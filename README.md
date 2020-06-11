@@ -156,7 +156,10 @@ await client.SendAsync();
 
 #### N-Action SCU
 ```csharp
-var dicomClient = new Dicom.Network.Client.DicomClient("127.0.0.1", 12345, false, "SCU-AE", "SCP-AE");
+// It is better to increase 'associationLingerTimeoutInMs' default is 50 ms, which may not be
+// be sufficient
+var dicomClient = new Dicom.Network.Client.DicomClient("127.0.0.1", 12345, false, "SCU-AE", "SCP-AE",
+DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs,5000);
 var txnUid = DicomUIDGenerator.GenerateDerivedFromUUID().UID;
 var nActionDicomDataSet = new DicomDataset
 {
