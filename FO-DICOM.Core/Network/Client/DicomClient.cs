@@ -55,6 +55,11 @@ namespace FellowOakDicom.Network.Client
         DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
 
         /// <summary>
+        /// Gets or sets the handler of  client N-EVENT-REPORT-RQ
+        /// </summary>
+        DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
+
+        /// <summary>
         /// Gets the network manager that will be used to open connections.
         /// </summary>
         INetworkManager NetworkManager { get; }
@@ -148,6 +153,7 @@ namespace FellowOakDicom.Network.Client
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
+        public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
         public INetworkManager NetworkManager { get; }
         public ILogManager LogManager { get; }
         public ITranscoderManager TranscoderManager { get; }
@@ -276,6 +282,16 @@ namespace FellowOakDicom.Network.Client
             }
 
             return await OnCStoreRequest(request).ConfigureAwait(false);
+        }
+
+        internal async Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
+        {
+            if (OnNEventReportRequest == null)
+            {
+                return new DicomNEventReportResponse(request, DicomStatus.AttributeListError);
+            }
+
+            return await OnNEventReportRequest(request).ConfigureAwait(false);
         }
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
