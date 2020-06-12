@@ -30,7 +30,7 @@ namespace FellowOakDicom.Network
     {
         #region FIELDS
 
-        private const int MaxBytesToRead = 16384;
+        private const int _maxBytesToRead = 16384;
 
         private bool _disposed = false;
 
@@ -309,7 +309,7 @@ namespace FellowOakDicom.Network
             catch (ObjectDisposedException)
             {
                 // ignore ObjectDisposedException, that may happen, when closing a connection.
-                return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+                return Task.CompletedTask;
             }
 
             lock (_lock)
@@ -370,7 +370,7 @@ namespace FellowOakDicom.Network
                     LogIOException(e, Logger, false);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
-                catch (ObjectDisposedException e)
+                catch (ObjectDisposedException)
                 {
                     // ignore ObjectDisposedException, that may happen, when closing a connection.
                 }
@@ -428,7 +428,7 @@ namespace FellowOakDicom.Network
                         ms.Write(buffer, 0, buffer.Length);
                         while (_readLength > 0)
                         {
-                            int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
+                            int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
                             count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
                                 .ConfigureAwait(false);
@@ -682,8 +682,7 @@ namespace FellowOakDicom.Network
 
                             var command = new DicomDataset().NotValidated();
 
-                            var reader = new DicomReader();
-                            reader.IsExplicitVR = false;
+                            var reader = new DicomReader { IsExplicitVR = false };
                             reader.Read(new StreamByteSource(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
 
                             _dimseStream = null;
@@ -781,8 +780,10 @@ namespace FellowOakDicom.Network
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
 
-                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default);
-                                source.Endian = pc.AcceptedTransferSyntax.Endian;
+                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default)
+                                {
+                                    Endian = pc.AcceptedTransferSyntax.Endian
+                                };
 
                                 var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
@@ -1514,7 +1515,7 @@ namespace FellowOakDicom.Network
         {
             if (_isInitialized)
             {
-                return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+                return Task.CompletedTask;
             }
 
             _isInitialized = true;
@@ -1526,9 +1527,7 @@ namespace FellowOakDicom.Network
         /// Action to perform when send queue is empty.
         /// </summary>
         protected virtual Task OnSendQueueEmptyAsync()
-        {
-            return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
-        }
+            => Task.CompletedTask;
 
         #endregion
 
@@ -1593,7 +1592,7 @@ namespace FellowOakDicom.Network
                 _command = true;
                 _pcid = pcid;
                 _dicomMessage = dicomMessage;
-                _pduMax = Math.Min(max, Int32.MaxValue);
+                _pduMax = Math.Min(max, int.MaxValue);
                 _max = _pduMax == 0
                            ? _service.Options.MaxCommandBuffer
                            : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
@@ -1648,7 +1647,7 @@ namespace FellowOakDicom.Network
                         Array.Resize(ref _bytes, _length);
                     }
 
-                    PDV pdv = new PDV(_pcid, _bytes, _command, last);
+                    var pdv = new PDV(_pcid, _bytes, _command, last);
                     _pdu.PDVs.Add(pdv);
 
                     // reset length in case we recurse into WritePDU()
@@ -1714,24 +1713,12 @@ namespace FellowOakDicom.Network
             {
             }
 
-            public override long Length
-            {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-            }
+            public override long Length => throw new NotSupportedException();
 
             public override long Position
             {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-                set
-                {
-                    throw new NotSupportedException();
-                }
+                get => throw new NotSupportedException();
+                set => throw new NotSupportedException();
             }
 
             public override int Read(byte[] buffer, int offset, int count)
