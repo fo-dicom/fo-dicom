@@ -120,6 +120,17 @@ namespace Dicom.Network.Client
         /// The <see cref="DicomCStoreResponse"/> related to the C-STORE <paramref name="request"/>.
         /// </returns>
         Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
+
+        /// <summary>
+        /// Callback for handling a client related N-EVENT-REPORT-RQ request, typically emanating from the client's N-ACTION request.
+        /// </summary>
+        /// <param name="request">
+        /// N-EVENT-REPORT-RQ request.
+        /// </param>
+        /// <returns>
+        /// The <see cref="DicomNEventReportResponse"/> related to the N-EVENT-REPORT-RQ <paramref name="request"/>.
+        /// </returns>
+        Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request);
     }
 
     public class DicomClientConnection : DicomService, IDicomClientConnection
@@ -212,6 +223,11 @@ namespace Dicom.Network.Client
         public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             return DicomClient.OnCStoreRequestAsync(request);
+        }
+
+        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
+        {
+            return DicomClient.OnNEventReportRequestAsync(request);
         }
     }
 }
