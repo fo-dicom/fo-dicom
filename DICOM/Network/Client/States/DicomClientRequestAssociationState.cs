@@ -134,7 +134,7 @@ namespace Dicom.Network.Client.States
                     extendedNegotiation.ServiceClassUid,
                     extendedNegotiation.RelatedGeneralSopClasses.ToArray());
             }
-
+            _dicomClient.NotifyAssociationRequest(new EventArguments.AssociationRequestEventArgs(associationToRequest));
             await Connection.SendAssociationRequestAsync(associationToRequest).ConfigureAwait(false);
         }
 

@@ -81,6 +81,11 @@ namespace Dicom.Network.Client
         NetworkManager NetworkManager { get; set; }
 
         /// <summary>
+        /// Triggers prior to an association being requested
+        /// </summary>
+        event EventHandler<EventArguments.AssociationRequestEventArgs> AssociationRequest;
+
+        /// <summary>
         /// Triggers when an association is accepted
         /// </summary>
         event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
@@ -163,6 +168,7 @@ namespace Dicom.Network.Client
         public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
         public NetworkManager NetworkManager { get; set; }
 
+        public event EventHandler<EventArguments.AssociationRequestEventArgs> AssociationRequest;
         public event EventHandler<EventArguments.AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<EventArguments.AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
@@ -238,6 +244,9 @@ namespace Dicom.Network.Client
 
             return await newState.GetNextStateAsync(cancellation).ConfigureAwait(false);
         }
+
+        internal void NotifyAssociationRequest(EventArguments.AssociationRequestEventArgs eventArgs)
+            => AssociationRequest?.Invoke(this, eventArgs);
 
         internal void NotifyAssociationAccepted(EventArguments.AssociationAcceptedEventArgs eventArgs)
             => AssociationAccepted?.Invoke(this, eventArgs);
