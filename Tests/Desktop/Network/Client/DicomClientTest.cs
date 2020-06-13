@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dicom.Helpers;
 using Dicom.Log;
+using Dicom.Network.Client.EventArguments;
 using Dicom.Network.Client.States;
 using Xunit;
 using Xunit.Abstractions;
@@ -260,6 +261,31 @@ namespace Dicom.Network.Client
                 await client.SendAsync().ConfigureAwait(false);
 
                 Assert.True(accepted);
+            }
+        }
+
+        [Fact]
+        public async Task BeforeAssociationSend_Event()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<SampleStoreProvider>(port))
+            {
+                var dicomClient = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                dicomClient.AssociationRequest += (object o, AssociationRequestEventArgs s) => {
+                    var totalTs = s.Association.PresentationContexts.First().GetTransferSyntaxes();
+                    Assert.True(totalTs.Count() > 0);
+                    var implicitTs = from t in totalTs
+                                     where t.UID == DicomTransferSyntax.ImplicitVRLittleEndian.UID
+                                     select t;
+                    Assert.True(implicitTs.Count() == 1);
+
+                    s.Association.PresentationContexts.First().ClearTransferSyntaxes();
+                    s.Association.PresentationContexts.First().AddTransferSyntax(DicomTransferSyntax.JPEGProcess1);
+                };
+                var cStore = new DicomCStoreRequest(@"Test Data\testjpeglossy.dcm");
+                await dicomClient.AddRequestAsync(cStore);
+                await dicomClient.SendAsync();
+
             }
         }
 
@@ -1426,6 +1452,55 @@ namespace Dicom.Network.Client
             };
 
             public ExplicitLECStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
+                : base(stream, fallbackEncoding, log)
+            {
+            }
+
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            {
+                foreach (var pc in association.PresentationContexts)
+                {
+                    if (!pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes))
+                    {
+                        return SendAssociationRejectAsync(DicomRejectResult.Permanent,
+                            DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);
+                    }
+                }
+
+                return SendAssociationAcceptAsync(association);
+            }
+
+            public Task OnReceiveAssociationReleaseRequestAsync()
+            {
+                return SendAssociationReleaseResponseAsync();
+            }
+
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public DicomCStoreResponse OnCStoreRequest(DicomCStoreRequest request)
+            {
+                return new DicomCStoreResponse(request, DicomStatus.Success);
+            }
+
+            public void OnCStoreRequestException(string tempFileName, Exception e)
+            {
+            }
+        }
+
+        private class SampleStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
+        {
+            private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
+            {
+                DicomTransferSyntax.JPEGProcess1
+            };
+
+            public SampleStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log)
                 : base(stream, fallbackEncoding, log)
             {
             }
