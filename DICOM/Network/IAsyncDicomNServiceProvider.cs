@@ -51,5 +51,13 @@ namespace Dicom.Network
         /// <param name="request">N-SET request subject to handling.</param>
         /// <returns>N-SET response based on <paramref name="request"/>.</returns>
         Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request);
+
+        /// <summary>
+        /// Provide the server implementer to send synchronous N-EVENT-REPORT.
+        /// It requires N-ACTION as the context
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task OnSendNEventReportRequestAsync(DicomNActionRequest request);
     }
 }

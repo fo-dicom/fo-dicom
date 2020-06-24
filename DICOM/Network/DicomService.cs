@@ -996,7 +996,9 @@ namespace Dicom.Network
                     {
                         case DicomCommandField.NActionRequest:
                             response = thisAsNServiceProvider.OnNActionRequest(dimse as DicomNActionRequest);
-                            break;
+                            await SendResponseAsync(response).ConfigureAwait(false);
+                            thisAsNServiceProvider.OnSendNEventReportRequest(dimse as DicomNActionRequest);
+                            return;
                         case DicomCommandField.NCreateRequest:
                             response = thisAsNServiceProvider.OnNCreateRequest(dimse as DicomNCreateRequest);
                             break;
@@ -1025,7 +1027,9 @@ namespace Dicom.Network
                     {
                         case DicomCommandField.NActionRequest:
                             response = await thisAsAsyncNServiceProvider.OnNActionRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
-                            break;
+                            await SendResponseAsync(response).ConfigureAwait(false);
+                            await thisAsAsyncNServiceProvider.OnSendNEventReportRequestAsync(dimse as DicomNActionRequest);
+                            return;
                         case DicomCommandField.NCreateRequest:
                             response = await thisAsAsyncNServiceProvider.OnNCreateRequestAsync(dimse as DicomNCreateRequest).ConfigureAwait(false);
                             break;
