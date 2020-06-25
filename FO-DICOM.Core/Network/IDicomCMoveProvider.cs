@@ -16,6 +16,10 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-MOVE request subject to handling.</param>
         /// <returns>Collection of C-MOVE responses based on <paramref name="request"/>.</returns>
+#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+        IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request);
+#else
         Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request);
+#endif
     }
 }

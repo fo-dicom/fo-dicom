@@ -55,4 +55,5 @@
 * [sfb13](https://github.com/sfb13)
 * [Zhenghan Yang](https://github.com/kira-96)
 * [Denny Spiegelberg](https://github.com/nutzlastfan)
+* [Amos Onn](https://github.com/amosonn)
 * [Sudheesh Subramannian](https://github.com/sudheeshps)

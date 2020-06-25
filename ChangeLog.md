@@ -1,5 +1,6 @@
 #### v.4.0.6 (TBD)
 * Update to DICOM Standard 2020b.
+* Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
 * Handle N-Event requests in DicomClient (required for synchronous storage commitment) (#1001)
 
 #### v.4.0.5 (5/18/2020)
