@@ -45,7 +45,10 @@ namespace FellowOakDicom.Tests.Serialization
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            for (int i = 0; i < numCalls; i++) call();
+            for (int i = 0; i < numCalls; i++)
+            {
+                call();
+            }
 
             stopWatch.Stop();
 
@@ -192,9 +195,15 @@ namespace FellowOakDicom.Tests.Serialization
                 dataset,
                 item =>
                     {
-                        if ((item.Tag.Element & 0xff00) != 0) Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
+                        if ((item.Tag.Element & 0xff00) != 0)
+                        {
+                            Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
+                        }
                         Assert.NotNull(item.Tag.DictionaryEntry);
-                        if (item.ValueRepresentation == DicomVR.SQ) Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
+                        if (item.ValueRepresentation == DicomVR.SQ)
+                        {
+                            Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
+                        }
                     });
         }
 
@@ -593,7 +602,7 @@ namespace FellowOakDicom.Tests.Serialization
             var target = new DicomDataset
             {
                 new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO_IR 192"),
-                new DicomLongText(DicomTag.StudyDescription, Encoding.UTF8, "Label®")
+                new DicomLongText(DicomTag.StudyDescription, "Label®")
             };
             VerifyJsonTripleTrip(target);
         }
@@ -645,79 +654,74 @@ namespace FellowOakDicom.Tests.Serialization
 
         private static bool ValueEquals(DicomDataset a, DicomDataset b)
         {
-            if (a == null || b == null)
-                return a == b;
-            else if (a == b)
-                return true;
-            else
-                return a.Zip(b, ValueEquals).All(x => x);
+            return a == null || b == null
+                ? a == b
+                : a == b || a.Zip(b, ValueEquals).All(x => x);
         }
 
         private static bool ValueEquals(DicomItem a, DicomItem b)
         {
             if (a == null || b == null)
+            {
                 return a == b;
+            }
             else if (a == b)
+            {
                 return true;
+            }
             else if (a.ValueRepresentation != b.ValueRepresentation || (uint)a.Tag != (uint)b.Tag)
+            {
                 return false;
+            }
+            else if (a is DicomDecimalString decimalStringA && b is DicomDecimalString decimalStringB)
+            {
+                return decimalStringA.Get<decimal[]>().SequenceEqual(decimalStringB.Get<decimal[]>());
+            }
             else if (a is DicomElement elementA)
             {
-                if (!(b is DicomElement elementB))
-                    return false;
-                else if (b is DicomDecimalString decimalStringB
-                    && a is DicomDecimalString decimalStringA)
-                    return decimalStringA.Get<decimal[]>().SequenceEqual(decimalStringB.Get<decimal[]>());
-                else
-                    return ValueEquals(elementA.Buffer, elementB.Buffer);
+                return (b is DicomElement elementB) && ValueEquals(elementA.Buffer, elementB.Buffer);
             }
             else if (a is DicomSequence sequenceA)
             {
-                if (!(b is DicomSequence sequenceB))
-                    return false;
-                else
-                    return sequenceA.Items.Zip(sequenceB.Items, ValueEquals).All(x => x);
+                return (b is DicomSequence sequenceB) && sequenceA.Items.Zip(sequenceB.Items, ValueEquals).All(x => x);
             }
             else if (a is DicomFragmentSequence fragmentSequenceA)
             {
-                if (!(b is DicomFragmentSequence fragmentSequenceB))
-                    return false;
-                else
-                    return fragmentSequenceA.Fragments.Zip(fragmentSequenceB.Fragments, ValueEquals).All(x => x);
+                return b is DicomFragmentSequence fragmentSequenceB && fragmentSequenceA.Fragments.Zip(fragmentSequenceB.Fragments, ValueEquals).All(x => x);
             }
             else
+            {
                 return a.Equals(b);
+            }
         }
 
         private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
         {
             if (a == null || b == null)
+            {
                 return a == b;
+            }
             else if (a == b)
+            {
                 return true;
+            }
             else if (a.IsMemory)
             {
                 return b.IsMemory && a.Data.SequenceEqual(b.Data);
             }
             else if (a is IBulkDataUriByteBuffer bufferA)
             {
-                if (b is IBulkDataUriByteBuffer bufferB)
-                    return bufferA.BulkDataUri == bufferB.BulkDataUri;
-                else
-                    return false;
+                return b is IBulkDataUriByteBuffer bufferB && bufferA.BulkDataUri == bufferB.BulkDataUri;
             }
             else if (a is EmptyBuffer && b is EmptyBuffer)
+            {
                 return true;
+            }
             else if (a is StreamByteBuffer asbb && b is StreamByteBuffer bsbb)
             {
-                if (asbb.Stream == null || bsbb.Stream == null)
-                {
-                    return asbb.Stream == bsbb.Stream;
-                }
-                else
-                {
-                    return asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
-                }
+                return asbb.Stream == null || bsbb.Stream == null
+                    ? asbb.Stream == bsbb.Stream
+                    : asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
             }
             else if (a is CompositeByteBuffer acbb && b is CompositeByteBuffer bcbb)
             {
@@ -818,28 +822,28 @@ namespace FellowOakDicom.Tests.Serialization
                            new DicomAgeString(new DicomTag(3, 0x1003, privateCreator)),
                            new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator)),
                            new DicomCodeString(new DicomTag(3, 0x1005, privateCreator)),
-                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), new string[0]),
-                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new string[0]),
-                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), new string[0]),
+                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), Array.Empty<string>()),
+                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), Array.Empty<string>()),
+                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), Array.Empty<string>()),
                            new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator)),
                            new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator)),
-                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), new string[0]),
+                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), Array.Empty<string>()),
                            new DicomLongString(new DicomTag(3, 0x100c, privateCreator)),
                            new DicomLongText(new DicomTag(3, 0x100d, privateCreator), null),
-                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), new byte[0]),
-                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), new double[0]),
-                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), new float[0]),
-                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator), new uint[0]),
-                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[0]),
+                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), Array.Empty<byte>()),
+                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), Array.Empty<double>()),
+                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), Array.Empty<float>()),
+                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator), Array.Empty<uint>()),
+                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), Array.Empty<ushort>()),
                            new DicomPersonName(new DicomTag(3, 0x1012, privateCreator)),
                            new DicomShortString(new DicomTag(3, 0x1013, privateCreator)),
                            new DicomSignedLong(new DicomTag(3, 0x1001, privateCreator)),
                            new DicomSequence(new DicomTag(3, 0x1015, privateCreator)),
                            new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator)),
                            new DicomShortText(new DicomTag(3, 0x1018, privateCreator), null),
-                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), new string[0]),
+                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), Array.Empty<string>()),
                            new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator), (string)null),
-                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), new string[0]),
+                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), Array.Empty<string>()),
                            new DicomUnsignedLong(new DicomTag(3, 0x101c, privateCreator)),
                            new DicomUnknown(new DicomTag(3, 0x101d, privateCreator)),
                            new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), null),
@@ -940,7 +944,7 @@ namespace FellowOakDicom.Tests.Serialization
         // The following example is a QIDO-RS SearchForStudies response consisting 
         // of two matching studies, corresponding to the example QIDO-RS request:
         // GET http://qido.nema.org/studies?PatientID=12345&includefield=all&limit=2
-        private string _jsonExampleFromDicomNemaOrg = @"
+        private readonly string _jsonExampleFromDicomNemaOrg = @"
 [
     { // Result 1
         ""00080005"": {

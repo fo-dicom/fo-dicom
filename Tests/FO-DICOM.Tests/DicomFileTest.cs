@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Writer;
 using System;
 using System.IO;
@@ -16,9 +17,9 @@ namespace FellowOakDicom.Tests
     {
         #region Fields
 
-        private const string MinimumDatasetInstanceUid = "1.2.3";
+        private const string _minimumDatasetInstanceUid = "1.2.3";
 
-        private static readonly DicomDataset MinimumDatatset =
+        private static readonly DicomDataset _minimumDatatset =
             new DicomDataset(
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
@@ -28,13 +29,59 @@ namespace FellowOakDicom.Tests
         #region Unit tests
 
         [Fact]
-        public void DicomFile_OpenDefaultEncoding_SwedishCharactersNotMaintained()
+        public void DicomFile_NoDefaultEncoding_SwedishCharactersNotMaintained()
         {
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(MinimumDatatset);
-            dataset.Add(new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+            var dataset = new DicomDataset(_minimumDatatset)
+            {
+                new DicomLongString(tag, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
+            };
+
+            var outFile = new DicomFile(dataset);
+            var stream = new MemoryStream();
+            outFile.Save(stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var inFile = DicomFile.Open(stream);
+            var actual = inFile.Dataset.GetString(tag);
+
+            Assert.NotEqual(expected, actual);
+        }
+
+        [Fact]
+        public void DicomFile_OpenDefaultEncoding_SwedishCharactersMaintained()
+        {
+            var expected = "Händer Å Fötter";
+            var tag = DicomTag.DoseComment;
+
+            var dataset = new DicomDataset(_minimumDatatset)
+            {
+                new DicomLongString(tag, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
+            };
+
+            var outFile = new DicomFile(dataset);
+            var stream = new MemoryStream();
+            outFile.Save(stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var inFile = DicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
+            var actual = inFile.Dataset.GetString(tag);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomFile_NoEncoding_SwedishCharactersNotMaintained()
+        {
+            var expected = "Händer Å Fötter";
+            var tag = DicomTag.DoseComment;
+
+            var dataset = new DicomDataset(_minimumDatatset)
+            {
+                new DicomLongString(tag, expected)
+            };
 
             var outFile = new DicomFile(dataset);
             var stream = new MemoryStream();
@@ -53,15 +100,18 @@ namespace FellowOakDicom.Tests
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(MinimumDatatset);
-            dataset.Add(new DicomLongString(tag, DicomEncoding.GetEncoding("ISO IR 192"), expected));
+            var dataset = new DicomDataset(_minimumDatatset)
+            {
+                new DicomLongString(tag, expected),
+                { DicomTag.SpecificCharacterSet,"ISO IR 192"  }
+            };
 
             var outFile = new DicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
 
             stream.Seek(0, SeekOrigin.Begin);
-            var inFile = DicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
+            var inFile = DicomFile.Open(stream);
             var actual = inFile.Dataset.GetString(tag);
 
             Assert.Equal(expected, actual);
@@ -70,7 +120,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Save_ToFile_FileExistsOnDisk()
         {
-            var saveFile = new DicomFile(MinimumDatatset);
+            var saveFile = new DicomFile(_minimumDatatset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
             Assert.True(File.Exists(fileName));
@@ -79,7 +129,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsync_ToFile_FileExistsOnDisk()
         {
-            var saveFile = new DicomFile(MinimumDatatset);
+            var saveFile = new DicomFile(_minimumDatatset);
             var fileName = Path.GetTempFileName();
             await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
@@ -88,12 +138,12 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_FromFile_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(MinimumDatatset);
+            var saveFile = new DicomFile(_minimumDatatset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
             var openFile = DicomFile.Open(fileName);
-            var expected = MinimumDatasetInstanceUid;
+            var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
@@ -101,12 +151,12 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task OpenAsync_FromFile_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(MinimumDatatset);
+            var saveFile = new DicomFile(_minimumDatatset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
             var openFile = await DicomFile.OpenAsync(fileName);
-            var expected = MinimumDatasetInstanceUid;
+            var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
@@ -114,13 +164,13 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StreamOfMemoryMappedFile_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(MinimumDatatset);
+            var saveFile = new DicomFile(_minimumDatatset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
             var file = MemoryMappedFile.CreateFromFile(fileName);
             var openFile = DicomFile.Open(file.CreateViewStream());
-            var expected = MinimumDatasetInstanceUid;
+            var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
         }
@@ -135,7 +185,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAtOperatorsNameTag_OperatorsNameExcluded()
         {
-            Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
+            bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
+
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
         }
@@ -143,7 +194,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterOperatorsNameTag_OperatorsNameIncluded()
         {
-            Func<ParseState, bool> criterion = state => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
+            bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
+
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
         }
@@ -159,7 +211,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
         {
-            Func<ParseState, bool> criterion = state => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            bool criterion(ParseState state) => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
         }

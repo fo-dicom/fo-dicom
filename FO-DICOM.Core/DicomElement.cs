@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 
@@ -52,7 +53,7 @@ namespace FellowOakDicom
                 var entry = Tag.DictionaryEntry;
                 if (Count < entry.ValueMultiplicity.Minimum || Count > entry.ValueMultiplicity.Maximum)
                 {
-                    throw new DicomValidationException(this.ToString(), ValueRepresentation, $"Number of items {Count} does not match ValueMultiplicity {entry.ValueMultiplicity}");
+                    throw new DicomValidationException(ToString(), ValueRepresentation, $"Number of items {Count} does not match ValueMultiplicity {entry.ValueMultiplicity}");
                 }
             }
         }
@@ -72,33 +73,47 @@ namespace FellowOakDicom
 
         private string _value = null;
 
+        private readonly Encoding _bufferEncoding;
+        private Encoding _targetEncoding = DicomEncoding.Default;
+
         #endregion
 
         #region Constructors
 
         protected DicomStringElement(DicomTag tag, string value)
-            : this(tag, DicomEncoding.Default, value)
-        {
-        }
-
-        protected DicomStringElement(DicomTag tag, Encoding encoding, string value)
             : base(tag, EmptyBuffer.Value)
         {
-            Encoding = encoding;
-            Buffer = ByteConverter.ToByteBuffer(value ?? string.Empty, encoding, ValueRepresentation.PaddingValue);
+            _value = value ?? string.Empty;
+            if (!string.IsNullOrEmpty(_value))
+            {
+                Buffer = new LazyByteBuffer(StringToBytes);
+            }
         }
 
         protected DicomStringElement(DicomTag tag, Encoding encoding, IByteBuffer buffer)
             : base(tag, buffer)
         {
-            Encoding = encoding;
+            _bufferEncoding = encoding;
+            TargetEncoding = encoding;
         }
 
         #endregion
 
         #region Public Properties
 
-        public Encoding Encoding { get; protected set; }
+        public Encoding TargetEncoding
+        {
+            get => _targetEncoding;
+            set
+            {
+                if (!(Buffer is LazyByteBuffer) && (Buffer != EmptyBuffer.Value) && value != _bufferEncoding)
+                {
+                    _value = StringValue;
+                    Buffer = new LazyByteBuffer(StringToBytes);
+                }
+                _targetEncoding = value;
+            }
+        }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
         /// <value>Number of value items</value>
@@ -108,10 +123,11 @@ namespace FellowOakDicom
         {
             get
             {
-                if (_value == null && Buffer != null)
-                    _value =
-                        Encoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
+                if (_value == null && Buffer != null && (Buffer != EmptyBuffer.Value))
+                {
+                    _value = _bufferEncoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
                             .TrimEnd((char)ValueRepresentation.PaddingValue);
+                }
                 return _value;
             }
         }
@@ -122,23 +138,54 @@ namespace FellowOakDicom
 
         public override T Get<T>(int item = -1)
         {
-            if (typeof(T) == typeof(string) || typeof(T) == typeof(object)) return (T)((object)StringValue);
+            if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
+            {
+                return (T)((object)StringValue);
+            }
 
-            if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)(new string[] { StringValue });
+            if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[]))
+            {
+                return (T)(object)(new string[] { StringValue });
+            }
 
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return DicomParseable.Parse<T>(StringValue);
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable)))
+            {
+                return DicomParseable.Parse<T>(StringValue);
+            }
 
-            if (typeof(T).GetTypeInfo().IsEnum) return (T)Enum.Parse(typeof(T), StringValue.Replace("\0", string.Empty), true);
+            if (typeof(T).GetTypeInfo().IsEnum)
+            {
+                return (T)Enum.Parse(typeof(T), StringValue.Replace("\0", string.Empty), true);
+            }
 
-            throw new InvalidCastException(
-                "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
+            throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
         #endregion
 
+        private byte[] StringToBytes()
+        {
+            if (_value is null)
+            {
+                return Array.Empty<byte>();
+            }
+
+            var encoding = TargetEncoding ?? DicomEncoding.Default;
+
+            byte[] bytes = encoding.GetBytes(_value);
+
+            if (bytes.Length.IsOdd())
+            {
+                Array.Resize(ref bytes, bytes.Length + 1);
+                bytes[bytes.Length - 1] = ValueRepresentation.PaddingValue;
+            }
+
+            return bytes;
+        }
+
         protected override void ValidateString()
         {
-            this.ValueRepresentation?.ValidateString(_value);
+            ValueRepresentation?.ValidateString(_value);
         }
     }
 
@@ -155,12 +202,7 @@ namespace FellowOakDicom
         #region Constructors
 
         protected DicomMultiStringElement(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, String.Join("\\", values))
-        {
-        }
-
-        protected DicomMultiStringElement(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, String.Join("\\", values))
+            : base(tag, string.Join("\\", values))
         {
         }
 
@@ -190,8 +232,9 @@ namespace FellowOakDicom
         {
             if (_values == null || _count == -1)
             {
-                if (String.IsNullOrEmpty(StringValue)) _values = new string[0];
-                else _values = StringValue.Split('\\');
+                _values = string.IsNullOrEmpty(StringValue)
+                    ? Array.Empty<string>()
+                    : StringValue.Split('\\');
                 _count = _values.Length;
             }
         }
@@ -219,18 +262,33 @@ namespace FellowOakDicom
                 return (T)((object)_values[item]);
             }
 
-            if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[])) return (T)(object)_values;
+            if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[]))
+            {
+                return (T)(object)_values;
+            }
 
-            if (item == -1) item = 0;
-            if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
+            if (item == -1)
+            {
+                item = 0;
+            }
 
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable))) return DicomParseable.Parse<T>(_values[item]);
+            if (item < 0 || item >= Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
+            }
+
+            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable)))
+            {
+                return DicomParseable.Parse<T>(_values[item]);
+            }
 
             var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
-            if (t.GetTypeInfo().IsEnum) return (T)Enum.Parse(t, _values[item].Replace("\0", string.Empty), true);
+            if (t.GetTypeInfo().IsEnum)
+            {
+                return (T)Enum.Parse(t, _values[item].Replace("\0", string.Empty), true);
+            }
 
-            throw new InvalidCastException(
-                "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
+            throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
         #endregion
@@ -241,9 +299,9 @@ namespace FellowOakDicom
     {
         #region FIELDS
 
-        private static readonly CultureInfo DicomDateElementFormat = CultureInfo.InvariantCulture;
+        private static readonly CultureInfo _dicomDateElementFormat = CultureInfo.InvariantCulture;
 
-        private static readonly DateTimeStyles DicomDateElementStyle = DateTimeStyles.NoCurrentDateDefault;
+        private const DateTimeStyles _dicomDateElementStyle = DateTimeStyles.NoCurrentDateDefault;
 
         private DateTime[] _values = null;
 
@@ -258,7 +316,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params DateTime[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(dateFormats[0]).Replace(":", string.Empty)).ToArray())
+            : base(tag, values.Select(x => x.ToString(dateFormats[0]).Replace(":", string.Empty)).ToArray())
         {
             DateFormats = dateFormats;
         }
@@ -270,7 +328,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="range">Date/time range.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, DicomDateRange range)
-            : base(tag, DicomEncoding.Default, range.ToString(dateFormats[0]).Replace(":", string.Empty))
+            : base(tag, range.ToString(dateFormats[0]).Replace(":", string.Empty))
         {
             DateFormats = dateFormats;
         }
@@ -282,7 +340,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="values">Values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, params string[] values)
-            : base(tag, DicomEncoding.Default, string.Join("\\", values))
+            : base(tag, string.Join("\\", values))
         {
             DateFormats = dateFormats;
         }
@@ -333,22 +391,22 @@ namespace FellowOakDicom
                         range.Minimum = DateTime.ParseExact(
                             vals[0],
                             DateFormats,
-                            DicomDateElementFormat,
-                            DicomDateElementStyle);
+                            _dicomDateElementFormat,
+                            _dicomDateElementStyle);
                     if (!string.IsNullOrEmpty(vals[1]))
                         range.Maximum = DateTime.ParseExact(
                             vals[1],
                             DateFormats,
-                            DicomDateElementFormat,
-                            DicomDateElementStyle);
+                            _dicomDateElementFormat,
+                            _dicomDateElementStyle);
                 }
                 else if (vals.Length == 1)
                 {
                     range.Minimum = DateTime.ParseExact(
                         vals[0],
                         DateFormats,
-                        DicomDateElementFormat,
-                        DicomDateElementStyle);
+                        _dicomDateElementFormat,
+                        _dicomDateElementStyle);
                     range.Maximum = range.Minimum.AddDays(1).AddMilliseconds(-1);
                 }
                 return (T)(object)range;
@@ -357,16 +415,21 @@ namespace FellowOakDicom
             if (_values == null)
             {
                 string[] vals = base.Get<string[]>();
-                if (vals.Length == 1 && string.IsNullOrEmpty(vals[0])) _values = new DateTime[0];
+                if (vals.Length == 1 && string.IsNullOrEmpty(vals[0]))
+                {
+                    _values = Array.Empty<DateTime>();
+                }
                 else
                 {
                     _values = new DateTime[vals.Length];
                     for (int i = 0; i < vals.Length; i++)
+                    {
                         _values[i] = DateTime.ParseExact(
                             vals[i],
                             DateFormats,
-                            DicomDateElementFormat,
-                            DicomDateElementStyle);
+                            _dicomDateElementFormat,
+                            _dicomDateElementStyle);
+                    }
                 }
             }
 
@@ -448,7 +511,10 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(string))
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
+                if (item < 0 || item >= Count)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
+                }
 
                 return (T)(object)ByteConverter.Get<Tv>(Buffer, item).ToString();
             }
@@ -460,7 +526,10 @@ namespace FellowOakDicom
 
             if (typeof(T).GetTypeInfo().IsValueType)
             {
-                if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
+                if (item < 0 || item >= Count)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
+                }
 
                 // If nullable, need to apply conversions on underlying type (#212)
                 var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
@@ -474,8 +543,7 @@ namespace FellowOakDicom
                 return (T)Convert.ChangeType(ByteConverter.Get<Tv>(Buffer, item), t);
             }
 
-            throw new InvalidCastException(
-                "Unable to convert DICOM " + ValueRepresentation.Code + " value to '" + typeof(T).Name + "'");
+            throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
         #endregion
@@ -488,7 +556,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomApplicationEntity(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -514,7 +582,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomAgeString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -627,7 +695,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomCodeString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -721,12 +789,12 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
+            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
         public DicomDecimalString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -927,12 +995,12 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomIntegerString(DicomTag tag, params int[] values)
-            : base(tag, DicomEncoding.Default, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
+            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
         public DicomIntegerString(DicomTag tag, params string[] values)
-            : base(tag, DicomEncoding.Default, values)
+            : base(tag, values)
         {
         }
 
@@ -1036,11 +1104,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomLongString(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
-        {
-        }
-
         public DicomLongString(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1062,11 +1125,6 @@ namespace FellowOakDicom
 
         public DicomLongText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomLongText(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
         {
         }
 
@@ -1276,13 +1334,7 @@ namespace FellowOakDicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.OV;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.OV;
 
         #endregion
     }
@@ -1297,11 +1349,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomPersonName(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
-        {
-        }
-
         public DicomPersonName(
             DicomTag tag,
             string Last,
@@ -1310,18 +1357,6 @@ namespace FellowOakDicom
             string Prefix = null,
             string Suffix = null)
             : base(tag, ConcatName(Last, First, Middle, Prefix, Suffix))
-        {
-        }
-
-        public DicomPersonName(
-            DicomTag tag,
-            Encoding encoding,
-            string Last,
-            string First,
-            string Middle = null,
-            string Prefix = null,
-            string Suffix = null)
-            : base(tag, encoding, ConcatName(Last, First, Middle, Prefix, Suffix))
         {
         }
 
@@ -1418,10 +1453,10 @@ namespace FellowOakDicom
             string Prefix = null,
             string Suffix = null)
         {
-            if (!String.IsNullOrEmpty(Suffix)) return Last + "^" + First + "^" + Middle + "^" + Prefix + "^" + Suffix;
-            if (!String.IsNullOrEmpty(Prefix)) return Last + "^" + First + "^" + Middle + "^" + Prefix;
-            if (!String.IsNullOrEmpty(Middle)) return Last + "^" + First + "^" + Middle;
-            if (!String.IsNullOrEmpty(First)) return Last + "^" + First;
+            if (!string.IsNullOrEmpty(Suffix)) return Last + "^" + First + "^" + Middle + "^" + Prefix + "^" + Suffix;
+            if (!string.IsNullOrEmpty(Prefix)) return Last + "^" + First + "^" + Middle + "^" + Prefix;
+            if (!string.IsNullOrEmpty(Middle)) return Last + "^" + First + "^" + Middle;
+            if (!string.IsNullOrEmpty(First)) return Last + "^" + First;
             return Last;
         }
 
@@ -1431,7 +1466,7 @@ namespace FellowOakDicom
         {
             if (Tag == DicomTag.PatientName && Count > 3)
             {
-                throw new DicomValidationException(this.ToString(), DicomVR.PN, $"Number of items {Count} does not match ValueMultiplicity 1-3");
+                throw new DicomValidationException(ToString(), DicomVR.PN, $"Number of items {Count} does not match ValueMultiplicity 1-3");
             }
         }
 
@@ -1459,11 +1494,6 @@ namespace FellowOakDicom
 
         public DicomShortString(DicomTag tag, params string[] values)
             : base(tag, values)
-        {
-        }
-
-        public DicomShortString(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
         {
         }
 
@@ -1550,11 +1580,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomShortText(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
-        {
-        }
-
         public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1588,13 +1613,7 @@ namespace FellowOakDicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.SV;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.SV;
 
         #endregion
     }
@@ -1693,11 +1712,6 @@ namespace FellowOakDicom
 
         public DicomUnlimitedCharacters(DicomTag tag, params string[] values)
             : base(tag, values)
-        {
-        }
-
-        public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, params string[] values)
-            : base(tag, encoding, values)
         {
         }
 
@@ -1860,11 +1874,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUniversalResource(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
-        {
-        }
-
         public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1924,11 +1933,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUnlimitedText(DicomTag tag, Encoding encoding, string value)
-            : base(tag, encoding, value)
-        {
-        }
-
         public DicomUnlimitedText(DicomTag tag, Encoding encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1962,13 +1966,7 @@ namespace FellowOakDicom
 
         #region Public Properties
 
-        public override DicomVR ValueRepresentation
-        {
-            get
-            {
-                return DicomVR.UV;
-            }
-        }
+        public override DicomVR ValueRepresentation => DicomVR.UV;
 
         #endregion
     }

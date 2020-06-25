@@ -159,7 +159,7 @@ namespace FellowOakDicom
 
         #region Fields
 
-        private readonly IEnumerable<DicomItem> _dataset;
+        private readonly DicomDataset _dataset;
 
         #endregion
 
@@ -169,7 +169,7 @@ namespace FellowOakDicom
         /// Initializes an instance of a <see cref="DicomDatasetWalker"/>.
         /// </summary>
         /// <param name="dataset"></param>
-        public DicomDatasetWalker(IEnumerable<DicomItem> dataset)
+        public DicomDatasetWalker(DicomDataset dataset)
         {
             _dataset = dataset;
         }
@@ -184,10 +184,11 @@ namespace FellowOakDicom
         /// <param name="walker">Dataset walker implementation to be used for dataset traversal.</param>
         public void Walk(IDicomDatasetWalker walker)
         {
-                var items = new Queue<DicomItem>();
-                BuildWalkQueue(this._dataset, items);
+            _dataset.OnBeforeSerializing();
+            var items = new Queue<DicomItem>();
+            BuildWalkQueue(_dataset, items);
 
-                DoWalk(walker, items);
+            DoWalk(walker, items);
         }
 
         /// <summary>
@@ -197,8 +198,9 @@ namespace FellowOakDicom
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public Task WalkAsync(IDicomDatasetWalker walker)
         {
+            _dataset.OnBeforeSerializing();
             var items = new Queue<DicomItem>();
-            BuildWalkQueue(this._dataset, items);
+            BuildWalkQueue(_dataset, items);
 
             return DoWalkAsync(walker, items);
         }
@@ -232,6 +234,7 @@ namespace FellowOakDicom
                     items.Enqueue(item);
                     foreach (var sqi in sq)
                     {
+                        sqi.OnBeforeSerializing();
                         items.Enqueue(new BeginDicomSequenceItem(sqi));
                         BuildWalkQueue(sqi, items);
                         items.Enqueue(new EndDicomSequenceItem());

@@ -193,6 +193,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientCStoreRequestHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientDefaults.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\DicomClientNEventReportRequestHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\AssociationAcceptedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\AssociationRejectedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client\EventArguments\RequestTimedOutEventArgs.cs" />

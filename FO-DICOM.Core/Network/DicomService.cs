@@ -30,7 +30,7 @@ namespace FellowOakDicom.Network
     {
         #region FIELDS
 
-        private const int MaxBytesToRead = 16384;
+        private const int _maxBytesToRead = 16384;
 
         private bool _disposed = false;
 
@@ -309,7 +309,7 @@ namespace FellowOakDicom.Network
             catch (ObjectDisposedException)
             {
                 // ignore ObjectDisposedException, that may happen, when closing a connection.
-                return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+                return Task.CompletedTask;
             }
 
             lock (_lock)
@@ -370,7 +370,7 @@ namespace FellowOakDicom.Network
                     LogIOException(e, Logger, false);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
-                catch (ObjectDisposedException e)
+                catch (ObjectDisposedException)
                 {
                     // ignore ObjectDisposedException, that may happen, when closing a connection.
                 }
@@ -428,7 +428,7 @@ namespace FellowOakDicom.Network
                         ms.Write(buffer, 0, buffer.Length);
                         while (_readLength > 0)
                         {
-                            int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
+                            int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
                             count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
                                 .ConfigureAwait(false);
@@ -682,8 +682,7 @@ namespace FellowOakDicom.Network
 
                             var command = new DicomDataset().NotValidated();
 
-                            var reader = new DicomReader();
-                            reader.IsExplicitVR = false;
+                            var reader = new DicomReader { IsExplicitVR = false };
                             reader.Read(new StreamByteSource(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
 
                             _dimseStream = null;
@@ -781,8 +780,10 @@ namespace FellowOakDicom.Network
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
 
-                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default);
-                                source.Endian = pc.AcceptedTransferSyntax.Endian;
+                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default)
+                                {
+                                    Endian = pc.AcceptedTransferSyntax.Endian
+                                };
 
                                 var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
@@ -987,33 +988,48 @@ namespace FellowOakDicom.Network
                 || dimse.Type == DicomCommandField.NEventReportRequest
                 || dimse.Type == DicomCommandField.NGetRequest || dimse.Type == DicomCommandField.NSetRequest)
             {
-                var thisAsNServiceProvider = this as IDicomNServiceProvider ?? throw new DicomNetworkException("N-Service SCP not implemented");
-
-                DicomResponse response = null;
-                switch (dimse.Type)
+                if (this is IDicomNServiceProvider thisAsNServiceProvider)
                 {
-                    case DicomCommandField.NActionRequest:
-                        response = await thisAsNServiceProvider.OnNActionRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
-                        break;
-                    case DicomCommandField.NCreateRequest:
-                        response = await thisAsNServiceProvider.OnNCreateRequestAsync(dimse as DicomNCreateRequest).ConfigureAwait(false);
-                        break;
-                    case DicomCommandField.NDeleteRequest:
-                        response = await thisAsNServiceProvider.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest).ConfigureAwait(false);
-                        break;
-                    case DicomCommandField.NEventReportRequest:
-                        response = await thisAsNServiceProvider.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
-                        break;
-                    case DicomCommandField.NGetRequest:
-                        response = await thisAsNServiceProvider.OnNGetRequestAsync(dimse as DicomNGetRequest).ConfigureAwait(false);
-                        break;
-                    case DicomCommandField.NSetRequest:
-                        response = await thisAsNServiceProvider.OnNSetRequestAsync(dimse as DicomNSetRequest).ConfigureAwait(false);
-                        break;
+                    DicomResponse response = null;
+                    switch (dimse.Type)
+                    {
+                        case DicomCommandField.NActionRequest:
+                            response = await thisAsNServiceProvider.OnNActionRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
+                            break;
+                        case DicomCommandField.NCreateRequest:
+                            response = await thisAsNServiceProvider.OnNCreateRequestAsync(dimse as DicomNCreateRequest).ConfigureAwait(false);
+                            break;
+                        case DicomCommandField.NDeleteRequest:
+                            response = await thisAsNServiceProvider.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest).ConfigureAwait(false);
+                            break;
+                        case DicomCommandField.NEventReportRequest:
+                            response = await thisAsNServiceProvider.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
+                            break;
+                        case DicomCommandField.NGetRequest:
+                            response = await thisAsNServiceProvider.OnNGetRequestAsync(dimse as DicomNGetRequest).ConfigureAwait(false);
+                            break;
+                        case DicomCommandField.NSetRequest:
+                            response = await thisAsNServiceProvider.OnNSetRequestAsync(dimse as DicomNSetRequest).ConfigureAwait(false);
+                            break;
+                    }
+
+                    await SendResponseAsync(response).ConfigureAwait(false);
+                    return;
                 }
 
-                await SendResponseAsync(response).ConfigureAwait(false);
-                return;
+                if (this is IDicomClientConnection thisAsConnection)
+                {
+                    switch (dimse.Type)
+                    {
+                        case DicomCommandField.NEventReportRequest:
+                            var response = await thisAsConnection.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
+                            await SendResponseAsync(response).ConfigureAwait(false);
+                            break;
+                    }
+                    return;
+                }
+
+                throw new DicomNetworkException("N-Service SCP not implemented");
             }
 
             throw new DicomNetworkException("Operation not implemented");
@@ -1021,6 +1037,11 @@ namespace FellowOakDicom.Network
 
         private Task SendMessageAsync(DicomMessage message)
         {
+            if (message == null)
+            {
+                return Task.CompletedTask;
+            }
+
             lock (_lock)
             {
                 _msgQueue.Enqueue(message);
@@ -1054,7 +1075,7 @@ namespace FellowOakDicom.Network
                     }
 
                     if (Association.MaxAsyncOpsInvoked > 0
-                        && _pending.Count(req => req.Type != DicomCommandField.CGetRequest)
+                        && _pending.Count(req => req.Type != DicomCommandField.CGetRequest && req.Type != DicomCommandField.NActionRequest)
                         >= Association.MaxAsyncOpsInvoked)
                     {
                         break;
@@ -1518,7 +1539,7 @@ namespace FellowOakDicom.Network
         {
             if (_isInitialized)
             {
-                return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
+                return Task.CompletedTask;
             }
 
             _isInitialized = true;
@@ -1530,9 +1551,7 @@ namespace FellowOakDicom.Network
         /// Action to perform when send queue is empty.
         /// </summary>
         protected virtual Task OnSendQueueEmptyAsync()
-        {
-            return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
-        }
+            => Task.CompletedTask;
 
         #endregion
 
@@ -1597,7 +1616,7 @@ namespace FellowOakDicom.Network
                 _command = true;
                 _pcid = pcid;
                 _dicomMessage = dicomMessage;
-                _pduMax = Math.Min(max, Int32.MaxValue);
+                _pduMax = Math.Min(max, int.MaxValue);
                 _max = _pduMax == 0
                            ? _service.Options.MaxCommandBuffer
                            : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
@@ -1652,7 +1671,7 @@ namespace FellowOakDicom.Network
                         Array.Resize(ref _bytes, _length);
                     }
 
-                    PDV pdv = new PDV(_pcid, _bytes, _command, last);
+                    var pdv = new PDV(_pcid, _bytes, _command, last);
                     _pdu.PDVs.Add(pdv);
 
                     // reset length in case we recurse into WritePDU()
@@ -1718,24 +1737,12 @@ namespace FellowOakDicom.Network
             {
             }
 
-            public override long Length
-            {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-            }
+            public override long Length => throw new NotSupportedException();
 
             public override long Position
             {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-                set
-                {
-                    throw new NotSupportedException();
-                }
+                get => throw new NotSupportedException();
+                set => throw new NotSupportedException();
             }
 
             public override int Read(byte[] buffer, int offset, int count)

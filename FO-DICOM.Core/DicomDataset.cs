@@ -78,7 +78,10 @@ namespace FellowOakDicom
                     if (item.ValueRepresentation.Equals(DicomVR.SQ))
                     {
                         var tag = item.Tag;
-                        if (tag.IsPrivate) tag = GetPrivateTag(tag);
+                        if (tag.IsPrivate)
+                        {
+                            tag = GetPrivateTag(tag);
+                        }
                         var sequenceItems =
                             ((DicomSequence)item).Items.Where(dataset => dataset != null)
                                 .Select(dataset => new DicomDataset(dataset, validate))
@@ -87,7 +90,10 @@ namespace FellowOakDicom
                     }
                     else
                     {
-                        if (ValidateItems) item.Validate();
+                        if (ValidateItems)
+                        {
+                            item.Validate();
+                        }
                         _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }
@@ -118,6 +124,15 @@ namespace FellowOakDicom
             }
         }
 
+        public Encoding TextEncoding
+        {
+            get => TryGetString(DicomTag.SpecificCharacterSet, out var charset) ? DicomEncoding.GetEncoding(charset) : DicomEncoding.Default;
+            set
+            {
+                AddOrUpdate(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(value));
+                ApplyTextEncoding(value);
+            }
+        }
 
         internal bool _validateItems = true;
         internal bool ValidateItems
@@ -758,21 +773,7 @@ namespace FellowOakDicom
         /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomTag tag, params T[] values)
         {
-            return DoAdd(tag, DicomEncoding.Default, values, false);
-        }
-
-        /// <summary>
-        /// Add single DICOM item given by <paramref name="tag"/> and <paramref name="values"/>.
-        /// </summary>
-        /// <typeparam name="T">Type of added values.</typeparam>
-        /// <param name="tag">DICOM tag of the added item.</param>
-        /// <param name="encoding">Encoding to be applied when adding item to the dataset.</param>
-        /// <param name="values">Values of the added item.</param>
-        /// <returns>The dataset instance.</returns>
-        /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
-        public DicomDataset Add<T>(DicomTag tag, Encoding encoding, params T[] values)
-        {
-            return DoAdd(tag, encoding, values, false);
+            return DoAdd(tag, values, false);
         }
 
         /// <summary>
@@ -789,25 +790,7 @@ namespace FellowOakDicom
         /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
-            return DoAdd(vr, tag, DicomEncoding.Default, values, false);
-        }
-
-        /// <summary>
-        /// Add single DICOM item given by <paramref name="vr"/>, <paramref name="tag"/> and <paramref name="values"/>.
-        /// </summary>
-        /// <typeparam name="T">Type of added values.</typeparam>
-        /// <param name="vr">DICOM vr of the added item. Use when setting a private element.</param>
-        /// <param name="tag">DICOM tag of the added item.</param>
-        /// <param name="encoding">Encoding to be applied when adding item to the dataset.</param>
-        /// <param name="values">Values of the added item.</param>
-        /// <remarks>No validation is performed on the <paramref name="vr"/> matching the element <paramref name="tag"/>
-        /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
-        /// </remarks>
-        /// <returns>The dataset instance.</returns>
-        /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
-        public DicomDataset Add<T>(DicomVR vr, DicomTag tag, Encoding encoding, params T[] values)
-        {
-            return DoAdd(vr, tag, encoding, values, false);
+            return DoAdd(vr, tag, values, false);
         }
 
         /// <summary>
@@ -839,20 +822,7 @@ namespace FellowOakDicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate<T>(DicomTag tag, params T[] values)
         {
-            return DoAdd(tag, DicomEncoding.Default, values, true);
-        }
-
-        /// <summary>
-        /// Add or update a single DICOM item given by <paramref name="tag"/> and <paramref name="values"/>.
-        /// </summary>
-        /// <typeparam name="T">Type of added values.</typeparam>
-        /// <param name="tag">DICOM tag of the added item.</param>
-        /// <param name="encoding">Encoding to be applied when adding item to the dataset.</param>
-        /// <param name="values">Values of the added item.</param>
-        /// <returns>The dataset instance.</returns>
-        public DicomDataset AddOrUpdate<T>(DicomTag tag, Encoding encoding, params T[] values)
-        {
-            return DoAdd(tag, encoding, values, true);
+            return DoAdd(tag, values, true);
         }
 
         /// <summary>
@@ -868,24 +838,7 @@ namespace FellowOakDicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
-            return DoAdd(vr, tag, DicomEncoding.Default, values, true);
-        }
-
-        /// <summary>
-        /// Add or update a single DICOM item given by <paramref name="vr"/>, <paramref name="tag"/> and <paramref name="values"/>.
-        /// </summary>
-        /// <typeparam name="T">Type of added values.</typeparam>
-        /// <param name="vr">DICOM vr of the added item. Use when setting a private element.</param>
-        /// <param name="tag">DICOM tag of the added item.</param>
-        /// <param name="encoding">Encoding to be applied when adding item to the dataset.</param>
-        /// <param name="values">Values of the added item.</param>
-        /// <remarks>No validation is performed on the <paramref name="vr"/> matching the element <paramref name="tag"/>
-        /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
-        /// </remarks>
-        /// <returns>The dataset instance.</returns>
-        public DicomDataset AddOrUpdate<T>(DicomVR vr, DicomTag tag, Encoding encoding, params T[] values)
-        {
-            return DoAdd(vr, tag, encoding, values, true);
+            return DoAdd(vr, tag, values, true);
         }
 
         /// <summary>
@@ -1101,11 +1054,10 @@ namespace FellowOakDicom
         /// </summary>
         /// <typeparam name="T">Type of added values.</typeparam>
         /// <param name="tag">DICOM tag of the added item.</param>
-        /// <param name="encoding"></param>
         /// <param name="values">Values of the added item.</param>
         /// <param name="allowUpdate">True if existing tag can be updated, false if method should throw when trying to add already existing tag.</param>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd<T>(DicomTag tag, Encoding encoding, IList<T> values, bool allowUpdate)
+        private DicomDataset DoAdd<T>(DicomTag tag, IList<T> values, bool allowUpdate)
         {
             var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
             if (entry == null)
@@ -1115,7 +1067,7 @@ namespace FellowOakDicom
             if (values != null) vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));
             if (vr == null) vr = entry.ValueRepresentations.First();
 
-            return DoAdd(vr, tag, encoding, values, allowUpdate);
+            return DoAdd(vr, tag, values, allowUpdate);
         }
 
         /// <summary>
@@ -1124,14 +1076,13 @@ namespace FellowOakDicom
         /// <typeparam name="T">Type of added values.</typeparam>
         /// <param name="vr">DICOM vr of the added item. Use when setting a private element.</param>
         /// <param name="tag">DICOM tag of the added item.</param>
-        /// <param name="encoding"></param>
         /// <param name="values">Values of the added item.</param>
         /// <param name="allowUpdate">True if existing tag can be updated, false if method should throw when trying to add already existing tag.</param>
         /// <remarks>No validation is performed on the <paramref name="vr"/> matching the element <paramref name="tag"/>
         /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
         /// </remarks>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd<T>(DicomVR vr, DicomTag tag, Encoding encoding, IList<T> values, bool allowUpdate)
+        private DicomDataset DoAdd<T>(DicomVR vr, DicomTag tag, IList<T> values, bool allowUpdate)
         {
             if (tag.IsPrivate) tag = GetPrivateTag(tag);
             if (vr == DicomVR.AE)
@@ -1229,14 +1180,14 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.LO)
             {
-                if (values == null) return DoAdd(new DicomLongString(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongString(tag, encoding, values.Cast<string>().ToArray()), allowUpdate);
+                if (values == null) return DoAdd(new DicomLongString(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongString(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.LT)
             {
-                if (values == null) return DoAdd(new DicomLongText(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
+                if (values == null) return DoAdd(new DicomLongText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.OB)
@@ -1296,14 +1247,14 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.PN)
             {
-                if (values == null) return DoAdd(new DicomPersonName(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomPersonName(tag, encoding, values.Cast<string>().ToArray()), allowUpdate);
+                if (values == null) return DoAdd(new DicomPersonName(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomPersonName(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.SH)
             {
-                if (values == null) return DoAdd(new DicomShortString(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortString(tag, encoding, values.Cast<string>().ToArray()), allowUpdate);
+                if (values == null) return DoAdd(new DicomShortString(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortString(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.SL)
@@ -1338,8 +1289,8 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.ST)
             {
-                if (values == null) return DoAdd(new DicomShortText(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
+                if (values == null) return DoAdd(new DicomShortText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.TM)
@@ -1354,8 +1305,8 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UC)
             {
-                if (values == null) return DoAdd(new DicomUnlimitedCharacters(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedCharacters(tag, encoding, values.Cast<string>().ToArray()), allowUpdate);
+                if (values == null) return DoAdd(new DicomUnlimitedCharacters(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedCharacters(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.UI)
@@ -1390,8 +1341,8 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UR)
             {
-                if (values == null) return DoAdd(new DicomUniversalResource(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
+                if (values == null) return DoAdd(new DicomUniversalResource(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             if (vr == DicomVR.US)
@@ -1407,13 +1358,14 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UT)
             {
-                if (values == null) return DoAdd(new DicomUnlimitedText(tag, encoding, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
+                if (values == null) return DoAdd(new DicomUnlimitedText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
             }
 
             throw new InvalidOperationException(
                 $"Unable to create DICOM element of type {vr.Code} with values of type {typeof(T)}");
         }
+
 
         private static bool ParseVrValueFromString<T, TOut>(
             IEnumerable<T> values,
@@ -1438,6 +1390,21 @@ namespace FellowOakDicom
             }
 
             return false;
+        }
+
+
+        private void ApplyTextEncoding(Encoding value)
+        {
+            foreach(var txt in this.Where(x => x is DicomStringElement))
+            {
+                (txt as DicomStringElement).TargetEncoding = value;
+            }
+        }
+
+
+        internal void OnBeforeSerializing()
+        {
+            ApplyTextEncoding(TextEncoding);
         }
 
         #endregion

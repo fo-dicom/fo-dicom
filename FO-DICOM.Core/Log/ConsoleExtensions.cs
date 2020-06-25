@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace FellowOakDicom.Log
@@ -17,7 +16,7 @@ namespace FellowOakDicom.Log
         /// Write DICOM dataset to console.
         /// </summary>
         /// <param name="dataset">DICOM dataset to write.</param>
-        public static void WriteToConsole(this IEnumerable<DicomItem> dataset)
+        public static void WriteToConsole(this DicomDataset dataset)
         {
             var log = new StringBuilder();
             var dumper = new DicomDatasetDumper(log, 80, 60);

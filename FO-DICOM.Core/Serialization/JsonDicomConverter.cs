@@ -201,9 +201,9 @@ namespace FellowOakDicom.Serialization
         /// <returns>
         /// <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type typeToConvert)
         {
-            return typeof(DicomDataset).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+            return typeof(DicomDataset).GetTypeInfo().IsAssignableFrom(typeToConvert.GetTypeInfo());
         }
 
         #endregion
@@ -274,12 +274,12 @@ namespace FellowOakDicom.Serialization
                         : new DicomIntegerString(tag, (int[])data);
                     break;
                 case "LO":
-                    item = new DicomLongString(tag, _jsonTextEncoding, (string[])data);
+                    item = new DicomLongString(tag, (string[])data);
                     break;
                 case "LT":
                     item = data is IByteBuffer dataBufferLT
                         ? new DicomLongText(tag, _jsonTextEncoding, dataBufferLT)
-                        : new DicomLongText(tag, _jsonTextEncoding, data.GetAsStringArray().GetSingleOrEmpty());
+                        : new DicomLongText(tag, data.GetAsStringArray().GetSingleOrEmpty());
                     break;
                 case "OB":
                     item = new DicomOtherByte(tag, (IByteBuffer)data);
@@ -300,10 +300,10 @@ namespace FellowOakDicom.Serialization
                     item = new DicomOtherVeryLong(tag, (IByteBuffer)data);
                     break;
                 case "PN":
-                    item = new DicomPersonName(tag, _jsonTextEncoding, (string[])data);
+                    item = new DicomPersonName(tag, (string[])data);
                     break;
                 case "SH":
-                    item = new DicomShortString(tag, _jsonTextEncoding, (string[])data);
+                    item = new DicomShortString(tag, (string[])data);
                     break;
                 case "SL":
                     item = data is IByteBuffer dataBufferSL
@@ -321,7 +321,7 @@ namespace FellowOakDicom.Serialization
                 case "ST":
                     item = data is IByteBuffer dataBufferST
                         ? new DicomShortText(tag, _jsonTextEncoding, dataBufferST)
-                        : new DicomShortText(tag, _jsonTextEncoding, data.GetAsStringArray().GetFirstOrEmpty());
+                        : new DicomShortText(tag, data.GetAsStringArray().GetFirstOrEmpty());
                     break;
                 case "SV":
                     item = data is IByteBuffer dataBufferSV
@@ -334,7 +334,7 @@ namespace FellowOakDicom.Serialization
                 case "UC":
                     item = data is IByteBuffer dataBufferUC
                         ? new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC)
-                        : new DicomUnlimitedCharacters(tag, _jsonTextEncoding, data.GetAsStringArray().SingleOrDefault());
+                        : new DicomUnlimitedCharacters(tag, data.GetAsStringArray().SingleOrDefault());
                     break;
                 case "UI":
                     item = new DicomUniqueIdentifier(tag, (string[])data);
@@ -358,7 +358,7 @@ namespace FellowOakDicom.Serialization
                 case "UT":
                     item = data is IByteBuffer dataBufferUT
                         ? new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT)
-                        : new DicomUnlimitedText(tag, _jsonTextEncoding, data.GetAsStringArray().GetSingleOrEmpty());
+                        : new DicomUnlimitedText(tag, data.GetAsStringArray().GetSingleOrEmpty());
                     break;
                 case "UV":
                     item = data is IByteBuffer dataBufferUV

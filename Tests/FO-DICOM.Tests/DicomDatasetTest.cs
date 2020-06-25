@@ -21,8 +21,10 @@ namespace FellowOakDicom.Tests
         public void Add_OtherDoubleElement_Succeeds()
         {
             var tag = DicomTag.DoubleFloatPixelData;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, 3.45);
+            var dataset = new DicomDataset
+            {
+                { tag, 3.45 }
+            };
             Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
         }
 
@@ -30,8 +32,10 @@ namespace FellowOakDicom.Tests
         public void Add_OtherDoubleElementWithMultipleDoubles_Succeeds()
         {
             var tag = DicomTag.DoubleFloatPixelData;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, 3.45, 6.78, 9.01);
+            var dataset = new DicomDataset
+            {
+                { tag, 3.45, 6.78, 9.01 }
+            };
             Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal(3, dataset.GetValues<double>(tag).Length);
         }
@@ -40,8 +44,10 @@ namespace FellowOakDicom.Tests
         public void Add_UnlimitedCharactersElement_Succeeds()
         {
             var tag = DicomTag.LongCodeValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, "abc");
+            var dataset = new DicomDataset
+            {
+                { tag, "abc" }
+            };
             Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal("abc", dataset.GetSingleValue<string>(tag));
         }
@@ -212,7 +218,7 @@ namespace FellowOakDicom.Tests
             var tag = DicomTag.SelectorISValue;
             var dataset = new DicomDataset
             {
-                { tag, new int[0] }
+                { tag, Array.Empty<int>() }
             };
 
             var e = Record.Exception(() => Assert.Equal(10, dataset.GetSingleValueOrDefault(tag, 10)));
@@ -234,14 +240,14 @@ namespace FellowOakDicom.Tests
         public void DicomSignedShortTest()
         {
             short[] values = new short[] { 5 }; //single Value element
-            DicomSignedShort element = new DicomSignedShort(DicomTag.TagAngleSecondAxis, values);
+            var element = new DicomSignedShort(DicomTag.TagAngleSecondAxis, values);
 
-            TestAddElementToDatasetAsString<short>(element, values);
+            TestAddElementToDatasetAsString(element, values);
 
             values = new short[] { 5, 8 }; //multi-value element
             element = new DicomSignedShort(DicomTag.CenterOfCircularExposureControlSensingRegion, values);
 
-            TestAddElementToDatasetAsString<short>(element, values);
+            Assert.True(TestAddElementToDatasetAsString(element, values));
         }
 
         [Fact]
@@ -250,13 +256,12 @@ namespace FellowOakDicom.Tests
             var expected = new DicomTag[] { DicomTag.ALinePixelSpacing }; //single value
             DicomElement element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, expected);
 
-
-            TestAddElementToDatasetAsString<string>(element, expected.Select(n => n.ToString("J", null)).ToArray());
+            TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray());
 
             expected = new DicomTag[] { DicomTag.ALinePixelSpacing, DicomTag.AccessionNumber }; //multi-value
             element = new DicomAttributeTag(DicomTag.FrameIncrementPointer, expected);
 
-            TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray());
+            Assert.True(TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray()));
         }
 
         [Fact]
@@ -266,7 +271,7 @@ namespace FellowOakDicom.Tests
 
             var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumber, testValues);
 
-            TestAddElementToDatasetAsString<ushort>(element, testValues);
+            Assert.True(TestAddElementToDatasetAsString(element, testValues));
         }
 
         [Fact]
@@ -275,7 +280,7 @@ namespace FellowOakDicom.Tests
             var testValues = new int[] { 1, 2, 3 };
             var element = new DicomSignedLong(DicomTag.RationalNumeratorValue, testValues);
 
-            TestAddElementToDatasetAsString(element, testValues);
+            Assert.True(TestAddElementToDatasetAsString(element, testValues));
         }
 
         [Fact]
@@ -285,7 +290,7 @@ namespace FellowOakDicom.Tests
 
             var element = new DicomOtherDouble(DicomTag.DoubleFloatPixelData, testValues);
 
-            TestAddElementToDatasetAsByteBuffer(element, testValues);
+            Assert.True(TestAddElementToDatasetAsByteBuffer(element, testValues));
         }
 
         [Fact]
@@ -295,7 +300,7 @@ namespace FellowOakDicom.Tests
 
             var element = new DicomOtherByte(DicomTag.PixelData, testValues);
 
-            TestAddElementToDatasetAsByteBuffer(element, testValues);
+            Assert.True(TestAddElementToDatasetAsByteBuffer(element, testValues));
         }
 
         [Fact]
@@ -524,8 +529,9 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset
             {
-                new DicomLongText(tag, encoding, expected)
+                new DicomLongText(tag, expected)
             };
+            dataset.TextEncoding = encoding;
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);
@@ -539,7 +545,8 @@ namespace FellowOakDicom.Tests
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
 
             var dataset = new DicomDataset();
-            dataset.AddOrUpdate(tag, encoding, expected);
+            dataset.TextEncoding = encoding;
+            dataset.AddOrUpdate(tag, expected);
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);
@@ -612,24 +619,14 @@ namespace FellowOakDicom.Tests
 
         #region Support methods
 
-        private void TestAddElementToDatasetAsString<T>(DicomElement element, T[] testValues)
+        private bool TestAddElementToDatasetAsString<T>(DicomElement element, T[] testValues)
         {
-            DicomDataset ds = new DicomDataset();
-            string[] stringValues;
-
-
-            if (typeof(T) == typeof(string))
-            {
-                stringValues = testValues.Cast<string>().ToArray();
-            }
-            else
-            {
-                stringValues = testValues.Select(x => x.ToString()).ToArray();
-            }
-
+            var ds = new DicomDataset();
+            string[] stringValues = typeof(T) == typeof(string)
+                ? testValues.Cast<string>().ToArray()
+                : testValues.Select(x => x.ToString()).ToArray();
 
             ds.AddOrUpdate(element.Tag, stringValues);
-
 
             for (int index = 0; index < element.Count; index++)
             {
@@ -655,12 +652,12 @@ namespace FellowOakDicom.Tests
                     Assert.Equal(stringValues[index], val);
                 }
             }
+            return true;
         }
 
         private string GetStringValue(DicomElement element, DicomDataset ds, int index)
         {
             string val;
-
 
             if (element.ValueRepresentation == DicomVR.AT)
             {
@@ -684,17 +681,18 @@ namespace FellowOakDicom.Tests
             return testValue.ToString("J", null);
         }
 
-        private static void TestAddElementToDatasetAsByteBuffer<T>(DicomElement element, T[] testValues)
+        private static bool TestAddElementToDatasetAsByteBuffer<T>(DicomElement element, T[] testValues)
         {
-            DicomDataset ds = new DicomDataset();
-
-
-            ds.Add(element.Tag, element.Buffer);
+            var ds = new DicomDataset
+            {
+                { element.Tag, element.Buffer }
+            };
 
             for (int index = 0; index < testValues.Count(); index++)
             {
                 Assert.Equal(testValues[index], ds.GetValue<T>(element.Tag, index));
             }
+            return true;
         }
 
         #endregion

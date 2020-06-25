@@ -229,7 +229,7 @@ namespace FellowOakDicom.Serialization
                     }
                     break;
                 case "LO":
-                    item = new DicomLongString(tag, _jsonTextEncoding, (string[])data);
+                    item = new DicomLongString(tag, (string[])data);
                     break;
                 case "LT":
                     if (data is IByteBuffer dataBufferLT)
@@ -238,7 +238,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
-                        item = new DicomLongText(tag, _jsonTextEncoding, data.AsStringArray().SingleOrEmpty());
+                        item = new DicomLongText(tag, data.AsStringArray().SingleOrEmpty());
                     }
                     break;
                 case "OB":
@@ -260,10 +260,10 @@ namespace FellowOakDicom.Serialization
                     item = new DicomOtherVeryLong(tag, (IByteBuffer)data);
                     break;
                 case "PN":
-                    item = new DicomPersonName(tag, _jsonTextEncoding, (string[])data);
+                    item = new DicomPersonName(tag, (string[])data);
                     break;
                 case "SH":
-                    item = new DicomShortString(tag, _jsonTextEncoding, (string[])data);
+                    item = new DicomShortString(tag, (string[])data);
                     break;
                 case "SL":
                     if (data is IByteBuffer dataBufferSL)
@@ -295,7 +295,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
-                        item = new DicomShortText(tag, _jsonTextEncoding, data.AsStringArray().FirstOrEmpty());
+                        item = new DicomShortText(tag, data.AsStringArray().FirstOrEmpty());
                     }
                     break;
                 case "SV":
@@ -318,7 +318,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
-                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, data.AsStringArray().SingleOrDefault());
+                        item = new DicomUnlimitedCharacters(tag, data.AsStringArray().SingleOrDefault());
                     }
                     break;
                 case "UI":
@@ -357,7 +357,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
-                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, data.AsStringArray().SingleOrEmpty());
+                        item = new DicomUnlimitedText(tag, data.AsStringArray().SingleOrEmpty());
                     }
                     break;
                 case "UV":
