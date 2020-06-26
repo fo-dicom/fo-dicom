@@ -35,6 +35,8 @@ namespace FellowOakDicom
             return this;
         }
 
+        public static void UseServiceProvider(IServiceProvider provider) => Setup.SetupDI(provider);
+
     }
     
     /// <summary>

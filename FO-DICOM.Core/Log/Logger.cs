@@ -54,6 +54,11 @@ namespace FellowOakDicom.Log
         void Fatal(string msg, params object[] args);
     }
 
+    public interface ILogger<T> : ILogger
+    {
+
+    }
+
     /// <summary>
     /// Abstract base class for loggers.
     /// </summary>
@@ -74,7 +79,7 @@ namespace FellowOakDicom.Log
         /// <param name="args">Log message arguments.</param>
         public void Debug(string msg, params object[] args)
         {
-            this.Log(LogLevel.Debug, msg, args);
+            Log(LogLevel.Debug, msg, args);
         }
 
         /// <summary>
@@ -84,7 +89,7 @@ namespace FellowOakDicom.Log
         /// <param name="args">Log message arguments.</param>
         public void Info(string msg, params object[] args)
         {
-            this.Log(LogLevel.Info, msg, args);
+            Log(LogLevel.Info, msg, args);
         }
 
         /// <summary>
@@ -94,7 +99,7 @@ namespace FellowOakDicom.Log
         /// <param name="args">Log message arguments.</param>
         public void Warn(string msg, params object[] args)
         {
-            this.Log(LogLevel.Warning, msg, args);
+            Log(LogLevel.Warning, msg, args);
         }
 
         /// <summary>
@@ -104,7 +109,7 @@ namespace FellowOakDicom.Log
         /// <param name="args">Log message arguments.</param>
         public void Error(string msg, params object[] args)
         {
-            this.Log(LogLevel.Error, msg, args);
+            Log(LogLevel.Error, msg, args);
         }
 
         /// <summary>
@@ -114,7 +119,7 @@ namespace FellowOakDicom.Log
         /// <param name="args">Log message arguments.</param>
         public void Fatal(string msg, params object[] args)
         {
-            this.Log(LogLevel.Fatal, msg, args);
+            Log(LogLevel.Fatal, msg, args);
         }
 
         private static readonly Regex CurlyBracePairRegex = new Regex(@"{.*?}");
@@ -187,7 +192,6 @@ namespace FellowOakDicom.Log
                 positionDelta = positionDelta + (replacement.Length - match.Length);
             }
 
-
             if (everyMatchIsANumber)
             {
                 return message;
@@ -205,5 +209,6 @@ namespace FellowOakDicom.Log
         {
             return int.TryParse(s, out _);
         }
+
     }
 }

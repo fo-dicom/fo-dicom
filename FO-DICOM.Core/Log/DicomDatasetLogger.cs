@@ -14,17 +14,17 @@ namespace FellowOakDicom.Log
     /// </summary>
     public class DicomDatasetLogger : IDicomDatasetWalker
     {
-        private Logger _log;
+        private readonly Logger _log;
 
-        private LogLevel _level;
+        private readonly LogLevel _level;
 
-        private int _width = 128;
+        private readonly int _width;
 
-        private int _value = 64;
+        private readonly int _value;
 
         private int _depth = 0;
 
-        private string _pad = String.Empty;
+        private string _pad = string.Empty;
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomDatasetLogger"/>.
@@ -55,8 +55,11 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnElement(DicomElement element)
         {
-            StringBuilder sb = new StringBuilder();
-            if (_depth > 0) sb.Append(_pad).Append("> ");
+            var sb = new StringBuilder();
+            if (_depth > 0)
+            {
+                sb.Append(_pad).Append("> ");
+            }
             sb.Append(element.Tag);
             sb.Append(' ');
             sb.Append(element.ValueRepresentation.Code);
@@ -86,7 +89,7 @@ namespace FellowOakDicom.Log
             }
             else
             {
-                var val = String.Join("/", element.Get<string[]>());
+                var val = string.Join("/", element.Get<string[]>());
                 if (val.Length > (_value - sb.Length))
                 {
                     sb.Append(val.Substring(0, _value - sb.Length));
@@ -96,13 +99,17 @@ namespace FellowOakDicom.Log
                     sb.Append(val);
                 }
             }
-            while (sb.Length < _value) sb.Append(' ');
+            while (sb.Length < _value)
+            {
+                sb.Append(' ');
+            }
+
             sb.Append('#');
             string name = element.Tag.DictionaryEntry.Keyword;
             sb.AppendFormat(
                 "{0,6}, {1}",
                 element.Length,
-                name.Substring(0, System.Math.Min(_width - sb.Length - 9, name.Length)));
+                name.Substring(0, Math.Min(_width - sb.Length - 9, name.Length)));
             _log.Log(_level, sb.ToString());
             return true;
         }
@@ -114,7 +121,7 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public Task<bool> OnElementAsync(DicomElement element)
         {
-            return Task.FromResult(this.OnElement(element));
+            return Task.FromResult(OnElement(element));
         }
 
         /// <summary>
@@ -174,14 +181,14 @@ namespace FellowOakDicom.Log
         public bool OnBeginFragment(DicomFragmentSequence fragment)
         {
             _log.Log(
-                _level,
-                "{padding}{tag} {vrCode} {tagDictionaryEntryName} [{offsets} offsets, {fragments} fragments]",
-                (_depth > 0) ? _pad + "> " : "",
-                fragment.Tag,
-                fragment.ValueRepresentation.Code,
-                fragment.Tag.DictionaryEntry.Name,
-                fragment.OffsetTable.Count,
-                fragment.Fragments.Count);
+                 _level,
+                 "{padding}{tag} {vrCode} {tagDictionaryEntryName} [{offsets} offsets, {fragments} fragments]",
+                 (_depth > 0) ? _pad + "> " : "",
+                 fragment.Tag,
+                 fragment.ValueRepresentation.Code,
+                 fragment.Tag.DictionaryEntry.Name,
+                 fragment.OffsetTable.Count,
+                 fragment.Fragments.Count);
             return true;
         }
 
@@ -202,7 +209,7 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public Task<bool> OnFragmentItemAsync(IByteBuffer item)
         {
-            return Task.FromResult(this.OnFragmentItem(item));
+            return Task.FromResult(OnFragmentItem(item));
         }
 
         /// <summary>
@@ -225,16 +232,15 @@ namespace FellowOakDicom.Log
         {
             _depth++;
 
-            _pad = String.Empty;
-            for (int i = 0; i < _depth; i++) _pad += "  ";
+            _pad = string.Empty.PadLeft(2 * _depth);
         }
 
         private void DecreaseDepth()
         {
             _depth--;
 
-            _pad = String.Empty;
-            for (int i = 0; i < _depth; i++) _pad += "  ";
+            _pad = string.Empty.PadLeft(2 * _depth);
         }
+
     }
 }
