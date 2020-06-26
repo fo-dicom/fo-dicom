@@ -1101,6 +1101,22 @@ namespace FellowOakDicom.Network
                 {
                     await DoSendMessageAsync(msg).ConfigureAwait(false);
                 }
+                catch (Exception e)
+                {
+                    Logger.Error($"Failed to send DICOM message due to {{@error}}", e);
+
+                    if (msg is DicomRequest dicomRequest)
+                    {
+                        Logger.Debug($"Removing request [{dicomRequest.MessageID}] from pending queue because an error occurred while sending it");
+
+                        lock (_lock)
+                        {
+                            _pending.Remove(dicomRequest);
+                        }
+                    }
+
+                    throw;
+                }
                 finally
                 {
                     lock (_lock)

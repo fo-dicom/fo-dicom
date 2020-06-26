@@ -221,28 +221,34 @@ namespace FellowOakDicom.Network.Client.States
             {
                 if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
                 {
-                    if (!_dicomClient.QueuedRequests.IsEmpty)
+                    try
                     {
-                        if (_sentRequests.Count >= _maximumNumberOfRequestsPerAssociation)
+                        if (!_dicomClient.QueuedRequests.IsEmpty)
                         {
-                            _dicomClient.Logger.Debug($"[{this}] DICOM client has reached the maximum number of requests for this association and is still waiting for the sent requests to complete");
-                        }
-                        else
-                        {
-                            _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
+                            if (_sentRequests.Count >= _maximumNumberOfRequestsPerAssociation)
+                            {
+                                _dicomClient.Logger.Debug(
+                                    $"[{this}] DICOM client has reached the maximum number of requests for this association and is still waiting for the sent requests to complete");
+                            }
+                            else
+                            {
+                                _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
 
-                            await SendRequests().ConfigureAwait(false);
+                                await SendRequests().ConfigureAwait(false);
+                            }
+                        }
+
+                        if (Connection.IsSendNextMessageRequired)
+                        {
+                            _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
+
+                            await Connection.SendNextMessageAsync().ConfigureAwait(false);
                         }
                     }
-
-                    if (Connection.IsSendNextMessageRequired)
+                    finally
                     {
-                        _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
-
-                        await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                        Interlocked.Exchange(ref _sending, 0);
                     }
-
-                    Interlocked.Exchange(ref _sending, 0);
                 }
             }
             finally
