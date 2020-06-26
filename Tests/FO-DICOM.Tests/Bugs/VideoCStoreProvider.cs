@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Bugs
     [Collection("General")]
     internal class VideoCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
-        private static readonly DicomTransferSyntax[] AcceptedVideoTransferSyntaxes =
+        private static readonly DicomTransferSyntax[] _acceptedVideoTransferSyntaxes =
         {
             DicomTransferSyntax.MPEG2,
             DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41),
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             foreach (var pc in association.PresentationContexts)
             {
-                pc.AcceptTransferSyntaxes(AcceptedVideoTransferSyntaxes);
+                pc.AcceptTransferSyntaxes(_acceptedVideoTransferSyntaxes);
             }
 
             return SendAssociationAcceptAsync(association);

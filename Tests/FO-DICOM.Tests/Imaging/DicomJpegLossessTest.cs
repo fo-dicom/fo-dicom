@@ -13,7 +13,6 @@ namespace FellowOakDicom.Tests.Imaging
     {
 
         [Theory]
-        // [InlineData("GH538-jpeg1.dcm")] // TODO re-enable this
         [InlineData("GH538-jpeg14sv1.dcm")]
         [InlineData("CR-MONO1-10-chest")]
         public void DicomJpegLosses_DecodingAvailable(string filename)

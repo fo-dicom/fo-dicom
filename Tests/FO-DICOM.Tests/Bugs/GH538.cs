@@ -66,7 +66,7 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [Fact]
         public async Task CStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
             string file = TestData.Resolve("GH538-jpeg14sv1.dcm");
@@ -76,16 +76,18 @@ namespace FellowOakDicom.Tests.Bugs
             var port = Ports.GetNext();
             using (DicomServerFactory.Create<VideoCStoreProvider>(port))
             {
-                var request = new DicomCStoreRequest(file);
-                request.OnResponseReceived = (req, rsp) =>
+                var request = new DicomCStoreRequest(file)
                 {
-                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
-                        !req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success)
+                    OnResponseReceived = (req, rsp) =>
                     {
-                        success = true;
-                    }
+                        if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
+                            req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success)
+                        {
+                            success = true;
+                        }
 
-                    handle.Set();
+                        handle.Set();
+                    }
                 };
 
                 var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
