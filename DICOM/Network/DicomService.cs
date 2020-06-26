@@ -1037,7 +1037,7 @@ namespace Dicom.Network
                             response = thisAsNServiceProvider.OnNSetRequest(dimse as DicomNSetRequest);
                             break;
                     }
-                    
+
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -1150,6 +1150,22 @@ namespace Dicom.Network
                 try
                 {
                     await DoSendMessageAsync(msg).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Failed to send DICOM message due to {{@error}}", e);
+
+                    if (msg is DicomRequest dicomRequest)
+                    {
+                        Logger.Debug($"Removing request [{dicomRequest.MessageID}] from pending queue because an error occurred while sending it");
+
+                        lock (_lock)
+                        {
+                            _pending.Remove(dicomRequest);
+                        }
+                    }
+
+                    throw;
                 }
                 finally
                 {
