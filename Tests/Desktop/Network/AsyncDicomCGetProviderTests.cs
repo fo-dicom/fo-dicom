@@ -126,12 +126,6 @@ namespace Dicom.Network
         {
         }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
-        public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
-        {
-            yield return new DicomCGetResponse(request, DicomStatus.Success);
-        }
-#else
         public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
         {
             return InnerOnCGetRequestAsync();
@@ -141,7 +135,6 @@ namespace Dicom.Network
                 yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Success));
             }
         }
-#endif
     }
 
     public class PendingAsyncDicomCGetProvider : DicomService, IDicomServiceProvider, IAsyncDicomCGetProvider
@@ -178,14 +171,6 @@ namespace Dicom.Network
         {
         }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
-        public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
-        {
-            yield return new DicomCGetResponse(request, DicomStatus.Pending);
-            yield return new DicomCGetResponse(request, DicomStatus.Pending);
-            yield return new DicomCGetResponse(request, DicomStatus.Success);
-        }
-#else
         public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
         {
             return InnerOnCGetRequestAsync();
@@ -197,7 +182,6 @@ namespace Dicom.Network
                 yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Success));
             }
         }
-#endif
     }
 
 

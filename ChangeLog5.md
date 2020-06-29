@@ -22,6 +22,7 @@
 * new methods in `IByteBuffer` to directly manipulate/use the data instead of copying it around multiple times.
 * Include Json serialization/deserialization directly into *fo-dicom.core* based on `System.Text.Json`.
 * Text encoding is now handled when a string is written into a network- or file-stream.
+* Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
 
 ##### Breaking changes:
 

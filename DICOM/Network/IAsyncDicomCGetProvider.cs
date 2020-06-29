@@ -16,10 +16,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">C-GET request.</param>
         /// <returns>Collection of C-GET responses resulting from the <paramref name="request"/>.</returns>
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
-        IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request);
-#else
         Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request);
-#endif
     }
 }
