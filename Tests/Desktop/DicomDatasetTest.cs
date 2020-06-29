@@ -463,6 +463,40 @@ namespace Dicom
             Assert.Equal(loCreator, firstCreator);
         }
 
+        /// <summary>
+        /// Associated with Github issue #1059
+        /// </summary>
+        [Fact]
+        public void Add_PrivateTags_LowestAndHighestPossibleElementsShouldBeAdded()
+        {
+            var tag1Private = new DicomTag(0x0019, 0x1000, "PRIVATE"); // lowest possible element (not used for group length encoding)
+            var tag2Private = new DicomTag(0x0019, 0xff, "PRIVATE"); // Should result in (0019, 10ff)
+            var tag3Private = new DicomTag(0x0019, 0xff, "ALSOPRIVATE"); // Should result in (0019, 11ff)
+            var tag4Private = new DicomTag(0x0019, 0xffff, "PRIVATE"); // highest possible element
+
+            var dataset = new DicomDataset();
+            dataset.Add(tag1Private, 1);
+            dataset.Add(tag2Private, 2);
+            dataset.Add(tag3Private, 3);
+            dataset.Add(tag4Private, 4);
+
+            var item1 = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
+                                            item.Tag.Element == 0x1000);
+            Assert.NotNull(item1);
+
+            var item2 = dataset.SingleOrDefault(item => item.Tag.Group == tag2Private.Group &&
+                                item.Tag.Element == 0x10ff);
+            Assert.NotNull(item2);
+
+            var item3 = dataset.SingleOrDefault(item => item.Tag.Group == tag3Private.Group &&
+                    item.Tag.Element == 0x11ff);
+            Assert.NotNull(item3);
+
+            var item4 = dataset.SingleOrDefault(item => item.Tag.Group == tag3Private.Group &&
+                item.Tag.Element == 0xffff);
+            Assert.NotNull(item4);
+        }
+
         [Fact]
         public void Add_DicomItemOnNonExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
         {
