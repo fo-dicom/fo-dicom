@@ -720,7 +720,7 @@ namespace FellowOakDicom
             if (tag.PrivateCreator == null) return tag;
 
             // already a valid private tag
-            if (tag.Element >= 0xff) return tag;
+            if (tag.Element > 0xff) return tag;
 
             ushort group = 0x0010;
             for (; group <= 0x00ff; group++)
