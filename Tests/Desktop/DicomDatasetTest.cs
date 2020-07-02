@@ -463,6 +463,25 @@ namespace Dicom
             Assert.Equal(loCreator, firstCreator);
         }
 
+        /// <summary>
+        /// Associated with Github issue #1059
+        /// </summary>
+        [Theory]
+        [InlineData(0x0019, 0x1000, "PRIVATE", 0x1000)] // lowest possible element (not used for group length encoding)
+        [InlineData(0x0019, 0xff, "PRIVATE", 0x10ff)]
+        [InlineData(0x0019, 0xffff, "PRIVATE", 0xffff)] // highest possible element
+        public void Add_PrivateTags_LowestAndHighestPossibleElementsShouldBeAdded(ushort group, ushort element, string creator, ushort expectedElement)
+        {
+            var tag1Private = new DicomTag(group, element, creator); 
+
+            var dataset = new DicomDataset();
+            dataset.Add(tag1Private, 1);
+
+            var item1 = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
+                                            item.Tag.Element == expectedElement);
+            Assert.NotNull(item1);
+        }
+
         [Fact]
         public void Add_DicomItemOnNonExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
         {
