@@ -110,7 +110,8 @@ namespace Dicom.Network
     }
 
 
-    internal class SimpleStorageComitmentProvider : DicomService, IDicomServiceProvider, IAsyncDicomNServiceProvider
+    internal class SimpleStorageComitmentProvider : DicomService, IDicomServiceProvider, IAsyncDicomNServiceProvider,
+        IAsyncDicomDicomNEventReportRequestProvider
     {
         private static readonly DicomTransferSyntax[] _acceptedTransferSyntaxes =
         {
