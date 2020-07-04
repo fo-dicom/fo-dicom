@@ -22,6 +22,7 @@ namespace FellowOakDicom
         private readonly IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
+        private Encoding _defaultEncoding = DicomEncoding.Default;
 
         #endregion
 
@@ -124,13 +125,14 @@ namespace FellowOakDicom
             }
         }
 
-        public Encoding TextEncoding
+        internal Encoding TextEncoding
         {
-            get => TryGetString(DicomTag.SpecificCharacterSet, out var charset) ? DicomEncoding.GetEncoding(charset) : DicomEncoding.Default;
+            get => TryGetString(DicomTag.SpecificCharacterSet, out var charset) ? DicomEncoding.GetEncoding(charset) : _defaultEncoding;
             set
             {
-                AddOrUpdate(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(value));
-                ApplyTextEncoding(value);
+                _defaultEncoding = value;
+                // the default-encoding has been set, but still: if there is a DicomTag.SpeicificCharacterSet, then this will overrule all.
+                ApplyTextEncoding(TextEncoding);
             }
         }
 
