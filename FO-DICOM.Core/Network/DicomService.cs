@@ -1014,6 +1014,13 @@ namespace FellowOakDicom.Network
                     }
 
                     await SendResponseAsync(response).ConfigureAwait(false);
+
+                    if ((dimse.Type == DicomCommandField.NActionRequest) &&
+                        (this is IDicomNEventReportRequestProvider thisAsAsyncNEventReportRequestProvider))
+                    {
+                        await thisAsAsyncNEventReportRequestProvider.OnSendNEventReportRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
+                    }
+
                     return;
                 }
 

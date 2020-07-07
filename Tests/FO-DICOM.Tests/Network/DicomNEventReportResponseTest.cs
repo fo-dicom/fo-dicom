@@ -115,7 +115,7 @@ namespace FellowOakDicom.Tests.Network
     }
 
 
-    internal class SimpleStorageComitmentProvider : DicomService, IDicomServiceProvider, IDicomNServiceProvider
+    internal class SimpleStorageComitmentProvider : DicomService, IDicomServiceProvider, IDicomNServiceProvider, IDicomNEventReportRequestProvider
     {
         private static readonly DicomTransferSyntax[] _acceptedTransferSyntaxes =
         {
@@ -150,8 +150,9 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public async Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)
+        public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)
         {
+            /*
             // first return the success-response
             await SendResponseAsync(new DicomNActionResponse(request, DicomStatus.Success));
 
@@ -182,6 +183,32 @@ namespace FellowOakDicom.Tests.Network
             }
 
             return null;
+            */
+            return Task.FromResult(new DicomNActionResponse(request, DicomStatus.Success));
+        }
+
+        public async Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
+        {
+            // synchronously send NEvents
+            if (request.Dataset.Contains(DicomTag.ReferencedSOPSequence))
+            {
+                var referencedSequence = request.Dataset.GetSequence(DicomTag.ReferencedSOPSequence);
+                foreach (var referencedDataset in referencedSequence)
+                {
+                    var resultDs = new DicomDataset
+                          {
+                            {
+                                DicomTag.ReferencedSOPSequence,
+                                new DicomDataset
+                                {
+                                    { DicomTag.ReferencedSOPClassUID, referencedDataset.GetString(DicomTag.ReferencedSOPClassUID) },
+                                    { DicomTag.ReferencedSOPInstanceUID, referencedDataset.GetString(DicomTag.ReferencedSOPInstanceUID) }
+                                }
+                            }
+                          };
+                    await SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.StorageCommitmentPushModelSOPInstance, 2) { Dataset = resultDs });
+                }
+            }
         }
 
         public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request) => throw new NotImplementedException();
