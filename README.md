@@ -34,8 +34,8 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 * Supports very large datasets with content loading on demand
 * Platform-specific image rendering
 * JSON support
-* XML export (preview)
-* Anonymization (preview)
+* XML export
+* Anonymization
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
@@ -197,3 +197,9 @@ private static Task<DicomNEventReportResponse> OnNEventReportRequest(DicomNEvent
     return Task.FromResult(new DicomNEventReportResponse(request, DicomStatus.Success));
 }
 ```
+
+### New to DICOM?
+
+If you are new to DICOM, then take a look at the DICOM tutorial of Saravanan Subramanian:
+https://saravanansubramanian.com/dicomtutorials/
+The author is also using fo-dicom in some code samples.
