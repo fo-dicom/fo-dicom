@@ -1144,14 +1144,14 @@ namespace Dicom.Network
             DicomPresentationContext pc;
             if (msg is DicomCStoreRequest dicomCStoreRequest)
             {
-                pc =
-                    Association.PresentationContexts.FirstOrDefault(
-                        x =>
-                            x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID
-                            && x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax);
-                if (pc == null)
-                    pc = Association.PresentationContexts.FirstOrDefault(
-                            x => x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID);
+                var accpetedPcs = Association.PresentationContexts
+                    .Where(x =>
+                        x.Result == DicomPresentationContextResult.Accept &&
+                        x.AbstractSyntax == msg.SOPClassUID
+                     );
+
+                pc = accpetedPcs.FirstOrDefault(x => x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax)
+                    ?? accpetedPcs.FirstOrDefault();
             }
             else if (msg is DicomResponse)
             {
