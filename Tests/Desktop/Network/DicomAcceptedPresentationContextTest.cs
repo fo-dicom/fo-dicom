@@ -193,10 +193,7 @@ namespace Dicom.Network
 
         public DicomNActionResponse OnNActionRequest(DicomNActionRequest request)
         {
-            return new DicomNActionResponse(request, DicomStatus.Success)
-            {
-                Dataset = request.Dataset
-            };
+            return new DicomNActionResponse(request, DicomStatus.Success);
         }
 
         public DicomNCreateResponse OnNCreateRequest(DicomNCreateRequest request)
@@ -245,6 +242,9 @@ namespace Dicom.Network
             {
                 Dataset = request.Dataset
             };
+        }
+        public void OnSendNEventReportRequest(DicomNActionRequest request)
+        {
         }
     }
 
