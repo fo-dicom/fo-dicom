@@ -1052,7 +1052,7 @@ namespace Dicom.Network
                     await SendResponseAsync(response).ConfigureAwait(false);
 
                     if ((dimse.Type == DicomCommandField.NActionRequest) &&
-                        (this is IAsyncDicomDicomNEventReportRequestProvider thisAsAsyncNEventReportRequestProvider))
+                        (this is IAsyncDicomNEventReportRequestProvider thisAsAsyncNEventReportRequestProvider))
                     {
                         await thisAsAsyncNEventReportRequestProvider.OnSendNEventReportRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
                     }

@@ -8,7 +8,7 @@ namespace Dicom.Network
     /// <summary>
     /// Interface representing event handler for synchronous storage commitment handling
     /// </summary>
-    public interface IAsyncDicomDicomNEventReportRequestProvider
+    public interface IAsyncDicomNEventReportRequestProvider
     {
         /// <summary>
         /// Provide the server implementer a facility to send synchronous N-EVENT-REPORT.
