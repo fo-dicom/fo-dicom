@@ -9,27 +9,28 @@ on:
     - development
 
 jobs:
+  checkout:
+    runs-on: windows-2019
+    steps:
+        - uses: actions/checkout@v1
+  setup-dotnet:
+    runs-on: windows-2019
+    steps:
+        - uses: actions/setup-dotnet@v1 
+          with:
+            dotnet-version: '3.1.x'
   build:
-    runs-on: ${{ matrix.os }}
+    needs: [checkout, setup-dotnet]
+    runs-on: windows-2019
+    steps:
+    - name: Build
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release
+  test:
+    runs-on: windows-2019
+    needs: build
     strategy:
       matrix:
-        os: [windows-2019] #, ubuntu-18.04, macOS-latest]
-        dotnet-version: [2.1.803]
-
+        framework: ['netcoreapp2.1', 'netcoreapp3.1', 'net462']
     steps:
-    - uses: actions/checkout@v1
-      
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ matrix.dotnet-version }}
-        
-    - name: Build solution
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release
-      
-    - name: Run tests on .NET Core
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1
-    
-    - name: Run tests on .NET Framework
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net461
-      if: matrix.os == 'windows-2019'
+    - name: Test
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework ${{ matrix.framework }}
