@@ -480,7 +480,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 }));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
 
                 // Ensure requests are handled sequentially
                 client.NegotiateAsyncOps(1, 1);
@@ -555,7 +554,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 }));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
 
                 // Ensure requests are handled sequentially
                 client.NegotiateAsyncOps(1, 1);
