@@ -42,6 +42,10 @@ namespace FellowOakDicom.Imaging.LUT
 
         public int MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
 
+        public int NumberOfBitsPerEntry => _nrOfBitsPerEntry;
+
+        public int NumberOfEntries => _nrOfEntries;
+
         public int this[int value]
         {
             get
@@ -49,11 +53,17 @@ namespace FellowOakDicom.Imaging.LUT
                 unchecked
                 {
                     if (value < _firstInputValue)
+                    {
                         return _LUTDataArray[0];
+                    }
                     else if (value > (_firstInputValue + _nrOfEntries - 1))
+                    {
                         return _LUTDataArray[_nrOfEntries - 1];
+                    }
                     else
+                    {
                         return _LUTDataArray[value - _firstInputValue];
+                    }
                 }
             }
         }
@@ -88,6 +98,10 @@ namespace FellowOakDicom.Imaging.LUT
                     break;
                 }
             }
+            if (_LUTDataArray.Length < _nrOfEntries)
+            {
+                throw new DicomImagingException($"Number of entries in VOI LUT Sequence do not match");
+            }
         }
 
         #endregion
@@ -111,6 +125,11 @@ namespace FellowOakDicom.Imaging.LUT
                 _firstInputValue = LUTDescriptor.Get<int>(1);
                 _nrOfBitsPerEntry = LUTDescriptor.Get<int>(2);
             }
+            // according to DICOM Standard Section C.11.2.1.1
+            if (_nrOfEntries == 0)
+            {
+                _nrOfEntries = 1 << 16;
+            }
         }
 
         //Implementation of Array.ConvertAll()
@@ -118,12 +137,21 @@ namespace FellowOakDicom.Imaging.LUT
         private TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Func<TInput, TOutput> converter)
         {
             if (array == null)
+            {
                 throw new ArgumentNullException(nameof (array));
+            }
+
             if (converter == null)
+            {
                 throw new ArgumentNullException(nameof (converter));
-            TOutput[] outputArray = new TOutput[array.Length];
+            }
+
+            var outputArray = new TOutput[array.Length];
             for (int index = 0; index < array.Length; ++index)
+            {
                 outputArray[index] = converter(array[index]);
+            }
+
             return outputArray;
         }
 
