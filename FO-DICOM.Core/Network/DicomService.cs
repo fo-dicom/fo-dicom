@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Codec;
@@ -377,7 +377,7 @@ namespace FellowOakDicom.Network
                 catch (Exception e)
                 {
                     Logger.Error("Exception sending PDU: {@error}", e);
-                    await TryCloseConnectionAsync(e).ConfigureAwait(false);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
 
                 lock (_lock)
