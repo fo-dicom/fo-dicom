@@ -381,7 +381,7 @@ namespace Dicom.Network
                 catch (Exception e)
                 {
                     Logger.Error("Exception sending PDU: {@error}", e);
-                    await TryCloseConnectionAsync(e).ConfigureAwait(false);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
 
                 lock (_lock) _writing = false;
@@ -431,8 +431,7 @@ namespace Dicom.Network
                         {
                             int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
-                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
-                                .ConfigureAwait(false);
+                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead).ConfigureAwait(false);
 
                             if (count == 0)
                             {

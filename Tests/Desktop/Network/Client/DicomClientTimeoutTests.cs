@@ -501,17 +501,17 @@ namespace Dicom.Network.Client
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
-                    IOException ioException = null;
+                    Exception exception = null;
                     try
                     {
                         await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
-                        ioException = e;
+                        exception = e;
                     }
 
-                    Assert.NotNull(ioException);
+                    Assert.NotNull(exception);
 
                     Assert.False(cancellation.IsCancellationRequested);
                 }
@@ -575,8 +575,17 @@ namespace Dicom.Network.Client
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
                 {
-                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                    Exception exception = null;
+                    try
+                    {
+                        await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        exception = e;
+                    }
 
+                    Assert.NotNull(exception);
                     Assert.False(cancellation.IsCancellationRequested, "The DicomClient had to be cancelled, this indicates it was stuck in an infinite loop");
                 }
             }
