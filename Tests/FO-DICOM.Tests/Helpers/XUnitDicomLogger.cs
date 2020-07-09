@@ -4,6 +4,7 @@
 using FellowOakDicom.Log;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Xunit.Abstractions;
 
@@ -48,6 +49,18 @@ namespace FellowOakDicom.Tests.Helpers
         {
             if (level < _minimumLevel)
                 return;
+
+            if (args != null)
+            {
+                for (int i = 0; i < args.Length; i++)
+                {
+                    var arg = args[i];
+                    if (arg is Exception e)
+                    {
+                        args[i] = e.Demystify();
+                    }
+                }
+            }
 
             var prefix = _prefixEnrichers.Aggregate(
                 $"{nameof(XUnitDicomLogger), 20} {level.ToString().ToUpper(), 7}",
