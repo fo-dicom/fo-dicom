@@ -5,6 +5,7 @@
 * ImplicitVRLittleEndian always added to presentation context by default causes other transfer syntax to not be accepted (#1048)
 * New interface IDicomNEventReportRequestProvider for DicomServer. This is necessary to handle synchronous storage commitment on server (#1055)
 * Bug fix: Exception occurred in Indexer of VOISequenceLUT Class (#1062)
+* Bug fix: Prevent DicomClient getting stuck when any Exception (except IOException) occurs while sending a PDU over the network (#1054)
 
 #### v.4.0.5 (5/18/2020)
 * Bug fix: DicomTags of ValueRepresentation LT have not been validated.
