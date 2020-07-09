@@ -1372,7 +1372,7 @@ namespace Dicom.Network.Client
             var logger = _logger.IncludePrefix("UnitTest");
 
             DicomCEchoProviderServer server = null;
-            DicomCEchoResponse echoResponse1 = null, echoResponse2 = null;
+            DicomCEchoResponse echoResponse1 = null, echoResponse2 = null, echoResponse3 = null;
             try
             {
                 server = CreateServer<DicomCEchoProvider, DicomCEchoProviderServer>(port);
@@ -1400,6 +1400,14 @@ namespace Dicom.Network.Client
                         echoResponse2 = response;
                     }
                 };
+                var echoRequest3 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 3");
+                        echoResponse3 = response;
+                    }
+                };
 
                 await client.AddRequestsAsync(echoRequest1, echoRequest2).ConfigureAwait(false);
 
@@ -1415,6 +1423,7 @@ namespace Dicom.Network.Client
 
             Assert.NotNull(echoResponse1);
             Assert.Null(echoResponse2);
+            Assert.Null(echoResponse3);
         }
 
         #region Support classes

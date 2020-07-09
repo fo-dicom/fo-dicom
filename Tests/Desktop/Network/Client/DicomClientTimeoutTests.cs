@@ -310,7 +310,7 @@ namespace Dicom.Network.Client
 
                 TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(10);
 
-                client.NetworkManager = new VerySlowNetworkManager(streamWriteTimeout);
+                client.NetworkManager = new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout));
 
                 DicomResponse response = null;
 
@@ -352,7 +352,7 @@ namespace Dicom.Network.Client
 
                 TimeSpan streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
 
-                client.NetworkManager = new VerySlowNetworkManager(streamWriteTimeout);
+                client.NetworkManager = new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout));
 
                 DicomResponse response = null;
                 DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
@@ -388,11 +388,11 @@ namespace Dicom.Network.Client
         }
 
         [Theory]
-        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 1, /* async ops invoked: */ 1)]
-        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 6, /* async ops invoked: */ 1)]
-        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 2, /* async ops invoked: */ 1)]
-        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 1, /* async ops invoked: */ 2)]
-        [InlineData(/* number of reqs: */ 6, /* max requests per assoc: */ 6, /* async ops invoked: */ 6)]
+        [InlineData( /* number of reqs: */ 6, /* max requests per assoc: */ 1, /* async ops invoked: */ 1)]
+        [InlineData( /* number of reqs: */ 6, /* max requests per assoc: */ 6, /* async ops invoked: */ 1)]
+        [InlineData( /* number of reqs: */ 6, /* max requests per assoc: */ 2, /* async ops invoked: */ 1)]
+        [InlineData( /* number of reqs: */ 6, /* max requests per assoc: */ 1, /* async ops invoked: */ 2)]
+        [InlineData( /* number of reqs: */ 6, /* max requests per assoc: */ 6, /* async ops invoked: */ 6)]
         public async Task ShouldSendAllRequestsEvenThoughTheyAllTimeOut(int numberOfRequests, int maximumRequestsPerAssociation, int asyncOpsInvoked)
         {
             var options = new
@@ -449,37 +449,163 @@ namespace Dicom.Network.Client
             }
         }
 
+        [Fact]
+        public async Task SendAsync_WithSocketException_ShouldNotLoopInfinitely()
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            IDicomServer server = null;
+            DicomCStoreResponse response1 = null, response2 = null, response3 = null;
+            DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
+            using (CreateServer<InMemoryDicomCStoreProvider>(port))
+            {
+                var client = CreateClient(port);
+
+                var request1HasArrived = false;
+                client.NetworkManager = new ConfigurableNetworkManager(() =>
+                {
+                    if (request1HasArrived)
+                    {
+                        throw new IOException("Request 1 has arrived, we can no longer write to this stream!",
+                            new SocketException());
+                    }
+                });
+
+                // Ensure requests are handled sequentially
+                client.NegotiateAsyncOps(1, 1);
+
+                // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
+                // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
+                var request1 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                {
+                    OnResponseReceived = (req, res) =>
+                    {
+                        request1HasArrived = true;
+                        response1 = res;
+                    },
+                    OnTimeout = (sender, args) => timeout1 = args
+                };
+                var request2 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                {
+                    OnResponseReceived = (req, res) => response2 = res,
+                    OnTimeout = (sender, args) => timeout2 = args
+                };
+                var request3 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                {
+                    OnResponseReceived = (req, res) => response3 = res,
+                    OnTimeout = (sender, args) => timeout3 = args
+                };
+
+                await client.AddRequestsAsync(request1, request2, request3).ConfigureAwait(false);
+
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                }
+            }
+
+            Assert.NotNull(response1);
+            Assert.Null(response2);
+            Assert.Null(response3);
+            Assert.Null(timeout1);
+            Assert.Null(timeout2);
+            Assert.Null(timeout3);
+        }
+
+        [Fact]
+        public async Task SendAsync_WithGenericStreamException_ShouldNotLoopInfinitely()
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            DicomCStoreResponse response1 = null, response2 = null, response3 = null;
+            DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
+            using (CreateServer<InMemoryDicomCStoreProvider>(port))
+            {
+                var client = CreateClient(port);
+
+                var request1HasArrived = false;
+                client.NetworkManager = new ConfigurableNetworkManager(() =>
+                {
+                    if (request1HasArrived)
+                    {
+                        throw new Exception("Request 1 has arrived, we can no longer write to this stream!");
+                    }
+                });
+
+                // Ensure requests are handled sequentially
+                client.NegotiateAsyncOps(1, 1);
+
+                // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
+                // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
+                var request1 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                {
+                    OnResponseReceived = (req, res) =>
+                    {
+                        request1HasArrived = true;
+                        response1 = res;
+                    },
+                    OnTimeout = (sender, args) => timeout1 = args
+                };
+                var request2 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                {
+                    OnResponseReceived = (req, res) => response2 = res,
+                    OnTimeout = (sender, args) => timeout2 = args
+                };
+                var request3 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
+                {
+                    OnResponseReceived = (req, res) => response3 = res,
+                    OnTimeout = (sender, args) => timeout3 = args
+                };
+
+                await client.AddRequestsAsync(request1, request2, request3).ConfigureAwait(false);
+
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                }
+            }
+
+            Assert.NotNull(response1);
+            Assert.Null(response2);
+            Assert.Null(response3);
+            Assert.Null(timeout1);
+            Assert.Null(timeout2);
+            Assert.Null(timeout3);
+        }
+
         #endregion
 
         #region Support classes
 
-        private class VerySlowNetworkManager : DesktopNetworkManager
+        private class ConfigurableNetworkManager : DesktopNetworkManager
         {
-            private readonly TimeSpan _streamWriteTimeout;
+            private readonly Action _onStreamWrite;
 
-            public VerySlowNetworkManager(TimeSpan streamWriteTimeout)
+            public ConfigurableNetworkManager(Action onStreamWrite)
             {
-                _streamWriteTimeout = streamWriteTimeout;
+                _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
             }
 
             protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors,
                 int millisecondsTimeout)
             {
-                return new VerySlowDesktopNetworkStreamDecorator(
-                    _streamWriteTimeout,
+                return new ConfigurableDesktopNetworkStreamDecorator(
+                    _onStreamWrite,
                     new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
                 );
             }
         }
 
-        private class VerySlowDesktopNetworkStreamDecorator : INetworkStream
+        private class ConfigurableDesktopNetworkStreamDecorator : INetworkStream
         {
-            private readonly TimeSpan _streamWriteTimeout;
+            private readonly Action _onStreamWrite;
             private readonly DesktopNetworkStream _desktopNetworkStream;
 
-            public VerySlowDesktopNetworkStreamDecorator(TimeSpan streamWriteTimeout, DesktopNetworkStream desktopNetworkStream)
+            public ConfigurableDesktopNetworkStreamDecorator(Action onStreamWrite, DesktopNetworkStream desktopNetworkStream)
             {
-                _streamWriteTimeout = streamWriteTimeout;
+                _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
                 _desktopNetworkStream = desktopNetworkStream;
             }
 
@@ -498,18 +624,18 @@ namespace Dicom.Network.Client
 
             public Stream AsStream()
             {
-                return new VerySlowStreamDecorator(_streamWriteTimeout, (NetworkStream) _desktopNetworkStream.AsStream());
+                return new ConfigurableStreamDecorator(_onStreamWrite, (NetworkStream) _desktopNetworkStream.AsStream());
             }
         }
 
-        private class VerySlowStreamDecorator : Stream
+        private class ConfigurableStreamDecorator : Stream
         {
-            private readonly TimeSpan _streamWriteTimeout;
+            private readonly Action _onStreamWrite;
             private readonly NetworkStream _inner;
 
-            public VerySlowStreamDecorator(TimeSpan streamWriteTimeout, NetworkStream inner)
+            public ConfigurableStreamDecorator(Action onStreamWrite, NetworkStream inner)
             {
-                _streamWriteTimeout = streamWriteTimeout;
+                _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
                 _inner = inner ?? throw new ArgumentNullException(nameof(inner));
             }
 
@@ -523,7 +649,7 @@ namespace Dicom.Network.Client
 
             public override void Write(byte[] buffer, int offset, int count)
             {
-                Thread.Sleep(_streamWriteTimeout);
+                _onStreamWrite();
 
                 _inner.Write(buffer, offset, count);
             }
@@ -590,7 +716,7 @@ namespace Dicom.Network.Client
 
             public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             {
-                Thread.Sleep(_streamWriteTimeout);
+                _onStreamWrite();
 
                 return _inner.WriteAsync(buffer, offset, count, cancellationToken);
             }
@@ -642,17 +768,11 @@ namespace Dicom.Network.Client
 
         private class InMemoryDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
-            public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
-            {
-            }
+            public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log) { }
 
-            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-            {
-            }
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) { }
 
-            public void OnConnectionClosed(Exception exception)
-            {
-            }
+            public void OnConnectionClosed(Exception exception) { }
 
             public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
@@ -678,9 +798,7 @@ namespace Dicom.Network.Client
                 return new DicomCStoreResponse(request, DicomStatus.Success);
             }
 
-            public void OnCStoreRequestException(string tempFileName, Exception e)
-            {
-            }
+            public void OnCStoreRequestException(string tempFileName, Exception e) { }
         }
 
         private class NeverRespondingDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
@@ -694,13 +812,9 @@ namespace Dicom.Network.Client
                 _requests = new ConcurrentBag<DicomRequest>();
             }
 
-            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-            {
-            }
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) { }
 
-            public void OnConnectionClosed(Exception exception)
-            {
-            }
+            public void OnConnectionClosed(Exception exception) { }
 
             public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
@@ -736,17 +850,11 @@ namespace Dicom.Network.Client
 
         private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
-            {
-            }
+            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log) { }
 
-            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-            {
-            }
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) { }
 
-            public void OnConnectionClosed(Exception exception)
-            {
-            }
+            public void OnConnectionClosed(Exception exception) { }
 
             public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
@@ -794,17 +902,11 @@ namespace Dicom.Network.Client
 
         private class SlowPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log)
-            {
-            }
+            public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log) : base(stream, fallbackEncoding, log) { }
 
-            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-            {
-            }
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) { }
 
-            public void OnConnectionClosed(Exception exception)
-            {
-            }
+            public void OnConnectionClosed(Exception exception) { }
 
             public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {

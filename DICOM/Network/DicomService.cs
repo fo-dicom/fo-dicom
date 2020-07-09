@@ -374,7 +374,9 @@ namespace Dicom.Network
                 }
                 catch (ObjectDisposedException e)
                 {
-                    // ignore ObjectDisposedException, that may happen, when closing a connection.
+                    // This may happen when closing a connection.
+                    Logger.Error("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
+                                 "This can happen when the connection is being closed", e);
                 }
                 catch (Exception e)
                 {
