@@ -1354,6 +1354,70 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.NotNull(capturedException);
         }
 
+        [Fact]
+        public async Task SendAsync_ToDisposedDicomServer_ShouldNotLoopInfinitely()
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            RecordingDicomCEchoProviderServer server = null;
+            DicomCEchoResponse echoResponse1 = null, echoResponse2 = null, echoResponse3 = null;
+            try
+            {
+                server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                // Ensure requests are handled sequentially
+                client.NegotiateAsyncOps(1, 1);
+
+                var echoRequest1 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 1, disposing server");
+                        echoResponse1 = response;
+                        // ReSharper disable once AccessToDisposedClosure This is an edge case we are trying to test
+                        server?.Dispose();
+                        logger.Info("Server is disposed");
+                    }
+                };
+                var echoRequest2 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 2");
+                        echoResponse2 = response;
+                    }
+                };
+                var echoRequest3 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 3");
+                        echoResponse3 = response;
+                    }
+                };
+
+                await client.AddRequestsAsync(new [] { echoRequest1, echoRequest2, echoRequest3 }).ConfigureAwait(false);
+
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+
+                    Assert.False(cancellation.IsCancellationRequested);
+                }
+            }
+            finally
+            {
+                server?.Dispose();
+            }
+
+            Assert.NotNull(echoResponse1);
+            Assert.Null(echoResponse2);
+            Assert.Null(echoResponse3);
+        }
+
+
         #region Support classes
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
