@@ -4,6 +4,7 @@
 * Bug fix: Fix DICOM Tag conversion for private tags for element numbers xxff (#1059)
 * ImplicitVRLittleEndian always added to presentation context by default causes other transfer syntax to not be accepted (#1048)
 * New interface IDicomNEventReportRequestProvider for DicomServer. This is necessary to handle synchronous storage commitment on server (#1055)
+* Bug fix: IOException when reading/sending file > 2GB. (#1061)
 * Bug fix: Exception occurred in Indexer of VOISequenceLUT Class (#1062)
 
 #### v.4.0.5 (5/18/2020)
