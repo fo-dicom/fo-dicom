@@ -110,7 +110,7 @@ namespace Dicom.Network
     }
 
 
-    internal class SimpleStorageComitmentProvider : DicomService, IDicomServiceProvider, IAsyncDicomNServiceProvider
+    internal class SimpleStorageComitmentProvider : DicomService, IDicomServiceProvider, IAsyncDicomNServiceProvider, IAsyncDicomNEventReportRequestProvider
     {
         private static readonly DicomTransferSyntax[] _acceptedTransferSyntaxes =
         {
@@ -147,36 +147,7 @@ namespace Dicom.Network
 
         public async Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)
         {
-            // first return the success-response
-            await SendResponseAsync(new DicomNActionResponse(request, DicomStatus.Success));
-
-            // then synchronously send NEvents
-            if (request.Dataset.Contains(DicomTag.ReferencedSOPSequence))
-            {
-                var referencedSequence = request.Dataset.GetSequence(DicomTag.ReferencedSOPSequence);
-                foreach (var referencedDataset in referencedSequence)
-                {
-                    // This can also be done within a thread later
-                    //_ = Task.Run(async () =>
-                    //  {
-                    //      await Task.Delay(TimeSpan.FromSeconds(1));
-                          var resultDs = new DicomDataset
-                          {
-                            {
-                                DicomTag.ReferencedSOPSequence,
-                                new DicomDataset
-                                {
-                                    { DicomTag.ReferencedSOPClassUID, referencedDataset.GetString(DicomTag.ReferencedSOPClassUID) },
-                                    { DicomTag.ReferencedSOPInstanceUID, referencedDataset.GetString(DicomTag.ReferencedSOPInstanceUID) }
-                                }
-                            }
-                          };
-                          await SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.Generate(), 1) { Dataset = resultDs });
-                      //});
-                }
-            }
-
-            return null;
+            return new DicomNActionResponse(request, DicomStatus.Success);
         }
 
         public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request) => throw new NotImplementedException();
@@ -184,6 +155,13 @@ namespace Dicom.Network
         public Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => throw new NotImplementedException();
         public Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request) => throw new NotImplementedException();
         public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request) => throw new NotImplementedException();
+        public Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
+        {
+            return SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.StorageCommitmentPushModelSOPInstance, 2)
+            {
+                Dataset = request.Dataset
+            });
+        }
     }
 
 

@@ -16,10 +16,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">C-FIND request subject to handling.</param>
         /// <returns>Collection of C-FIND responses based on <paramref name="request"/>.</returns>
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
-        IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request);
-#else
         Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request);
-#endif
     }
 }

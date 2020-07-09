@@ -107,33 +107,35 @@ namespace FellowOakDicom.Network
         {
             if (request is DicomCStoreRequest cstore)
             {
-                var pcs = _pc.Values.Where(x => x.AbstractSyntax == request.SOPClassUID);
-                if (cstore.TransferSyntax == DicomTransferSyntax.ImplicitVRLittleEndian)
-                {
-                    pcs = pcs.Where(x => x.GetTransferSyntaxes().Contains(DicomTransferSyntax.ImplicitVRLittleEndian));
-                }
-                else
-                {
-                    pcs = pcs.Where(x => x.HasTransferSyntax(cstore.TransferSyntax));
-                }
+                var pcs = _pc.Values
+                    .Where(x => x.AbstractSyntax == request.SOPClassUID)
+                    .Where(x => x.HasTransferSyntax(cstore.TransferSyntax));
 
                 var pc = pcs.FirstOrDefault();
                 if (pc == null)
                 {
-                    var tx = new List<DicomTransferSyntax>();
-                    if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
+                    // add a presentation context for the original transfer syntax
+                    if (cstore.TransferSyntax != null)
                     {
-                        tx.Add(cstore.TransferSyntax);
+                        Add(cstore.SOPClassUID, cstore.TransferSyntax);
                     }
 
+                    // then add another for additional transfersyntaxes, if provided by the user, 
+                    // and for the mandatory ImplicitVRLittleEndian, if the original file was not implicitLittleEndian
+                    var tx = new List<DicomTransferSyntax>();
                     if (cstore.AdditionalTransferSyntaxes != null)
                     {
                         tx.AddRange(cstore.AdditionalTransferSyntaxes);
                     }
+                    if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
+                    {
+                        tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
+                    }
 
-                    tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
-
-                    Add(cstore.SOPClassUID, tx.ToArray());
+                    if (tx.Any())
+                    {
+                        Add(cstore.SOPClassUID, tx.ToArray());
+                    }
                 }
             }
             else

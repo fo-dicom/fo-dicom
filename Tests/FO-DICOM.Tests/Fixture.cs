@@ -3,6 +3,7 @@
 
 using System;
 using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.NativeCodec;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -20,15 +21,24 @@ namespace FellowOakDicom.Tests
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
 
 #if !NET462
+
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
+                .AddTranscoderManager<NativeTranscoderManager>()
                 .AddImageManager<ImageSharpImageManager>();
 
             var imageSharpServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register("ImageSharp", imageSharpServiceProvider);
+
+            serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddTranscoderManager<NativeTranscoderManager>();
+            var noTranscoderServiceProvider = serviceCollection.BuildServiceProvider();
+            serviceProviders.Register("WithTranscoder", noTranscoderServiceProvider);
+
 #endif
 
-            Setup.SetupDI(serviceProviders);
+            DicomSetupBuilder.UseServiceProvider(serviceProviders);
         }
 
         public void Dispose()
@@ -55,6 +65,10 @@ namespace FellowOakDicom.Tests
 
     [CollectionDefinition("Validation")]
     public class ValidationCollection: ICollectionFixture<GlobalFixture>
+    { }
+
+    [CollectionDefinition("WithTranscoder")]
+    public class WidthTranscoderCollection : ICollectionFixture<GlobalFixture>
     { }
 
 

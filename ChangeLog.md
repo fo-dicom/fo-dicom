@@ -1,7 +1,10 @@
 #### v.4.0.6 (TBD)
 * Update to DICOM Standard 2020b.
-* Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
 * Handle N-Event requests in DicomClient (required for synchronous storage commitment) (#1001)
+* Bug fix: Fix DICOM Tag conversion for private tags for element numbers xxff (#1059)
+* ImplicitVRLittleEndian always added to presentation context by default causes other transfer syntax to not be accepted (#1048)
+* New interface IDicomNEventReportRequestProvider for DicomServer. This is necessary to handle synchronous storage commitment on server (#1055)
+* Bug fix: Exception occurred in Indexer of VOISequenceLUT Class (#1062)
 
 #### v.4.0.5 (5/18/2020)
 * Bug fix: DicomTags of ValueRepresentation LT have not been validated.

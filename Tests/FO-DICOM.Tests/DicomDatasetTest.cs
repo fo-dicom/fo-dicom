@@ -3,8 +3,10 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Tests.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -463,6 +465,25 @@ namespace FellowOakDicom.Tests
             Assert.Equal(loCreator, firstCreator);
         }
 
+        /// <summary>
+        /// Associated with Github issue #1059
+        /// </summary>
+        [Theory]
+        [InlineData(0x0019, 0x1000, "PRIVATE", 0x1000)] // lowest possible element (not used for group length encoding)
+        [InlineData(0x0019, 0xff, "PRIVATE", 0x10ff)]
+        [InlineData(0x0019, 0xffff, "PRIVATE", 0xffff)] // highest possible element
+        public void Add_PrivateTags_LowestAndHighestPossibleElementsShouldBeAdded(ushort group, ushort element, string creator, ushort expectedElement)
+        {
+            var tag1Private = new DicomTag(group, element, creator);
+
+            var dataset = new DicomDataset();
+            dataset.Add(tag1Private, 1);
+
+            var item1 = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
+                                            item.Tag.Element == expectedElement);
+            Assert.NotNull(item1);
+        }
+
         [Fact]
         public void Add_DicomItemOnNonExistingPrivateTag_PrivateGroupShouldCorrespondToPrivateCreator()
         {
@@ -523,6 +544,9 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_ByteArrayFromStringElement_ReturnsValidArray()
         {
+            // preload encodings
+            DicomEncoding.GetCharset(Encoding.ASCII);
+            // now the actual unit-test
             var encoding = Encoding.GetEncoding("SHIFT_JIS");
             var tag = DicomTag.AdditionalPatientHistory;
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
@@ -531,10 +555,111 @@ namespace FellowOakDicom.Tests
             {
                 new DicomLongText(tag, expected)
             };
-            dataset.TextEncoding = encoding;
+            dataset.AddOrUpdate(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding));
+
+            // simulate some rendering into stream (file, network,..)
+            dataset.OnBeforeSerializing();
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomEncoding_AppliedToNestedDatasetsOnWriting()
+        {
+            // preload encodings
+            DicomEncoding.GetCharset(Encoding.ASCII);
+            // now the actual unit-test
+            var encoding = Encoding.GetEncoding("SHIFT_JIS");
+            var tag = DicomTag.AdditionalPatientHistory;
+            const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
+
+            var dataset = new DicomDataset
+            {
+                { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
+                { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
+                { tag, "SuperDataset" },
+                { DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding) },
+                { DicomTag.ReferencedInstanceSequence,
+                    new DicomDataset
+                    {
+                        { tag, expected }
+                    }
+                }
+            };
+
+            var memStream = new MemoryStream();
+            new DicomFile(dataset).Save(memStream);
+            memStream.Position = 0;
+
+            var bytesOfStream = memStream.ToArray();
+            var expectedBytes = encoding.GetBytes(expected);
+            Assert.True(bytesOfStream.ContainsSequence(expectedBytes));
+
+            var notexpectedBytes = DicomEncoding.Default.GetBytes(expected);
+            Assert.False(bytesOfStream.ContainsSequence(notexpectedBytes));
+
+            memStream.Position = 0;
+            var readDataset = DicomFile.Open(memStream);
+            var readValue = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).First().GetSingleValue<string>(tag);
+            Assert.Equal(expected, readValue);
+        }
+
+
+        [Fact]
+        public void DicomEncoding_AppliedToMultipleNestedDatasetsWithDifferentEncodingsOnWriting()
+        {
+            // preload encodings
+            DicomEncoding.GetCharset(Encoding.ASCII);
+            // now the actual unit-test
+            var encoding1 = Encoding.GetEncoding("SHIFT_JIS");
+            var encoding2 = Encoding.UTF8;
+            var tag = DicomTag.AdditionalPatientHistory;
+            const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
+
+            var dataset = new DicomDataset
+            {
+                { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
+                { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
+                { tag, "SuperDataset" },
+                { DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding1) },
+                { DicomTag.ReferencedInstanceSequence,
+                    new DicomDataset
+                    {
+                        { DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding2) },
+                        { tag, expected } // this value is supposed to be encoded in UTF8
+                    },
+                    new DicomDataset
+                    {
+                        { tag, expected } // this value is supposed to be encoded like the parent dataset in SHIFT_JIS
+                    }
+                }
+            };
+
+            var memStream = new MemoryStream();
+            new DicomFile(dataset).Save(memStream);
+            memStream.Position = 0;
+
+            var bytesOfStream = memStream.ToArray();
+
+            // there should be the name encoded in SHIFT_JIS
+            var expectedBytes1 = encoding1.GetBytes(expected);
+            Assert.True(bytesOfStream.ContainsSequence(expectedBytes1));
+
+            // there should also be the name encoded in UTF8
+            var expectedBytes2 = encoding2.GetBytes(expected);
+            Assert.True(bytesOfStream.ContainsSequence(expectedBytes2));
+
+            // but there should never be a fallback to default-encoding
+            var notexpectedBytes = DicomEncoding.Default.GetBytes(expected);
+            Assert.False(bytesOfStream.ContainsSequence(notexpectedBytes));
+
+            memStream.Position = 0;
+            var readDataset = DicomFile.Open(memStream);
+            var readValue1 = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).First().GetSingleValue<string>(tag);
+            Assert.Equal(expected, readValue1);
+            var readValue2 = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).Last().GetSingleValue<string>(tag);
+            Assert.Equal(expected, readValue2);
         }
 
         [Fact]
@@ -545,7 +670,7 @@ namespace FellowOakDicom.Tests
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
 
             var dataset = new DicomDataset();
-            dataset.TextEncoding = encoding;
+            dataset.AddOrUpdate(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding));
             dataset.AddOrUpdate(tag, expected);
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);

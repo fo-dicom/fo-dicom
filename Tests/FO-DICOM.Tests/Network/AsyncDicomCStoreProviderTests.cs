@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
@@ -53,9 +54,91 @@ namespace FellowOakDicom.Tests.Network
                 Assert.Null(timeout);
             }
         }
+
+        [Fact]
+        public async Task OnCStoreRequestAsync_PreferedTransfersyntax()
+        {
+            var port = Ports.GetNext();
+
+            using (DicomServerFactory.Create<AsyncDicomCStoreProviderPreferingUncompressedTS>(port, logger: _logger.IncludePrefix("DicomServer")))
+            {
+                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+
+                int numberOfContexts = 0;
+                DicomTransferSyntax accpetedTS = null;
+                // create a request with a jpeg-encoded file
+                var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
+                client.AssociationAccepted += (sender, e) =>
+                {
+                    numberOfContexts = e.Association.PresentationContexts.Count;
+                    accpetedTS = e.Association.PresentationContexts.First().AcceptedTransferSyntax;
+                };
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+                await client.SendAsync().ConfigureAwait(false);
+
+                Assert.Equal(2, numberOfContexts); // one for the jpeg2k TS and one for the mandatory ImplicitLittleEndian
+                Assert.Equal(DicomTransferSyntax.JPEG2000Lossy, accpetedTS);
+            }
+        }
+
     }
 
     #region helper classes
+
+
+    public class AsyncDicomCStoreProviderPreferingUncompressedTS : AsyncDicomCStoreProvider
+    {
+
+        private static readonly DicomTransferSyntax[] _acceptedTransferSyntaxes = new DicomTransferSyntax[]
+           {
+               DicomTransferSyntax.ExplicitVRLittleEndian,
+               DicomTransferSyntax.ExplicitVRBigEndian,
+               DicomTransferSyntax.ImplicitVRLittleEndian
+           };
+
+        private static readonly DicomTransferSyntax[] _acceptedImageTransferSyntaxes = new DicomTransferSyntax[]
+        {
+               // Uncompressed
+               DicomTransferSyntax.ExplicitVRLittleEndian,
+               DicomTransferSyntax.ExplicitVRBigEndian,
+               DicomTransferSyntax.ImplicitVRLittleEndian,
+               // Lossless
+               DicomTransferSyntax.JPEGLSLossless,
+               DicomTransferSyntax.JPEG2000Lossless,
+               DicomTransferSyntax.JPEGProcess14SV1,
+               DicomTransferSyntax.JPEGProcess14,
+               DicomTransferSyntax.RLELossless,
+               // Lossy
+               DicomTransferSyntax.JPEGLSNearLossless,
+               DicomTransferSyntax.JPEG2000Lossy,
+               DicomTransferSyntax.JPEGProcess1,
+               DicomTransferSyntax.JPEGProcess2_4,
+        };
+
+        public AsyncDicomCStoreProviderPreferingUncompressedTS(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
+            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+        { }
+
+        public override Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        {
+            foreach (var pc in association.PresentationContexts)
+            {
+                if (pc.AbstractSyntax == DicomUID.Verification)
+                {
+                    pc.AcceptTransferSyntaxes(_acceptedTransferSyntaxes);
+                }
+                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
+                {
+                    pc.AcceptTransferSyntaxes(_acceptedImageTransferSyntaxes, true);
+                }
+            }
+
+            return SendAssociationAcceptAsync(association);
+        }
+
+    }
+
 
     public class AsyncDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
@@ -66,7 +149,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public virtual async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
             foreach (var pc in association.PresentationContexts)
             {

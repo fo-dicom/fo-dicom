@@ -50,6 +50,6 @@ namespace Dicom.Network
         /// </summary>
         /// <param name="request">N-SET request subject to handling.</param>
         /// <returns>N-SET response based on <paramref name="request"/>.</returns>
-        Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request);
+        Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request);      
     }
 }

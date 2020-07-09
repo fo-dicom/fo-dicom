@@ -210,7 +210,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="dataset">Source of population.</param>
         /// <param name="items">Destination of population.</param>
-        private static void BuildWalkQueue(IEnumerable<DicomItem> dataset, Queue<DicomItem> items)
+        private static void BuildWalkQueue(DicomDataset dataset, Queue<DicomItem> items)
         {
             foreach (var item in dataset)
             {
@@ -234,6 +234,7 @@ namespace FellowOakDicom
                     items.Enqueue(item);
                     foreach (var sqi in sq)
                     {
+                        sqi.TextEncoding = dataset.TextEncoding;
                         sqi.OnBeforeSerializing();
                         items.Enqueue(new BeginDicomSequenceItem(sqi));
                         BuildWalkQueue(sqi, items);

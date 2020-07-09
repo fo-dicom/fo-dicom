@@ -9,13 +9,13 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.Codec
 {
 
-    [Collection("General")]
+    [Collection("WithTranscoder")]
     public class DicomTranscoderTest : IClassFixture<GlobalFixture>
     {
 
         #region Unit tests
 
-        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [TheoryForNetCore]
         [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {
@@ -33,8 +33,6 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         {
             get
             {
-                // TODO re-enable this
-                yield break;
                 yield return new object[] { DicomTransferSyntax.JPEGProcess1, DicomUID.JPEGBaseline1.Name };
                 yield return new object[] { DicomTransferSyntax.RLELossless, DicomUID.RLELossless.Name };
                 yield return new object[] { DicomTransferSyntax.JPEGLSNearLossless, DicomUID.JPEGLSLossyNearLossless.Name };

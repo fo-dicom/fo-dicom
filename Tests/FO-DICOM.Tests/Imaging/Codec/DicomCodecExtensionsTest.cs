@@ -13,12 +13,12 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.Codec
 {
 
-    [Collection("General")]
+    [Collection("WithTranscoder")]
     public class DicomCodecExtensionsTest
     {
         #region Unit tests
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [FactForNetCore]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [FactForNetCore]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4_WithParameters()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [FactForNetCore]
         public void ChangeTransferSyntax_FileFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -52,7 +52,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [Fact(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [FactForNetCore]
         public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -64,7 +64,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO: This Test shall run green if issue #921 is solved.
+        [TheoryForNetCore(Skip = "Bug in Photometricinterpretation, to be fixed...")] // TODO: fix the bug
         [InlineData("TestPattern_RGB.dcm")]
         [InlineData("CR-MONO1-10-chest")]
         [InlineData("GH064.dcm")]

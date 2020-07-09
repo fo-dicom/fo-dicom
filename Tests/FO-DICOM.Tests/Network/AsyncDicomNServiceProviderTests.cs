@@ -258,6 +258,12 @@ namespace FellowOakDicom.Tests.Network
 
         public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request)
             => Task.FromResult(new DicomNSetResponse(request, DicomStatus.Success));
+
+        public Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
+            => SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.StorageCommitmentPushModelSOPInstance, 2)
+        {
+            Dataset = request.Dataset
+        });
     }
     #endregion
 }

@@ -11,15 +11,14 @@ using Xunit;
 namespace FellowOakDicom.Tests.Bugs
 {
 
-    [Collection("General")]
+    [Collection("WithTranscoder")]
     public class GH549
     {
         #region Unit Tests
 
-        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [TheoryForNetCore]
         [MemberData(nameof(CodecsNumbers))]
-        public void DicomTranscoderTranscode_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
-            int filesToTranscode)
+        public void DicomTranscoderTranscode_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax, int filesToTranscode)
         {
             var original = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle")).Dataset;
 
@@ -46,7 +45,7 @@ namespace FellowOakDicom.Tests.Bugs
             }
         }
 
-        [Theory(Skip = "Codec tests are temporarily disabled")] // TODO re-enable this
+        [TheoryForNetCore]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomDatasetClone_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)

@@ -31,7 +31,12 @@ namespace FellowOakDicom.Tests
             var frames = st.GetFrames();
             var rootFrame = frames.LastOrDefault(f => f.GetMethod().DeclaringType.Namespace.StartsWith("FellowOakDicom"));
 
-            category = rootFrame.GetMethod().DeclaringType.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(CollectionAttribute))?.ConstructorArguments.FirstOrDefault().Value.ToString() ?? string.Empty;
+            var declType = rootFrame.GetMethod().DeclaringType;
+            if (declType.IsNested)
+            {
+                declType = declType.DeclaringType;
+            }
+            category = declType.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(CollectionAttribute))?.ConstructorArguments.FirstOrDefault().Value.ToString() ?? string.Empty;
 
             if (!_serviceProviders.ContainsKey(category))
             {
