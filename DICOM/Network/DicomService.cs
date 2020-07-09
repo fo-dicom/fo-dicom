@@ -388,9 +388,9 @@ namespace Dicom.Network
             }
         }
 
-        private async Task ListenAndProcessPDUAsync(CancellationToken cancellationToken = default(CancellationToken))
+        private async Task ListenAndProcessPDUAsync()
         {
-            while (!cancellationToken.IsCancellationRequested && IsConnected)
+            while (IsConnected)
             {
                 try
                 {
@@ -400,7 +400,7 @@ namespace Dicom.Network
                     _readLength = 6;
 
                     var buffer = new byte[6];
-                    var count = await stream.ReadAsync(buffer, 0, 6, cancellationToken).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
 
                     do
                     {
@@ -414,7 +414,7 @@ namespace Dicom.Network
                         _readLength -= count;
                         if (_readLength > 0)
                         {
-                            count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength, cancellationToken).ConfigureAwait(false);
+                            count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength).ConfigureAwait(false);
                         }
                     } while (_readLength > 0);
 
@@ -431,7 +431,7 @@ namespace Dicom.Network
                         {
                             int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
                             var tempBuffer = new byte[bytesToRead];
-                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead, cancellationToken)
+                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
                                 .ConfigureAwait(false);
 
                             if (count == 0)
@@ -1558,14 +1558,13 @@ namespace Dicom.Network
         /// <summary>
         /// Setup long-running operations that the DICOM service manages.
         /// </summary>
-        /// <param name="cancellationToken">The token that cancels this SCP</param>
         /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
-        public virtual Task RunAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task RunAsync()
         {
             if (_isInitialized) return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
             _isInitialized = true;
 
-            return ListenAndProcessPDUAsync(cancellationToken);
+            return ListenAndProcessPDUAsync();
         }
 
         /// <summary>

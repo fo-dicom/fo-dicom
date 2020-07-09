@@ -47,7 +47,7 @@ namespace Dicom.Network.Client.States
 
                 if (!cancellation.Token.IsCancellationRequested)
                 {
-                    connection.StartListener(cancellation.Token);
+                    connection.StartListener();
                 }
 
                 return connection;

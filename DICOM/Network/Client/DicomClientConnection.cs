@@ -32,7 +32,7 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Opens a long running listener task that waits for incoming DICOM communication
         /// </summary>
-        void StartListener(CancellationToken cancellationToken);
+        void StartListener();
 
         /// <summary>
         /// Send association request.
@@ -140,6 +140,7 @@ namespace Dicom.Network.Client
 
         public INetworkStream NetworkStream { get; }
         public Task Listener { get; private set; }
+
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
@@ -149,11 +150,11 @@ namespace Dicom.Network.Client
             NetworkStream = networkStream;
         }
 
-        public void StartListener(CancellationToken cancellationToken)
+        public void StartListener()
         {
             if (Listener != null) return;
 
-            Listener = Task.Factory.StartNew(() => RunAsync(cancellationToken), TaskCreationOptions.LongRunning);
+            Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association)

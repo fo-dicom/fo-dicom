@@ -124,7 +124,16 @@ namespace Dicom.Network
         /// Gets the number of clients currently connected to the server.
         /// </summary>
         /// <remarks>Included for testing purposes only.</remarks>
-        internal int CompletedServicesCount => _services.Count(service => service.Task.IsCompleted);
+        internal int CompletedServicesCount
+        {
+            get
+            {
+                lock (_services)
+                {
+                    return _services.Count(service => service.Task.IsCompleted);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets whether the list of services contains the maximum number of services or not.
@@ -134,7 +143,13 @@ namespace Dicom.Network
             get
             {
                 var maxClientsAllowed = Options?.MaxClientsAllowed ?? DicomServiceOptions.Default.MaxClientsAllowed;
-                return maxClientsAllowed > 0 && _services.Count >= maxClientsAllowed;
+                if (maxClientsAllowed <= 0)
+                    return false;
+
+                lock (_services)
+                {
+                    return _services.Count >= maxClientsAllowed;
+                }
             }
         }
 
@@ -251,8 +266,11 @@ namespace Dicom.Network
                             scp.Options = Options;
                         }
 
-                        var serviceTask = scp.RunAsync(_cancellationSource.Token);
-                        _services.Add(new RunningDicomService(scp, serviceTask));
+                        var serviceTask = scp.RunAsync();
+                        lock (_services)
+                        {
+                            _services.Add(new RunningDicomService(scp, serviceTask));
+                        }
 
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax) _hasNonMaxServicesFlag.Reset();
@@ -286,21 +304,29 @@ namespace Dicom.Network
                 try
                 {
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
-                    await Task.WhenAny(_services.Select(s => s.Task)).ConfigureAwait(false);
-
-                    for (int i = _services.Count - 1; i >= 0; i--)
+                    List<Task> runningDicomServiceTasks;
+                    lock (_services)
                     {
-                        var service = _services[i];
-                        if (service.Task.IsCompleted)
-                        {
-                            _services.RemoveAt(i);
-
-                            service.Dispose();
-                        }
+                        runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
                     }
+                    await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
 
-                    if (_services.Count == 0) _hasServicesFlag.Reset();
-                    if (!IsServicesAtMax) _hasNonMaxServicesFlag.Set();
+                    lock (_services)
+                    {
+                        for (int i = _services.Count - 1; i >= 0; i--)
+                        {
+                            var service = _services[i];
+                            if (service.Task.IsCompleted)
+                            {
+                                _services.RemoveAt(i);
+
+                                service.Dispose();
+                            }
+                        }
+
+                        if (_services.Count == 0) _hasServicesFlag.Reset();
+                        if (!IsServicesAtMax) _hasNonMaxServicesFlag.Set();
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -316,11 +342,16 @@ namespace Dicom.Network
 
         private void ClearServices()
         {
-            foreach (var service in _services)
+            lock (_services)
             {
-                service.Dispose();
+                foreach (var service in _services)
+                {
+                    service.Dispose();
+                }
+
+                _services.Clear();
             }
-            _services.Clear();
+
             _hasServicesFlag.Reset();
             _hasNonMaxServicesFlag.Set();
         }

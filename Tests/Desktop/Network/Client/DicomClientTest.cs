@@ -1223,9 +1223,9 @@ namespace Dicom.Network.Client
                     if (i < numberOfRequests)
                     {
                         var secondsToWait = secondsBetweenEachRequest[i];
-                        logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                        logger.Info($"Waiting {secondsToWait} seconds between requests");
                         await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
-                        logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
+                        logger.Info($"Waited {secondsToWait} seconds, moving on to next request");
                     }
                 }
 
