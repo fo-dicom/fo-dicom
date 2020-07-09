@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Linq;
 using Dicom.IO;
 
 namespace Dicom.Imaging.LUT
@@ -40,6 +41,10 @@ namespace Dicom.Imaging.LUT
         public int MinimumOutputValue => _LUTDataArray[0];
 
         public int MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
+
+        public int NumberOfBitsPerEntry => _nrOfBitsPerEntry;
+
+        public int NumberOfEntries => _nrOfEntries;
 
         public int this[int value]
         {
@@ -87,6 +92,10 @@ namespace Dicom.Imaging.LUT
                     break;
                 }
             }
+            if (_LUTDataArray.Count() < _nrOfEntries)
+            {
+                throw new DicomImagingException($"Number of entries in VOI LUT Sequence do not match");
+            }
         }
 
         #endregion
@@ -109,6 +118,11 @@ namespace Dicom.Imaging.LUT
                 _nrOfEntries = LUTDescriptor.Get<int>(0);
                 _firstInputValue = LUTDescriptor.Get<int>(1);
                 _nrOfBitsPerEntry = LUTDescriptor.Get<int>(2);
+            }
+            // according to DICOM Standard Section C.11.2.1.1
+            if (_nrOfEntries == 0)
+            {
+                _nrOfEntries = 1 << 16;
             }
         }
 
