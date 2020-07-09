@@ -501,7 +501,19 @@ namespace Dicom.Network.Client
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
-                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                    IOException ioException = null;
+                    try
+                    {
+                        await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                    }
+                    catch (IOException e)
+                    {
+                        ioException = e;
+                    }
+
+                    Assert.NotNull(ioException);
+
+                    Assert.False(cancellation.IsCancellationRequested);
                 }
             }
 
@@ -561,9 +573,11 @@ namespace Dicom.Network.Client
 
                 await client.AddRequestsAsync(request1, request2, request3).ConfigureAwait(false);
 
-                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+
+                    Assert.False(cancellation.IsCancellationRequested);
                 }
             }
 

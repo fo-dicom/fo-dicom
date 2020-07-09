@@ -1366,7 +1366,7 @@ namespace Dicom.Network.Client
         }
 
         [Fact]
-        public async Task SendAsync_WithSocketError_ShouldNotLoopInfinitely()
+        public async Task SendAsync_ToDisposedDicomServer_ShouldNotLoopInfinitely()
         {
             var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("UnitTest");
