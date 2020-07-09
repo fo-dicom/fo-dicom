@@ -959,7 +959,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        private async Task<DicomCEchoResponse> SendEchoRequestWithTimeout(IDicomClient dicomClient, int timeoutInMilliseconds = 3000)
+        private async Task<DicomCEchoResponse> SendEchoRequestWithTimeout(IDicomClient dicomClient, int timeoutInMilliseconds = 10000)
         {
             var request = new DicomCEchoRequest();
             var logger = _logger.IncludePrefix("C-Echo request");
