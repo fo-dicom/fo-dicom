@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Codec;
@@ -370,9 +370,11 @@ namespace FellowOakDicom.Network
                     LogIOException(e, Logger, false);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
-                catch (ObjectDisposedException)
+                catch (ObjectDisposedException e)
                 {
-                    // ignore ObjectDisposedException, that may happen, when closing a connection.
+                    // This may happen when closing a connection.
+                    Logger.Error("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
+                                 "This can happen when the connection is being closed", e);                
                 }
                 catch (Exception e)
                 {
