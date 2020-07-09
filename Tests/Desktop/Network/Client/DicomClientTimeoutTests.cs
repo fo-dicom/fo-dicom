@@ -573,11 +573,11 @@ namespace Dicom.Network.Client
 
                 await client.AddRequestsAsync(request1, request2, request3).ConfigureAwait(false);
 
-                using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
 
-                    Assert.False(cancellation.IsCancellationRequested);
+                    Assert.False(cancellation.IsCancellationRequested, "The DicomClient had to be cancelled, this indicates it was stuck in an infinite loop");
                 }
             }
 
