@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dicom.Network.Client
@@ -31,7 +32,7 @@ namespace Dicom.Network.Client
         /// <summary>
         /// Opens a long running listener task that waits for incoming DICOM communication
         /// </summary>
-        void StartListener();
+        void StartListener(CancellationToken cancellationToken);
 
         /// <summary>
         /// Send association request.
@@ -148,11 +149,11 @@ namespace Dicom.Network.Client
             NetworkStream = networkStream;
         }
 
-        public void StartListener()
+        public void StartListener(CancellationToken cancellationToken)
         {
             if (Listener != null) return;
 
-            Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
+            Listener = Task.Factory.StartNew(() => RunAsync(cancellationToken), TaskCreationOptions.LongRunning);
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association)

@@ -1352,7 +1352,10 @@ namespace Dicom.Network.Client
             Exception capturedException = null;
             try
             {
-                await client.SendAsync().ConfigureAwait(false);
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                }
             }
             catch (Exception exception)
             {
@@ -1360,6 +1363,58 @@ namespace Dicom.Network.Client
                 capturedException = exception;
             }
             Assert.NotNull(capturedException);
+        }
+
+        [Fact]
+        public async Task SendAsync_WithSocketError_ShouldNotLoopInfinitely()
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            DicomCEchoProviderServer server = null;
+            DicomCEchoResponse echoResponse1 = null, echoResponse2 = null;
+            try
+            {
+                server = CreateServer<DicomCEchoProvider, DicomCEchoProviderServer>(port);
+
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                // Ensure requests are handled sequentially
+                client.NegotiateAsyncOps(1, 1);
+
+                var echoRequest1 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 1, disposing server");
+                        echoResponse1 = response;
+                        // ReSharper disable once AccessToDisposedClosure This is an edge case we are trying to test
+                        server?.Dispose();
+                        logger.Info("Server is disposed");
+                    }
+                };
+                var echoRequest2 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 2");
+                        echoResponse2 = response;
+                    }
+                };
+
+                await client.AddRequestsAsync(echoRequest1, echoRequest2).ConfigureAwait(false);
+
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                server?.Dispose();
+            }
+
+            Assert.NotNull(echoResponse1);
+            Assert.Null(echoResponse2);
         }
 
         #region Support classes

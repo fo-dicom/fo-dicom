@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 
@@ -16,8 +17,9 @@ namespace Dicom.Network
         /// <summary>
         /// Setup long-running operations that the DICOM service manages.
         /// </summary>
+        /// <param name="cancellationToken">The token that cancels this SCP</param>
         /// <returns>Awaitable task maintaining the long-running operation(s).</returns>
-        Task RunAsync();
+        Task RunAsync(CancellationToken cancellationToken = default(CancellationToken));
 #endif
     }
 }

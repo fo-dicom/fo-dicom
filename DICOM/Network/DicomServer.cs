@@ -22,7 +22,7 @@ namespace Dicom.Network
     {
         #region FIELDS
 
-        private readonly List<Task> _services;
+        private readonly List<RunningDicomService> _services;
 
         private readonly CancellationTokenSource _cancellationSource;
 
@@ -60,7 +60,7 @@ namespace Dicom.Network
         public DicomServer()
         {
             _cancellationSource = new CancellationTokenSource();
-            _services = new List<Task>();
+            _services = new List<RunningDicomService>();
 
             IsListening = false;
             Exception = null;
@@ -124,7 +124,7 @@ namespace Dicom.Network
         /// Gets the number of clients currently connected to the server.
         /// </summary>
         /// <remarks>Included for testing purposes only.</remarks>
-        internal int CompletedServicesCount => _services.Count(service => service.IsCompleted);
+        internal int CompletedServicesCount => _services.Count(service => service.Task.IsCompleted);
 
         /// <summary>
         /// Gets whether the list of services contains the maximum number of services or not.
@@ -251,7 +251,8 @@ namespace Dicom.Network
                             scp.Options = Options;
                         }
 
-                        _services.Add(scp.RunAsync().ContinueWith(_ => scp.Dispose()));
+                        var serviceTask = scp.RunAsync(_cancellationSource.Token);
+                        _services.Add(new RunningDicomService(scp, serviceTask));
 
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax) _hasNonMaxServicesFlag.Reset();
@@ -285,9 +286,18 @@ namespace Dicom.Network
                 try
                 {
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
-                    await Task.WhenAny(_services).ConfigureAwait(false);
+                    await Task.WhenAny(_services.Select(s => s.Task)).ConfigureAwait(false);
 
-                    _services.RemoveAll(service => service.IsCompleted);
+                    for (int i = _services.Count - 1; i >= 0; i--)
+                    {
+                        var service = _services[i];
+                        if (service.Task.IsCompleted)
+                        {
+                            _services.RemoveAt(i);
+
+                            service.Dispose();
+                        }
+                    }
 
                     if (_services.Count == 0) _hasServicesFlag.Reset();
                     if (!IsServicesAtMax) _hasNonMaxServicesFlag.Set();
@@ -306,6 +316,10 @@ namespace Dicom.Network
 
         private void ClearServices()
         {
+            foreach (var service in _services)
+            {
+                service.Dispose();
+            }
             _services.Clear();
             _hasServicesFlag.Reset();
             _hasNonMaxServicesFlag.Set();
@@ -315,6 +329,23 @@ namespace Dicom.Network
 
         #region INNER TYPES
 
+        class RunningDicomService : IDisposable
+        {
+            public DicomService Service { get; }
+            public Task Task { get; }
+
+            public RunningDicomService(DicomService service, Task task)
+            {
+                Service = service ?? throw new ArgumentNullException(nameof(service));
+                Task = task ?? throw new ArgumentNullException(nameof(task));
+            }
+
+            public void Dispose()
+            {
+                Service.Dispose();
+            }
+        }
+
         #endregion
     }
 
@@ -322,7 +353,7 @@ namespace Dicom.Network
     /// Support class for managing multiple DICOM server instances.
     /// </summary>
     /// <remarks>Controls that only one DICOM server per <see cref="IDicomServer.Port"/> is initialized. Current implementation
-    /// only allows one server per port. It is not possible to initialize multiple servers listening to different network interfaces 
+    /// only allows one server per port. It is not possible to initialize multiple servers listening to different network interfaces
     /// (for example IPv4 vs. IPv6) via these methods if the port is the same.</remarks>
     public static class DicomServer
     {

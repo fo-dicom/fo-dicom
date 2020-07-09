@@ -810,12 +810,12 @@ namespace Dicom.Network
             }
 
             /// <inheritdoc />
-            public override Task RunAsync()
+            public override Task RunAsync(CancellationToken cancellationToken = default(CancellationToken))
             {
                 if (_isInitialized) return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
                 _isInitialized = true;
 
-                return Task.WhenAll(base.RunAsync(),
+                return Task.WhenAll(base.RunAsync(cancellationToken),
                     SendAssociationRequestAsync(_association));
             }
 
