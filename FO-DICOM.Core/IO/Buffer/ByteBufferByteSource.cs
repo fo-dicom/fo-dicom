@@ -226,8 +226,8 @@ namespace FellowOakDicom.IO.Buffer
                         }
                     }
 
-                    int n = (int)System.Math.Min(_currentData.Length - _currentPos, count);
-                    Array.Copy(_currentData, (int)_currentPos, bytes, p, n);
+                    int n = (int)Math.Min(_currentData.Length - _currentPos, count);
+                    Array.Copy(_currentData, _currentPos, bytes, p, n);
 
                     count -= n;
                     p += n;
@@ -251,7 +251,7 @@ namespace FellowOakDicom.IO.Buffer
         }
 
         /// <inheritdoc />
-        public void Skip(int count)
+        public void Skip(uint count)
         {
             lock (_lock)
             {
