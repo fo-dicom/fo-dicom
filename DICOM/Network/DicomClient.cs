@@ -815,7 +815,8 @@ namespace Dicom.Network
                 if (_isInitialized) return Task.FromResult(false); // TODO Replace with Task.CompletedTask when moving to .NET 4.6
                 _isInitialized = true;
 
-                return Task.WhenAll(base.RunAsync(), SendAssociationRequestAsync(_association));
+                return Task.WhenAll(base.RunAsync(),
+                    SendAssociationRequestAsync(_association));
             }
 
             /// <inheritdoc />

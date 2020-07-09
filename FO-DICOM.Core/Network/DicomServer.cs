@@ -25,7 +25,7 @@ namespace FellowOakDicom.Network
         
         private readonly ILogManager _logManager;
 
-        private readonly List<Task> _services;
+        private readonly List<RunningDicomService> _services;
 
         private readonly CancellationTokenSource _cancellationSource;
 
@@ -68,7 +68,7 @@ namespace FellowOakDicom.Network
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
 
             _cancellationSource = new CancellationTokenSource();
-            _services = new List<Task>();
+            _services = new List<RunningDicomService>();
 
             IsListening = false;
             Exception = null;
@@ -144,8 +144,17 @@ namespace FellowOakDicom.Network
         /// Gets the number of clients currently connected to the server.
         /// </summary>
         /// <remarks>Included for testing purposes only.</remarks>
-        internal int CompletedServicesCount => _services.Count(service => service.IsCompleted);
-
+        internal int CompletedServicesCount
+        {
+            get
+            {
+                lock (_services)
+                {
+                    return _services.Count(service => service.Task.IsCompleted);
+                }
+            }
+        }
+        
         /// <summary>
         /// Gets whether the list of services contains the maximum number of services or not.
         /// </summary>
@@ -154,7 +163,13 @@ namespace FellowOakDicom.Network
             get
             {
                 var maxClientsAllowed = Options.MaxClientsAllowed;
-                return maxClientsAllowed > 0 && _services.Count >= maxClientsAllowed;
+                if (maxClientsAllowed <= 0)
+                    return false;
+
+                lock (_services)
+                {
+                    return _services.Count >= maxClientsAllowed;
+                }
             }
         }
 
@@ -278,8 +293,12 @@ namespace FellowOakDicom.Network
                             scp.Options = Options;
                         }
 
-                        _services.Add(scp.RunAsync().ContinueWith(_ => scp.Dispose()));
-
+                        var serviceTask = scp.RunAsync();
+                        lock (_services)
+                        {
+                            _services.Add(new RunningDicomService(scp, serviceTask));
+                        }
+                        
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax)
                         {
@@ -316,19 +335,37 @@ namespace FellowOakDicom.Network
                 try
                 {
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
-                    await Task.WhenAny(_services).ConfigureAwait(false);
-
-                    _services.RemoveAll(service => service.IsCompleted);
-
-                    if (_services.Count == 0)
+                    List<Task> runningDicomServiceTasks;
+                    lock (_services)
                     {
-                        _hasServicesFlag.Reset();
+                        runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
+                    }
+                    await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
+                    
+                    lock (_services)
+                    {
+                        for (int i = _services.Count - 1; i >= 0; i--)
+                        {
+                            var service = _services[i];
+                            if (service.Task.IsCompleted)
+                            {
+                                _services.RemoveAt(i);
+
+                                service.Dispose();
+                            }
+                        }
+
+                        if (_services.Count == 0)
+                        {
+                            _hasServicesFlag.Reset();
+                        }
+
+                        if (!IsServicesAtMax)
+                        {
+                            _hasNonMaxServicesFlag.Set();
+                        }
                     }
 
-                    if (!IsServicesAtMax)
-                    {
-                        _hasNonMaxServicesFlag.Set();
-                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -344,9 +381,36 @@ namespace FellowOakDicom.Network
 
         private void ClearServices()
         {
-            _services.Clear();
+            lock (_services)
+            {
+                foreach (var service in _services)
+                {
+                    service.Dispose();
+                }
+
+                _services.Clear();
+            }
+            
             _hasServicesFlag.Reset();
             _hasNonMaxServicesFlag.Set();
+        }
+
+        #endregion
+        
+        #region INNER TYPES
+
+        class RunningDicomService : IDisposable
+        {
+            public DicomService Service { get; }
+            public Task Task { get; }
+
+            public RunningDicomService(DicomService service, Task task)
+            {
+                Service = service ?? throw new ArgumentNullException(nameof(service));
+                Task = task ?? throw new ArgumentNullException(nameof(task));
+            }
+
+            public void Dispose() => Service.Dispose();
         }
 
         #endregion

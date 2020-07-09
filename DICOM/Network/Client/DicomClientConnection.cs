@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dicom.Network.Client
@@ -140,7 +139,6 @@ namespace Dicom.Network.Client
 
         public INetworkStream NetworkStream { get; }
         public Task Listener { get; private set; }
-
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
 
         public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)

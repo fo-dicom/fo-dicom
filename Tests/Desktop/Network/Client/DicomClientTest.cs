@@ -1409,11 +1409,13 @@ namespace Dicom.Network.Client
                     }
                 };
 
-                await client.AddRequestsAsync(echoRequest1, echoRequest2).ConfigureAwait(false);
+                await client.AddRequestsAsync(echoRequest1, echoRequest2, echoRequest3).ConfigureAwait(false);
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+
+                    Assert.False(cancellation.IsCancellationRequested);
                 }
             }
             finally
