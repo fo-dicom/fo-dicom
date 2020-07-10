@@ -9,9 +9,14 @@ on:
     - development
 
 jobs:
-  4x-net-framework-472:
+  4x-net-framework:
     runs-on: windows-2019
     steps:
+      - name: Install Windows 8.1 SDK
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
+          Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
       - uses: actions/checkout@v1
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
