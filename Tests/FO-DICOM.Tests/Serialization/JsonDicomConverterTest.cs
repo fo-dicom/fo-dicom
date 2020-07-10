@@ -70,7 +70,7 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
-        public void ParseDoubleNaNValues()
+        public void ParseFloatingPointNaNValues()
         {
             var json = @"
             {
@@ -79,8 +79,7 @@ namespace FellowOakDicom.Tests.Serialization
                      ""Value"": [""NaN""]
                  }
             } ";
-            var tagValue = JsonConvert.DeserializeObject<DicomDataset>(json, new CustomJsonDicomConverter());
-            Assert.NotNull(tagValue);
+            var tagValue = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             Assert.NotNull(tagValue.GetDicomItem<DicomFloatingPointSingle>(DicomTag.SelectorFLValue));
         }
 
