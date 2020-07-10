@@ -588,7 +588,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Flaky test uses 1 second timeout, which can fail on slow systems")]
         public void Old_IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
         {
             var port = Ports.GetNext();
