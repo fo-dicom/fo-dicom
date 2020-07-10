@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		License.txt = License.txt
 		README.md = README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+		.github\workflows\build.yml = .github\workflows\build.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C5DA6B80-6F59-4893-9ED1-D78E82BBC98B}"
