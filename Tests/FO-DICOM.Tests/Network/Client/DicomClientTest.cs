@@ -976,7 +976,6 @@ namespace FellowOakDicom.Tests.Network.Client
 
         [Theory]
         [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
-        [InlineData( /*number of requests:*/ 3, /* seconds between each request: */ 2, /* linger: */ 5)]
         public async Task SendAsync_Linger_ShouldLingerLongEnoughToReuseAssociation(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
             var logger = _logger.IncludePrefix("UnitTest");
@@ -1032,8 +1031,7 @@ namespace FellowOakDicom.Tests.Network.Client
         }
 
         [Theory]
-        [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
-        [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 4, /* linger: */ 5)]
+        [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 10)]
         public async Task SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
             var logger = _logger.IncludePrefix("UnitTest");
