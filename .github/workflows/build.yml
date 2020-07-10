@@ -11,19 +11,17 @@ on:
 jobs:
   v4-net-framework:
     runs-on: windows-2019
-    container: 
-      image: mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019
     steps:
       - name: Install Windows 8.1 SDK
         shell: powershell
         run: |
           Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
           Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
+      - uses: actions/checkout@v1
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
       - name: Setup MSBuild
         uses: microsoft/Setup-MSBuild@v1
-      - uses: actions/checkout@v1
       - name: Restore nuget packages
         run: nuget restore DICOM.Desktop.sln
       - name: Build Desktop platform
@@ -35,8 +33,6 @@ jobs:
 
   v5-net-framework:
     runs-on: windows-2019
-    container:
-      image: mcr.microsoft.com/dotnet/core/sdk:3.1
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1 
@@ -49,8 +45,6 @@ jobs:
       
   v5-net-core-21:
     runs-on: windows-2019
-    container:
-      image: mcr.microsoft.com/dotnet/core/sdk:3.1
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1 
@@ -63,8 +57,6 @@ jobs:
       
   v5-net-core-31:
     runs-on: windows-2019
-    container:
-      image: mcr.microsoft.com/dotnet/core/sdk:3.1
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-dotnet@v1 
