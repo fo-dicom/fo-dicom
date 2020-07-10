@@ -9,7 +9,7 @@ on:
     - development
 
 jobs:
-  4x-net-framework-472:
+  v4-net-framework-472:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v1
@@ -26,7 +26,7 @@ jobs:
       - name: Run tests for Desktop platform
         run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll"
 
-  5x-net-framework-462:
+  v5-net-framework-462:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
@@ -37,7 +37,8 @@ jobs:
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462
     - name: Test
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462
-  5x-net-core-21:
+      
+  v5-net-core-21:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
@@ -48,7 +49,8 @@ jobs:
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0
     - name: Test
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1
-  5x-net-core-31:
+      
+  v5-net-core-31:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
