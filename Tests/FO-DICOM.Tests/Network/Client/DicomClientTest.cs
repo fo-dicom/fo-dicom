@@ -974,7 +974,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        [Theory]
+        [Theory(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
         [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
         public async Task SendAsync_Linger_ShouldLingerLongEnoughToReuseAssociation(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
@@ -1026,7 +1026,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        [Theory]
+        [Theory(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
         [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 10)]
         public async Task SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
@@ -1077,7 +1077,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        [Theory]
+        [Theory(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
         [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 2, /* linger: */ 1)]
         [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 3, /* linger: */ 2)]
         public async Task SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTime(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
@@ -1130,7 +1130,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        [Fact]
+        [Fact(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
         public async Task SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTimeAfterLastRequest()
         {
             var numberOfRequests = 5;
