@@ -890,7 +890,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 var timeoutCancellation = new CancellationTokenSource();
                 var timeout = Task.Delay(5000, timeoutCancellation.Token);
-                var sendTask = client.SendAsync(cancellationTokenSource.Token);
+                var sendTask = client.SendAsync(cancellationTokenSource.Token, cancellationMode);
 
                 var winner = await Task.WhenAny(sendTask, timeout).ConfigureAwait(false);
 
@@ -989,7 +989,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
-                var responses = new List<DicomCEchoResponse>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
                 var sendTasks = new List<Task>();
 
                 for (var i = 1; i <= numberOfRequests; i++)
@@ -1044,7 +1044,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
-                var responses = new List<DicomCEchoResponse>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
@@ -1101,7 +1101,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
-                var responses = new List<DicomCEchoResponse>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
@@ -1159,7 +1159,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
 
-                var responses = new List<DicomCEchoResponse>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
