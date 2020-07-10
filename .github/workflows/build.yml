@@ -31,7 +31,7 @@ jobs:
       - name: Run tests for Desktop platform
         run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll"
 
-  v5-net-framework-462:
+  v5-net-framework:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1

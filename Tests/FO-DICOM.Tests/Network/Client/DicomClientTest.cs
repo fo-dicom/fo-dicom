@@ -1135,7 +1135,7 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var numberOfRequests = 5;
             var lingerTimeoutInSeconds = 5;
-            var secondsBetweenEachRequest = new[] {1, 1, 1, 6, 1};
+            var secondsBetweenEachRequest = new[] {1, 1, 1, 6, 1, 1};
             var expectedNumberOfAssociations = 2;
             var logger = _logger.IncludePrefix("UnitTest");
             var port = Ports.GetNext();
