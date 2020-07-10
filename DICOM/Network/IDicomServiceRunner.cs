@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
-using System.Threading;
 using System.Threading.Tasks;
 #endif
 
