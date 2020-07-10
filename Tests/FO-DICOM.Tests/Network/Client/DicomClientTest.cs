@@ -1006,12 +1006,8 @@ namespace FellowOakDicom.Tests.Network.Client
                         sendTasks.Add(client.SendAsync());
                     }
 
-                    if (i < numberOfRequests)
-                    {
-                        logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
-                        await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
-                        logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
-                    }
+                    logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                    await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
                 }
 
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
@@ -1062,12 +1058,8 @@ namespace FellowOakDicom.Tests.Network.Client
                         sendTasks.Add(client.SendAsync());
                     }
 
-                    if (i < numberOfRequests)
-                    {
-                        logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
-                        await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
-                        logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
-                    }
+                    logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                    await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
                 }
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
@@ -1119,12 +1111,8 @@ namespace FellowOakDicom.Tests.Network.Client
                         sendTasks.Add(client.SendAsync());
                     }
 
-                    if (i < numberOfRequests)
-                    {
-                        logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
-                        await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
-                        logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
-                    }
+                    logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                    await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
                 }
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
@@ -1177,14 +1165,9 @@ namespace FellowOakDicom.Tests.Network.Client
                         sendTasks.Add(client.SendAsync());
                     }
 
-                    if (i < numberOfRequests)
-                    {
-                        var secondsToWait = secondsBetweenEachRequest[i];
-                        logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
-                        await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
-                        logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
-                    }
-
+                    var secondsToWait = secondsBetweenEachRequest[i];
+                    logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                    await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
                 }
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
