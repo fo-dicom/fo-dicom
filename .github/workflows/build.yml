@@ -9,7 +9,24 @@ on:
     - development
 
 jobs:
-  net-framework-462:
+  4x-net-framework-472:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+      - name: Setup MSBuild
+        uses: microsoft/Setup-MSBuild@v1
+      - name: Restore nuget packages
+        run: nuget restore DICOM.Desktop.sln
+      - name: Build Desktop platform
+        run: msbuild DICOM.Desktop.sln -target:"Platform\DICOM_Desktop" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+      - name: Build tests for Desktop platform
+        run: msbuild DICOM.Desktop.sln -target:"Unit Tests\DICOM_Tests_Desktop" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+      - name: Run tests for Desktop platform
+        run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll"
+
+  5x-net-framework-462:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
@@ -20,7 +37,7 @@ jobs:
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462
     - name: Test
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462
-  net-core-21:
+  5x-net-core-21:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
@@ -31,7 +48,7 @@ jobs:
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0
     - name: Test
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1
-  net-core-31:
+  5x-net-core-31:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
