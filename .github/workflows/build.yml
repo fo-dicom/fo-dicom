@@ -31,6 +31,23 @@ jobs:
       - name: Run tests for Desktop platform
         run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll"
 
+ # v4-net-core:
+ #   runs-on: windows-2019
+ #   steps:
+ #     - uses: actions/checkout@v1
+ #     - name: Setup NuGet
+ #       uses: nuget/setup-nuget@v1
+ #     - name: Setup MSBuild
+ #       uses: microsoft/Setup-MSBuild@v1
+ #     - name: Restore nuget packages
+ #       run: nuget restore DICOM.Full.sln
+ #     - name: Build NetCore platform
+ #       run: msbuild DICOM.Full.sln -target:"Platform\DICOM_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+ #     - name: Build tests for NetCore platform
+ #       run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+ #     - name: Run tests for NetCore platform
+ #       run: dotnet test "Tests\NetCore\bin\Release\netcoreapp2.0\DICOM [Unit Tests].dll"
+ 
   v5-net-framework:
     runs-on: windows-2019
     steps:
