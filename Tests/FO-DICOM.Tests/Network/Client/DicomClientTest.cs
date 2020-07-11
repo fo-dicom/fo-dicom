@@ -772,7 +772,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.False(aborted);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.True(numberOfResponsesReceived <= 2);
+                Assert.True(numberOfResponsesReceived < numberOfRequestsToSend);
             }
         }
 
@@ -804,7 +804,6 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 var numberOfRequestsToSend = 5;
                 var numberOfResponsesReceived = 0;
-                client.NegotiateAsyncOps(1, 1);
                 for (var i = 0; i < numberOfRequestsToSend; ++i)
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest
@@ -841,7 +840,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.True(aborted);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.True(numberOfResponsesReceived <= 2);
+                Assert.True(numberOfResponsesReceived < numberOfRequestsToSend);
             }
         }
 

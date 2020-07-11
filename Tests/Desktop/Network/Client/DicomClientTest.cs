@@ -777,7 +777,7 @@ namespace Dicom.Network.Client
                 Assert.False(aborted);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.True(numberOfResponsesReceived <= 2);
+                Assert.True(numberOfResponsesReceived < numberOfRequestsToSend);
             }
         }
 
@@ -846,7 +846,7 @@ namespace Dicom.Network.Client
                 Assert.True(aborted);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.True(numberOfResponsesReceived <= 2);
+                Assert.True(numberOfResponsesReceived < numberOfRequestsToSend);
             }
         }
 
