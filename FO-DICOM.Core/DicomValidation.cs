@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -25,7 +24,7 @@ namespace FellowOakDicom
                 throw new DicomValidationException(content, DicomVR.AE, "value may not consist only of spaces");
             }
             // Default Character Repertoire excluding character code 5CH (the BACKSLASH "\" in ISO-IR 6), and control characters LF, FF, CR and ESC.
-            if (content.Contains("\\") || content.ToCharArray().Any(Char.IsControl))
+            if (content.Contains("\\") || content.ToCharArray().Any(char.IsControl))
             {
                 throw new DicomValidationException(content, DicomVR.AE, "value contains invalid control character");
             }
@@ -154,7 +153,7 @@ namespace FellowOakDicom
                 throw new DicomValidationException(content, DicomVR.IS, "value is not an integer string");
             }
 
-            if (!Int32.TryParse(content, out _))
+            if (!int.TryParse(content, out _))
             {
                 throw new DicomValidationException(content, DicomVR.IS, "value too large to fit 32 bit integer");
             }
@@ -184,7 +183,7 @@ namespace FellowOakDicom
                 throw new DicomValidationException(content, DicomVR.LO, "value exceeds maximum length of 64 characters");
             }
 
-            if (content.Contains("\\") || content.ToCharArray().Any(Char.IsControl))
+            if (content.Contains("\\") || content.ToCharArray().Any(IsControlExceptESC))
             {
                 throw new DicomValidationException(content, DicomVR.LO, "value contains invalid character");
             }
@@ -276,7 +275,7 @@ namespace FellowOakDicom
                 {
                     throw new DicomValidationException(content, DicomVR.PN, "value exceeds maximum length of 64 characters");
                 }
-                if (group.ToCharArray().Any(Char.IsControl))
+                if (group.ToCharArray().Any(IsControlExceptESC))
                 {
                     throw new DicomValidationException(content, DicomVR.PN, "value contains invalid control character");
                 }
@@ -301,7 +300,7 @@ namespace FellowOakDicom
 
              16 chars maximum (see Note in Section 6.2)*/
 
-            if (content.Contains("\\") || content.ToCharArray().Any(Char.IsControl))
+            if (content.Contains("\\") || content.ToCharArray().Any(IsControlExceptESC))
             {
                 throw new DicomValidationException(content, DicomVR.SH, "value contains invalid character");
             }
@@ -452,7 +451,11 @@ namespace FellowOakDicom
         }
 
 
+        private static bool IsControlExceptESC(char c)
+            => char.IsControl(c) && (c != '\u001b');
+
     }
+
 
     public static class DicomValidationBuilderExtension
     {
