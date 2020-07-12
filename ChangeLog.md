@@ -6,6 +6,7 @@
 * New interface IDicomNEventReportRequestProvider for DicomServer. This is necessary to handle synchronous storage commitment on server (#1055)
 * Bug fix: IOException when reading/sending file > 2GB. (#1061)
 * Bug fix: DicomValidator ValidateLO issue, ESC is a valid character (#1043)
+* Bug fix: DicomValidation for UI when AddFile to DicomDirectory (#1053)
 * Bug fix: Exception occurred in Indexer of VOISequenceLUT Class (#1062)
 
 #### v.4.0.5 (5/18/2020)

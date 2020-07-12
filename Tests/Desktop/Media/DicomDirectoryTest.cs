@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -52,7 +51,7 @@ namespace Dicom.Media
         {
             using (var stream = File.OpenRead(@".\Test Data\DICOMDIR"))
             {
-                DicomDirectory dir = DicomDirectory.Open(stream);
+                var dir = DicomDirectory.Open(stream);
 
                 var expected = DicomUID.MediaStorageDirectoryStorage.UID;
                 var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
@@ -166,6 +165,29 @@ namespace Dicom.Media
 
             // there shall be only one patient record
             Assert.Equal(4, dicomDir.RootDirectoryRecordCollection.Count());
+        }
+
+
+        [Fact]
+        public void AddFile_InvalidUIDInExistingFileShouldNotThrow()
+        {
+            // first create a file with invalid UIDs
+            string filename = "TestPattern_Palette_16.dcm";
+            var dicomFile = DicomFile.Open(@".\Test Data\" + filename);
+
+            var invalidDs = dicomFile.Dataset.NotValidated();
+            invalidDs.AddOrUpdate(DicomTag.SOPInstanceUID, "1.2.4.100000.94849.4239.32.00121");
+            invalidDs.AddOrUpdate(DicomTag.SeriesInstanceUID, "1.2.4.100000.94849.4239.32.00122");
+            invalidDs.AddOrUpdate(DicomTag.StudyInstanceUID, "1.2.4.100000.94849.4239.32.00123");
+
+            var invalidFile = new DicomFile(invalidDs);
+
+            var ex = Record.Exception(() =>
+            {
+                var dicomDir = new DicomDirectory();
+                dicomDir.AddFile(invalidFile, "FILE1");
+            });
+            Assert.Null(ex); 
         }
 
 
