@@ -170,6 +170,29 @@ namespace FellowOakDicom.Tests.Media
 
 
         [Fact]
+        public void AddFile_InvalidUIDInExistingFileShouldNotThrow()
+        {
+            // first create a file with invalid UIDs
+            string filename = "TestPattern_Palette_16.dcm";
+            var dicomFile = DicomFile.Open(TestData.Resolve(filename));
+
+            var invalidDs = dicomFile.Dataset.NotValidated();
+            invalidDs.AddOrUpdate(DicomTag.SOPInstanceUID, "1.2.4.100000.94849.4239.32.00121");
+            invalidDs.AddOrUpdate(DicomTag.SeriesInstanceUID, "1.2.4.100000.94849.4239.32.00122");
+            invalidDs.AddOrUpdate(DicomTag.StudyInstanceUID, "1.2.4.100000.94849.4239.32.00123");
+
+            var invalidFile = new DicomFile(invalidDs);
+
+            var ex = Record.Exception(() =>
+            {
+                var dicomDir = new DicomDirectory();
+                dicomDir.AddFile(invalidFile, "FILE1");
+            });
+            Assert.Null(ex);
+        }
+
+
+        [Fact]
         public void AddFile_LongFilename()
         {
             string filename = "TestPattern_Palette_16.dcm";

@@ -519,9 +519,12 @@ namespace FellowOakDicom.Media
             }
             var newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
             newImage.AddOrUpdate(DicomTag.ReferencedFileID, referencedFileId);
-            newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
-            newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
-            newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
+            using (var unvalidated = new UnvalidatedScope(newImage))
+            {
+                newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
+                newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
+                newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
+            }
 
             if (currentImage != null)
             {
@@ -671,15 +674,18 @@ namespace FellowOakDicom.Media
                 dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet)
             };
 
-            foreach (var tag in recordType.Tags)
+            using (var unvalidated = new UnvalidatedScope(sequenceItem))
             {
-                if (dataset.Contains(tag))
+                foreach (var tag in recordType.Tags)
                 {
-                    sequenceItem.Add(dataset.GetDicomItem<DicomItem>(tag));
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"Cannot find tag {tag} for record type {recordType}");
+                    if (dataset.Contains(tag))
+                    {
+                        sequenceItem.Add(dataset.GetDicomItem<DicomItem>(tag));
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Cannot find tag {tag} for record type {recordType}");
+                    }
                 }
             }
 
@@ -717,9 +723,15 @@ namespace FellowOakDicom.Media
             if (recordItem == null) return;
 
             _directoryRecordSequence.Items.Add(recordItem);
-            if (recordItem.LowerLevelDirectoryRecord != null) AddDirectoryRecordsToSequenceItem(recordItem.LowerLevelDirectoryRecord);
+            if (recordItem.LowerLevelDirectoryRecord != null)
+            {
+                AddDirectoryRecordsToSequenceItem(recordItem.LowerLevelDirectoryRecord);
+            }
 
-            if (recordItem.NextDirectoryRecord != null) AddDirectoryRecordsToSequenceItem(recordItem.NextDirectoryRecord);
+            if (recordItem.NextDirectoryRecord != null)
+            {
+                AddDirectoryRecordsToSequenceItem(recordItem.NextDirectoryRecord);
+            }
         }
 
         #endregion
