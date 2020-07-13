@@ -70,7 +70,7 @@ jobs:
     - name: Build
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0
     - name: Test
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame
       
   v5-net-core-31:
     runs-on: windows-2019
@@ -82,5 +82,5 @@ jobs:
     - name: Build
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1
     - name: Test
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame
       
