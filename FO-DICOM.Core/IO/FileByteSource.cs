@@ -144,12 +144,12 @@ namespace FellowOakDicom.IO
             else if (count >= LargeObjectSize && _readOption == FileReadOption.ReadLargeOnDemand)
             {
                 buffer = new FileByteBuffer(_file, _stream.Position, count);
-                _stream.Seek((int)count, SeekOrigin.Current);
+                _stream.Seek(count, SeekOrigin.Current);
             }
             else if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
             {
                 buffer = null;
-                Skip((int)count);
+                Skip(count);
             }
             else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
             {
@@ -163,7 +163,7 @@ namespace FellowOakDicom.IO
 
         /// <inheritdoc />
         /// <param name="count">Number of bytes to skip.</param>
-        public void Skip(int count) => _stream.Seek(count, SeekOrigin.Current);
+        public void Skip(uint count) => _stream.Seek(count, SeekOrigin.Current);
 
         /// <inheritdoc />
         public void Mark() => Marker = _stream.Position;

@@ -115,6 +115,17 @@ namespace Dicom
             });
         }
 
+        [Fact()]
+        public void ValidationAllowESCInSeriesDescriptionTag()
+        {
+            var ex = Record.Exception(() =>
+            {
+                var ds = new DicomDataset();
+                ds.Add(new DicomLongString(DicomTag.SeriesDescription, "A ESC value: \u001b"));
+            });
+            Assert.Null(ex);
+        }
+
 
         [Fact()]
         public void AddInvalidUIDMultiplicityWithGlobalSuppression()

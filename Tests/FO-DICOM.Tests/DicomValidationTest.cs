@@ -82,23 +82,31 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AddInvalidUIDMultiplicity()
         {
-            Assert.Throws<DicomValidationException>(() =>
-            {
-                var ds = new DicomDataset();
-                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3\\3.4.5");
-            });
+            Assert.Throws<DicomValidationException>(() => _ = new DicomDataset
+                  {
+                    { DicomTag.SeriesInstanceUID, "1.2.3\\3.4.5" }
+                  });
 
-            Assert.Throws<DicomValidationException>(() =>
-            {
-                var ds = new DicomDataset();
-                ds.Add(DicomTag.SeriesInstanceUID, "1.2.3", "2.3.4");
-            });
+            Assert.Throws<DicomValidationException>(() => _ = new DicomDataset
+                {
+                    { DicomTag.SeriesInstanceUID, "1.2.3", "2.3.4" }
+                });
 
-            Assert.Throws<DicomValidationException>(() =>
-            {
-                var ds = new DicomDataset();
-                ds.Add(new DicomUniqueIdentifier(DicomTag.SeriesInstanceUID, "1.2.3", "3.4.5"));
-            });
+            Assert.Throws<DicomValidationException>(() => _ = new DicomDataset
+                {
+                    new DicomUniqueIdentifier(DicomTag.SeriesInstanceUID, "1.2.3", "3.4.5")
+                });
+        }
+
+
+        [Fact()]
+        public void ValidationAllowESCInSeriesDescriptionTag()
+        {
+            var ex = Record.Exception(() => _ = new DicomDataset
+                {
+                    new DicomLongString(DicomTag.SeriesDescription, "A ESC value: \u001b")
+                });
+            Assert.Null(ex);
         }
 
 

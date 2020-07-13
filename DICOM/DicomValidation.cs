@@ -198,7 +198,7 @@ namespace Dicom
                 throw new DicomValidationException(content, DicomVR.LO, "value exceeds maximum length of 64 characters");
             }
 
-            if (content.Contains("\\") || content.ToCharArray().Any(Char.IsControl))
+            if (content.Contains("\\") || content.ToCharArray().Any(IsControlExceptESC))
             {
                 throw new DicomValidationException(content, DicomVR.LO, "value contains invalid character");
             }
@@ -290,7 +290,7 @@ namespace Dicom
                 {
                     throw new DicomValidationException(content, DicomVR.PN, "value exceeds maximum length of 64 characters");
                 }
-                if (group.ToCharArray().Any(Char.IsControl))
+                if (group.ToCharArray().Any(IsControlExceptESC))
                 {
                     throw new DicomValidationException(content, DicomVR.PN, "value contains invalid control character");
                 }
@@ -315,7 +315,7 @@ namespace Dicom
 
              16 chars maximum (see Note in Section 6.2)*/
 
-            if (content.Contains("\\") || content.ToCharArray().Any(Char.IsControl))
+            if (content.Contains("\\") || content.ToCharArray().Any(IsControlExceptESC))
             {
                 throw new DicomValidationException(content, DicomVR.SH, "value contains invalid character");
             }
@@ -465,6 +465,9 @@ namespace Dicom
             }
         }
 
+
+        private static bool IsControlExceptESC(char c)
+            => char.IsControl(c) && (c != '\u001b');
 
     }
 

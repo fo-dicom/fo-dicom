@@ -128,7 +128,7 @@ namespace FellowOakDicom.IO
         /// Skip position <paramref name="count"/> number of bytes.
         /// </summary>
         /// <param name="count">Number of bytes to skip.</param>
-        void Skip(int count);
+        void Skip(uint count);
 
         /// <summary>
         /// Set a mark at the current position.

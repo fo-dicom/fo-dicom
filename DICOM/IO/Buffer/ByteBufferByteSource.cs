@@ -244,7 +244,7 @@ namespace Dicom.IO.Buffer
                         if (!SwapBuffers()) throw new DicomIoException("Tried to retrieve {0} bytes past end of source.", count);
                     }
 
-                    int n = (int)System.Math.Min(_currentData.Length - _currentPos, count);
+                    int n = (int)Math.Min(_currentData.Length - _currentPos, count);
                     Array.Copy(_currentData, (int)_currentPos, bytes, p, n);
 
                     count -= n;
@@ -271,7 +271,7 @@ namespace Dicom.IO.Buffer
 #endif
 
         /// <inheritdoc />
-        public void Skip(int count)
+        public void Skip(uint count)
         {
             lock (_lock)
             {

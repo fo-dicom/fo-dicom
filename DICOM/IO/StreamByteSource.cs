@@ -142,12 +142,12 @@ namespace Dicom.IO
             else if (count >= LargeObjectSize && _readOption == FileReadOption.ReadLargeOnDemand)
             {
                 buffer = new StreamByteBuffer(_stream, _stream.Position, count);
-                _stream.Seek((int)count, SeekOrigin.Current);
+                _stream.Seek(count, SeekOrigin.Current);
             }
             else if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
             {
                 buffer = null;
-                Skip((int)count);
+                Skip(count);
             }
             else // count < LargeOpjectSize || _readOption == FileReadOption.ReadAll
             {
@@ -162,7 +162,7 @@ namespace Dicom.IO
 #endif
 
         /// <inheritdoc />
-        public void Skip(int count) => _stream.Seek(count, SeekOrigin.Current);
+        public void Skip(uint count) => _stream.Seek(count, SeekOrigin.Current);
 
         /// <inheritdoc />
         public void Mark() => _mark = _stream.Position;
