@@ -4,6 +4,7 @@
 * Bug fix: Fix DICOM Tag conversion for private tags for element numbers xxff (#1059)
 * ImplicitVRLittleEndian always added to presentation context by default causes other transfer syntax to not be accepted (#1048)
 * New interface IDicomNEventReportRequestProvider for DicomServer. This is necessary to handle synchronous storage commitment on server (#1055)
+* Bug fix: Fix the deserialization issue in JsonDicomConverter for NaN value in VR=FL (#1063)
 * Bug fix: IOException when reading/sending file > 2GB. (#1061)
 * Bug fix: DicomValidator ValidateLO issue, ESC is a valid character (#1043)
 * Bug fix: DicomValidation for UI when AddFile to DicomDirectory (#1053)
