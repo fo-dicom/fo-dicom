@@ -762,7 +762,8 @@ namespace Dicom.Serialization
             var childValues = new List<T>();
             foreach (var item in tokens)
             {
-                if (!(item.Type == JTokenType.Float || item.Type == JTokenType.Integer)) { throw new JsonReaderException("Malformed DICOM json"); }
+                if (!(item.Type == JTokenType.String  && item.Value<string>() == "NaN") && !(item.Type  == JTokenType.Float || item.Type == JTokenType.Integer))
+                { throw new JsonReaderException("Malformed DICOM json"); }
                 childValues.Add((T)Convert.ChangeType(item.Value<object>(), typeof(T)));
             }
             var data = childValues.ToArray();
