@@ -758,11 +758,15 @@ namespace FellowOakDicom.Serialization
 
         private static T[] ReadJsonMultiNumberValue<T>(JToken token)
         {
-            if (!(token is JArray tokens)) { return new T[0]; }
+            if (!(token is JArray tokens)) { return Array.Empty<T>(); }
             var childValues = new List<T>();
             foreach (var item in tokens)
             {
-                if (!(item.Type == JTokenType.Float || item.Type == JTokenType.Integer)) { throw new JsonReaderException("Malformed DICOM json"); }
+                if (!(item.Type == JTokenType.String && item.Value<string>() == "NaN")
+                    && !(item.Type == JTokenType.Float || item.Type == JTokenType.Integer))
+                {
+                    throw new JsonReaderException("Malformed DICOM json");
+                }
                 childValues.Add((T)Convert.ChangeType(item.Value<object>(), typeof(T)));
             }
             var data = childValues.ToArray();

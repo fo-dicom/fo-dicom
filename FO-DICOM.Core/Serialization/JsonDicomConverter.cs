@@ -555,6 +555,10 @@ namespace FellowOakDicom.Serialization
                     {
                         writer.WriteNullValue();
                     }
+                    else if (val is float f && float.IsNaN(f))
+                    {
+                        writer.WriteStringValue("NaN");
+                    }
                     else
                     {
                         writeValue(writer, val);
@@ -835,6 +839,10 @@ namespace FellowOakDicom.Serialization
                 if (reader.TokenType == JsonTokenType.Number)
                 {
                     childValues.Add(getValue(reader));
+                }
+                else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "NaN")
+                {
+                    childValues.Add((T)(float.NaN as object));
                 }
                 else
                 {

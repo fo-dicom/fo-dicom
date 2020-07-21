@@ -72,6 +72,22 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public void ParseFloatingPointNaNValues()
+        {
+            var json = @"
+            {
+                ""00720076"": {
+                    ""vr"": ""FL"",
+                     ""Value"": [""NaN""]
+                 }
+            } ";
+            var tagValue = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(tagValue.GetDicomItem<DicomFloatingPointSingle>(DicomTag.SelectorFLValue));
+            var convertedJson = DicomJson.ConvertDicomToJson(tagValue);
+            Assert.NotNull(convertedJson);
+        }
+
+        [Fact]
         public void TimeParseTag()
         {
             var millisecondsPerCallA = TimeCall(100, () =>
