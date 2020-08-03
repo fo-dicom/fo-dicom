@@ -103,7 +103,7 @@ namespace FellowOakDicom.Network.Client.States
             {
                 _disposables.Add(cancellation.Token.Register(() => _onAbortRequestedTaskCompletionSource.TrySetResult(true)));
             }
-
+ 
             var onAssociationRelease = _onAssociationReleasedTaskCompletionSource.Task;
             var onAssociationReleaseTimeout = Task.Delay(_dicomClient.ClientOptions.AssociationReleaseTimeoutInMs, _associationReleaseTimeoutCancellationTokenSource.Token);
             var onReceiveAbort = _onAbortReceivedTaskCompletionSource.Task;
@@ -143,6 +143,11 @@ namespace FellowOakDicom.Network.Client.States
             if (winner == onDisconnect)
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected during association release, cleaning up...");
+
+                /*
+                 * Sometimes, the server is very swift at closing the connection, before we get a chance to process the Association Release response
+                 */
+                _dicomClient.NotifyAssociationReleased();
 
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)

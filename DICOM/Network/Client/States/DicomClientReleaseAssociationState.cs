@@ -155,6 +155,11 @@ namespace Dicom.Network.Client.States
             {
                 _dicomClient.Logger.Debug($"[{this}] Disconnected during association release, cleaning up...");
 
+                /*
+                 * Sometimes, the server is very swift at closing the connection, before we get a chance to process the Association Release response
+                 */
+                _dicomClient.NotifyAssociationReleased();
+
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {
