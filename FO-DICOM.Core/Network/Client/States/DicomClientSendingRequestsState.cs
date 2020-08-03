@@ -196,71 +196,72 @@ namespace FellowOakDicom.Network.Client.States
         /// </summary>
         private async Task KeepSendingUntilAllRequestsHaveCompletedAsync()
         {
-            var cancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
-            using (_sendRequestsCancellationTokenSource.Token.Register(() => cancellationTaskCompletionSource.SetResult(true)))
+            while (true)
             {
-                /*
-                 * This event will be triggered when the DicomClientConnection believes it has finished its work by triggering the OnSendQueueEmpty event
-                 */
-                var sendMoreRequests = _sendMoreRequests.WaitAsync();
-
-                /*
-                 * This event will be triggered when the CancellationToken passed into SendAsync is cancelled
-                 */
-                var onCancel = cancellationTaskCompletionSource.Task;
-
-                /*
-                 * This event will be triggered when the pending queue becomes empty
-                 */
-                var allRequestsHaveCompleted = _allRequestsHaveCompletedTaskCompletionSource.Task;
-
-                var winner = await Task.WhenAny(allRequestsHaveCompleted, sendMoreRequests, onCancel).ConfigureAwait(false);
-                if (winner == allRequestsHaveCompleted || winner == onCancel)
+                var cancellationTaskCompletionSource = TaskCompletionSourceFactory.Create<bool>();
+                using (_sendRequestsCancellationTokenSource.Token.Register(() => cancellationTaskCompletionSource.SetResult(true)))
                 {
-                    return;
-                }
-            }
+                    /*
+                     * This event will be triggered when the DicomClientConnection believes it has finished its work by triggering the OnSendQueueEmpty event
+                     */
+                    var sendMoreRequests = _sendMoreRequests.WaitAsync();
 
-            try
-            {
-                if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
-                {
-                    try
+                    /*
+                     * This event will be triggered when the CancellationToken passed into SendAsync is cancelled
+                     */
+                    var onCancel = cancellationTaskCompletionSource.Task;
+
+                    /*
+                     * This event will be triggered when the pending queue becomes empty
+                     */
+                    var allRequestsHaveCompleted = _allRequestsHaveCompletedTaskCompletionSource.Task;
+
+                    var winner = await Task.WhenAny(allRequestsHaveCompleted, sendMoreRequests, onCancel).ConfigureAwait(false);
+                    if (winner == allRequestsHaveCompleted || winner == onCancel)
                     {
-                        if (!_dicomClient.QueuedRequests.IsEmpty)
-                        {
-                            if (_numberOfSentRequests >= _maximumNumberOfRequestsPerAssociation)
-                            {
-                                _dicomClient.Logger.Debug(
-                                    $"[{this}] DICOM client has reached the maximum number of requests for this association and is still waiting for the sent requests to complete");
-                            }
-                            else
-                            {
-                                _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
-
-                                await SendRequests().ConfigureAwait(false);
-                            }
-                        }
-
-                        if (Connection.IsSendNextMessageRequired)
-                        {
-                            _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
-
-                            await Connection.SendNextMessageAsync().ConfigureAwait(false);
-                        }
-                    }
-                    finally
-                    {
-                        Interlocked.Exchange(ref _sending, 0);
+                        return;
                     }
                 }
-            }
-            finally
-            {
-                _sendMoreRequests.Reset();
-            }
 
-            await KeepSendingUntilAllRequestsHaveCompletedAsync().ConfigureAwait(false);
+                try
+                {
+                    if (Interlocked.CompareExchange(ref _sending, 1, 0) == 0)
+                    {
+                        try
+                        {
+                            if (!_dicomClient.QueuedRequests.IsEmpty)
+                            {
+                                if (_numberOfSentRequests >= _maximumNumberOfRequestsPerAssociation)
+                                {
+                                    _dicomClient.Logger.Debug(
+                                        $"[{this}] DICOM client has reached the maximum number of requests for this association and is still waiting for the sent requests to complete");
+                                }
+                                else
+                                {
+                                    _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
+
+                                    await SendRequests().ConfigureAwait(false);
+                                }
+                            }
+
+                            if (Connection.IsSendNextMessageRequired)
+                            {
+                                _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
+
+                                await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                            }
+                        }
+                        finally
+                        {
+                            Interlocked.Exchange(ref _sending, 0);
+                        }
+                    }
+                }
+                finally
+                {
+                    _sendMoreRequests.Reset();
+                }
+            }
         }
 
         public override async Task<IDicomClientState> GetNextStateAsync(DicomClientCancellation cancellation)
