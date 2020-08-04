@@ -11,6 +11,7 @@
 * Bug fix: Exception occurred in Indexer of VOISequenceLUT Class (#1062)
 * Bug fix: Prevent DicomClient getting stuck when any Exception (except IOException) occurs while sending a PDU over the network (#1054)
 * Bug fix: Size of uncompressed YBR_FULL_422 images is calculated wrong (#645)
+* Bug fix: YBR_FULL_422 images should have a planar configuration value of zero (#1049)
 
 #### v.4.0.5 (5/18/2020)
 * Bug fix: DicomTags of ValueRepresentation LT have not been validated.
