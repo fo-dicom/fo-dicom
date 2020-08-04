@@ -58,3 +58,4 @@
 * [Amos Onn](https://github.com/amosonn)
 * [Sudheesh Subramannian](https://github.com/sudheeshps)
 * [Johannes Hirschmann](https://github.com/Johannes-sg)
+* [Atif Colo](https://github.com/atifc)
