@@ -107,7 +107,7 @@ namespace Dicom.Imaging
 
         /// <summary>
         /// Gets or sets number of samples per pixel (0028,0002), usually 1 for grayscale and 3 for color (RGB and YBR.
-        /// </summary> 
+        /// </summary>
         public ushort SamplesPerPixel
         {
             get => Dataset.GetSingleValueOrDefault(DicomTag.SamplesPerPixel, (ushort)1);
@@ -276,7 +276,7 @@ namespace Dicom.Imaging
         public abstract void AddFrame(IByteBuffer data);
 
         /// <summary>
-        /// A factory method to initialize new instance of <seealso cref="DicomPixelData"/> implementation either 
+        /// A factory method to initialize new instance of <seealso cref="DicomPixelData"/> implementation either
         /// <seealso cref="OtherWordPixelData"/>, <seealso cref="OtherBytePixelData"/>, or <seealso cref="EncapsulatedPixelData"/>
         /// </summary>
         /// <param name="dataset">Source DICOM Dataset</param>
