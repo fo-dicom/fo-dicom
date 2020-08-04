@@ -139,6 +139,7 @@
     <Compile Include="Bugs\GH597.cs" />
     <Compile Include="Bugs\GH625.cs" />
     <Compile Include="Bugs\GH626.cs" />
+    <Compile Include="Bugs\GH645.cs" />
     <Compile Include="Bugs\GH745.cs" />
     <Compile Include="Bugs\GH846.cs" />
     <Compile Include="Bugs\GH859.cs" />
@@ -389,6 +390,9 @@
     <Content Include="Test Data\ETIAM_video_002.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Test Data\GH645.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
