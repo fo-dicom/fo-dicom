@@ -503,7 +503,7 @@ namespace FellowOakDicom
             {
                 if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
 
-                if (element.Count != 1) { throw new DicomDataException($"DICOM element {tag.ToString()} must contains a single value, but contains {element.Count}"); }
+                if (element.Count != 1) { throw new DicomDataException($"DICOM element {tag.ToString()} must contain a single value, but contains {element.Count}"); }
 
                 return element.Get<T>(0);
             }
