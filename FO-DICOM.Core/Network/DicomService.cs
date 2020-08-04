@@ -370,14 +370,16 @@ namespace FellowOakDicom.Network
                     LogIOException(e, Logger, false);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
-                catch (ObjectDisposedException)
+                catch (ObjectDisposedException e)
                 {
-                    // ignore ObjectDisposedException, that may happen, when closing a connection.
+                    // This may happen when closing a connection.
+                    Logger.Error("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
+                                 "This can happen when the connection is being closed", e);                
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Exception sending PDU: {@error}", e);
-                    await TryCloseConnectionAsync(e).ConfigureAwait(false);
+                    await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
 
                 lock (_lock)
@@ -1108,6 +1110,22 @@ namespace FellowOakDicom.Network
                 {
                     await DoSendMessageAsync(msg).ConfigureAwait(false);
                 }
+                catch (Exception e)
+                {
+                    Logger.Error($"Failed to send DICOM message due to {{@error}}", e);
+
+                    if (msg is DicomRequest dicomRequest)
+                    {
+                        Logger.Debug($"Removing request [{dicomRequest.MessageID}] from pending queue because an error occurred while sending it");
+
+                        lock (_lock)
+                        {
+                            _pending.Remove(dicomRequest);
+                        }
+                    }
+
+                    throw;
+                }
                 finally
                 {
                     lock (_lock)
@@ -1324,59 +1342,60 @@ namespace FellowOakDicom.Network
 
         private async Task CheckForTimeouts()
         {
-            if (Options?.RequestTimeout == null)
+            while (true)
             {
-                return;
-            }
-
-            var requestTimeout = Options.RequestTimeout.Value;
-
-            if (Interlocked.CompareExchange(ref _isCheckingForTimeouts, 1, 0) != 0)
-            {
-                return;
-            }
-
-            List<DicomRequest> timedOutPendingRequests;
-            lock (_lock)
-            {
-                if (!_pending.Any())
+                if (Options?.RequestTimeout == null)
                 {
                     return;
                 }
 
-                timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
-            }
+                var requestTimeout = Options.RequestTimeout.Value;
 
-            if (timedOutPendingRequests.Any())
-            {
-                for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
+                if (Interlocked.CompareExchange(ref _isCheckingForTimeouts, 1, 0) != 0)
                 {
-                    DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
-                    try
-                    {
-                        Logger.Warn($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
-                        timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
-                    }
-                    finally
-                    {
-                        lock (_lock)
-                        {
-                            _pending.Remove(timedOutPendingRequest);
-                        }
+                    return;
+                }
 
-                        if (this is IDicomClientConnection connection)
+                List<DicomRequest> timedOutPendingRequests;
+                lock (_lock)
+                {
+                    if (!_pending.Any())
+                    {
+                        return;
+                    }
+
+                    timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
+                }
+
+                if (timedOutPendingRequests.Any())
+                {
+                    for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
+                    {
+                        DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
+                        try
                         {
-                            await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
+                            Logger.Warn($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
+                            timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
+                        }
+                        finally
+                        {
+                            lock (_lock)
+                            {
+                                _pending.Remove(timedOutPendingRequest);
+                            }
+
+                            if (this is IDicomClientConnection connection)
+                            {
+                                await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
+                            }
                         }
                     }
                 }
+
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+
+                _isCheckingForTimeouts = 0;
             }
-
-            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-
-            _isCheckingForTimeouts = 0;
-
-            await CheckForTimeouts().ConfigureAwait(false);
         }
 
         private async Task<bool> TryCloseConnectionAsync(Exception exception = null, bool force = false)

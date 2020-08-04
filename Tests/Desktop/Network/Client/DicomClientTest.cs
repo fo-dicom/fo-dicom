@@ -777,7 +777,7 @@ namespace Dicom.Network.Client
                 Assert.False(aborted);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.True(numberOfResponsesReceived <= 2);
+                Assert.True(numberOfResponsesReceived < numberOfRequestsToSend);
             }
         }
 
@@ -846,7 +846,7 @@ namespace Dicom.Network.Client
                 Assert.True(aborted);
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Associations));
                 Assert.NotEmpty(server.Providers.SelectMany(p => p.Requests));
-                Assert.True(numberOfResponsesReceived <= 2);
+                Assert.True(numberOfResponsesReceived < numberOfRequestsToSend);
             }
         }
 
@@ -895,7 +895,7 @@ namespace Dicom.Network.Client
 
                 var timeoutCancellation = new CancellationTokenSource();
                 var timeout = Task.Delay(5000, timeoutCancellation.Token);
-                var sendTask = client.SendAsync(cancellationTokenSource.Token);
+                var sendTask = client.SendAsync(cancellationTokenSource.Token, cancellationMode);
 
                 var winner = await Task.WhenAny(sendTask, timeout).ConfigureAwait(false);
 
@@ -964,38 +964,6 @@ namespace Dicom.Network.Client
             }
         }
 
-        private async Task<DicomCEchoResponse> SendEchoRequestWithTimeout(DicomClient dicomClient, int timeoutInMilliseconds = 3000)
-        {
-            var request = new DicomCEchoRequest();
-            var logger = _logger.IncludePrefix("C-Echo request");
-
-            var responseCompletionSource = new TaskCompletionSource<DicomCEchoResponse>();
-            var responseCancellationSource = new CancellationTokenSource(timeoutInMilliseconds);
-
-            var cancellationRegistration = responseCancellationSource.Token.Register(() =>
-            {
-                logger.Error($"Request [{request.MessageID}] timed out!");
-                responseCompletionSource.SetCanceled();
-            });
-
-            request.OnResponseReceived += (req, res) =>
-            {
-                logger.Info($"Response [{request.MessageID}] received!");
-                responseCompletionSource.SetResult(res);
-            };
-
-            await dicomClient.AddRequestAsync(request).ConfigureAwait(false);
-
-            try
-            {
-                return await responseCompletionSource.Task.ConfigureAwait(false);
-            }
-            finally
-            {
-                cancellationRegistration.Dispose();
-            }
-        }
-
         private void AllResponsesShouldHaveSucceeded(IEnumerable<DicomCEchoResponse> responses)
         {
             var logger = _logger.IncludePrefix("Responses");
@@ -1028,14 +996,17 @@ namespace Dicom.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
-                var requests = new List<Task<DicomCEchoResponse>>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client);
-                    requests.Add(task);
+                    var request = new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (req, res) => responses.Add(res)
+                    };
+                    await client.AddRequestAsync(request).ConfigureAwait(false);
 
                     if (client.IsSendRequired)
                     {
@@ -1050,12 +1021,11 @@ namespace Dicom.Network.Client
                         logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
                     }
                 }
-
-                var responses = await Task.WhenAll(requests).ConfigureAwait(false);
+                await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
                 AllResponsesShouldHaveSucceeded(responses);
 
-                Assert.Equal(numberOfRequests, responses.Length);
+                Assert.Equal(numberOfRequests, responses.Count);
 
                 var associations = server.Providers.SelectMany(p => p.Associations).ToList();
 
@@ -1064,15 +1034,11 @@ namespace Dicom.Network.Client
                 var receivedRequests = server.Providers.SelectMany(p => p.Requests).ToList();
 
                 Assert.Equal(numberOfRequests, receivedRequests.Count);
-
-                // now let the DicomClient complete gracefully
-                await Task.WhenAll(sendTasks).ConfigureAwait(false);
             }
         }
 
         [Theory]
         [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
-        [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 4, /* linger: */ 5)]
         public async Task SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
             var logger = _logger.IncludePrefix("UnitTest");
@@ -1086,14 +1052,17 @@ namespace Dicom.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
-                var requests = new List<Task<DicomCEchoResponse>>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client);
-                    requests.Add(task);
+                    var request = new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (req, res) => responses.Add(res)
+                    };
+                    await client.AddRequestAsync(request).ConfigureAwait(false);
 
                     if (client.IsSendRequired)
                     {
@@ -1108,12 +1077,11 @@ namespace Dicom.Network.Client
                         logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
                     }
                 }
-
-                var responses = await Task.WhenAll(requests).ConfigureAwait(false);
+                await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
                 AllResponsesShouldHaveSucceeded(responses);
 
-                Assert.Equal(numberOfRequests, responses.Length);
+                Assert.Equal(numberOfRequests, responses.Count);
 
                 var associations = server.Providers.SelectMany(p => p.Associations).ToList();
 
@@ -1122,9 +1090,6 @@ namespace Dicom.Network.Client
                 var receivedRequests = server.Providers.SelectMany(p => p.Requests).ToList();
 
                 Assert.Equal(numberOfRequests, receivedRequests.Count);
-
-                // now let the DicomClient complete gracefully
-                await Task.WhenAll(sendTasks).ConfigureAwait(false);
             }
         }
 
@@ -1145,14 +1110,17 @@ namespace Dicom.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
-                var requests = new List<Task<DicomCEchoResponse>>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client);
-                    requests.Add(task);
+                    var request = new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (req, res) => responses.Add(res)
+                    };
+                    await client.AddRequestAsync(request).ConfigureAwait(false);
 
                     if (client.IsSendRequired)
                     {
@@ -1168,11 +1136,11 @@ namespace Dicom.Network.Client
                     }
                 }
 
-                var responses = await Task.WhenAll(requests).ConfigureAwait(false);
+                await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
                 AllResponsesShouldHaveSucceeded(responses);
 
-                Assert.Equal(numberOfRequests, responses.Length);
+                Assert.Equal(numberOfRequests, responses.Count);
 
                 var associations = server.Providers.SelectMany(p => p.Associations).ToList();
 
@@ -1181,9 +1149,6 @@ namespace Dicom.Network.Client
                 var receivedRequests = server.Providers.SelectMany(p => p.Requests).ToList();
 
                 Assert.Equal(numberOfRequests, receivedRequests.Count);
-
-                // now let the DicomClient complete gracefully
-                await Task.WhenAll(sendTasks).ConfigureAwait(false);
             }
         }
 
@@ -1205,14 +1170,17 @@ namespace Dicom.Network.Client
 
                 logger.Info($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
 
-                var requests = new List<Task<DicomCEchoResponse>>();
+                var responses = new ConcurrentBag<DicomCEchoResponse>();
 
                 var sendTasks = new List<Task>();
 
                 for (var i = 1; i <= numberOfRequests; i++)
                 {
-                    var task = SendEchoRequestWithTimeout(client, 10000);
-                    requests.Add(task);
+                    var request = new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (req, res) => responses.Add(res)
+                    };
+                    await client.AddRequestAsync(request).ConfigureAwait(false);
 
                     if (client.IsSendRequired)
                     {
@@ -1223,17 +1191,16 @@ namespace Dicom.Network.Client
                     if (i < numberOfRequests)
                     {
                         var secondsToWait = secondsBetweenEachRequest[i];
-                        logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                        logger.Info($"Waiting {secondsToWait} seconds between requests");
                         await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
-                        logger.Info($"Waited {secondsBetweenEachRequest} seconds, moving on to next request");
+                        logger.Info($"Waited {secondsToWait} seconds, moving on to next request");
                     }
                 }
-
-                var responses = await Task.WhenAll(requests).ConfigureAwait(false);
+                await Task.WhenAll(sendTasks).ConfigureAwait(false);
 
                 AllResponsesShouldHaveSucceeded(responses);
 
-                Assert.Equal(numberOfRequests, responses.Length);
+                Assert.Equal(numberOfRequests, responses.Count);
 
                 var associations = server.Providers.SelectMany(p => p.Associations).ToList();
 
@@ -1242,9 +1209,6 @@ namespace Dicom.Network.Client
                 var receivedRequests = server.Providers.SelectMany(p => p.Requests).ToList();
 
                 Assert.Equal(numberOfRequests, receivedRequests.Count);
-
-                // now let the DicomClient complete gracefully
-                await Task.WhenAll(sendTasks).ConfigureAwait(false);
             }
         }
 
@@ -1352,7 +1316,10 @@ namespace Dicom.Network.Client
             Exception capturedException = null;
             try
             {
-                await client.SendAsync().ConfigureAwait(false);
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                }
             }
             catch (Exception exception)
             {
@@ -1360,6 +1327,69 @@ namespace Dicom.Network.Client
                 capturedException = exception;
             }
             Assert.NotNull(capturedException);
+        }
+
+        [Fact]
+        public async Task SendAsync_ToDisposedDicomServer_ShouldNotLoopInfinitely()
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("UnitTest");
+
+            DicomCEchoProviderServer server = null;
+            DicomCEchoResponse echoResponse1 = null, echoResponse2 = null, echoResponse3 = null;
+            try
+            {
+                server = CreateServer<DicomCEchoProvider, DicomCEchoProviderServer>(port);
+
+                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                // Ensure requests are handled sequentially
+                client.NegotiateAsyncOps(1, 1);
+
+                var echoRequest1 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 1, disposing server");
+                        echoResponse1 = response;
+                        // ReSharper disable once AccessToDisposedClosure This is an edge case we are trying to test
+                        server?.Dispose();
+                        logger.Info("Server is disposed");
+                    }
+                };
+                var echoRequest2 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 2");
+                        echoResponse2 = response;
+                    }
+                };
+                var echoRequest3 = new DicomCEchoRequest
+                {
+                    OnResponseReceived = (request, response) =>
+                    {
+                        logger.Info("Received echo response 3");
+                        echoResponse3 = response;
+                    }
+                };
+
+                await client.AddRequestsAsync(echoRequest1, echoRequest2, echoRequest3).ConfigureAwait(false);
+
+                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+
+                    Assert.False(cancellation.IsCancellationRequested);
+                }
+            }
+            finally
+            {
+                server?.Dispose();
+            }
+
+            Assert.NotNull(echoResponse1);
+            Assert.Null(echoResponse2);
+            Assert.Null(echoResponse3);
         }
 
         #region Support classes

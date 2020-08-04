@@ -588,7 +588,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Flaky test uses 1 second timeout, which can fail on slow systems")]
         public void Old_IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
         {
             var port = Ports.GetNext();
@@ -764,7 +764,7 @@ namespace Dicom.Network
         }
 
         [Theory]
-        [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 4, /* linger: */ 5)]
+        [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
         public async Task Old_SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest,
             int lingerTimeoutInSeconds)
         {

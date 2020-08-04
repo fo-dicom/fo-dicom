@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var original = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle")).Dataset;
 
-            var datasets = Enumerable.Repeat(original.Clone(), filesToTranscode).ToList();
+            var datasets = Enumerable.Range(0, filesToTranscode).Select(_ => original.Clone()).ToList();
             var transcoder = new DicomTranscoder(original.InternalTransferSyntax, syntax);
 
             var originalTranscoded = transcoder.Transcode(original);
@@ -52,7 +52,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var original = DicomFile.Open(TestData.Resolve("D_CLUNIE_CT1_RLE_FRAGS.dcm")).Dataset;
 
-            var datasets = Enumerable.Repeat(original.Clone(), filesToTranscode).ToList();
+            var datasets = Enumerable.Range(0, filesToTranscode).Select(_ => original.Clone()).ToList();
 
             var originalTranscoded = original.Clone(syntax);
 
