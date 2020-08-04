@@ -194,6 +194,19 @@ namespace Dicom.Imaging
                     ++actualWidth;
                 }
 
+                // Issue #645, handle special case with uncompressed YBR_FULL_422 images
+                // chrominance channels are downsampled to 2 (nominally still 3)
+                if (PhotometricInterpretation == PhotometricInterpretation.YbrFull422)
+                {
+                    if (Syntax == DicomTransferSyntax.ExplicitVRBigEndian ||
+                        Syntax == DicomTransferSyntax.ExplicitVRLittleEndian ||
+                        Syntax == DicomTransferSyntax.ImplicitVRBigEndian ||
+                        Syntax == DicomTransferSyntax.ImplicitVRLittleEndian)
+                    {
+                        return BytesAllocated * 2 * actualWidth * Height;
+                    }
+                }
+
                 return BytesAllocated * SamplesPerPixel * actualWidth * Height;
             }
         }
