@@ -493,7 +493,7 @@ namespace Dicom
             {
                 if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
 
-                if (element.Count != 1) { throw new DicomDataException("DICOM element must contains a single value"); }
+                if (element.Count != 1) { throw new DicomDataException("DICOM element must contain a single value"); }
 
                 return element.Get<T>(0);
             }
