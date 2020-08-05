@@ -1,7 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
-// Licensed under the Microsoft Public License (MS-PL).
-
-using Dicom.Log;
+﻿using Dicom.Log;
 using Dicom.Printing;
 using System;
 using System.Collections.Generic;
