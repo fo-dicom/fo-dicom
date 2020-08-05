@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2019 fo-dicom contributors.
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -124,16 +124,16 @@ namespace Dicom.Imaging.Render
                         pixelData.Width,
                         pixelData.Height,
                         PixelDataConverter.ReverseBits(pixelData.GetFrame(frame)));
-                return new SingleBitPixelData(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
+                else
+                    // Need sample images to verify that this is correct
+                    return new SingleBitPixelData(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
             }
-
-            if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2
-                                                            || pi == PhotometricInterpretation.PaletteColor)
+            else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2
+                     || pi == PhotometricInterpretation.PaletteColor)
             {
                 if (pixelData.BitsAllocated == 8 && pixelData.HighBit == 7 && pixelData.BitsStored == 8)
                     return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
-
-                if (pixelData.BitsAllocated <= 16)
+                else if (pixelData.BitsAllocated <= 16)
                 {
                     if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
                         return new GrayscalePixelDataS16(
@@ -141,14 +141,14 @@ namespace Dicom.Imaging.Render
                             pixelData.Height,
                             pixelData.BitDepth,
                             pixelData.GetFrame(frame));
-                    return new GrayscalePixelDataU16(
-                        pixelData.Width,
-                        pixelData.Height,
-                        pixelData.BitDepth,
-                        pixelData.GetFrame(frame));
+                    else
+                        return new GrayscalePixelDataU16(
+                            pixelData.Width,
+                            pixelData.Height,
+                            pixelData.BitDepth,
+                            pixelData.GetFrame(frame));
                 }
-
-                if (pixelData.BitsAllocated <= 32)
+                else if (pixelData.BitsAllocated <= 32)
                 {
                     if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
                         return new GrayscalePixelDataS32(
@@ -156,19 +156,20 @@ namespace Dicom.Imaging.Render
                             pixelData.Height,
                             pixelData.BitDepth,
                             pixelData.GetFrame(frame));
-                    return new GrayscalePixelDataU32(
-                        pixelData.Width,
-                        pixelData.Height,
-                        pixelData.BitDepth,
-                        pixelData.GetFrame(frame));
+                    else
+                        return new GrayscalePixelDataU32(
+                            pixelData.Width,
+                            pixelData.Height,
+                            pixelData.BitDepth,
+                            pixelData.GetFrame(frame));
                 }
-                throw new DicomImagingException(
-                    "Unsupported pixel data value for bits stored: {0}",
-                    pixelData.BitsStored);
+                else
+                    throw new DicomImagingException(
+                        "Unsupported pixel data value for bits stored: {0}",
+                        pixelData.BitsStored);
             }
-
-            if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
-                                                    || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422)
+            else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
+                     || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422)
             {
                 var buffer = pixelData.GetFrame(frame);
 
@@ -177,6 +178,7 @@ namespace Dicom.Imaging.Render
                 if (pi == PhotometricInterpretation.YbrFull) buffer = PixelDataConverter.YbrFullToRgb(buffer);
                 else if (pi == PhotometricInterpretation.YbrFull422)
                 {
+                    // Fix issue#1049: check for planar configuration in case of PhotometricInterpretation.YbrFull422 was never done
                     if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
                         throw new DicomImagingException("Unsupported planar configuration for YBR_FULL_422");
 
@@ -186,10 +188,12 @@ namespace Dicom.Imaging.Render
 
                 return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
             }
-
-            throw new DicomImagingException(
-                "Unsupported pixel data photometric interpretation: {0}",
-                pi.Value);
+            else
+            {
+                throw new DicomImagingException(
+                    "Unsupported pixel data photometric interpretation: {0}",
+                    pi.Value);
+            }
         }
 
         /// <summary>
