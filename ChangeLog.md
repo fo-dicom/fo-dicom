@@ -1,4 +1,6 @@
-#### v.4.0.6 (TBD)
+#### v.4.0.7 (TBD)
+
+#### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
 * Handle N-Event requests in DicomClient (required for synchronous storage commitment) (#1001)
 * Bug fix: Fix DICOM Tag conversion for private tags for element numbers xxff (#1059)
