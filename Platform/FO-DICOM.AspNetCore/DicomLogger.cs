@@ -1,8 +1,29 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using FellowOakDicom.Log;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.AspNetCore
 {
-    public class DicomLogger : Log.ILogger
+
+    public class DicomLogManager : FellowOakDicom.Log.LogManager
+    {
+        private readonly Microsoft.Extensions.Logging.ILogger _loggerImpl;
+
+        public DicomLogManager(Microsoft.Extensions.Logging.ILogger loggerImpl)
+        {
+            _loggerImpl = loggerImpl;
+        }
+
+        protected override Logger GetLoggerImpl(string name)
+        {
+            return new DicomLogger(_loggerImpl);
+        }
+    }
+
+
+    public class DicomLogger : FellowOakDicom.Log.Logger
     {
 
         private readonly Microsoft.Extensions.Logging.ILogger _aspnetLogger;
@@ -12,22 +33,7 @@ namespace FellowOakDicom.AspNetCore
             _aspnetLogger = logger;
         }
 
-        public void Debug(string msg, params object[] args)
-            => _aspnetLogger.LogDebug(msg, args);
-
-        public void Error(string msg, params object[] args)
-            => _aspnetLogger.LogError(msg, args);
-
-        public void Fatal(string msg, params object[] args)
-            => _aspnetLogger.LogError(msg, args);
-
-        public void Info(string msg, params object[] args)
-            => _aspnetLogger.LogInformation(msg, args);
-
-        public void Warn(string msg, params object[] args)
-            => _aspnetLogger.LogWarning(msg, args);
-
-        public void Log(Log.LogLevel level, string msg, params object[] args)
+        public override void Log(Log.LogLevel level, string msg, params object[] args)
         {
             switch(level)
             {
