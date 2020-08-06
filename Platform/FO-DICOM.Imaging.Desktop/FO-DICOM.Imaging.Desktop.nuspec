@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>fo-dicom.Imaging.Desktop</id>
+    <version>5.0.0-alpha2</version>
+    <title>Fellow Oak DICOM System.Drawing support</title>
+    <authors>fo-dicom contributors</authors>
+    <license type="expression">MS-PL</license>
+    <projectUrl>https://github.com/fo-dicom/fo-dicom</projectUrl>
+    <iconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>System.Drawing support</description>
+    <copyright>Copyright (c) fo-dicom contributors 2012-2020</copyright>
+    <dependencies>
+      <dependency id="fo-dicom" version="5.0.0-alpha2" />
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="bin\Release\fo-dicom.Imaging.Desktop.dll" target="lib\net462"/>
+  </files>
+</package>

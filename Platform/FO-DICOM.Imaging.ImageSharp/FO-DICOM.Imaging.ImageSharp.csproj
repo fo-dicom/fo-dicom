@@ -1,9 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>FellowOakDicom.Imaging.ImageSharp</RootNamespace>
     <AssemblyName>fo-dicom.Imaging.ImageSharp</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>5.0.0-alpha2</Version>
+    <Authors>fo-dicom contributors</Authors>
+    <Company>fo-dicom</Company>
+    <Product>Fellow Oak DICOM</Product>
+    <Description>A NetStandard Imaging library for fo-dicom</Description>
+    <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
+    <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +21,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\FellowOakSquareTransp.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
