@@ -116,30 +116,35 @@ namespace FellowOakDicom.Imaging.Render
             {
                 if (pixelData.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID)
                     == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
+                {
                     // Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
                     return new SingleBitPixelData(
                         pixelData.Width,
                         pixelData.Height,
                         PixelDataConverter.ReverseBits(pixelData.GetFrame(frame)));
+                }
                 else
-                // Need sample images to verify that this is correct
+                {
+                    // Need sample images to verify that this is correct
                     return new SingleBitPixelData(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
+                }
             }
             else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2
                      || pi == PhotometricInterpretation.PaletteColor)
             {
                 if (pixelData.BitsAllocated == 8 && pixelData.HighBit == 7 && pixelData.BitsStored == 8)
+                {
                     return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
+                }
                 else if (pixelData.BitsAllocated <= 16)
                 {
-                    if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
-                        return new GrayscalePixelDataS16(
+                    return pixelData.PixelRepresentation == PixelRepresentation.Signed
+                        ? new GrayscalePixelDataS16(
                             pixelData.Width,
                             pixelData.Height,
                             pixelData.BitDepth,
-                            pixelData.GetFrame(frame));
-                    else
-                        return new GrayscalePixelDataU16(
+                            pixelData.GetFrame(frame))
+                        : (IPixelData)new GrayscalePixelDataU16(
                             pixelData.Width,
                             pixelData.Height,
                             pixelData.BitDepth,
@@ -147,14 +152,13 @@ namespace FellowOakDicom.Imaging.Render
                 }
                 else if (pixelData.BitsAllocated <= 32)
                 {
-                    if (pixelData.PixelRepresentation == PixelRepresentation.Signed)
-                        return new GrayscalePixelDataS32(
+                    return pixelData.PixelRepresentation == PixelRepresentation.Signed
+                        ? new GrayscalePixelDataS32(
                             pixelData.Width,
                             pixelData.Height,
                             pixelData.BitDepth,
-                            pixelData.GetFrame(frame));
-                    else
-                        return new GrayscalePixelDataU32(
+                            pixelData.GetFrame(frame))
+                        : (IPixelData)new GrayscalePixelDataU32(
                             pixelData.Width,
                             pixelData.Height,
                             pixelData.BitDepth,
@@ -170,18 +174,29 @@ namespace FellowOakDicom.Imaging.Render
             {
                 var buffer = pixelData.GetFrame(frame);
 
-                if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar) buffer = PixelDataConverter.PlanarToInterleaved24(buffer);
+                if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
+                {
+                    buffer = PixelDataConverter.PlanarToInterleaved24(buffer);
+                }
 
-                if (pi == PhotometricInterpretation.YbrFull) buffer = PixelDataConverter.YbrFullToRgb(buffer);
-                else if (pi == PhotometricInterpretation.YbrFull422) buffer = PixelDataConverter.YbrFull422ToRgb(buffer, pixelData.Width);
-                else if (pi == PhotometricInterpretation.YbrPartial422) buffer = PixelDataConverter.YbrPartial422ToRgb(buffer, pixelData.Width);
+                if (pi == PhotometricInterpretation.YbrFull)
+                {
+                    buffer = PixelDataConverter.YbrFullToRgb(buffer);
+                }
+                else if (pi == PhotometricInterpretation.YbrFull422)
+                {
+                    // Fix issue#1049: check for planar configuration in case of PhotometricInterpretation.YbrFull422 was never done
+                    if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
+                    {
+                        throw new DicomImagingException("Unsupported planar configuration for YBR_FULL_422");
+                    }
+                    buffer = PixelDataConverter.YbrFull422ToRgb(buffer, pixelData.Width);
+                }
+                else if (pi == PhotometricInterpretation.YbrPartial422)
+                {
+                    buffer = PixelDataConverter.YbrPartial422ToRgb(buffer, pixelData.Width);
+                }
 
-                return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
-            }
-            else if (pi == PhotometricInterpretation.YbrFull422)
-            {
-                var buffer = pixelData.GetFrame(frame);
-                if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar) throw new DicomImagingException("Unsupported planar configuration for YBR_FULL_422");
                 return new ColorPixelData24(pixelData.Width, pixelData.Height, buffer);
             }
             else
