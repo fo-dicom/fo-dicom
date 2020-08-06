@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.1.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0001" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>

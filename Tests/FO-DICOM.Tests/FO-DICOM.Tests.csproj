@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.1.6" />
-    <PackageReference Include="fo-dicom.Codecs" Version="5.0.0-beta5" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.0.0-beta6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
