@@ -112,6 +112,7 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Bugs\GH1049.cs" />
     <Compile Include="Bugs\GH319.cs" />
     <Compile Include="Bugs\GH328.cs" />
     <Compile Include="Bugs\GH340.cs" />
@@ -276,6 +277,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\genFile.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH1049_planar_0.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH1049_planar_1.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH487.dcm">
