@@ -128,12 +128,22 @@ namespace FellowOakDicom.Imaging
                     .DrawImage(layer, new Point(graphic.ScaledOffsetX, graphic.ScaledOffsetY), 1));
             }
         }
- 
+
 
         /// <inheritdoc />
         public override IImage Clone()
         {
             return new ImageSharpImage(width, height, new PinnedIntArray(pixels.Data), image?.Clone());
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.image?.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         #endregion
