@@ -504,7 +504,7 @@ namespace FellowOakDicom.Serialization
         /// <returns>A json number equivalent to the supplied DS value</returns>
         private static string FixDecimalString(string val)
         {
-            // trim invalid paaded character
+            // trim invalid padded character
             val = val.Trim().TrimEnd('\0');
 
             if (IsValidJsonNumber(val))

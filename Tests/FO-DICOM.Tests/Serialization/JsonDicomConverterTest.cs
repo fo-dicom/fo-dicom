@@ -951,7 +951,7 @@ namespace FellowOakDicom.Tests.Serialization
         [Fact]
         public static void GivenDicomDatasetWithInvalidPaddedCharacterForDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
         {
-            string invalidDSvalue = "0\0";
+            string invalidAccerationValue = "0\0";
 
             var dicomDataset = new DicomDataset();
 
@@ -960,7 +960,7 @@ namespace FellowOakDicom.Tests.Serialization
             dicomDataset.AutoValidate = false;
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            dicomDataset.Add(DicomTag.Acceleration, invalidDSvalue);
+            dicomDataset.Add(DicomTag.Acceleration, invalidAccerationValue);
             
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -977,18 +977,18 @@ namespace FellowOakDicom.Tests.Serialization
         [Fact]
         public static void GivenDicomDatasetWithValidDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
         {
-            string invalidDSvalue = "97";
+            string validAccelarationValue = "97";
 
             var dicomDataset = new DicomDataset
             {
-                { DicomTag.Acceleration, invalidDSvalue },
+                { DicomTag.Acceleration, validAccelarationValue },
             };
 
             var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
             JObject.Parse(json);
             DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
-            Assert.Equal("97", recoveredString);
+            Assert.Equal(validAccelarationValue, recoveredString);
         }
 
 
