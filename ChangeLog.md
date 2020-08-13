@@ -1,4 +1,5 @@
 #### v.4.0.7 (TBD)
+* Allow disabling validation in JsonDicomConverter
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
