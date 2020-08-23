@@ -59,6 +59,19 @@ namespace Dicom.Network
             _ms.Seek(6, SeekOrigin.Begin);
         }
 
+        /// <summary>
+        /// Initializes new PDU reader from a stream
+        /// </summary>
+        /// <remarks>The created object takes ownership of the stream</remarks>
+        /// <param name="stream">Stream</param>
+        public RawPDU(MemoryStream stream) {
+            _ms = stream;
+            _ms.Seek(0, SeekOrigin.Begin);
+            _br = EndianBinaryReader.Create(_ms, Endian.Big);
+            _type = _br.ReadByte();
+            _ms.Seek(6, SeekOrigin.Begin);
+        }
+
         #endregion
 
         #region Public Properties
@@ -354,8 +367,8 @@ namespace Dicom.Network
 
         public void Dispose()
         {
-            _ms = null;
-            _br = null;
+            _ms.Dispose();
+            _br.Dispose();
         }
     }
 

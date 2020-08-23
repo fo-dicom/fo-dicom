@@ -363,9 +363,8 @@ namespace Dicom.Network
                     var ms = new MemoryStream();
                     pdu.Write().WritePDU(ms);
 
-                    var buffer = ms.ToArray();
-
-                    await _network.AsStream().WriteAsync(buffer, 0, (int)ms.Length).ConfigureAwait(false);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    await ms.CopyToAsync(_network.AsStream()).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {
@@ -424,31 +423,27 @@ namespace Dicom.Network
                     _readLength = length;
 
                     // Read PDU
-                    using (var ms = new MemoryStream())
+                    var ms = new MemoryStream();
+                    ms.Write(buffer, 0, buffer.Length);
+                    while (_readLength > 0)
                     {
-                        ms.Write(buffer, 0, buffer.Length);
-                        while (_readLength > 0)
+                        int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
+                        var tempBuffer = new byte[bytesToRead];
+                        count = await stream.ReadAsync(tempBuffer, 0, bytesToRead).ConfigureAwait(false);
+
+                        if (count == 0)
                         {
-                            int bytesToRead = Math.Min(_readLength, MaxBytesToRead);
-                            var tempBuffer = new byte[bytesToRead];
-                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead).ConfigureAwait(false);
-
-                            if (count == 0)
-                            {
-                                // disconnected
-                                await TryCloseConnectionAsync().ConfigureAwait(false);
-                                return;
-                            }
-
-                            ms.Write(tempBuffer, 0, count);
-
-                            _readLength -= count;
+                            // disconnected
+                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            return;
                         }
 
-                        buffer = ms.ToArray();
+                        ms.Write(tempBuffer, 0, count);
+
+                        _readLength -= count;
                     }
 
-                    var raw = new RawPDU(buffer);
+                    var raw = new RawPDU(ms);
 
                     switch (raw.Type)
                     {
