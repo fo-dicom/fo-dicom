@@ -19,9 +19,9 @@ namespace FellowOakDicom.Network
 
         private readonly byte _type;
 
-        private MemoryStream _ms;
+        private readonly MemoryStream _ms;
 
-        private BinaryReader _br;
+        private readonly BinaryReader _br;
 
         private readonly BinaryWriter _bw;
 
@@ -377,7 +377,7 @@ namespace FellowOakDicom.Network
         public void Dispose()
         {
             _ms.Dispose();
-            _br.Dispose();
+            _br?.Dispose();
         }
     }
 
