@@ -166,8 +166,19 @@ namespace FellowOakDicom
 
         public override int GetHashCode()
         {
-            if (_hash == 0) _hash = ToString("X", null).GetHashCode();
-            return _hash;
+            if (_hash != 0) return _hash;
+            
+            unchecked
+            {
+                var hashCode = ((uint)(Group << 16) | Element).GetHashCode();
+
+                if (PrivateCreator != null)
+                {
+                    hashCode = hashCode ^ PrivateCreator.GetHashCode();
+                }
+
+                return _hash = hashCode;
+            }
         }
 
         public static DicomTag Parse(string s)
