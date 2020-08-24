@@ -43,13 +43,23 @@ namespace FellowOakDicom
             return (uint)(tag.Group << 16) | tag.Element;
         }
 
-        public ushort Group { get; private set; }
+        public ushort Group { get; }
 
-        public ushort Element { get; private set; }
+        public ushort Element { get; }
 
         public bool IsPrivate => Group.IsOdd();
 
-        public DicomPrivateCreator PrivateCreator { get; set; }
+        private DicomPrivateCreator _privateCreator;
+
+        public DicomPrivateCreator PrivateCreator
+        {
+            get => _privateCreator;
+            set
+            {
+                _privateCreator = value;
+                _hash = 0;
+            }
+        }
 
         public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
 
