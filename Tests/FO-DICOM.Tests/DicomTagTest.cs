@@ -165,28 +165,23 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void GetHashCode_PrivateTagsShouldBeRetrievable()
+        public void GetHashCode_AdjustedPrivateTagsShouldBeRetrievable()
         {
             var dicomDictionary = DicomDictionary.Default;
 
             var privateCreator = dicomDictionary.GetPrivateCreator("HashCodeTesting");
             var privateCreatorDictionary = dicomDictionary[privateCreator];
 
-            var tag1 = new DicomTag(4017, 4019, privateCreator);
-            var tag2 = new DicomTag(4017, 4021, privateCreator);
+            var tag = new DicomTag(4017, 0x008, privateCreator);
+            var adjustedTag = new DicomDataset().GetPrivateTag(tag);
 
-            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag1, "HashCodeTestTag1", "HashCodeTestKey1", DicomVM.VM_1, false, DicomVR.CS));
-            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag2, "HashCodeTestTag2", "HashCodeTestKey2", DicomVM.VM_1, false, DicomVR.CS));
+            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag, "AdjustableHashCodeTestTag1", "AdjustableHashCodeTestKey1", DicomVM.VM_1, false, DicomVR.CS));
 
-            var entry1 = dicomDictionary[tag1];
-            var entry2 = dicomDictionary[tag2];
+            var entry = dicomDictionary[adjustedTag];
 
-            Assert.NotEqual(DicomDictionary.UnknownTag, entry1);
-            Assert.NotEqual(DicomDictionary.UnknownTag, entry2);
-            Assert.Equal(tag1, entry1.Tag);
-            Assert.Equal(tag2, entry2.Tag);
-            Assert.Collection(entry1.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
-            Assert.Collection(entry2.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
+            Assert.NotEqual(DicomDictionary.UnknownTag, entry);
+            Assert.Equal(tag, entry.Tag);
+            Assert.Collection(entry.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
         }
 
         #endregion

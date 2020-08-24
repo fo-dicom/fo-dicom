@@ -180,14 +180,14 @@ namespace FellowOakDicom
             
             unchecked
             {
-                var hashCode = ((uint)(Group << 16) | Element).GetHashCode();
-
-                if (PrivateCreator != null)
+                if (PrivateCreator == null)
                 {
-                    hashCode = hashCode ^ PrivateCreator.GetHashCode();
+                    return _hash = ((uint)(Group << 16) | Element).GetHashCode();
                 }
-
-                return _hash = hashCode;
+                else
+                {
+                    return _hash = ((uint)(Group << 16) | (Element & 0xff)).GetHashCode() ^ PrivateCreator.GetHashCode();
+                }
             }
         }
 
