@@ -151,6 +151,26 @@ namespace Dicom
             }
         }
 
+        [Fact]
+        public void GetHashCode_AdjustedPrivateTagsShouldBeRetrievable()
+        {
+            var dicomDictionary = DicomDictionary.Default;
+
+            var privateCreator = dicomDictionary.GetPrivateCreator("HashCodeTesting");
+            var privateCreatorDictionary = dicomDictionary[privateCreator];
+
+            var tag = new DicomTag(4017, 0x008, privateCreator);
+            var adjustedTag = new DicomDataset().GetPrivateTag(tag);
+
+            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag, "AdjustableHashCodeTestTag1", "AdjustableHashCodeTestKey1", DicomVM.VM_1, false, DicomVR.CS));
+
+            var entry = dicomDictionary[adjustedTag];
+
+            Assert.NotEqual(DicomDictionary.UnknownTag, entry);
+            Assert.Equal(tag, entry.Tag);
+            Assert.Collection(entry.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
+        }
+
         #endregion
 
         #region Test data
