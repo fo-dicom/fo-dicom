@@ -87,10 +87,10 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void GetHashCode_ReturnsDifferentValuesForSameGroupAndElementButOneHasPrivateCreator()
         {
-            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("HashCodeTesting");
 
-            var tagWithPrivateCreator = new DicomTag(4013, 0x008, privateCreator);
-            var tagWithoutPrivateCreator = new DicomTag(4013, 0x008);
+            var tagWithPrivateCreator = new DicomTag(4017, 0x008, privateCreator);
+            var tagWithoutPrivateCreator = new DicomTag(4017, 0x008);
 
             var hashCode1 = tagWithPrivateCreator.GetHashCode();
             var hashCode2 = tagWithoutPrivateCreator.GetHashCode();
@@ -101,11 +101,11 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void GetHashCode_ReturnsDifferentValuesForSameGroupAndElementButDifferentPrivateCreator()
         {
-            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
-            var privateCreator2 = DicomDictionary.Default.GetPrivateCreator("Testing2");
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("HashCodeTesting");
+            var privateCreator2 = DicomDictionary.Default.GetPrivateCreator("HashCodeTesting2");
 
-            var tagWithPrivateCreator1 = new DicomTag(4013, 0x008, privateCreator);
-            var tagWithPrivateCreator2 = new DicomTag(4013, 0x008, privateCreator2);
+            var tagWithPrivateCreator1 = new DicomTag(4017, 0x008, privateCreator);
+            var tagWithPrivateCreator2 = new DicomTag(4017, 0x008, privateCreator2);
 
             var hashCode1 = tagWithPrivateCreator1.GetHashCode();
             var hashCode2 = tagWithPrivateCreator2.GetHashCode();
@@ -116,10 +116,10 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void GetHashCode_ReturnsSameValuesForSameGroupAndElementAndPrivateCreator()
         {
-            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("HashCodeTesting");
 
-            var tagWithPrivateCreator1 = new DicomTag(4013, 0x008, privateCreator);
-            var tagWithPrivateCreator2 = new DicomTag(4013, 0x008, privateCreator);
+            var tagWithPrivateCreator1 = new DicomTag(4017, 0x008, privateCreator);
+            var tagWithPrivateCreator2 = new DicomTag(4017, 0x008, privateCreator);
 
             var hashCode1 = tagWithPrivateCreator1.GetHashCode();
             var hashCode2 = tagWithPrivateCreator2.GetHashCode();
