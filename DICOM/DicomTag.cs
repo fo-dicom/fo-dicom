@@ -43,13 +43,23 @@ namespace Dicom
             return (uint)(tag.Group << 16) | tag.Element;
         }
 
-        public ushort Group { get; private set; }
+        public ushort Group { get; }
 
-        public ushort Element { get; private set; }
+        public ushort Element { get; }
 
         public bool IsPrivate => Group.IsOdd();
 
-        public DicomPrivateCreator PrivateCreator { get; set; }
+        private DicomPrivateCreator _privateCreator;
+
+        public DicomPrivateCreator PrivateCreator
+        {
+            get => _privateCreator;
+            set
+            {
+                _privateCreator = value;
+                _hash = 0;
+            }
+        }
 
         public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
 
@@ -168,8 +178,19 @@ namespace Dicom
 
         public override int GetHashCode()
         {
-            if (_hash == 0) _hash = ToString("X", null).GetHashCode();
-            return _hash;
+            if (_hash != 0) return _hash;
+
+            unchecked
+            {
+                var hashCode = ((uint)(Group << 16) | Element).GetHashCode();
+
+                if (PrivateCreator != null)
+                {
+                    hashCode = hashCode ^ PrivateCreator.GetHashCode();
+                }
+
+                return _hash = hashCode;
+            }
         }
 
         public static DicomTag Parse(string s)

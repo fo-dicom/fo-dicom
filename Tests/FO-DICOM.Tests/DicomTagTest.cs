@@ -78,7 +78,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void GetHashCode_ReturnsDifferentValuesForDifferentGroupButSameElement()
         {
-            var hashCode1 = DicomTag.ImplementationClassUID.GetHashCode(); // 0x0002, 0x0001
+            var hashCode1 = DicomTag.ImplementationClassUID.GetHashCode(); // 0x0002, 0x00012
             var hashCode2 = DicomTag.InstanceCreationDate.GetHashCode(); // 0x0008, 0x0012
 
             Assert.NotEqual(hashCode1, hashCode2);
