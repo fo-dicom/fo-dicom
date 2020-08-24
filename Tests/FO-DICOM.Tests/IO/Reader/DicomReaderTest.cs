@@ -57,6 +57,16 @@ namespace FellowOakDicom.Tests.IO.Reader
             Assert.NotNull(file);
         }
 
+        [Fact]
+        public void GivenDeflatedDicomFileWithSequence_WhenOpenFile_ThenShouldSucceed()
+        {
+            // This is for regression bug https://github.com/fo-dicom/fo-dicom/issues/1097
+            string filename = TestData.Resolve("Issue1097_FailToOpenDeflatedFileWithSQ.dcm");
+
+            // Verify should be able to open file without exception
+            DicomFile.Open(filename);
+        }
+
         #endregion
 
         #region Support data
