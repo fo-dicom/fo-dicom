@@ -114,6 +114,20 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void GetHashCode_ReturnsDifferentValuesForSameGroupAndPrivateCreatorButDifferentElement()
+        {
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("HashCodeTesting");
+
+            var tagWithPrivateCreator1 = new DicomTag(4017, 0x008, privateCreator);
+            var tagWithPrivateCreator2 = new DicomTag(4017, 0x009, privateCreator);
+
+            var hashCode1 = tagWithPrivateCreator1.GetHashCode();
+            var hashCode2 = tagWithPrivateCreator2.GetHashCode();
+
+            Assert.NotEqual(hashCode1, hashCode2);
+        }
+
+        [Fact]
         public void GetHashCode_ReturnsSameValuesForSameGroupAndElementAndPrivateCreator()
         {
             var privateCreator = DicomDictionary.Default.GetPrivateCreator("HashCodeTesting");
@@ -148,6 +162,31 @@ namespace FellowOakDicom.Tests
                     Assert.True(entries.Count == 1, message);
                 }
             }
+        }
+
+        [Fact]
+        public void GetHashCode_PrivateTagsShouldBeRetrievable()
+        {
+            var dicomDictionary = DicomDictionary.Default;
+
+            var privateCreator = dicomDictionary.GetPrivateCreator("HashCodeTesting");
+            var privateCreatorDictionary = dicomDictionary[privateCreator];
+
+            var tag1 = new DicomTag(4017, 4019, privateCreator);
+            var tag2 = new DicomTag(4017, 4021, privateCreator);
+
+            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag1, "HashCodeTestTag1", "HashCodeTestKey1", DicomVM.VM_1, false, DicomVR.CS));
+            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag2, "HashCodeTestTag2", "HashCodeTestKey2", DicomVM.VM_1, false, DicomVR.CS));
+
+            var entry1 = dicomDictionary[tag1];
+            var entry2 = dicomDictionary[tag2];
+
+            Assert.NotEqual(DicomDictionary.UnknownTag, entry1);
+            Assert.NotEqual(DicomDictionary.UnknownTag, entry2);
+            Assert.Equal(tag1, entry1.Tag);
+            Assert.Equal(tag2, entry2.Tag);
+            Assert.Collection(entry1.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
+            Assert.Collection(entry2.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
         }
 
         #endregion
