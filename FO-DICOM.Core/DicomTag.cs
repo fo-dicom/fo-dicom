@@ -56,6 +56,13 @@ namespace FellowOakDicom
         public override string ToString()
             => ToString("G", null);
 
+        /// <summary>
+        /// This method returns a string representation of the DicomTag.
+        /// Use one of the following formats as parameter:
+        /// - "G": returns for example "(0028,0010)" for public and "(0029,1001:MYPRIVATE)" for private tags
+        /// - "X": returns for example "(0028,0010)" for public and "(0029,xx01:MYPRIVATE)" for private tags
+        /// - "J": returns for example "00280010" for public and "00291001" for private tags
+        /// </summary>
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (formatProvider?.GetFormat(GetType()) is ICustomFormatter fmt)

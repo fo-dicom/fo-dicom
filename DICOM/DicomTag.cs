@@ -58,35 +58,44 @@ namespace Dicom
             return ToString("G", null);
         }
 
+        /// <summary>
+        /// This method returns a string representation of the DicomTag.
+        /// Use one of the following formats as parameter:
+        /// - "G": returns for example "(0028,0010)" for public and "(0029,1001:MYPRIVATE)" for private tags
+        /// - "X": returns for example "(0028,0010)" for public and "(0029,xx01:MYPRIVATE)" for private tags
+        /// - "J": returns for example "00280010" for public and "00291001" for private tags
+        /// </summary>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (formatProvider != null)
+            if (formatProvider?.GetFormat(GetType()) is ICustomFormatter fmt)
             {
-                ICustomFormatter fmt = formatProvider.GetFormat(this.GetType()) as ICustomFormatter;
-                if (fmt != null) return fmt.Format(format, this, formatProvider);
+                return fmt.Format(format, this, formatProvider);
             }
 
             switch (format)
             {
                 case "X":
                     {
-                        if (PrivateCreator != null) return String.Format("({0:x4},xx{1:x2}:{2})", Group, Element & 0xff, PrivateCreator.Creator);
-                        else return String.Format("({0:x4},{1:x4})", Group, Element);
+                        return (PrivateCreator != null)
+                            ? string.Format("({0:x4},xx{1:x2}:{2})", Group, Element & 0xff, PrivateCreator.Creator)
+                            : string.Format("({0:x4},{1:x4})", Group, Element);
                     }
                 case "g":
                     {
-                        if (PrivateCreator != null) return String.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator);
-                        else return String.Format("{0:x4},{1:x4}", Group, Element);
+                        return (PrivateCreator != null)
+                            ? string.Format("{0:x4},{1:x4}:{2}", Group, Element, PrivateCreator.Creator)
+                            : string.Format("{0:x4},{1:x4}", Group, Element);
                     }
                 case "J":
                     {
-                        return String.Format("{0:X4}{1:X4}", Group, Element);
+                        return string.Format("{0:X4}{1:X4}", Group, Element);
                     }
                 case "G":
                 default:
                     {
-                        if (PrivateCreator != null) return String.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator);
-                        else return String.Format("({0:x4},{1:x4})", Group, Element);
+                        return (PrivateCreator != null)
+                            ? string.Format("({0:x4},{1:x4}:{2})", Group, Element, PrivateCreator.Creator)
+                            : string.Format("({0:x4},{1:x4})", Group, Element);
                     }
             }
         }
