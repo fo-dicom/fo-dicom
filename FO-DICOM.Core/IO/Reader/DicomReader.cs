@@ -181,6 +181,7 @@ namespace FellowOakDicom.IO.Reader
             internal DicomReaderResult DoWork(IByteSource source)
             {
                 ResetState();
+                source = ConvertSource(source);
                 ParseDataset(source);
                 return _result;
             }
@@ -193,18 +194,18 @@ namespace FellowOakDicom.IO.Reader
             internal async Task<DicomReaderResult> DoWorkAsync(IByteSource source)
             {
                 ResetState();
+                source = ConvertSource(source);
                 await ParseDatasetAsync(source).ConfigureAwait(false);
                 return _result;
             }
 
-            private void ParseDataset(IByteSource source, bool isNestedDataset = false)
+            private IByteSource ConvertSource(IByteSource source)
             {
-                // For nested dataset, do not decompress
-                if (_isDeflated & !isNestedDataset)
-                {
-                    source = Decompress(source);
-                }
+                return _isDeflated ? Decompress(source) : source;
+            }
 
+            private void ParseDataset(IByteSource source)
+            {
                 _result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
@@ -245,11 +246,6 @@ namespace FellowOakDicom.IO.Reader
 
             private async Task ParseDatasetAsync(IByteSource source)
             {
-                if (_isDeflated)
-                {
-                    source = Decompress(source);
-                }
-
                 _result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
@@ -965,7 +961,7 @@ namespace FellowOakDicom.IO.Reader
 
                     ResetState();
                     ++_sequenceDepth;
-                    ParseDataset(source, isNestedDataset: true);
+                    ParseDataset(source);
                     --_sequenceDepth;
                     // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
                     bool isEndSequence = (_tag == DicomTag.SequenceDelimitationItem);
