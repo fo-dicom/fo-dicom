@@ -1,11 +1,12 @@
 ﻿// // Copyright (c) 2012-2020 fo-dicom contributors.
 // // Licensed under the Microsoft Public License (MS-PL).
-// 
+//
 
 using Xunit;
 
 namespace Dicom.Imaging
 {
+    [Collection("Imaging")]
     public class DicomPixelDataTest
     {
         [Fact]

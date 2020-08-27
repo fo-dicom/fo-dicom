@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Dicom.Bugs
 {
+    [Collection("Imaging")]
     public class GH553
     {
         [Fact(Skip = "Fails for unknown reason when run on CI server.")]

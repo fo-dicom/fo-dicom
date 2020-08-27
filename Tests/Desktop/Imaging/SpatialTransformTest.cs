@@ -7,7 +7,7 @@ namespace Dicom.Imaging
 
     using Xunit;
 
-    [Collection("General")]
+    [Collection("Imaging")]
     public class SpatialTransformTest
     {
         #region Unit tests
