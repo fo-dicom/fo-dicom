@@ -100,7 +100,7 @@ namespace Dicom.Bugs
         [Fact(Skip = "This test is broken since we now have a managed JPEG Lossless decoder in .NET Core")]
         public void OldCStoreRequestSend_16BitJpegFileToScpThatDoesNotSupportJpeg_TransferSuccessfulImplicitLENoPixelData()
         {
-            const string file = @"Test Data/TestPattern_Palette_16.dcm";
+            const string file = @"Test Data/GH538-jpeg14sv1.dcm";
             var handle = new ManualResetEventSlim();
             var success = false;
 
