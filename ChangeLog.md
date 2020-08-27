@@ -1,4 +1,5 @@
 #### v.4.0.7 (TBD)
+* Bug fix: IPv6 issue in DesktopNetworkStream
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
