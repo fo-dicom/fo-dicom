@@ -45,8 +45,22 @@ namespace Dicom.Network
             this.RemotePort = port;
 
 #if NETSTANDARD
-            this.tcpClient = new TcpClient { NoDelay = noDelay };
-            this.tcpClient.ConnectAsync(host, port).Wait();
+
+            this.tcpClient = IPAddress.TryParse(host, out var ipAddress)
+                ? new TcpClient(ipAddress.AddressFamily) {NoDelay = noDelay}
+                : new TcpClient(AddressFamily.InterNetworkV6) {NoDelay = noDelay};
+
+            try
+            {
+                this.tcpClient.ConnectAsync(host, port).Wait();
+            }
+            catch (AggregateException e)
+            {
+                var innerException = e.Flatten().InnerException;
+                if (innerException != null)
+                    throw innerException;
+                throw;
+            }
 #else
             this.tcpClient = new TcpClient(host, port) { NoDelay = noDelay };
 #endif
