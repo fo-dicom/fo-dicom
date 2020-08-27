@@ -39,10 +39,6 @@ jobs:
         uses: nuget/setup-nuget@v1
       - name: Setup MSBuild
         uses: microsoft/Setup-MSBuild@v1
-      - name: Setup .NET Core 2.1
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '2.1.x'
       - name: Restore nuget packages using NuGet CLI
         run: nuget restore DICOM.Full.sln
       - name: Restore DICOM.NetCore nuget packages using dotnet CLI
@@ -54,16 +50,12 @@ jobs:
       - name: Build Dicom.Tests.NetCore
         run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
       - name: Run Dicom.Tests.NetCore
-        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release
+        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release --framework netcoreapp2.0
  
   v5-net-framework:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x' 
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462 --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -73,10 +65,6 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 2.1
-      uses: actions/setup-dotnet@v1 
-      with:
-        dotnet-version: '2.1.x'
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0 --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -86,10 +74,6 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 3.1  
-      uses: actions/setup-dotnet@v1 
-      with:
-        dotnet-version: '3.1.x'
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1 --runtime win-x64
     - name: Test FO-DICOM.Tests
