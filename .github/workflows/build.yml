@@ -43,10 +43,14 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '2.1.x'
-      - name: Restore nuget packages
+      - name: Restore nuget packages using NuGet CLI
         run: nuget restore DICOM.Full.sln
+      - name: Restore DICOM.NetCore nuget packages using dotnet CLI
+        run: dotnet restore ./Platform/NetCore/DICOM.NetCore.csproj
       - name: Build Dicom.NetCore
         run: msbuild DICOM.Full.sln -target:"Platform\DICOM_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+      - name: Restore DICOM.Tests.NetCore nuget packages using dotnet CLI
+        run: dotnet restore ./Tests/NetCore/DICOM.Tests.NetCore.csproj
       - name: Build Dicom.Tests.NetCore
         run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
       - name: Run Dicom.Tests.NetCore
@@ -69,10 +73,6 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
     - name: Setup .NET Core 2.1
       uses: actions/setup-dotnet@v1 
       with:
