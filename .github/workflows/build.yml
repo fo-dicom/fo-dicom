@@ -54,7 +54,7 @@ jobs:
       - name: Build Dicom.Tests.NetCore
         run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
       - name: Run Dicom.Tests.NetCore
-        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release --runtime win-x64
+        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release
  
   v5-net-framework:
     runs-on: windows-2019
