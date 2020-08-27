@@ -41,8 +41,8 @@ jobs:
         uses: microsoft/Setup-MSBuild@v1
       - name: Setup .NET Core 2.1
         uses: actions/setup-dotnet@v1
-          with:
-            dotnet-version: '2.1.x'
+        with:
+          dotnet-version: '2.1.x'
       - name: Restore nuget packages
         run: nuget restore DICOM.Full.sln
       - name: Build Dicom.NetCore
