@@ -821,7 +821,7 @@ namespace Dicom.Network
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky test, use the new DicomClient if you have issues with the lingering system of DicomClient")]
         [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 5, /* linger: */ 3)]
         public async Task Old_SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTime(int numberOfRequests, int secondsBetweenEachRequest,
             int lingerTimeoutInSeconds)
@@ -880,7 +880,7 @@ namespace Dicom.Network
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Flaky test, use the new DicomClient if you have issues with the lingering system of DicomClient")]
         public async Task Old_SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTimeAfterLastRequest()
         {
             var numberOfRequests = 5;
