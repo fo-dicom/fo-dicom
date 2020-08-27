@@ -48,7 +48,7 @@ namespace Dicom.Network
 
             this.tcpClient = IPAddress.TryParse(host, out var ipAddress)
                 ? new TcpClient(ipAddress.AddressFamily) {NoDelay = noDelay}
-                : new TcpClient(AddressFamily.InterNetworkV6) {NoDelay = noDelay};
+                : new TcpClient() {NoDelay = noDelay};
 
             try
             {
