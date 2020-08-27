@@ -54,7 +54,7 @@ jobs:
       - name: Build Dicom.Tests.NetCore
         run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
       - name: Run Dicom.Tests.NetCore
-        run: dotnet test "Tests\NetCore\bin\Release\netcoreapp2.0\DICOM [Unit Tests].dll"
+        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release --runtime win-x64
  
   v5-net-framework:
     runs-on: windows-2019
@@ -65,9 +65,9 @@ jobs:
       with:
         dotnet-version: '3.1.x' 
     - name: Build FO-DICOM.Core
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462 --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64
       
   v5-net-core-21:
     runs-on: windows-2019
@@ -78,9 +78,9 @@ jobs:
       with:
         dotnet-version: '2.1.x'
     - name: Build FO-DICOM.Core
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0 --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame --runtime win-x64
       
   v5-net-core-31:
     runs-on: windows-2019
@@ -91,7 +91,7 @@ jobs:
       with:
         dotnet-version: '3.1.x'
     - name: Build FO-DICOM.Core
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1 --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64
       
