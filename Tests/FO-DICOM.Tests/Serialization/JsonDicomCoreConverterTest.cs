@@ -955,6 +955,39 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
 
+        [Fact]
+        public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
+        {
+            string invalidDatasetJson = @"
+{
+    ""00101010"": {
+        ""vr"": ""AS"",
+        ""Value"": [
+            ""34""
+        ]
+    }
+}";
+            Assert.Throws<DicomValidationException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
+        }
+
+
+        [Fact]
+        public static void GivenJsonIsInvalid_WhenDeserializationWithAutoValidationIsFalse_ThenShouldSucceed()
+        {
+            string invalidDatasetJson = @"
+{
+    ""00101010"": {
+        ""vr"": ""AS"",
+        ""Value"": [
+            ""34""
+        ]
+    }
+}";
+            var ds = DicomJson.ConvertJsonToDicom(invalidDatasetJson, autoValidate: false);
+            Assert.NotNull(ds);
+            Assert.True(ds.Contains(DicomTag.PatientAge));
+        }
+
         #region Sample Data
 
         // The following example is a QIDO-RS SearchForStudies response consisting 
