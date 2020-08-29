@@ -925,6 +925,41 @@ namespace Dicom.Serialization
             Assert.Equal(ds.Get<string>(privTag2), ds2.Get<string>(privTag2));
         }
 
+
+        [Fact]
+        public static void GivenDicomDatasetWithInvalidPaddedCharacterForDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string invalidAccerationValue = "0\0";
+
+            var dicomDataset = new DicomDataset().NotValidated();
+
+            dicomDataset.Add(DicomTag.Acceleration, invalidAccerationValue);
+
+            var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
+            JObject.Parse(json);
+            DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal("0", recoveredString);
+        }
+
+        [Fact]
+        public static void GivenDicomDatasetWithValidDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string validAccelarationValue = "97";
+
+            var dicomDataset = new DicomDataset
+            {
+                { DicomTag.Acceleration, validAccelarationValue },
+            };
+
+            var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
+            JObject.Parse(json);
+            DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal(validAccelarationValue, recoveredString);
+        }
+
+
         [Fact]
         public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
         {
