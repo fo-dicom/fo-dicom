@@ -47,7 +47,7 @@ namespace FellowOakDicom.Serialization
             }
             reader.Read();
             var conv = new DicomJsonConverter(writeTagsAsKeywords: _writeTagsAsKeywords);
-            while(reader.TokenType != JsonTokenType.EndArray)
+            while (reader.TokenType != JsonTokenType.EndArray)
             {
                 var ds = conv.Read(ref reader, typeToConvert, options);
                 datasetList.Add(ds);
@@ -60,7 +60,7 @@ namespace FellowOakDicom.Serialization
         {
             var conv = new DicomJsonConverter(writeTagsAsKeywords: _writeTagsAsKeywords);
             writer.WriteStartArray();
-            foreach(var ds in value)
+            foreach (var ds in value)
             {
                 conv.Write(writer, ds, options);
             }
@@ -76,27 +76,22 @@ namespace FellowOakDicom.Serialization
     {
 
         private readonly bool _writeTagsAsKeywords;
+        private readonly bool _autoValidate;
         private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
 
         private delegate T GetValue<out T>(Utf8JsonReader reader);
         private delegate void WriteValue<in T>(Utf8JsonWriter writer, T value);
 
-        /// <summary>
-        /// Initialize the JsonDicomConverter.
-        /// </summary>
-        /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
-        public DicomJsonConverter()
-            : this(false)
-        {
-        }
 
         /// <summary>
         /// Initialize the JsonDicomConverter.
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
-        public DicomJsonConverter(bool writeTagsAsKeywords)
+        /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset. </param>
+        public DicomJsonConverter(bool writeTagsAsKeywords = false, bool autoValidate = true)
         {
             _writeTagsAsKeywords = writeTagsAsKeywords;
+            _autoValidate = autoValidate;
         }
 
         #region JsonConverter overrides
@@ -163,10 +158,12 @@ namespace FellowOakDicom.Serialization
 
         private DicomDataset ReadJsonDataset(ref Utf8JsonReader reader)
         {
-            var dataset = new DicomDataset();
+            var dataset = _autoValidate
+                ? new DicomDataset()
+                : new DicomDataset().NotValidated();
             if (reader.TokenType != JsonTokenType.StartObject) { return null; }
             reader.Read();
-            
+
             while (reader.TokenType != JsonTokenType.EndObject)
             {
                 Assume(ref reader, JsonTokenType.PropertyName);
@@ -483,7 +480,7 @@ namespace FellowOakDicom.Serialization
                 DicomValidation.ValidateDS(val);
                 return true;
             }
-            catch(DicomValidationException)
+            catch (DicomValidationException)
             {
                 return false;
             }
@@ -779,7 +776,7 @@ namespace FellowOakDicom.Serialization
             AssumeAndSkip(ref reader, JsonTokenType.StartArray);
             var childStrings = new List<string>();
 
-            while(reader.TokenType != JsonTokenType.EndArray)
+            while (reader.TokenType != JsonTokenType.EndArray)
             {
                 if (reader.TokenType == JsonTokenType.Null)
                 {
@@ -1044,4 +1041,5 @@ namespace FellowOakDicom.Serialization
         public static string GetSingleOrEmpty(this string[] array) => array.Length > 0 ? array.Single() : string.Empty;
 
     }
+
 }
