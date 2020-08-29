@@ -948,6 +948,51 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal(ds.GetString(privTag2), ds2.GetString(privTag2));
         }
 
+        [Fact]
+        public static void GivenDicomDatasetWithInvalidPaddedCharacterForDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string invalidAccerationValue = "0\0";
+
+            var dicomDataset = new DicomDataset();
+
+            //Disabling the validation to add the invalid VR datatype to a dicom dataset.
+#pragma warning disable CS0618 // Type or member is obsolete
+            dicomDataset.AutoValidate = false;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            dicomDataset.Add(DicomTag.Acceleration, invalidAccerationValue);
+            
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            dicomDataset.AutoValidate = true;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
+            JObject.Parse(json);
+            DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal("0", recoveredString);
+        }
+
+        [Fact]
+        public static void GivenDicomDatasetWithValidDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string validAccelarationValue = "97";
+
+            var dicomDataset = new DicomDataset
+            {
+                { DicomTag.Acceleration, validAccelarationValue },
+            };
+
+            var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
+            JObject.Parse(json);
+            DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal(validAccelarationValue, recoveredString);
+        }
+
+
+
 
         [Fact]
         public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
