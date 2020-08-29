@@ -953,19 +953,9 @@ namespace FellowOakDicom.Tests.Serialization
         {
             string invalidAccerationValue = "0\0";
 
-            var dicomDataset = new DicomDataset();
-
             //Disabling the validation to add the invalid VR datatype to a dicom dataset.
-#pragma warning disable CS0618 // Type or member is obsolete
-            dicomDataset.AutoValidate = false;
-#pragma warning restore CS0618 // Type or member is obsolete
-
+            var dicomDataset = new DicomDataset().NotValidated();
             dicomDataset.Add(DicomTag.Acceleration, invalidAccerationValue);
-            
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            dicomDataset.AutoValidate = true;
-#pragma warning restore CS0618 // Type or member is obsolete
 
             var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
             JObject.Parse(json);
