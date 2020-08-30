@@ -63,7 +63,7 @@ namespace FellowOakDicom.Tests
         {
             var hashCode = DicomTag.AccessionNumber.GetHashCode();
 
-            Assert.InRange(hashCode, 1, int.MaxValue);
+            Assert.InRange(hashCode, int.MinValue, int.MaxValue);
         }
 
         [Fact]
