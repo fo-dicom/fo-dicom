@@ -1,5 +1,7 @@
 #### v.4.0.7 (TBD)
-* Optimize DicomTag.GetHashCode()
+* Bug fix: DS VR type value ending with \0 fails to serialize in JsonDicomConverter (#1078)
+* Allow disabling validation in JsonDicomConverter
+* Optimize DicomTag.GetHashCode() (#1088)
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
