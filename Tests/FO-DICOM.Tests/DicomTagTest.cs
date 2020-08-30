@@ -59,14 +59,6 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void GetHashCode_ReturnsValidInt()
-        {
-            var hashCode = DicomTag.AccessionNumber.GetHashCode();
-
-            Assert.InRange(hashCode, int.MinValue, int.MaxValue);
-        }
-
-        [Fact]
         public void GetHashCode_ReturnsDifferentValuesForSameGroupButDifferentElement()
         {
             var hashCode1 = DicomTag.SpecificCharacterSet.GetHashCode(); // 0x0008, 0x0005
