@@ -49,17 +49,7 @@ namespace Dicom
 
         public bool IsPrivate => Group.IsOdd();
 
-        private DicomPrivateCreator _privateCreator;
-
-        public DicomPrivateCreator PrivateCreator
-        {
-            get => _privateCreator;
-            set
-            {
-                _privateCreator = value;
-                _hash = 0;
-            }
-        }
+        public DicomPrivateCreator PrivateCreator { get; set; }
 
         public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
 
@@ -174,21 +164,17 @@ namespace Dicom
             return !(a == b);
         }
 
-        private int _hash = 0;
-
         public override int GetHashCode()
         {
-            if (_hash != 0) return _hash;
-
             unchecked
             {
                 if (PrivateCreator == null)
                 {
-                    return _hash = ((uint)(Group << 16) | Element).GetHashCode();
+                    return ((uint)(Group << 16) | Element).GetHashCode();
                 }
                 else
                 {
-                    return _hash = ((uint)(Group << 16) | (Element & 0xff)).GetHashCode() ^ PrivateCreator.GetHashCode();
+                    return ((uint)(Group << 16) | (Element & 0xff)).GetHashCode() ^ PrivateCreator.GetHashCode();
                 }
             }
         }
