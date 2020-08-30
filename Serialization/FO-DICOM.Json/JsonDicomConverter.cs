@@ -21,15 +21,18 @@ namespace FellowOakDicom.Serialization
     public class JsonDicomConverter : JsonConverter
     {
         private readonly bool _writeTagsAsKeywords;
+        private readonly bool _autoValidate;
         private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
 
         /// <summary>
         /// Initialize the JsonDicomConverter.
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
-        public JsonDicomConverter(bool writeTagsAsKeywords = false)
+        /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset.</param>
+        public JsonDicomConverter(bool writeTagsAsKeywords = false, bool autoValidate = true)
         {
             _writeTagsAsKeywords = writeTagsAsKeywords;
+            _autoValidate = autoValidate;
         }
 
         #region JsonConverter overrides
@@ -99,7 +102,9 @@ namespace FellowOakDicom.Serialization
 
         private DicomDataset ReadJsonDataset(JToken obj)
         {
-            var dataset = new DicomDataset();
+            var dataset = _autoValidate
+                ? new DicomDataset()
+                : new DicomDataset().NotValidated();
             if (obj.Type == JTokenType.Null) { return null; }
             if (!(obj is JObject itemObject)) { throw new JsonReaderException("Malformed DICOM json"); }
 
@@ -489,7 +494,7 @@ namespace FellowOakDicom.Serialization
                 DicomValidation.ValidateDS(val);
                 return true;
             }
-            catch(DicomValidationException)
+            catch (DicomValidationException)
             {
                 return false;
             }
@@ -504,6 +509,9 @@ namespace FellowOakDicom.Serialization
         /// <returns>A json number equivalent to the supplied DS value</returns>
         private static string FixDecimalString(string val)
         {
+            // trim invalid padded character
+            val = val.Trim().TrimEnd('\0');
+
             if (IsValidJsonNumber(val))
             {
                 return val;
