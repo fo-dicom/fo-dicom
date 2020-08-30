@@ -29,7 +29,12 @@ jobs:
       - name: Build tests for Desktop platform
         run: msbuild DICOM.Desktop.sln -target:"Unit Tests\DICOM_Tests_Desktop" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
       - name: Run tests for Desktop platform
-        run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll"
+        run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll" -xml test-v4-net-framework.xml
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-v4-net-framework.xml
+          path: test-v4-net-framework.xml
 
   v4-net-core-21:
     runs-on: windows-2019
