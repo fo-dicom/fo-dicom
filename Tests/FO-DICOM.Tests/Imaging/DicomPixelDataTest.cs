@@ -7,7 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging
 {
 
-    [Collection("General")]
+    [Collection("Imaging")]
     public class DicomPixelDataTest
     {
         [Fact]

@@ -346,7 +346,7 @@ namespace Dicom.Network
 
                 var exception = Record.Exception(() => client.Send(NetworkManager.IPv4Loopback, port, false, "SCU", "ANY-SCP"));
 
-                Assert.IsType<SocketException>(exception);
+                Assert.IsAssignableFrom<SocketException>(exception);
             }
         }
 
@@ -363,7 +363,7 @@ namespace Dicom.Network
 
                 var exception = Record.Exception(() => client.Send(NetworkManager.IPv6Loopback, port, false, "SCU", "ANY-SCP"));
 
-                Assert.IsType<SocketException>(exception);
+                Assert.IsAssignableFrom<SocketException>(exception);
             }
         }
 

@@ -1,6 +1,8 @@
 #### v.4.0.7 (TBD)
+
 * Bug fix: DS VR type value ending with \0 fails to serialize in JsonDicomConverter (#1078)
 * Allow disabling validation in JsonDicomConverter
+* Bug fix: IPv6 issue in DesktopNetworkStream
 * Optimize DicomTag.GetHashCode() (#1088)
 
 #### v.4.0.6 (8/6/2020)
