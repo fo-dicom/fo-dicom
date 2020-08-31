@@ -360,11 +360,7 @@ namespace Dicom.Network
 
                 try
                 {
-                    var ms = new MemoryStream();
-                    pdu.Write().WritePDU(ms);
-
-                    ms.Seek(0, SeekOrigin.Begin);
-                    await ms.CopyToAsync(_network.AsStream()).ConfigureAwait(false);
+                    await pdu.Write().WritePDUAsync(_network.AsStream()).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {

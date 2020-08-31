@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 using FellowOakDicom.IO;
 
 namespace FellowOakDicom.Network
@@ -91,24 +91,22 @@ namespace FellowOakDicom.Network
         /// Writes PDU to stream
         /// </summary>
         /// <param name="s">Output stream</param>
-        public void WritePDU(Stream s)
-        {
-            var buffer = new byte[6];
-
-            unchecked
-            {
-                buffer[0] = _type;
-
-                var length = (uint)_ms.Length;
-                buffer[2] = (byte)((length & 0xff000000U) >> 24);
-                buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
-                buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
-                buffer[5] = (byte)(length & 0x000000ffU);
-            }
-
-            s.Write(buffer, 0, 6);
+        public void WritePDU(Stream s) {
+            byte[] preamble = GetCommonFields();
+            s.Write(preamble, 0, preamble.Length);
             _ms.WriteTo(s);
             s.Flush();
+        }
+
+        /// <summary>
+        /// Writes PDU to stream
+        /// </summary>
+        /// <param name="s">Output stream</param>
+        public async Task WritePDUAsync(Stream s) {
+            byte[] preamble = GetCommonFields();
+            await s.WriteAsync(preamble, 0, preamble.Length).ConfigureAwait(false);
+            _ms.Seek(0, SeekOrigin.Begin);
+            await _ms.CopyToAsync(s).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -378,6 +376,25 @@ namespace FellowOakDicom.Network
         {
             _ms.Dispose();
             _br?.Dispose();
+        }
+
+        /// <summary>
+        /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
+        /// </summary>
+        private byte[] GetCommonFields() {
+            var buffer = new byte[6];
+
+            unchecked {
+                buffer[0] = _type;
+
+                var length = (uint)_ms.Length;
+                buffer[2] = (byte)((length & 0xff000000U) >> 24);
+                buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
+                buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
+                buffer[5] = (byte)(length & 0x000000ffU);
+            }
+
+            return buffer;
         }
     }
 

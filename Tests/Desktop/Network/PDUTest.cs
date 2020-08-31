@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Dicom.Network
@@ -119,6 +120,18 @@ namespace Dicom.Network
             using (var stream = new MemoryStream())
             {
                 raw.WritePDU(stream);
+                var actual = stream.ToArray();
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(RawPDUTestData))]
+        public async Task AssociateRJ_WriteAsync_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string dummy) {
+            using (var raw = reject.Write())
+            using (var stream = new MemoryStream()) {
+                await raw.WritePDUAsync(stream);
                 var actual = stream.ToArray();
 
                 Assert.Equal(expected, actual);
