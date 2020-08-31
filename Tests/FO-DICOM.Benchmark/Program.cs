@@ -17,8 +17,9 @@ namespace FellowOakDicom.Benchmark
             //Console.Write(summary.Table.ToString());
             //Console.Write(summary2.Table.ToString());
 
-            var summary3 = BenchmarkRunner.Run<JsonBenchmarks>();
-            Console.Write(summary3.Table.ToString());
+            // var summary3 = BenchmarkRunner.Run<JsonBenchmarks>();
+            var summary4 = BenchmarkRunner.Run<ParseDatasetBenchmark>();
+            Console.Write(summary4.Table.ToString());
         }
     }
 }
