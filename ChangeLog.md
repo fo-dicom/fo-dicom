@@ -1,4 +1,5 @@
 #### v.4.0.7 (TBD)
+* Bug fix: Not able to open deflated dicom file which contains squence
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
