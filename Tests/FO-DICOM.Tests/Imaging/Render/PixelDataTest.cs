@@ -11,7 +11,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.Render
 {
 
-    [Collection("General")]
+    [Collection("Imaging")]
     public class PixelDataTest
     {
         #region Unit tests

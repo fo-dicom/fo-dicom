@@ -24,6 +24,7 @@
 * Text encoding is now handled when a string is written into a network- or file-stream.
 * Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
 * internal: SCU now sends two presentation context per CStoreRequest: one with the original TS and one with the additional and the mandatory ImplicitLittleEndian. So the chance is higher to send the file without conversion. (#1048)
+* Optimize DicomTag.GetHashCode()
 
 ##### Breaking changes:
 

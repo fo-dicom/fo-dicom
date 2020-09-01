@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>FellowOakDicom.Benchmark</RootNamespace>
-    <AssemblyName>fo-dicom.Benchmark</AssemblyName>
+    <AssemblyName>FO-DICOM.Benchmark</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,10 +18,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\ct.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\DICOMDIR">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\GH355.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\mr.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

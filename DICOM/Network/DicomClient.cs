@@ -325,8 +325,10 @@ namespace Dicom.Network
             }
             catch (AggregateException e)
             {
-                // ReSharper disable once PossibleNullReferenceException
-                throw e.Flatten().InnerException;
+                var innerException = e.Flatten().InnerException;
+                if (innerException != null)
+                    throw innerException;
+                throw;
             }
         }
 

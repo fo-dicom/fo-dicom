@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests
 
             var st = new StackTrace(1);
             var frames = st.GetFrames();
-            var rootFrame = frames.LastOrDefault(f => f.GetMethod().DeclaringType.Namespace.StartsWith("FellowOakDicom"));
+            var rootFrame = frames.LastOrDefault(f => f.GetMethod()?.DeclaringType?.Namespace?.StartsWith("FellowOakDicom") == true);
 
             var declType = rootFrame.GetMethod().DeclaringType;
             if (declType.IsNested)

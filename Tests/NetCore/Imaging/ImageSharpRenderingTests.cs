@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Dicom.Imaging
 {
-    [Collection("ImageSharp")]
+    [Collection("Imaging")]
     public class ImageSharpRenderingTests
     {
         [Fact]
