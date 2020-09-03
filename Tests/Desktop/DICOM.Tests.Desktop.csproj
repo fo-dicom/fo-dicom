@@ -113,6 +113,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Bugs\GH1049.cs" />
+    <Compile Include="Bugs\GH1103.cs" />
     <Compile Include="Bugs\GH319.cs" />
     <Compile Include="Bugs\GH328.cs" />
     <Compile Include="Bugs\GH340.cs" />
