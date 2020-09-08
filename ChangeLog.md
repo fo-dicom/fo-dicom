@@ -4,6 +4,7 @@
 * Allow disabling validation in JsonDicomConverter
 * Bug fix: IPv6 issue in DesktopNetworkStream
 * Optimize DicomTag.GetHashCode() (#1088)
+* Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
