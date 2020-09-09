@@ -955,6 +955,73 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
 
+        [Fact]
+        public static void GivenDicomDatasetWithInvalidPaddedCharacterForDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string invalidAccerationValue = "0\0";
+
+            //Disabling the validation to add the invalid VR datatype to a dicom dataset.
+            var dicomDataset = new DicomDataset().NotValidated();
+            dicomDataset.Add(DicomTag.Acceleration, invalidAccerationValue);
+
+            var json = DicomJson.ConvertDicomToJson(dicomDataset);
+
+            DicomDataset deserializedDataset = DicomJson.ConvertJsonToDicom(json);
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal("0", recoveredString);
+        }
+
+        [Fact]
+        public static void GivenDicomDatasetWithValidDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string validAccelarationValue = "97";
+
+            var dicomDataset = new DicomDataset
+            {
+                { DicomTag.Acceleration, validAccelarationValue },
+            };
+
+            var json = DicomJson.ConvertDicomToJson(dicomDataset);
+
+            DicomDataset deserializedDataset = DicomJson.ConvertJsonToDicom(json);
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal(validAccelarationValue, recoveredString);
+        }
+
+
+        [Fact]
+        public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
+        {
+            string invalidDatasetJson = @"
+{
+    ""00101010"": {
+        ""vr"": ""AS"",
+        ""Value"": [
+            ""34""
+        ]
+    }
+}";
+            Assert.Throws<DicomValidationException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
+        }
+
+
+        [Fact]
+        public static void GivenJsonIsInvalid_WhenDeserializationWithAutoValidationIsFalse_ThenShouldSucceed()
+        {
+            string invalidDatasetJson = @"
+{
+    ""00101010"": {
+        ""vr"": ""AS"",
+        ""Value"": [
+            ""34""
+        ]
+    }
+}";
+            var ds = DicomJson.ConvertJsonToDicom(invalidDatasetJson, autoValidate: false);
+            Assert.NotNull(ds);
+            Assert.True(ds.Contains(DicomTag.PatientAge));
+        }
+
         #region Sample Data
 
         // The following example is a QIDO-RS SearchForStudies response consisting 

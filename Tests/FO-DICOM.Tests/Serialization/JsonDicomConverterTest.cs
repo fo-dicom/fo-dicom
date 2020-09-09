@@ -51,7 +51,7 @@ namespace FellowOakDicom.Tests.Serialization
             stopWatch.Stop();
 
             var totalElapsedMilliseconds = stopWatch.ElapsedMilliseconds;
-            var millisecondsPerCall = totalElapsedMilliseconds / (double) numCalls;
+            var millisecondsPerCall = totalElapsedMilliseconds / (double)numCalls;
 
             return millisecondsPerCall;
         }
@@ -221,7 +221,7 @@ namespace FellowOakDicom.Tests.Serialization
         {
             var ds = new DicomDataset { ValidateItems = false };
             // have to turn off validation, since we want to add invalid DS values
-            ds.Add( new DicomDecimalString(DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" } ));
+            ds.Add(new DicomDecimalString(DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" }));
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
             dynamic obj = JObject.Parse(json);
 
@@ -242,7 +242,7 @@ namespace FellowOakDicom.Tests.Serialization
             var ds = new DicomDataset { ValidateItems = false };
             // have to turn off validation, since DicomTag.PatientAge has Value Multiplicity 1, so
             // this dataset cannot be constructed without validation exception
-            ds.Add( new DicomAgeString( DicomTag.PatientAge, new[] { "1Y", "", "3Y" }));
+            ds.Add(new DicomAgeString(DicomTag.PatientAge, new[] { "1Y", "", "3Y" }));
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
             dynamic obj = JObject.Parse(json);
             Assert.Equal("1Y", (string)obj["00101010"].Value[0]);
@@ -946,6 +946,75 @@ namespace FellowOakDicom.Tests.Serialization
 
             Assert.Equal(ds.GetString(privTag1), ds2.GetString(privTag1));
             Assert.Equal(ds.GetString(privTag2), ds2.GetString(privTag2));
+        }
+
+        [Fact]
+        public static void GivenDicomDatasetWithInvalidPaddedCharacterForDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string invalidAccerationValue = "0\0";
+
+            //Disabling the validation to add the invalid VR datatype to a dicom dataset.
+            var dicomDataset = new DicomDataset().NotValidated();
+            dicomDataset.Add(DicomTag.Acceleration, invalidAccerationValue);
+
+            var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
+            JObject.Parse(json);
+            DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal("0", recoveredString);
+        }
+
+        [Fact]
+        public static void GivenDicomDatasetWithValidDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
+        {
+            string validAccelarationValue = "97";
+
+            var dicomDataset = new DicomDataset
+            {
+                { DicomTag.Acceleration, validAccelarationValue },
+            };
+
+            var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
+            JObject.Parse(json);
+            DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            Assert.Equal(validAccelarationValue, recoveredString);
+        }
+
+
+
+
+        [Fact]
+        public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
+        {
+            string invalidDatasetJson = @"
+{
+    ""00101010"": {
+        ""vr"": ""AS"",
+        ""Value"": [
+            ""34""
+        ]
+    }
+}";
+            Assert.Throws<DicomValidationException>(() => JsonConvert.DeserializeObject<DicomDataset>(invalidDatasetJson, new JsonDicomConverter()));
+        }
+
+
+        [Fact]
+        public static void GivenJsonIsInvalid_WhenDeserializationWithAutoValidationIsFalse_ThenShouldSucceed()
+        {
+            string invalidDatasetJson = @"
+{
+    ""00101010"": {
+        ""vr"": ""AS"",
+        ""Value"": [
+            ""34""
+        ]
+    }
+}";
+            var ds = JsonConvert.DeserializeObject<DicomDataset>(invalidDatasetJson, new JsonDicomConverter(autoValidate: false));
+            Assert.NotNull(ds);
+            Assert.True(ds.Contains(DicomTag.PatientAge));
         }
 
 

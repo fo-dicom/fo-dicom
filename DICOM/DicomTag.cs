@@ -43,9 +43,9 @@ namespace Dicom
             return (uint)(tag.Group << 16) | tag.Element;
         }
 
-        public ushort Group { get; private set; }
+        public ushort Group { get; }
 
-        public ushort Element { get; private set; }
+        public ushort Element { get; }
 
         public bool IsPrivate => Group.IsOdd();
 
@@ -164,12 +164,19 @@ namespace Dicom
             return !(a == b);
         }
 
-        private int _hash = 0;
-
         public override int GetHashCode()
         {
-            if (_hash == 0) _hash = ToString("X", null).GetHashCode();
-            return _hash;
+            unchecked
+            {
+                if (PrivateCreator == null)
+                {
+                    return ((uint)(Group << 16) | Element).GetHashCode();
+                }
+                else
+                {
+                    return ((uint)(Group << 16) | (Element & 0xff)).GetHashCode() ^ PrivateCreator.GetHashCode();
+                }
+            }
         }
 
         public static DicomTag Parse(string s)

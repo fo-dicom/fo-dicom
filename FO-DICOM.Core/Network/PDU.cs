@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Text;
 using FellowOakDicom.IO;
 
 namespace FellowOakDicom.Network
@@ -18,6 +18,8 @@ namespace FellowOakDicom.Network
         #region Private members
 
         private readonly byte _type;
+        
+        private readonly Encoding _encoding;
 
         private MemoryStream _ms;
 
@@ -37,12 +39,14 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU for writing
         /// </summary>
         /// <param name="type">Type of PDU</param>
-        public RawPDU(byte type)
+        /// <param name="encoding">The encoding to use for encoding text</param>
+        public RawPDU(byte type, Encoding encoding = null)
         {
             _type = type;
+            _encoding = encoding ?? DicomEncoding.Default;
             _ms = new MemoryStream();
             _ms.Seek(0, SeekOrigin.Begin);
-            _bw = EndianBinaryWriter.Create(_ms, DicomEncoding.Default, Endian.Big);
+            _bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
             _m16 = new Stack<long>();
             _m32 = new Stack<long>();
         }
@@ -51,10 +55,12 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU reader from buffer
         /// </summary>
         /// <param name="buffer">Buffer</param>
-        public RawPDU(byte[] buffer)
+        /// <param name="encoding">The encoding to use for decoding text</param>
+        public RawPDU(byte[] buffer, Encoding encoding = null)
         {
             _ms = new MemoryStream(buffer);
-            _br = EndianBinaryReader.Create(_ms, Endian.Big);
+            _encoding = encoding ?? DicomEncoding.Default;
+            _br = EndianBinaryReader.Create(_ms, _encoding, Endian.Big);
             _type = _br.ReadByte();
             _ms.Seek(6, SeekOrigin.Begin);
         }
@@ -195,13 +201,13 @@ namespace FellowOakDicom.Network
         /// Reads string from PDU
         /// </summary>
         /// <param name="name">Name of field</param>
-        /// <param name="count">Length of string</param>
+        /// <param name="numberOfBytes">Number of bytes to read</param>
         /// <returns>Field value</returns>
-        public string ReadString(string name, int count)
+        public string ReadString(string name, int numberOfBytes)
         {
-            CheckOffset(count, name);
-            var c = _br.ReadChars(count);
-            return new string(c).Trim(_trimChars);
+            var bytes = ReadBytes(name, numberOfBytes);
+            
+            return _encoding.GetString(bytes).Trim(_trimChars);
         }
 
         /// <summary>

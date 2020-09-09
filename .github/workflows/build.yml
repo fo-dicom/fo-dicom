@@ -29,58 +29,57 @@ jobs:
       - name: Build tests for Desktop platform
         run: msbuild DICOM.Desktop.sln -target:"Unit Tests\DICOM_Tests_Desktop" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
       - name: Run tests for Desktop platform
-        run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll"
+        run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll" -xml test-v4-net-framework.xml
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-v4-net-framework.xml
+          path: test-v4-net-framework.xml
 
- # v4-net-core:
- #   runs-on: windows-2019
- #   steps:
- #     - uses: actions/checkout@v1
- #     - name: Setup NuGet
- #       uses: nuget/setup-nuget@v1
- #     - name: Setup MSBuild
- #       uses: microsoft/Setup-MSBuild@v1
- #     - name: Restore nuget packages
- #       run: nuget restore DICOM.Full.sln
- #     - name: Build NetCore platform
- #       run: msbuild DICOM.Full.sln -target:"Platform\DICOM_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
- #     - name: Build tests for NetCore platform
- #       run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
- #     - name: Run tests for NetCore platform
- #       run: dotnet test "Tests\NetCore\bin\Release\netcoreapp2.0\DICOM [Unit Tests].dll"
+  v4-net-core-21:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+      - name: Setup MSBuild
+        uses: microsoft/Setup-MSBuild@v1
+      - name: Restore nuget packages using NuGet CLI
+        run: nuget restore DICOM.Full.sln
+      - name: Restore DICOM.NetCore nuget packages using dotnet CLI
+        run: dotnet restore ./Platform/NetCore/DICOM.NetCore.csproj
+      - name: Build Dicom.NetCore
+        run: msbuild DICOM.Full.sln -target:"Platform\DICOM_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+      - name: Restore DICOM.Tests.NetCore nuget packages using dotnet CLI
+        run: dotnet restore ./Tests/NetCore/DICOM.Tests.NetCore.csproj
+      - name: Build Dicom.Tests.NetCore
+        run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
+      - name: Run Dicom.Tests.NetCore
+        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release --framework netcoreapp2.0
  
   v5-net-framework:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1 
-      with:
-        dotnet-version: '3.1.x'
-    - name: Build
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462
-    - name: Test
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462
+    - name: Build FO-DICOM.Core
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462 --runtime win-x64
+    - name: Test FO-DICOM.Tests
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64
       
   v5-net-core-21:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1 
-      with:
-        dotnet-version: '2.1.x'
-    - name: Build
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0
-    - name: Test
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame
+    - name: Build FO-DICOM.Core
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0 --runtime win-x64
+    - name: Test FO-DICOM.Tests
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame --runtime win-x64
       
   v5-net-core-31:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-dotnet@v1 
-      with:
-        dotnet-version: '3.1.x'
-    - name: Build
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1
-    - name: Test
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame
-      
+    - name: Build FO-DICOM.Core
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1 --runtime win-x64
+    - name: Test FO-DICOM.Tests
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64

@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dicom
 {
@@ -56,6 +57,110 @@ namespace Dicom
         {
             var dataset = new DicomDataset { new DicomUnknown(new DicomTag(0x3005, 0x3025, "PRIVATE")) };
             Assert.True(dataset.Contains(new DicomTag(0x3005, 0x1525, "PRIVATE")));
+        }
+
+        [Fact]
+        public void GetHashCode_ReturnsDifferentValuesForSameGroupButDifferentElement()
+        {
+            var hashCode1 = DicomTag.SpecificCharacterSet.GetHashCode(); // 0x0008, 0x0005
+            var hashCode2 = DicomTag.LanguageCodeSequence.GetHashCode(); // 0x0008, 0x0006
+
+            Assert.NotEqual(hashCode1, hashCode2);
+        }
+
+        [Fact]
+        public void GetHashCode_ReturnsDifferentValuesForDifferentGroupButSameElement()
+        {
+            var hashCode1 = DicomTag.ImplementationClassUID.GetHashCode(); // 0x0002, 0x00012
+            var hashCode2 = DicomTag.InstanceCreationDate.GetHashCode(); // 0x0008, 0x0012
+
+            Assert.NotEqual(hashCode1, hashCode2);
+        }
+
+        [Fact]
+        public void GetHashCode_ReturnsDifferentValuesForSameGroupAndElementButOneHasPrivateCreator()
+        {
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+
+            var tagWithPrivateCreator = new DicomTag(4013, 0x008, privateCreator);
+            var tagWithoutPrivateCreator = new DicomTag(4013, 0x008);
+
+            var hashCode1 = tagWithPrivateCreator.GetHashCode();
+            var hashCode2 = tagWithoutPrivateCreator.GetHashCode();
+
+            Assert.NotEqual(hashCode1, hashCode2);
+        }
+
+        [Fact]
+        public void GetHashCode_ReturnsDifferentValuesForSameGroupAndElementButDifferentPrivateCreator()
+        {
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+            var privateCreator2 = DicomDictionary.Default.GetPrivateCreator("Testing2");
+
+            var tagWithPrivateCreator1 = new DicomTag(4013, 0x008, privateCreator);
+            var tagWithPrivateCreator2 = new DicomTag(4013, 0x008, privateCreator2);
+
+            var hashCode1 = tagWithPrivateCreator1.GetHashCode();
+            var hashCode2 = tagWithPrivateCreator2.GetHashCode();
+
+            Assert.NotEqual(hashCode1, hashCode2);
+        }
+
+        [Fact]
+        public void GetHashCode_ReturnsSameValuesForSameGroupAndElementAndPrivateCreator()
+        {
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+
+            var tagWithPrivateCreator1 = new DicomTag(4013, 0x008, privateCreator);
+            var tagWithPrivateCreator2 = new DicomTag(4013, 0x008, privateCreator);
+
+            var hashCode1 = tagWithPrivateCreator1.GetHashCode();
+            var hashCode2 = tagWithPrivateCreator2.GetHashCode();
+
+            Assert.Equal(hashCode1, hashCode2);
+        }
+
+        [Fact]
+        public void GetHashCode_ReturnsUniqueValuesForKnownDicomTags()
+        {
+            var dicomTagsByHashCode = DicomDictionary.Default
+                .GroupBy(e => new { e.Tag.Group, e.Tag.Element, e.Tag.PrivateCreator })
+                .Select(group => group.First())
+                .Select(entry => new { Entry = entry, HashCode = entry.Tag.GetHashCode() })
+                .GroupBy(twh => twh.HashCode);
+
+            foreach (var group in dicomTagsByHashCode)
+            {
+                var hashCode = group.Key;
+                var entries = group.Select(g => g.Entry).ToList();
+
+                if (entries.Count != 1)
+                {
+                    var entriesAsString = entries.Select(e => $"Tag = {e.Tag.ToString()}, Keyword = {e.Keyword}, Name = {e.Name}");
+                    var message = $"The following entries all have the same hash code '{hashCode}': {string.Join(", ", entriesAsString)}";
+                    Assert.True(entries.Count == 1, message);
+                }
+            }
+        }
+
+        [Fact]
+        public void GetHashCode_AdjustedPrivateTagsShouldBeRetrievable()
+        {
+            var dicomDictionary = DicomDictionary.Default;
+
+            var privateCreator = dicomDictionary.GetPrivateCreator("HashCodeTesting");
+            var privateCreatorDictionary = dicomDictionary[privateCreator];
+
+            var tag = new DicomTag(4017, 0x008, privateCreator);
+            var adjustedTag = new DicomDataset().GetPrivateTag(tag);
+
+            privateCreatorDictionary.Add(new DicomDictionaryEntry(tag, "AdjustableHashCodeTestTag1", "AdjustableHashCodeTestKey1", DicomVM.VM_1, false, DicomVR.CS));
+
+            var entry = dicomDictionary[adjustedTag];
+
+            Assert.NotEqual(DicomDictionary.UnknownTag, entry);
+            Assert.Equal(tag, entry.Tag);
+            Assert.Collection(entry.ValueRepresentations, vr => Assert.Equal(DicomVR.CS, vr));
         }
 
         #endregion

@@ -82,7 +82,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [Fact]
+        [Fact(Skip = "EncodeDecodeRLE16 causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
         public void EncodeDecodeRLE16()
         {
             var files = Directory.GetFiles(TestData.Resolve(""));

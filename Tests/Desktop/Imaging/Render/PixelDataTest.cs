@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Dicom.Imaging.Render
 {
-
+    [Collection("Imaging")]
     public class PixelDataTest
     {
         #region Unit tests

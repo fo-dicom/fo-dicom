@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Dicom.Imaging
 {
-
+    [Collection("Imaging")]
     public class DicomJpegLossessTest
     {
 
