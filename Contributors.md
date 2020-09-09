@@ -62,3 +62,5 @@
 * [Atif Colo](https://github.com/atifc)
 * [Peng Chen](https://github.com/pengchen0692)
 * [Pooja Adhikari](https://github.com/poadhika)
+* [devsko](https://github.com/devsko)
+* [jasonwurzel](https://github.com/jasonwurzel)
