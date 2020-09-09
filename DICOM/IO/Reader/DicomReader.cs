@@ -188,6 +188,7 @@ namespace Dicom.IO.Reader
             internal DicomReaderResult DoWork(IByteSource source)
             {
                 ResetState();
+                source = ConvertSource(source);
                 ParseDataset(source);
                 return _result;
             }
@@ -201,18 +202,18 @@ namespace Dicom.IO.Reader
             internal async Task<DicomReaderResult> DoWorkAsync(IByteSource source)
             {
                 ResetState();
+                source = ConvertSource(source);
                 await ParseDatasetAsync(source).ConfigureAwait(false);
                 return _result;
             }
 #endif
 
+            private IByteSource ConvertSource(IByteSource source)
+                => _isDeflated ? Decompress(source) : source;
+
+
             private void ParseDataset(IByteSource source)
             {
-                if (_isDeflated)
-                {
-                    source = Decompress(source);
-                }
-
                 _result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
@@ -254,11 +255,6 @@ namespace Dicom.IO.Reader
 #if !NET35
             private async Task ParseDatasetAsync(IByteSource source)
             {
-                if (_isDeflated)
-                {
-                    source = Decompress(source);
-                }
-
                 _result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
@@ -442,7 +438,7 @@ namespace Dicom.IO.Reader
                             // change 20161216: if changing from UN to UL then ParseLength causes a error, since length in UL is 2 bytes while length in UN is 6 bytes. 
                             // so the source hat UN and coded the length in 6 bytes. if here the VR was changed to UL then ParseLength would only read 2 bytes and the parser is then wrong.
                             // but no worry: in ParseValue in the first lines there is a lookup in the Dictionary of DicomTags and there the VR is changed to UL so that the value is finally interpreted correctly as UL.
-                           // _vr = DicomVR.UL;
+                            //_vr = DicomVR.UL;
                             break;
                         }
                         if (_isExplicitVR)

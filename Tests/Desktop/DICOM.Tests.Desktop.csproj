@@ -358,6 +358,9 @@
     <None Include="Test Data\IM-0001-0001-0001.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Test Data\Issue1097_FailToOpenDeflatedFileWithSQ.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Test Data\minimumdict.xml.gz">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
