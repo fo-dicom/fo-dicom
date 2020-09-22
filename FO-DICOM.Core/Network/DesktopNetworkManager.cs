@@ -65,8 +65,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
         {
-            var socketEx = exception as SocketException;
-            if (socketEx != null)
+            if (exception is SocketException socketEx)
             {
                 errorCode = (int)socketEx.SocketErrorCode;
                 errorDescriptor = socketEx.SocketErrorCode.ToString();

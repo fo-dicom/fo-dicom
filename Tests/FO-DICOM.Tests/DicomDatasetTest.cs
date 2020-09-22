@@ -388,8 +388,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AddOrUpdatePixelData_InternalTransferSyntax_Succeeds()
         {
-            var ds        = new DicomDataset ( );
-            var data      = new MemoryByteBuffer ( new byte[] { 255 } ); //dummy data
+            var ds = new DicomDataset();
+            var data = new MemoryByteBuffer(new byte[] { 255 }); //dummy data
 
             ds.AddOrUpdate(DicomTag.BitsAllocated, (ushort)8);
             var pixelData = DicomPixelData.Create(ds, true);
