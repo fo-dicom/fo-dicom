@@ -22,7 +22,7 @@
 * new methods in `IByteBuffer` to directly manipulate/use the data instead of copying it around multiple times.
 * Include Json serialization/deserialization directly into *fo-dicom.core* based on `System.Text.Json`.
 * Text encoding is now handled when a string is written into a network- or file-stream.
-* Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
+* Switch to IAsyncEnumerator using Microsoft.Bcl.AsyncInterfaces. LanguageVersion is set to 8.0. 
 * internal: SCU now sends two presentation context per CStoreRequest: one with the original TS and one with the additional and the mandatory ImplicitLittleEndian. So the chance is higher to send the file without conversion. (#1048)
 * Optimize DicomTag.GetHashCode()
 * Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
