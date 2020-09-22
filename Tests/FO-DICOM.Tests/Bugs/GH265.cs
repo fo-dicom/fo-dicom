@@ -28,13 +28,11 @@ namespace FellowOakDicom.Tests.Bugs
             var tempName = Path.GetTempFileName();
             DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest")).Save(tempName);
 
-            using (var stream = File.OpenRead(tempName))
-            {
-                var file = DicomFile.Open(stream);
-                Assert.Equal(DicomFileFormat.DICOM3, file.Format);
-                Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPClassUID));
-                Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID));
-            }
+            using var stream = File.OpenRead(tempName);
+            var file = DicomFile.Open(stream);
+            Assert.Equal(DicomFileFormat.DICOM3, file.Format);
+            Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPClassUID));
+            Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID));
         }
 
         [Fact]
@@ -66,15 +64,13 @@ namespace FellowOakDicom.Tests.Bugs
             var expected = input.FileMetaInfo;
             await input.SaveAsync(tempName).ConfigureAwait(false);
 
-            using (var stream = File.OpenRead(tempName))
-            {
-                var output = await DicomFile.OpenAsync(stream).ConfigureAwait(false);
-                var actual = output.FileMetaInfo;
+            using var stream = File.OpenRead(tempName);
+            var output = await DicomFile.OpenAsync(stream).ConfigureAwait(false);
+            var actual = output.FileMetaInfo;
 
-                Assert.NotEqual(expected.ImplementationClassUID.UID, actual.ImplementationClassUID.UID);
-                Assert.NotEqual(expected.ImplementationVersionName, actual.ImplementationVersionName);
-                Assert.Equal(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
-            }
+            Assert.NotEqual(expected.ImplementationClassUID.UID, actual.ImplementationClassUID.UID);
+            Assert.NotEqual(expected.ImplementationVersionName, actual.ImplementationVersionName);
+            Assert.Equal(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
         }
 
         [Fact]

@@ -9,31 +9,29 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void ReadingOsirixAssociationRequest1_ShouldNotThrow()
         {
-            using (var pdu = new RawPDU(OsirixAssociationRequest1))
-            {
-                var association = new DicomAssociation { };
+            using var pdu = new RawPDU(OsirixAssociationRequest1);
 
-                var associateRq = new AAssociateRQ(association);
+            var association = new DicomAssociation { };
 
-                var exception = Record.Exception(() => associateRq.Read(pdu));
+            var associateRq = new AAssociateRQ(association);
 
-                Assert.Null(exception);
-            }
+            var exception = Record.Exception(() => associateRq.Read(pdu));
+
+            Assert.Null(exception);
         }
 
         [Fact]
         public void ReadingOsirixAssociationRequest2_ShouldNotThrow()
         {
-            using (var pdu = new RawPDU(OsirixAssociationRequest2))
-            {
-                var association = new DicomAssociation { };
+            using var pdu = new RawPDU(OsirixAssociationRequest2);
 
-                var associateRq = new AAssociateRQ(association);
+            var association = new DicomAssociation { };
 
-                var exception = Record.Exception(() => associateRq.Read(pdu));
+            var associateRq = new AAssociateRQ(association);
 
-                Assert.Null(exception);
-            }
+            var exception = Record.Exception(() => associateRq.Read(pdu));
+
+            Assert.Null(exception);
         }
 
         #region TestData
