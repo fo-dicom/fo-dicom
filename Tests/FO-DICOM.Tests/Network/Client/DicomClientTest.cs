@@ -91,7 +91,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.NegotiateAsyncOps(1, 1);
                 for (var i = 0; i < 5; i++)
                 {
-                    var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
+                    var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
                     await client.AddRequestAsync(request).ConfigureAwait(false);
                 }
 
@@ -105,7 +105,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     {
                         for (var i = 0; i < 5; i++)
                         {
-                            var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
+                            var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
                             await client.AddRequestAsync(request).ConfigureAwait(false);
                         }
 
@@ -127,7 +127,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<DicomCEchoProvider>(port))
             {
                 var counter = 0;
-                var request = new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)};
+                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
@@ -155,7 +155,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.NegotiateAsyncOps(expected, 1);
 
                 var requests = Enumerable.Range(0, expected)
-                    .Select(i => new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)});
+                    .Select(i => new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
                 await client.AddRequestsAsync(requests).ConfigureAwait(false);
 
@@ -325,7 +325,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 var requestedNegotiation = new DicomExtendedNegotiation(
                     DicomUID.Verification,
-                    new DicomServiceApplicationInfo(new byte[] {1, 1, 1}));
+                    new DicomServiceApplicationInfo(new byte[] { 1, 1, 1 }));
                 DicomExtendedNegotiationCollection acceptedNegotiations = null;
 
                 client.AdditionalExtendedNegotiations.Add(requestedNegotiation);
@@ -417,7 +417,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<DicomCEchoProvider>(port))
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = (req, res) => Thread.Sleep(100)}).ConfigureAwait(false);
+                await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) }).ConfigureAwait(false);
                 await client.SendAsync().ConfigureAwait(false);
 
                 Assert.False(client.IsSendRequired);
@@ -434,9 +434,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 var flag = new ManualResetEventSlim();
 
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.ClientOptions.AssociationLingerTimeoutInMs= 100;
+                client.ClientOptions.AssociationLingerTimeoutInMs = 100;
 
-                await client.AddRequestAsync(new DicomCEchoRequest {OnResponseReceived = (req, res) => Interlocked.Increment(ref counter)})
+                await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) })
                     .ConfigureAwait(false);
 
                 var sendTask = client.SendAsync();
@@ -1134,7 +1134,7 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var numberOfRequests = 5;
             var lingerTimeoutInSeconds = 5;
-            var secondsBetweenEachRequest = new[] {1, 1, 1, 6, 1, 1};
+            var secondsBetweenEachRequest = new[] { 1, 1, 1, 6, 1, 1 };
             var expectedNumberOfAssociations = 2;
             var logger = _logger.IncludePrefix("UnitTest");
             var port = Ports.GetNext();
@@ -1341,7 +1341,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     }
                 };
 
-                await client.AddRequestsAsync(new [] { echoRequest1, echoRequest2, echoRequest3 }).ConfigureAwait(false);
+                await client.AddRequestsAsync(new[] { echoRequest1, echoRequest2, echoRequest3 }).ConfigureAwait(false);
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
@@ -1608,7 +1608,6 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
             {
                 _requests.Add(request);
@@ -1633,41 +1632,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 yield return result;
             }
-#else
-            public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
-            {
-                _requests.Add(request);
 
-                return InnerOnCGetRequestAsync();
-
-                IEnumerable<Task<DicomCGetResponse>> InnerOnCGetRequestAsync()
-                {
-                    yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Pending));
-
-                    Func<Task<DicomCGetResponse>> nextAsyncResponse = async () =>
-                    {
-                        try
-                        {
-                            var file = await DicomFile.OpenAsync(TestData.Resolve("10200904.dcm")).ConfigureAwait(false);
-
-                            var cStoreRequest = new DicomCStoreRequest(file);
-
-                            await SendRequestAsync(cStoreRequest).ConfigureAwait(false);
-
-                            return new DicomCGetResponse(request, DicomStatus.Success);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error("Could not send file via C-Store request: {error}", e);
-                            return new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
-                        }
-                    };
-
-                    yield return nextAsyncResponse();
-                }
-            }
-#endif
         }
+
 
         public class RecordingDicomCGetProviderServer : DicomServer<RecordingDicomCGetProvider>
         {

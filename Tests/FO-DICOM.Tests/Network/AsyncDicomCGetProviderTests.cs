@@ -127,23 +127,13 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
         {
             yield return new DicomCGetResponse(request, DicomStatus.Success);
         }
-#else
-        public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
-        {
-            return InnerOnCGetRequestAsync();
 
-            IEnumerable<Task<DicomCGetResponse>> InnerOnCGetRequestAsync()
-            {
-                yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Success));
-            }
-        }
-#endif
     }
+
 
     public class PendingAsyncDicomCGetProvider : DicomService, IDicomServiceProvider, IDicomCGetProvider
     {
@@ -181,26 +171,13 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
         {
             yield return new DicomCGetResponse(request, DicomStatus.Pending);
             yield return new DicomCGetResponse(request, DicomStatus.Pending);
             yield return new DicomCGetResponse(request, DicomStatus.Success);
         }
-#else
-        public async Task<IEnumerable<Task<DicomCGetResponse>>> OnCGetRequestAsync(DicomCGetRequest request)
-        {
-            return InnerOnCGetRequestAsync();
 
-            IEnumerable<Task<DicomCGetResponse>> InnerOnCGetRequestAsync()
-            {
-                yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Pending));
-                yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Pending));
-                yield return Task.FromResult(new DicomCGetResponse(request, DicomStatus.Success));
-            }
-        }
-#endif
     }
 
 

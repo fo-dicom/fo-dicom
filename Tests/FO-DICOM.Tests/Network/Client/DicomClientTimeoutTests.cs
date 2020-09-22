@@ -506,7 +506,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     OnTimeout = (sender, args) => timeout3 = args
                 };
 
-                await client.AddRequestsAsync(new [] { request1, request2, request3 }).ConfigureAwait(false);
+                await client.AddRequestsAsync(new[] { request1, request2, request3 }).ConfigureAwait(false);
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
@@ -580,7 +580,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     OnTimeout = (sender, args) => timeout3 = args
                 };
 
-                await client.AddRequestsAsync(new [] { request1, request2, request3 }).ConfigureAwait(false);
+                await client.AddRequestsAsync(new[] { request1, request2, request3 }).ConfigureAwait(false);
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
                 {
@@ -656,7 +656,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
             public Stream AsStream()
             {
-                return new ConfigurableStreamDecorator(_onStreamWrite, (NetworkStream) _desktopNetworkStream.AsStream());
+                return new ConfigurableStreamDecorator(_onStreamWrite, (NetworkStream)_desktopNetworkStream.AsStream());
             }
         }
 
@@ -878,39 +878,20 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
             {
                 _requests.Add(request);
                 yield break;
             }
-#else
-            public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
-            {
-                _requests.Add(request);
-                return InternalOnCFindRequestAsync();
 
-                IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
-                {
-                    yield break;
-                }
-            }
-#endif
-
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
                 _requests.Add(request);
                 yield break;
             }
-#else
-            public async Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request)
-            {
-                _requests.Add(request);
-                return Enumerable.Empty<Task<DicomCMoveResponse>>();
-            }
-#endif
+
         }
+
 
         private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
@@ -947,7 +928,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
             {
                 await Task.Delay(1000);
@@ -959,26 +939,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 await Task.Delay(1000);
                 yield return new DicomCFindResponse(request, DicomStatus.Success);
             }
-#else
-            public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
-            {
-                return InternalOnCFindRequestAsync();
 
-                IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
-                {
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
-                }
-            }
-#endif
-
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
                 await Task.Delay(1000);
@@ -990,25 +951,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 await Task.Delay(1000);
                 yield return new DicomCMoveResponse(request, DicomStatus.Success);
             }
-#else
-            public async Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request)
-            {
-                return InternalOnCMoveRequestAsync();
 
-                IEnumerable<Task<DicomCMoveResponse>> InternalOnCMoveRequestAsync()
-                {
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(1000);
-                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Success));
-                }
-            }
-#endif
         }
+
 
         private class SlowPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
@@ -1047,48 +992,22 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationReleaseResponseAsync();
             }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
             {
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
                 await Task.Delay(Delay);
                 yield return new DicomCFindResponse(request, DicomStatus.Success);
             }
-#else
-            public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
-            {
-                return InternalOnCFindRequestAsync();
 
-                IEnumerable<Task<DicomCFindResponse>> InternalOnCFindRequestAsync()
-                {
-                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(Delay);
-                    yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
-                }
-            }
-#endif
-
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
             public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
                 await Task.Delay(Delay);
                 yield return new DicomCMoveResponse(request, DicomStatus.Success);
             }
-#else
-            public async Task<IEnumerable<Task<DicomCMoveResponse>>> OnCMoveRequestAsync(DicomCMoveRequest request)
-            {
-                return InternalOnCMoveRequestAsync();
 
-                IEnumerable<Task<DicomCMoveResponse>> InternalOnCMoveRequestAsync()
-                {
-                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Pending));
-                    Thread.Sleep(Delay);
-                    yield return Task.FromResult(new DicomCMoveResponse(request, DicomStatus.Success));
-                }
-            }
-#endif
         }
+
 
         #endregion
     }
