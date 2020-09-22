@@ -626,12 +626,10 @@ namespace FellowOakDicom.Tests.Serialization
         private void DownloadBulkData(BulkDataUriByteBuffer bulkData)
         {
             var request = WebRequest.Create(bulkData.BulkDataUri);
-            using (var response = request.GetResponse())
-            using (var responseStream = response.GetResponseStream())
-            {
-                bulkData.Data = new byte[response.ContentLength];
-                responseStream.Read(bulkData.Data, 0, (int)response.ContentLength);
-            }
+            using var response = request.GetResponse();
+            using var responseStream = response.GetResponseStream();
+            bulkData.Data = new byte[response.ContentLength];
+            responseStream.Read(bulkData.Data, 0, (int)response.ContentLength);
         }
 
         /// <summary>

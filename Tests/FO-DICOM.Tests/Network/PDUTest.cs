@@ -102,30 +102,26 @@ namespace FellowOakDicom.Tests.Network
 
         [Theory]
         [MemberData(nameof(RawPDUTestData))]
-        public void AssociateRJ_Read_ReasonGivenByContext(byte[] buffer, AAssociateRJ dummy, string expected)
+        public void AssociateRJ_Read_ReasonGivenByContext(byte[] buffer, AAssociateRJ _, string expected)
         {
-            using (var raw = new RawPDU(buffer))
-            {
-                var reject = new AAssociateRJ();
-                reject.Read(raw);
-                var actual = reject.Reason.ToString();
+            using var raw = new RawPDU(buffer);
+            var reject = new AAssociateRJ();
+            reject.Read(raw);
+            var actual = reject.Reason.ToString();
 
-                Assert.Equal(expected, actual);
-            }
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
         [MemberData(nameof(RawPDUTestData))]
-        public void AssociateRJ_Write_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string dummy)
+        public void AssociateRJ_Write_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string _)
         {
-            using (var raw = reject.Write())
-            using (var stream = new MemoryStream())
-            {
-                raw.WritePDU(stream);
-                var actual = stream.ToArray();
+            using var raw = reject.Write();
+            using var stream = new MemoryStream();
+            raw.WritePDU(stream);
+            var actual = stream.ToArray();
 
-                Assert.Equal(expected, actual);
-            }
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -137,16 +133,14 @@ namespace FellowOakDicom.Tests.Network
             association.PresentationContexts.Add(
                 new DicomPresentationContext(contextId, DicomUID.Verification));
 
-            using (var raw = new RawPDU(buffer))
-            {
-                var accept = new AAssociateAC(association);
-                accept.Read(raw);
+            using var raw = new RawPDU(buffer);
+            var accept = new AAssociateAC(association);
+            accept.Read(raw);
 
-                var actual = association.PresentationContexts[contextId];
+            var actual = association.PresentationContexts[contextId];
 
-                Assert.Equal(result, actual.Result);
-                Assert.Equal(syntax, actual.AcceptedTransferSyntax);
-            }
+            Assert.Equal(result, actual.Result);
+            Assert.Equal(syntax, actual.AcceptedTransferSyntax);
         }
 
         #endregion
@@ -267,16 +261,14 @@ namespace FellowOakDicom.Tests.Network
 
         private RawPDU ConvertWriteToReadPdu(RawPDU writePdu)
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                writePdu.WritePDU(stream);
+            using var stream = new MemoryStream();
+            writePdu.WritePDU(stream);
 
-                int length = (int)stream.Length;
-                byte[] buffer = new byte[length];
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.Read(buffer, 0, length);
-                return new RawPDU(buffer);
-            }
+            int length = (int)stream.Length;
+            byte[] buffer = new byte[length];
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.Read(buffer, 0, length);
+            return new RawPDU(buffer);
         }
 
         #endregion

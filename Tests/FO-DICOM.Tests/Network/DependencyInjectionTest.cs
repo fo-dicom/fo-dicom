@@ -36,22 +36,21 @@ namespace FellowOakDicom.Tests.Network
             var dicomServerFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
             var dicomClientFactory = serviceProvider.GetRequiredService<IDicomClientFactory>();
 
-            using (var server = dicomServerFactory.Create<EchoProviderWithDependency>(port))
-            {
-                var client = dicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            using var server = dicomServerFactory.Create<EchoProviderWithDependency>(port);
 
-                string value = string.Empty;
-                var request = new DicomCEchoRequest();
-                request.OnResponseReceived += (req, resp) =>
-                    {
-                        value = resp.Dataset.GetSingleValueOrDefault(DicomTag.PatientComments, string.Empty);
-                    };
+            var client = dicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+            string value = string.Empty;
+            var request = new DicomCEchoRequest();
+            request.OnResponseReceived += (req, resp) =>
+                {
+                    value = resp.Dataset.GetSingleValueOrDefault(DicomTag.PatientComments, string.Empty);
+                };
 
-                Assert.False(string.IsNullOrEmpty(value));
-            }
+            await client.AddRequestAsync(request).ConfigureAwait(false);
+            await client.SendAsync().ConfigureAwait(false);
+
+            Assert.False(string.IsNullOrEmpty(value));
         }
 
     }

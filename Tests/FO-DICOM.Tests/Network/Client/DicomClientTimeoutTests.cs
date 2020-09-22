@@ -508,22 +508,21 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 await client.AddRequestsAsync(new[] { request1, request2, request3 }).ConfigureAwait(false);
 
-                using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
+                using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+
+                Exception exception = null;
+                try
                 {
-                    Exception exception = null;
-                    try
-                    {
-                        await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        exception = e;
-                    }
-
-                    Assert.NotNull(exception);
-
-                    Assert.False(cancellation.IsCancellationRequested);
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
                 }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
+
+                Assert.NotNull(exception);
+
+                Assert.False(cancellation.IsCancellationRequested);
             }
 
             Assert.NotNull(response1);
@@ -582,21 +581,20 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 await client.AddRequestsAsync(new[] { request1, request2, request3 }).ConfigureAwait(false);
 
-                using (var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
-                {
-                    Exception exception = null;
-                    try
-                    {
-                        await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        exception = e;
-                    }
+                using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
-                    Assert.NotNull(exception);
-                    Assert.False(cancellation.IsCancellationRequested, "The DicomClient had to be cancelled, this indicates it was stuck in an infinite loop");
+                Exception exception = null;
+                try
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
                 }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
+
+                Assert.NotNull(exception);
+                Assert.False(cancellation.IsCancellationRequested, "The DicomClient had to be cancelled, this indicates it was stuck in an infinite loop");
             }
 
             Assert.NotNull(response1);

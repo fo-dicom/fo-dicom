@@ -325,18 +325,16 @@ namespace FellowOakDicom
         /// <param name="format">File format.</param>
         public void Load(string file, DicomDictionaryFormat format)
         {
-            
+
             var fileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(file);
-            using (var fs = fileRef.OpenRead())
+            using var fs = fileRef.OpenRead();
+            var s = fs;
+            if (file.EndsWith(".gz"))
             {
-                var s = fs;
-                if (file.EndsWith(".gz"))
-                {
-                    s = new GZipStream(s, CompressionMode.Decompress);
-                }
-                var reader = new DicomDictionaryReader(this, format, s);
-                reader.Process();
+                s = new GZipStream(s, CompressionMode.Decompress);
             }
+            var reader = new DicomDictionaryReader(this, format, s);
+            reader.Process();
         }
 
         #endregion
