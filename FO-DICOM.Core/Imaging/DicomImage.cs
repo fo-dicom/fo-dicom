@@ -210,20 +210,22 @@ namespace FellowOakDicom.Imaging
         /// <returns>Rendered image</returns>
         public virtual IImage RenderImage(int frame = 0)
         {
-            bool load;
+            IPixelData pixels;
             lock (_lock)
             {
-                load = frame >= 0 && (frame != CurrentFrame || _rerender);
+                var load = frame >= 0 && (frame != CurrentFrame || _rerender);
                 CurrentFrame = frame;
                 _rerender = false;
-            }
 
-            var frameIndex = GetFrameIndex(frame);
-            if (load)
-            {
-                lock (_lock)
+                if (load)
                 {
-                    _pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    var frameIndex = GetFrameIndex(frame);
+                    pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    _pixels = pixels;
+                }
+                else
+                {
+                    pixels = _pixels;
                 }
             }
 
@@ -233,37 +235,34 @@ namespace FellowOakDicom.Imaging
             }
 
             IImage image;
-            lock (_lock)
-            { 
-                var graphic = new ImageGraphic(_pixels);
+            var graphic = new ImageGraphic(pixels);
 
-                if (ShowOverlays)
+            if (ShowOverlays)
+            {
+                foreach (var overlay in _overlays)
                 {
-                    foreach (var overlay in _overlays)
+                    if (overlay.Data is EmptyBuffer) // fixed overlay.data is null, exception thrown
                     {
-                        if (overlay.Data is EmptyBuffer) // fixed overlay.data is null, exception thrown
-                        {
-                            continue;
-                        }
-
-                        if (frame + 1 < overlay.OriginFrame
-                            || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1)
-                        {
-                            continue;
-                        }
-
-                        var og = new OverlayGraphic(
-                            PixelDataFactory.Create(overlay),
-                            overlay.OriginX - 1,
-                            overlay.OriginY - 1,
-                            OverlayColor);
-                        graphic.AddOverlay(og);
-                        og.Scale(_scale);
+                        continue;
                     }
-                }
 
-                image = graphic.RenderImage(_pipeline.LUT);
+                    if (frame + 1 < overlay.OriginFrame
+                        || frame + 1 > overlay.OriginFrame + overlay.NumberOfFrames - 1)
+                    {
+                        continue;
+                    }
+
+                    var og = new OverlayGraphic(
+                        PixelDataFactory.Create(overlay),
+                        overlay.OriginX - 1,
+                        overlay.OriginY - 1,
+                        OverlayColor);
+                    graphic.AddOverlay(og);
+                    og.Scale(_scale);
+                }
             }
+
+            image = graphic.RenderImage(_pipeline.LUT);
 
             return image;
         }
@@ -287,17 +286,14 @@ namespace FellowOakDicom.Imaging
                         DicomTransferSyntax.ExplicitVRLittleEndian);
                     var buffer = transcoder.DecodeFrame(_dataset, frame);
 
-                    lock (_lock)
+                    // Additional check to ensure that frame has not been provided by other thread.
+                    if (!_frameIndices.TryGetValue(frame, out index))
                     {
-                        // Additional check to ensure that frame has not been provided by other thread.
-                        if (!_frameIndices.TryGetValue(frame, out index))
-                        {
-                            // Get frame/index mapping for previously unstored frame.
-                            index = _pixelData.NumberOfFrames;
-                            _frameIndices.Add(frame, index);
+                        // Get frame/index mapping for previously unstored frame.
+                        index = _pixelData.NumberOfFrames;
+                        _frameIndices.Add(frame, index);
 
-                            _pixelData.AddFrame(buffer);
-                        }
+                        _pixelData.AddFrame(buffer);
                     }
                 }
 
