@@ -16,7 +16,8 @@ namespace FellowOakDicom.Tests.Bugs
     {
         #region Unit Tests
 
-        [TheoryForNetCore(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
+        // [TheoryForNetCore(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
+        [TheoryForNetCore()]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomTranscoderTranscode_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax, int filesToTranscode)
         {
@@ -45,7 +46,8 @@ namespace FellowOakDicom.Tests.Bugs
             }
         }
 
-        [TheoryForNetCore(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
+        // [TheoryForNetCore(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
+        [TheoryForNetCore()]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomDatasetClone_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)
