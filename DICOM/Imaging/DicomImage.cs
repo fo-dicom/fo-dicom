@@ -21,8 +21,6 @@ namespace Dicom.Imaging
 
         private readonly object _lock = new object();
 
-        private int _currentFrame;
-
         private double _scale;
 
         private bool _rerender;
@@ -60,7 +58,7 @@ namespace Dicom.Imaging
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
             _pixelData = CreateDicomPixelData(_dataset);
-            _currentFrame = frame;
+            CurrentFrame = frame;
         }
 
         /// <summary>Creates DICOM image object from file</summary>
@@ -222,7 +220,7 @@ namespace Dicom.Imaging
         /// <summary>
         /// Gets the index of the current frame.
         /// </summary>
-        public int CurrentFrame => _currentFrame;
+        public int CurrentFrame { get; private set; }
 
         #endregion
 
@@ -237,7 +235,7 @@ namespace Dicom.Imaging
             lock (_lock)
             {
                 var load = frame >= 0 && (frame != CurrentFrame || _rerender);
-                _currentFrame = frame;
+                CurrentFrame = frame;
                 _rerender = false;
 
                 if (load)
