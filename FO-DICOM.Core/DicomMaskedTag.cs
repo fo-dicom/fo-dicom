@@ -64,10 +64,9 @@ namespace FellowOakDicom
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (formatProvider != null)
+            if (formatProvider?.GetFormat(GetType()) is ICustomFormatter fmt)
             {
-                ICustomFormatter fmt = formatProvider.GetFormat(this.GetType()) as ICustomFormatter;
-                if (fmt != null) return fmt.Format(format, this, formatProvider);
+                return fmt.Format(format, this, formatProvider);
             }
 
             switch (format)
@@ -75,7 +74,7 @@ namespace FellowOakDicom
                 case "g":
                     {
                         string s = Group.ToString("x4");
-                        string x = String.Empty;
+                        string x = string.Empty;
                         x += ((Mask & 0xf0000000) != 0) ? s[0] : 'x';
                         x += ((Mask & 0x0f000000) != 0) ? s[1] : 'x';
                         x += ((Mask & 0x00f00000) != 0) ? s[2] : 'x';
@@ -85,7 +84,7 @@ namespace FellowOakDicom
                 case "e":
                     {
                         string s = Element.ToString("x4");
-                        string x = String.Empty;
+                        string x = string.Empty;
                         x += ((Mask & 0x0000f000) != 0) ? s[0] : 'x';
                         x += ((Mask & 0x00000f00) != 0) ? s[1] : 'x';
                         x += ((Mask & 0x000000f0) != 0) ? s[2] : 'x';
@@ -95,7 +94,7 @@ namespace FellowOakDicom
                 case "G":
                 default:
                     {
-                        return String.Format("({0},{1})", this.ToString("g", null), this.ToString("e", null));
+                        return string.Format("({0},{1})", this.ToString("g", null), this.ToString("e", null));
                     }
             }
         }
