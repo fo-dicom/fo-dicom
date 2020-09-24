@@ -30,10 +30,8 @@ namespace FellowOakDicom.IO.Buffer
             _file = TemporaryFile.Create();
             Size = data.Length;
 
-            using (var stream = _file.OpenWrite())
-            {
-                stream.Write(data, 0, (int)Size);
-            }
+            using var stream = _file.OpenWrite();
+            stream.Write(data, 0, (int)Size);
         }
 
         #endregion
@@ -69,11 +67,9 @@ namespace FellowOakDicom.IO.Buffer
         {
             var buffer = new byte[count];
 
-            using (var fs = _file.OpenRead())
-            {
-                fs.Seek(offset, SeekOrigin.Begin);
-                fs.Read(buffer, 0, count);
-            }
+            using var fs = _file.OpenRead();
+            fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(buffer, 0, count);
 
             return buffer;
         }

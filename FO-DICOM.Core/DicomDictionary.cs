@@ -143,14 +143,10 @@ namespace FellowOakDicom
                     try
                     {
                         var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
-                        using (
-                            var stream = assembly.GetManifestResourceStream(
-                                "FellowOakDicom.Dictionaries.DICOMDictionary.xml.gz"))
-                        {
-                            var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
-                            reader.Process();
-                        }
+                        using var stream = assembly.GetManifestResourceStream("FellowOakDicom.Dictionaries.DICOMDictionary.xml.gz");
+                        var gzip = new GZipStream(stream, CompressionMode.Decompress);
+                        var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
+                        reader.Process();                        
                     }
                     catch (Exception e)
                     {
@@ -163,14 +159,10 @@ namespace FellowOakDicom
                         try
                         {
                             var assembly = typeof(DicomDictionary).GetTypeInfo().Assembly;
-                            using (
-                                var stream =
-                                    assembly.GetManifestResourceStream("FellowOakDicom.Dictionaries.PrivateDictionary.xml.gz"))
-                            {
-                                var gzip = new GZipStream(stream, CompressionMode.Decompress);
-                                var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
-                                reader.Process();
-                            }
+                            using var stream = assembly.GetManifestResourceStream("FellowOakDicom.Dictionaries.PrivateDictionary.xml.gz");
+                            var gzip = new GZipStream(stream, CompressionMode.Decompress);
+                            var reader = new DicomDictionaryReader(dict, DicomDictionaryFormat.XML, gzip);
+                            reader.Process();
                         }
                         catch (Exception e)
                         {

@@ -286,25 +286,21 @@ namespace FellowOakDicom.IO.Reader
 
             private IByteSource Decompress(IByteSource source)
             {
-                using (var compressed = new MemoryStream())
+                using var compressed = new MemoryStream();
+                // It is implicitly assumed that the rest of the byte source is compressed.
+                while (!source.IsEOF)
                 {
-                    // It is implicitly assumed that the rest of the byte source is compressed.
-                    while (!source.IsEOF)
-                    {
-                        compressed.WriteByte(source.GetUInt8());
-                    }
-
-                    compressed.Seek(0, SeekOrigin.Begin);
-
-                    var decompressed = new MemoryStream();
-                    using (var decompressor = new DeflateStream(compressed, CompressionMode.Decompress, true))
-                    {
-                        decompressor.CopyTo(decompressed);
-                    }
-
-                    decompressed.Seek(0, SeekOrigin.Begin);
-                    return new StreamByteSource(decompressed, FileReadOption.Default);
+                    compressed.WriteByte(source.GetUInt8());
                 }
+
+                compressed.Seek(0, SeekOrigin.Begin);
+
+                var decompressed = new MemoryStream();
+                using var decompressor = new DeflateStream(compressed, CompressionMode.Decompress, true);
+                decompressor.CopyTo(decompressed);
+
+                decompressed.Seek(0, SeekOrigin.Begin);
+                return new StreamByteSource(decompressed, FileReadOption.Default);
             }
 
             private bool ParseTag(IByteSource source)

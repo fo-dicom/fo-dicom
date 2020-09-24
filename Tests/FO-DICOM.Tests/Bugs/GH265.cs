@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,7 +18,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
             Assert.Equal(DicomFileFormat.DICOM3NoFileMetaInfo, file.Format);
-            Assert.Equal(0, file.FileMetaInfo.Count());
+            Assert.Empty(file.FileMetaInfo);
         }
 
         [Fact]
@@ -41,12 +40,10 @@ namespace FellowOakDicom.Tests.Bugs
             DicomFileMetaInformation expected;
             var tempName = Path.GetTempFileName();
 
-            using (var stream = File.OpenWrite(tempName))
-            {
-                var input = await DicomFile.OpenAsync(TestData.Resolve("CT-MONO2-16-ankle")).ConfigureAwait(false);
-                expected = input.FileMetaInfo;
-                await input.SaveAsync(stream).ConfigureAwait(false);
-            }
+            using var stream = File.OpenWrite(tempName);
+            var input = await DicomFile.OpenAsync(TestData.Resolve("CT-MONO2-16-ankle")).ConfigureAwait(false);
+            expected = input.FileMetaInfo;
+            await input.SaveAsync(stream).ConfigureAwait(false);
 
             var output = DicomFile.Open(tempName);
             var actual = output.FileMetaInfo;

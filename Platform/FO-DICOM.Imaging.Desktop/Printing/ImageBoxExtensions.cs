@@ -81,10 +81,8 @@ namespace FellowOakDicom.Printing
                 {
                     fillBox.Inflate(-_border, -_border);
                 }
-                using (var brush = new SolidBrush(Color.Black))
-                {
-                    graphics.FillRectangle(brush, fillBox.X, fillBox.Y, fillBox.Width, fillBox.Height);
-                }
+                using var brush = new SolidBrush(Color.Black);
+                graphics.FillRectangle(brush, fillBox.X, fillBox.Y, fillBox.Width, fillBox.Height);
             }
         }
 
@@ -108,37 +106,30 @@ namespace FellowOakDicom.Printing
                 var targetHeight = (int)(imageResolution * box.Height / 100);
 
 
-                using (var membmp = new Bitmap(targetWidth, targetHeight))
+                using var membmp = new Bitmap(targetWidth, targetHeight);
+                membmp.SetResolution(imageResolution, imageResolution);
+
+                using var memg = Graphics.FromImage(membmp);
+                memg.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
+                memg.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                if (emptyImageDensity == "BLACK")
                 {
-                    membmp.SetResolution(imageResolution, imageResolution);
-
-                    using (var memg = Graphics.FromImage(membmp))
-                    {
-
-                        memg.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
-                        memg.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                        if (emptyImageDensity == "BLACK")
-                        {
-                            using (var brush = new SolidBrush(Color.Black))
-                            {
-                                memg.FillRectangle(brush, 0, 0, targetWidth, targetHeight);
-                            }
-                        }
-
-                        factor = Math.Min(
-                            targetHeight / (double)bitmap.Height,
-                            targetWidth / (double)bitmap.Width);
-
-                        var x = (float)((targetWidth - bitmap.Width * factor) / 2.0f);
-                        var y = (float)((targetHeight - bitmap.Height * factor) / 2.0f);
-                        var width = (float)(bitmap.Width * factor);
-                        var height = (float)(bitmap.Height * factor);
-
-                        memg.DrawImage(bitmap, x, y, width, height);
-                    }
-                    graphics.DrawImage(membmp, box.X, box.Y, box.Width, box.Height);
+                    using var brush = new SolidBrush(Color.Black);
+                    memg.FillRectangle(brush, 0, 0, targetWidth, targetHeight);
                 }
+
+                factor = Math.Min(
+                    targetHeight / (double)bitmap.Height,
+                    targetWidth / (double)bitmap.Width);
+
+                var x = (float)((targetWidth - bitmap.Width * factor) / 2.0f);
+                var y = (float)((targetHeight - bitmap.Height * factor) / 2.0f);
+                var width = (float)(bitmap.Width * factor);
+                var height = (float)(bitmap.Height * factor);
+
+                memg.DrawImage(bitmap, x, y, width, height);
+                graphics.DrawImage(membmp, box.X, box.Y, box.Width, box.Height);
             }
             else
             {

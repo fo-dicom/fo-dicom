@@ -58,10 +58,8 @@ namespace FellowOakDicom.Network
             Dataset = file.Dataset;
 
             // for potentially invalid UID values, we have to disable validation
-            using (var unvalidated = new UnvalidatedScope(Command))
-            {
-                SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
-            }
+            using var unvalidated = new UnvalidatedScope(Command);
+            SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
         }
 
         /// <summary>

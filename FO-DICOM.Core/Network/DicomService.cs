@@ -425,30 +425,28 @@ namespace FellowOakDicom.Network
                     _readLength = length;
 
                     // Read PDU
-                    using (var ms = new MemoryStream())
+                    using var ms = new MemoryStream();
+                    ms.Write(buffer, 0, buffer.Length);
+                    while (_readLength > 0)
                     {
-                        ms.Write(buffer, 0, buffer.Length);
-                        while (_readLength > 0)
+                        int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
+                        var tempBuffer = new byte[bytesToRead];
+                        count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
+                            .ConfigureAwait(false);
+
+                        if (count == 0)
                         {
-                            int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
-                            var tempBuffer = new byte[bytesToRead];
-                            count = await stream.ReadAsync(tempBuffer, 0, bytesToRead)
-                                .ConfigureAwait(false);
-
-                            if (count == 0)
-                            {
-                                // disconnected
-                                await TryCloseConnectionAsync().ConfigureAwait(false);
-                                return;
-                            }
-
-                            ms.Write(tempBuffer, 0, count);
-
-                            _readLength -= count;
+                            // disconnected
+                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            return;
                         }
 
-                        buffer = ms.ToArray();
+                        ms.Write(tempBuffer, 0, count);
+
+                        _readLength -= count;
                     }
+
+                    buffer = ms.ToArray();
 
                     var raw = new RawPDU(buffer);
 
@@ -790,10 +788,8 @@ namespace FellowOakDicom.Network
                                 var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
                                 // when receiving data via network, accept it and dont validate
-                                using (var unvalidated = new UnvalidatedScope(_dimse.Dataset))
-                                {
-                                    reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
-                                }
+                                using var unvalidated = new UnvalidatedScope(_dimse.Dataset);
+                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
                                 _dimseStream = null;
                                 _dimseStreamFile = null;

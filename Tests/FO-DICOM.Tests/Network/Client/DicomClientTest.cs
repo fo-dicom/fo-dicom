@@ -1247,10 +1247,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 await client.AddRequestAsync(dicomCEchoRequest).ConfigureAwait(false);
             }
 
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
-            {
-                await client.SendAsync(cts.Token).ConfigureAwait(false);
-            }
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            await client.SendAsync(cts.Token).ConfigureAwait(false);
 
             AllResponsesShouldHaveSucceeded(responses);
 

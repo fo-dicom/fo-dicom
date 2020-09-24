@@ -48,40 +48,38 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         /// <exception cref="IOException"></exception>
         private MemoryStream ReadImage(IByteBuffer data)
         {
-            using (var decoder = new DicomJpegLosslessDecoderImpl(data))
+            using var decoder = new DicomJpegLosslessDecoderImpl(data);
+            int[][] decoded = decoder.Decode();
+            int width = decoder.DimX;
+            int height = decoder.DimY;
+
+            if (decoder.NumComponents == 1)
             {
-                int[][] decoded = decoder.Decode();
-                int width = decoder.DimX;
-                int height = decoder.DimY;
-
-                if (decoder.NumComponents == 1)
+                switch (decoder.Precision)
                 {
-                    switch (decoder.Precision)
-                    {
-                        case int prec when prec <= 8:
-                            return Read8Bit1ComponentGrayScale(decoded, width, height);
-                        case int prec when (prec > 8 && prec <= 16):
-                            return Read16Bit1ComponentGrayScale(decoded, width, height);
-                        default:
-                            throw new IOException("JPEG Lossless with " + decoder.Precision + " bit precision and 1 component cannot be decoded");
-                    }
+                    case int prec when prec <= 8:
+                        return Read8Bit1ComponentGrayScale(decoded, width, height);
+                    case int prec when (prec > 8 && prec <= 16):
+                        return Read16Bit1ComponentGrayScale(decoded, width, height);
+                    default:
+                        throw new IOException("JPEG Lossless with " + decoder.Precision + " bit precision and 1 component cannot be decoded");
                 }
-                //rgb
-                if (decoder.NumComponents == 3)
-                {
-                    switch (decoder.Precision)
-                    {
-                        case 24:
-                        case 8:
-                            return Read24Bit3ComponentRGB(decoded, width, height);
-
-                        default:
-                            throw new IOException("JPEG Lossless with " + decoder.Precision + " bit precision and 3 components cannot be decoded");
-                    }
-                }
-
-                throw new IOException("JPEG Lossless with " + decoder.Precision + " bit precision and " + decoder.NumComponents + " component(s) cannot be decoded");
             }
+            //rgb
+            if (decoder.NumComponents == 3)
+            {
+                switch (decoder.Precision)
+                {
+                    case 24:
+                    case 8:
+                        return Read24Bit3ComponentRGB(decoded, width, height);
+
+                    default:
+                        throw new IOException("JPEG Lossless with " + decoder.Precision + " bit precision and 3 components cannot be decoded");
+                }
+            }
+
+            throw new IOException("JPEG Lossless with " + decoder.Precision + " bit precision and " + decoder.NumComponents + " component(s) cannot be decoded");
         }
 
 

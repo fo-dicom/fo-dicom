@@ -96,13 +96,11 @@ namespace FellowOakDicom.Imaging.Codec
         public DicomFile Transcode(DicomFile file)
         {
             var f = new DicomFile();
-            using (var scope = new UnvalidatedScope(f.Dataset))
-            {
-                f.FileMetaInfo.Add(file.FileMetaInfo);
-                f.FileMetaInfo.TransferSyntax = OutputSyntax;
-                f.Dataset.InternalTransferSyntax = OutputSyntax;
-                f.Dataset.Add(Transcode(file.Dataset));
-            }
+            using var scope = new UnvalidatedScope(f.Dataset);
+            f.FileMetaInfo.Add(file.FileMetaInfo);
+            f.FileMetaInfo.TransferSyntax = OutputSyntax;
+            f.Dataset.InternalTransferSyntax = OutputSyntax;
+            f.Dataset.Add(Transcode(file.Dataset));
             return f;
         }
 

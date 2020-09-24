@@ -170,24 +170,22 @@ namespace FellowOakDicom.Media
             {
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
-                using (var source = new FileByteSource(df.File, readOption))
-                {
-                    var reader = new DicomFileReader();
-                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                using var source = new FileByteSource(df.File, readOption);
+                var reader = new DicomFileReader();
+                var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                    var result = reader.Read(
-                        source,
-                        new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomReaderMultiObserver(
-                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                            dirObserver),
-                        stop);
+                var result = reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(df.FileMetaInfo),
+                    new DicomReaderMultiObserver(
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                        dirObserver),
+                    stop);
 
-                    df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
+                df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
 
-                    return df;
-                }
+                return df;
             }
             catch (Exception e)
             {
@@ -225,21 +223,19 @@ namespace FellowOakDicom.Media
             {
                 var source = new StreamByteSource(stream, readOption);
 
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
-                {
-                    var reader = new DicomFileReader();
-                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                var reader = new DicomFileReader();
+                var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                    var result = reader.Read(
-                        source,
-                        new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomReaderMultiObserver(
-                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                            dirObserver),
-                        stop);
+                var result = reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(df.FileMetaInfo),
+                    new DicomReaderMultiObserver(
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                        dirObserver),
+                    stop);
 
-                    df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
-                }
+                df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
 
                 return df;
             }
@@ -279,26 +275,24 @@ namespace FellowOakDicom.Media
             {
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
-                using (var source = new FileByteSource(df.File, readOption))
-                {
-                    var reader = new DicomFileReader();
-                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                using var source = new FileByteSource(df.File, readOption);
+                var reader = new DicomFileReader();
+                var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                    var result =
-                        await
-                        reader.ReadAsync(
-                            source,
-                            new DicomDatasetReaderObserver(df.FileMetaInfo),
-                            new DicomReaderMultiObserver(
-                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                            dirObserver),
-                            stop).ConfigureAwait(false);
+                var result =
+                    await
+                    reader.ReadAsync(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomReaderMultiObserver(
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                        dirObserver),
+                        stop).ConfigureAwait(false);
 
-                    df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
+                df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
 
-                    return df;
-                }
+                return df;
             }
             catch (Exception e)
             {
@@ -336,23 +330,21 @@ namespace FellowOakDicom.Media
             {
                 var source = new StreamByteSource(stream, readOption);
 
-                using (var unvalidatedScop = new UnvalidatedScope(df.Dataset))
-                {
-                    var reader = new DicomFileReader();
-                    var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
+                using var unvalidatedScop = new UnvalidatedScope(df.Dataset);
+                var reader = new DicomFileReader();
+                var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
-                    var result =
-                        await
-                        reader.ReadAsync(
-                            source,
-                            new DicomDatasetReaderObserver(df.FileMetaInfo),
-                            new DicomReaderMultiObserver(
-                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                            dirObserver),
-                            stop).ConfigureAwait(false);
+                var result =
+                    await
+                    reader.ReadAsync(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomReaderMultiObserver(
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                        dirObserver),
+                        stop).ConfigureAwait(false);
 
-                    df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
-                }
+                df = FinalizeDicomDirectoryLoad(df, reader, dirObserver, result);
 
                 return df;
             }
@@ -519,12 +511,10 @@ namespace FellowOakDicom.Media
             }
             var newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
             newImage.AddOrUpdate(DicomTag.ReferencedFileID, referencedFileId);
-            using (var unvalidated = new UnvalidatedScope(newImage))
-            {
-                newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
-                newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
-                newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
-            }
+            using var unvalidated = new UnvalidatedScope(newImage);
+            newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
+            newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
+            newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
 
             if (currentImage != null)
             {
@@ -674,18 +664,16 @@ namespace FellowOakDicom.Media
                 dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet)
             };
 
-            using (var unvalidated = new UnvalidatedScope(sequenceItem))
+            using var unvalidated = new UnvalidatedScope(sequenceItem);
+            foreach (var tag in recordType.Tags)
             {
-                foreach (var tag in recordType.Tags)
+                if (dataset.Contains(tag))
                 {
-                    if (dataset.Contains(tag))
-                    {
-                        sequenceItem.Add(dataset.GetDicomItem<DicomItem>(tag));
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Cannot find tag {tag} for record type {recordType}");
-                    }
+                    sequenceItem.Add(dataset.GetDicomItem<DicomItem>(tag));
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Cannot find tag {tag} for record type {recordType}");
                 }
             }
 

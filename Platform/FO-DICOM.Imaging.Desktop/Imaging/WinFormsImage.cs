@@ -90,13 +90,11 @@ namespace FellowOakDicom.Imaging
         /// <inheritdoc />
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
-            using (var g = Graphics.FromImage(this.image))
+            using var g = Graphics.FromImage(this.image);
+            foreach (var graphic in graphics)
             {
-                foreach (var graphic in graphics)
-                {
-                    var layer = graphic.RenderImage(null).As<Image>();
-                    g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
-                }
+                var layer = graphic.RenderImage(null).As<Image>();
+                g.DrawImage(layer, graphic.ScaledOffsetX, graphic.ScaledOffsetY, graphic.ScaledWidth, graphic.ScaledHeight);
             }
         }
 
