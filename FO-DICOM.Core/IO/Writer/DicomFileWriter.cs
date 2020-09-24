@@ -194,10 +194,12 @@ namespace FellowOakDicom.IO.Writer
                 using var uncompressed = new MemoryStream();
                 var temp = new StreamByteTarget(uncompressed);
                 await WalkDatasetAsync(temp, syntax, dataset, options).ConfigureAwait(false);
+
                 uncompressed.Seek(0, SeekOrigin.Begin);
                 using var compressed = new MemoryStream();
                 using var compressor = new DeflateStream(compressed, CompressionMode.Compress, true);
                 uncompressed.CopyTo(compressor);
+
                 target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
             }
             else

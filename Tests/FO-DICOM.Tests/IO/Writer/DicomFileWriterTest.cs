@@ -53,9 +53,11 @@ namespace FellowOakDicom.Tests.IO.Writer
                 string fileName = TestData.Resolve("dicomfilewriter_write.dcm");
                 var file = new FileReference(fileName);
 
-                using var target = new FileByteTarget(file);
-                var writer = new DicomFileWriter(new DicomWriteOptions());
-                writer.Write(target, this.metaInfo, this.dataset);
+                using (var target = new FileByteTarget(file))
+                {
+                    var writer = new DicomFileWriter(new DicomWriteOptions());
+                    writer.Write(target, this.metaInfo, this.dataset);
+                }
 
                 var expected = Comment;
                 var readFile = DicomFile.Open(fileName);
