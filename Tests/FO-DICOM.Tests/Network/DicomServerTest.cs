@@ -175,7 +175,7 @@ namespace FellowOakDicom.Tests.Network
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             server.Stop();
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             var dicomServer = DicomServerRegistry.Get(port)?.DicomServer;
             Assert.NotNull(dicomServer);
