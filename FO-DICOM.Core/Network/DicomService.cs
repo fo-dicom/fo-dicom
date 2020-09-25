@@ -459,7 +459,8 @@ namespace FellowOakDicom.Network
                                 Association = new DicomAssociation
                                 {
                                     RemoteHost = _network.RemoteHost,
-                                    RemotePort = _network.RemotePort
+                                    RemotePort = _network.RemotePort,
+                                    Options = Options
                                 };
 
                                 var pdu = new AAssociateRQ(Association);
