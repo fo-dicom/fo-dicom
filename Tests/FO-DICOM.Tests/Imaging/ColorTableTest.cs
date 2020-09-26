@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging;
+using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace FellowOakDicom.Tests.Imaging
         public void SaveLut_ValidTable_Succeeds()
         {
             var path = TestData.Resolve("monochrome1.lut");
-            if (File.Exists(path)) File.Delete(path);
+            IOHelper.DeleteIfExists(path);
 
             ColorTable.SaveLUT(path, ColorTable.Monochrome1);
             Assert.True(File.Exists(path));

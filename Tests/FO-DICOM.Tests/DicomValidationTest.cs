@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using Xunit;
 
@@ -47,6 +48,7 @@ namespace FellowOakDicom.Tests
 
             // but the validation should still work
             Assert.Throws<DicomValidationException>(() => dsFile.Dataset.Validate());
+            IOHelper.DeleteIfExists(tmpFile);
         }
 
         [Fact]
