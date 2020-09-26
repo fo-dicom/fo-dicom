@@ -5,6 +5,7 @@ using Dicom.IO.Writer;
 
 namespace Dicom
 {
+    using Dicom.Helpers;
     using System;
     using System.IO;
     using System.IO.MemoryMappedFiles;
@@ -75,6 +76,7 @@ namespace Dicom
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
             Assert.True(File.Exists(fileName));
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -84,6 +86,7 @@ namespace Dicom
             var fileName = Path.GetTempFileName();
             await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -97,6 +100,7 @@ namespace Dicom
             var expected = MinimumDatasetInstanceUid;
             var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -110,6 +114,7 @@ namespace Dicom
             var expected = MinimumDatasetInstanceUid;
             var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -119,11 +124,15 @@ namespace Dicom
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            var file = MemoryMappedFile.CreateFromFile(fileName);
-            var openFile = DicomFile.Open(file.CreateViewStream());
-            var expected = MinimumDatasetInstanceUid;
-            var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
-            Assert.Equal(expected, actual);
+            using (var file = MemoryMappedFile.CreateFromFile(fileName))
+            using(var stream = file.CreateViewStream())
+            {
+                var openFile = DicomFile.Open(stream);
+                var expected = MinimumDatasetInstanceUid;
+                var actual = openFile.Dataset.Get<string>(DicomTag.SOPInstanceUID);
+                Assert.Equal(expected, actual);
+            }
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
