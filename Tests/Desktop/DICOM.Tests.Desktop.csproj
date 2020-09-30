@@ -139,6 +139,7 @@
     <Compile Include="Helpers\PriorityOrderer.cs" />
     <Compile Include="Helpers\XUnitDicomLogger.cs" />
     <Compile Include="Helpers\TestPriorityAttribute.cs" />
+    <Compile Include="Imaging\Algorithms\BilinearInterpolationTest.cs" />
     <Compile Include="Imaging\Codec\DicomCodecExtensionsTest.cs" />
     <Compile Include="Imaging\FrameGeometryTest.cs" />
     <Compile Include="Imaging\ColorTableTest.cs" />
