@@ -85,11 +85,11 @@ namespace Dicom.IO
         /// <inheritdoc />
         public long Position => _stream.Position;
 
-      /// <inheritdoc />
-      public long Marker { get; private set; }
+        /// <inheritdoc />
+        public long Marker { get; private set; }
 
-      /// <inheritdoc />
-      public bool IsEOF => _stream.Position >= _stream.Length;
+        /// <inheritdoc />
+        public bool IsEOF => _stream.Position >= _stream.Length;
 
         /// <inheritdoc />
         public bool CanRewind => _stream.CanSeek;
@@ -249,6 +249,11 @@ namespace Dicom.IO
             { /* ignore exception */ }
 
             _disposed = true;
+        }
+
+        public Stream GetStream()
+        {
+            return _stream;
         }
 
         #endregion

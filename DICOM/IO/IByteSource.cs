@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 #if !NET35
+using System.IO;
 using System.Threading.Tasks;
 #endif
 
@@ -176,5 +177,11 @@ namespace Dicom.IO
         /// <param name="state">Callback state.</param>
         /// <returns>true if source contains sufficient number of remaining bytes, false otherwise.</returns>
         bool Require(uint count, ByteSourceCallback callback, object state);
+
+        /// <summary>
+        /// Get stream of this byte source.
+        /// </summary>
+        /// <returns></returns>
+        Stream GetStream();
     }
 }

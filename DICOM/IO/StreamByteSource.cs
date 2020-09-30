@@ -209,6 +209,11 @@ namespace Dicom.IO
             }
         }
 
+        public Stream GetStream()
+        {
+            return _stream;
+        }
+
         #endregion
     }
 }
