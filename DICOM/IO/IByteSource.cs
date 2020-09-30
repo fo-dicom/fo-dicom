@@ -181,7 +181,7 @@ namespace Dicom.IO
         /// <summary>
         /// Get stream of this byte source.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The stream.</returns>
         Stream GetStream();
     }
 }
