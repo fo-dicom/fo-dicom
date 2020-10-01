@@ -73,7 +73,7 @@ namespace FellowOakDicom.Network
             _ms = stream;
             _ms.Seek(0, SeekOrigin.Begin);
             _br = EndianBinaryReader.Create(_ms, Endian.Big);
-            _type = _br.ReadByte();
+            Type = _br.ReadByte();
             _ms.Seek(6, SeekOrigin.Begin);
         }
 
