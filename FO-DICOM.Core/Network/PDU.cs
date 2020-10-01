@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.IO;
 
@@ -17,7 +18,7 @@ namespace FellowOakDicom.Network
     {
         #region Private members
 
-        private readonly byte _type;
+        private readonly Encoding _encoding;
 
         private readonly MemoryStream _ms;
 
@@ -37,12 +38,14 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU for writing
         /// </summary>
         /// <param name="type">Type of PDU</param>
-        public RawPDU(byte type)
+        /// <param name="encoding">The encoding to use for encoding text</param>
+        public RawPDU(byte type, Encoding encoding = null)
         {
-            _type = type;
+            Type = type;
+            _encoding = encoding ?? DicomEncoding.Default;
             _ms = new MemoryStream();
             _ms.Seek(0, SeekOrigin.Begin);
-            _bw = EndianBinaryWriter.Create(_ms, DicomEncoding.Default, Endian.Big);
+            _bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
             _m16 = new Stack<long>();
             _m32 = new Stack<long>();
         }
@@ -51,11 +54,13 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU reader from buffer
         /// </summary>
         /// <param name="buffer">Buffer</param>
-        public RawPDU(byte[] buffer)
+        /// <param name="encoding">The encoding to use for decoding text</param>
+        public RawPDU(byte[] buffer, Encoding encoding = null)
         {
             _ms = new MemoryStream(buffer);
-            _br = EndianBinaryReader.Create(_ms, Endian.Big);
-            _type = _br.ReadByte();
+            _encoding = encoding ?? DicomEncoding.Default;
+            _br = EndianBinaryReader.Create(_ms, _encoding, Endian.Big);
+            Type = _br.ReadByte();
             _ms.Seek(6, SeekOrigin.Begin);
         }
 
@@ -78,7 +83,7 @@ namespace FellowOakDicom.Network
         #region Public Properties
 
         /// <summary>PDU type</summary>
-        public byte Type => _type;
+        public byte Type { get; }
 
         /// <summary>PDU length</summary>
         public uint Length => (uint)_ms.Length;
@@ -131,10 +136,7 @@ namespace FellowOakDicom.Network
         /// Gets string describing this PDU
         /// </summary>
         /// <returns>PDU description</returns>
-        public override string ToString()
-        {
-            return $"Pdu[type={Type:X2}, length={Length}]";
-        }
+        public override string ToString() => $"Pdu[type={Type:X2}, length={Length}]";
 
         /// <summary>
         /// Reset PDU read stream
@@ -150,8 +152,7 @@ namespace FellowOakDicom.Network
         {
             if (_ms.Position + bytes > _ms.Length)
             {
-                var msg =
-                    $"{ToString()} (offset={_ms.Position}, bytes={bytes}, field=\"{name}\") Requested offset out of range!";
+                var msg = $"{ToString()} (offset={_ms.Position}, bytes={bytes}, field=\"{name}\") Requested offset out of range!";
                 throw new DicomNetworkException(msg);
             }
         }
@@ -207,13 +208,13 @@ namespace FellowOakDicom.Network
         /// Reads string from PDU
         /// </summary>
         /// <param name="name">Name of field</param>
-        /// <param name="count">Length of string</param>
+        /// <param name="numberOfBytes">Number of bytes to read</param>
         /// <returns>Field value</returns>
-        public string ReadString(string name, int count)
+        public string ReadString(string name, int numberOfBytes)
         {
-            CheckOffset(count, name);
-            var c = _br.ReadChars(count);
-            return new string(c).Trim(_trimChars);
+            var bytes = ReadBytes(name, numberOfBytes);
+            
+            return _encoding.GetString(bytes).Trim(_trimChars);
         }
 
         /// <summary>
@@ -356,14 +357,7 @@ namespace FellowOakDicom.Network
             var c = new char[l];
             for (var i = 0; i < l; i++)
             {
-                if (i < s.Length)
-                {
-                    c[i] = s[i];
-                }
-                else
-                {
-                    c[i] = p;
-                }
+                c[i] = i < s.Length ? s[i] : p;
             }
             return c;
         }
@@ -385,7 +379,7 @@ namespace FellowOakDicom.Network
             var buffer = new byte[6];
 
             unchecked {
-                buffer[0] = _type;
+                buffer[0] = Type;
 
                 var length = (uint)_ms.Length;
                 buffer[2] = (byte)((length & 0xff000000U) >> 24);
@@ -438,10 +432,7 @@ namespace FellowOakDicom.Network
             _assoc = assoc;
         }
 
-        public override string ToString()
-        {
-            return "A-ASSOCIATE-RQ";
-        }
+        public override string ToString() => "A-ASSOCIATE-RQ";
 
         #region EVENTS
 
@@ -513,7 +504,7 @@ namespace FellowOakDicom.Network
             pdu.Write("Item-Type", 0x51);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", _assoc.MaximumPDULength);
+            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? new DicomServiceOptions().MaxPDULength);
 
             // Implementation Class UID
             pdu.Write("Item-Type", 0x52);
@@ -758,7 +749,7 @@ namespace FellowOakDicom.Network
     /// <summary>A-ASSOCIATE-AC</summary>
     public class AAssociateAC : PDU
     {
-        private DicomAssociation _assoc;
+        private readonly DicomAssociation _assoc;
 
         /// <summary>
         /// Initializes new A-ASSOCIATE-AC
@@ -769,10 +760,7 @@ namespace FellowOakDicom.Network
             _assoc = assoc;
         }
 
-        public override string ToString()
-        {
-            return "A-ASSOCIATE-AC";
-        }
+        public override string ToString() => "A-ASSOCIATE-AC";
 
         #region Write
 
@@ -828,7 +816,7 @@ namespace FellowOakDicom.Network
             pdu.Write("Item-Type", 0x51);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", _assoc.MaximumPDULength);
+            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? new DicomServiceOptions().MaxPDULength);
 
             // Implementation Class UID
             pdu.Write("Item-Type", 0x52);
@@ -1089,11 +1077,6 @@ namespace FellowOakDicom.Network
     /// <summary>A-ASSOCIATE-RJ</summary>
     public class AAssociateRJ : PDU
     {
-        private DicomRejectResult _rt = DicomRejectResult.Permanent;
-
-        private DicomRejectSource _so = DicomRejectSource.ServiceUser;
-
-        private DicomRejectReason _rn = DicomRejectReason.NoReasonGiven;
 
         /// <summary>
         /// Initializes new A-ASSOCIATE-RJ
@@ -1110,42 +1093,21 @@ namespace FellowOakDicom.Network
         /// <param name="rn">Rejection reason</param>
         public AAssociateRJ(DicomRejectResult rt, DicomRejectSource so, DicomRejectReason rn)
         {
-            _rt = rt;
-            _so = so;
-            _rn = rn;
+            Result = rt;
+            Source = so;
+            Reason = rn;
         }
 
         /// <summary>Rejection result</summary>
-        public DicomRejectResult Result
-        {
-            get
-            {
-                return _rt;
-            }
-        }
+        public DicomRejectResult Result { get; private set; } = DicomRejectResult.Permanent;
 
         /// <summary>Rejection source</summary>
-        public DicomRejectSource Source
-        {
-            get
-            {
-                return _so;
-            }
-        }
+        public DicomRejectSource Source { get; private set; } = DicomRejectSource.ServiceUser;
 
         /// <summary>Rejection reason</summary>
-        public DicomRejectReason Reason
-        {
-            get
-            {
-                return _rn;
-            }
-        }
+        public DicomRejectReason Reason { get; private set; } = DicomRejectReason.NoReasonGiven;
 
-        public override string ToString()
-        {
-            return "A-ASSOCIATE-RJ";
-        }
+        public override string ToString() => "A-ASSOCIATE-RJ";
 
         /// <summary>
         /// Writes A-ASSOCIATE-RJ to PDU buffer
@@ -1158,9 +1120,9 @@ namespace FellowOakDicom.Network
         {
             var pdu = new RawPDU(0x03);
             pdu.Write("Reserved", 0x00);
-            pdu.Write("Result", (byte)_rt);
-            pdu.Write("Source", (byte)_so);
-            pdu.Write("Reason", (byte)((byte)_rn & 0xf));
+            pdu.Write("Result", (byte)Result);
+            pdu.Write("Source", (byte)Source);
+            pdu.Write("Reason", (byte)((byte)Reason & 0xf));
             return pdu;
         }
 
@@ -1174,9 +1136,9 @@ namespace FellowOakDicom.Network
         public void Read(RawPDU raw)
         {
             raw.ReadByte("Reserved");
-            _rt = (DicomRejectResult)raw.ReadByte("Result");
-            _so = (DicomRejectSource)raw.ReadByte("Source");
-            _rn = (DicomRejectReason)((byte)_so << 4 | raw.ReadByte("Reason"));
+            Result = (DicomRejectResult)raw.ReadByte("Result");
+            Source = (DicomRejectSource)raw.ReadByte("Source");
+            Reason = (DicomRejectReason)((byte)Source << 4 | raw.ReadByte("Reason"));
         }
     }
 
@@ -1288,35 +1250,20 @@ namespace FellowOakDicom.Network
     /// <summary>A-ABORT</summary>
     public class AAbort : PDU
     {
-        private DicomAbortSource _s;
-
-        private DicomAbortReason _r;
 
         /// <summary>Abort source</summary>
-        public DicomAbortSource Source
-        {
-            get
-            {
-                return _s;
-            }
-        }
+        public DicomAbortSource Source { get; private set; }
 
         /// <summary>Abort reason</summary>
-        public DicomAbortReason Reason
-        {
-            get
-            {
-                return _r;
-            }
-        }
+        public DicomAbortReason Reason { get; private set; }
 
         /// <summary>
         /// Initializes new A-ABORT
         /// </summary>
         public AAbort()
         {
-            _s = DicomAbortSource.ServiceUser;
-            _r = DicomAbortReason.NotSpecified;
+            Source = DicomAbortSource.ServiceUser;
+            Reason = DicomAbortReason.NotSpecified;
         }
 
         /// <summary>
@@ -1326,14 +1273,11 @@ namespace FellowOakDicom.Network
         /// <param name="reason">Abort reason</param>
         public AAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            _s = source;
-            _r = reason;
+            Source = source;
+            Reason = reason;
         }
 
-        public override string ToString()
-        {
-            return "A-ABORT";
-        }
+        public override string ToString() => "A-ABORT";
 
         #region Write
 
@@ -1346,8 +1290,8 @@ namespace FellowOakDicom.Network
             var pdu = new RawPDU(0x07);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Reserved", 0x00);
-            pdu.Write("Source", (byte)_s);
-            pdu.Write("Reason", (byte)_r);
+            pdu.Write("Source", (byte)Source);
+            pdu.Write("Reason", (byte)Reason);
             return pdu;
         }
 
@@ -1363,8 +1307,8 @@ namespace FellowOakDicom.Network
         {
             raw.ReadByte("Reserved");
             raw.ReadByte("Reserved");
-            _s = (DicomAbortSource)raw.ReadByte("Source");
-            _r = (DicomAbortReason)raw.ReadByte("Reason");
+            Source = (DicomAbortSource)raw.ReadByte("Source");
+            Reason = (DicomAbortReason)raw.ReadByte("Reason");
         }
 
         #endregion
@@ -1377,7 +1321,6 @@ namespace FellowOakDicom.Network
     /// <summary>P-DATA-TF</summary>
     public class PDataTF : PDU
     {
-        private List<PDV> _pdvs = new List<PDV>();
 
         /// <summary>
         /// Initializes new P-DATA-TF
@@ -1387,24 +1330,13 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>PDVs in this P-DATA-TF</summary>
-        public List<PDV> PDVs
-        {
-            get
-            {
-                return _pdvs;
-            }
-        }
+        public List<PDV> PDVs { get; } = new List<PDV>();
 
         /// <summary>Calculates the total length of the PDVs in this P-DATA-TF</summary>
         /// <returns>Length of PDVs</returns>
         public uint GetLengthOfPDVs()
         {
-            uint len = 0;
-            foreach (var pdv in _pdvs)
-            {
-                len += pdv.PDVLength;
-            }
-            return len;
+            return (uint)PDVs.Sum(pdv => pdv.PDVLength);
         }
 
         public override string ToString()
@@ -1427,7 +1359,7 @@ namespace FellowOakDicom.Network
         public RawPDU Write()
         {
             var pdu = new RawPDU(0x04);
-            foreach (var pdv in _pdvs)
+            foreach (var pdv in PDVs)
             {
                 pdv.Write(pdu);
             }
@@ -1450,7 +1382,7 @@ namespace FellowOakDicom.Network
             {
                 var pdv = new PDV();
                 read += pdv.Read(raw);
-                _pdvs.Add(pdv);
+                PDVs.Add(pdv);
             }
         }
 
@@ -1464,13 +1396,6 @@ namespace FellowOakDicom.Network
     /// <summary>PDV</summary>
     public class PDV
     {
-        private byte _pcid;
-
-        private byte[] _value = new byte[0];
-
-        private bool _command = false;
-
-        private bool _last = false;
 
         /// <summary>
         /// Initializes new PDV
@@ -1486,10 +1411,10 @@ namespace FellowOakDicom.Network
                 Array.Resize(ref value, value.Length + 1);
             }
 
-            _pcid = pcid;
-            _value = value;
-            _command = command;
-            _last = last;
+            PCID = pcid;
+            Value = value;
+            IsCommand = command;
+            IsLastFragment = last;
         }
 
         /// <summary>
@@ -1500,70 +1425,21 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>Presentation context ID</summary>
-        public byte PCID
-        {
-            get
-            {
-                return _pcid;
-            }
-            set
-            {
-                _pcid = value;
-            }
-        }
+        public byte PCID { get; set; }
 
         /// <summary>PDV data</summary>
-        public byte[] Value
-        {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                _value = value;
-            }
-        }
+        public byte[] Value { get; set; } = new byte[0];
 
         /// <summary>PDV is command</summary>
-        public bool IsCommand
-        {
-            get
-            {
-                return _command;
-            }
-            set
-            {
-                _command = value;
-            }
-        }
+        public bool IsCommand { get; set; } = false;
 
         /// <summary>PDV is last fragment of command or data</summary>
-        public bool IsLastFragment
-        {
-            get
-            {
-                return _last;
-            }
-            set
-            {
-                _last = value;
-            }
-        }
+        public bool IsLastFragment { get; set; } = false;
 
         /// <summary>Length of this PDV</summary>
-        public uint PDVLength
-        {
-            get
-            {
-                return (uint)_value.Length + 6;
-            }
-        }
+        public uint PDVLength => (uint)Value.Length + 6;
 
-        public override string ToString()
-        {
-            return $"PDV [PCID: {PCID}; Length: {Value.Length}; Command: {IsCommand}; Last: {IsLastFragment}]";
-        }
+        public override string ToString() => $"PDV [PCID: {PCID}; Length: {Value.Length}; Command: {IsCommand}; Last: {IsLastFragment}]";
 
         #region Write
 
@@ -1573,11 +1449,11 @@ namespace FellowOakDicom.Network
         /// <param name="pdu">PDU buffer</param>
         public void Write(RawPDU pdu)
         {
-            var mch = (byte)((_last ? 2 : 0) + (_command ? 1 : 0));
+            var mch = (byte)((IsLastFragment ? 2 : 0) + (IsCommand ? 1 : 0));
             pdu.MarkLength32("PDV-Length");
-            pdu.Write("Presentation Context ID", _pcid);
+            pdu.Write("Presentation Context ID", PCID);
             pdu.Write("Message Control Header", mch);
-            pdu.Write("PDV Value", _value);
+            pdu.Write("PDV Value", Value);
             pdu.WriteLength32();
         }
 
@@ -1592,11 +1468,11 @@ namespace FellowOakDicom.Network
         public uint Read(RawPDU raw)
         {
             var len = raw.ReadUInt32("PDV-Length");
-            _pcid = raw.ReadByte("Presentation Context ID");
+            PCID = raw.ReadByte("Presentation Context ID");
             var mch = raw.ReadByte("Message Control Header");
-            _value = raw.ReadBytes("PDV Value", (int)len - 2);
-            _command = (mch & 0x01) != 0;
-            _last = (mch & 0x02) != 0;
+            Value = raw.ReadBytes("PDV Value", (int)len - 2);
+            IsCommand = (mch & 0x01) != 0;
+            IsLastFragment = (mch & 0x02) != 0;
             return len + 4;
         }
 

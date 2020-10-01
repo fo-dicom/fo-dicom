@@ -125,23 +125,13 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
         {
             yield return new DicomCFindResponse(request, DicomStatus.Success);
         }
-#else
-        public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
-        {
-            return InnerOnCFindRequestAsync();
 
-            IEnumerable<Task<DicomCFindResponse>> InnerOnCFindRequestAsync()
-            {
-                yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
-            }
-        }
-#endif
     }
+
 
     public class PendingAsyncDicomCFindProvider : DicomService, IDicomServiceProvider, IDicomCFindProvider
     {
@@ -179,28 +169,14 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
         public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
         {
             yield return new DicomCFindResponse(request, DicomStatus.Pending);
             yield return new DicomCFindResponse(request, DicomStatus.Pending);
             yield return new DicomCFindResponse(request, DicomStatus.Success);
         }
-#else
-        public async Task<IEnumerable<Task<DicomCFindResponse>>> OnCFindRequestAsync(DicomCFindRequest request)
-        {
-            return InnerOnCFindRequestAsync();
 
-            IEnumerable<Task<DicomCFindResponse>> InnerOnCFindRequestAsync()
-            {
-                yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Pending));
-                yield return Task.FromResult(new DicomCFindResponse(request, DicomStatus.Success));
-            }
-        }
-#endif
     }
-
 
     #endregion
 }

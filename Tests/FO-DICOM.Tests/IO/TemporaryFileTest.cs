@@ -59,11 +59,13 @@ namespace FellowOakDicom.Tests.IO
             lock (this.locker)
             {
                 TemporaryFile.StoragePath = null;
-                var temp = TemporaryFile.Create().Name;
+                var temp = TemporaryFile.Create();
 
                 var expected = Path.GetTempPath().TrimEnd('\\').TrimEnd('/');
-                var actual = Path.GetDirectoryName(temp);
+                var actual = Path.GetDirectoryName(temp.Name);
                 Assert.Equal(expected, actual);
+
+                TemporaryFileRemover.Delete(temp);
             }
         }
 

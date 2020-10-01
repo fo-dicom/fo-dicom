@@ -448,7 +448,8 @@ namespace Dicom.Network
                                 Association = new DicomAssociation
                                 {
                                     RemoteHost = _network.RemoteHost,
-                                    RemotePort = _network.RemotePort
+                                    RemotePort = _network.RemotePort,
+                                    Options = Options
                                 };
 
                                 var pdu = new AAssociateRQ(Association);
@@ -1629,7 +1630,7 @@ namespace Dicom.Network
                 _command = true;
                 _pcid = pcid;
                 _dicomMessage = dicomMessage;
-                _pduMax = Math.Min(max, Int32.MaxValue);
+                _pduMax = Math.Min(max, int.MaxValue);
                 _max = _pduMax == 0
                            ? _service.Options.MaxCommandBuffer
                            : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);

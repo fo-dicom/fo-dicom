@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             const int expectedLength = 0x10000;
             var sb = new StringBuilder();
-            for (int i = 0; i < expectedLength-1; i++)
+            for (int i = 0; i < expectedLength - 1; i++)
             {
                 sb.Append("0\\");
             }
@@ -31,26 +31,26 @@ namespace FellowOakDicom.Tests.Bugs
             var expectedValue = sb.ToString();
             dataset.Add(DicomTag.ContourData, expectedValue);
 
-            using (var stream = new MemoryStream())
-            {
-                var file = new DicomFile(dataset);
-                file.Save(stream);
+            using var stream = new MemoryStream();
 
-                // Checking that UN value representation has been written to raw stream;
-                // when DICOM file is re-read, the value representation is automatically set to the known tag's VR.
-                stream.Seek(0, SeekOrigin.Begin);
-                var streamString = Encoding.UTF8.GetString(stream.GetBuffer());
-                Assert.True(streamString.Contains("UN"), "streamString.Contains('UN')");
+            var file = new DicomFile(dataset);
+            file.Save(stream);
 
-                var newDataset = DicomFile.Open(stream).Dataset;
-                var contourDataItem = (DicomElement)newDataset.ElementAt(2);
+            // Checking that UN value representation has been written to raw stream;
+            // when DICOM file is re-read, the value representation is automatically set to the known tag's VR.
+            stream.Seek(0, SeekOrigin.Begin);
+            var streamString = Encoding.UTF8.GetString(stream.GetBuffer());
+            Assert.True(streamString.Contains("UN"), "streamString.Contains('UN')");
 
-                var actualLength = contourDataItem.Count;
-                var actualValue = contourDataItem.Get<string>(-1);
+            var newDataset = DicomFile.Open(stream).Dataset;
+            var contourDataItem = (DicomElement)newDataset.ElementAt(2);
 
-                Assert.Equal(expectedLength, actualLength);
-                Assert.Equal(expectedValue, actualValue);
-            }
+            var actualLength = contourDataItem.Count;
+            var actualValue = contourDataItem.Get<string>(-1);
+
+            Assert.Equal(expectedLength, actualLength);
+            Assert.Equal(expectedValue, actualValue);
         }
+
     }
 }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using Xunit;
+using System.Collections.Generic;
 
 namespace FellowOakDicom.Tests.Bugs
 {
@@ -16,6 +17,8 @@ namespace FellowOakDicom.Tests.Bugs
     [Collection("General")]
     internal class VideoCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
+        private readonly List<string> _storedFiles = new List<string>();
+
         private static readonly DicomTransferSyntax[] _acceptedVideoTransferSyntaxes =
         {
             DicomTransferSyntax.MPEG2,
@@ -49,6 +52,8 @@ namespace FellowOakDicom.Tests.Bugs
 
         public void OnConnectionClosed(Exception exception)
         {
+            _storedFiles.ForEach(file => File.Delete(file));
+            _storedFiles.Clear();
         }
 
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
@@ -56,6 +61,8 @@ namespace FellowOakDicom.Tests.Bugs
             var tempName = Path.GetTempFileName();
             Logger.Info(tempName);
             await request.File.SaveAsync(tempName);
+
+            _storedFiles.Add(tempName);
 
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }

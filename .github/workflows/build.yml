@@ -62,7 +62,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build FO-DICOM.Core
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework net462 --runtime win-x64
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64
       
@@ -80,6 +80,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build FO-DICOM.Core
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.1 --runtime win-x64
+      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64

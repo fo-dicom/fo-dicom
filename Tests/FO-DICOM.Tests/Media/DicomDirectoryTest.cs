@@ -50,27 +50,23 @@ namespace FellowOakDicom.Tests.Media
         [Fact]
         public void Open_DicomDirStream_Succeeds()
         {
-            using (var stream = File.OpenRead(TestData.Resolve("DICOMDIR")))
-            {
-                DicomDirectory dir = DicomDirectory.Open(stream);
+            using var stream = File.OpenRead(TestData.Resolve("DICOMDIR"));
+            var dir = DicomDirectory.Open(stream);
 
-                var expected = DicomUID.MediaStorageDirectoryStorage.UID;
-                var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
-                Assert.Equal(expected, actual);
-            }
+            var expected = DicomUID.MediaStorageDirectoryStorage.UID;
+            var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public async Task OpenAsync_DicomDirStream_Succeeds()
         {
-            using (var stream = File.OpenRead(TestData.Resolve("DICOMDIR")))
-            {
-                DicomDirectory dir = await DicomDirectory.OpenAsync(stream);
+            using var stream = File.OpenRead(TestData.Resolve("DICOMDIR"));
+            var dir = await DicomDirectory.OpenAsync(stream);
 
-                var expected = DicomUID.MediaStorageDirectoryStorage.UID;
-                var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
-                Assert.Equal(expected, actual);
-            }
+            var expected = DicomUID.MediaStorageDirectoryStorage.UID;
+            var actual = dir.FileMetaInfo.MediaStorageSOPClassUID.UID;
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -226,26 +222,22 @@ namespace FellowOakDicom.Tests.Media
         {
             var dicomFiles = new List<DicomFile>();
 
-            using (var fileStream = File.OpenRead(fileName))
-            using (var zipper = new ZipArchive(fileStream))
+            using var fileStream = File.OpenRead(fileName);
+            using var zipper = new ZipArchive(fileStream);
+
+            foreach (var entry in zipper.Entries)
             {
-                foreach (var entry in zipper.Entries)
+                try
                 {
-                    try
-                    {
-                        using (var entryStream = entry.Open())
-                        using (var duplicate = new MemoryStream())
-                        {
-                            entryStream.CopyTo(duplicate);
-                            duplicate.Seek(0, SeekOrigin.Begin);
-                            var dicomFile = DicomFile.Open(duplicate);
-                            dicomFiles.Add(dicomFile);
-                        }
-                    }
-                    catch
-                    {
-                    }
+                    using var entryStream = entry.Open();
+                    using var duplicate = new MemoryStream();
+                    entryStream.CopyTo(duplicate);
+                    duplicate.Seek(0, SeekOrigin.Begin);
+                    var dicomFile = DicomFile.Open(duplicate);
+                    dicomFiles.Add(dicomFile);
                 }
+                catch
+                { /* ignore exception */ }
             }
 
             return dicomFiles;

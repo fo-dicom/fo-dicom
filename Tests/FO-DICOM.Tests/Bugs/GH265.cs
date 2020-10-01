@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
             Assert.Equal(DicomFileFormat.DICOM3NoFileMetaInfo, file.Format);
-            Assert.Equal(0, file.FileMetaInfo.Count());
+            Assert.Empty(file.FileMetaInfo);
         }
 
         [Fact]
@@ -35,6 +36,7 @@ namespace FellowOakDicom.Tests.Bugs
                 Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPClassUID));
                 Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID));
             }
+            IOHelper.DeleteIfExists(tempName);
         }
 
         [Fact]
@@ -55,6 +57,8 @@ namespace FellowOakDicom.Tests.Bugs
 
             Assert.Equal(expected.Version, actual.Version);
             Assert.Equal(expected.TransferSyntax.UID.UID, actual.TransferSyntax.UID.UID);
+
+            IOHelper.DeleteIfExists(tempName);
         }
 
         [Fact]
@@ -75,6 +79,7 @@ namespace FellowOakDicom.Tests.Bugs
                 Assert.NotEqual(expected.ImplementationVersionName, actual.ImplementationVersionName);
                 Assert.Equal(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
             }
+            IOHelper.DeleteIfExists(tempName);
         }
 
         [Fact]

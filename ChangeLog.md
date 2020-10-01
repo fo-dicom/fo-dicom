@@ -1,8 +1,12 @@
 #### v.4.0.7 (TBD)
+* Bug fix: Not able to open deflated dicom file which contains squence (#1097)
 * Bug fix: DS VR type value ending with \0 fails to serialize in JsonDicomConverter (#1078)
 * Allow disabling validation in JsonDicomConverter
 * Bug fix: IPv6 issue in DesktopNetworkStream
 * Optimize DicomTag.GetHashCode() (#1088)
+* Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
+* Fixes caching of pixel data in DicomImage when rendering the same image multithreaded. (#805)
+* Fix handling of MaximumPDULength. DicomServer always repeated the clients value of MaximumPDULength in AssociationAccepted-message instead of returning its own value. (#1084)
 * Make DicomService more memory efficient (#1091)
 
 #### v.4.0.6 (8/6/2020)
@@ -19,6 +23,7 @@
 * Bug fix: Prevent DicomClient getting stuck when any Exception (except IOException) occurs while sending a PDU over the network (#1054)
 * Bug fix: Size of uncompressed YBR_FULL_422 images is calculated wrong (#645)
 * Bug fix: YBR_FULL_422 images should have a planar configuration value of zero (#1049)
+* When opening a DICOMDIR with invalid offsets, try to find the best matching records in a second run (#828)
 
 #### v.4.0.5 (5/18/2020)
 * Bug fix: DicomTags of ValueRepresentation LT have not been validated.

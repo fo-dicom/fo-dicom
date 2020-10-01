@@ -22,9 +22,10 @@
 * new methods in `IByteBuffer` to directly manipulate/use the data instead of copying it around multiple times.
 * Include Json serialization/deserialization directly into *fo-dicom.core* based on `System.Text.Json`.
 * Text encoding is now handled when a string is written into a network- or file-stream.
-* Switch to IAsyncEnumerator on netstandard2.1, netcoreapp3.X
+* Switch to IAsyncEnumerator using Microsoft.Bcl.AsyncInterfaces. LanguageVersion is set to 8.0. 
 * internal: SCU now sends two presentation context per CStoreRequest: one with the original TS and one with the additional and the mandatory ImplicitLittleEndian. So the chance is higher to send the file without conversion. (#1048)
 * Optimize DicomTag.GetHashCode()
+* Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
 
 ##### Breaking changes:
 
@@ -35,6 +36,7 @@
 * There are only asynchronous server provider interfaces. All synchronous methods have been replaced by asynchronous.
 * Instances of `DicomClient` and `DicomServer` are not created directly, but via a `DicomClientFactory` or a `DicomServerFactory`.
   If you are in a "DI-Environment" like Asp.Net, then inject a `IDicomClientFactory` instance and use this to create a DicomClient. otherwise call `DicomClientFactory.CreateDicomClient(...)`.  This is a wrapper around accessing the internal DI container , getting the registered IDicomClientFactory and then calling this. So this is more overhead.
+* DicomServiceOptions cannot be passed as parameter to DicomServer constructor/factory any more, but the values of options have to be set to the created instance of DicomServer.
 * Classes `DicomFileReader`, `DicomReader`, `DicomReaderCallbackObserver` etc are now internal instead of public, because the resulting Datasets are wrong/inconsistent and need further changes. Therefore its usage is dangerous for users. (#823)
 * Removed obsolte methods/classes/properties
   * `DicomValidation.AutoValidation`: Call `DicomSetupBuilder.SkipValidation()` instead.

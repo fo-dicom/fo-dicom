@@ -8,17 +8,17 @@ namespace FellowOakDicom
 
     public static class DicomImplementation
     {
-        public static DicomUID ClassUID = new DicomUID(
+        public static DicomUID ClassUID { get; } = new DicomUID(
             "1.3.6.1.4.1.30071.8",
             "Implementation Class UID",
             DicomUidType.Unknown);
 
-        public static string Version = GetImplementationVersion();
+        public static string Version { get; } = GetImplementationVersion();
 
         private static string GetImplementationVersion()
         {
             var version = typeof(DicomImplementation).GetTypeInfo().Assembly.GetName().Version;
-            return string.Format("fo-dicom {0}.{1}.{2}", version.Major, version.Minor, version.Build);
+            return $"fo-dicom {version.Major}.{version.Minor}.{version.Build}";
         }
     }
 }

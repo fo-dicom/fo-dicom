@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Writer;
+using System.Net.Http.Headers;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Writer
@@ -21,7 +22,7 @@ namespace FellowOakDicom.Tests.IO.Writer
 
         private readonly DicomDataset dataset;
 
-        private readonly object locker;
+        private readonly object _locker = new object();
 
         #endregion
 
@@ -38,8 +39,6 @@ namespace FellowOakDicom.Tests.IO.Writer
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
                 new DicomLongString(DoseCommentTag, Comment));
-
-            this.locker = new object();
         }
 
         #endregion
@@ -49,7 +48,7 @@ namespace FellowOakDicom.Tests.IO.Writer
         [Fact]
         public void Write_SimpleFile_CommentMaintained()
         {
-            lock (this.locker)
+            lock (_locker)
             {
                 string fileName = TestData.Resolve("dicomfilewriter_write.dcm");
                 var file = new FileReference(fileName);

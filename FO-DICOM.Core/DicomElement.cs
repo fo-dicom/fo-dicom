@@ -36,7 +36,7 @@ namespace FellowOakDicom
 
         public override void Validate()
         {
-            if (Buffer is BulkDataUriByteBuffer bulkbuffer && ! bulkbuffer.IsMemory)
+            if (Buffer is BulkDataUriByteBuffer bulkbuffer && !bulkbuffer.IsMemory)
             {
                 // skip validation in case of BulkDataUriByteBuffer, where the content has not been downloaded
                 return;
@@ -1657,7 +1657,7 @@ namespace FellowOakDicom
             {
                 if (_formats == null)
                 {
-                    _formats = new[] 
+                    _formats = new[]
                                 {
                                     "HHmmss",
                                     "HH",

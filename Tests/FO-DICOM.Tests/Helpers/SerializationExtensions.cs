@@ -18,16 +18,12 @@ namespace FellowOakDicom.Tests.Helpers
 
             T deserializedObject;
             var builder = new StringBuilder();
-            using (var writer = XmlWriter.Create(builder))
-            {
-                serializer.WriteObject(writer, tag);
-                writer.Close();
+            using var writer = XmlWriter.Create(builder);
+            serializer.WriteObject(writer, tag);
+            writer.Close();
 
-                using (var stream = new MemoryStream(Encoding.Unicode.GetBytes(builder.ToString())))
-                {
-                    deserializedObject = (T)serializer.ReadObject(stream);
-                }
-            }
+            using var stream = new MemoryStream(Encoding.Unicode.GetBytes(builder.ToString()));
+            deserializedObject = (T)serializer.ReadObject(stream);
             return deserializedObject;
         }
 
@@ -38,15 +34,11 @@ namespace FellowOakDicom.Tests.Helpers
             var tempFileName = Path.GetTempFileName();
             try
             {
-                using (var write = File.OpenWrite(tempFileName))
-                {
-                    formatter.Serialize(write, input);
-                    write.Close();
-                    using (var read = File.OpenRead(tempFileName))
-                    {
-                        deserialized = (T)formatter.Deserialize(read);
-                    }
-                }
+                using var write = File.OpenWrite(tempFileName);
+                formatter.Serialize(write, input);
+                write.Close();
+                using var read = File.OpenRead(tempFileName);
+                deserialized = (T)formatter.Deserialize(read);
             }
             finally
             {

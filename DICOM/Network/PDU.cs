@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dicom.IO;
 
@@ -37,12 +38,14 @@ namespace Dicom.Network
         /// Initializes new PDU for writing
         /// </summary>
         /// <param name="type">Type of PDU</param>
-        public RawPDU(byte type)
+        /// <param name="encoding">The encoding to use for encoding text</param>
+        public RawPDU(byte type, Encoding encoding = null)
         {
+            _encoding = encoding ?? DicomEncoding.Default;
             _type = type;
             _ms = new MemoryStream();
             _ms.Seek(0, SeekOrigin.Begin);
-            _bw = EndianBinaryWriter.Create(_ms, DicomEncoding.Default, Endian.Big);
+            _bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
             _m16 = new Stack<long>();
             _m32 = new Stack<long>();
         }
@@ -51,10 +54,12 @@ namespace Dicom.Network
         /// Initializes new PDU reader from buffer
         /// </summary>
         /// <param name="buffer">Buffer</param>
-        public RawPDU(byte[] buffer)
+        /// <param name="encoding">The encoding to use for decoding text</param>
+        public RawPDU(byte[] buffer, Encoding encoding = null)
         {
+            _encoding = encoding ?? DicomEncoding.Default;
             _ms = new MemoryStream(buffer);
-            _br = EndianBinaryReader.Create(_ms, Endian.Big);
+            _br = EndianBinaryReader.Create(_ms, encoding, Endian.Big);
             _type = _br.ReadByte();
             _ms.Seek(6, SeekOrigin.Begin);
         }
@@ -97,7 +102,7 @@ namespace Dicom.Network
             _ms.WriteTo(s);
             s.Flush();
         }
-        
+
         /// <summary>
         /// Writes PDU to stream
         /// </summary>
@@ -204,18 +209,24 @@ namespace Dicom.Network
         }
 
         private readonly char[] _trimChars = { ' ', '\0' };
+        private readonly Encoding _encoding;
 
         /// <summary>
         /// Reads string from PDU
         /// </summary>
         /// <param name="name">Name of field</param>
-        /// <param name="count">Length of string</param>
+        /// <param name="numberOfBytes">Number of bytes to read</param>
         /// <returns>Field value</returns>
-        public string ReadString(string name, int count)
+        public string ReadString(string name, int numberOfBytes)
         {
-            CheckOffset(count, name);
-            var c = _br.ReadChars(count);
-            return new string(c).Trim(_trimChars);
+            var bytes = ReadBytes(name, numberOfBytes);
+
+#if PORTABLE
+            return _encoding.GetString(bytes, 0, bytes.Length).Trim(_trimChars);
+#else
+            return _encoding.GetString(bytes).Trim(_trimChars);
+#endif
+
         }
 
         /// <summary>
@@ -508,7 +519,7 @@ namespace Dicom.Network
             pdu.Write("Item-Type", 0x51);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", _assoc.MaximumPDULength);
+            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength);
 
             // Implementation Class UID
             pdu.Write("Item-Type", 0x52);
@@ -827,7 +838,7 @@ namespace Dicom.Network
             pdu.Write("Item-Type", 0x51);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", _assoc.MaximumPDULength);
+            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength);
 
             // Implementation Class UID
             pdu.Write("Item-Type", 0x52);
@@ -973,8 +984,7 @@ namespace Dicom.Network
                         }
                         else if (ut == 0x52)
                         {
-                            _assoc.RemoteImplementationClassUID =
-                                DicomUID.Parse(raw.ReadString("Implementation Class UID", ul));
+                            _assoc.RemoteImplementationClassUID = DicomUID.Parse(raw.ReadString("Implementation Class UID", ul));
                         }
                         else if (ut == 0x53)
                         {

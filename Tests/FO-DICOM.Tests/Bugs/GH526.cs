@@ -61,27 +61,28 @@ namespace FellowOakDicom.Tests.Bugs
             var handle = new ManualResetEventSlim();
 
             var port = Ports.GetNext();
-            using (var server = DicomServerFactory.Create<VideoCStoreProvider>(port))
+            using var server = DicomServerFactory.Create<VideoCStoreProvider>(port);
+            server.Logger = _logger.IncludePrefix("VideoCStoreProvider");
+
+            var request = new DicomCStoreRequest(fileName)
             {
-                server.Logger = _logger.IncludePrefix("VideoCStoreProvider");
-                var request = new DicomCStoreRequest(fileName);
-                request.OnResponseReceived = (req, rsp) =>
+                OnResponseReceived = (req, rsp) =>
                 {
                     success = req.Dataset.InternalTransferSyntax.Equals(
                                   DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41)) &&
                               rsp.Status == DicomStatus.Success;
                     handle.Set();
-                };
+                }
+            };
 
-                var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
-                client.Logger = _logger.IncludePrefix("DicomClient");
+            var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
+            client.Logger = _logger.IncludePrefix("DicomClient");
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
-                handle.Wait(10000);
+            await client.AddRequestAsync(request).ConfigureAwait(false);
+            await client.SendAsync().ConfigureAwait(false);
+            handle.Wait(10000);
 
-                Assert.True(success);
-            }
+            Assert.True(success);
         }
 
 #endregion

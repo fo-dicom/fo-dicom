@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Writer;
+using FellowOakDicom.Tests.Helpers;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
@@ -124,6 +125,7 @@ namespace FellowOakDicom.Tests
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
             Assert.True(File.Exists(fileName));
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -133,6 +135,7 @@ namespace FellowOakDicom.Tests
             var fileName = Path.GetTempFileName();
             await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -146,6 +149,7 @@ namespace FellowOakDicom.Tests
             var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -159,6 +163,7 @@ namespace FellowOakDicom.Tests
             var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -168,11 +173,15 @@ namespace FellowOakDicom.Tests
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            var file = MemoryMappedFile.CreateFromFile(fileName);
-            var openFile = DicomFile.Open(file.CreateViewStream());
-            var expected = _minimumDatasetInstanceUid;
-            var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
-            Assert.Equal(expected, actual);
+            using (var file = MemoryMappedFile.CreateFromFile(fileName))
+            using (var stream = file.CreateViewStream())
+            {
+                var openFile = DicomFile.Open(stream);
+                var expected = _minimumDatasetInstanceUid;
+                var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
+                Assert.Equal(expected, actual);
+            }
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -185,7 +194,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAtOperatorsNameTag_OperatorsNameExcluded()
         {
-            bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
+            static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
@@ -194,7 +203,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterOperatorsNameTag_OperatorsNameIncluded()
         {
-            bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
+            static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
@@ -203,7 +212,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterInstanceNumberTag_SequenceDepth0InstanceNumberExcluded()
         {
-            bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
@@ -211,7 +221,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
         {
-            bool criterion(ParseState state) => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            static bool criterion(ParseState state) => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
@@ -222,16 +232,15 @@ namespace FellowOakDicom.Tests
         {
             var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
-            using (var stream1 = new MemoryStream())
-            using (var stream2 = new MemoryStream())
-            {
-                var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
-                file.Save(stream1, options1);
-                var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
-                file.Save(stream2, options2);
+            using var stream1 = new MemoryStream();
+            using var stream2 = new MemoryStream();
 
-                Assert.Equal(stream1.ToArray(), stream2.ToArray());
-            }
+            var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+            file.Save(stream1, options1);
+            var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+            file.Save(stream2, options2);
+
+            Assert.Equal(stream1.ToArray(), stream2.ToArray());
         }
 
         [Fact]
@@ -239,16 +248,15 @@ namespace FellowOakDicom.Tests
         {
             var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
-            using (var stream1 = new MemoryStream())
-            using (var stream2 = new MemoryStream())
-            {
-                var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
-                await file.SaveAsync(stream1, options1).ConfigureAwait(false);
-                var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
-                await file.SaveAsync(stream2, options2).ConfigureAwait(false);
+            using var stream1 = new MemoryStream();
+            using var stream2 = new MemoryStream();
 
-                Assert.Equal(stream1.ToArray(), stream2.ToArray());
-            }
+            var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
+            await file.SaveAsync(stream1, options1).ConfigureAwait(false);
+            var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
+            await file.SaveAsync(stream2, options2).ConfigureAwait(false);
+
+            Assert.Equal(stream1.ToArray(), stream2.ToArray());
         }
 
         [Fact]

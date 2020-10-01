@@ -193,6 +193,26 @@ namespace Dicom.Network
         }
 
         [Fact]
+        public async Task SendMaxPDU()
+        {
+            var port = Ports.GetNext();
+            uint serverPduLength = 400000;
+            uint clientPduLength = serverPduLength / 2;
+            using(var server = DicomServer.Create<DicomCEchoProvider>(port, null, new DicomServiceOptions {  MaxPDULength = serverPduLength }))
+            {
+                uint serverPduInAssociationAccepted = 0;
+                var client = new Client.DicomClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Options = new DicomServiceOptions { MaxPDULength = clientPduLength }; // explicitly choose a different value
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                client.AssociationAccepted += (sender, e) => serverPduInAssociationAccepted = e.Association.MaximumPDULength;
+
+                await client.SendAsync();
+
+                Assert.Equal(serverPduLength, serverPduInAssociationAccepted);
+            }
+        }
+
+        [Fact]
         public void Send_KnownSOPClass_SendSucceeds()
         {
             var port = Ports.GetNext();

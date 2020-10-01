@@ -7,6 +7,7 @@ using FellowOakDicom.IO.Reader;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Reader
@@ -55,6 +56,26 @@ namespace FellowOakDicom.Tests.IO.Reader
             var file = DicomFile.Open(filename);
 
             Assert.NotNull(file);
+        }
+
+        [Fact]
+        public void GivenDeflatedDicomFileWithSequence_WhenOpenFile_ThenShouldSucceed()
+        {
+            // This is for regression bug https://github.com/fo-dicom/fo-dicom/issues/1097
+            string filename = TestData.Resolve("Issue1097_FailToOpenDeflatedFileWithSQ.dcm");
+
+            // Verify should be able to open file without exception
+            DicomFile.Open(filename);
+        }
+
+        [Fact]
+        public async Task GivenDeflatedDicomFileWithSequence_WhenOpenFileAsync_ThenShouldSucceed()
+        {
+            // This is for regression bug https://github.com/fo-dicom/fo-dicom/issues/1097
+            string filename = TestData.Resolve("Issue1097_FailToOpenDeflatedFileWithSQ.dcm");
+
+            // Verify should be able to open file without exception
+            await DicomFile.OpenAsync(filename);
         }
 
         #endregion

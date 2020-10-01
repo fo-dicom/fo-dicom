@@ -93,13 +93,13 @@ namespace FellowOakDicom.Network.Client.States
 
         private async Task SendAssociationRequest()
         {
-            var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe, _dicomClient.ServiceOptions.MaxPDULength)
+            var associationToRequest = new DicomAssociation(_dicomClient.CallingAe, _dicomClient.CalledAe)
             {
                 MaxAsyncOpsInvoked = _dicomClient.AsyncInvoked,
                 MaxAsyncOpsPerformed = _dicomClient.AsyncPerformed,
                 RemoteHost = _initialisationParameters.Connection.NetworkStream.RemoteHost,
                 RemotePort = _initialisationParameters.Connection.NetworkStream.RemotePort,
-                MaximumPDULength = _dicomClient.ServiceOptions.MaxPDULength
+                Options = _dicomClient.ServiceOptions
             };
 
             foreach (var queuedItem in _dicomClient.QueuedRequests.ToList())

@@ -28,7 +28,8 @@ namespace FellowOakDicom.Tests.Imaging
             }
         }
 
-        [Fact(Skip = "Flaky test. Looks like the raw image manager might not be threadsafe. To investigate...")]
+        // [Fact(Skip = "Flaky test. Looks like the raw image manager might not be threadsafe. To investigate...")]
+        [Fact()]
         public void ManipulatedImage_MultithreadedAccess_ShouldNotThrow()
         {
             lock (_lock)

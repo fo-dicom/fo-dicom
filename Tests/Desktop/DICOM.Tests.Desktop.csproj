@@ -113,6 +113,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Bugs\GH1049.cs" />
+    <Compile Include="Bugs\GH1103.cs" />
     <Compile Include="Bugs\GH319.cs" />
     <Compile Include="Bugs\GH328.cs" />
     <Compile Include="Bugs\GH340.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="DicomTransferSyntaxTest.cs" />
     <Compile Include="DicomUIDGeneratorTest.cs" />
     <Compile Include="DicomValidationTest.cs" />
+    <Compile Include="Helpers\IOHelper.cs" />
     <Compile Include="Helpers\NLogHelper.cs" />
     <Compile Include="Helpers\PriorityOrderer.cs" />
     <Compile Include="Helpers\XUnitDicomLogger.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="IO\Writer\DicomFileWriterTest.cs" />
     <Compile Include="IO\Writer\DicomWriterTest.cs" />
     <Compile Include="Log\TextWriterLoggerTest.cs" />
+    <Compile Include="Media\DicomDirectoryReaderObserverTest.cs" />
     <Compile Include="Media\DicomDirectoryTest.cs" />
     <Compile Include="DicomElementTest.cs" />
     <Compile Include="DicomEncodingTest.cs" />
@@ -355,6 +358,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\IM-0001-0001-0001.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Issue1097_FailToOpenDeflatedFileWithSQ.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\minimumdict.xml.gz">

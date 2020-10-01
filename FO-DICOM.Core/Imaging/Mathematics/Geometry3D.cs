@@ -19,11 +19,11 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static readonly Vector3D Zero = new Vector3D(0.0, 0.0, 0.0);
 
-        public static readonly Vector3D Epsilon = new Vector3D(Double.Epsilon, Double.Epsilon, Double.Epsilon);
+        public static readonly Vector3D Epsilon = new Vector3D(double.Epsilon, double.Epsilon, double.Epsilon);
 
-        public static readonly Vector3D MinValue = new Vector3D(Double.MinValue, Double.MinValue, Double.MinValue);
+        public static readonly Vector3D MinValue = new Vector3D(double.MinValue, double.MinValue, double.MinValue);
 
-        public static readonly Vector3D MaxValue = new Vector3D(Double.MaxValue, Double.MaxValue, Double.MaxValue);
+        public static readonly Vector3D MaxValue = new Vector3D(double.MaxValue, double.MaxValue, double.MaxValue);
 
         public static readonly Vector3D AxisX = new Vector3D(1.0, 0.0, 0.0);
 
@@ -180,47 +180,38 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public Vector3D NearestAxis()
         {
-            Vector3D b = Zero.Clone();
+            var b = Zero.Clone();
             double xabs = Math.Abs(X);
             double yabs = Math.Abs(Y);
             double zabs = Math.Abs(Z);
 
-            if (xabs >= yabs && xabs >= zabs) b.X = (X > 0.0) ? 1.0 : -1.0;
-            else if (yabs >= zabs) b.Y = (Y > 0.0) ? 1.0 : -1.0;
-            else b.Z = (Z > 0.0) ? 1.0 : -1.0;
+            if (xabs >= yabs && xabs >= zabs)
+            {
+                b.X = (X > 0.0) ? 1.0 : -1.0;
+            }
+            else if (yabs >= zabs)
+            {
+                b.Y = (Y > 0.0) ? 1.0 : -1.0;
+            }
+            else
+            {
+                b.Z = (Z > 0.0) ? 1.0 : -1.0;
+            }
 
             return b;
         }
 
-        public override int GetHashCode()
-        {
-            return (int)((X + Y + Z) % int.MaxValue);
-        }
+        public override int GetHashCode() => (int)((X + Y + Z) % int.MaxValue);
 
-        public override bool Equals(object obj)
-        {
-            return obj is Vector3D other && this == other;
-        }
+        public override bool Equals(object obj) => obj is Vector3D other && this == other;
 
-        public override string ToString()
-        {
-            return string.Format("({0}, {1}, {2})", X, Y, Z);
-        }
+        public override string ToString() => $"({X}, {Y}, {Z})";
 
-        public Vector3D Clone()
-        {
-            return new Vector3D(X, Y, Z);
-        }
+        public Vector3D Clone() => new Vector3D(X, Y, Z);
 
-        public Point3D ToPoint()
-        {
-            return new Point3D(X, Y, Z);
-        }
+        public Point3D ToPoint() => new Point3D(X, Y, Z);
 
-        public double[] ToArray()
-        {
-            return new double[] { X, Y, Z };
-        }
+        public double[] ToArray() => new double[] { X, Y, Z };
 
         #endregion
 
@@ -319,9 +310,15 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static bool operator ==(Vector3D a, Vector3D b)
         {
-            if (ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
 
-            if ((a is null) || (b is null)) return false;
+            if ((a is null) || (b is null))
+            {
+                return false;
+            }
 
             return (a.X - b.X).IsNearlyZero() && (a.Y - b.Y).IsNearlyZero()
                    && (a.Z - b.Z).IsNearlyZero();
@@ -434,29 +431,15 @@ namespace FellowOakDicom.Imaging.Mathematics
         #region Public Methods
 
         public double Distance(Point3D b)
-        {
-            return Math.Sqrt((X - b.X) * (X - b.X) + (Y - b.Y) * (Y - b.Y) + (Z - b.Z) * (Z - b.Z));
-        }
+            => Math.Sqrt((X - b.X) * (X - b.X) + (Y - b.Y) * (Y - b.Y) + (Z - b.Z) * (Z - b.Z));
 
-        public Point3D Move(Vector3D axis, double distance)
-        {
-            return this + (axis.Normalize() * distance);
-        }
+        public Point3D Move(Vector3D axis, double distance) => this + (axis.Normalize() * distance);
 
-        public Point3D Clone()
-        {
-            return new Point3D(X, Y, Z);
-        }
+        public Point3D Clone() => new Point3D(X, Y, Z);
 
-        public Vector3D ToVector()
-        {
-            return new Vector3D(X, Y, Z);
-        }
+        public Vector3D ToVector() => new Vector3D(X, Y, Z);
 
-        public double[] ToArray()
-        {
-            return new double[] { X, Y, Z };
-        }
+        public double[] ToArray() => new double[] { X, Y, Z };
 
         #endregion
 
@@ -484,19 +467,13 @@ namespace FellowOakDicom.Imaging.Mathematics
         }
 
         public override int GetHashCode()
-        {
-            return (int)((X + Y + Z) % int.MaxValue);
-        }
+            => (int)((X + Y + Z) % int.MaxValue);
 
         public override bool Equals(object obj)
-        {
-            return obj is Point3D other && this == other;
-        }
+            => obj is Point3D other && this == other;
 
         public override string ToString()
-        {
-            return string.Format("({0}, {1}, {2})", X, Y, Z);
-        }
+            => $"({X}, {Y}, {Z})";
 
         #endregion
     }
@@ -554,7 +531,10 @@ namespace FellowOakDicom.Imaging.Mathematics
             pa = null;
             pb = null;
 
-            if (Vector == b.Vector || Vector == -b.Vector) return false;
+            if (Vector == b.Vector || Vector == -b.Vector)
+            {
+                return false;
+            }
 
             Vector3D p0 = Point.ToVector();
             Vector3D p1 = b.Point.ToVector();
@@ -562,8 +542,8 @@ namespace FellowOakDicom.Imaging.Mathematics
             Vector3D d1 = b.Vector;
             Vector3D d0n = d0.Normalize();
 
-            Vector3D c = new Vector3D();
-            Vector3D d = new Vector3D();
+            var c = new Vector3D();
+            var d = new Vector3D();
 
             d.X = d1.X - d0n.X * (d0.X * d1.X + d0.Y * d1.Y + d0.Z * d1.Z);
             c.X = p1.X - p0.X + d0n.X * (d0.X * p0.X + d0.Y * p0.Y + d0.Z * p0.Z);
@@ -655,14 +635,10 @@ namespace FellowOakDicom.Imaging.Mathematics
         #region Public Members
 
         public bool IsParallel(Line3D line)
-        {
-            return line.Vector.DotProduct(Normal) == 0.0;
-        }
+            => line.Vector.DotProduct(Normal) == 0.0;
 
         public bool IsParallel(Plane3D plane)
-        {
-            return Normal == plane.Normal;
-        }
+            => Normal == plane.Normal;
 
         public bool Intersect(Line3D line, out Point3D intersection)
         {
@@ -680,11 +656,14 @@ namespace FellowOakDicom.Imaging.Mathematics
         {
             intersection = null;
 
-            if (IsParallel(b)) return false;
+            if (IsParallel(b))
+            {
+                return false;
+            }
 
             Point3D p;
-            Vector3D v1 = Normal.CrossProduct(b.Normal);
-            Vector3D v2 = new Vector3D(v1.X * v1.X, v1.Y * v1.Y, v1.Z * v1.Z);
+            var v1 = Normal.CrossProduct(b.Normal);
+            var v2 = new Vector3D(v1.X * v1.X, v1.Y * v1.Y, v1.Z * v1.Z);
             double w1 = -Distance;
             double w2 = -b.Distance;
             double id;
@@ -701,13 +680,16 @@ namespace FellowOakDicom.Imaging.Mathematics
                 id = -1.0 / v1.Y;
                 p = new Point3D(Normal.Z * w2 - b.Normal.Z * w1, 0.0, b.Normal.Y * w1 - Normal.Y * w2);
             }
-            else if (v2.X > Double.Epsilon)
+            else if (v2.X > double.Epsilon)
             {
                 // point on YZ plane
                 id = 1.0 / v1.X;
                 p = new Point3D(0.0, Normal.Z * w2 - b.Normal.Z * w1, b.Normal.Y * w1 - Normal.Y * w2);
             }
-            else return false;
+            else
+            {
+                return false;
+            }
 
             p = (p.ToVector() * id).ToPoint();
             id = 1.0 / Math.Sqrt(v2.X + v2.Y + v2.Z);
@@ -720,7 +702,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public Point3D ClosestPoint(Point3D point)
         {
-            Vector3D pv = point.ToVector();
+            var pv = point.ToVector();
             double d = Normal.DotProduct(pv - Point.ToVector());
             return (pv - (Normal * d)).ToPoint();
         }
@@ -730,26 +712,6 @@ namespace FellowOakDicom.Imaging.Mathematics
 
     public class Slice3D
     {
-        #region Private Members
-
-        private readonly Vector3D _normal;
-
-        private readonly Point3D _topLeft;
-
-        private readonly Point3D _topRight;
-
-        private readonly Point3D _bottomLeft;
-
-        private readonly Point3D _bottomRight;
-
-        private readonly double _width;
-
-        private readonly double _height;
-
-        private readonly Plane3D _plane;
-
-        #endregion
-
         #region Public Constructors
 
         public Slice3D(Vector3D normal, Point3D topLeft, double width, double height)
@@ -757,36 +719,36 @@ namespace FellowOakDicom.Imaging.Mathematics
             Vector3D right = normal.Rotate(Vector3D.AxisY, -90.0);
             Vector3D down = normal.Rotate(Vector3D.AxisX, -90.0);
 
-            _topLeft = topLeft;
-            _topRight = _topLeft + (right * width);
-            _bottomLeft = _topLeft + (down * height);
-            _bottomRight = _bottomLeft + (right * width);
+            TopLeft = topLeft;
+            TopRight = TopLeft + (right * width);
+            BottomLeft = TopLeft + (down * height);
+            BottomRight = BottomLeft + (right * width);
 
-            _normal = normal;
-            _width = width;
-            _height = height;
-            _plane = new Plane3D(normal, _topLeft);
+            Normal = normal;
+            Width = width;
+            Height = height;
+            Plane = new Plane3D(normal, TopLeft);
         }
 
         #endregion
 
         #region Public Properties
 
-        public Vector3D Normal => _normal;
+        public Vector3D Normal { get; }
 
-        public Plane3D Plane => _plane;
+        public Plane3D Plane { get; }
 
-        public Point3D TopLeft => _topLeft;
+        public Point3D TopLeft { get; }
 
-        public Point3D TopRight => _topRight;
+        public Point3D TopRight { get; }
 
-        public Point3D BottomLeft => _bottomLeft;
+        public Point3D BottomLeft { get; }
 
-        public Point3D BottomRight => _bottomRight;
+        public Point3D BottomRight { get; }
 
-        public double Width => _width;
+        public double Width { get; }
 
-        public double Height => _height;
+        public double Height { get; }
 
         #endregion
 
@@ -815,39 +777,31 @@ namespace FellowOakDicom.Imaging.Mathematics
 
     public class Orientation3D
     {
-        #region Private Members
-
-        private Vector3D _forward;
-
-        private Vector3D _down;
-
-        #endregion
-
         #region Public Constructors
 
         public Orientation3D()
         {
-            _forward = new Vector3D(1.0, 0.0, 0.0);
-            _down = new Vector3D(0.0, 0.0, 1.0);
+            Forward = new Vector3D(1.0, 0.0, 0.0);
+            Down = new Vector3D(0.0, 0.0, 1.0);
         }
 
         public Orientation3D(Vector3D forward, Vector3D down)
         {
-            _forward = forward;
-            _down = down;
+            Forward = forward;
+            Down = down;
         }
 
         public Orientation3D(Orientation3D orientation)
         {
-            _forward = orientation.Forward.Clone();
-            _down = orientation.Down.Clone();
+            Forward = orientation.Forward.Clone();
+            Down = orientation.Down.Clone();
         }
 
         #endregion
 
         #region Public Properties
 
-        public Vector3D Forward => _forward;
+        public Vector3D Forward { get; private set; }
 
         public Vector3D Backward => -Forward;
 
@@ -857,7 +811,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public Vector3D Up => -Down;
 
-        public Vector3D Down => _down;
+        public Vector3D Down { get; private set; }
 
         #endregion
 
@@ -866,18 +820,18 @@ namespace FellowOakDicom.Imaging.Mathematics
         public void Pitch(double angle)
         {
             Vector3D right = Right;
-            _forward = _forward.Rotate(right, angle);
-            _down = _down.Rotate(right, angle);
+            Forward = Forward.Rotate(right, angle);
+            Down = Down.Rotate(right, angle);
         }
 
         public void Roll(double angle)
         {
-            _down = _down.Rotate(_forward, angle);
+            Down = Down.Rotate(Forward, angle);
         }
 
         public void Yaw(double angle)
         {
-            _forward = _forward.Rotate(_down, angle);
+            Forward = Forward.Rotate(Down, angle);
         }
 
         #endregion

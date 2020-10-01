@@ -28,7 +28,7 @@ namespace FellowOakDicom.Network.Client
         /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
         /// </summary>
         DicomServiceOptions ServiceOptions { get; }
-        
+
         /// <summary>
         /// Gets or sets options to control behavior of this DICOM client.
         /// </summary>
@@ -63,12 +63,12 @@ namespace FellowOakDicom.Network.Client
         /// Gets the network manager that will be used to open connections.
         /// </summary>
         INetworkManager NetworkManager { get; }
-        
+
         /// <summary>
         /// Gets the log manager that will be used to log information to.
         /// </summary>
         ILogManager LogManager { get; }
-        
+
         /// <summary>
         /// Gets the transcoder manager that will be used to transcode incoming or outgoing DICOM files.
         /// </summary>
@@ -178,9 +178,9 @@ namespace FellowOakDicom.Network.Client
         /// <param name="logManager">The log manager that will be used to extract a default logger</param>
         /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
-            DicomClientOptions clientOptions, 
+            DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
-            INetworkManager networkManager, 
+            INetworkManager networkManager,
             ILogManager logManager,
             ITranscoderManager transcoderManager)
         {

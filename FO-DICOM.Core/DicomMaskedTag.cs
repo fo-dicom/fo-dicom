@@ -25,11 +25,7 @@ namespace FellowOakDicom
 
         public DicomTag Tag
         {
-            get
-            {
-                if (_tag == null) _tag = new DicomTag(Group, Element);
-                return _tag;
-            }
+            get => _tag ??= new DicomTag(Group, Element);
             set
             {
                 _tag = value;
@@ -37,21 +33,9 @@ namespace FellowOakDicom
             }
         }
 
-        public ushort Group
-        {
-            get
-            {
-                return Tag.Group;
-            }
-        }
+        public ushort Group => Tag.Group;
 
-        public ushort Element
-        {
-            get
-            {
-                return Tag.Element;
-            }
-        }
+        public ushort Element => Tag.Element;
 
         public uint Card { get; private set; }
 
@@ -64,10 +48,9 @@ namespace FellowOakDicom
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (formatProvider != null)
+            if (formatProvider?.GetFormat(GetType()) is ICustomFormatter fmt)
             {
-                ICustomFormatter fmt = formatProvider.GetFormat(this.GetType()) as ICustomFormatter;
-                if (fmt != null) return fmt.Format(format, this, formatProvider);
+                return fmt.Format(format, this, formatProvider);
             }
 
             switch (format)
@@ -75,7 +58,7 @@ namespace FellowOakDicom
                 case "g":
                     {
                         string s = Group.ToString("x4");
-                        string x = String.Empty;
+                        string x = string.Empty;
                         x += ((Mask & 0xf0000000) != 0) ? s[0] : 'x';
                         x += ((Mask & 0x0f000000) != 0) ? s[1] : 'x';
                         x += ((Mask & 0x00f00000) != 0) ? s[2] : 'x';
@@ -85,7 +68,7 @@ namespace FellowOakDicom
                 case "e":
                     {
                         string s = Element.ToString("x4");
-                        string x = String.Empty;
+                        string x = string.Empty;
                         x += ((Mask & 0x0000f000) != 0) ? s[0] : 'x';
                         x += ((Mask & 0x00000f00) != 0) ? s[1] : 'x';
                         x += ((Mask & 0x000000f0) != 0) ? s[2] : 'x';
@@ -95,7 +78,7 @@ namespace FellowOakDicom
                 case "G":
                 default:
                     {
-                        return String.Format("({0},{1})", this.ToString("g", null), this.ToString("e", null));
+                        return string.Format("({0},{1})", this.ToString("g", null), this.ToString("e", null));
                     }
             }
         }
@@ -109,21 +92,36 @@ namespace FellowOakDicom
         {
             try
             {
-                if (s.Length < 8) throw new ArgumentOutOfRangeException(nameof(s), "Expected a string of 8 or more characters");
+                if (s.Length < 8)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(s), "Expected a string of 8 or more characters");
+                }
 
                 int pos = 0;
-                if (s[pos] == '(') pos++;
+                if (s[pos] == '(')
+                {
+                    pos++;
+                }
 
                 int idx = s.IndexOf(',');
-                if (idx == -1) idx = pos + 4;
+                if (idx == -1)
+                {
+                    idx = pos + 4;
+                }
 
                 string group = s.Substring(pos, idx - pos);
 
                 pos = idx + 1;
 
                 string element = null;
-                if (s[s.Length - 1] == ')') element = s.Substring(pos, s.Length - pos - 1);
-                else element = s.Substring(pos);
+                if (s[s.Length - 1] == ')')
+                {
+                    element = s.Substring(pos, s.Length - pos - 1);
+                }
+                else
+                {
+                    element = s.Substring(pos);
+                }
 
                 return Parse(group, element);
             }
@@ -138,7 +136,7 @@ namespace FellowOakDicom
         {
             try
             {
-                DicomMaskedTag tag = new DicomMaskedTag();
+                var tag = new DicomMaskedTag();
 
                 ushort g = ushort.Parse(group.ToLower().Replace('x', '0'), NumberStyles.HexNumber);
                 ushort e = ushort.Parse(element.ToLower().Replace('x', '0'), NumberStyles.HexNumber);

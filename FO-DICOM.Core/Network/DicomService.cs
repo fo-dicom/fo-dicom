@@ -80,7 +80,7 @@ namespace FellowOakDicom.Network
         /// <param name="networkManager">The network manager</param>
         /// <param name="transcoderManager">The transcoder manager</param>
         protected DicomService(
-            INetworkStream stream, 
+            INetworkStream stream,
             Encoding fallbackEncoding,
             ILogger logger,
             ILogManager logManager,
@@ -98,12 +98,12 @@ namespace FellowOakDicom.Network
             _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
 
             MaximumPDUsInQueue = 16;
-            
+
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
             NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
-            
+
             Options = new DicomServiceOptions();
 
             _isInitialized = false;
@@ -182,17 +182,17 @@ namespace FellowOakDicom.Network
         /// Gets or sets an event handler to handle unsupported PDU bytes.
         /// </summary>
         public PDUBytesHandler DoHandlePDUBytes { get; set; }
-        
+
         /// <summary>
         /// The network manager being used by this DICOM service
         /// </summary>
         private INetworkManager NetworkManager { get; }
-        
+
         /// <summary>
         /// The log manager being used by this DICOM service
         /// </summary>
         private ILogManager LogManager { get; }
-        
+
         /// <summary>
         /// The transcoder manager being used by this DICOM service
         /// </summary>
@@ -369,7 +369,7 @@ namespace FellowOakDicom.Network
                 {
                     // This may happen when closing a connection.
                     Logger.Error("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
-                                 "This can happen when the connection is being closed", e);                
+                                 "This can happen when the connection is being closed", e);
                 }
                 catch (Exception e)
                 {
@@ -447,151 +447,152 @@ namespace FellowOakDicom.Network
                     switch (raw.Type)
                     {
                         case 0x01:
-                        {
-                            Association = new DicomAssociation
                             {
-                                RemoteHost = _network.RemoteHost,
-                                RemotePort = _network.RemotePort
-                            };
+                                Association = new DicomAssociation
+                                {
+                                    RemoteHost = _network.RemoteHost,
+                                    RemotePort = _network.RemotePort,
+                                    Options = Options
+                                };
 
-                            var pdu = new AAssociateRQ(Association);
-                            if (DoHandlePDUBytes != null)
-                            {
-                                pdu.HandlePDUBytes += DoHandlePDUBytes;
+                                var pdu = new AAssociateRQ(Association);
+                                if (DoHandlePDUBytes != null)
+                                {
+                                    pdu.HandlePDUBytes += DoHandlePDUBytes;
+                                }
+
+                                pdu.Read(raw);
+                                if (DoHandlePDUBytes != null)
+                                {
+                                    pdu.HandlePDUBytes -= DoHandlePDUBytes;
+                                }
+
+                                LogID = Association.CallingAE;
+                                if (Options.UseRemoteAEForLogName)
+                                {
+                                    Logger = LogManager.GetLogger(LogID);
+                                }
+
+                                Logger.Info(
+                                    "{callingAE} <- Association request:\n{association}",
+                                    LogID,
+                                    Association.ToString());
+                                if (this is IDicomServiceProvider provider)
+                                {
+                                    await provider.OnReceiveAssociationRequestAsync(Association).ConfigureAwait(false);
+                                }
+
+                                break;
                             }
-
-                            pdu.Read(raw);
-                            if (DoHandlePDUBytes != null)
-                            {
-                                pdu.HandlePDUBytes -= DoHandlePDUBytes;
-                            }
-
-                            LogID = Association.CallingAE;
-                            if (Options.UseRemoteAEForLogName)
-                            {
-                                Logger = LogManager.GetLogger(LogID);
-                            }
-
-                            Logger.Info(
-                                "{callingAE} <- Association request:\n{association}",
-                                LogID,
-                                Association.ToString());
-                            if (this is IDicomServiceProvider provider)
-                            {
-                                await provider.OnReceiveAssociationRequestAsync(Association).ConfigureAwait(false);
-                            }
-
-                            break;
-                        }
                         case 0x02:
-                        {
-                            var pdu = new AAssociateAC(Association);
-                            pdu.Read(raw);
-                            LogID = Association.CalledAE;
-                            Logger.Info(
-                                "{calledAE} <- Association accept:\n{assocation}",
-                                LogID,
-                                Association.ToString());
-                            if (this is IDicomClientConnection connection)
                             {
-                                await connection.OnReceiveAssociationAcceptAsync(Association).ConfigureAwait(false);
-                            }
+                                var pdu = new AAssociateAC(Association);
+                                pdu.Read(raw);
+                                LogID = Association.CalledAE;
+                                Logger.Info(
+                                    "{calledAE} <- Association accept:\n{assocation}",
+                                    LogID,
+                                    Association.ToString());
+                                if (this is IDicomClientConnection connection)
+                                {
+                                    await connection.OnReceiveAssociationAcceptAsync(Association).ConfigureAwait(false);
+                                }
 
-                            break;
-                        }
+                                break;
+                            }
                         case 0x03:
-                        {
-                            var pdu = new AAssociateRJ();
-                            pdu.Read(raw);
-                            Logger.Info(
-                                "{logId} <- Association reject [result: {pduResult}; source: {pduSource}; reason: {pduReason}]",
-                                LogID,
-                                pdu.Result,
-                                pdu.Source,
-                                pdu.Reason);
-
-                            if (this is IDicomClientConnection connection)
                             {
-                                await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
-                            }
+                                var pdu = new AAssociateRJ();
+                                pdu.Read(raw);
+                                Logger.Info(
+                                    "{logId} <- Association reject [result: {pduResult}; source: {pduSource}; reason: {pduReason}]",
+                                    LogID,
+                                    pdu.Result,
+                                    pdu.Source,
+                                    pdu.Reason);
 
-                            if (await TryCloseConnectionAsync().ConfigureAwait(false))
-                            {
-                                return;
-                            }
+                                if (this is IDicomClientConnection connection)
+                                {
+                                    await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
+                                }
 
-                            break;
-                        }
+                                if (await TryCloseConnectionAsync().ConfigureAwait(false))
+                                {
+                                    return;
+                                }
+
+                                break;
+                            }
                         case 0x04:
-                        {
-                            var pdu = new PDataTF();
-                            pdu.Read(raw);
-                            if (Options.LogDataPDUs)
                             {
-                                Logger.Info("{logId} <- {@pdu}", LogID, pdu);
-                            }
+                                var pdu = new PDataTF();
+                                pdu.Read(raw);
+                                if (Options.LogDataPDUs)
+                                {
+                                    Logger.Info("{logId} <- {@pdu}", LogID, pdu);
+                                }
 
-                            await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
-                            break;
-                        }
+                                await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
+                                break;
+                            }
                         case 0x05:
-                        {
-                            var pdu = new AReleaseRQ();
-                            pdu.Read(raw);
-                            Logger.Info("{logId} <- Association release request", LogID);
-                            if(this is IDicomServiceProvider provider)
                             {
-                                await provider.OnReceiveAssociationReleaseRequestAsync().ConfigureAwait(false);
-                            }
+                                var pdu = new AReleaseRQ();
+                                pdu.Read(raw);
+                                Logger.Info("{logId} <- Association release request", LogID);
+                                if (this is IDicomServiceProvider provider)
+                                {
+                                    await provider.OnReceiveAssociationReleaseRequestAsync().ConfigureAwait(false);
+                                }
 
-                            break;
-                        }
+                                break;
+                            }
                         case 0x06:
-                        {
-                            var pdu = new AReleaseRP();
-                            pdu.Read(raw);
-                            Logger.Info("{logId} <- Association release response", LogID);
-                            if (this is IDicomClientConnection connection)
                             {
-                                await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
-                            }
+                                var pdu = new AReleaseRP();
+                                pdu.Read(raw);
+                                Logger.Info("{logId} <- Association release response", LogID);
+                                if (this is IDicomClientConnection connection)
+                                {
+                                    await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
+                                }
 
-                            if (await TryCloseConnectionAsync().ConfigureAwait(false))
-                            {
-                                return;
-                            }
+                                if (await TryCloseConnectionAsync().ConfigureAwait(false))
+                                {
+                                    return;
+                                }
 
-                            break;
-                        }
+                                break;
+                            }
                         case 0x07:
-                        {
-                            var pdu = new AAbort();
-                            pdu.Read(raw);
-                            Logger.Info(
-                                "{logId} <- Abort: {pduSource} - {pduReason}",
-                                LogID,
-                                pdu.Source,
-                                pdu.Reason);
-                            if (this is IDicomService service)
                             {
-                                service.OnReceiveAbort(pdu.Source, pdu.Reason);
-                            }
-                            else if (this is IDicomClientConnection connection)
-                            {
-                                await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
-                            }
+                                var pdu = new AAbort();
+                                pdu.Read(raw);
+                                Logger.Info(
+                                    "{logId} <- Abort: {pduSource} - {pduReason}",
+                                    LogID,
+                                    pdu.Source,
+                                    pdu.Reason);
+                                if (this is IDicomService service)
+                                {
+                                    service.OnReceiveAbort(pdu.Source, pdu.Reason);
+                                }
+                                else if (this is IDicomClientConnection connection)
+                                {
+                                    await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
+                                }
 
-                            if (await TryCloseConnectionAsync().ConfigureAwait(false))
-                            {
-                                return;
-                            }
+                                if (await TryCloseConnectionAsync().ConfigureAwait(false))
+                                {
+                                    return;
+                                }
 
-                            break;
-                        }
+                                break;
+                            }
                         case 0xFF:
-                        {
-                            break;
-                        }
+                            {
+                                break;
+                            }
                         default:
                             throw new DicomNetworkException("Unknown PDU type");
                     }
@@ -683,78 +684,32 @@ namespace FellowOakDicom.Network
                             _dimseStreamFile = null;
 
                             var type = command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
-                            switch (type)
+                            _dimse = type switch
                             {
-                                case DicomCommandField.CStoreRequest:
-                                    _dimse = new DicomCStoreRequest(command);
-                                    break;
-                                case DicomCommandField.CStoreResponse:
-                                    _dimse = new DicomCStoreResponse(command);
-                                    break;
-                                case DicomCommandField.CFindRequest:
-                                    _dimse = new DicomCFindRequest(command);
-                                    break;
-                                case DicomCommandField.CFindResponse:
-                                    _dimse = new DicomCFindResponse(command);
-                                    break;
-                                case DicomCommandField.CGetRequest:
-                                    _dimse = new DicomCGetRequest(command);
-                                    break;
-                                case DicomCommandField.CGetResponse:
-                                    _dimse = new DicomCGetResponse(command);
-                                    break;
-                                case DicomCommandField.CMoveRequest:
-                                    _dimse = new DicomCMoveRequest(command);
-                                    break;
-                                case DicomCommandField.CMoveResponse:
-                                    _dimse = new DicomCMoveResponse(command);
-                                    break;
-                                case DicomCommandField.CEchoRequest:
-                                    _dimse = new DicomCEchoRequest(command);
-                                    break;
-                                case DicomCommandField.CEchoResponse:
-                                    _dimse = new DicomCEchoResponse(command);
-                                    break;
-                                case DicomCommandField.NActionRequest:
-                                    _dimse = new DicomNActionRequest(command);
-                                    break;
-                                case DicomCommandField.NActionResponse:
-                                    _dimse = new DicomNActionResponse(command);
-                                    break;
-                                case DicomCommandField.NCreateRequest:
-                                    _dimse = new DicomNCreateRequest(command);
-                                    break;
-                                case DicomCommandField.NCreateResponse:
-                                    _dimse = new DicomNCreateResponse(command);
-                                    break;
-                                case DicomCommandField.NDeleteRequest:
-                                    _dimse = new DicomNDeleteRequest(command);
-                                    break;
-                                case DicomCommandField.NDeleteResponse:
-                                    _dimse = new DicomNDeleteResponse(command);
-                                    break;
-                                case DicomCommandField.NEventReportRequest:
-                                    _dimse = new DicomNEventReportRequest(command);
-                                    break;
-                                case DicomCommandField.NEventReportResponse:
-                                    _dimse = new DicomNEventReportResponse(command);
-                                    break;
-                                case DicomCommandField.NGetRequest:
-                                    _dimse = new DicomNGetRequest(command);
-                                    break;
-                                case DicomCommandField.NGetResponse:
-                                    _dimse = new DicomNGetResponse(command);
-                                    break;
-                                case DicomCommandField.NSetRequest:
-                                    _dimse = new DicomNSetRequest(command);
-                                    break;
-                                case DicomCommandField.NSetResponse:
-                                    _dimse = new DicomNSetResponse(command);
-                                    break;
-                                default:
-                                    _dimse = new DicomMessage(command);
-                                    break;
-                            }
+                                DicomCommandField.CStoreRequest => new DicomCStoreRequest(command),
+                                DicomCommandField.CStoreResponse => new DicomCStoreResponse(command),
+                                DicomCommandField.CFindRequest => new DicomCFindRequest(command),
+                                DicomCommandField.CFindResponse => new DicomCFindResponse(command),
+                                DicomCommandField.CGetRequest => new DicomCGetRequest(command),
+                                DicomCommandField.CGetResponse => new DicomCGetResponse(command),
+                                DicomCommandField.CMoveRequest => new DicomCMoveRequest(command),
+                                DicomCommandField.CMoveResponse => new DicomCMoveResponse(command),
+                                DicomCommandField.CEchoRequest => new DicomCEchoRequest(command),
+                                DicomCommandField.CEchoResponse => new DicomCEchoResponse(command),
+                                DicomCommandField.NActionRequest => new DicomNActionRequest(command),
+                                DicomCommandField.NActionResponse => new DicomNActionResponse(command),
+                                DicomCommandField.NCreateRequest => new DicomNCreateRequest(command),
+                                DicomCommandField.NCreateResponse => new DicomNCreateResponse(command),
+                                DicomCommandField.NDeleteRequest => new DicomNDeleteRequest(command),
+                                DicomCommandField.NDeleteResponse => new DicomNDeleteResponse(command),
+                                DicomCommandField.NEventReportRequest => new DicomNEventReportRequest(command),
+                                DicomCommandField.NEventReportResponse => new DicomNEventReportResponse(command),
+                                DicomCommandField.NGetRequest => new DicomNGetRequest(command),
+                                DicomCommandField.NGetResponse => new DicomNGetResponse(command),
+                                DicomCommandField.NSetRequest => new DicomNSetRequest(command),
+                                DicomCommandField.NSetResponse => new DicomNSetResponse(command),
+                                _ => new DicomMessage(command),
+                            };
                             _dimse.PresentationContext =
                                 Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
                             if (!_dimse.HasDataset)
@@ -906,20 +861,11 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCFindProvider = this as IDicomCFindProvider ?? throw new DicomNetworkException("C-Find SCP not implemented");
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                 var asyncResponses = thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest);
                 await foreach (var response in asyncResponses.ConfigureAwait(false))
                 {
                     await SendResponseAsync(response).ConfigureAwait(false);
                 }
-#else
-                var asyncResponses = await thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest).ConfigureAwait(false);
-                foreach (var asyncResponse in asyncResponses)
-                {
-                    var response = await asyncResponse.ConfigureAwait(false);
-                    await SendResponseAsync(response).ConfigureAwait(false);
-                }
-#endif
 
                 return;
             }
@@ -928,20 +874,11 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCGetProvider = this as IDicomCGetProvider ?? throw new DicomNetworkException("C-GET SCP not implemented");
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                 var asyncResponses = thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest);
                 await foreach (var response in asyncResponses.ConfigureAwait(false))
                 {
                     await SendResponseAsync(response).ConfigureAwait(false);
                 }
-#else
-                var asyncResponses = await thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest).ConfigureAwait(false);
-                foreach (var asyncResponse in asyncResponses)
-                {
-                    var response = await asyncResponse.ConfigureAwait(false);
-                    await SendResponseAsync(response).ConfigureAwait(false);
-                }
-#endif
 
                 return;
             }
@@ -950,20 +887,11 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCMoveProvider = this as IDicomCMoveProvider ?? throw new DicomNetworkException("C-Move SCP not implemented");
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
                 var asyncResponses = thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest);
                 await foreach (var response in asyncResponses.ConfigureAwait(false))
                 {
                     await SendResponseAsync(response).ConfigureAwait(false);
                 }
-#else
-                var asyncResponses = await thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest).ConfigureAwait(false);
-                foreach (var asyncResponse in asyncResponses)
-                {
-                    var response = await asyncResponse.ConfigureAwait(false);
-                    await SendResponseAsync(response).ConfigureAwait(false);
-                }
-#endif
 
                 return;
             }
@@ -1236,7 +1164,7 @@ namespace FellowOakDicom.Network
                         await connection.OnRequestCompletedAsync(request, response).ConfigureAwait(false);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Logger.Error("Exception in DoSendMessageAsync: {error}", e);
                 }
@@ -1419,7 +1347,7 @@ namespace FellowOakDicom.Network
                     }
                 }
 
-                if(this is IDicomService dicomService)
+                if (this is IDicomService dicomService)
                 {
                     dicomService.OnConnectionClosed(exception);
                 }
