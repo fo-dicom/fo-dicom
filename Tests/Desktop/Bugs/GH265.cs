@@ -3,6 +3,7 @@
 
 namespace Dicom.Bugs
 {
+    using Dicom.Helpers;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace Dicom.Bugs
                 Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPClassUID));
                 Assert.True(file.FileMetaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID));
             }
+            IOHelper.DeleteIfExists(tempName);
         }
 
         [Fact]
@@ -54,6 +56,8 @@ namespace Dicom.Bugs
 
             Assert.Equal(expected.Version, actual.Version);
             Assert.Equal(expected.TransferSyntax.UID.UID, actual.TransferSyntax.UID.UID);
+
+            IOHelper.DeleteIfExists(tempName);
         }
 
         [Fact]
@@ -74,6 +78,7 @@ namespace Dicom.Bugs
                 Assert.NotEqual(expected.ImplementationVersionName, actual.ImplementationVersionName);
                 Assert.Equal(expected.SourceApplicationEntityTitle, actual.SourceApplicationEntityTitle);
             }
+            IOHelper.DeleteIfExists(tempName);
         }
 
         [Fact]

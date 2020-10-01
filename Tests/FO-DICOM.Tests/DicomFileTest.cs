@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Writer;
+using FellowOakDicom.Tests.Helpers;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
@@ -124,6 +125,7 @@ namespace FellowOakDicom.Tests
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
             Assert.True(File.Exists(fileName));
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -133,6 +135,7 @@ namespace FellowOakDicom.Tests
             var fileName = Path.GetTempFileName();
             await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -146,6 +149,7 @@ namespace FellowOakDicom.Tests
             var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -159,6 +163,7 @@ namespace FellowOakDicom.Tests
             var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]
@@ -168,11 +173,15 @@ namespace FellowOakDicom.Tests
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            var file = MemoryMappedFile.CreateFromFile(fileName);
-            var openFile = DicomFile.Open(file.CreateViewStream());
-            var expected = _minimumDatasetInstanceUid;
-            var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
-            Assert.Equal(expected, actual);
+            using (var file = MemoryMappedFile.CreateFromFile(fileName))
+            using (var stream = file.CreateViewStream())
+            {
+                var openFile = DicomFile.Open(stream);
+                var expected = _minimumDatasetInstanceUid;
+                var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
+                Assert.Equal(expected, actual);
+            }
+            IOHelper.DeleteIfExists(fileName);
         }
 
         [Fact]

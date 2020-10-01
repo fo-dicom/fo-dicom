@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
+using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -33,10 +34,7 @@ namespace FellowOakDicom.Tests.IO.Reader
             dcm.Save(tmpFile);
             Assert.True(File.Exists(tmpFile));
             Assert.True(new FileInfo(tmpFile).Length > 0);
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
+            IOHelper.DeleteIfExists(tmpFile);
         }
 
 
@@ -55,10 +53,7 @@ namespace FellowOakDicom.Tests.IO.Reader
             // this will save the image without pixels and generate an ObjectDisposedException
             string tmpFile = Path.GetTempFileName();
             Assert.Throws<DicomIoException>(() => dcm.Save(tmpFile));
-            if (File.Exists(tmpFile))
-            {
-                File.Delete(tmpFile);
-            }
+            IOHelper.DeleteIfExists(tmpFile);
         }
 
 

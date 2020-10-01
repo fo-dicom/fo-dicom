@@ -8,12 +8,15 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
+using System.Collections.Generic;
 
 namespace FellowOakDicom.Tests.Network
 {
 
     internal class SimpleCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
+        private readonly List<string> _storedFiles = new List<string>();
+
         private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
         {
             DicomTransferSyntax.ExplicitVRLittleEndian,
@@ -68,6 +71,8 @@ namespace FellowOakDicom.Tests.Network
 
         public void OnConnectionClosed(Exception exception)
         {
+            _storedFiles.Each(tempFile => File.Delete(tempFile));
+            _storedFiles.Clear();
         }
 
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
@@ -80,6 +85,8 @@ namespace FellowOakDicom.Tests.Network
             request.File.FileMetaInfo.ValidateItems = false;
 
             await request.File.SaveAsync(tempName).ConfigureAwait(false);
+
+            _storedFiles.Add(tempName);
 
             return new DicomCStoreResponse(request, DicomStatus.Success)
             {

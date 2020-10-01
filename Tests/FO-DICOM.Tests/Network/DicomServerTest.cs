@@ -193,6 +193,30 @@ namespace FellowOakDicom.Tests.Network
             }
         }
 
+
+        [Fact]
+        public async Task SendMaxPDU()
+        {
+            var port = Ports.GetNext();
+            uint serverPduLength = 400000;
+            uint clientPduLength = serverPduLength / 2;
+
+            using var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
+            server.Options.MaxPDULength = serverPduLength;
+
+            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.ServiceOptions.MaxPDULength = clientPduLength; // explicitly choose a different value
+            await client.AddRequestAsync(new DicomCEchoRequest());
+
+            uint serverPduInAssociationAccepted = 0;
+            client.AssociationAccepted += (sender, e) => serverPduInAssociationAccepted = e.Association.MaximumPDULength;
+
+            await client.SendAsync();
+
+            Assert.Equal(serverPduLength, serverPduInAssociationAccepted);
+        }
+
+
         [Fact]
         public async Task Send_KnownSOPClass_SendSucceeds()
         {

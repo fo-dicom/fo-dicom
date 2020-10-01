@@ -27,13 +27,11 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="callingAe">The calling Application Entity.</param>
         /// <param name="calledAe">The called Application Entity.</param>
-        /// <param name="maxPduLength">Maximum PDU length.</param>
-        public DicomAssociation(string callingAe, string calledAe, uint maxPduLength = 262144)
+        public DicomAssociation(string callingAe, string calledAe)
             : this()
         {
             CallingAE = callingAe;
             CalledAE = calledAe;
-            MaximumPDULength = maxPduLength;
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace FellowOakDicom.Network
         public string RemoteImplementationVersion { get; internal set; }
 
         /// <summary>
-        /// Gets the maximum PDU length.
+        /// Gets the maximum PDU length that the remote service accepts.
         /// </summary>
         public uint MaximumPDULength { get; internal set; }
 
@@ -90,7 +88,12 @@ namespace FellowOakDicom.Network
         /// Gets the (common) extended negotiations
         /// </summary>
         public DicomExtendedNegotiationCollection ExtendedNegotiations { get; private set; }
-        
+
+        /// <summary>
+        /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
+        /// </summary>
+        public DicomServiceOptions Options { get; internal set; }
+
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
@@ -105,9 +108,7 @@ namespace FellowOakDicom.Network
             sb.AppendFormat("Called AE Title:        {0}\n", CalledAE);
             sb.AppendFormat("Remote host:            {0}\n", RemoteHost);
             sb.AppendFormat("Remote port:            {0}\n", RemotePort);
-            sb.AppendFormat(
-                "Implementation Class:   {0}\n",
-                this.RemoteImplementationClassUID ?? DicomImplementation.ClassUID);
+            sb.AppendFormat("Implementation Class:   {0}\n", RemoteImplementationClassUID ?? DicomImplementation.ClassUID);
             sb.AppendFormat("Implementation Version: {0}\n", RemoteImplementationVersion ?? DicomImplementation.Version);
             sb.AppendFormat("Maximum PDU Length:     {0}\n", MaximumPDULength);
             sb.AppendFormat("Async Ops Invoked:      {0}\n", MaxAsyncOpsInvoked);
