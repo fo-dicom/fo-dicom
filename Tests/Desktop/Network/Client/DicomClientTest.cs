@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1377,7 +1378,14 @@ namespace Dicom.Network.Client
 
                 using (var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1)))
                 {
-                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                    try
+                    {
+                        await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                    }
+                    catch(SocketException)
+                    {
+                        // Ignored
+                    }
 
                     Assert.False(cancellation.IsCancellationRequested);
                 }
