@@ -83,3 +83,24 @@ jobs:
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64
+
+  benchmarks:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build FO-DICOM..Benchmark
+      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --runtime win-x64
+    - name: run benchmarks
+      run: ./Tests/FO-DICOM.Benchmark/bin/Release/netcoreapp3.1/fo-dicom.Benchmark.exe
+    - name: Upload benchmark log
+      uses: actions/upload-artifact@v2
+      with:
+        name: benchmarklog
+        path: ./Tests/FO-DICOM.Benchmark/bin/Release/netcoreapp3.1/BenchmarkDotNet.Artifacts/*.log
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v2
+      with:
+        name: benchmarkresults
+        path: ./Tests/FO-DICOM.Benchmark/bin/Release/netcoreapp3.1/BenchmarkDotNet.Artifacts/results/*.*
+ 
+
