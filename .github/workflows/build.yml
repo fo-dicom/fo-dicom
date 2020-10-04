@@ -89,7 +89,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build FO-DICOM..Benchmark
-      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework netcoreapp3.1 --runtime win-x64
+      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework netcoreapp3.1
     - name: run benchmarks
       run: ./Tests/FO-DICOM.Benchmark/bin/Release/netcoreapp3.1/fo-dicom.Benchmark.exe
     - name: Upload benchmark log
