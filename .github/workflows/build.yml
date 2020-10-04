@@ -95,12 +95,9 @@ jobs:
     - name: Upload benchmark log
       uses: actions/upload-artifact@v2
       with:
-        name: benchmarklog
-        path: ./Tests/FO-DICOM.Benchmark/bin/Release/netcoreapp3.1/BenchmarkDotNet.Artifacts/*.log
-    - name: Upload benchmark results
-      uses: actions/upload-artifact@v2
-      with:
-        name: benchmarkresults
-        path: ./Tests/FO-DICOM.Benchmark/bin/Release/netcoreapp3.1/BenchmarkDotNet.Artifacts/results/*.*
+        name: benchmark
+        path: |
+          ./BenchmarkDotNet.Artifacts/
+          ./BenchmarkDotNet.Artifacts/results/
  
 
