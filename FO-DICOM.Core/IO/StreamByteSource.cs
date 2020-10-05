@@ -204,6 +204,12 @@ namespace FellowOakDicom.IO
             }
         }
 
+
+        public Stream GetStream()
+        {
+            return _stream;
+        }
+
         #endregion
     }
 }

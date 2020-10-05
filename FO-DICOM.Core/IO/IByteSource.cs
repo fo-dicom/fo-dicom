@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace FellowOakDicom.IO
 {
@@ -172,5 +173,12 @@ namespace FellowOakDicom.IO
         /// <param name="state">Callback state.</param>
         /// <returns>true if source contains sufficient number of remaining bytes, false otherwise.</returns>
         bool Require(uint count, ByteSourceCallback callback, object state);
+
+        /// <summary>
+        /// Get stream of this byte source.
+        /// </summary>
+        /// <returns>The stream.</returns>
+        Stream GetStream();
+
     }
 }

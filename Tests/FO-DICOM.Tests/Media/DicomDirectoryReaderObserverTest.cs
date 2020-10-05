@@ -6,6 +6,7 @@ using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Media;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -174,6 +175,7 @@ namespace FellowOakDicom.Tests.Media
         public bool Require(uint count) => throw new NotImplementedException();
         public bool Require(uint count, ByteSourceCallback callback, object state) => throw new NotImplementedException();
         public void Rewind() => throw new NotImplementedException();
+        public Stream GetStream() => throw new NotImplementedException();
     }
 
     internal class Container
