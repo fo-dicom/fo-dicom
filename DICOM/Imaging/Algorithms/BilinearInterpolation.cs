@@ -18,8 +18,8 @@ namespace Dicom.Imaging.Algorithms
         {
             byte[] output = new byte[outputWidth * outputHeight];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth-1) / (double)(outputWidth-1);
+            double yF = (double)(inputHeight-1) / (double)(outputHeight-1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
@@ -78,8 +78,8 @@ namespace Dicom.Imaging.Algorithms
         {
             short[] output = new short[outputWidth * outputHeight];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth - 1) / (double)(outputWidth - 1);
+            double yF = (double)(inputHeight - 1) / (double)(outputHeight - 1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
@@ -138,8 +138,8 @@ namespace Dicom.Imaging.Algorithms
         {
             ushort[] output = new ushort[outputWidth * outputHeight];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth - 1) / (double)(outputWidth - 1);
+            double yF = (double)(inputHeight - 1) / (double)(outputHeight - 1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
@@ -198,8 +198,8 @@ namespace Dicom.Imaging.Algorithms
         {
             int[] output = new int[outputWidth * outputHeight];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth - 1) / (double)(outputWidth - 1);
+            double yF = (double)(inputHeight - 1) / (double)(outputHeight - 1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
@@ -258,8 +258,8 @@ namespace Dicom.Imaging.Algorithms
         {
             uint[] output = new uint[outputWidth * outputHeight];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth - 1) / (double)(outputWidth - 1);
+            double yF = (double)(inputHeight - 1) / (double)(outputHeight - 1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
@@ -318,8 +318,8 @@ namespace Dicom.Imaging.Algorithms
         {
             byte[] output = new byte[outputWidth * outputHeight * 3];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth - 1) / (double)(outputWidth - 1);
+            double yF = (double)(inputHeight - 1) / (double)(outputHeight - 1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
@@ -400,8 +400,8 @@ namespace Dicom.Imaging.Algorithms
         {
             byte[] output = new byte[outputWidth * outputHeight * 4];
 
-            double xF = (double)inputWidth / (double)outputWidth;
-            double yF = (double)inputHeight / (double)outputHeight;
+            double xF = (double)(inputWidth - 1) / (double)(outputWidth - 1);
+            double yF = (double)(inputHeight - 1) / (double)(outputHeight - 1);
 
             int xMax = inputWidth - 1;
             int yMax = inputHeight - 1;
