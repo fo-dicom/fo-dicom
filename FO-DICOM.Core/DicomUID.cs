@@ -128,7 +128,7 @@ namespace FellowOakDicom
                     return DicomStorageCategory.Private;
                 }
 
-                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage"))
+                if (Type != DicomUidType.SOPClass || Name.StartsWith("Storage Commitment") || !Name.Contains("Storage"))
                 {
                     return DicomStorageCategory.None;
                 }

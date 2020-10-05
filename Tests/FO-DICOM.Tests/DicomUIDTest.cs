@@ -142,6 +142,20 @@ namespace FellowOakDicom.Tests
             Assert.Equal(DicomUidType.Unknown, uid.Type);
         }
 
+        [Fact]
+        public void DicomStorageCategoryTest()
+        {
+            // just check some DicomUIDs randomly
+            Assert.Equal(DicomStorageCategory.Image, DicomUID.SecondaryCaptureImageStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.StorageCommitmentPushModelSOPClass.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.Verification.StorageCategory);
+            Assert.Equal(DicomStorageCategory.StructuredReport, DicomUID.MammographyCADSRStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.Raw, DicomUID.RawDataStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.Image, DicomUID.DigitalXRayImageStorageForProcessing.StorageCategory);
+            Assert.Equal(DicomStorageCategory.Volume, DicomUID.EnhancedUSVolumeStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.VolumeMeasurements7472.StorageCategory);
+        }
+
         #endregion
 
         #region Support data
