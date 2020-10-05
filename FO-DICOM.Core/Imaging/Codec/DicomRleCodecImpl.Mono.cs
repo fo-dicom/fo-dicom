@@ -28,48 +28,46 @@ namespace FellowOakDicom.Imaging.Codec
                 var frameData = oldPixelData.GetFrame(frame);
                 var frameArray = frameData.Data;
 
-                using (var encoder = new RLEEncoder())
+                using var encoder = new RLEEncoder();
+                for (var s = 0; s < numberOfSegments; s++)
                 {
-                    for (var s = 0; s < numberOfSegments; s++)
+                    encoder.NextSegment();
+
+                    var sample = s / oldPixelData.BytesAllocated;
+                    var sabyte = s % oldPixelData.BytesAllocated;
+
+                    int pos;
+                    int offset;
+
+                    if (newPixelData.PlanarConfiguration == PlanarConfiguration.Interleaved)
                     {
-                        encoder.NextSegment();
-
-                        var sample = s / oldPixelData.BytesAllocated;
-                        var sabyte = s % oldPixelData.BytesAllocated;
-
-                        int pos;
-                        int offset;
-
-                        if (newPixelData.PlanarConfiguration == PlanarConfiguration.Interleaved)
-                        {
-                            pos = sample * oldPixelData.BytesAllocated;
-                            offset = numberOfSegments;
-                        }
-                        else
-                        {
-                            pos = sample * oldPixelData.BytesAllocated * pixelCount;
-                            offset = oldPixelData.BytesAllocated;
-                        }
-
-                        pos += oldPixelData.BytesAllocated - sabyte - 1;
-
-                        for (var p = 0; p < pixelCount; p++)
-                        {
-                            if (pos >= frameArray.Length)
-                            {
-                                throw new InvalidOperationException("Read position is past end of frame buffer");
-                            }
-                            encoder.Encode(frameArray[pos]);
-                            pos += offset;
-                        }
-                        encoder.Flush();
+                        pos = sample * oldPixelData.BytesAllocated;
+                        offset = numberOfSegments;
+                    }
+                    else
+                    {
+                        pos = sample * oldPixelData.BytesAllocated * pixelCount;
+                        offset = oldPixelData.BytesAllocated;
                     }
 
-                    encoder.MakeEvenLength();
+                    pos += oldPixelData.BytesAllocated - sabyte - 1;
 
-                    var data = encoder.GetBuffer();
-                    newPixelData.AddFrame(data);
+                    for (var p = 0; p < pixelCount; p++)
+                    {
+                        if (pos >= frameArray.Length)
+                        {
+                            throw new InvalidOperationException("Read position is past end of frame buffer");
+                        }
+                        encoder.Encode(frameArray[pos]);
+                        pos += offset;
+                    }
+                    encoder.Flush();
                 }
+
+                encoder.MakeEvenLength();
+
+                var data = encoder.GetBuffer();
+                newPixelData.AddFrame(data);
             }
         }
 

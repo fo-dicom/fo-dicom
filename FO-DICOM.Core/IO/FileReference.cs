@@ -140,11 +140,9 @@ namespace FellowOakDicom.IO
         {
             byte[] buffer = new byte[count];
 
-            using (var fs = OpenRead())
-            {
-                fs.Seek(offset, SeekOrigin.Begin);
-                fs.Read(buffer, 0, count);
-            }
+            using var fs = OpenRead();
+            fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(buffer, 0, count);
 
             return buffer;
         }

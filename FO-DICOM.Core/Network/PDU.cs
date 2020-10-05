@@ -130,10 +130,8 @@ namespace FellowOakDicom.Network
             {
                 d.Create();
             }
-            using (var fs = file.OpenWrite())
-            {
-                WritePDU(fs);
-            }
+            using var fs = file.OpenWrite();
+            WritePDU(fs);
         }
 
         /// <summary>

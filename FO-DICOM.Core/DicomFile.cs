@@ -129,11 +129,9 @@ namespace FellowOakDicom
 
             OnSave();
 
-            using (var target = new FileByteTarget(File))
-            {
-                var writer = new DicomFileWriter(options);
-                writer.Write(target, FileMetaInfo, Dataset);
-            }
+            using var target = new FileByteTarget(File);
+            var writer = new DicomFileWriter(options);
+            writer.Write(target, FileMetaInfo, Dataset);
         }
 
         /// <summary>
@@ -166,11 +164,9 @@ namespace FellowOakDicom
 
             OnSave();
 
-            using (var target = new FileByteTarget(File))
-            {
-                var writer = new DicomFileWriter(options);
-                await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
-            }
+            using var target = new FileByteTarget(File);
+            var writer = new DicomFileWriter(options);
+            await writer.WriteAsync(target, FileMetaInfo, Dataset).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -221,32 +217,30 @@ namespace FellowOakDicom
             {
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
-                using (var unvalidatedDataset = new UnvalidatedScope(df.Dataset))
-                using (var source = new FileByteSource(df.File, readOption))
+                using var unvalidatedDataset = new UnvalidatedScope(df.Dataset);
+                using var source = new FileByteSource(df.File, readOption);
+                var reader = new DicomFileReader();
+                var result = reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(df.FileMetaInfo),
+                    new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                    stop);
+
+                if (result == DicomReaderResult.Processing)
                 {
-                    var reader = new DicomFileReader();
-                    var result = reader.Read(
-                        source,
-                        new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                        stop);
-
-                    if (result == DicomReaderResult.Processing)
-                    {
-                        throw new DicomFileException(df, $"Invalid read return state: {result}");
-                    }
-                    if (result == DicomReaderResult.Error)
-                    {
-                        return null;
-                    }
-                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
-                    df.Format = reader.FileFormat;
-
-                    df.Dataset.InternalTransferSyntax = reader.Syntax;
-
-                    return df;
+                    throw new DicomFileException(df, $"Invalid read return state: {result}");
                 }
+                if (result == DicomReaderResult.Error)
+                {
+                    return null;
+                }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+
+                df.Format = reader.FileFormat;
+
+                df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                return df;
             }
             catch (Exception e)
             {
@@ -283,31 +277,29 @@ namespace FellowOakDicom
             {
                 var source = new StreamByteSource(stream, readOption);
 
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                var reader = new DicomFileReader();
+                var result = reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(df.FileMetaInfo),
+                    new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                    stop);
+
+                if (result == DicomReaderResult.Processing)
                 {
-                    var reader = new DicomFileReader();
-                    var result = reader.Read(
-                        source,
-                        new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                        stop);
-
-                    if (result == DicomReaderResult.Processing)
-                    {
-                        throw new DicomFileException(df, $"Invalid read return state: {result}");
-                    }
-                    if (result == DicomReaderResult.Error)
-                    {
-                        return null;
-                    }
-                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
-                    df.Format = reader.FileFormat;
-
-                    df.Dataset.InternalTransferSyntax = reader.Syntax;
-
-                    return df;
+                    throw new DicomFileException(df, $"Invalid read return state: {result}");
                 }
+                if (result == DicomReaderResult.Error)
+                {
+                    return null;
+                }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+
+                df.Format = reader.FileFormat;
+
+                df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                return df;
             }
             catch (Exception e)
             {
@@ -347,33 +339,31 @@ namespace FellowOakDicom
             {
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
-                using (var source = new FileByteSource(df.File, readOption))
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                using var source = new FileByteSource(df.File, readOption);
+                var reader = new DicomFileReader();
+                var result =
+                    await
+                    reader.ReadAsync(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                        stop).ConfigureAwait(false);
+
+                if (result == DicomReaderResult.Processing)
                 {
-                    var reader = new DicomFileReader();
-                    var result =
-                        await
-                        reader.ReadAsync(
-                            source,
-                            new DicomDatasetReaderObserver(df.FileMetaInfo),
-                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                            stop).ConfigureAwait(false);
-
-                    if (result == DicomReaderResult.Processing)
-                    {
-                        throw new DicomFileException(df, $"Invalid read return state: {result}");
-                    }
-                    if (result == DicomReaderResult.Error)
-                    {
-                        return null;
-                    }
-                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
-                    df.Format = reader.FileFormat;
-                    df.Dataset.InternalTransferSyntax = reader.Syntax;
-
-                    return df;
+                    throw new DicomFileException(df, $"Invalid read return state: {result}");
                 }
+                if (result == DicomReaderResult.Error)
+                {
+                    return null;
+                }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+
+                df.Format = reader.FileFormat;
+                df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                return df;
             }
             catch (Exception e)
             {
@@ -409,32 +399,30 @@ namespace FellowOakDicom
             try
             {
                 var source = new StreamByteSource(stream, readOption);
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                var reader = new DicomFileReader();
+                var result =
+                    await
+                    reader.ReadAsync(
+                        source,
+                        new DicomDatasetReaderObserver(df.FileMetaInfo),
+                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
+                        stop).ConfigureAwait(false);
+
+                if (result == DicomReaderResult.Processing)
                 {
-                    var reader = new DicomFileReader();
-                    var result =
-                        await
-                        reader.ReadAsync(
-                            source,
-                            new DicomDatasetReaderObserver(df.FileMetaInfo),
-                            new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
-                            stop).ConfigureAwait(false);
-
-                    if (result == DicomReaderResult.Processing)
-                    {
-                        throw new DicomFileException(df, $"Invalid read return state: {result}");
-                    }
-                    if (result == DicomReaderResult.Error)
-                    {
-                        return null;
-                    }
-                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
-                    df.Format = reader.FileFormat;
-                    df.Dataset.InternalTransferSyntax = reader.Syntax;
-
-                    return df;
+                    throw new DicomFileException(df, $"Invalid read return state: {result}");
                 }
+                if (result == DicomReaderResult.Error)
+                {
+                    return null;
+                }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+
+                df.Format = reader.FileFormat;
+                df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                return df;
             }
             catch (Exception e)
             {
@@ -452,11 +440,9 @@ namespace FellowOakDicom
             try
             {
                 var file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
-                using (var fs = file.OpenRead())
-                {
-                    fs.Seek(128, SeekOrigin.Begin);
-                    return fs.ReadByte() == 'D' && fs.ReadByte() == 'I' && fs.ReadByte() == 'C' && fs.ReadByte() == 'M';
-                }
+                using var fs = file.OpenRead();
+                fs.Seek(128, SeekOrigin.Begin);
+                return fs.ReadByte() == 'D' && fs.ReadByte() == 'I' && fs.ReadByte() == 'C' && fs.ReadByte() == 'M';
             }
             catch
             {
@@ -492,31 +478,29 @@ namespace FellowOakDicom
             {
                 df.File = file;
 
-                using (var source = new FileByteSource(file, readOption))
-                using (var unvalidated = new UnvalidatedScope(df.Dataset))
+                using var source = new FileByteSource(file, readOption);
+                using var unvalidated = new UnvalidatedScope(df.Dataset);
+                var reader = new DicomFileReader();
+                var result = reader.Read(
+                    source,
+                    new DicomDatasetReaderObserver(df.FileMetaInfo),
+                    new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
+
+                if (result == DicomReaderResult.Processing)
                 {
-                    var reader = new DicomFileReader();
-                    var result = reader.Read(
-                        source,
-                        new DicomDatasetReaderObserver(df.FileMetaInfo),
-                        new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
-
-                    if (result == DicomReaderResult.Processing)
-                    {
-                        throw new DicomFileException(df, $"Invalid read return state: {result}");
-                    }
-                    if (result == DicomReaderResult.Error)
-                    {
-                        return null;
-                    }
-                    df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
-                    df.Format = reader.FileFormat;
-
-                    df.Dataset.InternalTransferSyntax = reader.Syntax;
-
-                    return df;
+                    throw new DicomFileException(df, $"Invalid read return state: {result}");
                 }
+                if (result == DicomReaderResult.Error)
+                {
+                    return null;
+                }
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+
+                df.Format = reader.FileFormat;
+
+                df.Dataset.InternalTransferSyntax = reader.Syntax;
+
+                return df;
             }
             catch (Exception e)
             {

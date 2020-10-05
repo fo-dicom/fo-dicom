@@ -65,13 +65,10 @@ namespace FellowOakDicom.Network
             {
                 Task awaiter;
                 Task<TcpClient> acceptTcpClientTask;
-                using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token))
-                {
-                    acceptTcpClientTask = _listener.AcceptTcpClientAsync();
-                    awaiter =
-                        await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
-                    cancelSource.Cancel();
-                }
+                using var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+                acceptTcpClientTask = _listener.AcceptTcpClientAsync();
+                awaiter = await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
+                cancelSource.Cancel();
                 if (awaiter is Task<TcpClient> tcpClientTask)
                 {
                     var tcpClient = tcpClientTask.Result;

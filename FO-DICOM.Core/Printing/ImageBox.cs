@@ -306,10 +306,8 @@ namespace FellowOakDicom.Printing
             var imageBoxTextFile = imageBoxFile + ".txt";
 
             var imageBoxFileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(imageBoxTextFile);
-            using (var writer = new StreamWriter(imageBoxFileRef.Create()))
-            {
-                writer.Write(this.WriteToString());
-            }
+            using var writer = new StreamWriter(imageBoxFileRef.Create());
+            writer.Write(this.WriteToString());
 
             var file = new DicomFile(this);
             file.Save(imageBoxDicomFile);

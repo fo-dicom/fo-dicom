@@ -147,22 +147,18 @@ namespace FellowOakDicom.IO.Writer
 
             if (syntax.IsDeflate)
             {
-                using (var uncompressed = new MemoryStream())
+                using var uncompressed = new MemoryStream();
+                var temp = new StreamByteTarget(uncompressed);
+                WalkDataset(temp, syntax, dataset, options);
+
+                uncompressed.Seek(0, SeekOrigin.Begin);
+                using var compressed = new MemoryStream();
+                using (var compressor = new DeflateStream(compressed, CompressionMode.Compress, true))
                 {
-                    var temp = new StreamByteTarget(uncompressed);
-                    WalkDataset(temp, syntax, dataset, options);
-
-                    uncompressed.Seek(0, SeekOrigin.Begin);
-                    using (var compressed = new MemoryStream())
-                    {
-                        using (var compressor = new DeflateStream(compressed, CompressionMode.Compress, true))
-                        {
-                            uncompressed.CopyTo(compressor);
-                        }
-
-                        target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
-                    }
+                    uncompressed.CopyTo(compressor);
                 }
+
+                target.Write(compressed.ToArray(), 0, (uint)compressed.Length);
             }
             else
             {

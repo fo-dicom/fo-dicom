@@ -735,10 +735,8 @@ namespace FellowOakDicom.Printing
             file.Save(filmBoxDicomFile);
 
             var filmBoxFile = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(filmBoxTextFile);
-            using (var writer = new StreamWriter(filmBoxFile.Create()))
-            {
-                writer.Write(this.WriteToString());
-            }
+            using var writer = new StreamWriter(filmBoxFile.Create());
+            writer.Write(this.WriteToString());
 
             var imageBoxFolderInfo = new DirectoryReference(Path.Combine(filmBoxFolder, "Images"));
             imageBoxFolderInfo.Create();

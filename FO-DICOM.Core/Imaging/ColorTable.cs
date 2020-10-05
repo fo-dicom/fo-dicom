@@ -74,17 +74,15 @@ namespace FellowOakDicom.Imaging
             {
                 byte[] data;
                 var fileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
-                using (var stream = fileRef.OpenRead())
+                using var stream = fileRef.OpenRead();
+                var length = (int)stream.Length;
+                if (length != (256 * 3))
                 {
-                    var length = (int)stream.Length;
-                    if (length != (256 * 3))
-                    {
-                        return null;
-                    }
-
-                    data = new byte[length];
-                    stream.Read(data, 0, length);
+                    return null;
                 }
+
+                data = new byte[length];
+                stream.Read(data, 0, length);
 
                 var lut = new Color32[256];
                 for (var i = 0; i < 256; i++)
@@ -113,12 +111,10 @@ namespace FellowOakDicom.Imaging
             }
 
             var file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
-            using (var fs = file.Create())
-            {
-                lut.Each(c => fs.WriteByte(c.R));
-                lut.Each(c => fs.WriteByte(c.G));
-                lut.Each(c => fs.WriteByte(c.B));
-            }
+            using var fs = file.Create();
+            lut.Each(c => fs.WriteByte(c.R));
+            lut.Each(c => fs.WriteByte(c.G));
+            lut.Each(c => fs.WriteByte(c.B));
         }
     }
 }

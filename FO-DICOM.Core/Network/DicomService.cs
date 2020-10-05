@@ -736,10 +736,8 @@ namespace FellowOakDicom.Network
                                 var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
                                 // when receiving data via network, accept it and dont validate
-                                using (var unvalidated = new UnvalidatedScope(_dimse.Dataset))
-                                {
-                                    reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
-                                }
+                                using var unvalidated = new UnvalidatedScope(_dimse.Dataset);
+                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
 
                                 _dimseStream = null;
                                 _dimseStreamFile = null;
