@@ -22,6 +22,9 @@
     <None Update="Data\ct.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\Deflated.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\DICOMDIR">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

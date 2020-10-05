@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -428,6 +429,22 @@ namespace FellowOakDicom.IO.Buffer
                 return _currentData[_currentPos++];
             }
         }
+
+
+        public Stream GetStream()
+        {
+            lock (_lock)
+            {
+                Stream stream = new MemoryStream();
+                foreach (var item in _buffers)
+                {
+                    byte[] data = item.Data;
+                    stream.Write(data, 0, data.Length);
+                }
+                return stream;
+            }
+        }
+
 
         #endregion
     }

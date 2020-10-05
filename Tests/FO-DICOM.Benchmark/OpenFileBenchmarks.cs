@@ -36,6 +36,13 @@ namespace FellowOakDicom.Benchmark
         }
 
         [Benchmark]
+        public DicomFile OpenDeflatedFile()
+        {
+            var file = DicomFile.Open(Path.Combine(_rootpath, "Data\\Deflated.dcm"));
+            return file;
+        }
+
+        [Benchmark]
         public DicomFile OpenFileReadAll()
         {
             var file = DicomFile.Open(Path.Combine(_rootpath, "Data\\GH355.dcm"), FileReadOption.ReadAll);

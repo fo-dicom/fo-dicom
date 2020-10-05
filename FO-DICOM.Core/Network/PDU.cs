@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using FellowOakDicom.IO;
 
 namespace FellowOakDicom.Network
@@ -19,9 +20,9 @@ namespace FellowOakDicom.Network
 
         private readonly Encoding _encoding;
 
-        private MemoryStream _ms;
+        private readonly MemoryStream _ms;
 
-        private BinaryReader _br;
+        private readonly BinaryReader _br;
 
         private readonly BinaryWriter _bw;
 
@@ -63,6 +64,21 @@ namespace FellowOakDicom.Network
             _ms.Seek(6, SeekOrigin.Begin);
         }
 
+        /// <summary>
+        /// Initializes new PDU reader from a stream
+        /// </summary>
+        /// <remarks>The created object takes ownership of the stream</remarks>
+        /// <param name="stream">Stream</param>
+        public RawPDU(MemoryStream stream, Encoding encoding = null)
+        {
+            _encoding = encoding ?? DicomEncoding.Default;
+            _ms = stream;
+            _ms.Seek(0, SeekOrigin.Begin);
+            _br = EndianBinaryReader.Create(_ms, Endian.Big);
+            Type = _br.ReadByte();
+            _ms.Seek(6, SeekOrigin.Begin);
+        }
+
         #endregion
 
         #region Public Properties
@@ -83,22 +99,23 @@ namespace FellowOakDicom.Network
         /// <param name="s">Output stream</param>
         public void WritePDU(Stream s)
         {
-            var buffer = new byte[6];
-
-            unchecked
-            {
-                buffer[0] = Type;
-
-                var length = (uint)_ms.Length;
-                buffer[2] = (byte)((length & 0xff000000U) >> 24);
-                buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
-                buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
-                buffer[5] = (byte)(length & 0x000000ffU);
-            }
-
-            s.Write(buffer, 0, 6);
-            _ms.WriteTo(s);
+            byte[] preamble = GetCommonFields();
+            _ms.Seek(0, SeekOrigin.Begin);
+            var merged = new MergeStream(new MemoryStream(preamble), _ms);
+            merged.CopyTo(s);
             s.Flush();
+        }
+
+        /// <summary>
+        /// Writes PDU to stream
+        /// </summary>
+        /// <param name="s">Output stream</param>
+        public async Task WritePDUAsync(Stream s)
+        {
+            byte[] preamble = GetCommonFields();
+            _ms.Seek(0, SeekOrigin.Begin);
+            var merged = new MergeStream(new MemoryStream(preamble), _ms);
+            await merged.CopyToAsync(s).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -353,9 +370,31 @@ namespace FellowOakDicom.Network
 
         public void Dispose()
         {
-            _ms = null;
-            _br = null;
+            _ms.Dispose();
+            _br?.Dispose();
         }
+
+        /// <summary>
+        /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
+        /// </summary>
+        private byte[] GetCommonFields()
+        {
+            var buffer = new byte[6];
+
+            unchecked
+            {
+                buffer[0] = Type;
+
+                var length = (uint)_ms.Length;
+                buffer[2] = (byte)((length & 0xff000000U) >> 24);
+                buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
+                buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
+                buffer[5] = (byte)(length & 0x000000ffU);
+            }
+
+            return buffer;
+        }
+
     }
 
     #endregion

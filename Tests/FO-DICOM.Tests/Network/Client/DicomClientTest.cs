@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -1333,7 +1334,12 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-                await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                try
+                {
+                    await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
+                }
+                catch(IOException)
+                { /* Ignore */ }
 
                 Assert.False(cancellation.IsCancellationRequested);
             }

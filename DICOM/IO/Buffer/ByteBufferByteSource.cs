@@ -5,6 +5,7 @@ namespace Dicom.IO.Buffer
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
 
 #if !NET35
     using System.Threading.Tasks;
@@ -445,6 +446,20 @@ namespace Dicom.IO.Buffer
 
                 _position++;
                 return _currentData[_currentPos++];
+            }
+        }
+
+        public Stream GetStream()
+        {
+            lock (_lock)
+            {
+                Stream stream = new MemoryStream();
+                foreach (var item in _buffers)
+                {
+                    byte[] data = item.Data;
+                    stream.Write(data, 0, data.Length);
+                }
+                return stream;
             }
         }
 
