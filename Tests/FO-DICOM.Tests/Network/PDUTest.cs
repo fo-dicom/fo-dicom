@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using FellowOakDicom.IO;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -141,6 +142,20 @@ namespace FellowOakDicom.Tests.Network
 
             Assert.Equal(result, actual.Result);
             Assert.Equal(syntax, actual.AcceptedTransferSyntax);
+        }
+
+        [Theory]
+        [MemberData(nameof(RawPDUTestData))]
+        public async Task AssociateRJ_WriteAsync_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string dummy)
+        {
+            using (var raw = reject.Write())
+            using (var stream = new MemoryStream())
+            {
+                await raw.WritePDUAsync(stream);
+                var actual = stream.ToArray();
+
+                Assert.Equal(expected, actual);
+            }
         }
 
         #endregion

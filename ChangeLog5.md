@@ -26,6 +26,7 @@
 * internal: SCU now sends two presentation context per CStoreRequest: one with the original TS and one with the additional and the mandatory ImplicitLittleEndian. So the chance is higher to send the file without conversion. (#1048)
 * Optimize DicomTag.GetHashCode()
 * Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
+* Make DicomService more memory efficient. Use existing streams in PDU and do not create new Memorystreams for every PDU. (#1091)
 
 ##### Breaking changes:
 

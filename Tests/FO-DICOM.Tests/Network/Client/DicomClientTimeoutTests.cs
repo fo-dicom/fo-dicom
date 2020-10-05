@@ -379,7 +379,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 var sendTask = client.SendAsync();
                 var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(20), sendTimeoutCancellationTokenSource.Token);
 
                 var winner = await Task.WhenAny(sendTask, sendTimeout).ConfigureAwait(false);
 
