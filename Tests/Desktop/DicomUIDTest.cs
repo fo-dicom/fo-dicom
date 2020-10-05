@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
+using System.Linq;
+using Xunit;
+
 namespace Dicom
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Xunit;
 
     [Collection("General")]
     public class DicomUIDTest
@@ -153,6 +153,20 @@ namespace Dicom
             Assert.Equal("Unknown", uid.Name);
             Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
             Assert.Equal(DicomUidType.Unknown, uid.Type);
+        }
+
+        [Fact]
+        public void DicomStorageCategoryTest()
+        {
+            // just check some DicomUIDs randomly
+            Assert.Equal(DicomStorageCategory.Image, DicomUID.SecondaryCaptureImageStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.StorageCommitmentPushModelSOPClass.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.Verification.StorageCategory);
+            Assert.Equal(DicomStorageCategory.StructuredReport, DicomUID.MammographyCADSRStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.Raw, DicomUID.RawDataStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.Image, DicomUID.DigitalXRayImageStorageForProcessing.StorageCategory);
+            Assert.Equal(DicomStorageCategory.Volume, DicomUID.EnhancedUSVolumeStorage.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.VolumeMeasurements7472.StorageCategory);
         }
 
         #endregion

@@ -75,14 +75,14 @@ namespace Dicom
         public static DicomUID Generate(string name)
         {
             var now = DateTime.UtcNow;
-            var uid = $"{RootUID}.{now.ToString("yyyyMMddHHmmss")}.{now.Ticks}";
+            var uid = $"{RootUID}.{now:yyyyMMddHHmmss}.{now.Ticks}";
 
             return new DicomUID(uid, name, DicomUidType.SOPInstance);
         }
 
         public static DicomUID Append(DicomUID baseUid, long nextSeq)
         {
-            StringBuilder uid = new StringBuilder();
+            var uid = new StringBuilder();
             uid.Append(baseUid.UID).Append('.').Append(nextSeq);
             return new DicomUID(uid.ToString(), "SOP Instance UID", DicomUidType.SOPInstance);
         }
@@ -136,34 +136,61 @@ namespace Dicom
         {
             get
             {
-                if (!UID.StartsWith("1.2.840.10008") && Type == DicomUidType.SOPClass) return DicomStorageCategory.Private;
+                if (!UID.StartsWith("1.2.840.10008") && Type == DicomUidType.SOPClass)
+                {
+                    return DicomStorageCategory.Private;
+                }
 
-                if (Type != DicomUidType.SOPClass || !Name.Contains("Storage")) return DicomStorageCategory.None;
+                if (Type != DicomUidType.SOPClass || Name.StartsWith("Storage Commitment") || !Name.Contains("Storage"))
+                {
+                    return DicomStorageCategory.None;
+                }
 
-                if (Name.Contains("Image Storage")) return DicomStorageCategory.Image;
+                if (Name.Contains("Image Storage"))
+                {
+                    return DicomStorageCategory.Image;
+                }
 
-                if (Name.Contains("Volume Storage")) return DicomStorageCategory.Volume;
+                if (Name.Contains("Volume Storage"))
+                {
+                    return DicomStorageCategory.Volume;
+                }
 
                 if (this == DicomUID.BlendingSoftcopyPresentationStateStorage
                     || this == DicomUID.ColorSoftcopyPresentationStateStorage
                     || this == DicomUID.GrayscaleSoftcopyPresentationStateStorage
-                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorage) return DicomStorageCategory.PresentationState;
+                    || this == DicomUID.PseudoColorSoftcopyPresentationStateStorage)
+                {
+                    return DicomStorageCategory.PresentationState;
+                }
 
                 if (this == DicomUID.AudioSRStorageTrialRETIRED || this == DicomUID.BasicTextSRStorage
                     || this == DicomUID.ChestCADSRStorage || this == DicomUID.ComprehensiveSRStorage
                     || this == DicomUID.ComprehensiveSRStorageTrialRETIRED
                     || this == DicomUID.DetailSRStorageTrialRETIRED || this == DicomUID.EnhancedSRStorage
                     || this == DicomUID.MammographyCADSRStorage || this == DicomUID.TextSRStorageTrialRETIRED
-                    || this == DicomUID.XRayRadiationDoseSRStorage) return DicomStorageCategory.StructuredReport;
+                    || this == DicomUID.XRayRadiationDoseSRStorage)
+                {
+                    return DicomStorageCategory.StructuredReport;
+                }
 
                 if (this == DicomUID.AmbulatoryECGWaveformStorage || this == DicomUID.BasicVoiceAudioWaveformStorage
                     || this == DicomUID.CardiacElectrophysiologyWaveformStorage
                     || this == DicomUID.GeneralECGWaveformStorage || this == DicomUID.HemodynamicWaveformStorage
-                    || this == DicomUID.TwelveLeadECGWaveformStorage || this == DicomUID.WaveformStorageTrialRETIRED) return DicomStorageCategory.Waveform;
+                    || this == DicomUID.TwelveLeadECGWaveformStorage || this == DicomUID.WaveformStorageTrialRETIRED)
+                {
+                    return DicomStorageCategory.Waveform;
+                }
 
-                if (this == DicomUID.EncapsulatedCDAStorage || this == DicomUID.EncapsulatedPDFStorage) return DicomStorageCategory.Document;
+                if (this == DicomUID.EncapsulatedCDAStorage || this == DicomUID.EncapsulatedPDFStorage)
+                {
+                    return DicomStorageCategory.Document;
+                }
 
-                if (this == DicomUID.RawDataStorage) return DicomStorageCategory.Raw;
+                if (this == DicomUID.RawDataStorage)
+                {
+                    return DicomStorageCategory.Raw;
+                }
 
                 return DicomStorageCategory.Other;
             }
