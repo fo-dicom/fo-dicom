@@ -48,6 +48,7 @@ namespace Dicom.Media
             public bool Require(uint count, ByteSourceCallback callback, object state) => throw new NotImplementedException();
             public void Rewind() => throw new NotImplementedException();
             public void Skip(int count) => throw new NotImplementedException();
+            public Stream GetStream() => throw new NotImplementedException();
         }
 
         private class Container
