@@ -88,7 +88,7 @@ namespace Dicom
             // This is not very inefficient - uses .NET regex caching
             if (!Regex.IsMatch(content, "^[+-]?((0|[1-9][0-9]*)([.][0-9]*)?|[.][0-9]+)([eE][-+]?[0-9]+)?$"))
             {
-                throw new DicomValidationException(content, DicomVR.DS, "value is no decimal string");
+                throw new DicomValidationException(content, DicomVR.DS, "value is not decimal string");
             }
         }
 
