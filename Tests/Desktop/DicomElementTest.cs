@@ -384,6 +384,12 @@ namespace Dicom
         }
 
         [Fact]
+        public void DicomIntegerString_GetIntArrayFromString_ReturnsArray()
+        {
+            this.TestDicomIntegerStringGetArrayFromString<int>();
+        }
+
+        [Fact]
         public void DicomIntegerString_GetLongArray_ReturnsArray()
         {
             this.TestDicomIntegerStringGetArray<long>();
@@ -488,6 +494,14 @@ namespace Dicom
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContours, expected);
+            var actual = element.Get<T[]>();
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
+        }
+
+        internal void TestDicomIntegerStringGetArrayFromString<T>()
+        {
+            var expected = new[] { 35, 45, 55 };
+            var element = new DicomIntegerString(DicomTag.AttachedContours, new [] { "35.0", "45.0000", "55" });
             var actual = element.Get<T[]>();
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
