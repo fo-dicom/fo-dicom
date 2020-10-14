@@ -47,9 +47,9 @@ namespace ConsoleTest
                 //client.NegotiateAsyncOps();
                 //for (int i = 0; i < 10; i++)
                 //    client.AddRequest(new DicomCEchoRequest());
-                client.AddRequest(new DicomCStoreRequest(@"Z:\test1.dcm"));
-                client.AddRequest(new DicomCStoreRequest(@"Z:\test2.dcm"));
-                client.Send("127.0.0.1", 104, false, "SCU", "ANY-SCP");
+                client.AddRequest(new DicomCStoreRequest(@"c:\test.dcm"));
+                //client.AddRequest(new DicomCStoreRequest(@"Z:\test2.dcm"));
+                client.Send("127.0.0.1", 8314, false, "SCU", "TESTSTORESCP");
 
                 foreach (DicomPresentationContext ctr in client.AdditionalPresentationContexts)
                 {

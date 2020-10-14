@@ -12,7 +12,7 @@ using System.Resources;
 
 [assembly: AssemblyCompanyAttribute("fo-dicom")]
 [assembly: AssemblyProductAttribute("fo-dicom")]
-[assembly: AssemblyCopyrightAttribute("Copyright © fo-dicom contributors 2012-2016")]
+[assembly: AssemblyCopyrightAttribute("Copyright ?fo-dicom contributors 2012-2016")]
 [assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
 [assembly: NeutralResourcesLanguage("en")]

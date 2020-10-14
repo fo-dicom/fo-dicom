@@ -5,7 +5,7 @@ namespace Print_SCU
 {
     using System;
     using System.Drawing;
-
+    using System.Threading;
     using Dicom;
     using Dicom.Imaging;
     using Dicom.Log;
@@ -20,24 +20,37 @@ namespace Print_SCU
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            var printJob = new PrintJob("DICOM PRINT JOB")
-                               {
-                                   RemoteAddress = "localhost",
-                                   RemotePort = 8431,
-                                   CallingAE = "PRINTSCU",
-                                   CalledAE = "PRINTSCP"
-                               };
+            while(true)
+            {
+                TestPrintSCU();
+                Thread.Sleep(10000);
+            }
 
-            printJob.FilmSession.IsColor = true; //set to true to print in color
+            stopwatch.Stop();
+            Console.WriteLine();
+            Console.WriteLine(stopwatch.Elapsed);
+        }
+
+        private static void TestPrintSCU()
+        {
+            var printJob = new PrintJob("DICOM PRINT JOB")
+            {
+                RemoteAddress = "localhost",
+                RemotePort = 14311,
+                CallingAE = "PRINTSCU",
+                CalledAE = "PRINTSCP"
+            };
+
+            printJob.FilmSession.IsColor = false; //set to true to print in color
 
             printJob.StartFilmBox("STANDARD\\1,1", "PORTRAIT", "A4");
 
 
             //greyscale
-            //var dicomImage = new DicomImage(@"Data\1.3.51.5155.1353.20020423.1100947.1.0.0.dcm");
+            var dicomImage = new DicomImage(@"Data\cc_BREAST_SF_MLO_L.denOut_skinLineOff.dcm");
 
             //color
-            var dicomImage = new DicomImage(@"Data\US-RGB-8-epicard.dcm");
+            //var dicomImage = new DicomImage(@"Data\US-RGB-8-epicard.dcm");
 
             var bitmap = dicomImage.RenderImage().As<Bitmap>();
 
@@ -47,11 +60,28 @@ namespace Print_SCU
 
             printJob.EndFilmBox();
 
-            printJob.Print();
 
-            stopwatch.Stop();
-            Console.WriteLine();
-            Console.WriteLine(stopwatch.Elapsed);
+
+
+            printJob.StartFilmBox("STANDARD\\1,1", "PORTRAIT", "A4");
+
+
+            //greyscale
+            dicomImage = new DicomImage(@"Data\cc_BREAST_SF_MLO_L.denOut_skinLineOff.dcm");
+
+            //color
+            //var dicomImage = new DicomImage(@"Data\US-RGB-8-epicard.dcm");
+
+            bitmap = dicomImage.RenderImage().As<Bitmap>();
+
+            printJob.AddImage(bitmap, 0);
+
+            bitmap.Dispose();
+
+            printJob.EndFilmBox();
+
+
+            printJob.Print();
         }
     }
 }
