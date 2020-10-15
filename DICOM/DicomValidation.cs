@@ -79,7 +79,49 @@ namespace Dicom
 
         public static void ValidateDA(string content)
         {
-            // TODO
+            /*
+             A string of characters of the format YYYYMMDD; where YYYY shall contain year, MM shall contain the
+             month, and DD shall contain the day, interpreted as a date of the Gregorian calendar system.
+
+             */
+
+            string[] dateComponents = content.Split('-');
+
+            if (dateComponents.Length > 2)
+            {
+                throw new DicomValidationException(content, DicomVR.DA, "value contains too many range separators '-'");
+            }
+
+            foreach(var component in dateComponents)
+            {
+                // Trailling spaces are allowed
+                var trimmedComponent = component.TrimEnd(' ');
+
+                if (string.IsNullOrEmpty(trimmedComponent))
+                {
+                    continue;
+                }
+
+                // Check Character Repertoire
+                if (!Regex.IsMatch(trimmedComponent, @"^\d{8}$"))
+                {
+                    throw new DicomValidationException(content, DicomVR.DA, "one of the date values does not match the pattern YYYYMMDD");
+                }
+
+                // The date is in the numeric format, validate the month and day components
+                var month = trimmedComponent.Substring(4, 2);
+                var day = trimmedComponent.Substring(6, 2);
+
+                if(int.Parse(month) > 12)
+                {
+                    throw new DicomValidationException(content, DicomVR.DA, "month component exceeds the value 12");
+                }
+
+                if(int.Parse(day) > 31)
+                {
+                    throw new DicomValidationException(content, DicomVR.DA, "day component exceeds the value 31");
+                }
+            }
         }
 
 
@@ -95,7 +137,6 @@ namespace Dicom
 
         public static void ValidateDT(string content)
         {
-            // TODO:
             /*
              "0"-"9", "+", "-", "." and the SPACE character of Default Character Repertoire
 
@@ -135,7 +176,121 @@ namespace Dicom
              UTC offsets are calculated as "local time minus UTC". The offset for a Date Time value in
              UTC shall be +0000.
 
+             Used regex checking string: "YYYY[MM[DD[HH[MM[SS[.FFFFFF]]]]]][&ZZXX]"
+             If date is not empty, YYYY should not be null.
+             Note: To prevent unnecessary validation errors, if multiple range separators '-' are used
+             (range and negative UTC suffix at the same time), negative UTC suffixes will be soft-checked
+             (validated as years) to match 4-digit scheme ZZXX (just like YYYY)
              */
+
+            string[] dateTimeComponents = content.Split('-');
+
+            // DateTime may contain more than two '-' characters because of the negative UTC suffixes
+            if (dateTimeComponents.Length > 4)
+            {
+                throw new DicomValidationException(content, DicomVR.DT, "value contains too many range separators '-'");
+            }
+
+            foreach (var component in dateTimeComponents)
+            {
+                // Trailling spaces are allowed
+                var trimmedComponent = component.TrimEnd(' ');
+
+                if (string.IsNullOrEmpty(trimmedComponent))
+                {
+                    continue;
+                }
+
+                // Split by optional suffix for UTC +/-ZZXX
+                string[] splittedDateTime = trimmedComponent.Split(new char[] { '+', '-' }, StringSplitOptions.None);
+
+                if (splittedDateTime.Length > 2)
+                {
+                    throw new DicomValidationException(content, DicomVR.DT, "value contains too many UTC separators '+' or '-'");
+                }
+                else if(splittedDateTime.Length == 2)
+                {
+                    string utcSuffixString = splittedDateTime[1];
+
+                    // If optional UTC suffix is present
+                    if (!Regex.IsMatch(utcSuffixString, @"^\d{4}$"))
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "value does not match the UTC pattern &ZZXX");
+                    }
+
+                    var hours = utcSuffixString.Substring(0, 2);
+                    var minutes = utcSuffixString.Substring(2, 2);
+
+                    if (int.Parse(hours) > 23)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "UTC hours component exceeds 23");
+                    }
+
+                    if (int.Parse(minutes) > 59)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "UTC minutes component exceeds 59");
+                    }
+                }
+
+                string dateTimeString = splittedDateTime[0];
+
+                // Check Character Repertoire
+                if (!Regex.IsMatch(dateTimeString, @"^\d{4}$|^\d{6}$|^\d{8}$|^\d{10}$|^\d{12}$|^\d{14}$|^\d{14}\.\d{1,6}$"))
+                {
+                    throw new DicomValidationException(content, DicomVR.DT, "value does not mach pattern YYYY[MM[DD[HH[MM[SS[.F{1-6}]]]]]]");
+                }
+
+                // The date is in the right numeric format, validate the components
+                if (dateTimeString.Length >= 14)
+                {
+                    var seconds = dateTimeString.Substring(12, 2);
+                    if (int.Parse(seconds) > 60)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "seconds component exceeds 60");
+                    }
+                }
+
+                if (dateTimeString.Length >= 12)
+                {
+                    var minutes = dateTimeString.Substring(10, 2);
+                    if (int.Parse(minutes) > 59)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "minutes component exceeds 59");
+                    }
+                }
+
+                if (dateTimeString.Length >= 10)
+                {
+                    var hours = dateTimeString.Substring(8, 2);
+                    if (int.Parse(hours) > 23)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "hours component exceeds 23");
+                    }
+                }
+
+                if (dateTimeString.Length >= 8)
+                {
+                    var day = dateTimeString.Substring(6, 2);
+                    if (int.Parse(day) > 31)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "day component exceeds 31");
+                    }
+                }
+
+                if (dateTimeString.Length >= 6)
+                {
+                    var month = dateTimeString.Substring(4, 2);
+                    if (int.Parse(month) > 12)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "month component exceeds 12");
+                    }
+                }
+
+                if (dateTimeString.Length > 0 && dateTimeString.Length < 4)
+                {
+                    throw new DicomValidationException(content, DicomVR.DT, "year component or UTC suffix is too short and not in the correct YYYY (ZZXX) format");
+                }
+            }
         }
 
 

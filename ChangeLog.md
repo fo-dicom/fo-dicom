@@ -9,6 +9,7 @@
 * Fix handling of MaximumPDULength. DicomServer always repeated the clients value of MaximumPDULength in AssociationAccepted-message instead of returning its own value. (#1084)
 * Bug fix: It's very slow to open deflated dicom file. (#1115)
 * Bug fix: DicomUID Storage Commitment Push Model SOP Class was mapped to wrng DicomStorageCategory (#1113)
+* Bug fix: Date (DA) and DateTime (DT) fields didn't support range in validation (#1105)
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
