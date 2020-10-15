@@ -522,14 +522,37 @@ namespace Dicom.Media
                     break;
                 }
             }
-            var newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
+
+            //var newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset); //Original code in 4.0.6
+
+            //+ For StructuredReport
+            DicomDirectoryRecord newImage;
+            if (metaFileInfo.MediaStorageSOPClassUID.IsImageStorage.Equals(false) && metaFileInfo.MediaStorageSOPClassUID.StorageCategory.ToString() == "StructuredReport")
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Report, dataset);
+            else if (metaFileInfo.MediaStorageSOPClassUID.IsImageStorage.Equals(false) && metaFileInfo.MediaStorageSOPClassUID.StorageCategory.ToString() == "PresentationState")
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.PresentationState, dataset);
+            else
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
+            //- For StructuredReport
+
             newImage.AddOrUpdate(DicomTag.ReferencedFileID, referencedFileId);
             using (var unvalidated = new UnvalidatedScope(newImage))
             {
                 newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
                 newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
                 newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
+
+                //for Image and StructuredReport and Presentation State file
+                newImage.AddOrUpdate(DicomTag.ContentDate, dataset.GetSingleValueOrDefault<string>(DicomTag.ContentDate, string.Empty));
+                newImage.AddOrUpdate(DicomTag.ContentTime, dataset.GetSingleValueOrDefault<string>(DicomTag.ContentTime, string.Empty));
             }
+
+            //+ For StructuredReport and PresentationState file
+            if (metaFileInfo.MediaStorageSOPClassUID.IsImageStorage.Equals(false))
+            {
+                newImage.AddOrUpdate(DicomTag.InstanceNumber, dataset.GetSingleValueOrDefault<string>(DicomTag.InstanceNumber, string.Empty));
+            }
+            //- For StructuredReport and PresentationState file
 
             if (currentImage != null)
             {
