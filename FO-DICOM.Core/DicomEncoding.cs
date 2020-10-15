@@ -115,6 +115,7 @@ namespace FellowOakDicom
                 "iso-8859-8" => "ISO 2022 IR 138", // Hebrew Extended
                 "iso-8859-9" => "ISO 2022 IR 148", // Latin Alphabet No. 5 (Turkish) Extended
                 "iso-2022-jp" => "ISO 2022 IR 159", // JIS X 0212 (Kanji) Extended
+                "gb18030" => "GB18030",
                 "GB18030" => "GB18030", // Chinese (Simplified) Extended
                 "utf-8" => "ISO_IR 192", // Unicode in UTF-8
                 _ => throw new ArgumentException("No DICOM charset found for requested encoding.", "encoding")
