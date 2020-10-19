@@ -10,6 +10,7 @@
 * Bug fix: It's very slow to open deflated dicom file. (#1115)
 * Bug fix: DicomUID Storage Commitment Push Model SOP Class was mapped to wrng DicomStorageCategory (#1113)
 * Bug fix: String decimals ending in . (ex. 10.) throw DicomValidationException even though they can be converted to decimal
+* Bug fix: FrameGeometry.PixelSpacingX and FrameGeometry.PixelSpacingY where wrong initialized. Now for clarity they are called PixelSpacingBetweenRows and PixelSpacingBetweenColumns.
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
