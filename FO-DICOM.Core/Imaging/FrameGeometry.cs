@@ -31,9 +31,9 @@ namespace FellowOakDicom.Imaging
 
         public Point2 FrameSize { get; private set; }
 
-        public double PixelSpacingX { get; private set; }
+        public double PixelSpacingBetweenColumns { get; private set; }
 
-        public double PixelSpacingY { get; private set; }
+        public double PixelSpacingBetweenRows { get; private set; }
 
         public Point3D PointTopLeft { get; private set; }
         public Point3D PointTopRight { get; private set; }
@@ -71,8 +71,8 @@ namespace FellowOakDicom.Imaging
             DirectionRow = new Vector3D(imagePatientOrientation, 0);
             DirectionColumn = new Vector3D(imagePatientOrientation, 3);
             FrameSize = new Point2(width, height);
-            PixelSpacingX = pixelSpacing[0];
-            PixelSpacingY = pixelSpacing[1];
+            PixelSpacingBetweenRows = pixelSpacing[0];
+            PixelSpacingBetweenColumns = pixelSpacing[1];
 
             // calculate some additional values
 
@@ -94,21 +94,21 @@ namespace FellowOakDicom.Imaging
                     Orientation = FrameOrientation.None;
             }
 
-            PointTopRight = PointTopLeft + DirectionRow * PixelSpacingX * FrameSize.X;
-            PointBottomLeft = PointTopLeft + DirectionColumn * PixelSpacingY * FrameSize.Y;
+            PointTopRight = PointTopLeft + DirectionRow * PixelSpacingBetweenColumns * FrameSize.X;
+            PointBottomLeft = PointTopLeft + DirectionColumn * PixelSpacingBetweenRows * FrameSize.Y;
             PointBottomRight = PointBottomLeft + (PointTopRight - PointTopLeft);
 
             if (DirectionNormal.IsZero)
             {
                 ImageToPatientSpace = MatrixD.Identity(4);
-                ImageToPatientSpace[0, 0] = PixelSpacingX;
-                ImageToPatientSpace[1, 1] = PixelSpacingY;
+                ImageToPatientSpace[0, 0] = PixelSpacingBetweenColumns;
+                ImageToPatientSpace[1, 1] = PixelSpacingBetweenRows;
             }
             else
             {
                 ImageToPatientSpace = MatrixD.Identity(4);
-                ImageToPatientSpace.Column(0, DirectionRow.X * PixelSpacingX, DirectionRow.Y * PixelSpacingX, DirectionRow.Z * PixelSpacingX, 0);
-                ImageToPatientSpace.Column(1, DirectionColumn.X * PixelSpacingY, DirectionColumn.Y * PixelSpacingY, DirectionColumn.Z * PixelSpacingY, 0);
+                ImageToPatientSpace.Column(0, DirectionRow.X * PixelSpacingBetweenColumns, DirectionRow.Y * PixelSpacingBetweenColumns, DirectionRow.Z * PixelSpacingBetweenColumns, 0);
+                ImageToPatientSpace.Column(1, DirectionColumn.X * PixelSpacingBetweenRows, DirectionColumn.Y * PixelSpacingBetweenRows, DirectionColumn.Z * PixelSpacingBetweenRows, 0);
                 ImageToPatientSpace.Column(2, DirectionNormal.X, DirectionNormal.Y, DirectionNormal.Z, 0);
                 ImageToPatientSpace.Column(3, PointTopLeft.X, PointTopLeft.Y, PointTopLeft.Z, 1);
             }
