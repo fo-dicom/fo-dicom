@@ -579,9 +579,9 @@ namespace Dicom
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
 #if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.0")
+                        Encoding.GetEncoding(0).GetBytes("1.1")
 #else
-                        Encoding.Default.GetBytes("1.0")
+                        Encoding.Default.GetBytes("1.1")
 #endif
                     )
                 ) },
@@ -600,9 +600,9 @@ namespace Dicom
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
 #if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.0")
+                        Encoding.GetEncoding(0).GetBytes("1.1")
 #else
-                        Encoding.Default.GetBytes("1.0")
+                        Encoding.Default.GetBytes("1.1")
 #endif
                     )
                 ) },
@@ -621,9 +621,9 @@ namespace Dicom
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
 #if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.0")
+                        Encoding.GetEncoding(0).GetBytes("1.1")
 #else
-                        Encoding.Default.GetBytes("1.0")
+                        Encoding.Default.GetBytes("1.1")
 #endif
                     )
                 ) },
