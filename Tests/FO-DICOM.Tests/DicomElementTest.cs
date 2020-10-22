@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomSignedShort_Array_GetDefaultValue()
         {
-            DicomSignedShort element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            var element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.Equal((short)5, element.Get<short>());
         }
 
@@ -153,9 +153,9 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomValueElement_GetEnum_ReturnsEnum()
         {
-            const MockEnum expected = MockEnum.One;
+            const Mock expected = Mock.One;
             var element = new DicomSignedShort(DicomTag.ALinesPerFrame, (short)expected);
-            var actual = element.Get<MockEnum>();
+            var actual = element.Get<Mock>();
             Assert.Equal(expected, actual);
         }
 
@@ -171,9 +171,9 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomValueElement_HasData_GetNullableEnumReturnsDefinedNullableEnum()
         {
-            const MockEnum expected = MockEnum.Two;
+            const Mock expected = Mock.Two;
             var element = new DicomSignedLong(DicomTag.ReferencePixelX0, (int)expected);
-            var actual = element.Get<MockEnum?>().Value;
+            var actual = element.Get<Mock?>().Value;
             Assert.Equal(expected, actual);
         }
 
@@ -189,9 +189,9 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomIntegerString_HasData_GetNullableEnumReturnsDefinedNullableEnum()
         {
-            const MockEnum expected = MockEnum.One;
+            const Mock expected = Mock.One;
             var element = new DicomIntegerString(DicomTag.NumberOfBeams, (int)expected);
-            var actual = element.Get<MockEnum?>().Value;
+            var actual = element.Get<Mock?>().Value;
             Assert.Equal(expected, actual);
         }
 
@@ -207,18 +207,18 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomCodeString_HasData_GetNullableEnumReturnsDefinedNullableEnum()
         {
-            const MockEnum expected = MockEnum.Zero;
+            const Mock expected = Mock.Zero;
             var element = new DicomCodeString(DicomTag.AcquisitionStatus, expected.ToString());
-            var actual = element.Get<MockEnum?>().Value;
+            var actual = element.Get<Mock?>().Value;
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void DicomCodeString_HasData_GetEnumReturnsDefinedEnum()
         {
-            const MockEnum expected = MockEnum.Zero;
+            const Mock expected = Mock.Zero;
             var element = new DicomCodeString(DicomTag.AcquisitionStatus, expected.ToString());
-            var actual = element.Get<MockEnum>();
+            var actual = element.Get<Mock>();
             Assert.Equal(expected, actual);
         }
 
@@ -243,179 +243,133 @@ namespace FellowOakDicom.Tests
         [Fact(DisplayName = "GH-231")]
         public void DicomIntegerString_GetEnumDefaultArgument_ShouldReturnFirstValue()
         {
-            const MockEnum expected = MockEnum.Two;
+            const Mock expected = Mock.Two;
             var element = new DicomIntegerString(DicomTag.AcquisitionTerminationConditionData, (int)expected, 4, 3);
-            var actual = element.Get<MockEnum>();
+            var actual = element.Get<Mock>();
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void DicomCodeString_StringContainingNull_NullIsIgnored()
         {
-            const MockEnum expected = MockEnum.Two;
+            const Mock expected = Mock.Two;
             var element = new DicomCodeString(DicomTag.AITDeviceType, "Two\0");
-            var actual = element.Get<MockEnum>();
+            var actual = element.Get<Mock>();
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void DicomCodeString_StringEndsWithSpace_SpaceIsIgnored()
         {
-            const MockEnum expected = MockEnum.One;
+            const Mock expected = Mock.One;
             var element = new DicomCodeString(DicomTag.AITDeviceType, "One ");
-            var actual = element.Get<MockEnum>();
+            var actual = element.Get<Mock>();
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void DicomDecimalString_GetDecimal_ReturnsValue()
-        {
-            this.TestDicomDecimalStringGetItem<decimal>();
-        }
+            => TestDicomDecimalStringGetItem<decimal>();
 
         [Fact]
         public void DicomDecimalString_GetDouble_ReturnsValue()
-        {
-            this.TestDicomDecimalStringGetItem<double>();
-        }
+            => TestDicomDecimalStringGetItem<double>();
 
         [Fact]
         public void DicomDecimalString_GetSingle_ReturnsValue()
-        {
-            this.TestDicomDecimalStringGetItem<float>();
-        }
+            => TestDicomDecimalStringGetItem<float>();
 
         [Fact]
         public void DicomDecimalString_GetLong_ReturnsValue()
-        {
-            this.TestDicomDecimalStringGetItem<long>();
-        }
+            => TestDicomDecimalStringGetItem<long>();
 
         [Fact]
         public void DicomDecimalString_GetString_ReturnsValue()
-        {
-            this.TestDicomDecimalStringGetItem<string>();
-        }
+            => TestDicomDecimalStringGetItem<string>();
 
         [Fact]
         public void DicomDecimalString_GetObject_ReturnsValue()
-        {
-            this.TestDicomDecimalStringGetItem<object>();
-        }
+            => TestDicomDecimalStringGetItem<object>();
 
         [Fact]
         public void DicomDecimalString_GetDecimalArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<decimal>();
-        }
+            => TestDicomDecimalStringGetArray<decimal>();
 
         [Fact]
         public void DicomDecimalString_GetDoubleArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<double>();
-        }
+            => TestDicomDecimalStringGetArray<double>();
 
         [Fact]
         public void DicomDecimalString_GetSingleArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<float>();
-        }
+            => TestDicomDecimalStringGetArray<float>();
 
         [Fact]
         public void DicomDecimalString_GetLongArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<long>();
-        }
+            => TestDicomDecimalStringGetArray<long>();
 
         [Fact]
         public void DicomDecimalString_GetNullableLongArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<long?>();
-        }
+            => TestDicomDecimalStringGetArray<long?>();
 
         [Fact]
         public void DicomDecimalString_GetStringArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<string>();
-        }
+            => TestDicomDecimalStringGetArray<string>();
 
         [Fact]
         public void DicomDecimalString_GetObjectArray_ReturnsArray()
-        {
-            this.TestDicomDecimalStringGetArray<object>();
-        }
+            => TestDicomDecimalStringGetArray<object>();
 
         [Fact]
         public void DicomIntegerString_GetDecimal_ReturnsValue()
-        {
-            this.TestDicomIntegerStringGetItem<decimal>();
-        }
+            => TestDicomIntegerStringGetItem<decimal>();
 
         [Fact]
         public void DicomIntegerString_GetString_ReturnsValue()
-        {
-            this.TestDicomIntegerStringGetItem<string>();
-        }
+            => TestDicomIntegerStringGetItem<string>();
 
         [Fact]
         public void DicomIntegerString_GetNullableUnsignedLong_ReturnsValue()
-        {
-            this.TestDicomIntegerStringGetItem<ulong?>();
-        }
+            => TestDicomIntegerStringGetItem<ulong?>();
 
         [Fact]
         public void DicomIntegerString_GetSingle_ReturnsValue()
-        {
-            this.TestDicomIntegerStringGetItem<float>();
-        }
+            => TestDicomIntegerStringGetItem<float>();
 
         [Fact]
         public void DicomIntegerString_GetObject_ReturnsValue()
-        {
-            this.TestDicomIntegerStringGetItem<object>();
-        }
+            => TestDicomIntegerStringGetItem<object>();
 
         [Fact]
         public void DicomIntegerString_GetIntArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<int>();
-        }
+            => TestDicomIntegerStringGetArray<int>();
+
+        [Fact]
+        public void DicomIntegerString_GetIntArrayFromString_ReturnsArray()
+            => TestDicomIntegerStringGetArrayFromString<int>();
 
         [Fact]
         public void DicomIntegerString_GetLongArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<long>();
-        }
+            => TestDicomIntegerStringGetArray<long>();
 
         [Fact]
         public void DicomIntegerString_GetUnsignedShortArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<ushort>();
-        }
+            => TestDicomIntegerStringGetArray<ushort>();
 
         [Fact]
         public void DicomIntegerString_GetNullableDoubleArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<double?>();
-        }
+            => TestDicomIntegerStringGetArray<double?>();
 
         [Fact]
         public void DicomIntegerString_GetSingleArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<float>();
-        }
+            => TestDicomIntegerStringGetArray<float>();
 
         [Fact]
         public void DicomIntegerString_GetDecimalArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<decimal>();
-        }
+            => TestDicomIntegerStringGetArray<decimal>();
 
         [Fact]
         public void DicomIntegerString_GetObjectArray_ReturnsArray()
-        {
-            this.TestDicomIntegerStringGetArray<object>();
-        }
+            => TestDicomIntegerStringGetArray<object>();
 
         [Theory]
         [MemberData(nameof(KnownTransferSyntaxes))]
@@ -490,11 +444,19 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
+        internal void TestDicomIntegerStringGetArrayFromString<T>()
+        {
+            var expected = new[] { 35, 45, 55 };
+            var element = new DicomIntegerString(DicomTag.AttachedContours, new[] { "35.0", "45.0000", "55" });
+            var actual = element.Get<T[]>();
+            Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
+        }
+
         #endregion
 
         #region Support types
 
-        private enum MockEnum
+        private enum Mock
         {
             Zero,
             One,

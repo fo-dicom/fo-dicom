@@ -58,8 +58,10 @@ namespace FellowOakDicom.Tests
         public void Add_UnlimitedCharactersElementWithMultipleStrings_Succeeds()
         {
             var tag = DicomTag.LongCodeValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, "a", "b", "c");
+            var dataset = new DicomDataset
+            {
+                { tag, "a", "b", "c" }
+            };
             Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal("c", dataset.GetValue<string>(tag, 2));
         }
@@ -73,7 +75,7 @@ namespace FellowOakDicom.Tests
             Assert.IsType<DicomUnlimitedText>(dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.GetValues<string>(tag);
-            Assert.Single(data, (item) => item == string.Empty);
+            Assert.Single(data, string.IsNullOrEmpty);
         }
 
         [Fact]
@@ -85,7 +87,7 @@ namespace FellowOakDicom.Tests
             Assert.IsType<DicomShortText>(dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.GetValues<string>(tag);
-            Assert.Single(data, (item) => item == string.Empty);
+            Assert.Single(data, string.IsNullOrEmpty);
         }
 
         [Fact]
@@ -97,7 +99,7 @@ namespace FellowOakDicom.Tests
             Assert.IsType<DicomLongText>(dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.GetValues<string>(tag);
-            Assert.Single(data, (item) => item == string.Empty);
+            Assert.Single(data, string.IsNullOrEmpty);
         }
 
         [Fact]
@@ -109,7 +111,7 @@ namespace FellowOakDicom.Tests
             Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.GetValues<string>(tag);
-            Assert.Single(data, (item) => item == string.Empty);
+            Assert.Single(data, string.IsNullOrEmpty);
         }
 
         [Fact]
@@ -129,8 +131,10 @@ namespace FellowOakDicom.Tests
         public void Add_UniversalResourceElement_Succeeds()
         {
             var tag = DicomTag.URNCodeValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, "abc");
+            var dataset = new DicomDataset
+            {
+                { tag, "abc" }
+            };
             Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
             Assert.Equal("abc", dataset.GetSingleValue<string>(tag));
         }
@@ -139,8 +143,10 @@ namespace FellowOakDicom.Tests
         public void Add_UniversalResourceElementWithMultipleStrings_OnlyFirstValueIsUsed()
         {
             var tag = DicomTag.URNCodeValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, "a", "b", "c");
+            var dataset = new DicomDataset
+            {
+                { tag, "a", "b", "c" }
+            };
             Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
 
             var data = dataset.GetValues<string>(tag);
@@ -152,13 +158,16 @@ namespace FellowOakDicom.Tests
         public void Add_PersonName_MultipleNames_YieldsMultipleValues()
         {
             var tag = DicomTag.PerformingPhysicianName;
-            var dataset = new DicomDataset();
-            dataset.Add(
-                tag,
-                "Gustafsson^Anders^L",
-                "Yates^Ian",
-                "Desouky^Hesham",
-                "Horn^Chris");
+            var dataset = new DicomDataset
+            {
+                {
+                    tag,
+                    "Gustafsson^Anders^L",
+                    "Yates^Ian",
+                    "Desouky^Hesham",
+                    "Horn^Chris"
+                }
+            };
 
             var data = dataset.GetValues<string>(tag);
             Assert.Equal(4, data.Length);
@@ -169,8 +178,10 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(MultiVMStringTags))]
         public void Add_MultiVMStringTags_YieldsMultipleValues(DicomTag tag, string[] values, Type expectedType)
         {
-            var dataset = new DicomDataset();
-            dataset.Add(tag, values);
+            var dataset = new DicomDataset
+            {
+                { tag, values }
+            };
 
             Assert.IsType(expectedType, dataset.First(item => item.Tag.Equals(tag)));
 
@@ -207,8 +218,10 @@ namespace FellowOakDicom.Tests
         public void Get_IntOutsideRange_ShouldThrow()
         {
             var tag = DicomTag.SelectorISValue;
-            var dataset = new DicomDataset();
-            dataset.Add(tag, 3, 4, 5);
+            var dataset = new DicomDataset
+            {
+                { tag, 3, 4, 5 }
+            };
 
             var e = Record.Exception(() => dataset.GetValue<int>(tag, 10));
             Assert.IsType<DicomDataException>(e);
@@ -402,8 +415,10 @@ namespace FellowOakDicom.Tests
         public void Get_ArrayWhenTagExistsEmpty_ShouldReturnEmptyArray()
         {
             var tag = DicomTag.GridFrameOffsetVector;
-            var ds = new DicomDataset();
-            ds.Add(tag, (string[])null);
+            var ds = new DicomDataset
+            {
+                { tag, (string[])null }
+            };
 
             var array = ds.GetValues<string>(tag);
             Assert.Empty(array);
@@ -421,8 +436,10 @@ namespace FellowOakDicom.Tests
             var dictEntry = new DicomDictionaryEntry(DicomMaskedTag.Parse("0011", "xx10"), "TestPrivTagName", "TestPrivTagKeyword", DicomVM.VM_1, false, DicomVR.CS);
             privDict1.Add(dictEntry);
 
-            var ds = new DicomDataset();
-            ds.Add(dictEntry.Tag, "VAL1");
+            var ds = new DicomDataset
+            {
+                { dictEntry.Tag, "VAL1" }
+            };
             Assert.Equal(DicomVR.CS, ds.GetDicomItem<DicomItem>(dictEntry.Tag).ValueRepresentation);
         }
 
@@ -434,9 +451,11 @@ namespace FellowOakDicom.Tests
         [InlineData(0x0016, 0x1053, 0x1006)]
         public void Add_RegularTags_ShouldBeSortedInGroupElementOrder(ushort group, ushort hiElem, ushort loElem)
         {
-            var dataset = new DicomDataset();
-            dataset.Add(new DicomTag(group, hiElem), 2);
-            dataset.Add(new DicomTag(group, loElem), 1);
+            var dataset = new DicomDataset
+            {
+                { new DicomTag(group, hiElem), 2 },
+                { new DicomTag(group, loElem), 1 }
+            };
 
             var firstElem = dataset.First().Tag.Element;
             Assert.Equal(loElem, firstElem);
@@ -455,9 +474,11 @@ namespace FellowOakDicom.Tests
         public void Add_PrivateTags_ShouldBeSortedInGroupByteElementCreatorOrder(ushort group, ushort hiElem,
             ushort loElem, string hiCreator, string loCreator)
         {
-            var dataset = new DicomDataset();
-            dataset.Add(new DicomTag(group, hiElem, hiCreator), 2);
-            dataset.Add(new DicomTag(group, loElem, loCreator), 1);
+            var dataset = new DicomDataset
+            {
+                { new DicomTag(group, hiElem, hiCreator), 2 },
+                { new DicomTag(group, loElem, loCreator), 1 }
+            };
 
             var firstElem = dataset.First().Tag.Element;
             var firstCreator = dataset.First().Tag.PrivateCreator.Creator;
@@ -476,8 +497,10 @@ namespace FellowOakDicom.Tests
         {
             var tag1Private = new DicomTag(group, element, creator);
 
-            var dataset = new DicomDataset();
-            dataset.Add(tag1Private, 1);
+            var dataset = new DicomDataset
+            {
+                { tag1Private, 1 }
+            };
 
             var item1 = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
                                             item.Tag.Element == expectedElement);
@@ -687,9 +710,9 @@ namespace FellowOakDicom.Tests
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
 #if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.0")
+                        Encoding.GetEncoding(0).GetBytes("1.1")
 #else
-                        Encoding.Default.GetBytes("1.0")
+                        Encoding.Default.GetBytes("1.1")
 #endif
                     )
                 ) },
@@ -708,9 +731,9 @@ namespace FellowOakDicom.Tests
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
 #if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.0")
+                        Encoding.GetEncoding(0).GetBytes("1.1")
 #else
-                        Encoding.Default.GetBytes("1.0")
+                        Encoding.Default.GetBytes("1.1")
 #endif
                     )
                 ) },
@@ -729,9 +752,9 @@ namespace FellowOakDicom.Tests
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
 #if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.0")
+                        Encoding.GetEncoding(0).GetBytes("1.1")
 #else
-                        Encoding.Default.GetBytes("1.0")
+                        Encoding.Default.GetBytes("1.1")
 #endif
                     )
                 ) },
