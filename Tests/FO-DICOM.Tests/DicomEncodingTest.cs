@@ -34,5 +34,15 @@ namespace FellowOakDicom.Tests
             Assert.Null(exception);
             Assert.Equal(54936, codePage);
         }
+
+        [Fact]
+        public void GetCharset_GB18030()
+        {
+            var expected = "GB18030";
+            var encoding = DicomEncoding.GetEncoding("GB18030");
+            var actual = DicomEncoding.GetCharset(encoding);
+
+            Assert.Equal(expected, actual);
+        }
     }
 }
