@@ -178,10 +178,17 @@ namespace Dicom
 
              Used regex checking string: "YYYY[MM[DD[HH[MM[SS[.FFFFFF]]]]]][&ZZXX]"
              If date is not empty, YYYY should not be null.
-             Note: To prevent unnecessary validation errors, if multiple range separators '-' are used
-             (range and negative UTC suffix at the same time), negative UTC suffixes will be soft-checked
-             (validated as years) to match 4-digit scheme ZZXX (just like YYYY)
              */
+
+            if (content.Contains("-0000"))
+            {
+                throw new DicomValidationException(content, DicomVR.DT, "negative UTC hours component with value -0000 is not allowed");
+            }
+
+            if (content.Trim().Equals("-"))
+            {
+                throw new DicomValidationException(content, DicomVR.DT, "both dateTime components in range cannot be empty");
+            }
 
             string[] dateTimeComponents = content.Split('-');
 
@@ -189,6 +196,14 @@ namespace Dicom
             if (dateTimeComponents.Length > 4)
             {
                 throw new DicomValidationException(content, DicomVR.DT, "value contains too many range separators '-'");
+            }
+
+            if(dateTimeComponents.Length == 4)
+            {
+                string firstComponent = dateTimeComponents[0] + "-" + dateTimeComponents[1];
+                string secondComponent = dateTimeComponents[2] + "-" + dateTimeComponents[3];
+
+                dateTimeComponents = new string[2] { firstComponent, secondComponent };
             }
 
             foreach (var component in dateTimeComponents)
@@ -218,12 +233,18 @@ namespace Dicom
                         throw new DicomValidationException(content, DicomVR.DT, "value does not match the UTC pattern &ZZXX");
                     }
 
+                    bool isPositiveOffset = trimmedComponent.Contains("+");
                     var hours = utcSuffixString.Substring(0, 2);
                     var minutes = utcSuffixString.Substring(2, 2);
+                    var hoursValue = int.Parse(hours);
 
-                    if (int.Parse(hours) > 23)
+                    if (isPositiveOffset && hoursValue > 14)
                     {
-                        throw new DicomValidationException(content, DicomVR.DT, "UTC hours component exceeds 23");
+                        throw new DicomValidationException(content, DicomVR.DT, "positive UTC hours component exceeds 14 (allowed range is -1200 to +1400)");
+                    }
+                    else if (!isPositiveOffset && hoursValue > 12)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "negative UTC hours component exceeds 12 (allowed range is -1200 to +1400)");
                     }
 
                     if (int.Parse(minutes) > 59)
@@ -271,24 +292,34 @@ namespace Dicom
                 if (dateTimeString.Length >= 8)
                 {
                     var day = dateTimeString.Substring(6, 2);
-                    if (int.Parse(day) > 31)
+                    var dayValue = int.Parse(day);
+                    if (dayValue > 31)
                     {
                         throw new DicomValidationException(content, DicomVR.DT, "day component exceeds 31");
+                    }
+                    else if (dayValue == 0)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "day component cannot be 0");
                     }
                 }
 
                 if (dateTimeString.Length >= 6)
                 {
                     var month = dateTimeString.Substring(4, 2);
-                    if (int.Parse(month) > 12)
+                    var monthValue = int.Parse(month);
+                    if (monthValue > 12)
                     {
                         throw new DicomValidationException(content, DicomVR.DT, "month component exceeds 12");
+                    }
+                    else if (monthValue == 0)
+                    {
+                        throw new DicomValidationException(content, DicomVR.DT, "month component cannot be 0");
                     }
                 }
 
                 if (dateTimeString.Length > 0 && dateTimeString.Length < 4)
                 {
-                    throw new DicomValidationException(content, DicomVR.DT, "year component or UTC suffix is too short and not in the correct YYYY (ZZXX) format");
+                    throw new DicomValidationException(content, DicomVR.DT, "year component is too short and not in the correct YYYY format");
                 }
             }
         }

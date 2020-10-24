@@ -9,9 +9,10 @@
 * Fix handling of MaximumPDULength. DicomServer always repeated the clients value of MaximumPDULength in AssociationAccepted-message instead of returning its own value. (#1084)
 * Bug fix: It's very slow to open deflated dicom file. (#1115)
 * Bug fix: DicomUID Storage Commitment Push Model SOP Class was mapped to wrng DicomStorageCategory (#1113)
-* Bug fix: Date (DA) and DateTime (DT) fields didn't support range in validation (#1105)
+* Allow conversion of integerString into integer if original string had decimal with trailing zeros 
 * Bug fix: String decimals ending in . (ex. 10.) throw DicomValidationException even though they can be converted to decimal
 * Bug fix: FrameGeometry.PixelSpacingX and FrameGeometry.PixelSpacingY where wrong initialized. Now for clarity they are called PixelSpacingBetweenRows and PixelSpacingBetweenColumns.
+* Bug fix: Date (DA) and DateTime (DT) fields didn't support range in validation (#1105)
 
 #### v.4.0.6 (8/6/2020)
 * Update to DICOM Standard 2020b.
