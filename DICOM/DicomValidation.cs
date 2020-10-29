@@ -198,12 +198,47 @@ namespace Dicom
                 throw new DicomValidationException(content, DicomVR.DT, "value contains too many range separators '-'");
             }
 
-            if(dateTimeComponents.Length == 4)
+            if (dateTimeComponents.Length == 4)
             {
+                // Join 4 range separated components (X,Y,X,Y) into 2 range components with negative UTC (X-Y,X-Y)
                 string firstComponent = dateTimeComponents[0] + "-" + dateTimeComponents[1];
                 string secondComponent = dateTimeComponents[2] + "-" + dateTimeComponents[3];
 
                 dateTimeComponents = new string[2] { firstComponent, secondComponent };
+            }
+            else if (dateTimeComponents.Length == 3)
+            {
+                // Join 3 range separated components (X, Y, Z) into 2 range components with negative UTC (X-Y,Z) or (X,Y-Z)
+                string firstComponent = string.Empty;
+                string secondComponent = string.Empty;
+
+                if (Regex.IsMatch(dateTimeComponents[1], @"^\d{4}$") && int.Parse(dateTimeComponents[1]) <= 1200)
+                {
+                    // Second component is UTC -> (X-Y,Z)
+                    firstComponent = dateTimeComponents[0] + "-" + dateTimeComponents[1];
+                    secondComponent = dateTimeComponents[2];
+                }
+                else if(Regex.IsMatch(dateTimeComponents[2], @"^\d{4}$") && int.Parse(dateTimeComponents[2]) <= 1200)
+                {
+                    // Third component is UTC -> (X,Y-Z)
+                    firstComponent = dateTimeComponents[0];
+                    secondComponent = dateTimeComponents[1] + "-" + dateTimeComponents[2];
+                }
+                else
+                {
+                    throw new DicomValidationException(content, DicomVR.DT, "value is in invalid range format");
+                }
+
+                dateTimeComponents = new string[2] { firstComponent, secondComponent };
+            }
+            else if (dateTimeComponents.Length == 2)
+            {
+                // Join 2 range separated components (X,Y) into one (X-Y) if Y is negative UTC (0000-1200)
+                if (Regex.IsMatch(dateTimeComponents[1], @"^\d{4}$") && int.Parse(dateTimeComponents[1]) <= 1200)
+                {
+                    string newComponent = dateTimeComponents[0] + "-" + dateTimeComponents[1];
+                    dateTimeComponents = new string[1] { newComponent };
+                }
             }
 
             foreach (var component in dateTimeComponents)
