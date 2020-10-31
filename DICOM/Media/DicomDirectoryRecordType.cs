@@ -21,11 +21,9 @@ namespace Dicom.Media
 
         public static readonly DicomDirectoryRecordType Image = new DicomDirectoryRecordType("IMAGE");
 
-        //+ For StructuredReport and PresentationState file
-        public static readonly DicomDirectoryRecordType Report = new DicomDirectoryRecordType("REPORT");
+        public static readonly DicomDirectoryRecordType Report = new DicomDirectoryRecordType("SR DOCUMENT");
 
         public static readonly DicomDirectoryRecordType PresentationState = new DicomDirectoryRecordType("PRESENTATION");
-        //- For StructuredReport and PresentationState file
 
         #endregion
 
@@ -62,11 +60,20 @@ namespace Dicom.Media
                 case "IMAGE":
                     Tags.Add(DicomTag.InstanceNumber);
                     break;
-                case "Report":                                  //+ For StructuredReport
+                case "SR DOCUMENT":
                     Tags.Add(DicomTag.InstanceNumber);
+                    Tags.Add(DicomTag.CompletionFlag);
+                    Tags.Add(DicomTag.VerificationFlag);
+                    Tags.Add(DicomTag.ContentDate);
+                    Tags.Add(DicomTag.ContentTime);
+                    Tags.Add(DicomTag.VerificationDateTime);
+                    Tags.Add(DicomTag.ConceptNameCodeSequence);
                     break;
-                case "PresentationState":                       //+ For PresentationState
+                case "PRESENTATION":
                     Tags.Add(DicomTag.InstanceNumber);
+                    Tags.Add(DicomTag.PresentationCreationDate);
+                    Tags.Add(DicomTag.PresentationCreationTime);
+                    Tags.Add(DicomTag.ReferencedSeriesSequence);
                     break;
                 default:
                     break;
