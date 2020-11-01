@@ -170,6 +170,7 @@ namespace FellowOakDicom.Tests.Serialization
         {
             var originalDataset = new DicomDataset {
                 { DicomTag.ImagePositionPatient, new[] { "1.0000", "0.00", "0" } },
+                { DicomTag.ImagePlanePixelSpacing, new[] { "10.0", "10."} },
                 { DicomTag.ImageOrientationPatient, new[] { "1e-3096", "1", "0.0000000", ".03", "-.03", "-0" } }
             };
 

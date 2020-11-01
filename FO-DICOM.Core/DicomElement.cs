@@ -1034,7 +1034,7 @@ namespace FellowOakDicom
 
             if (_values == null)
             {
-                _values = base.Get<string[]>().Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+                _values = base.Get<string[]>().Select(x => int.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture)).ToArray();
             }
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(object))

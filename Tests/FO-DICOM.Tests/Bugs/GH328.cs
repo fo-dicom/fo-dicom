@@ -22,6 +22,10 @@ namespace FellowOakDicom.Tests.Bugs
                 // reserved for the range-delimiter
                 dt = dt.Replace('-', '+');
             }
+
+            // Remove invalid ':' character from the time zone
+            dt = dt.Replace(":", string.Empty);
+
             var dataset = new DicomDataset { new DicomDateTime(DicomTag.ScheduledProcedureStepStartDateTime, dt) };
 
             var exception = Record.Exception(() => dataset.GetSingleValue<DicomDateRange>(DicomTag.ScheduledProcedureStepStartDateTime));

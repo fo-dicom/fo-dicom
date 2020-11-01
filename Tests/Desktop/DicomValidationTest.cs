@@ -237,7 +237,109 @@ Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lo
             Assert.NotNull(ex);
         }
 
+        [Fact]
+        public void DicomValidation_ValidateDA()
+        {
+            var ds =
+                new DicomDataset(
+                    new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                    new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
 
+            ds.Add(DicomTag.ScheduledProcedureStepStartDate, "20191031");
+            ds.Add(DicomTag.ScheduledProcedureStepEndDate, "20191030-");
+            ds.Add(DicomTag.PerformedProcedureStepStartDate, "-20191228");
+            ds.Add(DicomTag.PerformedProcedureStepEndDate, "20190101-20200101");
+
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDate, "19970101-");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepEndDate, "-19701231");
+            ds.AddOrUpdate(DicomTag.PerformedProcedureStepStartDate, "20190101-20200101");
+            ds.AddOrUpdate(DicomTag.PerformedProcedureStepEndDate, "20190101-20200101");
+
+            var currentDate = System.DateTime.Now.ToString("yyyyMMdd");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDate, currentDate);
+
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDate, "20191031--"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepEndDate, "-20191031-"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.PerformedProcedureStepStartDate, "201911"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.PerformedProcedureStepStartDate, "20193101"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.PerformedProcedureStepStartDate, "20191232"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.PerformedProcedureStepEndDate, "31122008"));
+        }
+
+        [Fact]
+        public void DicomValidation_ValidateDT()
+        {
+            var ds =
+                new DicomDataset(
+                    new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage),
+                    new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
+
+            var currentDate = System.DateTime.Now;
+            var zone = currentDate.ToString("yyyyMMddHHmmsszzz").Substring(14).Replace(":", string.Empty);
+
+            // Basic valid tests
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyy"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMM"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMdd"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHH"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmm"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss.f"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss.ff"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss.fff"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss.ffff"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss.fffff"));
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, currentDate.ToString("yyyyMMddHHmmss.ffffff"));
+
+            // Basic valid UTC offset tests
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204230259.165432+0000");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204230259+0530");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "200812042302+0530");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2008120423+0530");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204-0100");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "200812+1400");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2007-0500");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2007+0500");
+
+            // Random valid range tests
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "-2008");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2008-");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "-20081204230259");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"-20081204230259.165432{zone}");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2008-200912");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"200812-200812{zone}");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"20081204{zone}-20081204");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"2008120422{zone}-2008120423{zone}");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"2008120422-0200-2008120423");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "200812042202-200812042302");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"20081204220259.1{zone}-20081204230259.1");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204220259.12-20081204230259.12");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204220259.132-20081204230259.132");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204220259-20081204230259.1432");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"20081204220259.15432{zone}-20081204230259.15432{zone}");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204220259.165432-20081204230259.165432");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081204220259+0000-20081204230259.165432+0100");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"20081204220259.165432+0200-20081204230259.165432{zone}");
+            ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"2019-1200-2020+1400");
+
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2019-1300-2020+1300"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "-0200"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20191000"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20190013"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "201912-0000"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "201912+1500"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "- "));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "201"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2019-2020-2021"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20191021120000.000000-1300-20191022120000.000000-1300"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20191031+"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20081304230259"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "-20191031+2400"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20191031121200+02"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "20193010-20193110"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, "2019-0100-2020-0100-202002-0100"));
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"20081-200812{zone}"));
+        }
         #endregion
 
     }
