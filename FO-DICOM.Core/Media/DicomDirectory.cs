@@ -509,7 +509,21 @@ namespace FellowOakDicom.Media
                     break;
                 }
             }
-            var newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
+
+            DicomDirectoryRecord newImage;
+            if (metaFileInfo.MediaStorageSOPClassUID.StorageCategory == DicomStorageCategory.StructuredReport)
+            {
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Report, dataset);
+            }
+            else if (metaFileInfo.MediaStorageSOPClassUID.StorageCategory == DicomStorageCategory.PresentationState)
+            {
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.PresentationState, dataset);
+            }
+            else
+            {
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
+            }
+
             newImage.AddOrUpdate(DicomTag.ReferencedFileID, referencedFileId);
             using var unvalidated = new UnvalidatedScope(newImage);
             newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
