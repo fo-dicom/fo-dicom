@@ -13,7 +13,7 @@
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <Description>A NetStandard DICOM library.</Description>
-    <Version>5.0.0-alpha2</Version>
+    <Version>5.0.0-alpha3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>fo-dicom</PackageId>
     <LangVersion>8.0</LangVersion>
