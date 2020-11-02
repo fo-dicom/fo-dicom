@@ -613,6 +613,15 @@ namespace FellowOakDicom.Tests.Serialization
             VerifyJsonTripleTrip(target);
         }
 
+        [Fact]
+        public void TestDecimalStringConversion()
+        {
+            var ds = new DicomDataset().NotValidated();
+            ds.Add(new DicomDecimalString(DicomTag.PatientWeight, "0\0"));
+
+            VerifyJsonTripleTrip(ds);
+        }
+
         private void DownloadBulkData(BulkDataUriByteBuffer bulkData)
         {
             var request = WebRequest.Create(bulkData.BulkDataUri);

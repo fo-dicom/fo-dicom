@@ -1020,6 +1020,17 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.True(ds.Contains(DicomTag.PatientAge));
         }
 
+
+        [Fact]
+        public void TestDecimalStringConversion()
+        {
+            var ds = new DicomDataset().NotValidated();
+            ds.Add(new DicomDecimalString(DicomTag.PatientWeight, "0\0"));
+
+            VerifyJsonTripleTrip(ds);
+        }
+
+
         #region Sample Data
 
         // The following example is a QIDO-RS SearchForStudies response consisting 
