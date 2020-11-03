@@ -156,6 +156,7 @@ namespace Dicom
                 case "iso-2022-jp":
                     return "ISO 2022 IR 159"; // JIS X 0212 (Kanji) Extended
                 case "GB18030":
+                case "gb18030":
                     return "GB18030"; // Chinese (Simplified) Extended
                 case "utf-8":
                     return "ISO_IR 192"; // Unicode in UTF-8
