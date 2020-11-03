@@ -1,5 +1,5 @@
 #### v.4.0.8 (TBD)
-
+* Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)
