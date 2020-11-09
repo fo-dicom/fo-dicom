@@ -7,18 +7,18 @@ using Microsoft.Extensions.Logging;
 namespace FellowOakDicom.AspNetCore
 {
 
-    public class DicomLogManager : FellowOakDicom.Log.LogManager
+    public class DicomLogManager : FellowOakDicom.Log.ILogManager
     {
-        private readonly Microsoft.Extensions.Logging.ILogger _loggerImpl;
+        private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory;
 
-        public DicomLogManager(Microsoft.Extensions.Logging.ILogger loggerImpl)
+        public DicomLogManager(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
         {
-            _loggerImpl = loggerImpl;
+            _loggerFactory = loggerFactory;
         }
 
-        protected override Logger GetLoggerImpl(string name)
+        public Log.ILogger GetLogger(string name)
         {
-            return new DicomLogger(_loggerImpl);
+            return new DicomLogger(_loggerFactory.CreateLogger(name));
         }
     }
 

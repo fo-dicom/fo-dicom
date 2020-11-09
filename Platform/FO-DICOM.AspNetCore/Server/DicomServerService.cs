@@ -15,6 +15,8 @@ namespace FellowOakDicom.AspNetCore.Server
         private IDicomServerFactory _serverFactory;
         private IConfiguration _configuration;
 
+        public DicomServerServiceOptions Options { get; set; } = new DicomServerServiceOptions();
+
         public DicomServerService(IConfiguration configuration, IDicomServerFactory serverFactory)
         {
             _serverFactory = serverFactory;
@@ -27,7 +29,7 @@ namespace FellowOakDicom.AspNetCore.Server
             // preload dictionary to prevent tiemouts
             _ = DicomDictionary.Default;
             _server = _serverFactory.Create<SCPService>(
-                104
+                Options.Port
                 );
             return Task.CompletedTask;
         }

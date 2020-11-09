@@ -26,7 +26,9 @@ namespace FO_DICOM.AspNetCoreTest
             services.AddControllers();
             services.AddLogging(c => c.AddConsole());
 
-            services.AddDicomServer();
+            services.AddDicomServer(o => {
+                o.Port = 104;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,8 +44,6 @@ namespace FO_DICOM.AspNetCoreTest
             app.UseRouting();
 
             app.UseAuthorization();
-
-            app.UseFellowOakDicom();
 
             app.UseEndpoints(endpoints =>
             {

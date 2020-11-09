@@ -5,7 +5,6 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
