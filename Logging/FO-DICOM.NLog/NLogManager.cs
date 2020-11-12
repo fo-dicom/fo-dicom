@@ -5,7 +5,6 @@ using System;
 
 namespace FellowOakDicom.Log
 {
-
     /// <summary>
     /// LogManager for the NLog logging framework.
     /// </summary>
@@ -22,7 +21,7 @@ namespace FellowOakDicom.Log
         /// <summary>
         /// Initializes an instance of <see cref="NLogManager"/>.
         /// </summary>
-        private NLogManager()
+        public NLogManager()
         {
         }
 
@@ -63,9 +62,9 @@ namespace FellowOakDicom.Log
                 var ordinalFormattedMessage = NameFormatToPositionalFormat(msg);
                 var nlogLevel = GetNLogLevel(level);
 
-                if (args.Length >= 1 && args[0] is Exception)
+                if (args.Length >= 1 && args[0] is Exception exception)
                 {
-                    this.logger.Log(nlogLevel, (Exception)args[0], ordinalFormattedMessage, args);
+                    this.logger.Log(nlogLevel, exception, ordinalFormattedMessage, args);
                 }
                 else
                 {
