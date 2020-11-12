@@ -554,27 +554,5 @@ namespace Dicom.Dump
             OpenFile(file);
         }
 
-        private void asfToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var dcm = DicomFile.Open(@"C:\Users\gofal\Downloads\ErrorDx.dcm");
-            var creator = new Dicom.DicomPrivateCreator("CM");
-
-            var PrivateCreatorTag = DicomTag.Parse("dddd,0042");
-            PrivateCreatorTag.PrivateCreator = creator;
-
-            var ds = new DicomDataset();
-
-            //The actual tags
-            ds.AddOrUpdate(Dicom.DicomVR.LO, DicomTag.Parse("dddd,4201"), "d451e53a-1cfe-4889-a5d1-8f39240ce69a");
-            ds.AddOrUpdate(Dicom.DicomVR.LO, DicomTag.Parse("dddd,4202"), "d451e53a-1cfe-4889-a5d1-8f39240ce69b");
-            ds.AddOrUpdate(Dicom.DicomVR.LO, DicomTag.Parse("dddd,4203"), "d451e53a-1cfe-4889-a5d1-8f39240ce69c");
-
-            //Add the sequence
-            var sq = new DicomSequence(PrivateCreatorTag, ds);
-            dcm.Dataset.AddOrUpdate(sq);
-
-            // Save under different name
-            dcm.Save(@"C:\Users\gofal\Downloads\ErrorDx_ready2.dcm");
-        }
     }
 }

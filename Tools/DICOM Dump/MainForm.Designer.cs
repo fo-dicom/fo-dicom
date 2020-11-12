@@ -70,7 +70,6 @@
             this.cmDicom = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.asfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.cmDicom.SuspendLayout();
             this.SuspendLayout();
@@ -124,8 +123,7 @@
             this.menuItemView,
             this.menuItemSyntax,
             this.menuItemAnonymize,
-            this.exportPixelDataToolStripMenuItem,
-            this.asfToolStripMenuItem});
+            this.exportPixelDataToolStripMenuItem});
             this.menuItemTools.Name = "menuItemTools";
             this.menuItemTools.Size = new System.Drawing.Size(46, 20);
             this.menuItemTools.Text = "&Tools";
@@ -446,13 +444,6 @@
             this.copyTagToolStripMenuItem.Text = "Copy &Tag";
             this.copyTagToolStripMenuItem.Click += new System.EventHandler(this.OnClickContextMenuCopyTag);
             // 
-            // asfToolStripMenuItem
-            // 
-            this.asfToolStripMenuItem.Name = "asfToolStripMenuItem";
-            this.asfToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.asfToolStripMenuItem.Text = "asf";
-            this.asfToolStripMenuItem.Click += new System.EventHandler(this.asfToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -522,7 +513,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportPixelDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItemAnonymize;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem asfToolStripMenuItem;
     }
 }
 
