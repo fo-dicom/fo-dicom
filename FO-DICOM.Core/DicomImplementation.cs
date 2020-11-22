@@ -8,12 +8,12 @@ namespace FellowOakDicom
 
     public static class DicomImplementation
     {
-        public static DicomUID ClassUID { get; } = new DicomUID(
+        public static DicomUID ClassUID { get; set; } = new DicomUID(
             "1.3.6.1.4.1.30071.8",
             "Implementation Class UID",
             DicomUidType.Unknown);
 
-        public static string Version { get; } = GetImplementationVersion();
+        public static string Version { get; set; } = GetImplementationVersion();
 
         private static string GetImplementationVersion()
         {
