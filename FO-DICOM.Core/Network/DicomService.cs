@@ -828,6 +828,11 @@ namespace FellowOakDicom.Network
                         else
                         {
                             req.LastPendingResponseReceived = DateTime.Now;
+                            
+                            if (this is IDicomClientConnection connection)
+                            {
+                                await connection.OnRequestPendingAsync(req, rsp).ConfigureAwait(false);
+                            }
                         }
                     }
                 }

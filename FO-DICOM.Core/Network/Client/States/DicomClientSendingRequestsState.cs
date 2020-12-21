@@ -148,6 +148,8 @@ namespace FellowOakDicom.Network.Client.States
             return Task.CompletedTask;
         }
 
+        public override Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
+
         public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
         {
             RemoveRequestFromPendingList(request);

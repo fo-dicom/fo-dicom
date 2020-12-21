@@ -123,6 +123,8 @@ namespace FellowOakDicom.Network.Client.States
 
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
 
+        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
+        
         public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => Task.CompletedTask;
 
         public void Dispose()

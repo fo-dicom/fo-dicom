@@ -90,6 +90,8 @@ namespace FellowOakDicom.Network.Client.States
         public override Task OnSendQueueEmptyAsync() => Task.CompletedTask;
 
         public override Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
+        
+        public override Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => Task.CompletedTask;
 
         public override Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => Task.CompletedTask;
 

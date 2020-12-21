@@ -129,7 +129,7 @@ namespace FellowOakDicom.Network.Client
         /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation);
-    }
+    }      
 
     public class DicomClient : IDicomClient
     {
@@ -256,6 +256,9 @@ namespace FellowOakDicom.Network.Client
         internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
             => State.OnRequestCompletedAsync(request, response);
 
+        internal Task OnRequestPendingAsync(DicomRequest request, DicomResponse response)
+            => State.OnRequestPendingAsync(request, response);
+
         internal Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
             => State.OnRequestTimedOutAsync(request, timeout);
 
@@ -311,24 +314,6 @@ namespace FellowOakDicom.Network.Client
             }
 
             var requests = dicomRequests.ToList();
-
-            if (!requests.Any())
-            {
-                return;
-            }
-
-            foreach (var request in requests)
-            {
-                await State.AddRequestAsync(request).ConfigureAwait(false);
-            }
-        }
-
-        public async Task AddRequestsAsync(params DicomRequest[] requests)
-        {
-            if (requests == null)
-            {
-                return;
-            }
 
             if (!requests.Any())
             {

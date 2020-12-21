@@ -62,6 +62,11 @@ namespace FellowOakDicom.Network
             return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
         }
 
+        protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
+        {
+            return new DesktopNetworkStream(options);
+        }
+
         /// <inheritdoc />
         protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
         {

@@ -28,6 +28,13 @@ namespace FellowOakDicom.Network
         INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
 
         /// <summary>
+        /// Platform-specific implementation to create a network stream object.
+        /// </summary>
+        /// <param name="options">The various options that specify how the network stream must be created</param>
+        /// <returns>Network stream implementation.</returns>
+        INetworkStream CreateNetworkStream(NetworkStreamCreationOptions options);
+
+        /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
         /// </summary>
         /// <param name="exception">Exception to validate.</param>
@@ -110,6 +117,13 @@ namespace FellowOakDicom.Network
         protected internal abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
 
         /// <summary>
+        /// Platform-specific implementation to create a network stream object.
+        /// </summary>
+        /// <param name="networkStreamCreationOptions">The various options that specify how the network stream must be created</param>
+        /// <returns>Network stream implementation.</returns>
+        protected internal abstract INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions networkStreamCreationOptions);
+
+        /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
         /// </summary>
         /// <param name="exception">Exception to validate.</param>
@@ -130,6 +144,9 @@ namespace FellowOakDicom.Network
 
         INetworkStream INetworkManager.CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
             => CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
+
+        INetworkStream INetworkManager.CreateNetworkStream(NetworkStreamCreationOptions options)
+            => CreateNetworkStreamImpl(options);
 
         bool INetworkManager.IsSocketException(Exception exception, out int errorCode, out string errorDescriptor)
             => IsSocketExceptionImpl(exception, out errorCode, out errorDescriptor);
