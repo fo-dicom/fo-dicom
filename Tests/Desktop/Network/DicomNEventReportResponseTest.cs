@@ -17,7 +17,7 @@ namespace Dicom.Network
         public void EventTypeIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
         {
             var request = new DicomNEventReportRequest(
-                DicomUID.BasicFilmSessionSOPClass,
+                DicomUID.BasicFilmSession,
                 new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                 1);
             var response = new DicomNEventReportResponse(request, DicomStatus.Success);
@@ -30,7 +30,7 @@ namespace Dicom.Network
         public void SOPInstanceUIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
         {
             var request = new DicomNEventReportRequest(
-                DicomUID.BasicFilmSessionSOPClass,
+                DicomUID.BasicFilmSession,
                 new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                 1);
             var response = new DicomNEventReportResponse(request, DicomStatus.Success);
@@ -74,8 +74,8 @@ namespace Dicom.Network
                     }
                 };
 
-                var nActionRequest = new DicomNActionRequest(DicomUID.StorageCommitmentPushModelSOPClass,
-                                DicomUID.StorageCommitmentPushModelSOPInstance, 1)
+                var nActionRequest = new DicomNActionRequest(DicomUID.StorageCommitmentPushModel,
+                                DicomUID.StorageCommitmentPushModel, 1)
                 {
                     Dataset = nActionDicomDataSet,
                     OnResponseReceived = (DicomNActionRequest request, DicomNActionResponse response) =>
@@ -157,7 +157,7 @@ namespace Dicom.Network
         public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request) => throw new NotImplementedException();
         public Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
         {
-            return SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.StorageCommitmentPushModelSOPInstance, 2)
+            return SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModel, DicomUID.StorageCommitmentPushModel, 2)
             {
                 Dataset = request.Dataset
             });

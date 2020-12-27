@@ -445,7 +445,7 @@ namespace Dicom.Network
             pdu.Write("Item-Type", 0x10);
             pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
-            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContextName.UID);
+            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContext.UID);
             pdu.WriteLength16();
 
             foreach (var pc in _assoc.PresentationContexts)
@@ -771,7 +771,7 @@ namespace Dicom.Network
             pdu.Write("Item-Type", 0x10);
             pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
-            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContextName.UID);
+            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContext.UID);
             pdu.WriteLength16();
 
             foreach (var pc in _assoc.PresentationContexts)

@@ -165,7 +165,12 @@ private Dictionary<string, Tuple<string, string, string, string, string, string,
 		"//d:table[@label='8-1']/d:tbody/d:tr",
 		NsManager).OfType<XmlNode>();
 
-	foreach (var item in tableE11Items.Concat(tableE21Items).Concat(table71Items).Concat(table81Items).Concat(table61Items))
+    // Part 6, Table 9-1 contains DICOM dynamic RTP Payload Elements (group 0006 tags)
+	var table91Items = Part6Document.DocumentElement.SelectNodes(
+		"//d:table[@label='9-1']/d:tbody/d:tr",
+		NsManager).OfType<XmlNode>();
+
+	foreach (var item in tableE11Items.Concat(tableE21Items).Concat(table71Items).Concat(table81Items).Concat(table61Items).Concat(table91Items))
 	{
 		var tagData = GetTagData(item, NsManager);
 		if (tagData == null) continue;
@@ -204,7 +209,7 @@ private static Tuple<string, string, string, string, string, string, bool> GetTa
 	// it is implicitly assumed that this comment never starts with "RET".
 	// Part 7, Table E.2-1 is 5 items long, and all tags in this table are retired; hence the isRetired condition based
 	// on item count.
-	var isRetired = list.Count < 6 || list[5].StartsWith("RET", StringComparison.Ordinal);
+	var isRetired = list.Count >= 6 && list[5].StartsWith("RET", StringComparison.Ordinal);
 
 	return Tuple.Create(parts[0], parts[1], list[2], list[1], vr, list[4], isRetired);
 }
@@ -212,12 +217,12 @@ private static Tuple<string, string, string, string, string, string, bool> GetTa
 // Get UIDs from the Part 6 document
 // Dictionary is organized with a UID number key and a tuple containing (1) the UID number, (2) UID description,
 // (3) UID type, and (4) "is retired" flag.
-private Dictionary<string, Tuple<string, string, string, bool>> GetUids()
+private Dictionary<string, Tuple<string, string, string, bool, string>> GetUids()
 {
 #if DEBUG
 	Init();
 #endif
-	var uids = new Dictionary<string, Tuple<string, string, string, bool>>();
+	var uids = new Dictionary<string, Tuple<string, string, string, bool, string>>();
 
 	// Part 6, Table A-1 contains the main list of DICOM Unique Identifiers
 	var tableA1Items = Part6Document.DocumentElement.SelectNodes(
@@ -255,7 +260,7 @@ private Dictionary<string, Tuple<string, string, string, bool>> GetUids()
 }
 
 // Get UID data from one row in the Part 6, A-1 table
-private static Tuple<string, string, string, bool> GetUidData(XmlNode item, XmlNamespaceManager manager)
+private static Tuple<string, string, string, bool, string> GetUidData(XmlNode item, XmlNamespaceManager manager)
 {
 	// Pick inner text from each <td> node; remove all control and non-ASCII characters
 	// If no UID type is provided (list[2] empty) ignore this entire <tr> node
@@ -268,11 +273,11 @@ private static Tuple<string, string, string, bool> GetUidData(XmlNode item, XmlN
 	// Is retired status is determined from the existence of the "(Retired)" text in the description
 	var isRetired = list[1].IndexOf("(Retired)", StringComparison.OrdinalIgnoreCase) >= 0;
 
-	return Tuple.Create(list[0], list[1], list[2], isRetired);
+	return Tuple.Create(list[0], list[1], list[3], isRetired, list[2]);
 }
 
 // Get UID data from one row in the Part 6, A-3 table (context groups)
-private static Tuple<string, string, string, bool> GetContextGroupNameData(XmlNode item, XmlNamespaceManager manager)
+private static Tuple<string, string, string, bool, string> GetContextGroupNameData(XmlNode item, XmlNamespaceManager manager)
 {
 	// Pick inner text from each <td> node; remove all control and non-ASCII characters
 	// If no forward link is provided (list[1] empty) ignore this entire <tr> node
@@ -301,7 +306,7 @@ private static Tuple<string, string, string, bool> GetContextGroupNameData(XmlNo
 
 	// UID description is given by a combination of the contect group title and CID number;
 	// UID type is always "Context Group Name" for the items in the context group table.
-	return Tuple.Create(uid, string.Format("{0} ({1})", title, cid), "Context Group Name", isRetired);
+	return Tuple.Create(uid, string.Format("{0} ({1})", title, cid), "Context Group Name", isRetired, "");
 }
 
 private static string ToTagKeyword(string keyword, bool isRetired)
@@ -321,8 +326,12 @@ private static string ToVrAttribute(string vr)
 	return vr == "NONE" ? string.Empty : string.Format(" vr=\"{0}\"", vr);
 }
 
-private static string ToUidKeyword(string uid, string description)
+private static string ToUidKeyword(string keyWord, string uid, string description)
 {
+	if (!string.IsNullOrEmpty(keyWord)) {
+		return keyWord.Trim();
+	}
+
 	// "Retired", "Process" and "Image Compression" should not be part of UID keywords, so strip.
 	// Keyword cannot start with a digit, so convert known digit-starter with corresponding text.
 	var raw = description.Replace("(Retired)", string.Empty).Replace(" (Process ", string.Empty)
@@ -367,9 +376,9 @@ private static string ToUidKeyword(string uid, string description)
 	return ret;
 }
 
-private static string ToUidKeyword(string uid, string description, bool isRetired)
+private static string ToUidKeyword(string keyWord, string uid, string description, bool isRetired)
 {
-	return ToUidKeyword(uid, description) + (isRetired ? "RETIRED" : string.Empty);
+	return ToUidKeyword(keyWord, uid, description) + (isRetired ? "RETIRED" : string.Empty);
 }
 
 // When description may be used in XML comments, convert ampersand to control character

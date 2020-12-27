@@ -93,7 +93,7 @@ namespace Dicom.Bugs
                 request.OnResponseReceived = (req, rsp) =>
                 {
                     success = req.Dataset.InternalTransferSyntax.Equals(
-                                  DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41)) &&
+                                  DicomTransferSyntax.Lookup(DicomUID.MPEG4HP41)) &&
                               rsp.Status == DicomStatus.Success;
                     handle.Set();
                 };
@@ -122,7 +122,7 @@ namespace Dicom.Bugs
                 request.OnResponseReceived = (req, rsp) =>
                 {
                     success = req.Dataset.InternalTransferSyntax.Equals(
-                                  DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41)) &&
+                                  DicomTransferSyntax.Lookup(DicomUID.MPEG4HP41)) &&
                               rsp.Status == DicomStatus.Success;
                     handle.Set();
                 };

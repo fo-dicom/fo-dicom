@@ -85,7 +85,7 @@ namespace Dicom
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            
+
             for (int i = 0; i < numCalls; i++)
             {
                 call();
@@ -94,7 +94,7 @@ namespace Dicom
             stopWatch.Stop();
 
             var totalElapsedMilliseconds = stopWatch.ElapsedMilliseconds;
-            var millisecondsPerCall = totalElapsedMilliseconds / (double) numCalls;
+            var millisecondsPerCall = totalElapsedMilliseconds / (double)numCalls;
 
             return millisecondsPerCall;
         }
@@ -200,6 +200,12 @@ namespace Dicom
                 DicomDictionary.EnsureDefaultDictionariesLoaded(false);
                 Assert.Throws<DicomDataException>(() => DicomDictionary.EnsureDefaultDictionariesLoaded(true));
             });
+
+        [Fact]
+        public void VerifyDicomStandardTags()
+        {
+            Assert.Equal("Current Frame Functional Groups Sequence", new DicomTag(0x0006, 0x0001).DictionaryEntry.Name);
+        }
 
         [Fact]
         public void EnsureLoaded_Assumes_Loading_Private_Dictionary_Data_By_Default()
@@ -322,4 +328,4 @@ namespace Dicom
 
         #endregion
     }
-    }
+}

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.AspNetCore.Server
 {
-    class DicomServerService : IHostedService
+    class DicomServerService<T> : IHostedService where T : DicomService, IDicomServiceProvider
     {
         private IDicomServer _server;
         private IDicomServerFactory _serverFactory;
@@ -28,7 +28,7 @@ namespace FellowOakDicom.AspNetCore.Server
         {
             // preload dictionary to prevent tiemouts
             _ = DicomDictionary.Default;
-            _server = _serverFactory.Create<SCPService>(
+            _server = _serverFactory.Create<T>(
                 Options.Port
                 );
             return Task.CompletedTask;

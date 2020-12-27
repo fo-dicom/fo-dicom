@@ -19,7 +19,7 @@ namespace Dicom.Bugs
         private static readonly DicomTransferSyntax[] AcceptedVideoTransferSyntaxes =
         {
             DicomTransferSyntax.MPEG2,
-            DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41),
+            DicomTransferSyntax.Lookup(DicomUID.MPEG4HP41),
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 

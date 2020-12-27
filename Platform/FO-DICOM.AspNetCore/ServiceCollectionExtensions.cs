@@ -25,22 +25,22 @@ namespace FellowOakDicom.AspNetCore
           ;
 
 
-        public static IServiceCollection AddDicomServer(this IServiceCollection services, DicomServerServiceOptions options)
+        public static IServiceCollection AddDicomServer<T>(this IServiceCollection services, DicomServerServiceOptions options) where T : DicomService, IDicomServiceProvider
             => services
             .UseFellowOakDicom()
-            .AddHostedService(services =>
+            .AddTransient<IHostedService>(s =>
             {
-                var dicomService = new DicomServerService(services.GetRequiredService<IConfiguration>(), services.GetRequiredService<IDicomServerFactory>());
+                var dicomService = new DicomServerService<T>(s.GetRequiredService<IConfiguration>(), s.GetRequiredService<IDicomServerFactory>());
                 dicomService.Options = options;
                 return dicomService;
             });
 
-        public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServerServiceOptions> optionsAction)
+        public static IServiceCollection AddDicomServer<T>(this IServiceCollection services, Action<DicomServerServiceOptions> optionsAction) where T : DicomService, IDicomServiceProvider
             => services
             .UseFellowOakDicom()
-            .AddHostedService(services =>
+            .AddTransient<IHostedService>(s =>
             {
-                var dicomService = new DicomServerService(services.GetRequiredService<IConfiguration>(), services.GetRequiredService<IDicomServerFactory>());
+                var dicomService = new DicomServerService<T>(s.GetRequiredService<IConfiguration>(), s.GetRequiredService<IDicomServerFactory>());
                 optionsAction(dicomService.Options);
                 return dicomService;
             });
