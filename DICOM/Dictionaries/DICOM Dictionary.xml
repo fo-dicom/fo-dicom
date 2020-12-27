@@ -28,28 +28,28 @@
     <tag group="0000" element="1023" keyword="NumberOfWarningSuboperations" vr="US" vm="1">Number of Warning Sub-operations</tag>
     <tag group="0000" element="1030" keyword="MoveOriginatorApplicationEntityTitle" vr="AE" vm="1">Move Originator Application Entity Title</tag>
     <tag group="0000" element="1031" keyword="MoveOriginatorMessageID" vr="US" vm="1">Move Originator Message ID</tag>
-    <tag group="0000" element="0001" keyword="CommandLengthToEnd" vr="UL" vm="1" retired="true">Command Length to End</tag>
-    <tag group="0000" element="0010" keyword="CommandRecognitionCode" vr="SH" vm="1" retired="true">Command Recognition Code</tag>
-    <tag group="0000" element="0200" keyword="Initiator" vr="AE" vm="1" retired="true">Initiator</tag>
-    <tag group="0000" element="0300" keyword="Receiver" vr="AE" vm="1" retired="true">Receiver</tag>
-    <tag group="0000" element="0400" keyword="FindLocation" vr="AE" vm="1" retired="true">Find Location</tag>
-    <tag group="0000" element="0850" keyword="NumberOfMatches" vr="US" vm="1" retired="true">Number of Matches</tag>
-    <tag group="0000" element="0860" keyword="ResponseSequenceNumber" vr="US" vm="1" retired="true">Response Sequence Number</tag>
-    <tag group="0000" element="4000" keyword="DialogReceiver" vr="LT" vm="1" retired="true">Dialog Receiver</tag>
-    <tag group="0000" element="4010" keyword="TerminalType" vr="LT" vm="1" retired="true">Terminal Type</tag>
-    <tag group="0000" element="5010" keyword="MessageSetID" vr="SH" vm="1" retired="true">Message Set ID</tag>
-    <tag group="0000" element="5020" keyword="EndMessageID" vr="SH" vm="1" retired="true">End Message ID</tag>
-    <tag group="0000" element="5110" keyword="DisplayFormat" vr="LT" vm="1" retired="true">Display Format</tag>
-    <tag group="0000" element="5120" keyword="PagePositionID" vr="LT" vm="1" retired="true">Page Position ID</tag>
-    <tag group="0000" element="5130" keyword="TextFormatID" vr="CS" vm="1" retired="true">Text Format ID</tag>
-    <tag group="0000" element="5140" keyword="NormalReverse" vr="CS" vm="1" retired="true">Normal/Reverse</tag>
-    <tag group="0000" element="5150" keyword="AddGrayScale" vr="CS" vm="1" retired="true">Add Gray Scale</tag>
-    <tag group="0000" element="5160" keyword="Borders" vr="CS" vm="1" retired="true">Borders</tag>
-    <tag group="0000" element="5170" keyword="Copies" vr="IS" vm="1" retired="true">Copies</tag>
-    <tag group="0000" element="5180" keyword="CommandMagnificationType" vr="CS" vm="1" retired="true">Command Magnification Type</tag>
-    <tag group="0000" element="5190" keyword="Erase" vr="CS" vm="1" retired="true">Erase</tag>
-    <tag group="0000" element="51A0" keyword="Print" vr="CS" vm="1" retired="true">Print</tag>
-    <tag group="0000" element="51B0" keyword="Overlays" vr="US" vm="1-n" retired="true">Overlays</tag>
+    <tag group="0000" element="0001" keyword="CommandLengthToEnd" vr="UL" vm="1">Command Length to End</tag>
+    <tag group="0000" element="0010" keyword="CommandRecognitionCode" vr="SH" vm="1">Command Recognition Code</tag>
+    <tag group="0000" element="0200" keyword="Initiator" vr="AE" vm="1">Initiator</tag>
+    <tag group="0000" element="0300" keyword="Receiver" vr="AE" vm="1">Receiver</tag>
+    <tag group="0000" element="0400" keyword="FindLocation" vr="AE" vm="1">Find Location</tag>
+    <tag group="0000" element="0850" keyword="NumberOfMatches" vr="US" vm="1">Number of Matches</tag>
+    <tag group="0000" element="0860" keyword="ResponseSequenceNumber" vr="US" vm="1">Response Sequence Number</tag>
+    <tag group="0000" element="4000" keyword="DialogReceiver" vr="LT" vm="1">Dialog Receiver</tag>
+    <tag group="0000" element="4010" keyword="TerminalType" vr="LT" vm="1">Terminal Type</tag>
+    <tag group="0000" element="5010" keyword="MessageSetID" vr="SH" vm="1">Message Set ID</tag>
+    <tag group="0000" element="5020" keyword="EndMessageID" vr="SH" vm="1">End Message ID</tag>
+    <tag group="0000" element="5110" keyword="DisplayFormat" vr="LT" vm="1">Display Format</tag>
+    <tag group="0000" element="5120" keyword="PagePositionID" vr="LT" vm="1">Page Position ID</tag>
+    <tag group="0000" element="5130" keyword="TextFormatID" vr="CS" vm="1">Text Format ID</tag>
+    <tag group="0000" element="5140" keyword="NormalReverse" vr="CS" vm="1">Normal/Reverse</tag>
+    <tag group="0000" element="5150" keyword="AddGrayScale" vr="CS" vm="1">Add Gray Scale</tag>
+    <tag group="0000" element="5160" keyword="Borders" vr="CS" vm="1">Borders</tag>
+    <tag group="0000" element="5170" keyword="Copies" vr="IS" vm="1">Copies</tag>
+    <tag group="0000" element="5180" keyword="CommandMagnificationType" vr="CS" vm="1">Command Magnification Type</tag>
+    <tag group="0000" element="5190" keyword="Erase" vr="CS" vm="1">Erase</tag>
+    <tag group="0000" element="51A0" keyword="Print" vr="CS" vm="1">Print</tag>
+    <tag group="0000" element="51B0" keyword="Overlays" vr="US" vm="1-n">Overlays</tag>
     <tag group="0002" element="0000" keyword="FileMetaInformationGroupLength" vr="UL" vm="1">File Meta Information Group Length</tag>
     <tag group="0002" element="0001" keyword="FileMetaInformationVersion" vr="OB" vm="1">File Meta Information Version</tag>
     <tag group="0002" element="0002" keyword="MediaStorageSOPClassUID" vr="UI" vm="1">Media Storage SOP Class UID</tag>
@@ -63,13 +63,13 @@
     <tag group="0002" element="0026" keyword="SourcePresentationAddress" vr="UR" vm="1">Source Presentation Address</tag>
     <tag group="0002" element="0027" keyword="SendingPresentationAddress" vr="UR" vm="1">Sending Presentation Address</tag>
     <tag group="0002" element="0028" keyword="ReceivingPresentationAddress" vr="UR" vm="1">Receiving Presentation Address</tag>
-    <tag group="0002" element="0031" keyword="RTVMetaInformationVersion" vr="OB" vm="1" retired="true">RTV Meta Information Version</tag>
-    <tag group="0002" element="0032" keyword="RTVCommunicationSOPClassUID" vr="UI" vm="1" retired="true">RTV Communication SOP Class UID</tag>
-    <tag group="0002" element="0033" keyword="RTVCommunicationSOPInstanceUID" vr="UI" vm="1" retired="true">RTV Communication SOP Instance UID</tag>
-    <tag group="0002" element="0035" keyword="RTVSourceIdentifier" vr="OB" vm="1" retired="true">RTV Source Identifier</tag>
-    <tag group="0002" element="0036" keyword="RTVFlowIdentifier" vr="OB" vm="1" retired="true">RTV Flow Identifier</tag>
-    <tag group="0002" element="0037" keyword="RTVFlowRTPSamplingRate" vr="UL" vm="1" retired="true">RTV Flow RTP Sampling Rate</tag>
-    <tag group="0002" element="0038" keyword="RTVFlowActualFrameDuration" vr="FD" vm="1" retired="true">RTV Flow Actual Frame Duration</tag>
+    <tag group="0002" element="0031" keyword="RTVMetaInformationVersion" vr="OB" vm="1">RTV Meta Information Version</tag>
+    <tag group="0002" element="0032" keyword="RTVCommunicationSOPClassUID" vr="UI" vm="1">RTV Communication SOP Class UID</tag>
+    <tag group="0002" element="0033" keyword="RTVCommunicationSOPInstanceUID" vr="UI" vm="1">RTV Communication SOP Instance UID</tag>
+    <tag group="0002" element="0035" keyword="RTVSourceIdentifier" vr="OB" vm="1">RTV Source Identifier</tag>
+    <tag group="0002" element="0036" keyword="RTVFlowIdentifier" vr="OB" vm="1">RTV Flow Identifier</tag>
+    <tag group="0002" element="0037" keyword="RTVFlowRTPSamplingRate" vr="UL" vm="1">RTV Flow RTP Sampling Rate</tag>
+    <tag group="0002" element="0038" keyword="RTVFlowActualFrameDuration" vr="FD" vm="1">RTV Flow Actual Frame Duration</tag>
     <tag group="0002" element="0100" keyword="PrivateInformationCreatorUID" vr="UI" vm="1">Private Information Creator UID</tag>
     <tag group="0002" element="0102" keyword="PrivateInformation" vr="OB" vm="1">Private Information</tag>
     <tag group="0004" element="1130" keyword="FileSetID" vr="CS" vm="1">File-set ID</tag>
@@ -2233,18 +2233,18 @@
     <tag group="0032" element="1067" keyword="ReasonForVisitCodeSequence" vr="SQ" vm="1">Reason for Visit Code Sequence</tag>
     <tag group="0032" element="1070" keyword="RequestedContrastAgent" vr="LO" vm="1">Requested Contrast Agent</tag>
     <tag group="0032" element="4000" keyword="StudyComments" vr="LT" vm="1" retired="true">Study Comments</tag>
-    <tag group="0034" element="0001" keyword="FlowIdentifierSequence" vr="SQ" vm="1" retired="true">Flow Identifier Sequence</tag>
-    <tag group="0034" element="0002" keyword="FlowIdentifier" vr="OB" vm="1" retired="true">Flow Identifier</tag>
-    <tag group="0034" element="0003" keyword="FlowTransferSyntaxUID" vr="UI" vm="1" retired="true">Flow Transfer Syntax UID</tag>
-    <tag group="0034" element="0004" keyword="FlowRTPSamplingRate" vr="UL" vm="1" retired="true">Flow RTP Sampling Rate</tag>
-    <tag group="0034" element="0005" keyword="SourceIdentifier" vr="OB" vm="1" retired="true">Source Identifier</tag>
-    <tag group="0034" element="0007" keyword="FrameOriginTimestamp" vr="OB" vm="1" retired="true">Frame Origin Timestamp</tag>
-    <tag group="0034" element="0008" keyword="IncludesImagingSubject" vr="CS" vm="1" retired="true">Includes Imaging Subject</tag>
-    <tag group="0034" element="0009" keyword="FrameUsefulnessGroupSequence" vr="SQ" vm="1" retired="true">Frame Usefulness Group Sequence</tag>
-    <tag group="0034" element="000A" keyword="RealTimeBulkDataFlowSequence" vr="SQ" vm="1" retired="true">Real-Time Bulk Data Flow Sequence</tag>
-    <tag group="0034" element="000B" keyword="CameraPositionGroupSequence" vr="SQ" vm="1" retired="true">Camera Position Group Sequence</tag>
-    <tag group="0034" element="000C" keyword="IncludesInformation" vr="CS" vm="1" retired="true">Includes Information</tag>
-    <tag group="0034" element="000D" keyword="TimeOfFrameGroupSequence" vr="SQ" vm="1" retired="true">Time of Frame Group Sequence</tag>
+    <tag group="0034" element="0001" keyword="FlowIdentifierSequence" vr="SQ" vm="1">Flow Identifier Sequence</tag>
+    <tag group="0034" element="0002" keyword="FlowIdentifier" vr="OB" vm="1">Flow Identifier</tag>
+    <tag group="0034" element="0003" keyword="FlowTransferSyntaxUID" vr="UI" vm="1">Flow Transfer Syntax UID</tag>
+    <tag group="0034" element="0004" keyword="FlowRTPSamplingRate" vr="UL" vm="1">Flow RTP Sampling Rate</tag>
+    <tag group="0034" element="0005" keyword="SourceIdentifier" vr="OB" vm="1">Source Identifier</tag>
+    <tag group="0034" element="0007" keyword="FrameOriginTimestamp" vr="OB" vm="1">Frame Origin Timestamp</tag>
+    <tag group="0034" element="0008" keyword="IncludesImagingSubject" vr="CS" vm="1">Includes Imaging Subject</tag>
+    <tag group="0034" element="0009" keyword="FrameUsefulnessGroupSequence" vr="SQ" vm="1">Frame Usefulness Group Sequence</tag>
+    <tag group="0034" element="000A" keyword="RealTimeBulkDataFlowSequence" vr="SQ" vm="1">Real-Time Bulk Data Flow Sequence</tag>
+    <tag group="0034" element="000B" keyword="CameraPositionGroupSequence" vr="SQ" vm="1">Camera Position Group Sequence</tag>
+    <tag group="0034" element="000C" keyword="IncludesInformation" vr="CS" vm="1">Includes Information</tag>
+    <tag group="0034" element="000D" keyword="TimeOfFrameGroupSequence" vr="SQ" vm="1">Time of Frame Group Sequence</tag>
     <tag group="0038" element="0004" keyword="ReferencedPatientAliasSequence" vr="SQ" vm="1">Referenced Patient Alias Sequence</tag>
     <tag group="0038" element="0008" keyword="VisitStatusID" vr="CS" vm="1">Visit Status ID</tag>
     <tag group="0038" element="0010" keyword="AdmissionID" vr="LO" vm="1">Admission ID</tag>
@@ -4904,7 +4904,7 @@
     <tag group="FFFE" element="E000" keyword="Item" vm="1">Item</tag>
     <tag group="FFFE" element="E00D" keyword="ItemDelimitationItem" vm="1">Item Delimitation Item</tag>
     <tag group="FFFE" element="E0DD" keyword="SequenceDelimitationItem" vm="1">Sequence Delimitation Item</tag>
-    <tag group="0006" element="0001" keyword="CurrentFrameFunctionalGroupsSequence" vr="SQ" vm="1" retired="true">Current Frame Functional Groups Sequence</tag>
+    <tag group="0006" element="0001" keyword="CurrentFrameFunctionalGroupsSequence" vr="SQ" vm="1">Current Frame Functional Groups Sequence</tag>
 
     <uid uid="1.2.840.10008.1.1" keyword="Verification" type="SOP Class">Verification SOP Class</uid>
     <uid uid="1.2.840.10008.1.2" keyword="ImplicitVRLittleEndian" type="Transfer Syntax">Implicit VR Little Endian: Default Transfer Syntax for DICOM</uid>

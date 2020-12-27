@@ -1,6 +1,7 @@
 #### v.4.0.8 (TBD)
 * Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
 * Update to DICOM Standard 2020e. Nema now also provides Keywords for the UIDs, these are now used. Breaking change: some UID keywords have changed.
+* Buf fix: Some non-retired DicomTags had a name including "RETIRED". Now fixed the generation of DicomTag names. (#1131)
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)

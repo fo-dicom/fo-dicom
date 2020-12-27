@@ -209,7 +209,7 @@ private static Tuple<string, string, string, string, string, string, bool> GetTa
 	// it is implicitly assumed that this comment never starts with "RET".
 	// Part 7, Table E.2-1 is 5 items long, and all tags in this table are retired; hence the isRetired condition based
 	// on item count.
-	var isRetired = list.Count < 6 || list[5].StartsWith("RET", StringComparison.Ordinal);
+	var isRetired = list.Count >= 6 && list[5].StartsWith("RET", StringComparison.Ordinal);
 
 	return Tuple.Create(parts[0], parts[1], list[2], list[1], vr, list[4], isRetired);
 }
