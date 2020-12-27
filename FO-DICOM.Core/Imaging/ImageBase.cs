@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Reflection;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO;
@@ -170,13 +169,13 @@ namespace FellowOakDicom.Imaging
             return bytes;
         }
 
-        public Color GetPixel(int x, int y)
+        public Color32 GetPixel(int x, int y)
         {
             if (x >= 0 && x < width && y >= 0 && y < height)
             {
-                return Color.FromArgb(pixels.Data[x + y * width]);
+                return new Color32(pixels.Data[x + y * width]);
             }
-            return Color.Black;
+            return Color32.Black;
         }
 
         private static int[] Rotate(ref int width, ref int height, int angle, int[] data)

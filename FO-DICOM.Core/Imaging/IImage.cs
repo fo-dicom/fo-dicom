@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO;
 
@@ -58,7 +57,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Deep copy of this image.</returns>
         IImage Clone();
 
-        Color GetPixel(int x, int y);
+        Color32 GetPixel(int x, int y);
 
         #endregion
     }
