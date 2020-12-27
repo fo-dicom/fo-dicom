@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.AspNetCore;
+using FO_DICOM.AspNetCoreTest.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,7 @@ namespace FO_DICOM.AspNetCoreTest
             services.AddControllers();
             services.AddLogging(c => c.AddConsole());
 
-            services.AddDicomServer(o => {
+            services.AddDicomServer<MyDicomService>(o => {
                 o.Port = 104;
             });
         }
