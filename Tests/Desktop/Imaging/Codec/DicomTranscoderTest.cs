@@ -29,14 +29,14 @@ namespace Dicom.Imaging.Codec
         {
             get
             {
-                yield return new object[] { DicomTransferSyntax.JPEGProcess1, DicomUID.JPEGBaseline1.Name };
+                yield return new object[] { DicomTransferSyntax.JPEGProcess1, DicomUID.JPEGBaseline8Bit.Name };
                 yield return new object[] { DicomTransferSyntax.RLELossless, DicomUID.RLELossless.Name };
-                yield return new object[] { DicomTransferSyntax.JPEGLSNearLossless, DicomUID.JPEGLSLossyNearLossless.Name };
+                yield return new object[] { DicomTransferSyntax.JPEGLSNearLossless, DicomUID.JPEGLSNearLossless.Name };
                 yield return
                     new object[]
                         {
                             DicomTransferSyntax.JPEG2000Lossless,
-                            DicomUID.JPEG2000LosslessOnly.Name
+                            DicomUID.JPEG2000Lossless.Name
                         };
             }
         }

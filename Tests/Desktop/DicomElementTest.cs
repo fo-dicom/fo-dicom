@@ -523,31 +523,31 @@ namespace Dicom
 
         public static IEnumerable<object[]> KnownTransferSyntaxes = new[]
         {
-            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.JPEG2000Lossless, DicomTransferSyntax.JPEG2000Lossless },
             new object[] { DicomUID.ImplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian },
-            new object[] { DicomUID.JPEGExtended24, DicomTransferSyntax.JPEGProcess2_4 },
-            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.JPEGExtended12Bit, DicomTransferSyntax.JPEGProcess2_4 },
+            new object[] { DicomUID.JPEG2000Lossless, DicomTransferSyntax.JPEG2000Lossless },
             new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomTransferSyntax.ExplicitVRBigEndian },
             new object[] { DicomUID.GEPrivateImplicitVRBigEndian, DicomTransferSyntax.GEPrivateImplicitVRBigEndian },
-            new object[] { DicomUID.MPEG2, DicomTransferSyntax.MPEG2 }
+            new object[] { DicomUID.MPEG2MPML, DicomTransferSyntax.MPEG2 }
         };
 
         public static IEnumerable<object[]> TransferSyntaxUids = new[]
         {
             new object[] { DicomUID.XMLEncodingRETIRED },
-            new object[] { DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo },
-            new object[] { DicomUID.JPEG2000Part2MultiComponentLosslessOnly },
+            new object[] { DicomUID.MPEG4HP422D },
+            new object[] { DicomUID.JPEG2000MCLossless },
             new object[] { DicomUID.JPIPReferencedDeflate },
             new object[] { DicomUID.RFC2557MIMEEncapsulationRETIRED }
         };
 
         public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
         {
-            new object[] { DicomUID.AbdominalArteriesPaired12111 },
+            new object[] { DicomUID.AbdominopelvicArteriesPaired12111 },
             new object[] { DicomUID.CTImageStorage },
-            new object[] { DicomUID.StorageCommitmentPushModelSOPClass },
+            new object[] { DicomUID.StorageCommitmentPushModel },
             new object[] { DicomUID.dicomTransferSyntax },
-            new object[] { DicomUID.PETColorPaletteSOPInstance }
+            new object[] { DicomUID.PETPalette }
         };
 
         #endregion

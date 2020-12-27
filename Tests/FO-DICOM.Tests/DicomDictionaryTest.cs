@@ -109,6 +109,12 @@ namespace FellowOakDicom.Tests
             Assert.Null(tag); // assert that the dictionary returns a null tag for invalid keyword
         }
 
+        [Fact]
+        public void VerifyDicomStandardTags()
+        {
+            Assert.Equal("Current Frame Functional Groups Sequence", new DicomTag(0x0006, 0x0001).DictionaryEntry.Name);
+        }
+
         #endregion
 
         #region Support data

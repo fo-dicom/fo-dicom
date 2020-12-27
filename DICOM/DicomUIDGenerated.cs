@@ -17,14 +17,14 @@ namespace Dicom
             _uids.Add(DicomUID.ExplicitVRLittleEndian.UID, DicomUID.ExplicitVRLittleEndian);
             _uids.Add(DicomUID.DeflatedExplicitVRLittleEndian.UID, DicomUID.DeflatedExplicitVRLittleEndian);
             _uids.Add(DicomUID.ExplicitVRBigEndianRETIRED.UID, DicomUID.ExplicitVRBigEndianRETIRED);
-            _uids.Add(DicomUID.JPEGBaseline1.UID, DicomUID.JPEGBaseline1);
-            _uids.Add(DicomUID.JPEGExtended24.UID, DicomUID.JPEGExtended24);
+            _uids.Add(DicomUID.JPEGBaseline8Bit.UID, DicomUID.JPEGBaseline8Bit);
+            _uids.Add(DicomUID.JPEGExtended12Bit.UID, DicomUID.JPEGExtended12Bit);
             _uids.Add(DicomUID.JPEGExtended35RETIRED.UID, DicomUID.JPEGExtended35RETIRED);
             _uids.Add(DicomUID.JPEGSpectralSelectionNonHierarchical68RETIRED.UID, DicomUID.JPEGSpectralSelectionNonHierarchical68RETIRED);
             _uids.Add(DicomUID.JPEGSpectralSelectionNonHierarchical79RETIRED.UID, DicomUID.JPEGSpectralSelectionNonHierarchical79RETIRED);
             _uids.Add(DicomUID.JPEGFullProgressionNonHierarchical1012RETIRED.UID, DicomUID.JPEGFullProgressionNonHierarchical1012RETIRED);
             _uids.Add(DicomUID.JPEGFullProgressionNonHierarchical1113RETIRED.UID, DicomUID.JPEGFullProgressionNonHierarchical1113RETIRED);
-            _uids.Add(DicomUID.JPEGLosslessNonHierarchical14.UID, DicomUID.JPEGLosslessNonHierarchical14);
+            _uids.Add(DicomUID.JPEGLossless.UID, DicomUID.JPEGLossless);
             _uids.Add(DicomUID.JPEGLosslessNonHierarchical15RETIRED.UID, DicomUID.JPEGLosslessNonHierarchical15RETIRED);
             _uids.Add(DicomUID.JPEGExtendedHierarchical1618RETIRED.UID, DicomUID.JPEGExtendedHierarchical1618RETIRED);
             _uids.Add(DicomUID.JPEGExtendedHierarchical1719RETIRED.UID, DicomUID.JPEGExtendedHierarchical1719RETIRED);
@@ -34,24 +34,24 @@ namespace Dicom
             _uids.Add(DicomUID.JPEGFullProgressionHierarchical2527RETIRED.UID, DicomUID.JPEGFullProgressionHierarchical2527RETIRED);
             _uids.Add(DicomUID.JPEGLosslessHierarchical28RETIRED.UID, DicomUID.JPEGLosslessHierarchical28RETIRED);
             _uids.Add(DicomUID.JPEGLosslessHierarchical29RETIRED.UID, DicomUID.JPEGLosslessHierarchical29RETIRED);
-            _uids.Add(DicomUID.JPEGLossless.UID, DicomUID.JPEGLossless);
+            _uids.Add(DicomUID.JPEGLosslessSV1.UID, DicomUID.JPEGLosslessSV1);
             _uids.Add(DicomUID.JPEGLSLossless.UID, DicomUID.JPEGLSLossless);
-            _uids.Add(DicomUID.JPEGLSLossyNearLossless.UID, DicomUID.JPEGLSLossyNearLossless);
-            _uids.Add(DicomUID.JPEG2000LosslessOnly.UID, DicomUID.JPEG2000LosslessOnly);
+            _uids.Add(DicomUID.JPEGLSNearLossless.UID, DicomUID.JPEGLSNearLossless);
+            _uids.Add(DicomUID.JPEG2000Lossless.UID, DicomUID.JPEG2000Lossless);
             _uids.Add(DicomUID.JPEG2000.UID, DicomUID.JPEG2000);
-            _uids.Add(DicomUID.JPEG2000Part2MultiComponentLosslessOnly.UID, DicomUID.JPEG2000Part2MultiComponentLosslessOnly);
-            _uids.Add(DicomUID.JPEG2000Part2MultiComponent.UID, DicomUID.JPEG2000Part2MultiComponent);
+            _uids.Add(DicomUID.JPEG2000MCLossless.UID, DicomUID.JPEG2000MCLossless);
+            _uids.Add(DicomUID.JPEG2000MC.UID, DicomUID.JPEG2000MC);
             _uids.Add(DicomUID.JPIPReferenced.UID, DicomUID.JPIPReferenced);
             _uids.Add(DicomUID.JPIPReferencedDeflate.UID, DicomUID.JPIPReferencedDeflate);
-            _uids.Add(DicomUID.MPEG2.UID, DicomUID.MPEG2);
-            _uids.Add(DicomUID.MPEG2MainProfileHighLevel.UID, DicomUID.MPEG2MainProfileHighLevel);
-            _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel41.UID, DicomUID.MPEG4AVCH264HighProfileLevel41);
-            _uids.Add(DicomUID.MPEG4AVCH264BDCompatibleHighProfileLevel41.UID, DicomUID.MPEG4AVCH264BDCompatibleHighProfileLevel41);
-            _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo.UID, DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo);
-            _uids.Add(DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo.UID, DicomUID.MPEG4AVCH264HighProfileLevel42For3DVideo);
-            _uids.Add(DicomUID.MPEG4AVCH264StereoHighProfileLevel42.UID, DicomUID.MPEG4AVCH264StereoHighProfileLevel42);
-            _uids.Add(DicomUID.HEVCH265MainProfileLevel51.UID, DicomUID.HEVCH265MainProfileLevel51);
-            _uids.Add(DicomUID.HEVCH265Main10ProfileLevel51.UID, DicomUID.HEVCH265Main10ProfileLevel51);
+            _uids.Add(DicomUID.MPEG2MPML.UID, DicomUID.MPEG2MPML);
+            _uids.Add(DicomUID.MPEG2MPHL.UID, DicomUID.MPEG2MPHL);
+            _uids.Add(DicomUID.MPEG4HP41.UID, DicomUID.MPEG4HP41);
+            _uids.Add(DicomUID.MPEG4HP41BD.UID, DicomUID.MPEG4HP41BD);
+            _uids.Add(DicomUID.MPEG4HP422D.UID, DicomUID.MPEG4HP422D);
+            _uids.Add(DicomUID.MPEG4HP423D.UID, DicomUID.MPEG4HP423D);
+            _uids.Add(DicomUID.MPEG4HP42STEREO.UID, DicomUID.MPEG4HP42STEREO);
+            _uids.Add(DicomUID.HEVCMP51.UID, DicomUID.HEVCMP51);
+            _uids.Add(DicomUID.HEVCM10P51.UID, DicomUID.HEVCM10P51);
             _uids.Add(DicomUID.RLELossless.UID, DicomUID.RLELossless);
             _uids.Add(DicomUID.RFC2557MIMEEncapsulationRETIRED.UID, DicomUID.RFC2557MIMEEncapsulationRETIRED);
             _uids.Add(DicomUID.XMLEncodingRETIRED.UID, DicomUID.XMLEncodingRETIRED);
@@ -59,102 +59,108 @@ namespace Dicom
             _uids.Add(DicomUID.SMPTEST211020UncompressedInterlacedActiveVideo.UID, DicomUID.SMPTEST211020UncompressedInterlacedActiveVideo);
             _uids.Add(DicomUID.SMPTEST211030PCMDigitalAudio.UID, DicomUID.SMPTEST211030PCMDigitalAudio);
             _uids.Add(DicomUID.MediaStorageDirectoryStorage.UID, DicomUID.MediaStorageDirectoryStorage);
-            _uids.Add(DicomUID.TalairachBrainAtlasFrameOfReference.UID, DicomUID.TalairachBrainAtlasFrameOfReference);
-            _uids.Add(DicomUID.SPM2T1FrameOfReference.UID, DicomUID.SPM2T1FrameOfReference);
-            _uids.Add(DicomUID.SPM2T2FrameOfReference.UID, DicomUID.SPM2T2FrameOfReference);
-            _uids.Add(DicomUID.SPM2PDFrameOfReference.UID, DicomUID.SPM2PDFrameOfReference);
-            _uids.Add(DicomUID.SPM2EPIFrameOfReference.UID, DicomUID.SPM2EPIFrameOfReference);
-            _uids.Add(DicomUID.SPM2FILT1FrameOfReference.UID, DicomUID.SPM2FILT1FrameOfReference);
-            _uids.Add(DicomUID.SPM2PETFrameOfReference.UID, DicomUID.SPM2PETFrameOfReference);
-            _uids.Add(DicomUID.SPM2TRANSMFrameOfReference.UID, DicomUID.SPM2TRANSMFrameOfReference);
-            _uids.Add(DicomUID.SPM2SPECTFrameOfReference.UID, DicomUID.SPM2SPECTFrameOfReference);
-            _uids.Add(DicomUID.SPM2GRAYFrameOfReference.UID, DicomUID.SPM2GRAYFrameOfReference);
-            _uids.Add(DicomUID.SPM2WHITEFrameOfReference.UID, DicomUID.SPM2WHITEFrameOfReference);
-            _uids.Add(DicomUID.SPM2CSFFrameOfReference.UID, DicomUID.SPM2CSFFrameOfReference);
-            _uids.Add(DicomUID.SPM2BRAINMASKFrameOfReference.UID, DicomUID.SPM2BRAINMASKFrameOfReference);
-            _uids.Add(DicomUID.SPM2AVG305T1FrameOfReference.UID, DicomUID.SPM2AVG305T1FrameOfReference);
-            _uids.Add(DicomUID.SPM2AVG152T1FrameOfReference.UID, DicomUID.SPM2AVG152T1FrameOfReference);
-            _uids.Add(DicomUID.SPM2AVG152T2FrameOfReference.UID, DicomUID.SPM2AVG152T2FrameOfReference);
-            _uids.Add(DicomUID.SPM2AVG152PDFrameOfReference.UID, DicomUID.SPM2AVG152PDFrameOfReference);
-            _uids.Add(DicomUID.SPM2SINGLESUBJT1FrameOfReference.UID, DicomUID.SPM2SINGLESUBJT1FrameOfReference);
-            _uids.Add(DicomUID.ICBM452T1FrameOfReference.UID, DicomUID.ICBM452T1FrameOfReference);
-            _uids.Add(DicomUID.ICBMSingleSubjectMRIFrameOfReference.UID, DicomUID.ICBMSingleSubjectMRIFrameOfReference);
-            _uids.Add(DicomUID.IEC61217FixedCoordinateSystemFrameOfReference.UID, DicomUID.IEC61217FixedCoordinateSystemFrameOfReference);
-            _uids.Add(DicomUID.StandardRoboticArmCoordinateSystemFrameOfReference.UID, DicomUID.StandardRoboticArmCoordinateSystemFrameOfReference);
-            _uids.Add(DicomUID.HotIronColorPaletteSOPInstance.UID, DicomUID.HotIronColorPaletteSOPInstance);
-            _uids.Add(DicomUID.PETColorPaletteSOPInstance.UID, DicomUID.PETColorPaletteSOPInstance);
-            _uids.Add(DicomUID.HotMetalBlueColorPaletteSOPInstance.UID, DicomUID.HotMetalBlueColorPaletteSOPInstance);
-            _uids.Add(DicomUID.PET20StepColorPaletteSOPInstance.UID, DicomUID.PET20StepColorPaletteSOPInstance);
-            _uids.Add(DicomUID.SpringColorPaletteSOPInstance.UID, DicomUID.SpringColorPaletteSOPInstance);
-            _uids.Add(DicomUID.SummerColorPaletteSOPInstance.UID, DicomUID.SummerColorPaletteSOPInstance);
-            _uids.Add(DicomUID.FallColorPaletteSOPInstance.UID, DicomUID.FallColorPaletteSOPInstance);
-            _uids.Add(DicomUID.WinterColorPaletteSOPInstance.UID, DicomUID.WinterColorPaletteSOPInstance);
-            _uids.Add(DicomUID.BasicStudyContentNotificationSOPClassRETIRED.UID, DicomUID.BasicStudyContentNotificationSOPClassRETIRED);
+            _uids.Add(DicomUID.TalairachBrainAtlas.UID, DicomUID.TalairachBrainAtlas);
+            _uids.Add(DicomUID.SPM2T1.UID, DicomUID.SPM2T1);
+            _uids.Add(DicomUID.SPM2T2.UID, DicomUID.SPM2T2);
+            _uids.Add(DicomUID.SPM2PD.UID, DicomUID.SPM2PD);
+            _uids.Add(DicomUID.SPM2EPI.UID, DicomUID.SPM2EPI);
+            _uids.Add(DicomUID.SPM2FILT1.UID, DicomUID.SPM2FILT1);
+            _uids.Add(DicomUID.SPM2PET.UID, DicomUID.SPM2PET);
+            _uids.Add(DicomUID.SPM2TRANSM.UID, DicomUID.SPM2TRANSM);
+            _uids.Add(DicomUID.SPM2SPECT.UID, DicomUID.SPM2SPECT);
+            _uids.Add(DicomUID.SPM2GRAY.UID, DicomUID.SPM2GRAY);
+            _uids.Add(DicomUID.SPM2WHITE.UID, DicomUID.SPM2WHITE);
+            _uids.Add(DicomUID.SPM2CSF.UID, DicomUID.SPM2CSF);
+            _uids.Add(DicomUID.SPM2BRAINMASK.UID, DicomUID.SPM2BRAINMASK);
+            _uids.Add(DicomUID.SPM2AVG305T1.UID, DicomUID.SPM2AVG305T1);
+            _uids.Add(DicomUID.SPM2AVG152T1.UID, DicomUID.SPM2AVG152T1);
+            _uids.Add(DicomUID.SPM2AVG152T2.UID, DicomUID.SPM2AVG152T2);
+            _uids.Add(DicomUID.SPM2AVG152PD.UID, DicomUID.SPM2AVG152PD);
+            _uids.Add(DicomUID.SPM2SINGLESUBJT1.UID, DicomUID.SPM2SINGLESUBJT1);
+            _uids.Add(DicomUID.ICBM452T1.UID, DicomUID.ICBM452T1);
+            _uids.Add(DicomUID.ICBMSingleSubjectMRI.UID, DicomUID.ICBMSingleSubjectMRI);
+            _uids.Add(DicomUID.IEC61217FixedCoordinateSystem.UID, DicomUID.IEC61217FixedCoordinateSystem);
+            _uids.Add(DicomUID.StandardRoboticArmCoordinateSystem.UID, DicomUID.StandardRoboticArmCoordinateSystem);
+            _uids.Add(DicomUID.SRI24.UID, DicomUID.SRI24);
+            _uids.Add(DicomUID.Colin27.UID, DicomUID.Colin27);
+            _uids.Add(DicomUID.LPBA40AIR.UID, DicomUID.LPBA40AIR);
+            _uids.Add(DicomUID.LPBA40FLIRT.UID, DicomUID.LPBA40FLIRT);
+            _uids.Add(DicomUID.LPBA40SPM5.UID, DicomUID.LPBA40SPM5);
+            _uids.Add(DicomUID.HotIronPalette.UID, DicomUID.HotIronPalette);
+            _uids.Add(DicomUID.PETPalette.UID, DicomUID.PETPalette);
+            _uids.Add(DicomUID.HotMetalBluePalette.UID, DicomUID.HotMetalBluePalette);
+            _uids.Add(DicomUID.PET20StepPalette.UID, DicomUID.PET20StepPalette);
+            _uids.Add(DicomUID.SpringPalette.UID, DicomUID.SpringPalette);
+            _uids.Add(DicomUID.SummerPalette.UID, DicomUID.SummerPalette);
+            _uids.Add(DicomUID.FallPalette.UID, DicomUID.FallPalette);
+            _uids.Add(DicomUID.WinterPalette.UID, DicomUID.WinterPalette);
+            _uids.Add(DicomUID.BasicStudyContentNotificationRETIRED.UID, DicomUID.BasicStudyContentNotificationRETIRED);
             _uids.Add(DicomUID.Papyrus3ImplicitVRLittleEndianRETIRED.UID, DicomUID.Papyrus3ImplicitVRLittleEndianRETIRED);
-            _uids.Add(DicomUID.StorageCommitmentPushModelSOPClass.UID, DicomUID.StorageCommitmentPushModelSOPClass);
-            _uids.Add(DicomUID.StorageCommitmentPushModelSOPInstance.UID, DicomUID.StorageCommitmentPushModelSOPInstance);
-            _uids.Add(DicomUID.StorageCommitmentPullModelSOPClassRETIRED.UID, DicomUID.StorageCommitmentPullModelSOPClassRETIRED);
-            _uids.Add(DicomUID.StorageCommitmentPullModelSOPInstanceRETIRED.UID, DicomUID.StorageCommitmentPullModelSOPInstanceRETIRED);
-            _uids.Add(DicomUID.ProceduralEventLoggingSOPClass.UID, DicomUID.ProceduralEventLoggingSOPClass);
-            _uids.Add(DicomUID.ProceduralEventLoggingSOPInstance.UID, DicomUID.ProceduralEventLoggingSOPInstance);
-            _uids.Add(DicomUID.SubstanceAdministrationLoggingSOPClass.UID, DicomUID.SubstanceAdministrationLoggingSOPClass);
-            _uids.Add(DicomUID.SubstanceAdministrationLoggingSOPInstance.UID, DicomUID.SubstanceAdministrationLoggingSOPInstance);
-            _uids.Add(DicomUID.DICOMUIDRegistry.UID, DicomUID.DICOMUIDRegistry);
-            _uids.Add(DicomUID.DICOMControlledTerminology.UID, DicomUID.DICOMControlledTerminology);
-            _uids.Add(DicomUID.AdultMouseAnatomyOntology.UID, DicomUID.AdultMouseAnatomyOntology);
-            _uids.Add(DicomUID.UberonOntology.UID, DicomUID.UberonOntology);
-            _uids.Add(DicomUID.IntegratedTaxonomicInformationSystemITISTaxonomicSerialNumberTSN.UID, DicomUID.IntegratedTaxonomicInformationSystemITISTaxonomicSerialNumberTSN);
-            _uids.Add(DicomUID.MouseGenomeInitiativeMGI.UID, DicomUID.MouseGenomeInitiativeMGI);
-            _uids.Add(DicomUID.PubChemCompoundCID.UID, DicomUID.PubChemCompoundCID);
-            _uids.Add(DicomUID.ICD11.UID, DicomUID.ICD11);
-            _uids.Add(DicomUID.NewYorkUniversityMelanomaClinicalCooperativeGroup.UID, DicomUID.NewYorkUniversityMelanomaClinicalCooperativeGroup);
-            _uids.Add(DicomUID.MayoClinicNonRadiologicalImagesSpecificBodyStructureAnatomicalSurfaceRegionGuide.UID, DicomUID.MayoClinicNonRadiologicalImagesSpecificBodyStructureAnatomicalSurfaceRegionGuide);
-            _uids.Add(DicomUID.ImageBiomarkerStandardisationInitiative.UID, DicomUID.ImageBiomarkerStandardisationInitiative);
-            _uids.Add(DicomUID.RadiomicsOntology.UID, DicomUID.RadiomicsOntology);
-            _uids.Add(DicomUID.RadElement.UID, DicomUID.RadElement);
-            _uids.Add(DicomUID.DICOMApplicationContextName.UID, DicomUID.DICOMApplicationContextName);
-            _uids.Add(DicomUID.DetachedPatientManagementSOPClassRETIRED.UID, DicomUID.DetachedPatientManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.DetachedPatientManagementMetaSOPClassRETIRED.UID, DicomUID.DetachedPatientManagementMetaSOPClassRETIRED);
-            _uids.Add(DicomUID.DetachedVisitManagementSOPClassRETIRED.UID, DicomUID.DetachedVisitManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.DetachedStudyManagementSOPClassRETIRED.UID, DicomUID.DetachedStudyManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.StudyComponentManagementSOPClassRETIRED.UID, DicomUID.StudyComponentManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.ModalityPerformedProcedureStepSOPClass.UID, DicomUID.ModalityPerformedProcedureStepSOPClass);
-            _uids.Add(DicomUID.ModalityPerformedProcedureStepRetrieveSOPClass.UID, DicomUID.ModalityPerformedProcedureStepRetrieveSOPClass);
-            _uids.Add(DicomUID.ModalityPerformedProcedureStepNotificationSOPClass.UID, DicomUID.ModalityPerformedProcedureStepNotificationSOPClass);
-            _uids.Add(DicomUID.DetachedResultsManagementSOPClassRETIRED.UID, DicomUID.DetachedResultsManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.DetachedResultsManagementMetaSOPClassRETIRED.UID, DicomUID.DetachedResultsManagementMetaSOPClassRETIRED);
-            _uids.Add(DicomUID.DetachedStudyManagementMetaSOPClassRETIRED.UID, DicomUID.DetachedStudyManagementMetaSOPClassRETIRED);
-            _uids.Add(DicomUID.DetachedInterpretationManagementSOPClassRETIRED.UID, DicomUID.DetachedInterpretationManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.StorageServiceClass.UID, DicomUID.StorageServiceClass);
-            _uids.Add(DicomUID.BasicFilmSessionSOPClass.UID, DicomUID.BasicFilmSessionSOPClass);
-            _uids.Add(DicomUID.BasicFilmBoxSOPClass.UID, DicomUID.BasicFilmBoxSOPClass);
-            _uids.Add(DicomUID.BasicGrayscaleImageBoxSOPClass.UID, DicomUID.BasicGrayscaleImageBoxSOPClass);
-            _uids.Add(DicomUID.BasicColorImageBoxSOPClass.UID, DicomUID.BasicColorImageBoxSOPClass);
-            _uids.Add(DicomUID.ReferencedImageBoxSOPClassRETIRED.UID, DicomUID.ReferencedImageBoxSOPClassRETIRED);
-            _uids.Add(DicomUID.BasicGrayscalePrintManagementMetaSOPClass.UID, DicomUID.BasicGrayscalePrintManagementMetaSOPClass);
-            _uids.Add(DicomUID.ReferencedGrayscalePrintManagementMetaSOPClassRETIRED.UID, DicomUID.ReferencedGrayscalePrintManagementMetaSOPClassRETIRED);
-            _uids.Add(DicomUID.PrintJobSOPClass.UID, DicomUID.PrintJobSOPClass);
-            _uids.Add(DicomUID.BasicAnnotationBoxSOPClass.UID, DicomUID.BasicAnnotationBoxSOPClass);
-            _uids.Add(DicomUID.PrinterSOPClass.UID, DicomUID.PrinterSOPClass);
-            _uids.Add(DicomUID.PrinterConfigurationRetrievalSOPClass.UID, DicomUID.PrinterConfigurationRetrievalSOPClass);
-            _uids.Add(DicomUID.PrinterSOPInstance.UID, DicomUID.PrinterSOPInstance);
-            _uids.Add(DicomUID.PrinterConfigurationRetrievalSOPInstance.UID, DicomUID.PrinterConfigurationRetrievalSOPInstance);
-            _uids.Add(DicomUID.BasicColorPrintManagementMetaSOPClass.UID, DicomUID.BasicColorPrintManagementMetaSOPClass);
-            _uids.Add(DicomUID.ReferencedColorPrintManagementMetaSOPClassRETIRED.UID, DicomUID.ReferencedColorPrintManagementMetaSOPClassRETIRED);
-            _uids.Add(DicomUID.VOILUTBoxSOPClass.UID, DicomUID.VOILUTBoxSOPClass);
-            _uids.Add(DicomUID.PresentationLUTSOPClass.UID, DicomUID.PresentationLUTSOPClass);
-            _uids.Add(DicomUID.ImageOverlayBoxSOPClassRETIRED.UID, DicomUID.ImageOverlayBoxSOPClassRETIRED);
-            _uids.Add(DicomUID.BasicPrintImageOverlayBoxSOPClassRETIRED.UID, DicomUID.BasicPrintImageOverlayBoxSOPClassRETIRED);
-            _uids.Add(DicomUID.PrintQueueSOPInstanceRETIRED.UID, DicomUID.PrintQueueSOPInstanceRETIRED);
-            _uids.Add(DicomUID.PrintQueueManagementSOPClassRETIRED.UID, DicomUID.PrintQueueManagementSOPClassRETIRED);
-            _uids.Add(DicomUID.StoredPrintStorageSOPClassRETIRED.UID, DicomUID.StoredPrintStorageSOPClassRETIRED);
-            _uids.Add(DicomUID.HardcopyGrayscaleImageStorageSOPClassRETIRED.UID, DicomUID.HardcopyGrayscaleImageStorageSOPClassRETIRED);
-            _uids.Add(DicomUID.HardcopyColorImageStorageSOPClassRETIRED.UID, DicomUID.HardcopyColorImageStorageSOPClassRETIRED);
-            _uids.Add(DicomUID.PullPrintRequestSOPClassRETIRED.UID, DicomUID.PullPrintRequestSOPClassRETIRED);
-            _uids.Add(DicomUID.PullStoredPrintManagementMetaSOPClassRETIRED.UID, DicomUID.PullStoredPrintManagementMetaSOPClassRETIRED);
-            _uids.Add(DicomUID.MediaCreationManagementSOPClassUID.UID, DicomUID.MediaCreationManagementSOPClassUID);
-            _uids.Add(DicomUID.DisplaySystemSOPClass.UID, DicomUID.DisplaySystemSOPClass);
-            _uids.Add(DicomUID.DisplaySystemSOPInstance.UID, DicomUID.DisplaySystemSOPInstance);
+            _uids.Add(DicomUID.StorageCommitmentPushModel.UID, DicomUID.StorageCommitmentPushModel);
+            _uids.Add(DicomUID.StorageCommitmentPushModelInstance.UID, DicomUID.StorageCommitmentPushModelInstance);
+            _uids.Add(DicomUID.StorageCommitmentPullModelRETIRED.UID, DicomUID.StorageCommitmentPullModelRETIRED);
+            _uids.Add(DicomUID.StorageCommitmentPullModelInstanceRETIRED.UID, DicomUID.StorageCommitmentPullModelInstanceRETIRED);
+            _uids.Add(DicomUID.ProceduralEventLogging.UID, DicomUID.ProceduralEventLogging);
+            _uids.Add(DicomUID.ProceduralEventLoggingInstance.UID, DicomUID.ProceduralEventLoggingInstance);
+            _uids.Add(DicomUID.SubstanceAdministrationLogging.UID, DicomUID.SubstanceAdministrationLogging);
+            _uids.Add(DicomUID.SubstanceAdministrationLoggingInstance.UID, DicomUID.SubstanceAdministrationLoggingInstance);
+            _uids.Add(DicomUID.DCMUID.UID, DicomUID.DCMUID);
+            _uids.Add(DicomUID.DCM.UID, DicomUID.DCM);
+            _uids.Add(DicomUID.MA.UID, DicomUID.MA);
+            _uids.Add(DicomUID.UBERON.UID, DicomUID.UBERON);
+            _uids.Add(DicomUID.ITIS_TSN.UID, DicomUID.ITIS_TSN);
+            _uids.Add(DicomUID.MGI.UID, DicomUID.MGI);
+            _uids.Add(DicomUID.PUBCHEM_CID.UID, DicomUID.PUBCHEM_CID);
+            _uids.Add(DicomUID.DC.UID, DicomUID.DC);
+            _uids.Add(DicomUID.NYUMCCG.UID, DicomUID.NYUMCCG);
+            _uids.Add(DicomUID.MAYONRISBSASRG.UID, DicomUID.MAYONRISBSASRG);
+            _uids.Add(DicomUID.IBSI.UID, DicomUID.IBSI);
+            _uids.Add(DicomUID.RO.UID, DicomUID.RO);
+            _uids.Add(DicomUID.RADELEMENT.UID, DicomUID.RADELEMENT);
+            _uids.Add(DicomUID.I11.UID, DicomUID.I11);
+            _uids.Add(DicomUID.DICOMApplicationContext.UID, DicomUID.DICOMApplicationContext);
+            _uids.Add(DicomUID.DetachedPatientManagementRETIRED.UID, DicomUID.DetachedPatientManagementRETIRED);
+            _uids.Add(DicomUID.DetachedPatientManagementMetaRETIRED.UID, DicomUID.DetachedPatientManagementMetaRETIRED);
+            _uids.Add(DicomUID.DetachedVisitManagementRETIRED.UID, DicomUID.DetachedVisitManagementRETIRED);
+            _uids.Add(DicomUID.DetachedStudyManagementRETIRED.UID, DicomUID.DetachedStudyManagementRETIRED);
+            _uids.Add(DicomUID.StudyComponentManagementRETIRED.UID, DicomUID.StudyComponentManagementRETIRED);
+            _uids.Add(DicomUID.ModalityPerformedProcedureStep.UID, DicomUID.ModalityPerformedProcedureStep);
+            _uids.Add(DicomUID.ModalityPerformedProcedureStepRetrieve.UID, DicomUID.ModalityPerformedProcedureStepRetrieve);
+            _uids.Add(DicomUID.ModalityPerformedProcedureStepNotification.UID, DicomUID.ModalityPerformedProcedureStepNotification);
+            _uids.Add(DicomUID.DetachedResultsManagementRETIRED.UID, DicomUID.DetachedResultsManagementRETIRED);
+            _uids.Add(DicomUID.DetachedResultsManagementMetaRETIRED.UID, DicomUID.DetachedResultsManagementMetaRETIRED);
+            _uids.Add(DicomUID.DetachedStudyManagementMetaRETIRED.UID, DicomUID.DetachedStudyManagementMetaRETIRED);
+            _uids.Add(DicomUID.DetachedInterpretationManagementRETIRED.UID, DicomUID.DetachedInterpretationManagementRETIRED);
+            _uids.Add(DicomUID.Storage.UID, DicomUID.Storage);
+            _uids.Add(DicomUID.BasicFilmSession.UID, DicomUID.BasicFilmSession);
+            _uids.Add(DicomUID.BasicFilmBox.UID, DicomUID.BasicFilmBox);
+            _uids.Add(DicomUID.BasicGrayscaleImageBox.UID, DicomUID.BasicGrayscaleImageBox);
+            _uids.Add(DicomUID.BasicColorImageBox.UID, DicomUID.BasicColorImageBox);
+            _uids.Add(DicomUID.ReferencedImageBoxRETIRED.UID, DicomUID.ReferencedImageBoxRETIRED);
+            _uids.Add(DicomUID.BasicGrayscalePrintManagementMeta.UID, DicomUID.BasicGrayscalePrintManagementMeta);
+            _uids.Add(DicomUID.ReferencedGrayscalePrintManagementMetaRETIRED.UID, DicomUID.ReferencedGrayscalePrintManagementMetaRETIRED);
+            _uids.Add(DicomUID.PrintJob.UID, DicomUID.PrintJob);
+            _uids.Add(DicomUID.BasicAnnotationBox.UID, DicomUID.BasicAnnotationBox);
+            _uids.Add(DicomUID.Printer.UID, DicomUID.Printer);
+            _uids.Add(DicomUID.PrinterConfigurationRetrieval.UID, DicomUID.PrinterConfigurationRetrieval);
+            _uids.Add(DicomUID.PrinterInstance.UID, DicomUID.PrinterInstance);
+            _uids.Add(DicomUID.PrinterConfigurationRetrievalInstance.UID, DicomUID.PrinterConfigurationRetrievalInstance);
+            _uids.Add(DicomUID.BasicColorPrintManagementMeta.UID, DicomUID.BasicColorPrintManagementMeta);
+            _uids.Add(DicomUID.ReferencedColorPrintManagementMetaRETIRED.UID, DicomUID.ReferencedColorPrintManagementMetaRETIRED);
+            _uids.Add(DicomUID.VOILUTBox.UID, DicomUID.VOILUTBox);
+            _uids.Add(DicomUID.PresentationLUT.UID, DicomUID.PresentationLUT);
+            _uids.Add(DicomUID.ImageOverlayBoxRETIRED.UID, DicomUID.ImageOverlayBoxRETIRED);
+            _uids.Add(DicomUID.BasicPrintImageOverlayBoxRETIRED.UID, DicomUID.BasicPrintImageOverlayBoxRETIRED);
+            _uids.Add(DicomUID.PrintQueueRETIRED.UID, DicomUID.PrintQueueRETIRED);
+            _uids.Add(DicomUID.PrintQueueManagementRETIRED.UID, DicomUID.PrintQueueManagementRETIRED);
+            _uids.Add(DicomUID.StoredPrintStorageRETIRED.UID, DicomUID.StoredPrintStorageRETIRED);
+            _uids.Add(DicomUID.HardcopyGrayscaleImageStorageRETIRED.UID, DicomUID.HardcopyGrayscaleImageStorageRETIRED);
+            _uids.Add(DicomUID.HardcopyColorImageStorageRETIRED.UID, DicomUID.HardcopyColorImageStorageRETIRED);
+            _uids.Add(DicomUID.PullPrintRequestRETIRED.UID, DicomUID.PullPrintRequestRETIRED);
+            _uids.Add(DicomUID.PullStoredPrintManagementMetaRETIRED.UID, DicomUID.PullStoredPrintManagementMetaRETIRED);
+            _uids.Add(DicomUID.MediaCreationManagement.UID, DicomUID.MediaCreationManagement);
+            _uids.Add(DicomUID.DisplaySystem.UID, DicomUID.DisplaySystem);
+            _uids.Add(DicomUID.DisplaySystemInstance.UID, DicomUID.DisplaySystemInstance);
             _uids.Add(DicomUID.ComputedRadiographyImageStorage.UID, DicomUID.ComputedRadiographyImageStorage);
             _uids.Add(DicomUID.DigitalXRayImageStorageForPresentation.UID, DicomUID.DigitalXRayImageStorageForPresentation);
             _uids.Add(DicomUID.DigitalXRayImageStorageForProcessing.UID, DicomUID.DigitalXRayImageStorageForProcessing);
@@ -165,15 +171,15 @@ namespace Dicom
             _uids.Add(DicomUID.CTImageStorage.UID, DicomUID.CTImageStorage);
             _uids.Add(DicomUID.EnhancedCTImageStorage.UID, DicomUID.EnhancedCTImageStorage);
             _uids.Add(DicomUID.LegacyConvertedEnhancedCTImageStorage.UID, DicomUID.LegacyConvertedEnhancedCTImageStorage);
-            _uids.Add(DicomUID.UltrasoundMultiFrameImageStorageRETIRED.UID, DicomUID.UltrasoundMultiFrameImageStorageRETIRED);
+            _uids.Add(DicomUID.UltrasoundMultiFrameImageStorageRetiredRETIRED.UID, DicomUID.UltrasoundMultiFrameImageStorageRetiredRETIRED);
             _uids.Add(DicomUID.UltrasoundMultiFrameImageStorage.UID, DicomUID.UltrasoundMultiFrameImageStorage);
             _uids.Add(DicomUID.MRImageStorage.UID, DicomUID.MRImageStorage);
             _uids.Add(DicomUID.EnhancedMRImageStorage.UID, DicomUID.EnhancedMRImageStorage);
             _uids.Add(DicomUID.MRSpectroscopyStorage.UID, DicomUID.MRSpectroscopyStorage);
             _uids.Add(DicomUID.EnhancedMRColorImageStorage.UID, DicomUID.EnhancedMRColorImageStorage);
             _uids.Add(DicomUID.LegacyConvertedEnhancedMRImageStorage.UID, DicomUID.LegacyConvertedEnhancedMRImageStorage);
-            _uids.Add(DicomUID.NuclearMedicineImageStorageRETIRED.UID, DicomUID.NuclearMedicineImageStorageRETIRED);
-            _uids.Add(DicomUID.UltrasoundImageStorageRETIRED.UID, DicomUID.UltrasoundImageStorageRETIRED);
+            _uids.Add(DicomUID.NuclearMedicineImageStorageRetiredRETIRED.UID, DicomUID.NuclearMedicineImageStorageRetiredRETIRED);
+            _uids.Add(DicomUID.UltrasoundImageStorageRetiredRETIRED.UID, DicomUID.UltrasoundImageStorageRetiredRETIRED);
             _uids.Add(DicomUID.UltrasoundImageStorage.UID, DicomUID.UltrasoundImageStorage);
             _uids.Add(DicomUID.EnhancedUSVolumeStorage.UID, DicomUID.EnhancedUSVolumeStorage);
             _uids.Add(DicomUID.SecondaryCaptureImageStorage.UID, DicomUID.SecondaryCaptureImageStorage);
@@ -193,6 +199,12 @@ namespace Dicom
             _uids.Add(DicomUID.GeneralAudioWaveformStorage.UID, DicomUID.GeneralAudioWaveformStorage);
             _uids.Add(DicomUID.ArterialPulseWaveformStorage.UID, DicomUID.ArterialPulseWaveformStorage);
             _uids.Add(DicomUID.RespiratoryWaveformStorage.UID, DicomUID.RespiratoryWaveformStorage);
+            _uids.Add(DicomUID.MultichannelRespiratoryWaveformStorage.UID, DicomUID.MultichannelRespiratoryWaveformStorage);
+            _uids.Add(DicomUID.RoutineScalpElectroencephalogramWaveformStorage.UID, DicomUID.RoutineScalpElectroencephalogramWaveformStorage);
+            _uids.Add(DicomUID.ElectromyogramWaveformStorage.UID, DicomUID.ElectromyogramWaveformStorage);
+            _uids.Add(DicomUID.ElectrooculogramWaveformStorage.UID, DicomUID.ElectrooculogramWaveformStorage);
+            _uids.Add(DicomUID.SleepElectroencephalogramWaveformStorage.UID, DicomUID.SleepElectroencephalogramWaveformStorage);
+            _uids.Add(DicomUID.BodyPositionWaveformStorage.UID, DicomUID.BodyPositionWaveformStorage);
             _uids.Add(DicomUID.StandaloneModalityLUTStorageRETIRED.UID, DicomUID.StandaloneModalityLUTStorageRETIRED);
             _uids.Add(DicomUID.StandaloneVOILUTStorageRETIRED.UID, DicomUID.StandaloneVOILUTStorageRETIRED);
             _uids.Add(DicomUID.GrayscaleSoftcopyPresentationStateStorage.UID, DicomUID.GrayscaleSoftcopyPresentationStateStorage);
@@ -211,7 +223,6 @@ namespace Dicom
             _uids.Add(DicomUID.XRayRadiofluoroscopicImageStorage.UID, DicomUID.XRayRadiofluoroscopicImageStorage);
             _uids.Add(DicomUID.EnhancedXRFImageStorage.UID, DicomUID.EnhancedXRFImageStorage);
             _uids.Add(DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED.UID, DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED);
-            _uids.Add(DicomUID.UID_1_2_840_10008_5_1_4_1_1_12_77RETIRED.UID, DicomUID.UID_1_2_840_10008_5_1_4_1_1_12_77RETIRED);
             _uids.Add(DicomUID.XRay3DAngiographicImageStorage.UID, DicomUID.XRay3DAngiographicImageStorage);
             _uids.Add(DicomUID.XRay3DCraniofacialImageStorage.UID, DicomUID.XRay3DCraniofacialImageStorage);
             _uids.Add(DicomUID.BreastTomosynthesisImageStorage.UID, DicomUID.BreastTomosynthesisImageStorage);
@@ -221,7 +232,6 @@ namespace Dicom
             _uids.Add(DicomUID.IntravascularOpticalCoherenceTomographyImageStorageForProcessing.UID, DicomUID.IntravascularOpticalCoherenceTomographyImageStorageForProcessing);
             _uids.Add(DicomUID.NuclearMedicineImageStorage.UID, DicomUID.NuclearMedicineImageStorage);
             _uids.Add(DicomUID.ParametricMapStorage.UID, DicomUID.ParametricMapStorage);
-            _uids.Add(DicomUID.UID_1_2_840_10008_5_1_4_1_1_40RETIRED.UID, DicomUID.UID_1_2_840_10008_5_1_4_1_1_40RETIRED);
             _uids.Add(DicomUID.RawDataStorage.UID, DicomUID.RawDataStorage);
             _uids.Add(DicomUID.SpatialRegistrationStorage.UID, DicomUID.SpatialRegistrationStorage);
             _uids.Add(DicomUID.SpatialFiducialsStorage.UID, DicomUID.SpatialFiducialsStorage);
@@ -248,8 +258,9 @@ namespace Dicom
             _uids.Add(DicomUID.WideFieldOphthalmicPhotographyStereographicProjectionImageStorage.UID, DicomUID.WideFieldOphthalmicPhotographyStereographicProjectionImageStorage);
             _uids.Add(DicomUID.WideFieldOphthalmicPhotography3DCoordinatesImageStorage.UID, DicomUID.WideFieldOphthalmicPhotography3DCoordinatesImageStorage);
             _uids.Add(DicomUID.OphthalmicOpticalCoherenceTomographyEnFaceImageStorage.UID, DicomUID.OphthalmicOpticalCoherenceTomographyEnFaceImageStorage);
-            _uids.Add(DicomUID.OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage.UID, DicomUID.OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage);
+            _uids.Add(DicomUID.OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage.UID, DicomUID.OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage);
             _uids.Add(DicomUID.VLWholeSlideMicroscopyImageStorage.UID, DicomUID.VLWholeSlideMicroscopyImageStorage);
+            _uids.Add(DicomUID.DermoscopicPhotographyImageStorage.UID, DicomUID.DermoscopicPhotographyImageStorage);
             _uids.Add(DicomUID.LensometryMeasurementsStorage.UID, DicomUID.LensometryMeasurementsStorage);
             _uids.Add(DicomUID.AutorefractionMeasurementsStorage.UID, DicomUID.AutorefractionMeasurementsStorage);
             _uids.Add(DicomUID.KeratometryMeasurementsStorage.UID, DicomUID.KeratometryMeasurementsStorage);
@@ -298,9 +309,9 @@ namespace Dicom
             _uids.Add(DicomUID.CTDefinedProcedureProtocolStorage.UID, DicomUID.CTDefinedProcedureProtocolStorage);
             _uids.Add(DicomUID.CTPerformedProcedureProtocolStorage.UID, DicomUID.CTPerformedProcedureProtocolStorage);
             _uids.Add(DicomUID.ProtocolApprovalStorage.UID, DicomUID.ProtocolApprovalStorage);
-            _uids.Add(DicomUID.ProtocolApprovalInformationModelFIND.UID, DicomUID.ProtocolApprovalInformationModelFIND);
-            _uids.Add(DicomUID.ProtocolApprovalInformationModelMOVE.UID, DicomUID.ProtocolApprovalInformationModelMOVE);
-            _uids.Add(DicomUID.ProtocolApprovalInformationModelGET.UID, DicomUID.ProtocolApprovalInformationModelGET);
+            _uids.Add(DicomUID.ProtocolApprovalInformationModelFind.UID, DicomUID.ProtocolApprovalInformationModelFind);
+            _uids.Add(DicomUID.ProtocolApprovalInformationModelMove.UID, DicomUID.ProtocolApprovalInformationModelMove);
+            _uids.Add(DicomUID.ProtocolApprovalInformationModelGet.UID, DicomUID.ProtocolApprovalInformationModelGet);
             _uids.Add(DicomUID.RTImageStorage.UID, DicomUID.RTImageStorage);
             _uids.Add(DicomUID.RTDoseStorage.UID, DicomUID.RTDoseStorage);
             _uids.Add(DicomUID.RTStructureSetStorage.UID, DicomUID.RTStructureSetStorage);
@@ -316,52 +327,57 @@ namespace Dicom
             _uids.Add(DicomUID.CArmPhotonElectronRadiationStorage.UID, DicomUID.CArmPhotonElectronRadiationStorage);
             _uids.Add(DicomUID.TomotherapeuticRadiationStorage.UID, DicomUID.TomotherapeuticRadiationStorage);
             _uids.Add(DicomUID.RoboticArmRadiationStorage.UID, DicomUID.RoboticArmRadiationStorage);
+            _uids.Add(DicomUID.RTRadiationRecordSetStorage.UID, DicomUID.RTRadiationRecordSetStorage);
+            _uids.Add(DicomUID.RTRadiationSalvageRecordStorage.UID, DicomUID.RTRadiationSalvageRecordStorage);
+            _uids.Add(DicomUID.TomotherapeuticRadiationRecordStorage.UID, DicomUID.TomotherapeuticRadiationRecordStorage);
+            _uids.Add(DicomUID.CArmPhotonElectronRadiationRecordStorage.UID, DicomUID.CArmPhotonElectronRadiationRecordStorage);
+            _uids.Add(DicomUID.RoboticRadiationRecordStorage.UID, DicomUID.RoboticRadiationRecordStorage);
             _uids.Add(DicomUID.DICOSCTImageStorage.UID, DicomUID.DICOSCTImageStorage);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForPresentation.UID, DicomUID.DICOSDigitalXRayImageStorageForPresentation);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForProcessing.UID, DicomUID.DICOSDigitalXRayImageStorageForProcessing);
             _uids.Add(DicomUID.DICOSThreatDetectionReportStorage.UID, DicomUID.DICOSThreatDetectionReportStorage);
             _uids.Add(DicomUID.DICOS2DAITStorage.UID, DicomUID.DICOS2DAITStorage);
             _uids.Add(DicomUID.DICOS3DAITStorage.UID, DicomUID.DICOS3DAITStorage);
-            _uids.Add(DicomUID.DICOSQuadrupoleResonanceQRStorage.UID, DicomUID.DICOSQuadrupoleResonanceQRStorage);
+            _uids.Add(DicomUID.DICOSQuadrupoleResonanceStorage.UID, DicomUID.DICOSQuadrupoleResonanceStorage);
             _uids.Add(DicomUID.EddyCurrentImageStorage.UID, DicomUID.EddyCurrentImageStorage);
             _uids.Add(DicomUID.EddyCurrentMultiFrameImageStorage.UID, DicomUID.EddyCurrentMultiFrameImageStorage);
-            _uids.Add(DicomUID.PatientRootQueryRetrieveInformationModelFIND.UID, DicomUID.PatientRootQueryRetrieveInformationModelFIND);
-            _uids.Add(DicomUID.PatientRootQueryRetrieveInformationModelMOVE.UID, DicomUID.PatientRootQueryRetrieveInformationModelMOVE);
-            _uids.Add(DicomUID.PatientRootQueryRetrieveInformationModelGET.UID, DicomUID.PatientRootQueryRetrieveInformationModelGET);
-            _uids.Add(DicomUID.StudyRootQueryRetrieveInformationModelFIND.UID, DicomUID.StudyRootQueryRetrieveInformationModelFIND);
-            _uids.Add(DicomUID.StudyRootQueryRetrieveInformationModelMOVE.UID, DicomUID.StudyRootQueryRetrieveInformationModelMOVE);
-            _uids.Add(DicomUID.StudyRootQueryRetrieveInformationModelGET.UID, DicomUID.StudyRootQueryRetrieveInformationModelGET);
-            _uids.Add(DicomUID.PatientStudyOnlyQueryRetrieveInformationModelFINDRETIRED.UID, DicomUID.PatientStudyOnlyQueryRetrieveInformationModelFINDRETIRED);
-            _uids.Add(DicomUID.PatientStudyOnlyQueryRetrieveInformationModelMOVERETIRED.UID, DicomUID.PatientStudyOnlyQueryRetrieveInformationModelMOVERETIRED);
-            _uids.Add(DicomUID.PatientStudyOnlyQueryRetrieveInformationModelGETRETIRED.UID, DicomUID.PatientStudyOnlyQueryRetrieveInformationModelGETRETIRED);
-            _uids.Add(DicomUID.CompositeInstanceRootRetrieveMOVE.UID, DicomUID.CompositeInstanceRootRetrieveMOVE);
-            _uids.Add(DicomUID.CompositeInstanceRootRetrieveGET.UID, DicomUID.CompositeInstanceRootRetrieveGET);
-            _uids.Add(DicomUID.CompositeInstanceRetrieveWithoutBulkDataGET.UID, DicomUID.CompositeInstanceRetrieveWithoutBulkDataGET);
-            _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelFIND.UID, DicomUID.DefinedProcedureProtocolInformationModelFIND);
-            _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelMOVE.UID, DicomUID.DefinedProcedureProtocolInformationModelMOVE);
-            _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelGET.UID, DicomUID.DefinedProcedureProtocolInformationModelGET);
-            _uids.Add(DicomUID.ModalityWorklistInformationModelFIND.UID, DicomUID.ModalityWorklistInformationModelFIND);
-            _uids.Add(DicomUID.GeneralPurposeWorklistManagementMetaSOPClassRETIRED.UID, DicomUID.GeneralPurposeWorklistManagementMetaSOPClassRETIRED);
+            _uids.Add(DicomUID.PatientRootQueryRetrieveInformationModelFind.UID, DicomUID.PatientRootQueryRetrieveInformationModelFind);
+            _uids.Add(DicomUID.PatientRootQueryRetrieveInformationModelMove.UID, DicomUID.PatientRootQueryRetrieveInformationModelMove);
+            _uids.Add(DicomUID.PatientRootQueryRetrieveInformationModelGet.UID, DicomUID.PatientRootQueryRetrieveInformationModelGet);
+            _uids.Add(DicomUID.StudyRootQueryRetrieveInformationModelFind.UID, DicomUID.StudyRootQueryRetrieveInformationModelFind);
+            _uids.Add(DicomUID.StudyRootQueryRetrieveInformationModelMove.UID, DicomUID.StudyRootQueryRetrieveInformationModelMove);
+            _uids.Add(DicomUID.StudyRootQueryRetrieveInformationModelGet.UID, DicomUID.StudyRootQueryRetrieveInformationModelGet);
+            _uids.Add(DicomUID.PatientStudyOnlyQueryRetrieveInformationModelFindRETIRED.UID, DicomUID.PatientStudyOnlyQueryRetrieveInformationModelFindRETIRED);
+            _uids.Add(DicomUID.PatientStudyOnlyQueryRetrieveInformationModelMoveRETIRED.UID, DicomUID.PatientStudyOnlyQueryRetrieveInformationModelMoveRETIRED);
+            _uids.Add(DicomUID.PatientStudyOnlyQueryRetrieveInformationModelGetRETIRED.UID, DicomUID.PatientStudyOnlyQueryRetrieveInformationModelGetRETIRED);
+            _uids.Add(DicomUID.CompositeInstanceRootRetrieveMove.UID, DicomUID.CompositeInstanceRootRetrieveMove);
+            _uids.Add(DicomUID.CompositeInstanceRootRetrieveGet.UID, DicomUID.CompositeInstanceRootRetrieveGet);
+            _uids.Add(DicomUID.CompositeInstanceRetrieveWithoutBulkDataGet.UID, DicomUID.CompositeInstanceRetrieveWithoutBulkDataGet);
+            _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelFind.UID, DicomUID.DefinedProcedureProtocolInformationModelFind);
+            _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelMove.UID, DicomUID.DefinedProcedureProtocolInformationModelMove);
+            _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelGet.UID, DicomUID.DefinedProcedureProtocolInformationModelGet);
+            _uids.Add(DicomUID.ModalityWorklistInformationModelFind.UID, DicomUID.ModalityWorklistInformationModelFind);
+            _uids.Add(DicomUID.GeneralPurposeWorklistManagementMetaRETIRED.UID, DicomUID.GeneralPurposeWorklistManagementMetaRETIRED);
             _uids.Add(DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED.UID, DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED);
-            _uids.Add(DicomUID.GeneralPurposeScheduledProcedureStepSOPClassRETIRED.UID, DicomUID.GeneralPurposeScheduledProcedureStepSOPClassRETIRED);
-            _uids.Add(DicomUID.GeneralPurposePerformedProcedureStepSOPClassRETIRED.UID, DicomUID.GeneralPurposePerformedProcedureStepSOPClassRETIRED);
-            _uids.Add(DicomUID.InstanceAvailabilityNotificationSOPClass.UID, DicomUID.InstanceAvailabilityNotificationSOPClass);
+            _uids.Add(DicomUID.GeneralPurposeScheduledProcedureStepRETIRED.UID, DicomUID.GeneralPurposeScheduledProcedureStepRETIRED);
+            _uids.Add(DicomUID.GeneralPurposePerformedProcedureStepRETIRED.UID, DicomUID.GeneralPurposePerformedProcedureStepRETIRED);
+            _uids.Add(DicomUID.InstanceAvailabilityNotification.UID, DicomUID.InstanceAvailabilityNotification);
             _uids.Add(DicomUID.RTBeamsDeliveryInstructionStorageTrialRETIRED.UID, DicomUID.RTBeamsDeliveryInstructionStorageTrialRETIRED);
             _uids.Add(DicomUID.RTConventionalMachineVerificationTrialRETIRED.UID, DicomUID.RTConventionalMachineVerificationTrialRETIRED);
             _uids.Add(DicomUID.RTIonMachineVerificationTrialRETIRED.UID, DicomUID.RTIonMachineVerificationTrialRETIRED);
-            _uids.Add(DicomUID.UnifiedWorklistAndProcedureStepServiceClassTrialRETIRED.UID, DicomUID.UnifiedWorklistAndProcedureStepServiceClassTrialRETIRED);
-            _uids.Add(DicomUID.UnifiedProcedureStepPushSOPClassTrialRETIRED.UID, DicomUID.UnifiedProcedureStepPushSOPClassTrialRETIRED);
-            _uids.Add(DicomUID.UnifiedProcedureStepWatchSOPClassTrialRETIRED.UID, DicomUID.UnifiedProcedureStepWatchSOPClassTrialRETIRED);
-            _uids.Add(DicomUID.UnifiedProcedureStepPullSOPClassTrialRETIRED.UID, DicomUID.UnifiedProcedureStepPullSOPClassTrialRETIRED);
-            _uids.Add(DicomUID.UnifiedProcedureStepEventSOPClassTrialRETIRED.UID, DicomUID.UnifiedProcedureStepEventSOPClassTrialRETIRED);
-            _uids.Add(DicomUID.UPSGlobalSubscriptionSOPInstance.UID, DicomUID.UPSGlobalSubscriptionSOPInstance);
-            _uids.Add(DicomUID.UPSFilteredGlobalSubscriptionSOPInstance.UID, DicomUID.UPSFilteredGlobalSubscriptionSOPInstance);
-            _uids.Add(DicomUID.UnifiedWorklistAndProcedureStepServiceClass.UID, DicomUID.UnifiedWorklistAndProcedureStepServiceClass);
-            _uids.Add(DicomUID.UnifiedProcedureStepPushSOPClass.UID, DicomUID.UnifiedProcedureStepPushSOPClass);
-            _uids.Add(DicomUID.UnifiedProcedureStepWatchSOPClass.UID, DicomUID.UnifiedProcedureStepWatchSOPClass);
-            _uids.Add(DicomUID.UnifiedProcedureStepPullSOPClass.UID, DicomUID.UnifiedProcedureStepPullSOPClass);
-            _uids.Add(DicomUID.UnifiedProcedureStepEventSOPClass.UID, DicomUID.UnifiedProcedureStepEventSOPClass);
-            _uids.Add(DicomUID.UnifiedProcedureStepQuerySOPClass.UID, DicomUID.UnifiedProcedureStepQuerySOPClass);
+            _uids.Add(DicomUID.UnifiedWorklistAndProcedureStepTrialRETIRED.UID, DicomUID.UnifiedWorklistAndProcedureStepTrialRETIRED);
+            _uids.Add(DicomUID.UnifiedProcedureStepPushTrialRETIRED.UID, DicomUID.UnifiedProcedureStepPushTrialRETIRED);
+            _uids.Add(DicomUID.UnifiedProcedureStepWatchTrialRETIRED.UID, DicomUID.UnifiedProcedureStepWatchTrialRETIRED);
+            _uids.Add(DicomUID.UnifiedProcedureStepPullTrialRETIRED.UID, DicomUID.UnifiedProcedureStepPullTrialRETIRED);
+            _uids.Add(DicomUID.UnifiedProcedureStepEventTrialRETIRED.UID, DicomUID.UnifiedProcedureStepEventTrialRETIRED);
+            _uids.Add(DicomUID.UPSGlobalSubscriptionInstance.UID, DicomUID.UPSGlobalSubscriptionInstance);
+            _uids.Add(DicomUID.UPSFilteredGlobalSubscriptionInstance.UID, DicomUID.UPSFilteredGlobalSubscriptionInstance);
+            _uids.Add(DicomUID.UnifiedWorklistAndProcedureStep.UID, DicomUID.UnifiedWorklistAndProcedureStep);
+            _uids.Add(DicomUID.UnifiedProcedureStepPush.UID, DicomUID.UnifiedProcedureStepPush);
+            _uids.Add(DicomUID.UnifiedProcedureStepWatch.UID, DicomUID.UnifiedProcedureStepWatch);
+            _uids.Add(DicomUID.UnifiedProcedureStepPull.UID, DicomUID.UnifiedProcedureStepPull);
+            _uids.Add(DicomUID.UnifiedProcedureStepEvent.UID, DicomUID.UnifiedProcedureStepEvent);
+            _uids.Add(DicomUID.UnifiedProcedureStepQuery.UID, DicomUID.UnifiedProcedureStepQuery);
             _uids.Add(DicomUID.RTBeamsDeliveryInstructionStorage.UID, DicomUID.RTBeamsDeliveryInstructionStorage);
             _uids.Add(DicomUID.RTConventionalMachineVerification.UID, DicomUID.RTConventionalMachineVerification);
             _uids.Add(DicomUID.RTIonMachineVerification.UID, DicomUID.RTIonMachineVerification);
@@ -370,27 +386,27 @@ namespace Dicom
             _uids.Add(DicomUID.BreastImagingRelevantPatientInformationQuery.UID, DicomUID.BreastImagingRelevantPatientInformationQuery);
             _uids.Add(DicomUID.CardiacRelevantPatientInformationQuery.UID, DicomUID.CardiacRelevantPatientInformationQuery);
             _uids.Add(DicomUID.HangingProtocolStorage.UID, DicomUID.HangingProtocolStorage);
-            _uids.Add(DicomUID.HangingProtocolInformationModelFIND.UID, DicomUID.HangingProtocolInformationModelFIND);
-            _uids.Add(DicomUID.HangingProtocolInformationModelMOVE.UID, DicomUID.HangingProtocolInformationModelMOVE);
-            _uids.Add(DicomUID.HangingProtocolInformationModelGET.UID, DicomUID.HangingProtocolInformationModelGET);
+            _uids.Add(DicomUID.HangingProtocolInformationModelFind.UID, DicomUID.HangingProtocolInformationModelFind);
+            _uids.Add(DicomUID.HangingProtocolInformationModelMove.UID, DicomUID.HangingProtocolInformationModelMove);
+            _uids.Add(DicomUID.HangingProtocolInformationModelGet.UID, DicomUID.HangingProtocolInformationModelGet);
             _uids.Add(DicomUID.ColorPaletteStorage.UID, DicomUID.ColorPaletteStorage);
-            _uids.Add(DicomUID.ColorPaletteQueryRetrieveInformationModelFIND.UID, DicomUID.ColorPaletteQueryRetrieveInformationModelFIND);
-            _uids.Add(DicomUID.ColorPaletteQueryRetrieveInformationModelMOVE.UID, DicomUID.ColorPaletteQueryRetrieveInformationModelMOVE);
-            _uids.Add(DicomUID.ColorPaletteQueryRetrieveInformationModelGET.UID, DicomUID.ColorPaletteQueryRetrieveInformationModelGET);
-            _uids.Add(DicomUID.ProductCharacteristicsQuerySOPClass.UID, DicomUID.ProductCharacteristicsQuerySOPClass);
-            _uids.Add(DicomUID.SubstanceApprovalQuerySOPClass.UID, DicomUID.SubstanceApprovalQuerySOPClass);
+            _uids.Add(DicomUID.ColorPaletteQueryRetrieveInformationModelFind.UID, DicomUID.ColorPaletteQueryRetrieveInformationModelFind);
+            _uids.Add(DicomUID.ColorPaletteQueryRetrieveInformationModelMove.UID, DicomUID.ColorPaletteQueryRetrieveInformationModelMove);
+            _uids.Add(DicomUID.ColorPaletteQueryRetrieveInformationModelGet.UID, DicomUID.ColorPaletteQueryRetrieveInformationModelGet);
+            _uids.Add(DicomUID.ProductCharacteristicsQuery.UID, DicomUID.ProductCharacteristicsQuery);
+            _uids.Add(DicomUID.SubstanceApprovalQuery.UID, DicomUID.SubstanceApprovalQuery);
             _uids.Add(DicomUID.GenericImplantTemplateStorage.UID, DicomUID.GenericImplantTemplateStorage);
-            _uids.Add(DicomUID.GenericImplantTemplateInformationModelFIND.UID, DicomUID.GenericImplantTemplateInformationModelFIND);
-            _uids.Add(DicomUID.GenericImplantTemplateInformationModelMOVE.UID, DicomUID.GenericImplantTemplateInformationModelMOVE);
-            _uids.Add(DicomUID.GenericImplantTemplateInformationModelGET.UID, DicomUID.GenericImplantTemplateInformationModelGET);
+            _uids.Add(DicomUID.GenericImplantTemplateInformationModelFind.UID, DicomUID.GenericImplantTemplateInformationModelFind);
+            _uids.Add(DicomUID.GenericImplantTemplateInformationModelMove.UID, DicomUID.GenericImplantTemplateInformationModelMove);
+            _uids.Add(DicomUID.GenericImplantTemplateInformationModelGet.UID, DicomUID.GenericImplantTemplateInformationModelGet);
             _uids.Add(DicomUID.ImplantAssemblyTemplateStorage.UID, DicomUID.ImplantAssemblyTemplateStorage);
-            _uids.Add(DicomUID.ImplantAssemblyTemplateInformationModelFIND.UID, DicomUID.ImplantAssemblyTemplateInformationModelFIND);
-            _uids.Add(DicomUID.ImplantAssemblyTemplateInformationModelMOVE.UID, DicomUID.ImplantAssemblyTemplateInformationModelMOVE);
-            _uids.Add(DicomUID.ImplantAssemblyTemplateInformationModelGET.UID, DicomUID.ImplantAssemblyTemplateInformationModelGET);
+            _uids.Add(DicomUID.ImplantAssemblyTemplateInformationModelFind.UID, DicomUID.ImplantAssemblyTemplateInformationModelFind);
+            _uids.Add(DicomUID.ImplantAssemblyTemplateInformationModelMove.UID, DicomUID.ImplantAssemblyTemplateInformationModelMove);
+            _uids.Add(DicomUID.ImplantAssemblyTemplateInformationModelGet.UID, DicomUID.ImplantAssemblyTemplateInformationModelGet);
             _uids.Add(DicomUID.ImplantTemplateGroupStorage.UID, DicomUID.ImplantTemplateGroupStorage);
-            _uids.Add(DicomUID.ImplantTemplateGroupInformationModelFIND.UID, DicomUID.ImplantTemplateGroupInformationModelFIND);
-            _uids.Add(DicomUID.ImplantTemplateGroupInformationModelMOVE.UID, DicomUID.ImplantTemplateGroupInformationModelMOVE);
-            _uids.Add(DicomUID.ImplantTemplateGroupInformationModelGET.UID, DicomUID.ImplantTemplateGroupInformationModelGET);
+            _uids.Add(DicomUID.ImplantTemplateGroupInformationModelFind.UID, DicomUID.ImplantTemplateGroupInformationModelFind);
+            _uids.Add(DicomUID.ImplantTemplateGroupInformationModelMove.UID, DicomUID.ImplantTemplateGroupInformationModelMove);
+            _uids.Add(DicomUID.ImplantTemplateGroupInformationModelGet.UID, DicomUID.ImplantTemplateGroupInformationModelGet);
             _uids.Add(DicomUID.NativeDICOMModel.UID, DicomUID.NativeDICOMModel);
             _uids.Add(DicomUID.AbstractMultiDimensionalImageModel.UID, DicomUID.AbstractMultiDimensionalImageModel);
             _uids.Add(DicomUID.DICOMContentMappingResource.UID, DicomUID.DICOMContentMappingResource);
@@ -437,7 +453,7 @@ namespace Dicom
             _uids.Add(DicomUID.dicomNetworkConnection.UID, DicomUID.dicomNetworkConnection);
             _uids.Add(DicomUID.dicomUniqueAETitle.UID, DicomUID.dicomUniqueAETitle);
             _uids.Add(DicomUID.dicomTransferCapability.UID, DicomUID.dicomTransferCapability);
-            _uids.Add(DicomUID.UniversalCoordinatedTime.UID, DicomUID.UniversalCoordinatedTime);
+            _uids.Add(DicomUID.UTC.UID, DicomUID.UTC);
             _uids.Add(DicomUID.AnatomicModifier2.UID, DicomUID.AnatomicModifier2);
             _uids.Add(DicomUID.AnatomicRegion4.UID, DicomUID.AnatomicRegion4);
             _uids.Add(DicomUID.TransducerApproach5.UID, DicomUID.TransducerApproach5);
@@ -1015,7 +1031,7 @@ namespace Dicom
             _uids.Add(DicomUID.UpperExtremityVeins12108.UID, DicomUID.UpperExtremityVeins12108);
             _uids.Add(DicomUID.LowerExtremityArteries12109.UID, DicomUID.LowerExtremityArteries12109);
             _uids.Add(DicomUID.LowerExtremityVeins12110.UID, DicomUID.LowerExtremityVeins12110);
-            _uids.Add(DicomUID.AbdominalArteriesPaired12111.UID, DicomUID.AbdominalArteriesPaired12111);
+            _uids.Add(DicomUID.AbdominopelvicArteriesPaired12111.UID, DicomUID.AbdominopelvicArteriesPaired12111);
             _uids.Add(DicomUID.AbdominopelvicArteriesUnpaired12112.UID, DicomUID.AbdominopelvicArteriesUnpaired12112);
             _uids.Add(DicomUID.AbdominopelvicVeinsPaired12113.UID, DicomUID.AbdominopelvicVeinsPaired12113);
             _uids.Add(DicomUID.AbdominopelvicVeinsUnpaired12114.UID, DicomUID.AbdominopelvicVeinsUnpaired12114);
@@ -1643,12 +1659,50 @@ namespace Dicom
             _uids.Add(DicomUID.TomotherapeuticDoseRateUnits9558.UID, DicomUID.TomotherapeuticDoseRateUnits9558);
             _uids.Add(DicomUID.RoboticDeliveryDeviceDosimeterUnits9559.UID, DicomUID.RoboticDeliveryDeviceDosimeterUnits9559);
             _uids.Add(DicomUID.RoboticDeliveryDeviceDoseRateUnits9560.UID, DicomUID.RoboticDeliveryDeviceDoseRateUnits9560);
-            _uids.Add(DicomUID.AnatomicStructuresForAnatomicPathology8134.UID, DicomUID.AnatomicStructuresForAnatomicPathology8134);
+            _uids.Add(DicomUID.AnatomicStructures8134.UID, DicomUID.AnatomicStructures8134);
             _uids.Add(DicomUID.MediastinumFindingOrFeature6148.UID, DicomUID.MediastinumFindingOrFeature6148);
             _uids.Add(DicomUID.MediastinumAnatomy6149.UID, DicomUID.MediastinumAnatomy6149);
             _uids.Add(DicomUID.VascularUltrasoundReportDocumentTitles12100.UID, DicomUID.VascularUltrasoundReportDocumentTitles12100);
             _uids.Add(DicomUID.PartsOfOrgansNonLateralized12130.UID, DicomUID.PartsOfOrgansNonLateralized12130);
             _uids.Add(DicomUID.PartsOfOrgansLateralized12131.UID, DicomUID.PartsOfOrgansLateralized12131);
+            _uids.Add(DicomUID.TreatmentTerminationReasons9561.UID, DicomUID.TreatmentTerminationReasons9561);
+            _uids.Add(DicomUID.RadiotherapyTreatmentDeliveryPersonRoles9562.UID, DicomUID.RadiotherapyTreatmentDeliveryPersonRoles9562);
+            _uids.Add(DicomUID.InterlockResolutions9563.UID, DicomUID.InterlockResolutions9563);
+            _uids.Add(DicomUID.TreatmentSessionConfirmationAssertions9564.UID, DicomUID.TreatmentSessionConfirmationAssertions9564);
+            _uids.Add(DicomUID.TreatmentToleranceViolationCauses9565.UID, DicomUID.TreatmentToleranceViolationCauses9565);
+            _uids.Add(DicomUID.ClinicalToleranceViolationTypes9566.UID, DicomUID.ClinicalToleranceViolationTypes9566);
+            _uids.Add(DicomUID.MachineToleranceViolationTypes9567.UID, DicomUID.MachineToleranceViolationTypes9567);
+            _uids.Add(DicomUID.TreatmentInterlocks9568.UID, DicomUID.TreatmentInterlocks9568);
+            _uids.Add(DicomUID.IsocentricPatientSupportPositionParameters9569.UID, DicomUID.IsocentricPatientSupportPositionParameters9569);
+            _uids.Add(DicomUID.RTOverriddenTreatmentParameters9570.UID, DicomUID.RTOverriddenTreatmentParameters9570);
+            _uids.Add(DicomUID.EEGLeads3030.UID, DicomUID.EEGLeads3030);
+            _uids.Add(DicomUID.LeadLocationsNearOrInMuscles3031.UID, DicomUID.LeadLocationsNearOrInMuscles3031);
+            _uids.Add(DicomUID.LeadLocationsNearPeripheralNerves3032.UID, DicomUID.LeadLocationsNearPeripheralNerves3032);
+            _uids.Add(DicomUID.EOGLeads3033.UID, DicomUID.EOGLeads3033);
+            _uids.Add(DicomUID.BodyPositionChannels3034.UID, DicomUID.BodyPositionChannels3034);
+            _uids.Add(DicomUID.EEGAnnotationsNeurophysiologicEnumerationsEEG3035.UID, DicomUID.EEGAnnotationsNeurophysiologicEnumerationsEEG3035);
+            _uids.Add(DicomUID.EMGAnnotationsNeurophysiologicalEnumerationsEMG3036.UID, DicomUID.EMGAnnotationsNeurophysiologicalEnumerationsEMG3036);
+            _uids.Add(DicomUID.EOGAnnotationsNeurophysiologicalEnumerationsEOG3037.UID, DicomUID.EOGAnnotationsNeurophysiologicalEnumerationsEOG3037);
+            _uids.Add(DicomUID.PatternEvents3038.UID, DicomUID.PatternEvents3038);
+            _uids.Add(DicomUID.DeviceRelatedAndEnvironmentRelatedEvents3039.UID, DicomUID.DeviceRelatedAndEnvironmentRelatedEvents3039);
+            _uids.Add(DicomUID.EEGAnnotationsNeurologicalMonitoringMeasurements3040.UID, DicomUID.EEGAnnotationsNeurologicalMonitoringMeasurements3040);
+            _uids.Add(DicomUID.OBGYNUltrasoundReportDocumentTitles12024.UID, DicomUID.OBGYNUltrasoundReportDocumentTitles12024);
+            _uids.Add(DicomUID.AutomationOfMeasurement7230.UID, DicomUID.AutomationOfMeasurement7230);
+            _uids.Add(DicomUID.OBGYNUltrasoundBeamPath12025.UID, DicomUID.OBGYNUltrasoundBeamPath12025);
+            _uids.Add(DicomUID.AngleMeasurements7550.UID, DicomUID.AngleMeasurements7550);
+            _uids.Add(DicomUID.GenericPurposeOfReferenceToImagesAndCoordinatesInMeasurements7551.UID, DicomUID.GenericPurposeOfReferenceToImagesAndCoordinatesInMeasurements7551);
+            _uids.Add(DicomUID.GenericPurposeOfReferenceToImagesInMeasurements7552.UID, DicomUID.GenericPurposeOfReferenceToImagesInMeasurements7552);
+            _uids.Add(DicomUID.GenericPurposeOfReferenceToCoordinatesInMeasurements7553.UID, DicomUID.GenericPurposeOfReferenceToCoordinatesInMeasurements7553);
+            _uids.Add(DicomUID.FitzpatrickSkinType4401.UID, DicomUID.FitzpatrickSkinType4401);
+            _uids.Add(DicomUID.HistoryOfMalignantMelanoma4402.UID, DicomUID.HistoryOfMalignantMelanoma4402);
+            _uids.Add(DicomUID.HistoryOfMelanomaInSitu4403.UID, DicomUID.HistoryOfMelanomaInSitu4403);
+            _uids.Add(DicomUID.HistoryOfNonMelanomaSkinCancer4404.UID, DicomUID.HistoryOfNonMelanomaSkinCancer4404);
+            _uids.Add(DicomUID.HistoryOfNonMelanomaSkinCancer4405.UID, DicomUID.HistoryOfNonMelanomaSkinCancer4405);
+            _uids.Add(DicomUID.PatientReportedLesionCharacteristics4406.UID, DicomUID.PatientReportedLesionCharacteristics4406);
+            _uids.Add(DicomUID.LesionPalpationFindings4407.UID, DicomUID.LesionPalpationFindings4407);
+            _uids.Add(DicomUID.LesionVisualFindings4408.UID, DicomUID.LesionVisualFindings4408);
+            _uids.Add(DicomUID.LesionVisualFindings4409.UID, DicomUID.LesionVisualFindings4409);
+            _uids.Add(DicomUID.AbdominopelvicVessels12125.UID, DicomUID.AbdominopelvicVessels12125);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1667,10 +1721,10 @@ namespace Dicom
         public static readonly DicomUID ExplicitVRBigEndianRETIRED = new DicomUID("1.2.840.10008.1.2.2", "Explicit VR Big Endian (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression</summary>
-        public static readonly DicomUID JPEGBaseline1 = new DicomUID("1.2.840.10008.1.2.4.50", "JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEGBaseline8Bit = new DicomUID("1.2.840.10008.1.2.4.50", "JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG Extended (Process 2 &amp; 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)</summary>
-        public static readonly DicomUID JPEGExtended24 = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEGExtended12Bit = new DicomUID("1.2.840.10008.1.2.4.51", "JPEG Extended (Process 2 & 4): Default Transfer Syntax for Lossy JPEG 12 Bit Image Compression (Process 4 only)", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG Extended (Process 3 &amp; 5) (Retired)</summary>
         public static readonly DicomUID JPEGExtended35RETIRED = new DicomUID("1.2.840.10008.1.2.4.52", "JPEG Extended (Process 3 & 5) (Retired)", DicomUidType.TransferSyntax, true);
@@ -1688,7 +1742,7 @@ namespace Dicom
         public static readonly DicomUID JPEGFullProgressionNonHierarchical1113RETIRED = new DicomUID("1.2.840.10008.1.2.4.56", "JPEG Full Progression, Non-Hierarchical (Process 11 & 13) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical (Process 14)</summary>
-        public static readonly DicomUID JPEGLosslessNonHierarchical14 = new DicomUID("1.2.840.10008.1.2.4.57", "JPEG Lossless, Non-Hierarchical (Process 14)", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEGLossless = new DicomUID("1.2.840.10008.1.2.4.57", "JPEG Lossless, Non-Hierarchical (Process 14)", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical (Process 15) (Retired)</summary>
         public static readonly DicomUID JPEGLosslessNonHierarchical15RETIRED = new DicomUID("1.2.840.10008.1.2.4.58", "JPEG Lossless, Non-Hierarchical (Process 15) (Retired)", DicomUidType.TransferSyntax, true);
@@ -1718,25 +1772,25 @@ namespace Dicom
         public static readonly DicomUID JPEGLosslessHierarchical29RETIRED = new DicomUID("1.2.840.10008.1.2.4.66", "JPEG Lossless, Hierarchical (Process 29) (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>Transfer Syntax: JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1]): Default Transfer Syntax for Lossless JPEG Image Compression</summary>
-        public static readonly DicomUID JPEGLossless = new DicomUID("1.2.840.10008.1.2.4.70", "JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1]): Default Transfer Syntax for Lossless JPEG Image Compression", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEGLosslessSV1 = new DicomUID("1.2.840.10008.1.2.4.70", "JPEG Lossless, Non-Hierarchical, First-Order Prediction (Process 14 [Selection Value 1]): Default Transfer Syntax for Lossless JPEG Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG-LS Lossless Image Compression</summary>
         public static readonly DicomUID JPEGLSLossless = new DicomUID("1.2.840.10008.1.2.4.80", "JPEG-LS Lossless Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG-LS Lossy (Near-Lossless) Image Compression</summary>
-        public static readonly DicomUID JPEGLSLossyNearLossless = new DicomUID("1.2.840.10008.1.2.4.81", "JPEG-LS Lossy (Near-Lossless) Image Compression", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEGLSNearLossless = new DicomUID("1.2.840.10008.1.2.4.81", "JPEG-LS Lossy (Near-Lossless) Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG 2000 Image Compression (Lossless Only)</summary>
-        public static readonly DicomUID JPEG2000LosslessOnly = new DicomUID("1.2.840.10008.1.2.4.90", "JPEG 2000 Image Compression (Lossless Only)", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEG2000Lossless = new DicomUID("1.2.840.10008.1.2.4.90", "JPEG 2000 Image Compression (Lossless Only)", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG 2000 Image Compression</summary>
         public static readonly DicomUID JPEG2000 = new DicomUID("1.2.840.10008.1.2.4.91", "JPEG 2000 Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)</summary>
-        public static readonly DicomUID JPEG2000Part2MultiComponentLosslessOnly = new DicomUID("1.2.840.10008.1.2.4.92", "JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEG2000MCLossless = new DicomUID("1.2.840.10008.1.2.4.92", "JPEG 2000 Part 2 Multi-component Image Compression (Lossless Only)", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPEG 2000 Part 2 Multi-component Image Compression</summary>
-        public static readonly DicomUID JPEG2000Part2MultiComponent = new DicomUID("1.2.840.10008.1.2.4.93", "JPEG 2000 Part 2 Multi-component Image Compression", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID JPEG2000MC = new DicomUID("1.2.840.10008.1.2.4.93", "JPEG 2000 Part 2 Multi-component Image Compression", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: JPIP Referenced</summary>
         public static readonly DicomUID JPIPReferenced = new DicomUID("1.2.840.10008.1.2.4.94", "JPIP Referenced", DicomUidType.TransferSyntax, false);
@@ -1745,31 +1799,31 @@ namespace Dicom
         public static readonly DicomUID JPIPReferencedDeflate = new DicomUID("1.2.840.10008.1.2.4.95", "JPIP Referenced Deflate", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG2 Main Profile / Main Level</summary>
-        public static readonly DicomUID MPEG2 = new DicomUID("1.2.840.10008.1.2.4.100", "MPEG2 Main Profile / Main Level", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG2MPML = new DicomUID("1.2.840.10008.1.2.4.100", "MPEG2 Main Profile / Main Level", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG2 Main Profile / High Level</summary>
-        public static readonly DicomUID MPEG2MainProfileHighLevel = new DicomUID("1.2.840.10008.1.2.4.101", "MPEG2 Main Profile / High Level", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG2MPHL = new DicomUID("1.2.840.10008.1.2.4.101", "MPEG2 Main Profile / High Level", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.1</summary>
-        public static readonly DicomUID MPEG4AVCH264HighProfileLevel41 = new DicomUID("1.2.840.10008.1.2.4.102", "MPEG-4 AVC/H.264 High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG4HP41 = new DicomUID("1.2.840.10008.1.2.4.102", "MPEG-4 AVC/H.264 High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</summary>
-        public static readonly DicomUID MPEG4AVCH264BDCompatibleHighProfileLevel41 = new DicomUID("1.2.840.10008.1.2.4.103", "MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG4HP41BD = new DicomUID("1.2.840.10008.1.2.4.103", "MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video</summary>
-        public static readonly DicomUID MPEG4AVCH264HighProfileLevel42For2DVideo = new DicomUID("1.2.840.10008.1.2.4.104", "MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG4HP422D = new DicomUID("1.2.840.10008.1.2.4.104", "MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video</summary>
-        public static readonly DicomUID MPEG4AVCH264HighProfileLevel42For3DVideo = new DicomUID("1.2.840.10008.1.2.4.105", "MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG4HP423D = new DicomUID("1.2.840.10008.1.2.4.105", "MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</summary>
-        public static readonly DicomUID MPEG4AVCH264StereoHighProfileLevel42 = new DicomUID("1.2.840.10008.1.2.4.106", "MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID MPEG4HP42STEREO = new DicomUID("1.2.840.10008.1.2.4.106", "MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: HEVC/H.265 Main Profile / Level 5.1</summary>
-        public static readonly DicomUID HEVCH265MainProfileLevel51 = new DicomUID("1.2.840.10008.1.2.4.107", "HEVC/H.265 Main Profile / Level 5.1", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID HEVCMP51 = new DicomUID("1.2.840.10008.1.2.4.107", "HEVC/H.265 Main Profile / Level 5.1", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: HEVC/H.265 Main 10 Profile / Level 5.1</summary>
-        public static readonly DicomUID HEVCH265Main10ProfileLevel51 = new DicomUID("1.2.840.10008.1.2.4.108", "HEVC/H.265 Main 10 Profile / Level 5.1", DicomUidType.TransferSyntax, false);
+        public static readonly DicomUID HEVCM10P51 = new DicomUID("1.2.840.10008.1.2.4.108", "HEVC/H.265 Main 10 Profile / Level 5.1", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: RLE Lossless</summary>
         public static readonly DicomUID RLELossless = new DicomUID("1.2.840.10008.1.2.5", "RLE Lossless", DicomUidType.TransferSyntax, false);
@@ -1793,292 +1847,310 @@ namespace Dicom
         public static readonly DicomUID MediaStorageDirectoryStorage = new DicomUID("1.2.840.10008.1.3.10", "Media Storage Directory Storage", DicomUidType.SOPClass, false);
 
         ///<summary>Well-known frame of reference: Talairach Brain Atlas Frame of Reference</summary>
-        public static readonly DicomUID TalairachBrainAtlasFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.1", "Talairach Brain Atlas Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID TalairachBrainAtlas = new DicomUID("1.2.840.10008.1.4.1.1", "Talairach Brain Atlas Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.2", "SPM2 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2T1 = new DicomUID("1.2.840.10008.1.4.1.2", "SPM2 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 T2 Frame of Reference</summary>
-        public static readonly DicomUID SPM2T2FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.3", "SPM2 T2 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2T2 = new DicomUID("1.2.840.10008.1.4.1.3", "SPM2 T2 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 PD Frame of Reference</summary>
-        public static readonly DicomUID SPM2PDFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.4", "SPM2 PD Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2PD = new DicomUID("1.2.840.10008.1.4.1.4", "SPM2 PD Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 EPI Frame of Reference</summary>
-        public static readonly DicomUID SPM2EPIFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.5", "SPM2 EPI Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2EPI = new DicomUID("1.2.840.10008.1.4.1.5", "SPM2 EPI Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 FIL T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2FILT1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.6", "SPM2 FIL T1 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2FILT1 = new DicomUID("1.2.840.10008.1.4.1.6", "SPM2 FIL T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 PET Frame of Reference</summary>
-        public static readonly DicomUID SPM2PETFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.7", "SPM2 PET Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2PET = new DicomUID("1.2.840.10008.1.4.1.7", "SPM2 PET Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 TRANSM Frame of Reference</summary>
-        public static readonly DicomUID SPM2TRANSMFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.8", "SPM2 TRANSM Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2TRANSM = new DicomUID("1.2.840.10008.1.4.1.8", "SPM2 TRANSM Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 SPECT Frame of Reference</summary>
-        public static readonly DicomUID SPM2SPECTFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.9", "SPM2 SPECT Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2SPECT = new DicomUID("1.2.840.10008.1.4.1.9", "SPM2 SPECT Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 GRAY Frame of Reference</summary>
-        public static readonly DicomUID SPM2GRAYFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.10", "SPM2 GRAY Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2GRAY = new DicomUID("1.2.840.10008.1.4.1.10", "SPM2 GRAY Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 WHITE Frame of Reference</summary>
-        public static readonly DicomUID SPM2WHITEFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.11", "SPM2 WHITE Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2WHITE = new DicomUID("1.2.840.10008.1.4.1.11", "SPM2 WHITE Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 CSF Frame of Reference</summary>
-        public static readonly DicomUID SPM2CSFFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.12", "SPM2 CSF Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2CSF = new DicomUID("1.2.840.10008.1.4.1.12", "SPM2 CSF Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 BRAINMASK Frame of Reference</summary>
-        public static readonly DicomUID SPM2BRAINMASKFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.13", "SPM2 BRAINMASK Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2BRAINMASK = new DicomUID("1.2.840.10008.1.4.1.13", "SPM2 BRAINMASK Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 AVG305T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG305T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.14", "SPM2 AVG305T1 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2AVG305T1 = new DicomUID("1.2.840.10008.1.4.1.14", "SPM2 AVG305T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 AVG152T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG152T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.15", "SPM2 AVG152T1 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2AVG152T1 = new DicomUID("1.2.840.10008.1.4.1.15", "SPM2 AVG152T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 AVG152T2 Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG152T2FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.16", "SPM2 AVG152T2 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2AVG152T2 = new DicomUID("1.2.840.10008.1.4.1.16", "SPM2 AVG152T2 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 AVG152PD Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG152PDFrameOfReference = new DicomUID("1.2.840.10008.1.4.1.17", "SPM2 AVG152PD Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2AVG152PD = new DicomUID("1.2.840.10008.1.4.1.17", "SPM2 AVG152PD Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: SPM2 SINGLESUBJT1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2SINGLESUBJT1FrameOfReference = new DicomUID("1.2.840.10008.1.4.1.18", "SPM2 SINGLESUBJT1 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID SPM2SINGLESUBJT1 = new DicomUID("1.2.840.10008.1.4.1.18", "SPM2 SINGLESUBJT1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: ICBM 452 T1 Frame of Reference</summary>
-        public static readonly DicomUID ICBM452T1FrameOfReference = new DicomUID("1.2.840.10008.1.4.2.1", "ICBM 452 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID ICBM452T1 = new DicomUID("1.2.840.10008.1.4.2.1", "ICBM 452 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: ICBM Single Subject MRI Frame of Reference</summary>
-        public static readonly DicomUID ICBMSingleSubjectMRIFrameOfReference = new DicomUID("1.2.840.10008.1.4.2.2", "ICBM Single Subject MRI Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID ICBMSingleSubjectMRI = new DicomUID("1.2.840.10008.1.4.2.2", "ICBM Single Subject MRI Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: IEC 61217 Fixed Coordinate System Frame of Reference</summary>
-        public static readonly DicomUID IEC61217FixedCoordinateSystemFrameOfReference = new DicomUID("1.2.840.10008.1.4.3.1", "IEC 61217 Fixed Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID IEC61217FixedCoordinateSystem = new DicomUID("1.2.840.10008.1.4.3.1", "IEC 61217 Fixed Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known frame of reference: Standard Robotic-Arm Coordinate System Frame of Reference</summary>
-        public static readonly DicomUID StandardRoboticArmCoordinateSystemFrameOfReference = new DicomUID("1.2.840.10008.1.4.3.2", "Standard Robotic-Arm Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID StandardRoboticArmCoordinateSystem = new DicomUID("1.2.840.10008.1.4.3.2", "Standard Robotic-Arm Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
+
+        ///<summary>Well-known frame of reference: SRI24 Frame of Reference</summary>
+        public static readonly DicomUID SRI24 = new DicomUID("1.2.840.10008.1.4.4.1", "SRI24 Frame of Reference", DicomUidType.FrameOfReference, false);
+
+        ///<summary>Well-known frame of reference: Colin27 Frame of Reference</summary>
+        public static readonly DicomUID Colin27 = new DicomUID("1.2.840.10008.1.4.5.1", "Colin27 Frame of Reference", DicomUidType.FrameOfReference, false);
+
+        ///<summary>Well-known frame of reference: LPBA40/AIR Frame of Reference</summary>
+        public static readonly DicomUID LPBA40AIR = new DicomUID("1.2.840.10008.1.4.6.1", "LPBA40/AIR Frame of Reference", DicomUidType.FrameOfReference, false);
+
+        ///<summary>Well-known frame of reference: LPBA40/FLIRT Frame of Reference</summary>
+        public static readonly DicomUID LPBA40FLIRT = new DicomUID("1.2.840.10008.1.4.6.2", "LPBA40/FLIRT Frame of Reference", DicomUidType.FrameOfReference, false);
+
+        ///<summary>Well-known frame of reference: LPBA40/SPM5 Frame of Reference</summary>
+        public static readonly DicomUID LPBA40SPM5 = new DicomUID("1.2.840.10008.1.4.6.3", "LPBA40/SPM5 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known SOP Instance: Hot Iron Color Palette SOP Instance</summary>
-        public static readonly DicomUID HotIronColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.1", "Hot Iron Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID HotIronPalette = new DicomUID("1.2.840.10008.1.5.1", "Hot Iron Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: PET Color Palette SOP Instance</summary>
-        public static readonly DicomUID PETColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.2", "PET Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID PETPalette = new DicomUID("1.2.840.10008.1.5.2", "PET Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: Hot Metal Blue Color Palette SOP Instance</summary>
-        public static readonly DicomUID HotMetalBlueColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.3", "Hot Metal Blue Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID HotMetalBluePalette = new DicomUID("1.2.840.10008.1.5.3", "Hot Metal Blue Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: PET 20 Step Color Palette SOP Instance</summary>
-        public static readonly DicomUID PET20StepColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.4", "PET 20 Step Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID PET20StepPalette = new DicomUID("1.2.840.10008.1.5.4", "PET 20 Step Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: Spring Color Palette SOP Instance</summary>
-        public static readonly DicomUID SpringColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.5", "Spring Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID SpringPalette = new DicomUID("1.2.840.10008.1.5.5", "Spring Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: Summer Color Palette SOP Instance</summary>
-        public static readonly DicomUID SummerColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.6", "Summer Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID SummerPalette = new DicomUID("1.2.840.10008.1.5.6", "Summer Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: Fall Color Palette SOP Instance</summary>
-        public static readonly DicomUID FallColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.7", "Fall Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID FallPalette = new DicomUID("1.2.840.10008.1.5.7", "Fall Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: Winter Color Palette SOP Instance</summary>
-        public static readonly DicomUID WinterColorPaletteSOPInstance = new DicomUID("1.2.840.10008.1.5.8", "Winter Color Palette SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID WinterPalette = new DicomUID("1.2.840.10008.1.5.8", "Winter Color Palette SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>SOP Class: Basic Study Content Notification SOP Class (Retired)</summary>
-        public static readonly DicomUID BasicStudyContentNotificationSOPClassRETIRED = new DicomUID("1.2.840.10008.1.9", "Basic Study Content Notification SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID BasicStudyContentNotificationRETIRED = new DicomUID("1.2.840.10008.1.9", "Basic Study Content Notification SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Transfer Syntax: Papyrus 3 Implicit VR Little Endian (Retired)</summary>
         public static readonly DicomUID Papyrus3ImplicitVRLittleEndianRETIRED = new DicomUID("1.2.840.10008.1.20", "Papyrus 3 Implicit VR Little Endian (Retired)", DicomUidType.TransferSyntax, true);
 
         ///<summary>SOP Class: Storage Commitment Push Model SOP Class</summary>
-        public static readonly DicomUID StorageCommitmentPushModelSOPClass = new DicomUID("1.2.840.10008.1.20.1", "Storage Commitment Push Model SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID StorageCommitmentPushModel = new DicomUID("1.2.840.10008.1.20.1", "Storage Commitment Push Model SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>Well-known SOP Instance: Storage Commitment Push Model SOP Instance</summary>
-        public static readonly DicomUID StorageCommitmentPushModelSOPInstance = new DicomUID("1.2.840.10008.1.20.1.1", "Storage Commitment Push Model SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID StorageCommitmentPushModelInstance = new DicomUID("1.2.840.10008.1.20.1.1", "Storage Commitment Push Model SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>SOP Class: Storage Commitment Pull Model SOP Class (Retired)</summary>
-        public static readonly DicomUID StorageCommitmentPullModelSOPClassRETIRED = new DicomUID("1.2.840.10008.1.20.2", "Storage Commitment Pull Model SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID StorageCommitmentPullModelRETIRED = new DicomUID("1.2.840.10008.1.20.2", "Storage Commitment Pull Model SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Well-known SOP Instance: Storage Commitment Pull Model SOP Instance (Retired)</summary>
-        public static readonly DicomUID StorageCommitmentPullModelSOPInstanceRETIRED = new DicomUID("1.2.840.10008.1.20.2.1", "Storage Commitment Pull Model SOP Instance (Retired)", DicomUidType.SOPInstance, true);
+        public static readonly DicomUID StorageCommitmentPullModelInstanceRETIRED = new DicomUID("1.2.840.10008.1.20.2.1", "Storage Commitment Pull Model SOP Instance (Retired)", DicomUidType.SOPInstance, true);
 
         ///<summary>SOP Class: Procedural Event Logging SOP Class</summary>
-        public static readonly DicomUID ProceduralEventLoggingSOPClass = new DicomUID("1.2.840.10008.1.40", "Procedural Event Logging SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ProceduralEventLogging = new DicomUID("1.2.840.10008.1.40", "Procedural Event Logging SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>Well-known SOP Instance: Procedural Event Logging SOP Instance</summary>
-        public static readonly DicomUID ProceduralEventLoggingSOPInstance = new DicomUID("1.2.840.10008.1.40.1", "Procedural Event Logging SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID ProceduralEventLoggingInstance = new DicomUID("1.2.840.10008.1.40.1", "Procedural Event Logging SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>SOP Class: Substance Administration Logging SOP Class</summary>
-        public static readonly DicomUID SubstanceAdministrationLoggingSOPClass = new DicomUID("1.2.840.10008.1.42", "Substance Administration Logging SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID SubstanceAdministrationLogging = new DicomUID("1.2.840.10008.1.42", "Substance Administration Logging SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>Well-known SOP Instance: Substance Administration Logging SOP Instance</summary>
-        public static readonly DicomUID SubstanceAdministrationLoggingSOPInstance = new DicomUID("1.2.840.10008.1.42.1", "Substance Administration Logging SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID SubstanceAdministrationLoggingInstance = new DicomUID("1.2.840.10008.1.42.1", "Substance Administration Logging SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>DICOM UIDs as a Coding Scheme: DICOM UID Registry</summary>
-        public static readonly DicomUID DICOMUIDRegistry = new DicomUID("1.2.840.10008.2.6.1", "DICOM UID Registry", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID DCMUID = new DicomUID("1.2.840.10008.2.6.1", "DICOM UID Registry", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: DICOM Controlled Terminology</summary>
-        public static readonly DicomUID DICOMControlledTerminology = new DicomUID("1.2.840.10008.2.16.4", "DICOM Controlled Terminology", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID DCM = new DicomUID("1.2.840.10008.2.16.4", "DICOM Controlled Terminology", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Adult Mouse Anatomy Ontology</summary>
-        public static readonly DicomUID AdultMouseAnatomyOntology = new DicomUID("1.2.840.10008.2.16.5", "Adult Mouse Anatomy Ontology", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID MA = new DicomUID("1.2.840.10008.2.16.5", "Adult Mouse Anatomy Ontology", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Uberon Ontology</summary>
-        public static readonly DicomUID UberonOntology = new DicomUID("1.2.840.10008.2.16.6", "Uberon Ontology", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID UBERON = new DicomUID("1.2.840.10008.2.16.6", "Uberon Ontology", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Integrated Taxonomic Information System (ITIS) Taxonomic Serial Number (TSN)</summary>
-        public static readonly DicomUID IntegratedTaxonomicInformationSystemITISTaxonomicSerialNumberTSN = new DicomUID("1.2.840.10008.2.16.7", "Integrated Taxonomic Information System (ITIS) Taxonomic Serial Number (TSN)", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID ITIS_TSN = new DicomUID("1.2.840.10008.2.16.7", "Integrated Taxonomic Information System (ITIS) Taxonomic Serial Number (TSN)", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Mouse Genome Initiative (MGI)</summary>
-        public static readonly DicomUID MouseGenomeInitiativeMGI = new DicomUID("1.2.840.10008.2.16.8", "Mouse Genome Initiative (MGI)", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID MGI = new DicomUID("1.2.840.10008.2.16.8", "Mouse Genome Initiative (MGI)", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: PubChem Compound CID</summary>
-        public static readonly DicomUID PubChemCompoundCID = new DicomUID("1.2.840.10008.2.16.9", "PubChem Compound CID", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID PUBCHEM_CID = new DicomUID("1.2.840.10008.2.16.9", "PubChem Compound CID", DicomUidType.CodingScheme, false);
 
-        ///<summary>Coding Scheme: ICD-11</summary>
-        public static readonly DicomUID ICD11 = new DicomUID("1.2.840.10008.2.16.10", "ICD-11", DicomUidType.CodingScheme, false);
+        ///<summary>Coding Scheme: Dublin Core</summary>
+        public static readonly DicomUID DC = new DicomUID("1.2.840.10008.2.16.10", "Dublin Core", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: New York University Melanoma Clinical Cooperative Group</summary>
-        public static readonly DicomUID NewYorkUniversityMelanomaClinicalCooperativeGroup = new DicomUID("1.2.840.10008.2.16.11", "New York University Melanoma Clinical Cooperative Group", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID NYUMCCG = new DicomUID("1.2.840.10008.2.16.11", "New York University Melanoma Clinical Cooperative Group", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Mayo Clinic Non-radiological Images Specific Body Structure Anatomical Surface Region Guide</summary>
-        public static readonly DicomUID MayoClinicNonRadiologicalImagesSpecificBodyStructureAnatomicalSurfaceRegionGuide = new DicomUID("1.2.840.10008.2.16.12", "Mayo Clinic Non-radiological Images Specific Body Structure Anatomical Surface Region Guide", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID MAYONRISBSASRG = new DicomUID("1.2.840.10008.2.16.12", "Mayo Clinic Non-radiological Images Specific Body Structure Anatomical Surface Region Guide", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Image Biomarker Standardisation Initiative</summary>
-        public static readonly DicomUID ImageBiomarkerStandardisationInitiative = new DicomUID("1.2.840.10008.2.16.13", "Image Biomarker Standardisation Initiative", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID IBSI = new DicomUID("1.2.840.10008.2.16.13", "Image Biomarker Standardisation Initiative", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: Radiomics Ontology</summary>
-        public static readonly DicomUID RadiomicsOntology = new DicomUID("1.2.840.10008.2.16.14", "Radiomics Ontology", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID RO = new DicomUID("1.2.840.10008.2.16.14", "Radiomics Ontology", DicomUidType.CodingScheme, false);
 
         ///<summary>Coding Scheme: RadElement</summary>
-        public static readonly DicomUID RadElement = new DicomUID("1.2.840.10008.2.16.15", "RadElement", DicomUidType.CodingScheme, false);
+        public static readonly DicomUID RADELEMENT = new DicomUID("1.2.840.10008.2.16.15", "RadElement", DicomUidType.CodingScheme, false);
+
+        ///<summary>Coding Scheme: ICD-11</summary>
+        public static readonly DicomUID I11 = new DicomUID("1.2.840.10008.2.16.16", "ICD-11", DicomUidType.CodingScheme, false);
 
         ///<summary>Application Context Name: DICOM Application Context Name</summary>
-        public static readonly DicomUID DICOMApplicationContextName = new DicomUID("1.2.840.10008.3.1.1.1", "DICOM Application Context Name", DicomUidType.ApplicationContextName, false);
+        public static readonly DicomUID DICOMApplicationContext = new DicomUID("1.2.840.10008.3.1.1.1", "DICOM Application Context Name", DicomUidType.ApplicationContextName, false);
 
         ///<summary>SOP Class: Detached Patient Management SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedPatientManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.1.1", "Detached Patient Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID DetachedPatientManagementRETIRED = new DicomUID("1.2.840.10008.3.1.2.1.1", "Detached Patient Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Meta SOP Class: Detached Patient Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedPatientManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.1.4", "Detached Patient Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID DetachedPatientManagementMetaRETIRED = new DicomUID("1.2.840.10008.3.1.2.1.4", "Detached Patient Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: Detached Visit Management SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedVisitManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.2.1", "Detached Visit Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID DetachedVisitManagementRETIRED = new DicomUID("1.2.840.10008.3.1.2.2.1", "Detached Visit Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Detached Study Management SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedStudyManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.1", "Detached Study Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID DetachedStudyManagementRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.1", "Detached Study Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Study Component Management SOP Class (Retired)</summary>
-        public static readonly DicomUID StudyComponentManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.2", "Study Component Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID StudyComponentManagementRETIRED = new DicomUID("1.2.840.10008.3.1.2.3.2", "Study Component Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Modality Performed Procedure Step SOP Class</summary>
-        public static readonly DicomUID ModalityPerformedProcedureStepSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.3", "Modality Performed Procedure Step SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ModalityPerformedProcedureStep = new DicomUID("1.2.840.10008.3.1.2.3.3", "Modality Performed Procedure Step SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Modality Performed Procedure Step Retrieve SOP Class</summary>
-        public static readonly DicomUID ModalityPerformedProcedureStepRetrieveSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.4", "Modality Performed Procedure Step Retrieve SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ModalityPerformedProcedureStepRetrieve = new DicomUID("1.2.840.10008.3.1.2.3.4", "Modality Performed Procedure Step Retrieve SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Modality Performed Procedure Step Notification SOP Class</summary>
-        public static readonly DicomUID ModalityPerformedProcedureStepNotificationSOPClass = new DicomUID("1.2.840.10008.3.1.2.3.5", "Modality Performed Procedure Step Notification SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ModalityPerformedProcedureStepNotification = new DicomUID("1.2.840.10008.3.1.2.3.5", "Modality Performed Procedure Step Notification SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Detached Results Management SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedResultsManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.1", "Detached Results Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID DetachedResultsManagementRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.1", "Detached Results Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Meta SOP Class: Detached Results Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedResultsManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.4", "Detached Results Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID DetachedResultsManagementMetaRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.4", "Detached Results Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>Meta SOP Class: Detached Study Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedStudyManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.5", "Detached Study Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID DetachedStudyManagementMetaRETIRED = new DicomUID("1.2.840.10008.3.1.2.5.5", "Detached Study Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: Detached Interpretation Management SOP Class (Retired)</summary>
-        public static readonly DicomUID DetachedInterpretationManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.3.1.2.6.1", "Detached Interpretation Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID DetachedInterpretationManagementRETIRED = new DicomUID("1.2.840.10008.3.1.2.6.1", "Detached Interpretation Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Service Class: Storage Service Class</summary>
-        public static readonly DicomUID StorageServiceClass = new DicomUID("1.2.840.10008.4.2", "Storage Service Class", DicomUidType.ServiceClass, false);
+        public static readonly DicomUID Storage = new DicomUID("1.2.840.10008.4.2", "Storage Service Class", DicomUidType.ServiceClass, false);
 
         ///<summary>SOP Class: Basic Film Session SOP Class</summary>
-        public static readonly DicomUID BasicFilmSessionSOPClass = new DicomUID("1.2.840.10008.5.1.1.1", "Basic Film Session SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID BasicFilmSession = new DicomUID("1.2.840.10008.5.1.1.1", "Basic Film Session SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Basic Film Box SOP Class</summary>
-        public static readonly DicomUID BasicFilmBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.2", "Basic Film Box SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID BasicFilmBox = new DicomUID("1.2.840.10008.5.1.1.2", "Basic Film Box SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Basic Grayscale Image Box SOP Class</summary>
-        public static readonly DicomUID BasicGrayscaleImageBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.4", "Basic Grayscale Image Box SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID BasicGrayscaleImageBox = new DicomUID("1.2.840.10008.5.1.1.4", "Basic Grayscale Image Box SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Basic Color Image Box SOP Class</summary>
-        public static readonly DicomUID BasicColorImageBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.4.1", "Basic Color Image Box SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID BasicColorImageBox = new DicomUID("1.2.840.10008.5.1.1.4.1", "Basic Color Image Box SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Referenced Image Box SOP Class (Retired)</summary>
-        public static readonly DicomUID ReferencedImageBoxSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.4.2", "Referenced Image Box SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID ReferencedImageBoxRETIRED = new DicomUID("1.2.840.10008.5.1.1.4.2", "Referenced Image Box SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Meta SOP Class: Basic Grayscale Print Management Meta SOP Class</summary>
-        public static readonly DicomUID BasicGrayscalePrintManagementMetaSOPClass = new DicomUID("1.2.840.10008.5.1.1.9", "Basic Grayscale Print Management Meta SOP Class", DicomUidType.MetaSOPClass, false);
+        public static readonly DicomUID BasicGrayscalePrintManagementMeta = new DicomUID("1.2.840.10008.5.1.1.9", "Basic Grayscale Print Management Meta SOP Class", DicomUidType.MetaSOPClass, false);
 
         ///<summary>Meta SOP Class: Referenced Grayscale Print Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID ReferencedGrayscalePrintManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.9.1", "Referenced Grayscale Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID ReferencedGrayscalePrintManagementMetaRETIRED = new DicomUID("1.2.840.10008.5.1.1.9.1", "Referenced Grayscale Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: Print Job SOP Class</summary>
-        public static readonly DicomUID PrintJobSOPClass = new DicomUID("1.2.840.10008.5.1.1.14", "Print Job SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID PrintJob = new DicomUID("1.2.840.10008.5.1.1.14", "Print Job SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Basic Annotation Box SOP Class</summary>
-        public static readonly DicomUID BasicAnnotationBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.15", "Basic Annotation Box SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID BasicAnnotationBox = new DicomUID("1.2.840.10008.5.1.1.15", "Basic Annotation Box SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Printer SOP Class</summary>
-        public static readonly DicomUID PrinterSOPClass = new DicomUID("1.2.840.10008.5.1.1.16", "Printer SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID Printer = new DicomUID("1.2.840.10008.5.1.1.16", "Printer SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Printer Configuration Retrieval SOP Class</summary>
-        public static readonly DicomUID PrinterConfigurationRetrievalSOPClass = new DicomUID("1.2.840.10008.5.1.1.16.376", "Printer Configuration Retrieval SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID PrinterConfigurationRetrieval = new DicomUID("1.2.840.10008.5.1.1.16.376", "Printer Configuration Retrieval SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>Well-known Printer SOP Instance: Printer SOP Instance</summary>
-        public static readonly DicomUID PrinterSOPInstance = new DicomUID("1.2.840.10008.5.1.1.17", "Printer SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID PrinterInstance = new DicomUID("1.2.840.10008.5.1.1.17", "Printer SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known Printer SOP Instance: Printer Configuration Retrieval SOP Instance</summary>
-        public static readonly DicomUID PrinterConfigurationRetrievalSOPInstance = new DicomUID("1.2.840.10008.5.1.1.17.376", "Printer Configuration Retrieval SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID PrinterConfigurationRetrievalInstance = new DicomUID("1.2.840.10008.5.1.1.17.376", "Printer Configuration Retrieval SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Meta SOP Class: Basic Color Print Management Meta SOP Class</summary>
-        public static readonly DicomUID BasicColorPrintManagementMetaSOPClass = new DicomUID("1.2.840.10008.5.1.1.18", "Basic Color Print Management Meta SOP Class", DicomUidType.MetaSOPClass, false);
+        public static readonly DicomUID BasicColorPrintManagementMeta = new DicomUID("1.2.840.10008.5.1.1.18", "Basic Color Print Management Meta SOP Class", DicomUidType.MetaSOPClass, false);
 
         ///<summary>Meta SOP Class: Referenced Color Print Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID ReferencedColorPrintManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.18.1", "Referenced Color Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID ReferencedColorPrintManagementMetaRETIRED = new DicomUID("1.2.840.10008.5.1.1.18.1", "Referenced Color Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: VOI LUT Box SOP Class</summary>
-        public static readonly DicomUID VOILUTBoxSOPClass = new DicomUID("1.2.840.10008.5.1.1.22", "VOI LUT Box SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID VOILUTBox = new DicomUID("1.2.840.10008.5.1.1.22", "VOI LUT Box SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Presentation LUT SOP Class</summary>
-        public static readonly DicomUID PresentationLUTSOPClass = new DicomUID("1.2.840.10008.5.1.1.23", "Presentation LUT SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID PresentationLUT = new DicomUID("1.2.840.10008.5.1.1.23", "Presentation LUT SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Image Overlay Box SOP Class (Retired)</summary>
-        public static readonly DicomUID ImageOverlayBoxSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.24", "Image Overlay Box SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID ImageOverlayBoxRETIRED = new DicomUID("1.2.840.10008.5.1.1.24", "Image Overlay Box SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Basic Print Image Overlay Box SOP Class (Retired)</summary>
-        public static readonly DicomUID BasicPrintImageOverlayBoxSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.24.1", "Basic Print Image Overlay Box SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID BasicPrintImageOverlayBoxRETIRED = new DicomUID("1.2.840.10008.5.1.1.24.1", "Basic Print Image Overlay Box SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Well-known Print Queue SOP Instance: Print Queue SOP Instance (Retired)</summary>
-        public static readonly DicomUID PrintQueueSOPInstanceRETIRED = new DicomUID("1.2.840.10008.5.1.1.25", "Print Queue SOP Instance (Retired)", DicomUidType.SOPInstance, true);
+        public static readonly DicomUID PrintQueueRETIRED = new DicomUID("1.2.840.10008.5.1.1.25", "Print Queue SOP Instance (Retired)", DicomUidType.SOPInstance, true);
 
         ///<summary>SOP Class: Print Queue Management SOP Class (Retired)</summary>
-        public static readonly DicomUID PrintQueueManagementSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.26", "Print Queue Management SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID PrintQueueManagementRETIRED = new DicomUID("1.2.840.10008.5.1.1.26", "Print Queue Management SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Stored Print Storage SOP Class (Retired)</summary>
-        public static readonly DicomUID StoredPrintStorageSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.27", "Stored Print Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID StoredPrintStorageRETIRED = new DicomUID("1.2.840.10008.5.1.1.27", "Stored Print Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Hardcopy Grayscale Image Storage SOP Class (Retired)</summary>
-        public static readonly DicomUID HardcopyGrayscaleImageStorageSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.29", "Hardcopy Grayscale Image Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID HardcopyGrayscaleImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.1.29", "Hardcopy Grayscale Image Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Hardcopy Color Image Storage SOP Class (Retired)</summary>
-        public static readonly DicomUID HardcopyColorImageStorageSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.30", "Hardcopy Color Image Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID HardcopyColorImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.1.30", "Hardcopy Color Image Storage SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Pull Print Request SOP Class (Retired)</summary>
-        public static readonly DicomUID PullPrintRequestSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.31", "Pull Print Request SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID PullPrintRequestRETIRED = new DicomUID("1.2.840.10008.5.1.1.31", "Pull Print Request SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Meta SOP Class: Pull Stored Print Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID PullStoredPrintManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.1.32", "Pull Stored Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID PullStoredPrintManagementMetaRETIRED = new DicomUID("1.2.840.10008.5.1.1.32", "Pull Stored Print Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: Media Creation Management SOP Class UID</summary>
-        public static readonly DicomUID MediaCreationManagementSOPClassUID = new DicomUID("1.2.840.10008.5.1.1.33", "Media Creation Management SOP Class UID", DicomUidType.SOPClass, false);
+        public static readonly DicomUID MediaCreationManagement = new DicomUID("1.2.840.10008.5.1.1.33", "Media Creation Management SOP Class UID", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Display System SOP Class</summary>
-        public static readonly DicomUID DisplaySystemSOPClass = new DicomUID("1.2.840.10008.5.1.1.40", "Display System SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID DisplaySystem = new DicomUID("1.2.840.10008.5.1.1.40", "Display System SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>Well-known SOP Instance: Display System SOP Instance</summary>
-        public static readonly DicomUID DisplaySystemSOPInstance = new DicomUID("1.2.840.10008.5.1.1.40.1", "Display System SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID DisplaySystemInstance = new DicomUID("1.2.840.10008.5.1.1.40.1", "Display System SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>SOP Class: Computed Radiography Image Storage</summary>
         public static readonly DicomUID ComputedRadiographyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.1", "Computed Radiography Image Storage", DicomUidType.SOPClass, false);
@@ -2111,7 +2183,7 @@ namespace Dicom
         public static readonly DicomUID LegacyConvertedEnhancedCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.2.2", "Legacy Converted Enhanced CT Image Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Ultrasound Multi-frame Image Storage (Retired)</summary>
-        public static readonly DicomUID UltrasoundMultiFrameImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.3", "Ultrasound Multi-frame Image Storage (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID UltrasoundMultiFrameImageStorageRetiredRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.3", "Ultrasound Multi-frame Image Storage (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Ultrasound Multi-frame Image Storage</summary>
         public static readonly DicomUID UltrasoundMultiFrameImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.3.1", "Ultrasound Multi-frame Image Storage", DicomUidType.SOPClass, false);
@@ -2132,10 +2204,10 @@ namespace Dicom
         public static readonly DicomUID LegacyConvertedEnhancedMRImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.4.4", "Legacy Converted Enhanced MR Image Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Nuclear Medicine Image Storage (Retired)</summary>
-        public static readonly DicomUID NuclearMedicineImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.5", "Nuclear Medicine Image Storage (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID NuclearMedicineImageStorageRetiredRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.5", "Nuclear Medicine Image Storage (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Ultrasound Image Storage (Retired)</summary>
-        public static readonly DicomUID UltrasoundImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.6", "Ultrasound Image Storage (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID UltrasoundImageStorageRetiredRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.6", "Ultrasound Image Storage (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Ultrasound Image Storage</summary>
         public static readonly DicomUID UltrasoundImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.6.1", "Ultrasound Image Storage", DicomUidType.SOPClass, false);
@@ -2194,6 +2266,24 @@ namespace Dicom
         ///<summary>SOP Class: Respiratory Waveform Storage</summary>
         public static readonly DicomUID RespiratoryWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.6.1", "Respiratory Waveform Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Multi-channel Respiratory Waveform Storage</summary>
+        public static readonly DicomUID MultichannelRespiratoryWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.6.2", "Multi-channel Respiratory Waveform Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Routine Scalp Electroencephalogram Waveform Storage</summary>
+        public static readonly DicomUID RoutineScalpElectroencephalogramWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.7.1", "Routine Scalp Electroencephalogram Waveform Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Electromyogram Waveform Storage</summary>
+        public static readonly DicomUID ElectromyogramWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.7.2", "Electromyogram Waveform Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Electrooculogram Waveform Storage</summary>
+        public static readonly DicomUID ElectrooculogramWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.7.3", "Electrooculogram Waveform Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Sleep Electroencephalogram Waveform Storage</summary>
+        public static readonly DicomUID SleepElectroencephalogramWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.7.4", "Sleep Electroencephalogram Waveform Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Body Position Waveform Storage</summary>
+        public static readonly DicomUID BodyPositionWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.8.1", "Body Position Waveform Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: Standalone Modality LUT Storage (Retired)</summary>
         public static readonly DicomUID StandaloneModalityLUTStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.10", "Standalone Modality LUT Storage (Retired)", DicomUidType.SOPClass, true);
 
@@ -2248,9 +2338,6 @@ namespace Dicom
         ///<summary>SOP Class: X-Ray Angiographic Bi-Plane Image Storage (Retired)</summary>
         public static readonly DicomUID XRayAngiographicBiPlaneImageStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.12.3", "X-Ray Angiographic Bi-Plane Image Storage (Retired)", DicomUidType.SOPClass, true);
 
-        ///<summary>SOP Class: (Retired)</summary>
-        public static readonly DicomUID UID_1_2_840_10008_5_1_4_1_1_12_77RETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.12.77", "(Retired)", DicomUidType.SOPClass, true);
-
         ///<summary>SOP Class: X-Ray 3D Angiographic Image Storage</summary>
         public static readonly DicomUID XRay3DAngiographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.13.1.1", "X-Ray 3D Angiographic Image Storage", DicomUidType.SOPClass, false);
 
@@ -2277,9 +2364,6 @@ namespace Dicom
 
         ///<summary>SOP Class: Parametric Map Storage</summary>
         public static readonly DicomUID ParametricMapStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.30", "Parametric Map Storage", DicomUidType.SOPClass, false);
-
-        ///<summary>SOP Class: (Retired)</summary>
-        public static readonly DicomUID UID_1_2_840_10008_5_1_4_1_1_40RETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.40", "(Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Raw Data Storage</summary>
         public static readonly DicomUID RawDataStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.66", "Raw Data Storage", DicomUidType.SOPClass, false);
@@ -2360,10 +2444,13 @@ namespace Dicom
         public static readonly DicomUID OphthalmicOpticalCoherenceTomographyEnFaceImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.7", "Ophthalmic Optical Coherence Tomography En Face Image Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage</summary>
-        public static readonly DicomUID OphthalmicOpticalCoherenceTomographyBScanVolumeAnalysisStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.8", "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage", DicomUidType.SOPClass, false);
+        public static readonly DicomUID OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.5.8", "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: VL Whole Slide Microscopy Image Storage</summary>
         public static readonly DicomUID VLWholeSlideMicroscopyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.6", "VL Whole Slide Microscopy Image Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Dermoscopic Photography Image Storage</summary>
+        public static readonly DicomUID DermoscopicPhotographyImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.77.1.7", "Dermoscopic Photography Image Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Lensometry Measurements Storage</summary>
         public static readonly DicomUID LensometryMeasurementsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.78.1", "Lensometry Measurements Storage", DicomUidType.SOPClass, false);
@@ -2510,13 +2597,13 @@ namespace Dicom
         public static readonly DicomUID ProtocolApprovalStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.200.3", "Protocol Approval Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Protocol Approval Information Model - FIND</summary>
-        public static readonly DicomUID ProtocolApprovalInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.1.1.200.4", "Protocol Approval Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ProtocolApprovalInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.1.1.200.4", "Protocol Approval Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Protocol Approval Information Model - MOVE</summary>
-        public static readonly DicomUID ProtocolApprovalInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.1.1.200.5", "Protocol Approval Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ProtocolApprovalInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.1.1.200.5", "Protocol Approval Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Protocol Approval Information Model - GET</summary>
-        public static readonly DicomUID ProtocolApprovalInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.1.1.200.6", "Protocol Approval Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ProtocolApprovalInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.1.1.200.6", "Protocol Approval Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: RT Image Storage</summary>
         public static readonly DicomUID RTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.1", "RT Image Storage", DicomUidType.SOPClass, false);
@@ -2563,6 +2650,21 @@ namespace Dicom
         ///<summary>SOP Class: Robotic-Arm Radiation Storage</summary>
         public static readonly DicomUID RoboticArmRadiationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.15", "Robotic-Arm Radiation Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: RT Radiation Record Set Storage</summary>
+        public static readonly DicomUID RTRadiationRecordSetStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.16", "RT Radiation Record Set Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: RT Radiation Salvage Record Storage</summary>
+        public static readonly DicomUID RTRadiationSalvageRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.17", "RT Radiation Salvage Record Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Tomotherapeutic Radiation Record Storage</summary>
+        public static readonly DicomUID TomotherapeuticRadiationRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.18", "Tomotherapeutic Radiation Record Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: C-Arm Photon-Electron Radiation Record Storage</summary>
+        public static readonly DicomUID CArmPhotonElectronRadiationRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.19", "C-Arm Photon-Electron Radiation Record Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Robotic Radiation Record Storage</summary>
+        public static readonly DicomUID RoboticRadiationRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.20", "Robotic Radiation Record Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: DICOS CT Image Storage</summary>
         public static readonly DicomUID DICOSCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.1", "DICOS CT Image Storage", DicomUidType.SOPClass, false);
 
@@ -2582,7 +2684,7 @@ namespace Dicom
         public static readonly DicomUID DICOS3DAITStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.5", "DICOS 3D AIT Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: DICOS Quadrupole Resonance (QR) Storage</summary>
-        public static readonly DicomUID DICOSQuadrupoleResonanceQRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.6", "DICOS Quadrupole Resonance (QR) Storage", DicomUidType.SOPClass, false);
+        public static readonly DicomUID DICOSQuadrupoleResonanceStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.6", "DICOS Quadrupole Resonance (QR) Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Eddy Current Image Storage</summary>
         public static readonly DicomUID EddyCurrentImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.601.1", "Eddy Current Image Storage", DicomUidType.SOPClass, false);
@@ -2591,67 +2693,67 @@ namespace Dicom
         public static readonly DicomUID EddyCurrentMultiFrameImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.601.2", "Eddy Current Multi-frame Image Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Patient Root Query/Retrieve Information Model - FIND</summary>
-        public static readonly DicomUID PatientRootQueryRetrieveInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.1.2.1.1", "Patient Root Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID PatientRootQueryRetrieveInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.1.2.1.1", "Patient Root Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Patient Root Query/Retrieve Information Model - MOVE</summary>
-        public static readonly DicomUID PatientRootQueryRetrieveInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.1.2.1.2", "Patient Root Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID PatientRootQueryRetrieveInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.1.2.1.2", "Patient Root Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Patient Root Query/Retrieve Information Model - GET</summary>
-        public static readonly DicomUID PatientRootQueryRetrieveInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.1.2.1.3", "Patient Root Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID PatientRootQueryRetrieveInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.1.2.1.3", "Patient Root Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Study Root Query/Retrieve Information Model - FIND</summary>
-        public static readonly DicomUID StudyRootQueryRetrieveInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.1.2.2.1", "Study Root Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID StudyRootQueryRetrieveInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.1.2.2.1", "Study Root Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Study Root Query/Retrieve Information Model - MOVE</summary>
-        public static readonly DicomUID StudyRootQueryRetrieveInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.1.2.2.2", "Study Root Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID StudyRootQueryRetrieveInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.1.2.2.2", "Study Root Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Study Root Query/Retrieve Information Model - GET</summary>
-        public static readonly DicomUID StudyRootQueryRetrieveInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.1.2.2.3", "Study Root Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID StudyRootQueryRetrieveInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.1.2.2.3", "Study Root Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Patient/Study Only Query/Retrieve Information Model - FIND (Retired)</summary>
-        public static readonly DicomUID PatientStudyOnlyQueryRetrieveInformationModelFINDRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.1", "Patient/Study Only Query/Retrieve Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID PatientStudyOnlyQueryRetrieveInformationModelFindRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.1", "Patient/Study Only Query/Retrieve Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Patient/Study Only Query/Retrieve Information Model - MOVE (Retired)</summary>
-        public static readonly DicomUID PatientStudyOnlyQueryRetrieveInformationModelMOVERETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.2", "Patient/Study Only Query/Retrieve Information Model - MOVE (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID PatientStudyOnlyQueryRetrieveInformationModelMoveRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.2", "Patient/Study Only Query/Retrieve Information Model - MOVE (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Patient/Study Only Query/Retrieve Information Model - GET (Retired)</summary>
-        public static readonly DicomUID PatientStudyOnlyQueryRetrieveInformationModelGETRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.3", "Patient/Study Only Query/Retrieve Information Model - GET (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID PatientStudyOnlyQueryRetrieveInformationModelGetRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.2.3.3", "Patient/Study Only Query/Retrieve Information Model - GET (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Composite Instance Root Retrieve - MOVE</summary>
-        public static readonly DicomUID CompositeInstanceRootRetrieveMOVE = new DicomUID("1.2.840.10008.5.1.4.1.2.4.2", "Composite Instance Root Retrieve - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID CompositeInstanceRootRetrieveMove = new DicomUID("1.2.840.10008.5.1.4.1.2.4.2", "Composite Instance Root Retrieve - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Composite Instance Root Retrieve - GET</summary>
-        public static readonly DicomUID CompositeInstanceRootRetrieveGET = new DicomUID("1.2.840.10008.5.1.4.1.2.4.3", "Composite Instance Root Retrieve - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID CompositeInstanceRootRetrieveGet = new DicomUID("1.2.840.10008.5.1.4.1.2.4.3", "Composite Instance Root Retrieve - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Composite Instance Retrieve Without Bulk Data - GET</summary>
-        public static readonly DicomUID CompositeInstanceRetrieveWithoutBulkDataGET = new DicomUID("1.2.840.10008.5.1.4.1.2.5.3", "Composite Instance Retrieve Without Bulk Data - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID CompositeInstanceRetrieveWithoutBulkDataGet = new DicomUID("1.2.840.10008.5.1.4.1.2.5.3", "Composite Instance Retrieve Without Bulk Data - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Defined Procedure Protocol Information Model - FIND</summary>
-        public static readonly DicomUID DefinedProcedureProtocolInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.20.1", "Defined Procedure Protocol Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID DefinedProcedureProtocolInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.20.1", "Defined Procedure Protocol Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Defined Procedure Protocol Information Model - MOVE</summary>
-        public static readonly DicomUID DefinedProcedureProtocolInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.20.2", "Defined Procedure Protocol Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID DefinedProcedureProtocolInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.20.2", "Defined Procedure Protocol Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Defined Procedure Protocol Information Model - GET</summary>
-        public static readonly DicomUID DefinedProcedureProtocolInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.20.3", "Defined Procedure Protocol Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID DefinedProcedureProtocolInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.20.3", "Defined Procedure Protocol Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Modality Worklist Information Model - FIND</summary>
-        public static readonly DicomUID ModalityWorklistInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.31", "Modality Worklist Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ModalityWorklistInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.31", "Modality Worklist Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>Meta SOP Class: General Purpose Worklist Management Meta SOP Class (Retired)</summary>
-        public static readonly DicomUID GeneralPurposeWorklistManagementMetaSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.4.32", "General Purpose Worklist Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
+        public static readonly DicomUID GeneralPurposeWorklistManagementMetaRETIRED = new DicomUID("1.2.840.10008.5.1.4.32", "General Purpose Worklist Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: General Purpose Worklist Information Model - FIND (Retired)</summary>
         public static readonly DicomUID GeneralPurposeWorklistInformationModelFINDRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.1", "General Purpose Worklist Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: General Purpose Scheduled Procedure Step SOP Class (Retired)</summary>
-        public static readonly DicomUID GeneralPurposeScheduledProcedureStepSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.2", "General Purpose Scheduled Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID GeneralPurposeScheduledProcedureStepRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.2", "General Purpose Scheduled Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: General Purpose Performed Procedure Step SOP Class (Retired)</summary>
-        public static readonly DicomUID GeneralPurposePerformedProcedureStepSOPClassRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.3", "General Purpose Performed Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID GeneralPurposePerformedProcedureStepRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.3", "General Purpose Performed Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Instance Availability Notification SOP Class</summary>
-        public static readonly DicomUID InstanceAvailabilityNotificationSOPClass = new DicomUID("1.2.840.10008.5.1.4.33", "Instance Availability Notification SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID InstanceAvailabilityNotification = new DicomUID("1.2.840.10008.5.1.4.33", "Instance Availability Notification SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: RT Beams Delivery Instruction Storage - Trial (Retired)</summary>
         public static readonly DicomUID RTBeamsDeliveryInstructionStorageTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.1", "RT Beams Delivery Instruction Storage - Trial (Retired)", DicomUidType.SOPClass, true);
@@ -2663,43 +2765,43 @@ namespace Dicom
         public static readonly DicomUID RTIonMachineVerificationTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.3", "RT Ion Machine Verification - Trial (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Service Class: Unified Worklist and Procedure Step Service Class - Trial (Retired)</summary>
-        public static readonly DicomUID UnifiedWorklistAndProcedureStepServiceClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4", "Unified Worklist and Procedure Step Service Class - Trial (Retired)", DicomUidType.ServiceClass, true);
+        public static readonly DicomUID UnifiedWorklistAndProcedureStepTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4", "Unified Worklist and Procedure Step Service Class - Trial (Retired)", DicomUidType.ServiceClass, true);
 
         ///<summary>SOP Class: Unified Procedure Step - Push SOP Class - Trial (Retired)</summary>
-        public static readonly DicomUID UnifiedProcedureStepPushSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.1", "Unified Procedure Step - Push SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID UnifiedProcedureStepPushTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.1", "Unified Procedure Step - Push SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Unified Procedure Step - Watch SOP Class - Trial (Retired)</summary>
-        public static readonly DicomUID UnifiedProcedureStepWatchSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.2", "Unified Procedure Step - Watch SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID UnifiedProcedureStepWatchTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.2", "Unified Procedure Step - Watch SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Unified Procedure Step - Pull SOP Class - Trial (Retired)</summary>
-        public static readonly DicomUID UnifiedProcedureStepPullSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.3", "Unified Procedure Step - Pull SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID UnifiedProcedureStepPullTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.3", "Unified Procedure Step - Pull SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: Unified Procedure Step - Event SOP Class - Trial (Retired)</summary>
-        public static readonly DicomUID UnifiedProcedureStepEventSOPClassTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.4", "Unified Procedure Step - Event SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID UnifiedProcedureStepEventTrialRETIRED = new DicomUID("1.2.840.10008.5.1.4.34.4.4", "Unified Procedure Step - Event SOP Class - Trial (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>Well-known SOP Instance: UPS Global Subscription SOP Instance</summary>
-        public static readonly DicomUID UPSGlobalSubscriptionSOPInstance = new DicomUID("1.2.840.10008.5.1.4.34.5", "UPS Global Subscription SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID UPSGlobalSubscriptionInstance = new DicomUID("1.2.840.10008.5.1.4.34.5", "UPS Global Subscription SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Well-known SOP Instance: UPS Filtered Global Subscription SOP Instance</summary>
-        public static readonly DicomUID UPSFilteredGlobalSubscriptionSOPInstance = new DicomUID("1.2.840.10008.5.1.4.34.5.1", "UPS Filtered Global Subscription SOP Instance", DicomUidType.SOPInstance, false);
+        public static readonly DicomUID UPSFilteredGlobalSubscriptionInstance = new DicomUID("1.2.840.10008.5.1.4.34.5.1", "UPS Filtered Global Subscription SOP Instance", DicomUidType.SOPInstance, false);
 
         ///<summary>Service Class: Unified Worklist and Procedure Step Service Class</summary>
-        public static readonly DicomUID UnifiedWorklistAndProcedureStepServiceClass = new DicomUID("1.2.840.10008.5.1.4.34.6", "Unified Worklist and Procedure Step Service Class", DicomUidType.ServiceClass, false);
+        public static readonly DicomUID UnifiedWorklistAndProcedureStep = new DicomUID("1.2.840.10008.5.1.4.34.6", "Unified Worklist and Procedure Step Service Class", DicomUidType.ServiceClass, false);
 
         ///<summary>SOP Class: Unified Procedure Step - Push SOP Class</summary>
-        public static readonly DicomUID UnifiedProcedureStepPushSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.1", "Unified Procedure Step - Push SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID UnifiedProcedureStepPush = new DicomUID("1.2.840.10008.5.1.4.34.6.1", "Unified Procedure Step - Push SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Unified Procedure Step - Watch SOP Class</summary>
-        public static readonly DicomUID UnifiedProcedureStepWatchSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.2", "Unified Procedure Step - Watch SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID UnifiedProcedureStepWatch = new DicomUID("1.2.840.10008.5.1.4.34.6.2", "Unified Procedure Step - Watch SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Unified Procedure Step - Pull SOP Class</summary>
-        public static readonly DicomUID UnifiedProcedureStepPullSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.3", "Unified Procedure Step - Pull SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID UnifiedProcedureStepPull = new DicomUID("1.2.840.10008.5.1.4.34.6.3", "Unified Procedure Step - Pull SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Unified Procedure Step - Event SOP Class</summary>
-        public static readonly DicomUID UnifiedProcedureStepEventSOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.4", "Unified Procedure Step - Event SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID UnifiedProcedureStepEvent = new DicomUID("1.2.840.10008.5.1.4.34.6.4", "Unified Procedure Step - Event SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Unified Procedure Step - Query SOP Class</summary>
-        public static readonly DicomUID UnifiedProcedureStepQuerySOPClass = new DicomUID("1.2.840.10008.5.1.4.34.6.5", "Unified Procedure Step - Query SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID UnifiedProcedureStepQuery = new DicomUID("1.2.840.10008.5.1.4.34.6.5", "Unified Procedure Step - Query SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: RT Beams Delivery Instruction Storage</summary>
         public static readonly DicomUID RTBeamsDeliveryInstructionStorage = new DicomUID("1.2.840.10008.5.1.4.34.7", "RT Beams Delivery Instruction Storage", DicomUidType.SOPClass, false);
@@ -2726,67 +2828,67 @@ namespace Dicom
         public static readonly DicomUID HangingProtocolStorage = new DicomUID("1.2.840.10008.5.1.4.38.1", "Hanging Protocol Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Hanging Protocol Information Model - FIND</summary>
-        public static readonly DicomUID HangingProtocolInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.38.2", "Hanging Protocol Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID HangingProtocolInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.38.2", "Hanging Protocol Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Hanging Protocol Information Model - MOVE</summary>
-        public static readonly DicomUID HangingProtocolInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.38.3", "Hanging Protocol Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID HangingProtocolInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.38.3", "Hanging Protocol Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Hanging Protocol Information Model - GET</summary>
-        public static readonly DicomUID HangingProtocolInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.38.4", "Hanging Protocol Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID HangingProtocolInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.38.4", "Hanging Protocol Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Color Palette Storage</summary>
         public static readonly DicomUID ColorPaletteStorage = new DicomUID("1.2.840.10008.5.1.4.39.1", "Color Palette Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Color Palette Query/Retrieve Information Model - FIND</summary>
-        public static readonly DicomUID ColorPaletteQueryRetrieveInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.39.2", "Color Palette Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ColorPaletteQueryRetrieveInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.39.2", "Color Palette Query/Retrieve Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Color Palette Query/Retrieve Information Model - MOVE</summary>
-        public static readonly DicomUID ColorPaletteQueryRetrieveInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.39.3", "Color Palette Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ColorPaletteQueryRetrieveInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.39.3", "Color Palette Query/Retrieve Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Color Palette Query/Retrieve Information Model - GET</summary>
-        public static readonly DicomUID ColorPaletteQueryRetrieveInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.39.4", "Color Palette Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ColorPaletteQueryRetrieveInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.39.4", "Color Palette Query/Retrieve Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Product Characteristics Query SOP Class</summary>
-        public static readonly DicomUID ProductCharacteristicsQuerySOPClass = new DicomUID("1.2.840.10008.5.1.4.41", "Product Characteristics Query SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ProductCharacteristicsQuery = new DicomUID("1.2.840.10008.5.1.4.41", "Product Characteristics Query SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Substance Approval Query SOP Class</summary>
-        public static readonly DicomUID SubstanceApprovalQuerySOPClass = new DicomUID("1.2.840.10008.5.1.4.42", "Substance Approval Query SOP Class", DicomUidType.SOPClass, false);
+        public static readonly DicomUID SubstanceApprovalQuery = new DicomUID("1.2.840.10008.5.1.4.42", "Substance Approval Query SOP Class", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Generic Implant Template Storage</summary>
         public static readonly DicomUID GenericImplantTemplateStorage = new DicomUID("1.2.840.10008.5.1.4.43.1", "Generic Implant Template Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Generic Implant Template Information Model - FIND</summary>
-        public static readonly DicomUID GenericImplantTemplateInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.43.2", "Generic Implant Template Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID GenericImplantTemplateInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.43.2", "Generic Implant Template Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Generic Implant Template Information Model - MOVE</summary>
-        public static readonly DicomUID GenericImplantTemplateInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.43.3", "Generic Implant Template Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID GenericImplantTemplateInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.43.3", "Generic Implant Template Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Generic Implant Template Information Model - GET</summary>
-        public static readonly DicomUID GenericImplantTemplateInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.43.4", "Generic Implant Template Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID GenericImplantTemplateInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.43.4", "Generic Implant Template Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Assembly Template Storage</summary>
         public static readonly DicomUID ImplantAssemblyTemplateStorage = new DicomUID("1.2.840.10008.5.1.4.44.1", "Implant Assembly Template Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Assembly Template Information Model - FIND</summary>
-        public static readonly DicomUID ImplantAssemblyTemplateInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.44.2", "Implant Assembly Template Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ImplantAssemblyTemplateInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.44.2", "Implant Assembly Template Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Assembly Template Information Model - MOVE</summary>
-        public static readonly DicomUID ImplantAssemblyTemplateInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.44.3", "Implant Assembly Template Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ImplantAssemblyTemplateInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.44.3", "Implant Assembly Template Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Assembly Template Information Model - GET</summary>
-        public static readonly DicomUID ImplantAssemblyTemplateInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.44.4", "Implant Assembly Template Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ImplantAssemblyTemplateInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.44.4", "Implant Assembly Template Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Template Group Storage</summary>
         public static readonly DicomUID ImplantTemplateGroupStorage = new DicomUID("1.2.840.10008.5.1.4.45.1", "Implant Template Group Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Template Group Information Model - FIND</summary>
-        public static readonly DicomUID ImplantTemplateGroupInformationModelFIND = new DicomUID("1.2.840.10008.5.1.4.45.2", "Implant Template Group Information Model - FIND", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ImplantTemplateGroupInformationModelFind = new DicomUID("1.2.840.10008.5.1.4.45.2", "Implant Template Group Information Model - FIND", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Template Group Information Model - MOVE</summary>
-        public static readonly DicomUID ImplantTemplateGroupInformationModelMOVE = new DicomUID("1.2.840.10008.5.1.4.45.3", "Implant Template Group Information Model - MOVE", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ImplantTemplateGroupInformationModelMove = new DicomUID("1.2.840.10008.5.1.4.45.3", "Implant Template Group Information Model - MOVE", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Implant Template Group Information Model - GET</summary>
-        public static readonly DicomUID ImplantTemplateGroupInformationModelGET = new DicomUID("1.2.840.10008.5.1.4.45.4", "Implant Template Group Information Model - GET", DicomUidType.SOPClass, false);
+        public static readonly DicomUID ImplantTemplateGroupInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.45.4", "Implant Template Group Information Model - GET", DicomUidType.SOPClass, false);
 
         ///<summary>Application Hosting Model: Native DICOM Model</summary>
         public static readonly DicomUID NativeDICOMModel = new DicomUID("1.2.840.10008.7.1.1", "Native DICOM Model", DicomUidType.ApplicationHostingModel, false);
@@ -2927,7 +3029,7 @@ namespace Dicom
         public static readonly DicomUID dicomTransferCapability = new DicomUID("1.2.840.10008.15.0.4.8", "dicomTransferCapability", DicomUidType.LDAP, false);
 
         ///<summary>Synchronization Frame of Reference: Universal Coordinated Time</summary>
-        public static readonly DicomUID UniversalCoordinatedTime = new DicomUID("1.2.840.10008.15.1.1", "Universal Coordinated Time", DicomUidType.FrameOfReference, false);
+        public static readonly DicomUID UTC = new DicomUID("1.2.840.10008.15.1.1", "Universal Coordinated Time", DicomUidType.FrameOfReference, false);
 
         ///<summary>Context Group Name: Anatomic Modifier (2)</summary>
         public static readonly DicomUID AnatomicModifier2 = new DicomUID("1.2.840.10008.6.1.1", "Anatomic Modifier (2)", DicomUidType.ContextGroupName, false);
@@ -4660,8 +4762,8 @@ namespace Dicom
         ///<summary>Context Group Name: Lower Extremity Veins (12110)</summary>
         public static readonly DicomUID LowerExtremityVeins12110 = new DicomUID("1.2.840.10008.6.1.577", "Lower Extremity Veins (12110)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Abdominal Arteries (Paired) (12111)</summary>
-        public static readonly DicomUID AbdominalArteriesPaired12111 = new DicomUID("1.2.840.10008.6.1.578", "Abdominal Arteries (Paired) (12111)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Abdominopelvic Arteries (Paired) (12111)</summary>
+        public static readonly DicomUID AbdominopelvicArteriesPaired12111 = new DicomUID("1.2.840.10008.6.1.578", "Abdominopelvic Arteries (Paired) (12111)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Abdominopelvic Arteries (Unpaired) (12112)</summary>
         public static readonly DicomUID AbdominopelvicArteriesUnpaired12112 = new DicomUID("1.2.840.10008.6.1.579", "Abdominopelvic Arteries (Unpaired) (12112)", DicomUidType.ContextGroupName, false);
@@ -6544,8 +6646,8 @@ namespace Dicom
         ///<summary>Context Group Name: Robotic Delivery Device Dose Rate Units (9560)</summary>
         public static readonly DicomUID RoboticDeliveryDeviceDoseRateUnits9560 = new DicomUID("1.2.840.10008.6.1.1311", "Robotic Delivery Device Dose Rate Units (9560)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Anatomic Structures for Anatomic Pathology (8134)</summary>
-        public static readonly DicomUID AnatomicStructuresForAnatomicPathology8134 = new DicomUID("1.2.840.10008.6.1.1312", "Anatomic Structures for Anatomic Pathology (8134)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Anatomic Structures (8134)</summary>
+        public static readonly DicomUID AnatomicStructures8134 = new DicomUID("1.2.840.10008.6.1.1312", "Anatomic Structures (8134)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Mediastinum Finding or Feature (6148)</summary>
         public static readonly DicomUID MediastinumFindingOrFeature6148 = new DicomUID("1.2.840.10008.6.1.1313", "Mediastinum Finding or Feature (6148)", DicomUidType.ContextGroupName, false);
@@ -6561,6 +6663,120 @@ namespace Dicom
 
         ///<summary>Context Group Name: Parts of Organs (Lateralized) (12131)</summary>
         public static readonly DicomUID PartsOfOrgansLateralized12131 = new DicomUID("1.2.840.10008.6.1.1317", "Parts of Organs (Lateralized) (12131)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Treatment Termination Reasons (9561)</summary>
+        public static readonly DicomUID TreatmentTerminationReasons9561 = new DicomUID("1.2.840.10008.6.1.1318", "Treatment Termination Reasons (9561)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Treatment Delivery Person Roles (9562)</summary>
+        public static readonly DicomUID RadiotherapyTreatmentDeliveryPersonRoles9562 = new DicomUID("1.2.840.10008.6.1.1319", "Radiotherapy Treatment Delivery Person Roles (9562)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Interlock Resolutions (9563)</summary>
+        public static readonly DicomUID InterlockResolutions9563 = new DicomUID("1.2.840.10008.6.1.1320", "Interlock Resolutions (9563)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Treatment Session Confirmation Assertions (9564)</summary>
+        public static readonly DicomUID TreatmentSessionConfirmationAssertions9564 = new DicomUID("1.2.840.10008.6.1.1321", "Treatment Session Confirmation Assertions (9564)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Treatment Tolerance Violation Causes (9565)</summary>
+        public static readonly DicomUID TreatmentToleranceViolationCauses9565 = new DicomUID("1.2.840.10008.6.1.1322", "Treatment Tolerance Violation Causes (9565)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Clinical Tolerance Violation Types (9566)</summary>
+        public static readonly DicomUID ClinicalToleranceViolationTypes9566 = new DicomUID("1.2.840.10008.6.1.1323", "Clinical Tolerance Violation Types (9566)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Machine Tolerance Violation Types (9567)</summary>
+        public static readonly DicomUID MachineToleranceViolationTypes9567 = new DicomUID("1.2.840.10008.6.1.1324", "Machine Tolerance Violation Types (9567)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Treatment Interlocks (9568)</summary>
+        public static readonly DicomUID TreatmentInterlocks9568 = new DicomUID("1.2.840.10008.6.1.1325", "Treatment Interlocks (9568)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Isocentric Patient Support Position Parameters (9569)</summary>
+        public static readonly DicomUID IsocentricPatientSupportPositionParameters9569 = new DicomUID("1.2.840.10008.6.1.1326", "Isocentric Patient Support Position Parameters (9569)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Overridden Treatment Parameters (9570)</summary>
+        public static readonly DicomUID RTOverriddenTreatmentParameters9570 = new DicomUID("1.2.840.10008.6.1.1327", "RT Overridden Treatment Parameters (9570)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EEG Leads (3030)</summary>
+        public static readonly DicomUID EEGLeads3030 = new DicomUID("1.2.840.10008.6.1.1328", "EEG Leads (3030)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Lead locations near or in muscles (3031)</summary>
+        public static readonly DicomUID LeadLocationsNearOrInMuscles3031 = new DicomUID("1.2.840.10008.6.1.1329", "Lead locations near or in muscles (3031)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Lead locations near peripheral nerves (3032)</summary>
+        public static readonly DicomUID LeadLocationsNearPeripheralNerves3032 = new DicomUID("1.2.840.10008.6.1.1330", "Lead locations near peripheral nerves (3032)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EOG Leads (3033)</summary>
+        public static readonly DicomUID EOGLeads3033 = new DicomUID("1.2.840.10008.6.1.1331", "EOG Leads (3033)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Body Position Channels (3034)</summary>
+        public static readonly DicomUID BodyPositionChannels3034 = new DicomUID("1.2.840.10008.6.1.1332", "Body Position Channels (3034)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EEG Annotations – Neurophysiologic Enumerations (EEG) (3035)</summary>
+        public static readonly DicomUID EEGAnnotationsNeurophysiologicEnumerationsEEG3035 = new DicomUID("1.2.840.10008.6.1.1333", "EEG Annotations – Neurophysiologic Enumerations (EEG) (3035)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EMG Annotations – Neurophysiological Enumerations (EMG) (3036)</summary>
+        public static readonly DicomUID EMGAnnotationsNeurophysiologicalEnumerationsEMG3036 = new DicomUID("1.2.840.10008.6.1.1334", "EMG Annotations – Neurophysiological Enumerations (EMG) (3036)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EOG Annotations – Neurophysiological Enumerations (EOG) (3037)</summary>
+        public static readonly DicomUID EOGAnnotationsNeurophysiologicalEnumerationsEOG3037 = new DicomUID("1.2.840.10008.6.1.1335", "EOG Annotations – Neurophysiological Enumerations (EOG) (3037)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Pattern Events  (3038)</summary>
+        public static readonly DicomUID PatternEvents3038 = new DicomUID("1.2.840.10008.6.1.1336", "Pattern Events  (3038)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Device-related and Environment-related Events (3039)</summary>
+        public static readonly DicomUID DeviceRelatedAndEnvironmentRelatedEvents3039 = new DicomUID("1.2.840.10008.6.1.1337", "Device-related and Environment-related Events (3039)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EEG Annotations - Neurological Monitoring Measurements (3040)</summary>
+        public static readonly DicomUID EEGAnnotationsNeurologicalMonitoringMeasurements3040 = new DicomUID("1.2.840.10008.6.1.1338", "EEG Annotations - Neurological Monitoring Measurements (3040)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: OB-GYN Ultrasound Report Document Titles (12024)</summary>
+        public static readonly DicomUID OBGYNUltrasoundReportDocumentTitles12024 = new DicomUID("1.2.840.10008.6.1.1339", "OB-GYN Ultrasound Report Document Titles (12024)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Automation of Measurement (7230)</summary>
+        public static readonly DicomUID AutomationOfMeasurement7230 = new DicomUID("1.2.840.10008.6.1.1340", "Automation of Measurement (7230)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: OB-GYN Ultrasound Beam Path (12025)</summary>
+        public static readonly DicomUID OBGYNUltrasoundBeamPath12025 = new DicomUID("1.2.840.10008.6.1.1341", "OB-GYN Ultrasound Beam Path (12025)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Angle Measurements (7550)</summary>
+        public static readonly DicomUID AngleMeasurements7550 = new DicomUID("1.2.840.10008.6.1.1342", "Angle Measurements (7550)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Generic Purpose of Reference to Images and Coordinates in Measurements (7551)</summary>
+        public static readonly DicomUID GenericPurposeOfReferenceToImagesAndCoordinatesInMeasurements7551 = new DicomUID("1.2.840.10008.6.1.1343", "Generic Purpose of Reference to Images and Coordinates in Measurements (7551)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Generic Purpose of Reference to Images in Measurements (7552)</summary>
+        public static readonly DicomUID GenericPurposeOfReferenceToImagesInMeasurements7552 = new DicomUID("1.2.840.10008.6.1.1344", "Generic Purpose of Reference to Images in Measurements (7552)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Generic Purpose of Reference to Coordinates in Measurements (7553)</summary>
+        public static readonly DicomUID GenericPurposeOfReferenceToCoordinatesInMeasurements7553 = new DicomUID("1.2.840.10008.6.1.1345", "Generic Purpose of Reference to Coordinates in Measurements (7553)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fitzpatrick Skin Type (4401)</summary>
+        public static readonly DicomUID FitzpatrickSkinType4401 = new DicomUID("1.2.840.10008.6.1.1346", "Fitzpatrick Skin Type (4401)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: History of Malignant Melanoma (4402)</summary>
+        public static readonly DicomUID HistoryOfMalignantMelanoma4402 = new DicomUID("1.2.840.10008.6.1.1347", "History of Malignant Melanoma (4402)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: History of Melanoma in Situ (4403)</summary>
+        public static readonly DicomUID HistoryOfMelanomaInSitu4403 = new DicomUID("1.2.840.10008.6.1.1348", "History of Melanoma in Situ (4403)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: History of Non-Melanoma Skin Cancer (4404)</summary>
+        public static readonly DicomUID HistoryOfNonMelanomaSkinCancer4404 = new DicomUID("1.2.840.10008.6.1.1349", "History of Non-Melanoma Skin Cancer (4404)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: History of Non-Melanoma Skin Cancer (4405)</summary>
+        public static readonly DicomUID HistoryOfNonMelanomaSkinCancer4405 = new DicomUID("1.2.840.10008.6.1.1350", "History of Non-Melanoma Skin Cancer (4405)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Reported Lesion Characteristics (4406)</summary>
+        public static readonly DicomUID PatientReportedLesionCharacteristics4406 = new DicomUID("1.2.840.10008.6.1.1351", "Patient Reported Lesion Characteristics (4406)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Lesion Palpation Findings (4407)</summary>
+        public static readonly DicomUID LesionPalpationFindings4407 = new DicomUID("1.2.840.10008.6.1.1352", "Lesion Palpation Findings (4407)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Lesion Visual Findings (4408)</summary>
+        public static readonly DicomUID LesionVisualFindings4408 = new DicomUID("1.2.840.10008.6.1.1353", "Lesion Visual Findings (4408)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Lesion Visual Findings (4409)</summary>
+        public static readonly DicomUID LesionVisualFindings4409 = new DicomUID("1.2.840.10008.6.1.1354", "Lesion Visual Findings (4409)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Abdominopelvic Vessels (12125)</summary>
+        public static readonly DicomUID AbdominopelvicVessels12125 = new DicomUID("1.2.840.10008.6.1.1355", "Abdominopelvic Vessels (12125)", DicomUidType.ContextGroupName, false);
 
     }
 }
