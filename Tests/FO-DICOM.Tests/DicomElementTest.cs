@@ -125,7 +125,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomPersonName_TwoNames_YieldsTwoValues()
         {
-            var element = new DicomPersonName(DicomTag.ConsultingPhysicianName, new [] { "Doe^John", "Bar^Foo"});
+            var element = new DicomPersonName(DicomTag.ConsultingPhysicianName, new[] { "Doe^John", "Bar^Foo" });
             var actual = element.Get<string[]>();
             Assert.Equal(2, actual.Length);
             Assert.Equal("Bar^Foo", actual[1]);
@@ -134,20 +134,20 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomDecimalString_WorksInCommaCulture()
         {
-          var currentCulture = Thread.CurrentThread.CurrentCulture;
-          try
-          {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
+            var currentCulture = Thread.CurrentThread.CurrentCulture;
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
 
-            var decimals = new[] { 0.1m, 1e10m, -1m, 0, 3.141592656m };
-            var element = new DicomDecimalString(DicomTag.CumulativeMetersetWeight, decimals);
-            Assert.Equal(decimals, element.Get<decimal[]>());
-            Assert.Equal(decimals.Select(x => (double)x), element.Get<double[]>());
-          }
-          finally
-          {
-            Thread.CurrentThread.CurrentCulture = currentCulture;
-          }
+                var decimals = new[] { 0.1m, 1e10m, -1m, 0, 3.141592656m };
+                var element = new DicomDecimalString(DicomTag.CumulativeMetersetWeight, decimals);
+                Assert.Equal(decimals, element.Get<decimal[]>());
+                Assert.Equal(decimals.Select(x => (double)x), element.Get<double[]>());
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = currentCulture;
+            }
         }
 
         [Fact]
@@ -469,31 +469,31 @@ namespace FellowOakDicom.Tests
 
         public static IEnumerable<object[]> KnownTransferSyntaxes = new[]
         {
-            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.JPEG2000Lossless, DicomTransferSyntax.JPEG2000Lossless },
             new object[] { DicomUID.ImplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian },
-            new object[] { DicomUID.JPEGExtended24, DicomTransferSyntax.JPEGProcess2_4 },
-            new object[] { DicomUID.JPEG2000LosslessOnly, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.JPEGExtended12Bit, DicomTransferSyntax.JPEGProcess2_4 },
+            new object[] { DicomUID.JPEG2000Lossless, DicomTransferSyntax.JPEG2000Lossless },
             new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomTransferSyntax.ExplicitVRBigEndian },
             new object[] { DicomUID.GEPrivateImplicitVRBigEndian, DicomTransferSyntax.GEPrivateImplicitVRBigEndian },
-            new object[] { DicomUID.MPEG2, DicomTransferSyntax.MPEG2 }
+            new object[] { DicomUID.MPEG2MPML, DicomTransferSyntax.MPEG2 }
         };
 
         public static IEnumerable<object[]> TransferSyntaxUids = new[]
         {
             new object[] { DicomUID.XMLEncodingRETIRED },
-            new object[] { DicomUID.MPEG4AVCH264HighProfileLevel42For2DVideo },
-            new object[] { DicomUID.JPEG2000Part2MultiComponentLosslessOnly },
+            new object[] { DicomUID.MPEG4HP422D },
+            new object[] { DicomUID.JPEG2000MCLossless },
             new object[] { DicomUID.JPIPReferencedDeflate },
             new object[] { DicomUID.RFC2557MIMEEncapsulationRETIRED }
         };
 
         public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
         {
-            new object[] { DicomUID.AbdominalArteriesPaired12111 },
+            new object[] { DicomUID.AbdominopelvicArteriesPaired12111 },
             new object[] { DicomUID.CTImageStorage },
-            new object[] { DicomUID.StorageCommitmentPushModelSOPClass },
+            new object[] { DicomUID.StorageCommitmentPushModel },
             new object[] { DicomUID.dicomTransferSyntax },
-            new object[] { DicomUID.PETColorPaletteSOPInstance }
+            new object[] { DicomUID.PETPalette }
         };
 
         #endregion

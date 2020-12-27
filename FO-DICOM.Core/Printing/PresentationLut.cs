@@ -17,7 +17,7 @@ namespace FellowOakDicom.Printing
         /// <summary>
         /// Gets the Presentation LUT SOP Class UID.
         /// </summary>
-        public static readonly DicomUID SopClassUid = DicomUID.PresentationLUTSOPClass;
+        public static readonly DicomUID SopClassUid = DicomUID.PresentationLUT;
 
         #endregion
 

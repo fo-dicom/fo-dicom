@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void AcceptApplicationInfo_WhenNotRequested_ApplicationInfoIsNotSet()
         {
-            var negotiation = new DicomExtendedNegotiation(DicomUID.Verification, (DicomServiceApplicationInfo) null);
+            var negotiation = new DicomExtendedNegotiation(DicomUID.Verification, (DicomServiceApplicationInfo)null);
             negotiation.AcceptApplicationInfo(new DicomCFindApplicationInfo(DicomCFindOption.DateTimeMatching | DicomCFindOption.FuzzySemanticMatching));
             Assert.Null(negotiation.RequestedApplicationInfo);
             Assert.Null(negotiation.AcceptedApplicationInfo);
@@ -42,20 +42,20 @@ namespace FellowOakDicom.Tests.Network
         [MemberData(nameof(OrderOfBytesTestData))]
         public void Constructor_WhenApplicationInfoIsSet_OrderOfBytesIsAsExpected(DicomServiceApplicationInfo appInfo, byte[] expectedByteOrder)
         {
-            var sopClass = DicomUID.PatientRootQueryRetrieveInformationModelFIND;
+            var sopClass = DicomUID.PatientRootQueryRetrieveInformationModelFind;
             var negotiation = new DicomExtendedNegotiation(sopClass, appInfo);
 
             Assert.Equal(expectedByteOrder, negotiation.RequestedApplicationInfo.GetValues());
             foreach (var neg in negotiation.RequestedApplicationInfo)
             {
-                Assert.Equal(expectedByteOrder[neg.Key-1], neg.Value);
+                Assert.Equal(expectedByteOrder[neg.Key - 1], neg.Value);
             }
         }
 
         [Fact]
         public void Constructor_WithCreatedApplicationInfo_ApplicationInfoTypeIsAsExpected()
         {
-            var sopClass = DicomUID.PatientRootQueryRetrieveInformationModelFIND;
+            var sopClass = DicomUID.PatientRootQueryRetrieveInformationModelFind;
             var appInfoType = typeof(DicomCFindApplicationInfo);
 
             var appInfo = DicomServiceApplicationInfo.Create(sopClass, new byte[] { 1 });
@@ -68,7 +68,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void Constructor_WithDelegateCreatedApplicationInfo_ApplicationInfoTypeIsAsExpected()
         {
-            var sopClass = DicomUID.BasicAnnotationBoxSOPClass;
+            var sopClass = DicomUID.BasicAnnotationBox;
             var appInfoType = typeof(DicomCFindApplicationInfo);
 
             DicomServiceApplicationInfo.OnCreateApplicationInfo = (sop, info) =>
@@ -79,7 +79,7 @@ namespace FellowOakDicom.Tests.Network
                 return null;
             };
 
-            var appInfo = DicomServiceApplicationInfo.Create(sopClass, new byte[] {1});
+            var appInfo = DicomServiceApplicationInfo.Create(sopClass, new byte[] { 1 });
             var negotiation = new DicomExtendedNegotiation(sopClass, appInfo);
 
             Assert.Equal(sopClass, negotiation.SopClassUid);
@@ -100,7 +100,7 @@ namespace FellowOakDicom.Tests.Network
             },
             new object[]
             {
-                new DicomCMoveApplicationInfo(DicomCMoveOption.RelationalRetrieval), 
+                new DicomCMoveApplicationInfo(DicomCMoveOption.RelationalRetrieval),
                 new byte[] { 1, 0 }
             },
             new object[]
@@ -110,12 +110,12 @@ namespace FellowOakDicom.Tests.Network
             },
             new object[]
             {
-                new DicomCStoreApplicationInfo(DicomLevelOfSupport.Level0, DicomLevelOfDigitalSignatureSupport.Level1, DicomElementCoercion.NotApplicable), 
+                new DicomCStoreApplicationInfo(DicomLevelOfSupport.Level0, DicomLevelOfDigitalSignatureSupport.Level1, DicomElementCoercion.NotApplicable),
                 new byte[] { 0, 0, 1, 0, 2 }
             },
             new object[]
             {
-                new DicomServiceApplicationInfo(new byte[] { 50, 30, 40, 10, 20 }), 
+                new DicomServiceApplicationInfo(new byte[] { 50, 30, 40, 10, 20 }),
                 new byte[] { 50, 30, 40, 10, 20 }
             },
         };

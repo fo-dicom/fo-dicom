@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Printing
         [MemberData(nameof(SopClassUids))]
         public void ImageSequence_NoSequenceInImageBox_ReturnsNull(DicomUID sopClassUid)
         {
-            var session = new FilmSession(DicomUID.BasicFilmSessionSOPClass);
+            var session = new FilmSession(DicomUID.BasicFilmSession);
             var filmBox = new FilmBox(session, null, DicomTransferSyntax.ImplicitVRLittleEndian);
             var imageBox = new ImageBox(filmBox, sopClassUid, null);
 
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Printing
         public static readonly IEnumerable<object[]> SopClassUids = new[]
         {
             new object[] { ImageBox.GraySOPClassUID },
-            new object[] { ImageBox.ColorSOPClassUID } 
+            new object[] { ImageBox.ColorSOPClassUID }
         };
 
         #endregion

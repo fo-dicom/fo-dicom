@@ -69,7 +69,7 @@ namespace FellowOakDicom.Tests.Bugs
                 OnResponseReceived = (req, rsp) =>
                 {
                     success = req.Dataset.InternalTransferSyntax.Equals(
-                                  DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41)) &&
+                                  DicomTransferSyntax.Lookup(DicomUID.MPEG4HP41)) &&
                               rsp.Status == DicomStatus.Success;
                     handle.Set();
                 }
@@ -85,6 +85,6 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.True(success);
         }
 
-#endregion
+        #endregion
     }
 }

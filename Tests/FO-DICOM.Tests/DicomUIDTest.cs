@@ -136,7 +136,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void CanParseGeneric()
         {
-            var uid = DicomUID.Parse<DicomUID>("1.2.3.4.5.6.7.8.9.0");
+            var uid = DicomParseable.Parse<DicomUID>("1.2.3.4.5.6.7.8.9.0");
             Assert.Equal("Unknown", uid.Name);
             Assert.Equal("1.2.3.4.5.6.7.8.9.0", uid.UID);
             Assert.Equal(DicomUidType.Unknown, uid.Type);
@@ -147,7 +147,7 @@ namespace FellowOakDicom.Tests
         {
             // just check some DicomUIDs randomly
             Assert.Equal(DicomStorageCategory.Image, DicomUID.SecondaryCaptureImageStorage.StorageCategory);
-            Assert.Equal(DicomStorageCategory.None, DicomUID.StorageCommitmentPushModelSOPClass.StorageCategory);
+            Assert.Equal(DicomStorageCategory.None, DicomUID.StorageCommitmentPushModel.StorageCategory);
             Assert.Equal(DicomStorageCategory.None, DicomUID.Verification.StorageCategory);
             Assert.Equal(DicomStorageCategory.StructuredReport, DicomUID.MammographyCADSRStorage.StorageCategory);
             Assert.Equal(DicomStorageCategory.Raw, DicomUID.RawDataStorage.StorageCategory);
@@ -166,8 +166,8 @@ namespace FellowOakDicom.Tests
             {
                 yield return new object[] { DicomUID.AbnormalLinesFindingOrFeature6103, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.AbstractMultiDimensionalImageModel, DicomUidType.ApplicationHostingModel, false };
-                yield return new object[] { DicomUID.NuclearMedicineImageStorageRETIRED, DicomUidType.SOPClass, true };
-                yield return new object[] { DicomUID.SPM2GRAYFrameOfReference, DicomUidType.FrameOfReference, false };
+                yield return new object[] { DicomUID.NuclearMedicineImageStorageRetiredRETIRED, DicomUidType.SOPClass, true };
+                yield return new object[] { DicomUID.SPM2GRAY, DicomUidType.FrameOfReference, false };
                 yield return new object[] { DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED, DicomUidType.SOPClass, true };
                 yield return new object[] { DicomUID.TransducerOrientation6, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.UltrasoundTransducerGeometry12033, DicomUidType.ContextGroupName, false };

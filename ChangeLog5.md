@@ -53,6 +53,6 @@
   * `DicomImage.Dataset`, `DicomImage.PixelData` and `DicomImage.PhotometricInterpretation`: do not load the DicomImage directly from filename if you also need access to the dataset, but load the DicomDataset from file first and then construct the DicomImage from this loaded DicomDataset. Then you can access both.
 * DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
 * DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncoding`, that is applied to all string-based tags.
-
+* in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
 
    

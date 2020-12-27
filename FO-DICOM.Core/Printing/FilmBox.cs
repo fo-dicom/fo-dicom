@@ -36,7 +36,7 @@ namespace FellowOakDicom.Printing
         /// <summary>
         /// Basic film box SOP class UID
         /// </summary>
-        public static readonly DicomUID SOPClassUID = DicomUID.BasicFilmBoxSOPClass;
+        public static readonly DicomUID SOPClassUID = DicomUID.BasicFilmBox;
 
         /// <summary>
         /// Basic film box SOP instance UID
@@ -392,7 +392,7 @@ namespace FellowOakDicom.Printing
         {
             InternalTransferSyntax = transferSyntax;
             _filmSession = filmSession;
-            if (sopInstance == null || sopInstance.UID == string.Empty)
+            if (string.IsNullOrEmpty(sopInstance?.UID))
             {
                 SOPInstanceUID = DicomUID.Generate();
             }
@@ -559,14 +559,14 @@ namespace FellowOakDicom.Printing
         /// </summary>
         private void CreateImageBox()
         {
-            DicomUID classUid = DicomUID.BasicGrayscaleImageBoxSOPClass;
+            DicomUID classUid = DicomUID.BasicGrayscaleImageBox;
 
             if (_filmSession.IsColor)
             {
-                classUid = DicomUID.BasicColorImageBoxSOPClass;
+                classUid = DicomUID.BasicColorImageBox;
             }
 
-            DicomUID sopInstance = new DicomUID(
+            var sopInstance = new DicomUID(
                 string.Format("{0}.{1}", SOPInstanceUID.UID, BasicImageBoxes.Count + 1),
                 SOPInstanceUID.Name,
                 SOPInstanceUID.Type);
@@ -625,17 +625,17 @@ namespace FellowOakDicom.Printing
                     {
                         boxes.Add(
                             new RectF
-                                {
-                                    X = marginBounds.X + c * boxWidth,
-                                    Y = marginBounds.Y + r * boxHeight,
-                                    Width = boxWidth,
-                                    Height = boxHeight
-                                });
+                            {
+                                X = marginBounds.X + c * boxWidth,
+                                Y = marginBounds.Y + r * boxHeight,
+                                Width = boxWidth,
+                                Height = boxHeight
+                            });
                     }
                 }
                 return boxes.ToArray();
             }
-            
+
             return null;
         }
 
@@ -665,12 +665,12 @@ namespace FellowOakDicom.Printing
                     {
                         boxes.Add(
                             new RectF
-                                {
-                                    X = marginBounds.X + c * boxWidth,
-                                    Y = marginBounds.Y + r * boxHeight,
-                                    Width = boxWidth,
-                                    Height = boxHeight
-                                });
+                            {
+                                X = marginBounds.X + c * boxWidth,
+                                Y = marginBounds.Y + r * boxHeight,
+                                Width = boxWidth,
+                                Height = boxHeight
+                            });
                     }
                 }
                 return boxes.ToArray();
@@ -703,12 +703,12 @@ namespace FellowOakDicom.Printing
 
                         boxes.Add(
                             new RectF
-                                {
-                                    X = marginBounds.X + c * boxWidth,
-                                    Y = marginBounds.Y + r * boxHeight,
-                                    Width = boxWidth,
-                                    Height = boxHeight
-                                });
+                            {
+                                X = marginBounds.X + c * boxWidth,
+                                Y = marginBounds.Y + r * boxHeight,
+                                Width = boxWidth,
+                                Height = boxHeight
+                            });
                     }
                 }
 

@@ -23,7 +23,7 @@
     {
         var uid = kv.Value;
 #>
-    <uid uid="<#= uid.Item1 #>" keyword="<#= ToUidKeyword(uid.Item1, uid.Item2) #>" type="<#= uid.Item3 #>"<#= uid.Item4 ? " retired=\"true\"" : "" #>><#= ToXmlValidDescription(uid.Item2) #></uid>
+    <uid uid="<#= uid.Item1 #>" keyword="<#= ToUidKeyword(uid.Item5, uid.Item1, uid.Item2) #>" type="<#= uid.Item3 #>"<#= uid.Item4 ? " retired=\"true\"" : "" #>><#= ToXmlValidDescription(uid.Item2) #></uid>
 <#
     }
 #>

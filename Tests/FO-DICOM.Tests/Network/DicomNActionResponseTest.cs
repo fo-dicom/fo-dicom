@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Network
         public void ActionTypeIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
         {
             var request = new DicomNActionRequest(
-                DicomUID.BasicFilmSessionSOPClass,
+                DicomUID.BasicFilmSession,
                 new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                 1);
             var response = new DicomNActionResponse(request, DicomStatus.Success);
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Network
         public void SOPInstanceUIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
         {
             var request = new DicomNActionRequest(
-                DicomUID.BasicFilmSessionSOPClass,
+                DicomUID.BasicFilmSession,
                 new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                 1);
             var response = new DicomNActionResponse(request, DicomStatus.Success);
@@ -42,7 +42,7 @@ namespace FellowOakDicom.Tests.Network
         public void ToString_ResponseWithoutActionTypeID_DoesNotThrow()
         {
             var command = new DicomDataset(new DicomUnsignedShort(DicomTag.CommandField, (ushort)DicomCommandField.NActionResponse),
-                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.BasicFilmSessionSOPClass),
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.BasicFilmSession),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new DicomUID("1.2.3", null, DicomUidType.SOPInstance)),
                 new DicomUnsignedShort(DicomTag.MessageIDBeingRespondedTo, 1));
             var response = new DicomNActionResponse(command) { Status = DicomStatus.Success };

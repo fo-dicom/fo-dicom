@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Bugs
         private static readonly DicomTransferSyntax[] _acceptedVideoTransferSyntaxes =
         {
             DicomTransferSyntax.MPEG2,
-            DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41),
+            DicomTransferSyntax.Lookup(DicomUID.MPEG4HP41),
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 

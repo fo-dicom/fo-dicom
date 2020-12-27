@@ -34,7 +34,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus storeStatus = DicomStatus.Pending;
                 storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 
-                var filmSession = new FilmSession(DicomUID.BasicFilmSessionSOPClass, DicomUID.Generate());
+                var filmSession = new FilmSession(DicomUID.BasicFilmSession, DicomUID.Generate());
                 var printReq = new DicomNCreateRequest(filmSession.SOPClassUID, filmSession.SOPInstanceUID);
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
@@ -64,7 +64,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus storeStatus = DicomStatus.Pending;
                 storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 
-                var filmSession = new FilmSession(DicomUID.BasicFilmSessionSOPClass, DicomUID.Generate());
+                var filmSession = new FilmSession(DicomUID.BasicFilmSession, DicomUID.Generate());
                 var printReq = new DicomNCreateRequest(filmSession.SOPClassUID, filmSession.SOPInstanceUID);
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
@@ -94,7 +94,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus storeStatus = DicomStatus.Pending;
                 storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 
-                var filmSession = new FilmSession(DicomUID.BasicFilmSessionSOPClass, DicomUID.Generate());
+                var filmSession = new FilmSession(DicomUID.BasicFilmSession, DicomUID.Generate());
                 var printReq = new DicomNCreateRequest(filmSession.SOPClassUID, filmSession.SOPInstanceUID);
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
@@ -128,7 +128,7 @@ namespace FellowOakDicom.Tests.Network
         public AcceptOnlyEchoPrintManagementProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
             ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
         {
-            AcceptedSopClasses.AddRange(new[] { DicomUID.Verification, DicomUID.BasicGrayscalePrintManagementMetaSOPClass });
+            AcceptedSopClasses.AddRange(new[] { DicomUID.Verification, DicomUID.BasicGrayscalePrintManagementMeta });
         }
     }
 

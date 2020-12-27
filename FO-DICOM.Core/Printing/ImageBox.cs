@@ -25,12 +25,12 @@ namespace FellowOakDicom.Printing
         /// <summary>
         /// Basic color image box SOP
         /// </summary>
-        public static readonly DicomUID ColorSOPClassUID = DicomUID.BasicColorImageBoxSOPClass;
+        public static readonly DicomUID ColorSOPClassUID = DicomUID.BasicColorImageBox;
 
         /// <summary>
         /// Basic gray scale image box SOP
         /// </summary>
-        public static readonly DicomUID GraySOPClassUID = DicomUID.BasicGrayscaleImageBoxSOPClass;
+        public static readonly DicomUID GraySOPClassUID = DicomUID.BasicGrayscaleImageBox;
 
         /// <summary>
         /// Image box SOP class UID

@@ -102,8 +102,8 @@ namespace FellowOakDicom.Network
             }
 
             if (sopClass.Name.Contains("- FIND") ||
-                sopClass == DicomUID.UnifiedProcedureStepPullSOPClass ||
-                sopClass == DicomUID.UnifiedProcedureStepWatchSOPClass)
+                sopClass == DicomUID.UnifiedProcedureStepPull ||
+                sopClass == DicomUID.UnifiedProcedureStepWatch)
             {
                 return new DicomCFindApplicationInfo(rawApplicationInfo);
             }
@@ -157,7 +157,7 @@ namespace FellowOakDicom.Network
         /// <exception cref="ArgumentException">Invalid field index.</exception>
         public void AddOrUpdate(byte index, bool value)
         {
-            this[index] = value ? (byte) 1 : (byte) 0;
+            this[index] = value ? (byte)1 : (byte)0;
         }
 
         /// <summary>

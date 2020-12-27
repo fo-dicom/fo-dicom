@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Network
         public void EventTypeIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
         {
             var request = new DicomNEventReportRequest(
-                DicomUID.BasicFilmSessionSOPClass,
+                DicomUID.BasicFilmSession,
                 new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                 1);
             var response = new DicomNEventReportResponse(request, DicomStatus.Success);
@@ -35,7 +35,7 @@ namespace FellowOakDicom.Tests.Network
         public void SOPInstanceUIDGetter_ResponseCreatedFromRequest_DoesNotThrow()
         {
             var request = new DicomNEventReportRequest(
-                DicomUID.BasicFilmSessionSOPClass,
+                DicomUID.BasicFilmSession,
                 new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                 1);
             var response = new DicomNEventReportResponse(request, DicomStatus.Success);
@@ -79,8 +79,7 @@ namespace FellowOakDicom.Tests.Network
                     }
                 };
 
-                var nActionRequest = new DicomNActionRequest(DicomUID.StorageCommitmentPushModelSOPClass,
-                                DicomUID.StorageCommitmentPushModelSOPInstance, 1)
+                var nActionRequest = new DicomNActionRequest(DicomUID.StorageCommitmentPushModel, DicomUID.StorageCommitmentPushModel, 1)
                 {
                     Dataset = nActionDicomDataSet,
                     OnResponseReceived = (DicomNActionRequest request, DicomNActionResponse response) =>
@@ -206,7 +205,7 @@ namespace FellowOakDicom.Tests.Network
                                 }
                             }
                           };
-                    await SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.StorageCommitmentPushModelSOPInstance, 2) { Dataset = resultDs });
+                    await SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModel, DicomUID.StorageCommitmentPushModel, 2) { Dataset = resultDs });
                 }
             }
         }
