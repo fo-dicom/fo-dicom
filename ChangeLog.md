@@ -1,5 +1,6 @@
 #### v.4.0.8 (TBD)
 * Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
+* Bug fix: Incorrect failed validation for Vr Type DS, both .NET Core and Framework (#1141)
 * Update to DICOM Standard 2020e. Nema now also provides Keywords for the UIDs, these are now used. Breaking change: some UID keywords have changed.
 * Buf fix: Some non-retired DicomTags had a name including "RETIRED". Now fixed the generation of DicomTag names. (#1131)
 

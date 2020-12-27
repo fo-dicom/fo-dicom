@@ -67,3 +67,4 @@
 * [PoojaG-dev](https://github.com/PoojaG-dev)
 * [Abdullah Islam](https://github.com/abdullah248)
 * [Martin Nguyen](https://github.com/gladiatus55)
+* [James Allsopp](https://github.com/EthicsGradient)
