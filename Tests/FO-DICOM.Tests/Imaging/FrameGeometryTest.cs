@@ -216,5 +216,49 @@ namespace FellowOakDicom.Tests.Imaging
         }
 
 
+        [Theory]
+        [InlineData("CR-ModalitySequenceLUT.dcm", FrameGeometryType.Plane, 7.5)]
+        [InlineData("CT1_J2KI", FrameGeometryType.Volume, 33.0734)]
+        [InlineData("GH645.dcm", FrameGeometryType.None, 0.0)]
+        public void FrameGeometryMeassureDistance(string filename, FrameGeometryType expectedType, double expectedMeassure)
+        {
+            var image = DicomFile.Open(TestData.Resolve(filename));
+            var geometry = new FrameGeometry(image.Dataset);
+            Assert.Equal(expectedType, geometry.GeometryType);
+            Assert.Equal(expectedType != FrameGeometryType.None, geometry.HasGeometryData);
+            if (geometry.HasGeometryData)
+            {
+                var point1 = geometry.TransformImagePointToPatient(new Point2(0, 0));
+                var point2 = geometry.TransformImagePointToPatient(new Point2(30, 40));
+                var distance = point1.Distance(point2);
+                Assert.Equal(expectedMeassure, distance, 4);
+            }
+        }
+
+        [Fact]
+        public void ThrowWhenTransformingWithoutGeometryData()
+        {
+            // load a dicom image that does not contain pixel spacing (removed when anonymization was done)
+            var image = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
+            var geometry = new FrameGeometry(image.Dataset);
+            Assert.Equal(FrameGeometryType.None, geometry.GeometryType);
+            var exception = Record.Exception(() => geometry.TransformImagePointToPatient(new Point2(10, 10)));
+            Assert.NotNull(exception);
+            Assert.IsAssignableFrom<DicomException>(exception);
+        }
+
+
+        [Fact]
+        public void InitialState()
+        {
+            // load a dicom image that does not contain pixel spacing (removed when anonymization was done)
+            var geometry = new FrameGeometry(new DicomDataset());
+            Assert.Equal(FrameGeometryType.None, geometry.GeometryType);
+            var exception = Record.Exception(() => geometry.TransformImagePointToPatient(new Point2(10, 10)));
+            Assert.NotNull(exception);
+            Assert.IsAssignableFrom<DicomException>(exception);
+        }
+
+
     }
 }
