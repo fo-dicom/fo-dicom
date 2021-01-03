@@ -30,6 +30,13 @@ namespace FO_DICOM.AspNetCoreTest
             services.AddDicomServer<MyDicomService>(o => {
                 o.Port = 104;
             });
+
+            services.AddDicomServer(
+                o => o.Port = 105,
+                builder => builder
+                    .AnswerDicomEcho()
+                    .CheckAssociationForCalledAET("SERVER")
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -24,14 +24,17 @@ namespace FellowOakDicom.AspNetCore
                     })
           ;
 
+        #region Add DicomServer with own class implementation
 
         public static IServiceCollection AddDicomServer<T>(this IServiceCollection services, DicomServerServiceOptions options) where T : DicomService, IDicomServiceProvider
             => services
             .UseFellowOakDicom()
             .AddTransient<IHostedService>(s =>
             {
-                var dicomService = new DicomServerService<T>(s.GetRequiredService<IConfiguration>(), s.GetRequiredService<IDicomServerFactory>());
-                dicomService.Options = options;
+                var dicomService = new DicomServerService<T>(s.GetRequiredService<IConfiguration>(), s.GetRequiredService<IDicomServerFactory>())
+                {
+                    Options = options
+                };
                 return dicomService;
             });
 
@@ -45,6 +48,23 @@ namespace FellowOakDicom.AspNetCore
                 return dicomService;
             });
 
+        #endregion
+
+        #region Add General Purpose Service
+
+        public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServerServiceOptions> optionsAction, Action<DicomServiceBuilder> builderAction)
+            => services
+            .UseFellowOakDicom()
+            .AddTransient<IHostedService>(s =>
+            {
+                var builder = new DicomServiceBuilder();
+                builderAction(builder);
+                var dicomService = new GeneralPurposeDicomServerService(s.GetRequiredService<IConfiguration>(), s.GetRequiredService<IDicomServerFactory>(), builder);
+                optionsAction(dicomService.Options);
+                return dicomService;
+            });
+
+        #endregion
     }
 
 
