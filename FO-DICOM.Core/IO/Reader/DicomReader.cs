@@ -316,7 +316,12 @@ namespace FellowOakDicom.IO.Reader
                     var element = source.GetUInt16();
                     DicomPrivateCreator creator = null;
 
-                    if (@group.IsOdd() && element > 0x00ff)
+                    // according to
+                    // http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.8.html
+                    // The requirements of this section do not allow any use of elements in the ranges 
+                    // (gggg,0001-000F) and (gggg,0100-0FFF) where gggg is odd.
+                    // So element at [0x0100-0x0FFF] should not has a creator
+                    if (@group.IsOdd() && element >= 0x1000)
                     {
                         var card = (uint)(@group << 16) + (uint)(element >> 8);
                         lock (_locker)
@@ -432,7 +437,11 @@ namespace FellowOakDicom.IO.Reader
 
                     if (_tag.IsPrivate)
                     {
-                        if (_tag.Element != 0x0000 && _tag.Element <= 0x00ff && _vr == DicomVR.UN)
+                        // according to
+                        // http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.8.html
+                        // Private Creator Data Elements numbered (gggg,0010-00FF) (gggg is odd)
+                        // The VR of the private identification code shall be LO (Long String) and the VM shall be equal to 1.
+                        if (_tag.Element >= 0x0010 && _tag.Element <= 0x00ff && _vr == DicomVR.UN)
                         {
                             _vr = DicomVR.LO; // force private creator to LO
                         }
@@ -665,7 +674,11 @@ namespace FellowOakDicom.IO.Reader
                     }
 
                     // parse private creator value and add to lookup table
-                    if (_tag.IsPrivate && _tag.Element != 0x0000 && _tag.Element <= 0x00ff)
+                    // according to
+                    // http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.8.html
+                    // Private Creator Data Elements numbered (gggg,0010-00FF) (gggg is odd)
+                    // The VR of the private identification code shall be LO (Long String) and the VM shall be equal to 1.
+                    if (_tag.IsPrivate && _tag.Element >= 0x0010 && _tag.Element <= 0x00ff)
                     {
                         var creator =
                             DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
@@ -814,7 +827,11 @@ namespace FellowOakDicom.IO.Reader
                     _observer.OnElement(source, _tag, _vr, buffer);
 
                     // parse private creator value and add to lookup table
-                    if (_tag.IsPrivate && _tag.Element != 0x0000 && _tag.Element <= 0x00ff)
+                    // according to
+                    // http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.8.html
+                    // Private Creator Data Elements numbered (gggg,0010-00FF) (gggg is odd)
+                    // The VR of the private identification code shall be LO (Long String) and the VM shall be equal to 1.
+                    if (_tag.IsPrivate && _tag.Element >= 0x0010 && _tag.Element <= 0x00ff)
                     {
                         var creator =
                             DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)

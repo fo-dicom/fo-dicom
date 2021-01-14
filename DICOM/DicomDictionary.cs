@@ -44,6 +44,7 @@ namespace Dicom
                 DicomVR.OD,
                 DicomVR.OF,
                 DicomVR.OL,
+                DicomVR.OV,
                 DicomVR.OW,
                 DicomVR.PN,
                 DicomVR.SH,
@@ -51,13 +52,15 @@ namespace Dicom
                 DicomVR.SQ,
                 DicomVR.SS,
                 DicomVR.ST,
+                DicomVR.SV,
                 DicomVR.TM,
                 DicomVR.UC,
                 DicomVR.UI,
                 DicomVR.UL,
                 DicomVR.UR,
                 DicomVR.US,
-                DicomVR.UT);
+                DicomVR.UT,
+                DicomVR.UV);
 
         public static readonly DicomDictionaryEntry PrivateCreatorTag =
             new DicomDictionaryEntry(
@@ -256,7 +259,11 @@ namespace Dicom
                 }
 
                 // special case for private creator tag
-                if (tag.IsPrivate && tag.Element != 0x0000 && tag.Element <= 0x00ff)
+                // according to
+                // http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.8.html
+                // The requirements of this section do not allow any use of elements in the ranges 
+                // (gggg,0001-000F) and (gggg,0100-0FFF) where gggg is odd.
+                if (tag.IsPrivate && tag.Element >= 0x0010 && tag.Element <= 0x00ff)
                 {
                     return PrivateCreatorTag;
                 }
