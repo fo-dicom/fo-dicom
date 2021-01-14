@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="Bugs\GH1049.cs" />
     <Compile Include="Bugs\GH1103.cs" />
+    <Compile Include="Bugs\GH1146.cs" />
     <Compile Include="Bugs\GH319.cs" />
     <Compile Include="Bugs\GH328.cs" />
     <Compile Include="Bugs\GH340.cs" />
@@ -286,6 +287,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH1049_planar_1.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\GH1146.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\GH487.dcm">
