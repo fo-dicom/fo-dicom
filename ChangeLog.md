@@ -4,6 +4,7 @@
 * Update to DICOM Standard 2020e. Nema now also provides Keywords for the UIDs, these are now used. Breaking change: some UID keywords have changed.
 * Bug fix: Some non-retired DicomTags had a name including "RETIRED". Now fixed the generation of DicomTag names. (#1131)
 * FrameGeometry is enhanced so that it also works for DX, CR or MG images. (#1138)
+* Private Creator UN tags are converted to LO (#1146)
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)
