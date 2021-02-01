@@ -12,9 +12,9 @@ namespace FellowOakDicom.AspNetCore.Server
     class GeneralPurposeDicomServerService : IHostedService
     {
         private IDicomServer _server;
-        private IDicomServerFactory _serverFactory;
-        private IConfiguration _configuration;
-        private DicomServiceBuilder _serviceBuilder;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IConfiguration _configuration;
+        private readonly DicomServiceBuilder _serviceBuilder;
 
         public DicomServerServiceOptions Options { get; set; } = new DicomServerServiceOptions();
 

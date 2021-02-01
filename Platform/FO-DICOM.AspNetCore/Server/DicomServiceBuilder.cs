@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Network;
 using System;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.AspNetCore.Server
 {
@@ -10,6 +11,7 @@ namespace FellowOakDicom.AspNetCore.Server
     {
         internal Func<DicomCEchoRequest, DicomCEchoResponse> EchoHandler { get; set; } = null;
         internal Func<DicomAssociation, bool> AssociationRequestHandler { get; set; } = null;
+        internal Func<InstanceReceivedEventArgs, Task<bool>> InstanceReceivedHandlerAsync { get; set; } = null;
 
         internal DicomServiceBuilder()
         {
@@ -34,6 +36,12 @@ namespace FellowOakDicom.AspNetCore.Server
             return this;
         }
 
+        public DicomServiceBuilder OnInstanceReceived(Func<InstanceReceivedEventArgs, Task<bool>> p)
+        {
+            InstanceReceivedHandlerAsync = p;
+            return this;
+        }
+
         /// <summary>
         /// All DicomEchoRequests are answered with Success
         /// </summary>
@@ -46,7 +54,6 @@ namespace FellowOakDicom.AspNetCore.Server
         /// <summary>
         /// Sets a custom handler to be executed on EchoRequest
         /// </summary>
-
         public DicomServiceBuilder OnEcho(Func<DicomCEchoRequest, DicomCEchoResponse> echoHandler)
         {
             EchoHandler = echoHandler;
