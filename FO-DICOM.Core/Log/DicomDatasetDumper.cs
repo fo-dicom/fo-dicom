@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -19,7 +19,7 @@ namespace FellowOakDicom.Log
 
         private int _depth = 0;
 
-        private string _pad = String.Empty;
+        private string _pad = string.Empty;
 
         public DicomDatasetDumper(StringBuilder log, int width = 128, int valueLength = 64)
         {
@@ -42,7 +42,7 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnElement(DicomElement element)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             if (_depth > 0) sb.Append(_pad).Append("> ");
             sb.Append(element.Tag);
             sb.Append(' ');
@@ -74,7 +74,7 @@ namespace FellowOakDicom.Log
             }
             else
             {
-                var val = String.Join("/", element.Get<string[]>());
+                var val = string.Join("/", element.Get<string[]>());
                 var maxLengthToWrite = _value - sb.Length;
                 if (val.Length > maxLengthToWrite && maxLengthToWrite > 0)
                 {
@@ -103,7 +103,7 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public Task<bool> OnElementAsync(DicomElement element)
         {
-            return Task.FromResult(this.OnElement(element));
+            return Task.FromResult(OnElement(element));
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public Task<bool> OnFragmentItemAsync(IByteBuffer item)
         {
-            return Task.FromResult(this.OnFragmentItem(item));
+            return Task.FromResult(OnFragmentItem(item));
         }
 
         /// <summary>
@@ -212,16 +212,14 @@ namespace FellowOakDicom.Log
         {
             _depth++;
 
-            _pad = String.Empty;
-            for (int i = 0; i < _depth; i++) _pad += "  ";
+            _pad = "".PadRight(_depth * 2);
         }
 
         private void DecreaseDepth()
         {
             _depth--;
 
-            _pad = String.Empty;
-            for (int i = 0; i < _depth; i++) _pad += "  ";
+            _pad = "".PadRight(_depth * 2);
         }
     }
 }

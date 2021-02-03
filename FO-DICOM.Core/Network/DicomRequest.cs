@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -121,11 +121,11 @@ namespace FellowOakDicom.Network
                 throw new ArgumentException("Proposed Transfer Syntaxes array can't be empty");
             }
 
-            this.PresentationContext = new DicomPresentationContext(0, this.SOPClassUID);
+            PresentationContext = new DicomPresentationContext(0, SOPClassUID);
 
             foreach (var tx in transferSyntaxes)
             {
-                this.PresentationContext.AddTransferSyntax(tx);
+                PresentationContext.AddTransferSyntax(tx);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
@@ -90,7 +90,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public virtual string IPAddress
         {
-            get { return _ipAddress; }
+            get => _ipAddress;
             protected set
             {
                 if (_isIpAddressSet && !string.Equals(_ipAddress, value, StringComparison.OrdinalIgnoreCase))
@@ -106,7 +106,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public virtual int Port
         {
-            get { return _port; }
+            get => _port;
             protected set
             {
                 if (_isPortSet && _port != value)

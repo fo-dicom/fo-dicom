@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Mathematics;
@@ -15,7 +15,7 @@ namespace FellowOakDicom.IO
 
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             byte[] bytes = encoding.GetBytes(value);
 
@@ -24,7 +24,7 @@ namespace FellowOakDicom.IO
 
         public static IByteBuffer ToByteBuffer(string value, Encoding encoding, byte padding)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             byte[] bytes = encoding.GetBytes(value);
 

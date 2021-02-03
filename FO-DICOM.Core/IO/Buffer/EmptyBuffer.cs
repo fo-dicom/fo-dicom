@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -14,7 +14,7 @@ namespace FellowOakDicom.IO.Buffer
 
         internal EmptyBuffer()
         {
-            Data = new byte[0];
+            Data = Array.Empty<byte>();
         }
 
         public bool IsMemory => true;

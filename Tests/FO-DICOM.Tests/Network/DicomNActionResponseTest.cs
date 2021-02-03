@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -54,8 +54,10 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void StatusSetter_SetWithoutErrorComment_DoesNotAddErrorComment()
         {
-            DicomResponse x = new DicomNActionResponse(new DicomDataset());
-            x.Status = DicomStatus.Success;
+            DicomResponse x = new DicomNActionResponse(new DicomDataset())
+            {
+                Status = DicomStatus.Success
+            };
             Assert.False(x.Command.Contains(DicomTag.ErrorComment));
         }
 

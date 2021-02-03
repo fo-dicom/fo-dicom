@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -18,7 +18,7 @@ namespace FellowOakDicom
         /// <param name="creator">The textual value of the private creator</param>
         public DicomPrivateCreator(string creator)
         {
-            this.Creator = creator;
+            Creator = creator;
         }
 
         [DataMember]
@@ -40,7 +40,7 @@ namespace FellowOakDicom
         {
             if (Object.ReferenceEquals(obj, null)) return false;
             if (Object.ReferenceEquals(this, obj)) return true;
-            if (this.GetType() != obj.GetType()) return false;
+            if (GetType() != obj.GetType()) return false;
             return Equals(obj as DicomPrivateCreator);
         }
 

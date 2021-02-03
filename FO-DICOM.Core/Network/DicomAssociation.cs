@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Linq;
@@ -167,7 +167,7 @@ namespace FellowOakDicom.Network
                 }
             }
 
-            sb.Length = sb.Length - 1;
+            sb.Length -= 1;
             return sb.ToString();
         }
     }

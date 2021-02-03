@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -64,11 +64,11 @@ namespace FellowOakDicom.Log
 
                 if (args.Length >= 1 && args[0] is Exception exception)
                 {
-                    this.logger.Log(nlogLevel, exception, ordinalFormattedMessage, args);
+                    logger.Log(nlogLevel, exception, ordinalFormattedMessage, args);
                 }
                 else
                 {
-                    this.logger.Log(nlogLevel, ordinalFormattedMessage, args);
+                    logger.Log(nlogLevel, ordinalFormattedMessage, args);
                 }
             }
 

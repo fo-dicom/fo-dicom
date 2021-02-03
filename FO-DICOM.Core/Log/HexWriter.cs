@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.IO;
@@ -36,9 +36,11 @@ namespace FellowOakDicom.Log
 
         public static string ToString(byte[] data, int start, int length)
         {
-            HexWriter hw = new HexWriter(data);
-            hw.Start = start;
-            hw.End = start + length;
+            var hw = new HexWriter(data)
+            {
+                Start = start,
+                End = start + length
+            };
             return hw.ToString();
         }
 
@@ -48,16 +50,18 @@ namespace FellowOakDicom.Log
             stream.Position = start;
             stream.Read(data, 0, length);
 
-            HexWriter hw = new HexWriter(data);
-            hw.Start = 0;
-            hw.End = length;
-            hw.Offset = start;
+            var hw = new HexWriter(data)
+            {
+                Start = 0,
+                End = length,
+                Offset = start
+            };
             return hw.ToString();
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             for (int b = Start; b < End;)
             {

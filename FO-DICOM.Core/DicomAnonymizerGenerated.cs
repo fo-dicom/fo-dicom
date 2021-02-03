@@ -1,5 +1,5 @@
 ﻿
-// Copyright (c) 2012-2020 fo-dicom contributors.
+// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace FellowOakDicom
@@ -38,6 +38,7 @@ namespace FellowOakDicom
 				0008,0022;X/Z;;;;;;K;C;;
 				0008,002A;X/Z/D;;;;;;K;C;;
 				0018,1400;X/D;;;;;;;;C;
+				0018,11BB;D;;;;;;;;C;
 				0018,9424;X;;;;;;;;C;
 				0008,0032;X/Z;;;;;;K;C;;
 				0040,4035;X;;;;;;;;;
@@ -235,6 +236,8 @@ namespace FellowOakDicom
 				003A,0310;U;;K;;;;;;;
 				0008,1060;X;;;;;;;;;
 				0040,1010;X;;;;;;;;;
+				0400,0551;X;;;;;;;;;
+				0400,0552;X;;;;;;;;;
 				0040,A192;X;;;;;;K;C;;
 				0040,A402;U;;K;;;;;;;
 				0040,A193;X;;;;;;K;C;;
@@ -356,6 +359,7 @@ namespace FellowOakDicom
 				0032,1060;X/Z;;;;;;;;C;
 				0040,1001;X;;;;;;;;;
 				0040,1005;X;;;;;;;;;
+				0018,9937;X;;;;;;;;C;
 				0000,1001;U;;K;;;;;;;
 				0032,1032;X;;;;;;;;;
 				0032,1033;X;;;;;;;;;

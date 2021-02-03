@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests.IO
     {
         #region Fields
 
-        private readonly object locker = new object();
+        private readonly object _locker = new object();
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void StoragePath_Setter_DirectoryCreatedIfNonExisting()
         {
-            lock (this.locker)
+            lock (_locker)
             {
                 var path = TestData.Resolve("Temporary Path 1");
                 if (Directory.Exists(path)) Directory.Delete(path, true);
@@ -42,7 +42,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void StoragePath_Getter_DefaultEqualToUserTemp()
         {
-            lock (this.locker)
+            lock (_locker)
             {
                 var expected = Path.GetTempPath();
 
@@ -56,7 +56,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void Create_StoragePathNull_LocatedInUserTemp()
         {
-            lock (this.locker)
+            lock (_locker)
             {
                 TemporaryFile.StoragePath = null;
                 var temp = TemporaryFile.Create();
@@ -72,7 +72,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void Create_StoragePathNonNull_LocatedInSpecDirectory()
         {
-            lock (this.locker)
+            lock (_locker)
             {
                 var expected = TestData.Resolve("Temporary Path 2");
                 TemporaryFile.StoragePath = expected;
@@ -89,7 +89,7 @@ namespace FellowOakDicom.Tests.IO
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                lock (this.locker)
+                lock (_locker)
                 {
                     TemporaryFile.StoragePath = TestData.Resolve("Temporary Path 3");
                     var path = TemporaryFile.Create().Name;
@@ -101,7 +101,7 @@ namespace FellowOakDicom.Tests.IO
         [Fact]
         public void Create_StoragePathNull_FileAttributesContainTempFlag()
         {
-            lock (this.locker)
+            lock (_locker)
             {
                 TemporaryFile.StoragePath = null;
                 var path = TemporaryFile.Create().Name;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -149,7 +149,7 @@ namespace FellowOakDicom.Tests
 
                 if (entries.Count != 1)
                 {
-                    var entriesAsString = entries.Select(e => $"Tag = {e.Tag.ToString()}, Keyword = {e.Keyword}, Name = {e.Name}");
+                    var entriesAsString = entries.Select(e => $"Tag = {e.Tag}, Keyword = {e.Keyword}, Name = {e.Name}");
                     var message = $"The following entries all have the same hash code '{hashCode}': {string.Join(", ", entriesAsString)}";
                     Assert.True(entries.Count == 1, message);
                 }

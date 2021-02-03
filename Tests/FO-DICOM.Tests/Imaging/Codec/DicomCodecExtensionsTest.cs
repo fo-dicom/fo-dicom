@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging;
@@ -91,7 +91,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
                 try
                 {
                     var myOriginalDicomFilePath = testFile;
-                    DicomFile myOriginalDicomFile = DicomFile.Open(myOriginalDicomFilePath);
+                    var myOriginalDicomFile = DicomFile.Open(myOriginalDicomFilePath);
                     DicomFile myNewFile = myOriginalDicomFile.Clone(DicomTransferSyntax.RLELossless);
                     DicomFile myResFile = myNewFile.Clone(myOriginalDicomFile.Dataset.InternalTransferSyntax);
 

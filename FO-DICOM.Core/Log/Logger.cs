@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -189,7 +189,7 @@ namespace FellowOakDicom.Log
                 updatedMessage = updatedMessage.Substring(0, match.Index + positionDelta) + replacement
                                  + updatedMessage.Substring(match.Index + match.Length + positionDelta);
                 //Update positionDelta to account for differing lengths of substitution
-                positionDelta = positionDelta + (replacement.Length - match.Length);
+                positionDelta += (replacement.Length - match.Length);
             }
 
             if (everyMatchIsANumber)

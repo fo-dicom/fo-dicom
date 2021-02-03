@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -76,21 +76,21 @@ namespace FellowOakDicom.Imaging
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
-            var stride = GetStride(this.width, format);
+            var stride = GetStride(width, format);
 
-            this.image = new Bitmap(this.width, this.height, stride, format, this.pixels.Pointer);
+            image = new Bitmap(width, height, stride, format, pixels.Pointer);
 
             var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
             if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
             {
-                this.image.RotateFlip(rotateFlipType);
+                image.RotateFlip(rotateFlipType);
             }
         }
 
         /// <inheritdoc />
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
-            using var g = Graphics.FromImage(this.image);
+            using var g = Graphics.FromImage(image);
             foreach (var graphic in graphics)
             {
                 var layer = graphic.RenderImage(null).As<Image>();
@@ -102,10 +102,10 @@ namespace FellowOakDicom.Imaging
         public override IImage Clone()
         {
             return new WinFormsImage(
-                this.width,
-                this.height,
-                new PinnedIntArray(this.pixels.Data),
-                this.image == null ? null : new Bitmap(this.image));
+                width,
+                height,
+                new PinnedIntArray(pixels.Data),
+                image == null ? null : new Bitmap(image));
         }
 
         private static int GetStride(int width, PixelFormat format)
@@ -119,60 +119,44 @@ namespace FellowOakDicom.Imaging
         {
             if (flipX && flipY)
             {
-                switch (rotation)
+                return rotation switch
                 {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipXY;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipXY;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipXY;
-                    default:
-                        return RotateFlipType.RotateNoneFlipXY;
-                }
+                    90 => RotateFlipType.Rotate90FlipXY,
+                    180 => RotateFlipType.Rotate180FlipXY,
+                    270 => RotateFlipType.Rotate270FlipXY,
+                    _ => RotateFlipType.RotateNoneFlipXY,
+                };
             }
 
             if (flipX)
             {
-                switch (rotation)
+                return rotation switch
                 {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipX;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipX;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipX;
-                    default:
-                        return RotateFlipType.RotateNoneFlipX;
-                }
+                    90 => RotateFlipType.Rotate90FlipX,
+                    180 => RotateFlipType.Rotate180FlipX,
+                    270 => RotateFlipType.Rotate270FlipX,
+                    _ => RotateFlipType.RotateNoneFlipX,
+                };
             }
 
             if (flipY)
             {
-                switch (rotation)
+                return rotation switch
                 {
-                    case 90:
-                        return RotateFlipType.Rotate90FlipY;
-                    case 180:
-                        return RotateFlipType.Rotate180FlipY;
-                    case 270:
-                        return RotateFlipType.Rotate270FlipY;
-                    default:
-                        return RotateFlipType.RotateNoneFlipY;
-                }
+                    90 => RotateFlipType.Rotate90FlipY,
+                    180 => RotateFlipType.Rotate180FlipY,
+                    270 => RotateFlipType.Rotate270FlipY,
+                    _ => RotateFlipType.RotateNoneFlipY,
+                };
             }
 
-            switch (rotation)
+            return rotation switch
             {
-                case 90:
-                    return RotateFlipType.Rotate90FlipNone;
-                case 180:
-                    return RotateFlipType.Rotate180FlipNone;
-                case 270:
-                    return RotateFlipType.Rotate270FlipNone;
-                default:
-                    return RotateFlipType.RotateNoneFlipNone;
-            }
+                90 => RotateFlipType.Rotate90FlipNone,
+                180 => RotateFlipType.Rotate180FlipNone,
+                270 => RotateFlipType.Rotate270FlipNone,
+                _ => RotateFlipType.RotateNoneFlipNone,
+            };
         }
 
 

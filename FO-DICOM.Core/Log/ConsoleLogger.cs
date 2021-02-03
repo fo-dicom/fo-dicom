@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -36,27 +36,15 @@ namespace FellowOakDicom.Log
             lock (_lock)
             {
                 var previous = ConsoleForegroundColor;
-                switch (level)
+                ConsoleForegroundColor = level switch
                 {
-                    case LogLevel.Debug:
-                        ConsoleForegroundColor = ConsoleColor.Blue;
-                        break;
-                    case LogLevel.Info:
-                        ConsoleForegroundColor = ConsoleColor.White;
-                        break;
-                    case LogLevel.Warning:
-                        ConsoleForegroundColor = ConsoleColor.Yellow;
-                        break;
-                    case LogLevel.Error:
-                        ConsoleForegroundColor = ConsoleColor.Red;
-                        break;
-                    case LogLevel.Fatal:
-                        ConsoleForegroundColor = ConsoleColor.Magenta;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(level), level, null);
-                }
-
+                    LogLevel.Debug => ConsoleColor.Blue,
+                    LogLevel.Info => ConsoleColor.White,
+                    LogLevel.Warning => ConsoleColor.Yellow,
+                    LogLevel.Error => ConsoleColor.Red,
+                    LogLevel.Fatal => ConsoleColor.Magenta,
+                    _ => throw new ArgumentOutOfRangeException(nameof(level), level, null),
+                };
                 base.Log(level, msg, args);
                 ConsoleForegroundColor = previous;
             }
@@ -68,14 +56,8 @@ namespace FellowOakDicom.Log
         /// <remarks>Dispatcher method to allow for platform-specific handling.</remarks>
         private static ConsoleColor ConsoleForegroundColor
         {
-            get
-            {
-                return Console.ForegroundColor;
-            }
-            set
-            {
-                Console.ForegroundColor = value;
-            }
+            get => Console.ForegroundColor;
+            set => Console.ForegroundColor = value;
         }
     }
 

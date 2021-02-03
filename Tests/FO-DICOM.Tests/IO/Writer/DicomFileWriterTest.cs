@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Writer;
-using System.Net.Http.Headers;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Writer
@@ -14,13 +13,13 @@ namespace FellowOakDicom.Tests.IO.Writer
     {
         #region Fields
 
-        private const string Comment = "Some meaningful comment.";
+        private const string _comment = "Some meaningful comment.";
 
-        private static readonly DicomTag DoseCommentTag = DicomTag.DoseComment;
+        private static readonly DicomTag _doseCommentTag = DicomTag.DoseComment;
 
-        private readonly DicomFileMetaInformation metaInfo;
+        private readonly DicomFileMetaInformation _metaInfo;
 
-        private readonly DicomDataset dataset;
+        private readonly DicomDataset _dataset;
 
         private readonly object _locker = new object();
 
@@ -30,15 +29,15 @@ namespace FellowOakDicom.Tests.IO.Writer
 
         public DicomFileWriterTest()
         {
-            this.metaInfo = new DicomFileMetaInformation
+            _metaInfo = new DicomFileMetaInformation
                                {
                                    MediaStorageSOPClassUID = DicomUID.RTDoseStorage,
                                    TransferSyntax = DicomTransferSyntax.JPEG2000Lossless
                                };
-            this.dataset = new DicomDataset(
+            _dataset = new DicomDataset(
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
-                new DicomLongString(DoseCommentTag, Comment));
+                new DicomLongString(_doseCommentTag, _comment));
         }
 
         #endregion
@@ -56,12 +55,12 @@ namespace FellowOakDicom.Tests.IO.Writer
                 using (var target = new FileByteTarget(file))
                 {
                     var writer = new DicomFileWriter(new DicomWriteOptions());
-                    writer.Write(target, this.metaInfo, this.dataset);
+                    writer.Write(target, _metaInfo, _dataset);
                 }
 
-                var expected = Comment;
+                var expected = _comment;
                 var readFile = DicomFile.Open(fileName);
-                var actual = readFile.Dataset.GetSingleValue<string>(DoseCommentTag);
+                var actual = readFile.Dataset.GetSingleValue<string>(_doseCommentTag);
                 Assert.Equal(expected, actual);
 
                 var syntax = readFile.FileMetaInfo.TransferSyntax;

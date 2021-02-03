@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -43,103 +43,40 @@ namespace FellowOakDicom.IO.Reader
 
         public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
         {
-            DicomElement element;
-            switch (vr.Code)
+            DicomElement element = vr.Code switch
             {
-                case "AE":
-                    element = new DicomApplicationEntity(tag, data);
-                    break;
-                case "AS":
-                    element = new DicomAgeString(tag, data);
-                    break;
-                case "AT":
-                    element = new DicomAttributeTag(tag, data);
-                    break;
-                case "CS":
-                    element = new DicomCodeString(tag, data);
-                    break;
-                case "DA":
-                    element = new DicomDate(tag, data);
-                    break;
-                case "DS":
-                    element = new DicomDecimalString(tag, data);
-                    break;
-                case "DT":
-                    element = new DicomDateTime(tag, data);
-                    break;
-                case "FD":
-                    element = new DicomFloatingPointDouble(tag, data);
-                    break;
-                case "FL":
-                    element = new DicomFloatingPointSingle(tag, data);
-                    break;
-                case "IS":
-                    element = new DicomIntegerString(tag, data);
-                    break;
-                case "LO":
-                    element = new DicomLongString(tag, _encodings.Peek(), data);
-                    break;
-                case "LT":
-                    element = new DicomLongText(tag, _encodings.Peek(), data);
-                    break;
-                case "OB":
-                    element = new DicomOtherByte(tag, data);
-                    break;
-                case "OD":
-                    element = new DicomOtherDouble(tag, data);
-                    break;
-                case "OF":
-                    element = new DicomOtherFloat(tag, data);
-                    break;
-                case "OL":
-                    element = new DicomOtherLong(tag, data);
-                    break;
-                case "OW":
-                    element = new DicomOtherWord(tag, data);
-                    break;
-                case "PN":
-                    element = new DicomPersonName(tag, _encodings.Peek(), data);
-                    break;
-                case "SH":
-                    element = new DicomShortString(tag, _encodings.Peek(), data);
-                    break;
-                case "SL":
-                    element = new DicomSignedLong(tag, data);
-                    break;
-                case "SS":
-                    element = new DicomSignedShort(tag, data);
-                    break;
-                case "ST":
-                    element = new DicomShortText(tag, _encodings.Peek(), data);
-                    break;
-                case "TM":
-                    element = new DicomTime(tag, data);
-                    break;
-                case "UC":
-                    element = new DicomUnlimitedCharacters(tag, _encodings.Peek(), data);
-                    break;
-                case "UI":
-                    element = new DicomUniqueIdentifier(tag, data);
-                    break;
-                case "UL":
-                    element = new DicomUnsignedLong(tag, data);
-                    break;
-                case "UN":
-                    element = new DicomUnknown(tag, data);
-                    break;
-                case "UR":
-                    element = new DicomUniversalResource(tag, _encodings.Peek(), data);
-                    break;
-                case "US":
-                    element = new DicomUnsignedShort(tag, data);
-                    break;
-                case "UT":
-                    element = new DicomUnlimitedText(tag, _encodings.Peek(), data);
-                    break;
-                default:
-                    throw new DicomDataException($"Unhandled VR in DICOM parser observer: {vr.Code}");
-            }
-
+                "AE" => new DicomApplicationEntity(tag, data),
+                "AS" => new DicomAgeString(tag, data),
+                "AT" => new DicomAttributeTag(tag, data),
+                "CS" => new DicomCodeString(tag, data),
+                "DA" => new DicomDate(tag, data),
+                "DS" => new DicomDecimalString(tag, data),
+                "DT" => new DicomDateTime(tag, data),
+                "FD" => new DicomFloatingPointDouble(tag, data),
+                "FL" => new DicomFloatingPointSingle(tag, data),
+                "IS" => new DicomIntegerString(tag, data),
+                "LO" => new DicomLongString(tag, _encodings.Peek(), data),
+                "LT" => new DicomLongText(tag, _encodings.Peek(), data),
+                "OB" => new DicomOtherByte(tag, data),
+                "OD" => new DicomOtherDouble(tag, data),
+                "OF" => new DicomOtherFloat(tag, data),
+                "OL" => new DicomOtherLong(tag, data),
+                "OW" => new DicomOtherWord(tag, data),
+                "PN" => new DicomPersonName(tag, _encodings.Peek(), data),
+                "SH" => new DicomShortString(tag, _encodings.Peek(), data),
+                "SL" => new DicomSignedLong(tag, data),
+                "SS" => new DicomSignedShort(tag, data),
+                "ST" => new DicomShortText(tag, _encodings.Peek(), data),
+                "TM" => new DicomTime(tag, data),
+                "UC" => new DicomUnlimitedCharacters(tag, _encodings.Peek(), data),
+                "UI" => new DicomUniqueIdentifier(tag, data),
+                "UL" => new DicomUnsignedLong(tag, data),
+                "UN" => new DicomUnknown(tag, data),
+                "UR" => new DicomUniversalResource(tag, _encodings.Peek(), data),
+                "US" => new DicomUnsignedShort(tag, data),
+                "UT" => new DicomUnlimitedText(tag, _encodings.Peek(), data),
+                _ => throw new DicomDataException($"Unhandled VR in DICOM parser observer: {vr.Code}"),
+            };
             if (element.Tag == DicomTag.SpecificCharacterSet)
             {
                 Encoding encoding = _encodings.Peek();

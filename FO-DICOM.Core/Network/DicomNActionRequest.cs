@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -103,11 +103,11 @@ namespace FellowOakDicom.Network
         /// <returns>Formatted output of the N-ACTION request.</returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]", ToString(Type), MessageID);
             if (Command.Contains(DicomTag.ActionTypeID))
             {
-                sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
+                sb.AppendFormat("\n\t\tAction Type:\t{0:x4}", ActionTypeID);
             }
 
             return sb.ToString();

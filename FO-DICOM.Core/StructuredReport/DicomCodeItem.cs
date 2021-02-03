@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -28,22 +28,22 @@ namespace FellowOakDicom.StructuredReport
 
         public string Value
         {
-            get => GetValueOrDefault(DicomTag.CodeValue, 0, String.Empty);
+            get => GetValueOrDefault(DicomTag.CodeValue, 0, string.Empty);
         }
 
         public string Scheme
         {
-            get => GetValueOrDefault(DicomTag.CodingSchemeDesignator, 0, String.Empty);
+            get => GetValueOrDefault(DicomTag.CodingSchemeDesignator, 0, string.Empty);
         }
 
         public string Meaning
         {
-            get => GetValueOrDefault(DicomTag.CodeMeaning, 0, String.Empty);
+            get => GetValueOrDefault(DicomTag.CodeMeaning, 0, string.Empty);
         }
 
         public string Version
         {
-            get => GetValueOrDefault(DicomTag.CodingSchemeVersion, 0, String.Empty);
+            get => GetValueOrDefault(DicomTag.CodingSchemeVersion, 0, string.Empty);
         }
 
         public override bool Equals(object obj)
@@ -73,8 +73,8 @@ namespace FellowOakDicom.StructuredReport
 
         public override string ToString()
         {
-            if (!String.IsNullOrEmpty(Version)) return String.Format("({0},{1}:{2},\"{3}\")", Value, Scheme, Version, Meaning);
-            return String.Format("({0},{1},\"{2}\")", Value, Scheme, Meaning);
+            if (!string.IsNullOrEmpty(Version)) return string.Format("({0},{1}:{2},\"{3}\")", Value, Scheme, Version, Meaning);
+            return string.Format("({0},{1},\"{2}\")", Value, Scheme, Meaning);
         }
     }
 }

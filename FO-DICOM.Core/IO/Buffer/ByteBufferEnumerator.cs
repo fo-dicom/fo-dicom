@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -50,21 +50,9 @@ namespace FellowOakDicom.IO.Buffer
             return this;
         }
 
-        public T Current
-        {
-            get
-            {
-                return CurrentItem();
-            }
-        }
+        public T Current => CurrentItem();
 
-        object System.Collections.IEnumerator.Current
-        {
-            get
-            {
-                return CurrentItem();
-            }
-        }
+        object System.Collections.IEnumerator.Current => CurrentItem();
 
         public bool MoveNext()
         {

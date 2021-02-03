@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -131,10 +131,7 @@ namespace FellowOakDicom
             return !_rule.Match(dataset);
         }
 
-        public override string ToString()
-        {
-            return String.Format("not {0}", _rule);
-        }
+        public override string ToString() => $"not {_rule}";
 
         #endregion
     }
@@ -166,10 +163,7 @@ namespace FellowOakDicom
             return dataset.Contains(_tag);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} exists", _tag);
-        }
+        public override string ToString() => $"{_tag} exists";
 
         #endregion
     }
@@ -201,10 +195,7 @@ namespace FellowOakDicom
             return !dataset.TryGetString(_tag, out string dummy) || string.IsNullOrEmpty(dummy);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} is empty", _tag);
-        }
+        public override string ToString() => $"{_tag} is empty";
 
         #endregion
     }
@@ -244,14 +235,11 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
             return _value == value;
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} equals '{1}'", _tag, _value);
-        }
+        public override string ToString() => $"{_tag} equals '{_value}'";
 
         #endregion
     }
@@ -283,14 +271,11 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
             return value.StartsWith(_value);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} starts with '{1}'", _tag, _value);
-        }
+        public override string ToString() => $"{_tag} starts with '{_value}'";
 
         #endregion
     }
@@ -322,14 +307,11 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
             return value.EndsWith(_value);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} ends with '{1}'", _tag, _value);
-        }
+        public override string ToString() => $"{_tag} ends with '{_value}'";
 
         #endregion
     }
@@ -361,14 +343,11 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
             return value.Contains(_value);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} contains '{1}'", _tag, _value);
-        }
+        public override string ToString() => $"{_tag} contains '{_value}'";
 
         #endregion
     }
@@ -400,14 +379,11 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
             return value.Wildcard(_pattern);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} wildcard match '{1}'", _tag, _pattern);
-        }
+        public override string ToString() => $"{_tag} wildcard match '{_pattern}'";
 
         #endregion
     }
@@ -442,14 +418,11 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
             return _regex.IsMatch(value);
         }
 
-        public override string ToString()
-        {
-            return String.Format("{0} regex match '{1}'", _tag, _pattern);
-        }
+        public override string ToString() => $"{_tag} regex match '{_pattern}'";
 
         #endregion
     }
@@ -481,14 +454,13 @@ namespace FellowOakDicom
 
         public bool Match(DicomDataset dataset)
         {
-            var value = dataset.GetValueOrDefault(_tag, -1, String.Empty);
-            foreach (string v in _values) if (v == value) return true;
-            return false;
+            var value = dataset.GetValueOrDefault(_tag, -1, string.Empty);
+            return _values.Any(v => v == value);
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(_tag);
             sb.Append(" is one of ['");
             sb.Append(string.Join("', '", _values));

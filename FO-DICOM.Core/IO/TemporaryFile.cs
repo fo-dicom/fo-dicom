@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +26,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         public static string StoragePath
         {
-            get => _storagePath != null ? _storagePath : Path.GetTempPath();
+            get => _storagePath ?? Path.GetTempPath();
             set
             {
                 _storagePath = value;

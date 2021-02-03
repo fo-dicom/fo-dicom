@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -73,18 +73,18 @@ namespace FellowOakDicom.Network
         /// <returns>Formatted output of the N-EVENTREPORT response message.</returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
             if (Command.Contains(DicomTag.EventTypeID))
             {
-                sb.AppendFormat("\n\t\tEvent Type:	{0:x4}", EventTypeID);
+                sb.AppendFormat("\n\t\tEvent Type:\t{0:x4}", EventTypeID);
             }
 
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
-                if (!String.IsNullOrEmpty(Status.ErrorComment))
+                if (!string.IsNullOrEmpty(Status.ErrorComment))
                 {
-                    sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+                    sb.AppendFormat("\n\t\tError:\t\t{0}", Status.ErrorComment);
                 }
             }
             return sb.ToString();

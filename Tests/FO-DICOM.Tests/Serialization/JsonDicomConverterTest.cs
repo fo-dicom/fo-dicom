@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -714,9 +714,13 @@ namespace FellowOakDicom.Tests.Serialization
         private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
         {
             if (a == null || b == null)
+            {
                 return a == b;
+            }
             else if (a == b)
+            {
                 return true;
+            }
             else if (a.IsMemory)
             {
                 return b.IsMemory && a.Data.SequenceEqual(b.Data);
@@ -729,7 +733,9 @@ namespace FellowOakDicom.Tests.Serialization
                     return false;
             }
             else if (a is EmptyBuffer && b is EmptyBuffer)
+            {
                 return true;
+            }
             else if (a is StreamByteBuffer asbb && b is StreamByteBuffer bsbb)
             {
                 if (asbb.Stream == null || bsbb.Stream == null)
@@ -840,28 +846,28 @@ namespace FellowOakDicom.Tests.Serialization
                            new DicomAgeString(new DicomTag(3, 0x1003, privateCreator)),
                            new DicomAttributeTag(new DicomTag(3, 0x1004, privateCreator)),
                            new DicomCodeString(new DicomTag(3, 0x1005, privateCreator)),
-                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), new string[0]),
-                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), new string[0]),
-                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), new string[0]),
+                           new DicomDate(new DicomTag(3, 0x1006, privateCreator), Array.Empty<string>()),
+                           new DicomDecimalString(new DicomTag(3, 0x1007, privateCreator), Array.Empty<string>()),
+                           new DicomDateTime(new DicomTag(3, 0x1008, privateCreator), Array.Empty<string>()),
                            new DicomFloatingPointSingle(new DicomTag(3, 0x1009, privateCreator)),
                            new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator)),
-                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), new string[0]),
+                           new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), Array.Empty<string>()),
                            new DicomLongString(new DicomTag(3, 0x100c, privateCreator)),
                            new DicomLongText(new DicomTag(3, 0x100d, privateCreator), null),
-                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), new byte[0]),
-                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), new double[0]),
-                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), new float[0]),
-                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator), new uint[0]),
-                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[0]),
+                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), Array.Empty<byte>()),
+                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), Array.Empty<double>()),
+                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), Array.Empty<float>()),
+                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator), Array.Empty<uint>()),
+                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), Array.Empty<ushort>()),
                            new DicomPersonName(new DicomTag(3, 0x1012, privateCreator)),
                            new DicomShortString(new DicomTag(3, 0x1013, privateCreator)),
                            new DicomSignedLong(new DicomTag(3, 0x1001, privateCreator)),
                            new DicomSequence(new DicomTag(3, 0x1015, privateCreator)),
                            new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator)),
                            new DicomShortText(new DicomTag(3, 0x1018, privateCreator), null),
-                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), new string[0]),
+                           new DicomTime(new DicomTag(3, 0x1019, privateCreator), Array.Empty<string>()),
                            new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator), (string)null),
-                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), new string[0]),
+                           new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), Array.Empty<string>()),
                            new DicomUnsignedLong(new DicomTag(3, 0x101c, privateCreator)),
                            new DicomUnknown(new DicomTag(3, 0x101d, privateCreator)),
                            new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), null),

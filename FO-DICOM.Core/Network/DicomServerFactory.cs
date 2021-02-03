@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -172,8 +172,8 @@ namespace FellowOakDicom.Network
                 throw new DicomNetworkException($"There is already a DICOM server registered on port: {port}");
             }
 
-            var creator = ActivatorUtilities.CreateFactory(typeof(TServer), new Type[0]);
-            var server = (TServer) creator(dicomServerScope.ServiceProvider, new object[0]);
+            var creator = ActivatorUtilities.CreateFactory(typeof(TServer), Array.Empty<Type>());
+            var server = (TServer) creator(dicomServerScope.ServiceProvider, Array.Empty<object>());
             
             if (logger != null)
             {

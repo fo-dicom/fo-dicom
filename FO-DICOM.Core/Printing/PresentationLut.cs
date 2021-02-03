@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Printing
         public PresentationLut(DicomUID sopInstance = null)
         {
             InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
-            SopInstanceUid = sopInstance == null || sopInstance.UID == string.Empty ? DicomUID.Generate() : sopInstance;
+            SopInstanceUid = string.IsNullOrEmpty(sopInstance?.UID) ? DicomUID.Generate() : sopInstance;
 
             CreateLutSequence();
         }
@@ -52,7 +52,7 @@ namespace FellowOakDicom.Printing
 
             if (!dataset.Contains(DicomTag.PresentationLUTSequence)) CreateLutSequence();
 
-            SopInstanceUid = sopInstance == null || sopInstance.UID == string.Empty ? DicomUID.Generate() : sopInstance;
+            SopInstanceUid = string.IsNullOrEmpty(sopInstance?.UID) ? DicomUID.Generate() : sopInstance;
             AddOrUpdate(DicomTag.SOPInstanceUID, SopInstanceUid);
         }
 

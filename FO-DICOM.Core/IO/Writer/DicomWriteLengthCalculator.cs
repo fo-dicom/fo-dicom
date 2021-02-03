@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace FellowOakDicom.IO.Writer
             }
             else if (item is DicomFragmentSequence)
             {
-                DicomFragmentSequence sq = item as DicomFragmentSequence;
+                var sq = item as DicomFragmentSequence;
                 // fragment item (offset table)
                 length += 4; // tag
                 length += 4; // length
@@ -79,7 +79,7 @@ namespace FellowOakDicom.IO.Writer
             }
             else if (item is DicomSequence)
             {
-                DicomSequence sq = item as DicomSequence;
+                var sq = item as DicomSequence;
                 length += Calculate(sq);
             }
 

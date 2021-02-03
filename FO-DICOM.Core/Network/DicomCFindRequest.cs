@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -247,7 +247,7 @@ namespace FellowOakDicom.Network
             dimse.Dataset.Add(DicomTag.PatientWeight, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientBirthDate, string.Empty);
             dimse.Dataset.Add(DicomTag.MedicalAlerts, string.Empty);
-            dimse.Dataset.Add(DicomTag.PregnancyStatus, new ushort[0]);
+            dimse.Dataset.Add(DicomTag.PregnancyStatus, Array.Empty<ushort>());
             dimse.Dataset.Add(DicomTag.Allergies, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientComments, string.Empty);
             dimse.Dataset.Add(DicomTag.SpecialNeeds, string.Empty);

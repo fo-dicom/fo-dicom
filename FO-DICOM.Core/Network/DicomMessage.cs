@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -219,57 +219,33 @@ namespace FellowOakDicom.Network
         /// <returns>Formatted output string of the DICOM message.</returns>
         public static string ToString(DicomCommandField type)
         {
-            switch (type)
+            return type switch
             {
-                case DicomCommandField.CCancelRequest:
-                    return "C-Cancel request";
-                case DicomCommandField.CEchoRequest:
-                    return "C-Echo request";
-                case DicomCommandField.CEchoResponse:
-                    return "C-Echo response";
-                case DicomCommandField.CFindRequest:
-                    return "C-Find request";
-                case DicomCommandField.CFindResponse:
-                    return "C-Find response";
-                case DicomCommandField.CGetRequest:
-                    return "C-Get request";
-                case DicomCommandField.CGetResponse:
-                    return "C-Get response";
-                case DicomCommandField.CMoveRequest:
-                    return "C-Move request";
-                case DicomCommandField.CMoveResponse:
-                    return "C-Move response";
-                case DicomCommandField.CStoreRequest:
-                    return "C-Store request";
-                case DicomCommandField.CStoreResponse:
-                    return "C-Store response";
-                case DicomCommandField.NActionRequest:
-                    return "N-Action request";
-                case DicomCommandField.NActionResponse:
-                    return "N-Action response";
-                case DicomCommandField.NCreateRequest:
-                    return "N-Create request";
-                case DicomCommandField.NCreateResponse:
-                    return "N-Create response";
-                case DicomCommandField.NDeleteRequest:
-                    return "N-Delete request";
-                case DicomCommandField.NDeleteResponse:
-                    return "N-Delete response";
-                case DicomCommandField.NEventReportRequest:
-                    return "N-EventReport request";
-                case DicomCommandField.NEventReportResponse:
-                    return "N-EventReport response";
-                case DicomCommandField.NGetRequest:
-                    return "N-Get request";
-                case DicomCommandField.NGetResponse:
-                    return "N-Get response";
-                case DicomCommandField.NSetRequest:
-                    return "N-Set request";
-                case DicomCommandField.NSetResponse:
-                    return "N-Set response";
-                default:
-                    return "DIMSE";
-            }
+                DicomCommandField.CCancelRequest => "C-Cancel request",
+                DicomCommandField.CEchoRequest => "C-Echo request",
+                DicomCommandField.CEchoResponse => "C-Echo response",
+                DicomCommandField.CFindRequest => "C-Find request",
+                DicomCommandField.CFindResponse => "C-Find response",
+                DicomCommandField.CGetRequest => "C-Get request",
+                DicomCommandField.CGetResponse => "C-Get response",
+                DicomCommandField.CMoveRequest => "C-Move request",
+                DicomCommandField.CMoveResponse => "C-Move response",
+                DicomCommandField.CStoreRequest => "C-Store request",
+                DicomCommandField.CStoreResponse => "C-Store response",
+                DicomCommandField.NActionRequest => "N-Action request",
+                DicomCommandField.NActionResponse => "N-Action response",
+                DicomCommandField.NCreateRequest => "N-Create request",
+                DicomCommandField.NCreateResponse => "N-Create response",
+                DicomCommandField.NDeleteRequest => "N-Delete request",
+                DicomCommandField.NDeleteResponse => "N-Delete response",
+                DicomCommandField.NEventReportRequest => "N-EventReport request",
+                DicomCommandField.NEventReportResponse => "N-EventReport response",
+                DicomCommandField.NGetRequest => "N-Get request",
+                DicomCommandField.NGetResponse => "N-Get response",
+                DicomCommandField.NSetRequest => "N-Set request",
+                DicomCommandField.NSetResponse => "N-Set response",
+                _ => "DIMSE",
+            };
         }
 
         /// <summary>

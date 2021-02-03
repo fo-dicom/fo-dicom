@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -229,142 +229,72 @@ namespace FellowOakDicom.Serialization
 
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)
         {
-            DicomItem item;
-            switch (vr)
+            DicomItem item = vr switch
             {
-                case "AE":
-                    item = new DicomApplicationEntity(tag, (string[])data);
-                    break;
-                case "AS":
-                    item = new DicomAgeString(tag, (string[])data);
-                    break;
-                case "AT":
-                    item = new DicomAttributeTag(tag, ((string[])data).Select(ParseTag).ToArray());
-                    break;
-                case "CS":
-                    item = new DicomCodeString(tag, (string[])data);
-                    break;
-                case "DA":
-                    item = new DicomDate(tag, (string[])data);
-                    break;
-                case "DS":
-                    item = data is IByteBuffer dataBufferDS
-                        ? new DicomDecimalString(tag, dataBufferDS)
-                        : new DicomDecimalString(tag, (decimal[])data);
-                    break;
-                case "DT":
-                    item = new DicomDateTime(tag, (string[])data);
-                    break;
-                case "FD":
-                    item = data is IByteBuffer dataBufferFD
-                        ? new DicomFloatingPointDouble(tag, dataBufferFD)
-                        : new DicomFloatingPointDouble(tag, (double[])data);
-                    break;
-                case "FL":
-                    item = data is IByteBuffer dataBufferFL
-                        ? new DicomFloatingPointSingle(tag, dataBufferFL)
-                        : new DicomFloatingPointSingle(tag, (float[])data);
-                    break;
-                case "IS":
-                    item = data is IByteBuffer dataBufferIS
-                        ? new DicomIntegerString(tag, dataBufferIS)
-                        : new DicomIntegerString(tag, (int[])data);
-                    break;
-                case "LO":
-                    item = new DicomLongString(tag, (string[])data);
-                    break;
-                case "LT":
-                    item = data is IByteBuffer dataBufferLT
-                        ? new DicomLongText(tag, _jsonTextEncoding, dataBufferLT)
-                        : new DicomLongText(tag, data.GetAsStringArray().GetSingleOrEmpty());
-                    break;
-                case "OB":
-                    item = new DicomOtherByte(tag, (IByteBuffer)data);
-                    break;
-                case "OD":
-                    item = new DicomOtherDouble(tag, (IByteBuffer)data);
-                    break;
-                case "OF":
-                    item = new DicomOtherFloat(tag, (IByteBuffer)data);
-                    break;
-                case "OL":
-                    item = new DicomOtherLong(tag, (IByteBuffer)data);
-                    break;
-                case "OW":
-                    item = new DicomOtherWord(tag, (IByteBuffer)data);
-                    break;
-                case "OV":
-                    item = new DicomOtherVeryLong(tag, (IByteBuffer)data);
-                    break;
-                case "PN":
-                    item = new DicomPersonName(tag, (string[])data);
-                    break;
-                case "SH":
-                    item = new DicomShortString(tag, (string[])data);
-                    break;
-                case "SL":
-                    item = data is IByteBuffer dataBufferSL
-                        ? new DicomSignedLong(tag, dataBufferSL)
-                        : new DicomSignedLong(tag, (int[])data);
-                    break;
-                case "SQ":
-                    item = new DicomSequence(tag, ((DicomDataset[])data));
-                    break;
-                case "SS":
-                    item = data is IByteBuffer dataBufferSS
-                        ? new DicomSignedShort(tag, dataBufferSS)
-                        : new DicomSignedShort(tag, (short[])data);
-                    break;
-                case "ST":
-                    item = data is IByteBuffer dataBufferST
-                        ? new DicomShortText(tag, _jsonTextEncoding, dataBufferST)
-                        : new DicomShortText(tag, data.GetAsStringArray().GetFirstOrEmpty());
-                    break;
-                case "SV":
-                    item = data is IByteBuffer dataBufferSV
-                        ? new DicomSignedVeryLong(tag, dataBufferSV)
-                        : new DicomSignedVeryLong(tag, (long[])data);
-                    break;
-                case "TM":
-                    item = new DicomTime(tag, (string[])data);
-                    break;
-                case "UC":
-                    item = data is IByteBuffer dataBufferUC
-                        ? new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC)
-                        : new DicomUnlimitedCharacters(tag, data.GetAsStringArray().SingleOrDefault());
-                    break;
-                case "UI":
-                    item = new DicomUniqueIdentifier(tag, (string[])data);
-                    break;
-                case "UL":
-                    item = data is IByteBuffer dataBufferUL
-                        ? new DicomUnsignedLong(tag, dataBufferUL)
-                        : new DicomUnsignedLong(tag, (uint[])data);
-                    break;
-                case "UN":
-                    item = new DicomUnknown(tag, (IByteBuffer)data);
-                    break;
-                case "UR":
-                    item = new DicomUniversalResource(tag, data.GetAsStringArray().GetSingleOrEmpty());
-                    break;
-                case "US":
-                    item = data is IByteBuffer dataBufferUS
-                        ? new DicomUnsignedShort(tag, dataBufferUS)
-                        : new DicomUnsignedShort(tag, (ushort[])data);
-                    break;
-                case "UT":
-                    item = data is IByteBuffer dataBufferUT
-                        ? new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT)
-                        : new DicomUnlimitedText(tag, data.GetAsStringArray().GetSingleOrEmpty());
-                    break;
-                case "UV":
-                    item = data is IByteBuffer dataBufferUV
-                        ? new DicomUnsignedVeryLong(tag, dataBufferUV)
-                        : new DicomUnsignedVeryLong(tag, (ulong[])data);
-                    break;
-                default:
-                    throw new NotSupportedException("Unsupported value representation");
-            }
+                "AE" => new DicomApplicationEntity(tag, (string[])data),
+                "AS" => new DicomAgeString(tag, (string[])data),
+                "AT" => new DicomAttributeTag(tag, ((string[])data).Select(ParseTag).ToArray()),
+                "CS" => new DicomCodeString(tag, (string[])data),
+                "DA" => new DicomDate(tag, (string[])data),
+                "DS" => data is IByteBuffer dataBufferDS
+                            ? new DicomDecimalString(tag, dataBufferDS)
+                            : new DicomDecimalString(tag, (decimal[])data),
+                "DT" => new DicomDateTime(tag, (string[])data),
+                "FD" => data is IByteBuffer dataBufferFD
+                            ? new DicomFloatingPointDouble(tag, dataBufferFD)
+                            : new DicomFloatingPointDouble(tag, (double[])data),
+                "FL" => data is IByteBuffer dataBufferFL
+                            ? new DicomFloatingPointSingle(tag, dataBufferFL)
+                            : new DicomFloatingPointSingle(tag, (float[])data),
+                "IS" => data is IByteBuffer dataBufferIS
+                            ? new DicomIntegerString(tag, dataBufferIS)
+                            : new DicomIntegerString(tag, (int[])data),
+                "LO" => new DicomLongString(tag, (string[])data),
+                "LT" => data is IByteBuffer dataBufferLT
+                            ? new DicomLongText(tag, _jsonTextEncoding, dataBufferLT)
+                            : new DicomLongText(tag, data.GetAsStringArray().GetSingleOrEmpty()),
+                "OB" => new DicomOtherByte(tag, (IByteBuffer)data),
+                "OD" => new DicomOtherDouble(tag, (IByteBuffer)data),
+                "OF" => new DicomOtherFloat(tag, (IByteBuffer)data),
+                "OL" => new DicomOtherLong(tag, (IByteBuffer)data),
+                "OW" => new DicomOtherWord(tag, (IByteBuffer)data),
+                "OV" => new DicomOtherVeryLong(tag, (IByteBuffer)data),
+                "PN" => new DicomPersonName(tag, (string[])data),
+                "SH" => new DicomShortString(tag, (string[])data),
+                "SL" => data is IByteBuffer dataBufferSL
+                            ? new DicomSignedLong(tag, dataBufferSL)
+                            : new DicomSignedLong(tag, (int[])data),
+                "SQ" => new DicomSequence(tag, ((DicomDataset[])data)),
+                "SS" => data is IByteBuffer dataBufferSS
+                            ? new DicomSignedShort(tag, dataBufferSS)
+                            : new DicomSignedShort(tag, (short[])data),
+                "ST" => data is IByteBuffer dataBufferST
+                            ? new DicomShortText(tag, _jsonTextEncoding, dataBufferST)
+                            : new DicomShortText(tag, data.GetAsStringArray().GetFirstOrEmpty()),
+                "SV" => data is IByteBuffer dataBufferSV
+                                ? new DicomSignedVeryLong(tag, dataBufferSV)
+                                : new DicomSignedVeryLong(tag, (long[])data),
+                "TM" => new DicomTime(tag, (string[])data),
+                "UC" => data is IByteBuffer dataBufferUC
+                            ? new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC)
+                            : new DicomUnlimitedCharacters(tag, data.GetAsStringArray().SingleOrDefault()),
+                "UI" => new DicomUniqueIdentifier(tag, (string[])data),
+                "UL" => data is IByteBuffer dataBufferUL
+                            ? new DicomUnsignedLong(tag, dataBufferUL)
+                            : new DicomUnsignedLong(tag, (uint[])data),
+                "UN" => new DicomUnknown(tag, (IByteBuffer)data),
+                "UR" => new DicomUniversalResource(tag, data.GetAsStringArray().GetSingleOrEmpty()),
+                "US" => data is IByteBuffer dataBufferUS
+                            ? new DicomUnsignedShort(tag, dataBufferUS)
+                            : new DicomUnsignedShort(tag, (ushort[])data),
+                "UT" => data is IByteBuffer dataBufferUT
+                            ? new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT)
+                            : new DicomUnlimitedText(tag, data.GetAsStringArray().GetSingleOrEmpty()),
+                "UV" => data is IByteBuffer dataBufferUV
+                            ? new DicomUnsignedVeryLong(tag, dataBufferUV)
+                            : new DicomUnsignedVeryLong(tag, (ulong[])data),
+                _ => throw new NotSupportedException("Unsupported value representation"),
+            };
             return item;
         }
 

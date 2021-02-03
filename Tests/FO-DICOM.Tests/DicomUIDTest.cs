@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests
     {
         #region Fields
 
-        private static readonly IList<DicomUID> KnownUids = DicomUID.Enumerate().ToList();
+        private static readonly IList<DicomUID> _knownUids = DicomUID.Enumerate().ToList();
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests
             DicomUidType type,
             bool isRetired)
         {
-            var found = KnownUids.Single(item => item.UID.Equals(uid.UID));
+            var found = _knownUids.Single(item => item.UID.Equals(uid.UID));
             Assert.Equal(type, found.Type);
             Assert.Equal(isRetired, found.IsRetired);
         }
@@ -168,7 +168,7 @@ namespace FellowOakDicom.Tests
                 yield return new object[] { DicomUID.AbstractMultiDimensionalImageModel, DicomUidType.ApplicationHostingModel, false };
                 yield return new object[] { DicomUID.NuclearMedicineImageStorageRetiredRETIRED, DicomUidType.SOPClass, true };
                 yield return new object[] { DicomUID.SPM2GRAY, DicomUidType.FrameOfReference, false };
-                yield return new object[] { DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED, DicomUidType.SOPClass, true };
+                yield return new object[] { DicomUID.GeneralPurposeWorklistInformationModelFindRETIRED, DicomUidType.SOPClass, true };
                 yield return new object[] { DicomUID.TransducerOrientation6, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.UltrasoundTransducerGeometry12033, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomUidType.TransferSyntax, true };

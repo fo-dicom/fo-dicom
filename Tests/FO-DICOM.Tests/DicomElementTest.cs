@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -431,7 +431,7 @@ namespace FellowOakDicom.Tests
         internal void TestDicomIntegerStringGetItem<T>()
         {
             var expected = 45;
-            var element = new DicomIntegerString(DicomTag.AttachedContours, 35, expected, 55);
+            var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, 35, expected, 55);
             var actual = element.Get<T>(1);
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
@@ -439,7 +439,7 @@ namespace FellowOakDicom.Tests
         internal void TestDicomIntegerStringGetArray<T>()
         {
             var expected = new[] { 35, 45, 55 };
-            var element = new DicomIntegerString(DicomTag.AttachedContours, expected);
+            var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, expected);
             var actual = element.Get<T[]>();
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
@@ -447,7 +447,7 @@ namespace FellowOakDicom.Tests
         internal void TestDicomIntegerStringGetArrayFromString<T>()
         {
             var expected = new[] { 35, 45, 55 };
-            var element = new DicomIntegerString(DicomTag.AttachedContours, new[] { "35.0", "45.0000", "55" });
+            var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, new[] { "35.0", "45.0000", "55" });
             var actual = element.Get<T[]>();
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
