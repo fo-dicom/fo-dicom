@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -202,39 +202,24 @@ namespace FellowOakDicom.StructuredReport
             get
             {
                 var type = Dataset.GetValueOrDefault(DicomTag.ValueType, 0, "UNKNOWN");
-                switch (type)
+                return type switch
                 {
-                    case "CONTAINER":
-                        return DicomValueType.Container;
-                    case "TEXT":
-                        return DicomValueType.Text;
-                    case "CODE":
-                        return DicomValueType.Code;
-                    case "NUM":
-                        return DicomValueType.Numeric;
-                    case "PNAME":
-                        return DicomValueType.PersonName;
-                    case "DATE":
-                        return DicomValueType.Date;
-                    case "TIME":
-                        return DicomValueType.Time;
-                    case "DATETIME":
-                        return DicomValueType.DateTime;
-                    case "UIDREF":
-                        return DicomValueType.UIDReference;
-                    case "COMPOSITE":
-                        return DicomValueType.Composite;
-                    case "IMAGE":
-                        return DicomValueType.Image;
-                    case "WAVEFORM":
-                        return DicomValueType.Waveform;
-                    case "SCOORD":
-                        return DicomValueType.SpatialCoordinate;
-                    case "TCOORD":
-                        return DicomValueType.TemporalCoordinate;
-                    default:
-                        throw new DicomStructuredReportException($"Unknown value type: {type}");
-                }
+                    "CONTAINER" => DicomValueType.Container,
+                    "TEXT" => DicomValueType.Text,
+                    "CODE" => DicomValueType.Code,
+                    "NUM" => DicomValueType.Numeric,
+                    "PNAME" => DicomValueType.PersonName,
+                    "DATE" => DicomValueType.Date,
+                    "TIME" => DicomValueType.Time,
+                    "DATETIME" => DicomValueType.DateTime,
+                    "UIDREF" => DicomValueType.UIDReference,
+                    "COMPOSITE" => DicomValueType.Composite,
+                    "IMAGE" => DicomValueType.Image,
+                    "WAVEFORM" => DicomValueType.Waveform,
+                    "SCOORD" => DicomValueType.SpatialCoordinate,
+                    "TCOORD" => DicomValueType.TemporalCoordinate,
+                    _ => throw new DicomStructuredReportException($"Unknown value type: {type}"),
+                };
             }
             private set
             {
@@ -293,25 +278,17 @@ namespace FellowOakDicom.StructuredReport
             get
             {
                 var type = Dataset.GetValueOrDefault(DicomTag.RelationshipType, 0, "UNKNOWN");
-                switch (type)
+                return type switch
                 {
-                    case "CONTAINS":
-                        return DicomRelationship.Contains;
-                    case "HAS PROPERTIES":
-                        return DicomRelationship.HasProperties;
-                    case "INFERRED FROM":
-                        return DicomRelationship.InferredFrom;
-                    case "SELECTED FROM":
-                        return DicomRelationship.SelectedFrom;
-                    case "HAS OBS CONTEXT":
-                        return DicomRelationship.HasObservationContext;
-                    case "HAS ACQ CONTEXT":
-                        return DicomRelationship.HasAcquisitionContext;
-                    case "HAS CONCEPT MOD":
-                        return DicomRelationship.HasConceptModifier;
-                    default:
-                        throw new DicomStructuredReportException($"Unknown relationship type: {type}");
-                }
+                    "CONTAINS" => DicomRelationship.Contains,
+                    "HAS PROPERTIES" => DicomRelationship.HasProperties,
+                    "INFERRED FROM" => DicomRelationship.InferredFrom,
+                    "SELECTED FROM" => DicomRelationship.SelectedFrom,
+                    "HAS OBS CONTEXT" => DicomRelationship.HasObservationContext,
+                    "HAS ACQ CONTEXT" => DicomRelationship.HasAcquisitionContext,
+                    "HAS CONCEPT MOD" => DicomRelationship.HasConceptModifier,
+                    _ => throw new DicomStructuredReportException($"Unknown relationship type: {type}"),
+                };
             }
             private set
             {
@@ -429,17 +406,17 @@ namespace FellowOakDicom.StructuredReport
         {
             if (typeof(T) == typeof(string))
             {
-                if (Type == DicomValueType.Text) return (T)(object)Dataset.GetValueOrDefault(DicomTag.TextValue, 0, String.Empty);
-                if (Type == DicomValueType.PersonName) return (T)(object)Dataset.GetValueOrDefault(DicomTag.PersonName, 0, String.Empty);
+                if (Type == DicomValueType.Text) return (T)(object)Dataset.GetValueOrDefault(DicomTag.TextValue, 0, string.Empty);
+                if (Type == DicomValueType.PersonName) return (T)(object)Dataset.GetValueOrDefault(DicomTag.PersonName, 0, string.Empty);
                 if (Type == DicomValueType.Numeric)
                 {
                     var mv = Dataset.GetMeasuredValue(DicomTag.MeasuredValueSequence);
                     if (mv == null) return default(T);
                     return (T)(object)mv.ToString();
                 }
-                if (Type == DicomValueType.Date) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Date, 0, String.Empty);
-                if (Type == DicomValueType.Time) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Time, 0, String.Empty);
-                if (Type == DicomValueType.DateTime) return (T)(object)Dataset.GetValueOrDefault(DicomTag.DateTime, 0, String.Empty);
+                if (Type == DicomValueType.Date) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Date, 0, string.Empty);
+                if (Type == DicomValueType.Time) return (T)(object)Dataset.GetValueOrDefault(DicomTag.Time, 0, string.Empty);
+                if (Type == DicomValueType.DateTime) return (T)(object)Dataset.GetValueOrDefault(DicomTag.DateTime, 0, string.Empty);
                 if (Type == DicomValueType.UIDReference) return (T)(object)Dataset.GetSingleValue<string>(DicomTag.UID);
                 if (Type == DicomValueType.Code)
                 {
@@ -512,7 +489,7 @@ namespace FellowOakDicom.StructuredReport
         public T Get<T>(DicomCodeItem code, T defaultValue)
         {
             var item = Children().FirstOrDefault(x => x.Code == code);
-            if (item == null) return default(T);
+            if (item == null) return default;
 
             if (typeof(T) == typeof(DicomContentItem)) return (T)(object)item;
 
@@ -521,18 +498,18 @@ namespace FellowOakDicom.StructuredReport
 
         public override string ToString()
         {
-            var s = Dataset.GetValueOrDefault(DicomTag.RelationshipType, 0, String.Empty);
-            if (!String.IsNullOrEmpty(s)) s += " ";
-            else s = String.Empty;
-            if (Code != null) s += String.Format("{0} {1}", Code.ToString(), Dataset.GetSingleValueOrDefault(DicomTag.ValueType, "UNKNOWN"));
+            var s = Dataset.GetValueOrDefault(DicomTag.RelationshipType, 0, string.Empty);
+            if (!string.IsNullOrEmpty(s)) s += " ";
+            else s = string.Empty;
+            if (Code != null) s += string.Format("{0} {1}", Code.ToString(), Dataset.GetSingleValueOrDefault(DicomTag.ValueType, "UNKNOWN"));
             else
-                s += String.Format(
+                s += string.Format(
                     "{0} {1}",
                     "(no code provided)",
                     Dataset.GetValueOrDefault(DicomTag.ValueType, 0, "UNKNOWN"));
             try
             {
-                s += String.Format(" [{0}]", Get<string>());
+                s += string.Format(" [{0}]", Get<string>());
             }
             catch
             {

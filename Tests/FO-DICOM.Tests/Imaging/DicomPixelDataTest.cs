@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging;
@@ -122,7 +122,7 @@ namespace FellowOakDicom.Tests.Imaging
         [Fact]
         public void RotateAndFlipImage()
         {
-            DicomFile myDicomFile = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
+            var myDicomFile = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
             var myDicomImage = new DicomImage(myDicomFile.Dataset);
             IImage myImg = myDicomImage.RenderImage(0);
             myImg.Render(3, true, true, 0);

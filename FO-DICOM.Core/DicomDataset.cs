@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -503,7 +503,7 @@ namespace FellowOakDicom
             {
                 if (typeof(IByteBuffer).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo())) { return (T)(object)element.Buffer; }
 
-                if (element.Count != 1) { throw new DicomDataException($"DICOM element {tag.ToString()} must contain a single value, but contains {element.Count}"); }
+                if (element.Count != 1) { throw new DicomDataException($"DICOM element {tag} must contain a single value, but contains {element.Count}"); }
 
                 return element.Get<T>(0);
             }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2020 fo-dicom contributors.
+// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -255,7 +255,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="short"/> values.</param>
         public static void Swap(short[] values)
         {
-            Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
+            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="ushort"/> values.</param>
         public static void Swap(ushort[] values)
         {
-            Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
+            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="int"/> values.</param>
         public static void Swap(int[] values)
         {
-            Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
+            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
         }
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="uint"/> values.</param>
         public static void Swap(uint[] values)
         {
-            Parallel.For(0, values.Length, i => { values[i] = Swap(values[i]); });
+            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
         }
 
         /// <summary>
@@ -467,10 +467,7 @@ namespace FellowOakDicom.IO
 
         public bool UseInternalBuffer
         {
-            get
-            {
-                return _internalBuffer != null;
-            }
+            get => _internalBuffer != null;
             set
             {
                 if (value && (_internalBuffer == null))

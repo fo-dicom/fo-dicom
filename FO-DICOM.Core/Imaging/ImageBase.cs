@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Reflection;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO;
@@ -46,7 +45,7 @@ namespace FellowOakDicom.Imaging
             this.height = height;
             this.pixels = pixels;
             this.image = image;
-            this.disposed = false;
+            disposed = false;
         }
 
 		/// <summary>
@@ -54,9 +53,9 @@ namespace FellowOakDicom.Imaging
 		/// </summary>
 		~ImageBase()
 		{
-			this.Dispose(false);
+			Dispose(false);
 		}
-		
+
         #endregion
 
         #region PROPERTIES
@@ -64,13 +63,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets the array of pixels associated with the image.
         /// </summary>
-        public PinnedIntArray Pixels
-        {
-            get
-            {
-                return this.pixels;
-            }
-        }
+        public PinnedIntArray Pixels => pixels;
 
         public int Height => height;
 
@@ -127,7 +120,7 @@ namespace FellowOakDicom.Imaging
         /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -137,17 +130,17 @@ namespace FellowOakDicom.Imaging
         /// <param name="disposing">Dispose mode?</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposed) return;
+            if (disposed) return;
 
-            this.image = null;
+            image = null;
 
-            if (this.pixels != null)
+            if (pixels != null)
             {
-                this.pixels.Dispose();
-                this.pixels = null;
+                pixels.Dispose();
+                pixels = null;
             }
 
-            this.disposed = true;
+            disposed = true;
         }
 
         protected static byte[] ToBytes(
@@ -170,13 +163,13 @@ namespace FellowOakDicom.Imaging
             return bytes;
         }
 
-        public Color GetPixel(int x, int y)
+        public Color32 GetPixel(int x, int y)
         {
             if (x >= 0 && x < width && y >= 0 && y < height)
             {
-                return Color.FromArgb(pixels.Data[x + y * width]);
+                return new Color32(pixels.Data[x + y * width]);
             }
-            return Color.Black;
+            return Color32.Black;
         }
 
         private static int[] Rotate(ref int width, ref int height, int angle, int[] data)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -76,14 +76,14 @@ namespace FellowOakDicom.Network
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
             if (Command.Contains(DicomTag.ActionTypeID))
             {
-                sb.AppendFormat("\n\t\tAction Type:	{0:x4}", ActionTypeID);
+                sb.AppendFormat("\n\t\tAction Type:\t{0:x4}", ActionTypeID);
             }
 
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
                 if (!string.IsNullOrEmpty(Status.ErrorComment))
                 {
-                    sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+                    sb.AppendFormat("\n\t\tError:\t\t{0}", Status.ErrorComment);
                 }
             }
             return sb.ToString();

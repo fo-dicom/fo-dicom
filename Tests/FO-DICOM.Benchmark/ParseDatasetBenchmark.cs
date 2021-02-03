@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using BenchmarkDotNet.Attributes;
@@ -12,9 +12,9 @@ namespace FellowOakDicom.Benchmark
     {
         private readonly string _rootpath;
 
-        private MemoryStream ctData;
-        private MemoryStream mrData;
-        private MemoryStream dicomdirData;
+        private MemoryStream _ctData;
+        private MemoryStream _mrData;
+        private MemoryStream _dicomdirData;
 
 
         public ParseDatasetBenchmark()
@@ -25,20 +25,20 @@ namespace FellowOakDicom.Benchmark
         [GlobalSetup]
         public void Setup()
         {
-            ctData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\ct.dcm")));
-            mrData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\mr.dcm")));
-            dicomdirData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\DICOMDIR")));
+            _ctData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\ct.dcm")));
+            _mrData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\mr.dcm")));
+            _dicomdirData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\DICOMDIR")));
         }
 
 
         [Benchmark]
-        public object ParseCT() => ParseHeader(ctData);
+        public object ParseCT() => ParseHeader(_ctData);
 
         [Benchmark]
-        public object ParseMR() => ParseHeader(mrData);
+        public object ParseMR() => ParseHeader(_mrData);
 
         [Benchmark]
-        public object ParseDicomdir() => ParseHeader(dicomdirData);
+        public object ParseDicomdir() => ParseHeader(_dicomdirData);
 
 
         public static object ParseHeader(Stream content)

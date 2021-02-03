@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -41,10 +41,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         public Endian Endian
         {
-            get
-            {
-                return _endian;
-            }
+            get => _endian;
             set
             {
                 if (_endian != value)

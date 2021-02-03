@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Log
             _log = log;
             _level = level;
             _depth = 0;
-            _pad = String.Empty;
+            _pad = string.Empty;
         }
 
         public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)

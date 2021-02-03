@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.core</AssemblyName>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2020</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2021</Copyright>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
     <Product>Fellow Oak DICOM</Product>
     <Authors>fo-dicom contributors</Authors>

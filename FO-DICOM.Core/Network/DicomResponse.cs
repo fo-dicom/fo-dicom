@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -86,13 +86,13 @@ namespace FellowOakDicom.Network
         /// </returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendFormat("{0} [{1}]: {2}", ToString(Type), RequestMessageID, Status.Description);
             if (Status.State != DicomState.Pending && Status.State != DicomState.Success)
             {
-                if (!String.IsNullOrEmpty(Status.ErrorComment))
+                if (!string.IsNullOrEmpty(Status.ErrorComment))
                 {
-                    sb.AppendFormat("\n\t\tError:		{0}", Status.ErrorComment);
+                    sb.AppendFormat("\n\t\tError:\t\t{0}", Status.ErrorComment);
                 }
 
                 if (Command.Contains(DicomTag.OffendingElement))
@@ -100,7 +100,7 @@ namespace FellowOakDicom.Network
                     string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
                     if (tags.Length > 0)
                     {
-                        sb.Append("\n\t\tTags:		");
+                        sb.Append("\n\t\tTags:\t\t");
                         foreach (var tag in tags)
                         {
                             sb.AppendFormat(" {0}", tag);

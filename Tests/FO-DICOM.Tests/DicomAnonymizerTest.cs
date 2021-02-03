@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Xunit;
 using System.Text;
+using System;
 
 namespace FellowOakDicom.Tests
 {
@@ -101,7 +102,7 @@ namespace FellowOakDicom.Tests
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
-            var expected = new string[0];
+            var expected = Array.Empty<string>();
             var actual = dataset.GetValues<string>(tag);
             Assert.Equal(expected, actual);
         }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -25,9 +25,9 @@ namespace FellowOakDicom
 
         public string ToString(string format)
         {
-            var value = (Minimum == DateTime.MinValue ? String.Empty : Minimum.ToString(format)) + "-"
-                        + (Maximum == DateTime.MaxValue ? String.Empty : Maximum.ToString(format));
-            if (value == "-") return String.Empty;
+            var value = (Minimum == DateTime.MinValue ? string.Empty : Minimum.ToString(format)) + "-"
+                        + (Maximum == DateTime.MaxValue ? string.Empty : Maximum.ToString(format));
+            if (value == "-") return string.Empty;
             return value;
         }
     }

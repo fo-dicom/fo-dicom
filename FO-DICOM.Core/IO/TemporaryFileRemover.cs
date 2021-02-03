@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -18,13 +18,13 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Singleton instance of the temporary file remover.
         /// </summary>
-        private static readonly TemporaryFileRemover Instance = new TemporaryFileRemover();
+        private static readonly TemporaryFileRemover _instance = new TemporaryFileRemover();
 
-        private readonly object locker = new object();
+        private readonly object _locker = new object();
 
-        private readonly List<IFileReference> files = new List<IFileReference>();
+        private readonly List<IFileReference> _files = new List<IFileReference>();
 
-        private Task running;
+        private Task _running;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         ~TemporaryFileRemover()
         {
-            this.DeleteAllRemainingFiles();
+            DeleteAllRemainingFiles();
         }
 
         #endregion
@@ -60,7 +60,7 @@ namespace FellowOakDicom.IO
             {
                 throw new DicomIoException("Only temporary files should be removed through this operation.");
             }
-            Instance.DeletePrivate(file);
+            _instance.DeletePrivate(file);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         public void Dispose()
         {
-            this.DeleteAllRemainingFiles();
+            DeleteAllRemainingFiles();
             GC.SuppressFinalize(this);
         }
 
@@ -77,7 +77,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         private void DeleteAllRemainingFiles()
         {
-            foreach (var file in this.files)
+            foreach (var file in _files)
             {
                 try
                 {
@@ -104,12 +104,12 @@ namespace FellowOakDicom.IO
             {
                 if (file.Exists)
                 {
-                    lock (this.locker)
+                    lock (_locker)
                     {
-                        this.files.Add(file);
-                        if (this.running == null || this.running.IsCompleted)
+                        _files.Add(file);
+                        if (_running == null || _running.IsCompleted)
                         { 
-                            this.running = this.DeleteAllAsync();
+                            _running = DeleteAllAsync();
                         }
                     }
                 }
@@ -123,9 +123,9 @@ namespace FellowOakDicom.IO
         {
             while (true)
             {
-                lock (this.locker)
+                lock (_locker)
                 {
-                    foreach (var file in this.files)
+                    foreach (var file in _files)
                     {
                         try
                         {
@@ -136,9 +136,9 @@ namespace FellowOakDicom.IO
                             // Just ignore if deletion fails.
                         }
                     }
-                    this.files.RemoveAll(file => !file.Exists);
+                    _files.RemoveAll(file => !file.Exists);
 
-                    if (this.files.Count == 0)
+                    if (_files.Count == 0)
                     {
                         break;
                     }

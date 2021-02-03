@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -215,7 +215,7 @@ namespace FellowOakDicom.Network
         public string ReadString(string name, int numberOfBytes)
         {
             var bytes = ReadBytes(name, numberOfBytes);
-            
+
             return _encoding.GetString(bytes).Trim(_trimChars);
         }
 
@@ -468,7 +468,7 @@ namespace FellowOakDicom.Network
             pdu.Write("Item-Type", 0x10);
             pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
-            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContextName.UID);
+            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContext.UID);
             pdu.WriteLength16();
 
             foreach (var pc in _assoc.PresentationContexts)
@@ -787,7 +787,7 @@ namespace FellowOakDicom.Network
             pdu.Write("Item-Type", 0x10);
             pdu.Write("Reserved", 0x00);
             pdu.MarkLength16("Item-Length");
-            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContextName.UID);
+            pdu.Write("Application Context Name", DicomUID.DICOMApplicationContext.UID);
             pdu.WriteLength16();
 
             foreach (var pc in _assoc.PresentationContexts)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -14,9 +14,9 @@ namespace FellowOakDicom.Tests
     {
         #region Fields
 
-        private readonly DicomDatasetWalker walker;
+        private readonly DicomDatasetWalker _walker;
 
-        private readonly DatasetWalkerImpl walkerImpl;
+        private readonly DatasetWalkerImpl _walkerImpl;
 
         #endregion
 
@@ -46,8 +46,8 @@ namespace FellowOakDicom.Tests
                         new DicomLongString(DicomTag.BeamName, "Left"))),
                 new DicomIntegerString(DicomTag.NumberOfContourPoints, 120));
 
-            this.walker = new DicomDatasetWalker(dataset);
-            this.walkerImpl = new DatasetWalkerImpl();
+            _walker = new DicomDatasetWalker(dataset);
+            _walkerImpl = new DatasetWalkerImpl();
         }
 
         #endregion
@@ -57,29 +57,29 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Walk_CheckSequenceItems_ShouldBeThree()
         {
-            this.walker.Walk(this.walkerImpl);
-            Assert.Equal(3, this.walkerImpl.itemVisits);
+            _walker.Walk(_walkerImpl);
+            Assert.Equal(3, _walkerImpl._itemVisits);
         }
 
         [Fact]
         public void Walk_OnElementReturnedFalse_FallbackBehaviorContinueWalk()
         {
-            this.walker.Walk(this.walkerImpl);
-            Assert.Equal(120, this.walkerImpl.numberOfCountourPoints);
+            _walker.Walk(_walkerImpl);
+            Assert.Equal(120, _walkerImpl._numberOfCountourPoints);
         }
 
         [Fact]
         public async Task WalkAsync_OnElementAsyncReturnedFalse_FallbackBehaviorContinueWalk()
         {
-            await this.walker.WalkAsync(this.walkerImpl);
-            Assert.Equal(120, this.walkerImpl.numberOfCountourPoints);
+            await _walker.WalkAsync(_walkerImpl);
+            Assert.Equal(120, _walkerImpl._numberOfCountourPoints);
         }
 
         [Fact]
         public void Walk_OnBeginSequenceItemReturnedFalse_FallbackBehaviorContinueWalk()
         {
-            this.walker.Walk(this.walkerImpl);
-            Assert.Equal(100.0, this.walkerImpl.maxFinalCumulativeMetersetWeight);
+            _walker.Walk(_walkerImpl);
+            Assert.Equal(100.0, _walkerImpl._maxFinalCumulativeMetersetWeight);
         }
 
         #endregion
@@ -90,11 +90,11 @@ namespace FellowOakDicom.Tests
         {
             #region Fields
 
-            internal int itemVisits = 0;
+            internal int _itemVisits = 0;
 
-            internal int numberOfCountourPoints;
+            internal int _numberOfCountourPoints;
 
-            internal double maxFinalCumulativeMetersetWeight;
+            internal double _maxFinalCumulativeMetersetWeight;
 
             #endregion
 
@@ -108,13 +108,13 @@ namespace FellowOakDicom.Tests
             {
                 if (element.Tag.Equals(DicomTag.NumberOfContourPoints))
                 {
-                    this.numberOfCountourPoints = element.Get<int>();
+                    _numberOfCountourPoints = element.Get<int>();
                 }
                 if (element.Tag.Equals(DicomTag.FinalCumulativeMetersetWeight))
                 {
-                    this.maxFinalCumulativeMetersetWeight = Math.Max(
+                    _maxFinalCumulativeMetersetWeight = Math.Max(
                         element.Get<double>(),
-                        this.maxFinalCumulativeMetersetWeight);
+                        _maxFinalCumulativeMetersetWeight);
                 }
 
                 var success = !element.Tag.Equals(DicomTag.AcquisitionDate);
@@ -124,7 +124,7 @@ namespace FellowOakDicom.Tests
 
             public Task<bool> OnElementAsync(DicomElement element)
             {
-                return Task.FromResult(this.OnElement(element));
+                return Task.FromResult(OnElement(element));
             }
 
             public bool OnBeginSequence(DicomSequence sequence)
@@ -134,9 +134,9 @@ namespace FellowOakDicom.Tests
 
             public bool OnBeginSequenceItem(DicomDataset dataset)
             {
-                ++this.itemVisits;
+                ++_itemVisits;
 
-                var success = this.itemVisits != 2;
+                var success = _itemVisits != 2;
 
                 return success;
             }
@@ -163,7 +163,7 @@ namespace FellowOakDicom.Tests
 
             public Task<bool> OnFragmentItemAsync(IByteBuffer item)
             {
-                return Task.FromResult(this.OnFragmentItem(item));
+                return Task.FromResult(OnFragmentItem(item));
             }
 
             public bool OnEndFragment()

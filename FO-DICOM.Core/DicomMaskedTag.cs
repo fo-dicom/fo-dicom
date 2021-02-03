@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -78,14 +78,14 @@ namespace FellowOakDicom
                 case "G":
                 default:
                     {
-                        return string.Format("({0},{1})", this.ToString("g", null), this.ToString("e", null));
+                        return string.Format("({0},{1})", ToString("g", null), ToString("e", null));
                     }
             }
         }
 
         public bool IsMatch(DicomTag tag)
         {
-            return Card == ((((uint)tag.Group << 16) | (uint)tag.Element) & Mask);
+            return Card == ((((uint)tag.Group << 16) | tag.Element) & Mask);
         }
 
         public static DicomMaskedTag Parse(string s)

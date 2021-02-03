@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -24,7 +24,8 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null) where T : DicomService, IDicomServiceProvider;
+            Logger logger = null,
+            object userState = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
         /// Creates a DICOM server object.
@@ -41,7 +42,8 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null) where T : DicomService, IDicomServiceProvider;
+            Logger logger = null,
+            object userState = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
         /// Creates a DICOM server object.
@@ -79,9 +81,10 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null) where T : DicomService, IDicomServiceProvider
+            Logger logger = null,
+            object userState = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T>(port, certificateName, fallbackEncoding, logger);
+            .GetRequiredService<IDicomServerFactory>().Create<T>(port, certificateName, fallbackEncoding, logger, userState);
 
         /// <summary>
         /// Creates a DICOM server object out of DI-container.
@@ -98,9 +101,10 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null) where T : DicomService, IDicomServiceProvider
+            Logger logger = null,
+            object userState = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, certificateName, fallbackEncoding, logger);
+            .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, certificateName, fallbackEncoding, logger, userState);
 
         /// <summary>
         /// Creates a DICOM server object out of DI-container.
@@ -145,12 +149,13 @@ namespace FellowOakDicom.Network
             int port, 
             string certificateName = null,
             Encoding fallbackEncoding = null, 
-            Logger logger = null)
+            Logger logger = null,
+            object userState = null)
             where T : DicomService, IDicomServiceProvider 
-            => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, null, certificateName, fallbackEncoding, logger);
+            => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, certificateName, fallbackEncoding, logger);
 
-        public IDicomServer Create<T>(string ipAddress, int port, string certificateName = null, Encoding fallbackEncoding = null, Logger logger = null) where T : DicomService, IDicomServiceProvider
-            => Create<T, DicomServer<T>>(ipAddress, port, null, certificateName, fallbackEncoding, logger);
+        public IDicomServer Create<T>(string ipAddress, int port, string certificateName = null, Encoding fallbackEncoding = null, Logger logger = null, object userState = null) where T : DicomService, IDicomServiceProvider
+            => Create<T, DicomServer<T>>(ipAddress, port, userState, certificateName, fallbackEncoding, logger);
 
         public virtual IDicomServer Create<TServiceProvider, TServer>(
             string ipAddress, 
@@ -167,8 +172,8 @@ namespace FellowOakDicom.Network
                 throw new DicomNetworkException($"There is already a DICOM server registered on port: {port}");
             }
 
-            var creator = ActivatorUtilities.CreateFactory(typeof(TServer), new Type[0]);
-            var server = (TServer) creator(dicomServerScope.ServiceProvider, new object[0]);
+            var creator = ActivatorUtilities.CreateFactory(typeof(TServer), Array.Empty<Type>());
+            var server = (TServer) creator(dicomServerScope.ServiceProvider, Array.Empty<object>());
             
             if (logger != null)
             {

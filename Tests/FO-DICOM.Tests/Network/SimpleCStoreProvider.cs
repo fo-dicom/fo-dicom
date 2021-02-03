@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
@@ -17,14 +17,14 @@ namespace FellowOakDicom.Tests.Network
     {
         private readonly List<string> _storedFiles = new List<string>();
 
-        private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
+        private static readonly DicomTransferSyntax[] _acceptedTransferSyntaxes =
         {
             DicomTransferSyntax.ExplicitVRLittleEndian,
             DicomTransferSyntax.ExplicitVRBigEndian,
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 
-        private static readonly DicomTransferSyntax[] AcceptedImageTransferSyntaxes =
+        private static readonly DicomTransferSyntax[] _acceptedImageTransferSyntaxes =
         {
             // Lossless
             DicomTransferSyntax.JPEGLSLossless,
@@ -55,8 +55,8 @@ namespace FellowOakDicom.Tests.Network
         {
             foreach (var pc in association.PresentationContexts)
             {
-                if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
-                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(AcceptedImageTransferSyntaxes);
+                if (pc.AbstractSyntax == DicomUID.Verification) pc.AcceptTransferSyntaxes(_acceptedTransferSyntaxes);
+                else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None) pc.AcceptTransferSyntaxes(_acceptedImageTransferSyntaxes);
             }
 
             return SendAssociationAcceptAsync(association);

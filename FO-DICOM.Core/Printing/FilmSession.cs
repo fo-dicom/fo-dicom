@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -140,7 +140,7 @@ namespace FellowOakDicom.Printing
             InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
             SOPClassUID = sopClassUID ?? throw new ArgumentNullException(nameof(sopClassUID));
 
-            if (sopInstance == null || sopInstance.UID == string.Empty)
+            if (string.IsNullOrEmpty(sopInstance?.UID))
             {
                 SOPInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID();
             }
@@ -252,7 +252,7 @@ namespace FellowOakDicom.Printing
         public PresentationLut CreatePresentationLut(DicomUID sopInstance, DicomDataset dataset)
         {
             DicomUID uid = sopInstance;
-            if (uid == null || uid.UID == string.Empty)
+            if (string.IsNullOrEmpty(uid?.UID))
             {
                 uid = new DicomUID(
                     string.Format("{0}.{1}", SOPInstanceUID.UID, BasicFilmBoxes.Count + 1),

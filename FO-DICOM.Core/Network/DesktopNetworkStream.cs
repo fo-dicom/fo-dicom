@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -20,13 +20,13 @@ namespace FellowOakDicom.Network
     {
         #region FIELDS
 
-        private static readonly TimeSpan SslHandshakeTimeout = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan _sslHandshakeTimeout = TimeSpan.FromMinutes(1);
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
-        private readonly TcpClient tcpClient;
+        private readonly TcpClient _tcpClient;
 
-        private readonly Stream networkStream;
+        private readonly Stream _networkStream;
 
         #endregion
 
@@ -43,35 +43,37 @@ namespace FellowOakDicom.Network
                 throw new ArgumentNullException(nameof(options));
             }
 
-            this.RemoteHost = options.Host;
-            this.RemotePort = options.Port;
+            RemoteHost = options.Host;
+            RemotePort = options.Port;
 
-            this.tcpClient = new TcpClient { NoDelay = options.NoDelay };
-            this.tcpClient.ConnectAsync(options.Host, options.Port).Wait();
+            _tcpClient = new TcpClient { NoDelay = options.NoDelay };
+            _tcpClient.ConnectAsync(options.Host, options.Port).Wait();
 
-            Stream stream = this.tcpClient.GetStream();
+            Stream stream = _tcpClient.GetStream();
             if (options.UseTls)
             {
                 var ssl = new SslStream(
                     stream,
                     false,
+
                     (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || options.IgnoreSslPolicyErrors);
                 ssl.ReadTimeout = (int) options.Timeout.TotalMilliseconds;
                 ssl.WriteTimeout = (int) options.Timeout.TotalMilliseconds;
 
-                var authenticationSucceeded = Task.Run(async () => await ssl.AuthenticateAsClientAsync(options.Host).ConfigureAwait(false)).Wait(SslHandshakeTimeout);
+                var authenticationSucceeded = Task.Run(async () => await ssl.AuthenticateAsClientAsync(options.Host).ConfigureAwait(false)).Wait(_sslHandshakeTimeout);
+
                 if (!authenticationSucceeded)
                 {
-                    throw new DicomNetworkException($"SSL client authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
+                    throw new DicomNetworkException($"SSL client authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
                 }
 
                 stream = ssl;
             }
 
-            this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
-            this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+            LocalHost = ((IPEndPoint)_tcpClient.Client.LocalEndPoint).Address.ToString();
+            LocalPort = ((IPEndPoint)_tcpClient.Client.LocalEndPoint).Port;
 
-            this.networkStream = stream;
+            _networkStream = stream;
         }
 
         /// <summary>
@@ -105,10 +107,10 @@ namespace FellowOakDicom.Network
         /// </remarks>
         internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate, bool ownsTcpClient = false)
         {
-            this.LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
-            this.LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
-            this.RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-            this.RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
+            LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
+            LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
+            RemoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+            RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
 
             Stream stream = tcpClient.GetStream();
             if (certificate != null)
@@ -117,11 +119,11 @@ namespace FellowOakDicom.Network
 
                 var authenticationSucceeded = Task.Run(
                     async () => await ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).ConfigureAwait(false)
-                    ).Wait(SslHandshakeTimeout);
+                    ).Wait(_sslHandshakeTimeout);
 
                 if (!authenticationSucceeded)
                 {
-                    throw new DicomNetworkException($"SSL server authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
+                    throw new DicomNetworkException($"SSL server authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
                 }
 
                 stream = ssl;
@@ -129,10 +131,10 @@ namespace FellowOakDicom.Network
 
             if (ownsTcpClient)
             {
-                this.tcpClient = tcpClient;
+                _tcpClient = tcpClient;
             }
 
-            this.networkStream = stream;
+            _networkStream = stream;
         }
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         ~DesktopNetworkStream()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         #endregion
@@ -177,7 +179,7 @@ namespace FellowOakDicom.Network
         /// <returns>Network stream as <see cref="Stream"/> object.</returns>
         public Stream AsStream()
         {
-            return this.networkStream;
+            return _networkStream;
         }
 
         /// <summary>
@@ -185,7 +187,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -197,17 +199,17 @@ namespace FellowOakDicom.Network
         /// is responsible for disposing the stream when appropriate. Therefore, the stream should not be disposed here.</remarks>
         private void Dispose(bool disposing)
         {
-            if (this.disposed)
+            if (_disposed)
             {
                 return;
             }
 
-            if (this.tcpClient != null)
+            if (_tcpClient != null)
             {
-                this.tcpClient.Dispose();
+                _tcpClient.Dispose();
             }
 
-            this.disposed = true;
+            _disposed = true;
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -53,10 +53,7 @@ namespace FellowOakDicom
                 if (_conditions == null) _conditions = new DicomMatchRuleSet();
                 return _conditions;
             }
-            set
-            {
-                _conditions = value;
-            }
+            set => _conditions = value;
         }
 
         #endregion
@@ -110,11 +107,7 @@ namespace FellowOakDicom
             }
         }
 
-        public override string ToString()
-        {
-            string name = String.Format("[{0}]", _mask);
-            return String.Format("'{0}' remove", name);
-        }
+        public override string ToString() => $"'[{_mask}]' remove";
 
         #endregion
     }
@@ -152,8 +145,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' set '{1}'", name, _value);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' set '{1}'", name, _value);
         }
 
         #endregion
@@ -195,8 +188,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _match.Tag, _match.Tag.DictionaryEntry.Name);
-            return String.Format("'{0}' map '{1}' -> '{2}'", name, _match.Value, _value);
+            string name = string.Format("{0} {1}", _match.Tag, _match.Tag.DictionaryEntry.Name);
+            return string.Format("'{0}' map '{1}' -> '{2}'", name, _match.Value, _value);
         }
 
         #endregion
@@ -238,9 +231,9 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string sname = String.Format("{0} {1}", _src, _src.DictionaryEntry.Name);
-            string dname = String.Format("{0} {1}", _dst, _dst.DictionaryEntry.Name);
-            return String.Format("'{0}' copy to '{1}'", sname, dname);
+            string sname = string.Format("{0} {1}", _src, _src.DictionaryEntry.Name);
+            string dname = string.Format("{0} {1}", _dst, _dst.DictionaryEntry.Name);
+            return string.Format("'{0}' copy to '{1}'", sname, dname);
         }
 
         #endregion
@@ -287,8 +280,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' regex '{1}' -> '{2}'", name, _pattern, _replacement);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' regex '{1}' -> '{2}'", name, _pattern, _replacement);
         }
 
         #endregion
@@ -331,8 +324,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' prefix '{1}'", name, _prefix);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' prefix '{1}'", name, _prefix);
         }
 
         #endregion
@@ -375,8 +368,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' append '{1}'", name, _append);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' append '{1}'", name, _append);
         }
 
         #endregion
@@ -433,8 +426,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' trim '{1}' from {2}", name, _trim, _position.ToString().ToLower());
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' trim '{1}' from {2}", name, _trim, _position.ToString().ToLower());
         }
 
         #endregion
@@ -502,14 +495,14 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
             if (_trim != null)
-                return String.Format(
+                return string.Format(
                     "'{0}' trim '{1}' from {2}",
                     name,
                     new string(_trim),
                     _position.ToString().ToLower());
-            else return String.Format("'{0}' trim whitespace from {1}", name, _position.ToString().ToLower());
+            else return string.Format("'{0}' trim whitespace from {1}", name, _position.ToString().ToLower());
         }
 
         #endregion
@@ -557,8 +550,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' pad to {1} with '{2}'", name, _totalLength, _paddingChar);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' pad to {1} with '{2}'", name, _totalLength, _paddingChar);
         }
 
         #endregion
@@ -600,15 +593,15 @@ namespace FellowOakDicom
                 {
                     if (parts[i].Length > _length) parts[i] = parts[i].Substring(0, _length);
                 }
-                value = String.Join("\\", parts);
+                value = string.Join("\\", parts);
                 dataset.AddOrUpdate(_tag, value);
             }
         }
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' truncate to {1} characters", name, _length);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' truncate to {1} characters", name, _length);
         }
 
         #endregion
@@ -649,15 +642,15 @@ namespace FellowOakDicom
                 dataset.CopyTo(modifiedAttributesSequenceItem, _tag);
                 var value = dataset.GetString(_tag);
                 string[] parts = value.Split(_seperators);
-                value = String.Format(_format, parts);
+                value = string.Format(_format, parts);
                 dataset.AddOrUpdate(_tag, value);
             }
         }
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' split on '{1}' and format as '{2}'", name, new string(_seperators), _format);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' split on '{1}' and format as '{2}'", name, new string(_seperators), _format);
         }
 
         #endregion
@@ -697,8 +690,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' to upper case", name);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' to upper case", name);
         }
 
         #endregion
@@ -738,8 +731,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' to lower case", name);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' to lower case", name);
         }
 
         #endregion
@@ -779,8 +772,8 @@ namespace FellowOakDicom
 
         public override string ToString()
         {
-            string name = String.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
-            return String.Format("'{0}' generate UID", name);
+            string name = string.Format("{0} {1}", _tag, _tag.DictionaryEntry.Name);
+            return string.Format("'{0}' generate UID", name);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -105,7 +105,7 @@ namespace FellowOakDicom.Serialization
                     xmlOutput.AppendLine($@"<PersonName number=""{i+1}"">");
                     xmlOutput.AppendLine(@"<Alphabetic>");
 
-                    DicomPersonName person = new DicomPersonName(item.Tag, item.Get<string>(i));
+                    var person = new DicomPersonName(item.Tag, item.Get<string>(i));
 
                     string lastName = person.Last;
                     if (!string.IsNullOrEmpty(lastName)) xmlOutput.AppendLine($@"<FamilyName>{EscapeXml(lastName)}</FamilyName>");

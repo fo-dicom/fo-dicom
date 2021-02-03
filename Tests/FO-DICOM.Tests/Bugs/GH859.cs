@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Threading;
@@ -46,8 +46,10 @@ namespace FellowOakDicom.Tests.Bugs
             var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.Logger = clientLogger;
 
-            var command = new DicomDataset();
-            command.ValidateItems = false;
+            var command = new DicomDataset
+            {
+                ValidateItems = false
+            };
             command.Add(DicomTag.CommandField, (ushort)DicomCommandField.CStoreRequest);
             command.Add(DicomTag.MessageID, (ushort)1);
             command.Add(DicomTag.AffectedSOPClassUID, DicomUID.CTImageStorage);

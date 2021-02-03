@@ -38,7 +38,7 @@ namespace Dicom.Network
                 DicomNActionResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
                 var request = new DicomNActionRequest(
-                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                     1)
                 {
@@ -70,7 +70,7 @@ namespace Dicom.Network
                 DicomNCreateResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
                 var request = new DicomNCreateRequest(
-                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
                 {
                     OnResponseReceived = (req, res) => response = res,
@@ -101,7 +101,7 @@ namespace Dicom.Network
                 DicomNDeleteResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
                 var request = new DicomNDeleteRequest(
-                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
                 {
                     OnResponseReceived = (req, res) => response = res,
@@ -132,7 +132,7 @@ namespace Dicom.Network
                 DicomNEventReportResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
                 var request = new DicomNEventReportRequest(
-                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
                     1)
                 {
@@ -164,7 +164,7 @@ namespace Dicom.Network
                 DicomNGetResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
                 var request = new DicomNGetRequest(
-                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
                 {
                     OnResponseReceived = (req, res) => response = res,
@@ -195,7 +195,7 @@ namespace Dicom.Network
                 DicomNSetResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
                 var request = new DicomNSetRequest(
-                    DicomUID.BasicFilmSessionSOPClass,
+                    DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
                 {
                     OnResponseReceived = (req, res) => response = res,
@@ -279,7 +279,7 @@ namespace Dicom.Network
         }
         public Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
         {
-            return SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModelSOPClass, DicomUID.StorageCommitmentPushModelSOPInstance, 2)
+            return SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModel, DicomUID.StorageCommitmentPushModel, 2)
             {
                 Dataset = request.Dataset
             });

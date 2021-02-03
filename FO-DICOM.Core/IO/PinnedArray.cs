@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -25,48 +25,18 @@ namespace FellowOakDicom.IO
 
         #region Public Properties
 
-        public T[] Data
-        {
-            get
-            {
-                return _data;
-            }
-        }
+        public T[] Data => _data;
 
-        public int Count
-        {
-            get
-            {
-                return _count;
-            }
-        }
+        public int Count => _count;
 
-        public int ByteSize
-        {
-            get
-            {
-                return _size;
-            }
-        }
+        public int ByteSize => _size;
 
-        public IntPtr Pointer
-        {
-            get
-            {
-                return _pointer;
-            }
-        }
+        public IntPtr Pointer => _pointer;
 
         public T this[int index]
         {
-            get
-            {
-                return _data[index];
-            }
-            set
-            {
-                _data[index] = value;
-            }
+            get => _data[index];
+            set => _data[index] = value;
         }
 
         #endregion

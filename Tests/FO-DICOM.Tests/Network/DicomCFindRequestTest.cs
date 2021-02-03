@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -33,10 +33,10 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void Constructor_ParamatersAreSet()
         {
-            var cfind = new DicomCFindRequest(DicomUID.UnifiedProcedureStepEventSOPClass, DicomQueryRetrieveLevel.NotApplicable, DicomPriority.High);
+            var cfind = new DicomCFindRequest(DicomUID.UnifiedProcedureStepEvent, DicomQueryRetrieveLevel.NotApplicable, DicomPriority.High);
             Assert.Equal(DicomPriority.High, cfind.Priority);
             Assert.Equal(DicomQueryRetrieveLevel.NotApplicable, cfind.Level);
-            Assert.Equal(DicomUID.UnifiedProcedureStepEventSOPClass, cfind.SOPClassUID);
+            Assert.Equal(DicomUID.UnifiedProcedureStepEvent, cfind.SOPClassUID);
         }
 
         [Theory, MemberData(nameof(InstancesLevels))]
@@ -49,17 +49,17 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void Constructor_CreatesPatientRootQuery()
         {
-            var query = new DicomCFindRequest(DicomUID.PatientRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Patient);
+            var query = new DicomCFindRequest(DicomUID.PatientRootQueryRetrieveInformationModelFind, DicomQueryRetrieveLevel.Patient);
             Assert.Equal(DicomQueryRetrieveLevel.Patient, query.Level);
-            Assert.Equal(DicomUID.PatientRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
+            Assert.Equal(DicomUID.PatientRootQueryRetrieveInformationModelFind, query.SOPClassUID);
         }
 
         [Fact]
         public void Constructor_CreatesStudyRootQuery()
         {
-            var query = new DicomCFindRequest(DicomUID.StudyRootQueryRetrieveInformationModelFIND, DicomQueryRetrieveLevel.Study);
+            var query = new DicomCFindRequest(DicomUID.StudyRootQueryRetrieveInformationModelFind, DicomQueryRetrieveLevel.Study);
             Assert.Equal(DicomQueryRetrieveLevel.Study, query.Level);
-            Assert.Equal(DicomUID.StudyRootQueryRetrieveInformationModelFIND, query.SOPClassUID);
+            Assert.Equal(DicomUID.StudyRootQueryRetrieveInformationModelFind, query.SOPClassUID);
         }
 
         [Fact]
@@ -151,9 +151,9 @@ namespace FellowOakDicom.Tests.Network
             new object[] { new DicomCFindRequest(DicomQueryRetrieveLevel.Series), DicomQueryRetrieveLevel.Series },
             new object[] { new DicomCFindRequest(DicomQueryRetrieveLevel.Image), DicomQueryRetrieveLevel.Image },
             new object[] { new DicomCFindRequest(DicomQueryRetrieveLevel.Worklist), DicomQueryRetrieveLevel.NotApplicable },
-            new object[] { new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFIND), DicomQueryRetrieveLevel.NotApplicable },
-            new object[] { new DicomCFindRequest(DicomUID.UnifiedProcedureStepPullSOPClass), DicomQueryRetrieveLevel.NotApplicable },
-            new object[] { new DicomCFindRequest(DicomUID.UnifiedProcedureStepWatchSOPClass), DicomQueryRetrieveLevel.NotApplicable }
+            new object[] { new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFind), DicomQueryRetrieveLevel.NotApplicable },
+            new object[] { new DicomCFindRequest(DicomUID.UnifiedProcedureStepPull), DicomQueryRetrieveLevel.NotApplicable },
+            new object[] { new DicomCFindRequest(DicomUID.UnifiedProcedureStepWatch), DicomQueryRetrieveLevel.NotApplicable }
         };
 
         #endregion

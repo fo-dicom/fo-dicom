@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2020 fo-dicom contributors.
+// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void LookupReturnsKnownTransferSyntax()
+        public void LookupReturnsKnownTransferSyntax()
         {
             var ts = DicomTransferSyntax.Lookup(DicomUID.ImplicitVRLittleEndian);
             Assert.NotNull(ts);
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void LookupReturnsAdHocTransferSyntax()
+        public void LookupReturnsAdHocTransferSyntax()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
 
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void LookupThrowsOnInvalidUidType()
+        public void LookupThrowsOnInvalidUidType()
         {
             var uid = DicomUID.ComputedRadiographyImageStorage;
             Assert.Throws<DicomDataException>(
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void QueryReturnsKnownTransferSyntax()
+        public void QueryReturnsKnownTransferSyntax()
         {
             var uid = DicomUID.ImplicitVRLittleEndian;
             var ts = DicomTransferSyntax.Query(uid);
@@ -74,7 +74,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void QueryReturnsRegisteredTransferSyntax()
+        public void QueryReturnsRegisteredTransferSyntax()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
             DicomTransferSyntax.Register(uid);
@@ -90,7 +90,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void QueryReturnsNullIfNotRegistered()
+        public void QueryReturnsNullIfNotRegistered()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
 
@@ -102,7 +102,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void RegisterRegistersTransferSyntax()
+        public void RegisterRegistersTransferSyntax()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
 
@@ -121,7 +121,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void RegisterHandlesMultipleRegistrations()
+        public void RegisterHandlesMultipleRegistrations()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
 
@@ -137,7 +137,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void UnregisterUnregistersTransferSyntax()
+        public void UnregisterUnregistersTransferSyntax()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
 
@@ -152,7 +152,7 @@ namespace FellowOakDicom.Tests
         ///
         /// </summary>
         [Fact]
-        private void UnregisterHandleMultipleUnregistrations()
+        public void UnregisterHandleMultipleUnregistrations()
         {
             var uid = new DicomUID("0", "testing", DicomUidType.TransferSyntax);
 

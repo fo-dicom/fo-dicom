@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -146,7 +146,7 @@ namespace FellowOakDicom.Tests.Network
 
         [Theory]
         [MemberData(nameof(RawPDUTestData))]
-        public async Task AssociateRJ_WriteAsync_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string dummy)
+        public async Task AssociateRJ_WriteAsync_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string _)
         {
             using (var raw = reject.Write())
             using (var stream = new MemoryStream())
@@ -169,12 +169,12 @@ namespace FellowOakDicom.Tests.Network
                 DicomUID.ProcedureLogStorage,
                 new DicomCStoreApplicationInfo(DicomLevelOfSupport.Level2, DicomLevelOfDigitalSignatureSupport.Level3,
                     DicomElementCoercion.AllowCoercion),
-                DicomUID.StorageServiceClass,
+                DicomUID.Storage,
                 new[] {DicomUID.EnhancedSRStorage}
             },
             new object[]
             {
-                DicomUID.StudyRootQueryRetrieveInformationModelFIND,
+                DicomUID.StudyRootQueryRetrieveInformationModelFind,
                 new DicomCFindApplicationInfo(DicomCFindOption.RelationalQueries | DicomCFindOption.DateTimeMatching),
                 null,
                 new DicomUID[] {}

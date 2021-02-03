@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Text;
@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomPersonNameConstructorTest()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
+            var target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
             Assert.Equal("Last^First^Middle^Prefix^Suffix", target.Get<string>());
             target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "", "");
             Assert.Equal("Last^First^Middle", target.Get<string>());
@@ -38,14 +38,16 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomPersonNameConstructorTest1()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей", "Арсеньевич");
+            var target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей", "Арсеньевич");
             target.TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144");
             byte[] b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             byte[] c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей^Арсеньевич");
             Assert.Equal(c, b);
             // foloowing test checks also padding with space!
-            target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей");
-            target.TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144");
+            target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей")
+            {
+                TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144")
+            };
             b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей ");
             Assert.Equal(c, b);
@@ -57,7 +59,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void LastTest()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
+            var target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
             Assert.Equal("Last", target.Last);
             target = new DicomPersonName(DicomTag.PatientName, "");
             Assert.Equal("", target.Last);
@@ -71,7 +73,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void FirstTest()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
+            var target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
             Assert.Equal("First", target.First);
             target = new DicomPersonName(DicomTag.PatientName, "Last");
             Assert.Equal("", target.First);
@@ -85,7 +87,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void MiddleTest()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
+            var target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
             Assert.Equal("Middle", target.Middle);
             target = new DicomPersonName(DicomTag.PatientName, "Last^First");
             Assert.Equal("", target.Middle);
@@ -99,7 +101,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void PrefixTest()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
+            var target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
             Assert.Equal("Prefix", target.Prefix);
             target = new DicomPersonName(DicomTag.PatientName, "Last");
             Assert.Equal("", target.Prefix);
@@ -113,7 +115,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void SuffixTest()
         {
-            DicomPersonName target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
+            var target = new DicomPersonName(DicomTag.PatientName, "Last", "First", "Middle", "Prefix", "Suffix");
             Assert.Equal("Suffix", target.Suffix);
             target = new DicomPersonName(DicomTag.PatientName, "Last");
             Assert.Equal("", target.Suffix);

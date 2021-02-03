@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -107,6 +107,12 @@ namespace FellowOakDicom.Tests
             var ex = Record.Exception(() => tag = DicomDictionary.Default["invalid-keyword"]);
             Assert.Null(ex); // assert that no exception was thrown
             Assert.Null(tag); // assert that the dictionary returns a null tag for invalid keyword
+        }
+
+        [Fact]
+        public void VerifyDicomStandardTags()
+        {
+            Assert.Equal("Current Frame Functional Groups Sequence", new DicomTag(0x0006, 0x0001).DictionaryEntry.Name);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -387,23 +387,16 @@ namespace FellowOakDicom.Network
         /// <returns>User-friendly description of negotiation result.</returns>
         public string GetResultDescription()
         {
-            switch (Result)
+            return Result switch
             {
-                case DicomPresentationContextResult.Accept:
-                    return "Accept";
-                case DicomPresentationContextResult.Proposed:
-                    return "Proposed";
-                case DicomPresentationContextResult.RejectAbstractSyntaxNotSupported:
-                    return "Reject - Abstract Syntax Not Supported";
-                case DicomPresentationContextResult.RejectNoReason:
-                    return "Reject - No Reason";
-                case DicomPresentationContextResult.RejectTransferSyntaxesNotSupported:
-                    return "Reject - Transfer Syntaxes Not Supported";
-                case DicomPresentationContextResult.RejectUser:
-                    return "Reject - User";
-                default:
-                    return "Unknown";
-            }
+                DicomPresentationContextResult.Accept => "Accept",
+                DicomPresentationContextResult.Proposed => "Proposed",
+                DicomPresentationContextResult.RejectAbstractSyntaxNotSupported => "Reject - Abstract Syntax Not Supported",
+                DicomPresentationContextResult.RejectNoReason => "Reject - No Reason",
+                DicomPresentationContextResult.RejectTransferSyntaxesNotSupported => "Reject - Transfer Syntaxes Not Supported",
+                DicomPresentationContextResult.RejectUser => "Reject - User",
+                _ => "Unknown",
+            };
         }
 
         #endregion

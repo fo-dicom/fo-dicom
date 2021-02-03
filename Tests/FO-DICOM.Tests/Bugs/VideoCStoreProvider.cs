@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Bugs
         private static readonly DicomTransferSyntax[] _acceptedVideoTransferSyntaxes =
         {
             DicomTransferSyntax.MPEG2,
-            DicomTransferSyntax.Lookup(DicomUID.MPEG4AVCH264HighProfileLevel41),
+            DicomTransferSyntax.Lookup(DicomUID.MPEG4HP41),
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 

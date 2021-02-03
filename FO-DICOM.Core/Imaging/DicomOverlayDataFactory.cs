@@ -1,7 +1,6 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Drawing;
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO.Buffer;
 
@@ -22,7 +21,7 @@ namespace FellowOakDicom.Imaging
         /// <param name="bitmap">Bitmap</param>
         /// <param name="mask">Color mask for overlay</param>
         /// <returns>DICOM overlay</returns>
-        public static DicomOverlayData FromBitmap(DicomDataset ds, IImage bitmap, Color mask)
+        public static DicomOverlayData FromBitmap(DicomDataset ds, IImage bitmap, Color32 mask)
         {
             ushort group = 0x6000;
             while (ds.Contains(new DicomTag(group, DicomTag.OverlayBitPosition.Element))) group += 2;
@@ -45,7 +44,7 @@ namespace FellowOakDicom.Imaging
             {
                 for (var x = 0; x < bitmap.Width; x++, p++)
                 {
-                    if (bitmap.GetPixel(x, y).ToArgb() == mask.ToArgb()) array[p] = true;
+                    if (bitmap.GetPixel(x, y).Value == mask.Value) array[p] = true;
                 }
             }
 

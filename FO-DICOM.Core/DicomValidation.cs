@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -112,6 +112,7 @@ namespace FellowOakDicom
 
         public static void ValidateDS(string content)
         {
+            content=content.Trim();
             // This is not very inefficient - uses .NET regex caching
             if (!Regex.IsMatch(content, "^[+-]?((0|[1-9][0-9]*)([.][0-9]*)?|[.][0-9]+)([eE][-+]?[0-9]+)?$"))
             {

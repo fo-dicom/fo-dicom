@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
@@ -161,9 +161,9 @@ namespace FellowOakDicom.Tests.IO.Reader
 
             public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
             {
-                this.Tag = tag;
-                this.VR = vr;
-                this.Data = Encoding.UTF8.GetString(data.Data);
+                Tag = tag;
+                VR = vr;
+                Data = Encoding.UTF8.GetString(data.Data);
             }
 
             public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)

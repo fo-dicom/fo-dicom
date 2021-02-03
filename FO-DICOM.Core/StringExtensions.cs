@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -11,7 +11,7 @@ namespace FellowOakDicom
     {
         public static bool IsDigits(this string s)
         {
-            foreach (char c in s) if (!Char.IsDigit(c)) return false;
+            foreach (char c in s) if (!char.IsDigit(c)) return false;
             return true;
         }
 

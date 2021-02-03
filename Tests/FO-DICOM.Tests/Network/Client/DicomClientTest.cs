@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -29,9 +29,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Fields
 
-        private static string remoteHost;
+        private static string _remoteHost;
 
-        private static int remotePort;
+        private static int _remotePort;
 
         #endregion
 
@@ -44,8 +44,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-            remoteHost = null;
-            remotePort = 0;
+            _remoteHost = null;
+            _remotePort = 0;
         }
 
         #endregion
@@ -314,9 +314,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
                 await client.SendAsync().ConfigureAwait(false);
 
-                Assert.NotNull(remoteHost);
-                Assert.True(remotePort > 0);
-                Assert.NotEqual(port, remotePort);
+                Assert.NotNull(_remoteHost);
+                Assert.True(_remotePort > 0);
+                Assert.NotEqual(port, _remotePort);
             }
         }
 
@@ -1379,8 +1379,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
                 {
                     Thread.Sleep(1000);
-                    remoteHost = association.RemoteHost;
-                    remotePort = association.RemotePort;
+                    _remoteHost = association.RemoteHost;
+                    _remotePort = association.RemotePort;
                     return SendAssociationAcceptAsync(association);
                 }
 
@@ -1409,7 +1409,7 @@ namespace FellowOakDicom.Tests.Network.Client
         /// </summary>
         private class ExplicitLECStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
-            private static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
+            private static readonly DicomTransferSyntax[] _acceptedTransferSyntaxes =
             {
                 DicomTransferSyntax.ExplicitVRLittleEndian
             };
@@ -1424,7 +1424,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 foreach (var pc in association.PresentationContexts)
                 {
-                    if (!pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes))
+                    if (!pc.AcceptTransferSyntaxes(_acceptedTransferSyntaxes))
                     {
                         return SendAssociationRejectAsync(DicomRejectResult.Permanent,
                             DicomRejectSource.ServiceProviderACSE, DicomRejectReason.ApplicationContextNotSupported);

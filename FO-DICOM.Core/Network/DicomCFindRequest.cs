@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -76,7 +76,7 @@ namespace FellowOakDicom.Network
             private set
             {
                 switch (value)
-                { 
+                {
                     case DicomQueryRetrieveLevel.Patient:
                     case DicomQueryRetrieveLevel.Study:
                     case DicomQueryRetrieveLevel.Series:
@@ -239,7 +239,7 @@ namespace FellowOakDicom.Network
             string modality = null,
             DicomDateRange scheduledDateTime = null)
         {
-            var dimse = new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFIND);
+            var dimse = new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFind);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
             dimse.Dataset.Add(DicomTag.PatientName, patientName);
             dimse.Dataset.Add(DicomTag.IssuerOfPatientID, string.Empty);
@@ -247,7 +247,7 @@ namespace FellowOakDicom.Network
             dimse.Dataset.Add(DicomTag.PatientWeight, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientBirthDate, string.Empty);
             dimse.Dataset.Add(DicomTag.MedicalAlerts, string.Empty);
-            dimse.Dataset.Add(DicomTag.PregnancyStatus, new ushort[0]);
+            dimse.Dataset.Add(DicomTag.PregnancyStatus, Array.Empty<ushort>());
             dimse.Dataset.Add(DicomTag.Allergies, string.Empty);
             dimse.Dataset.Add(DicomTag.PatientComments, string.Empty);
             dimse.Dataset.Add(DicomTag.SpecialNeeds, string.Empty);
@@ -305,14 +305,14 @@ namespace FellowOakDicom.Network
             switch (level)
             {
                 case DicomQueryRetrieveLevel.Patient:
-                    return DicomUID.PatientRootQueryRetrieveInformationModelFIND;
+                    return DicomUID.PatientRootQueryRetrieveInformationModelFind;
                 case DicomQueryRetrieveLevel.Study:
                 case DicomQueryRetrieveLevel.Series:
                 case DicomQueryRetrieveLevel.Image:
-                    return DicomUID.StudyRootQueryRetrieveInformationModelFIND;
+                    return DicomUID.StudyRootQueryRetrieveInformationModelFind;
                 case DicomQueryRetrieveLevel.Worklist:
                 case DicomQueryRetrieveLevel.NotApplicable:
-                    return DicomUID.ModalityWorklistInformationModelFIND;
+                    return DicomUID.ModalityWorklistInformationModelFind;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level), level, null);
             }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.IO;
@@ -25,12 +25,12 @@ namespace FellowOakDicom.Printing
         /// <summary>
         /// Basic color image box SOP
         /// </summary>
-        public static readonly DicomUID ColorSOPClassUID = DicomUID.BasicColorImageBoxSOPClass;
+        public static readonly DicomUID ColorSOPClassUID = DicomUID.BasicColorImageBox;
 
         /// <summary>
         /// Basic gray scale image box SOP
         /// </summary>
-        public static readonly DicomUID GraySOPClassUID = DicomUID.BasicGrayscaleImageBoxSOPClass;
+        public static readonly DicomUID GraySOPClassUID = DicomUID.BasicGrayscaleImageBox;
 
         /// <summary>
         /// Image box SOP class UID
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Printing
             get
             {
                 DicomSequence seq = null;
-                if (SOPClassUID == ColorSOPClassUID || this.Contains(DicomTag.BasicColorImageSequence))
+                if (SOPClassUID == ColorSOPClassUID || Contains(DicomTag.BasicColorImageSequence))
                 {
                     seq = TryGetSequence(DicomTag.BasicColorImageSequence, out var dummy) ? dummy : null;
                 }
@@ -235,20 +235,13 @@ namespace FellowOakDicom.Printing
         /// <param name="sopInstance">SOP instance UID for the image.</param>
         public ImageBox(FilmBox filmBox, DicomUID sopClass, DicomUID sopInstance)
         {
-            this.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
             FilmBox = filmBox;
             SOPClassUID = sopClass;
-            if (sopInstance == null || sopInstance.UID == string.Empty)
-            {
-                SOPInstanceUID = DicomUID.Generate();
-            }
-            else
-            {
-                SOPInstanceUID = sopInstance;
-            }
+            SOPInstanceUID = string.IsNullOrEmpty(sopInstance?.UID) ? DicomUID.Generate() : sopInstance;
 
-            this.Add(DicomTag.SOPClassUID, SOPClassUID);
-            this.Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
+            Add(DicomTag.SOPClassUID, SOPClassUID);
+            Add(DicomTag.SOPInstanceUID, SOPInstanceUID);
 
         }
 
@@ -261,7 +254,7 @@ namespace FellowOakDicom.Printing
             : this(filmBox, imageBox.SOPClassUID, imageBox.SOPInstanceUID)
         {
             imageBox.CopyTo(this);
-            this.InternalTransferSyntax = imageBox.InternalTransferSyntax;
+            InternalTransferSyntax = imageBox.InternalTransferSyntax;
         }
 
         /// <summary>

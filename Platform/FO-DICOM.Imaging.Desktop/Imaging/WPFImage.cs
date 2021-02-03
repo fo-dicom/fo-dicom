@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -77,8 +77,8 @@ namespace FellowOakDicom.Imaging
         /// <param name="rotation">Image rotation.</param>
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
-            var bitmap = CreateBitmap(this.width, this.height, components, this.pixels.Data);
-            this.image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
+            var bitmap = CreateBitmap(width, height, components, pixels.Data);
+            image = ApplyFlipRotate(bitmap, flipX, flipY, rotation);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace FellowOakDicom.Imaging
                 var stride = 4 * graphic.ScaledWidth;
                 layer.CopyPixels(overlay, stride, 0);
 
-                this.image.WritePixels(
+                image.WritePixels(
                     new Int32Rect(
                         graphic.ScaledOffsetX,
                         graphic.ScaledOffsetY,
@@ -114,10 +114,10 @@ namespace FellowOakDicom.Imaging
         public override IImage Clone()
         {
             return new WPFImage(
-                this.width,
-                this.height,
-                new PinnedIntArray(this.pixels.Data),
-                this.image == null ? null : new WriteableBitmap(this.image));
+                width,
+                height,
+                new PinnedIntArray(pixels.Data),
+                image == null ? null : new WriteableBitmap(image));
         }
 
         private static WriteableBitmap CreateBitmap(int width, int height, int components, int[] pixelData)

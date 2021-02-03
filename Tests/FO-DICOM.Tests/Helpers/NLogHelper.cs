@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using NLog.Config;
@@ -11,7 +11,7 @@ namespace FellowOakDicom.Tests.Helpers
     {
         #region Fields
 
-        private static readonly LoggingConfiguration config = new LoggingConfiguration();
+        private static readonly LoggingConfiguration _config = new LoggingConfiguration();
 
         #endregion
 
@@ -21,12 +21,12 @@ namespace FellowOakDicom.Tests.Helpers
         {
             var target = new MemoryTarget { Layout = layout };
 
-            lock (config)
+            lock (_config)
             {
-                config.AddTarget(name, target);
-                config.LoggingRules.Add(new LoggingRule(name, minLogLevel ?? NLog.LogLevel.Debug, target));
+                _config.AddTarget(name, target);
+                _config.LoggingRules.Add(new LoggingRule(name, minLogLevel ?? NLog.LogLevel.Debug, target));
 
-                NLog.LogManager.Configuration = config;
+                NLog.LogManager.Configuration = _config;
             }
 
             return target;

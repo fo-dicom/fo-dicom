@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -237,21 +237,21 @@ namespace FellowOakDicom
         public static Dictionary<DicomUID, DicomUID[]> Instances { get; } = new Dictionary<DicomUID, DicomUID[]>
         {
             {
-                DicomUID.BasicGrayscalePrintManagementMetaSOPClass, new DicomUID[]
+                DicomUID.BasicGrayscalePrintManagementMeta, new DicomUID[]
                 {
-                    DicomUID.BasicFilmSessionSOPClass,
-                    DicomUID.BasicFilmBoxSOPClass,
-                    DicomUID.BasicGrayscaleImageBoxSOPClass,
-                    DicomUID.PrinterSOPClass
+                    DicomUID.BasicFilmSession,
+                    DicomUID.BasicFilmBox,
+                    DicomUID.BasicGrayscaleImageBox,
+                    DicomUID.Printer
                 }
             },
             {
-                DicomUID.BasicColorPrintManagementMetaSOPClass, new DicomUID[]
+                DicomUID.BasicColorPrintManagementMeta, new DicomUID[]
                 {
-                    DicomUID.BasicFilmSessionSOPClass,
-                    DicomUID.BasicFilmBoxSOPClass,
-                    DicomUID.BasicColorImageBoxSOPClass,
-                    DicomUID.PrinterSOPClass
+                    DicomUID.BasicFilmSession,
+                    DicomUID.BasicFilmBox,
+                    DicomUID.BasicColorImageBox,
+                    DicomUID.Printer
                 }
             }
         };

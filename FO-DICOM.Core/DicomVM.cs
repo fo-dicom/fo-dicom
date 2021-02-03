@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -69,11 +69,11 @@ namespace FellowOakDicom
 
             if (Maximum == int.MaxValue)
             {
-                if (Multiplicity > 1) return String.Format(@"{0}-{1}n", Minimum, Multiplicity);
-                else return String.Format(@"{0}-n", Minimum);
+                if (Multiplicity > 1) return string.Format(@"{0}-{1}n", Minimum, Multiplicity);
+                else return string.Format(@"{0}-n", Minimum);
             }
 
-            return String.Format(@"{0}-{1}", Minimum, Maximum);
+            return string.Format(@"{0}-{1}", Minimum, Maximum);
         }
 
         public static DicomVM Parse(string s)
@@ -94,9 +94,11 @@ namespace FellowOakDicom
                 }
                 else
                 {
-                    vm = new DicomVM();
-                    vm.Minimum = int.Parse(parts[0]);
-                    vm.Multiplicity = 1;
+                    vm = new DicomVM
+                    {
+                        Minimum = int.Parse(parts[0]),
+                        Multiplicity = 1
+                    };
 
                     if (parts[1].IndexOf("n", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
