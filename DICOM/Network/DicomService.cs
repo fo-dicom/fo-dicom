@@ -1378,44 +1378,52 @@ namespace Dicom.Network
 
                 if (Interlocked.CompareExchange(ref _isCheckingForTimeouts, 1, 0) != 0)
                     return;
-
-                List<DicomRequest> timedOutPendingRequests;
-                lock (_lock)
+                try
                 {
-                    if (!_pending.Any())
-                        return;
-
-                    timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
-                }
-
-                if (timedOutPendingRequests.Any())
-                {
-                    for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
+                    List<DicomRequest> timedOutPendingRequests;
+                    lock (_lock)
                     {
-                        DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
-                        try
-                        {
-                            Logger.Warn($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
-                            timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
-                        }
-                        finally
-                        {
-                            lock (_lock)
-                            {
-                                _pending.Remove(timedOutPendingRequest);
-                            }
+                        if (!_pending.Any())
+                            return;
 
-                            if (this is IDicomClientConnection connection)
+                        timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
+                    }
+
+                    if (timedOutPendingRequests.Any())
+                    {
+                        for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
+                        {
+                            DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
+                            try
                             {
-                                await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
+                                Logger.Warn($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
+                                timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
+                            }
+                            finally
+                            {
+                                lock (_lock)
+                                {
+                                    _pending.Remove(timedOutPendingRequest);
+                                }
+
+                                if (this is IDicomClientConnection connection)
+                                {
+                                    await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
+                                }
                             }
                         }
                     }
+
+                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-
-                _isCheckingForTimeouts = 0;
+                catch (Exception e)
+                {
+                    Logger.Error("An error occurred in the Fellow Oak DICOM timeout detection loop: {Error}", e);
+                }
+                finally
+                {
+                    _isCheckingForTimeouts = 0;
+                }
             }
         }
 
