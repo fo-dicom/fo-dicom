@@ -28,6 +28,7 @@
 * Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
 * Make DicomService more memory efficient. Use existing streams in PDU and do not create new Memorystreams for every PDU. (#1091)
 * Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
+* Bug fix: Ensure timeout detection can never stop prematurely
 
 ##### Breaking changes:
 

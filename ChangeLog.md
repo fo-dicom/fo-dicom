@@ -5,6 +5,7 @@
 * Bug fix: Some non-retired DicomTags had a name including "RETIRED". Now fixed the generation of DicomTag names. (#1131)
 * FrameGeometry is enhanced so that it also works for DX, CR or MG images. (#1138)
 * Private Creator UN tags are converted to LO (#1146)
+* Bug fix: Ensure timeout detection can never stop prematurely
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)
