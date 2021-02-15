@@ -80,6 +80,17 @@ namespace FellowOakDicom.Tests
             Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGOHUGOHUGOHUGO1"));
         }
 
+        [Fact]
+        public void DicomValidation_ValidateDS()
+        {
+            var ds = new DicomDataset();
+            var validDS = "0.333333333333  "; // 16 chars
+            ds.Add(DicomTag.RescaleSlope, validDS);
+            Assert.Equal(validDS, ds.GetSingleValue<string>(DicomTag.RescaleSlope));
+
+            var notValidDS = "0.333333333333   "; // 17 chars
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.RescaleSlope, notValidDS));
+        }
 
         [Fact]
         public void AddInvalidUIDMultiplicity()
