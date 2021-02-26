@@ -25,7 +25,7 @@ namespace Dicom
         }
 
         protected DicomException(string format, params object[] args)
-            : this(String.Format(format, args))
+            : this(string.Format(format, args))
         {
         }
 
