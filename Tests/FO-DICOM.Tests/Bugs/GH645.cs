@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Bugs
         public void UncompressedFrameSize_ShouldBeCorrect()
         {
             // Arrange
-            var dicomFile = DicomFile.Open(@"Test Data\GH645.dcm");
+            var dicomFile = DicomFile.Open(TestData.Resolve("GH645.dcm"));
 
             // Act
             var pixelData = DicomPixelData.Create(dicomFile.Dataset);

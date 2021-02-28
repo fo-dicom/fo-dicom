@@ -190,6 +190,12 @@ namespace Dicom.IO.Reader
                 ResetState();
                 source = ConvertSource(source);
                 ParseDataset(source);
+
+                if (_tag == DicomTag.SequenceDelimitationItem && _result == DicomReaderResult.Processing && source.IsEOF)
+                {
+                    _result = DicomReaderResult.Success;
+                }
+
                 return _result;
             }
 
@@ -204,6 +210,12 @@ namespace Dicom.IO.Reader
                 ResetState();
                 source = ConvertSource(source);
                 await ParseDatasetAsync(source).ConfigureAwait(false);
+
+                if (_tag == DicomTag.SequenceDelimitationItem && _result == DicomReaderResult.Processing && source.IsEOF)
+                {
+                    _result = DicomReaderResult.Success;
+                }
+
                 return _result;
             }
 #endif
