@@ -64,7 +64,12 @@ jobs:
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml"
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+          name: test-v5-net-framework.xml
+          path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
       
   v5-net-core-21:
     runs-on: windows-2019
@@ -73,7 +78,12 @@ jobs:
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0 --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame --runtime win-x64
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp2.1 --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnetcore21.xml"
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+          name: test-v5-net-core-21.xml
+          path: ./Tests/FO-DICOM.Tests/TestResults/resultsnetcore21.xml
       
   v5-net-core-31:
     runs-on: windows-2019
@@ -82,7 +92,12 @@ jobs:
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnetcore31.xml"
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+          name: test-v5-net-core-31.xml
+          path: ./Tests/FO-DICOM.Tests/TestResults/resultsnetcore31.xml
 
   benchmarks:
     runs-on: windows-2019
