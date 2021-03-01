@@ -1,5 +1,22 @@
 #### 5.0.0
 
+
+
+#### 5.0.0-alpha4 (2021-03-01)
+
+* Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
+* NLogManager constructor should be public (#1136)
+* Update to DICOM Standard 2020e (#1132)
+* Use Color32 instead of System.Drawing.Color (#1140)
+* FrameGeometry is enhanced so that it also works for DX, CR or MG images. (#1138)
+* DicomServerFactory missed the method overload to pass the userState object
+* Private Creator UN tags are converted to LO (#1146)
+* Bug fix: Ensure timeout detection can never stop prematurely
+* Fix parsing of datasets with a final SequenceDelimiterItem at the end. (#1157)
+
+
+#### 5.0.0-alpha3 and prior (2020-11-01)
+
 ##### Changes:
 
 * There is only one library built in NetStandard 2.0 *fo-dicom.core*.*
@@ -27,8 +44,6 @@
 * Optimize DicomTag.GetHashCode()
 * Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
 * Make DicomService more memory efficient. Use existing streams in PDU and do not create new Memorystreams for every PDU. (#1091)
-* Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
-* Bug fix: Ensure timeout detection can never stop prematurely
 
 ##### Breaking changes:
 
