@@ -125,8 +125,10 @@ namespace FellowOakDicom
             {
                 if (_value == null && Buffer != null && (Buffer != EmptyBuffer.Value))
                 {
-                    _value = _bufferEncoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
-                            .TrimEnd((char)ValueRepresentation.PaddingValue);
+                    _value = Buffer == EmptyBuffer.Value
+                        ? string.Empty
+                        : _bufferEncoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
+                                .TrimEnd((char)ValueRepresentation.PaddingValue);
                 }
                 return _value;
             }
