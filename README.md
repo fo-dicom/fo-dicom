@@ -6,21 +6,6 @@
 ![build development](https://github.com/fo-dicom/fo-dicom/workflows/build/badge.svg?branch=development)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-### Support Us!
-If *fo-dicom* is a vital component in your open-source or commercial application and/or you want to contribute to its continued success, please consider making a small monetary contribution.
-<table>
-<tr>
-<th>€25</th>
-<th>€100</th>
-<th>€500</th>
-</tr>
-<tr>
-<td><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EXB948DWYJA2C"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif"/></a></td>
-<td><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LLCTSJF8AASFY"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif"/></a></td>
-<td><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U59AWASX7QK22"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif"/></a></td>
-</tr>
-</table>
-
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
 
