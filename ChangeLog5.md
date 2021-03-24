@@ -1,6 +1,7 @@
 #### 5.0.0
 
 * Fix unintended breaking change, where StringValue of tags with length 0 returned null, but should return string.empty.
+* Be more tollerant to recognize Encoding by ignoring the difference of Underlande and Space.
 
 #### 5.0.0-alpha4 (2021-03-01)
 

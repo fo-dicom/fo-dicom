@@ -44,32 +44,20 @@ namespace FellowOakDicom
                 return Default;
             }
 
-            return charset.Trim() switch
+            return charset.Trim().Replace("_"," ") switch
             {
                 "ISO IR 13" => Encoding.GetEncoding("shift_jis"), // JIS X 0201 (Shift JIS) Unextended
-                "ISO_IR 13" => Encoding.GetEncoding("shift_jis"), // JIS X 0201 (Shift JIS) Unextended
                 "ISO IR 100" => Encoding.GetEncoding("iso-8859-1"), // Latin Alphabet No. 1 Unextended
-                "ISO_IR 100" => Encoding.GetEncoding("iso-8859-1"), // Latin Alphabet No. 1 Unextended
                 "ISO IR 101" => Encoding.GetEncoding("iso-8859-2"), // Latin Alphabet No. 2 Unextended
-                "ISO_IR 101" => Encoding.GetEncoding("iso-8859-2"), // Latin Alphabet No. 2 Unextended
                 "ISO IR 109" => Encoding.GetEncoding("iso-8859-3"), // Latin Alphabet No. 3 Unextended
-                "ISO_IR 109" => Encoding.GetEncoding("iso-8859-3"), // Latin Alphabet No. 3 Unextended
                 "ISO IR 110" => Encoding.GetEncoding("iso-8859-4"), // Latin Alphabet No. 4 Unextended
-                "ISO_IR 110" => Encoding.GetEncoding("iso-8859-4"), // Latin Alphabet No. 4 Unextended
                 "ISO IR 126" => Encoding.GetEncoding("iso-8859-7"), // Greek Unextended
-                "ISO_IR 126" => Encoding.GetEncoding("iso-8859-7"), // Greek Unextended
                 "ISO IR 127" => Encoding.GetEncoding("iso-8859-6"), // Arabic Unextended
-                "ISO_IR 127" => Encoding.GetEncoding("iso-8859-6"), // Arabic Unextended
                 "ISO IR 138" => Encoding.GetEncoding("iso-8859-8"), // Hebrew Unextended
-                "ISO_IR 138" => Encoding.GetEncoding("iso-8859-8"), // Hebrew Unextended
                 "ISO IR 144" => Encoding.GetEncoding("iso-8859-5"), // Cyrillic Unextended
-                "ISO_IR 144" => Encoding.GetEncoding("iso-8859-5"), // Cyrillic Unextended
                 "ISO IR 148" => Encoding.GetEncoding("iso-8859-9"), // Latin Alphabet No. 5 (Turkish) Unextended
-                "ISO_IR 148" => Encoding.GetEncoding("iso-8859-9"), // Latin Alphabet No. 5 (Turkish) Unextended
                 "ISO IR 166" => Encoding.GetEncoding("windows-874"), // TIS 620-2533 (Thai) Unextended
-                "ISO_IR 166" => Encoding.GetEncoding("windows-874"), // TIS 620-2533 (Thai) Unextended
                 "ISO IR 192" => Encoding.GetEncoding("utf-8"), // Unicode in UTF-8
-                "ISO_IR 192" => Encoding.GetEncoding("utf-8"), // Unicode in UTF-8
                 "ISO 2022 IR 6" => Encoding.GetEncoding("us-ascii"), // ASCII
                 "ISO 2022 IR 13" => Encoding.GetEncoding("iso-2022-jp"), // JIS X 0201 (Shift JIS) Extended
                 "ISO 2022 IR 87" => Encoding.GetEncoding("iso-2022-jp"), // JIS X 0208 (Kanji) Extended
