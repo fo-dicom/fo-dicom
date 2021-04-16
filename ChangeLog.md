@@ -1,4 +1,5 @@
 #### v.4.0.8 (TBD)
+* Add missing properties to IDicomClient interface (#1171)
 * Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
 * Bug fix: Incorrect failed validation for Vr Type DS, both .NET Core and Framework (#1141)
 * Update to DICOM Standard 2021a. Nema now also provides Keywords for the UIDs, these are now used. Breaking change: some UID keywords have changed.
