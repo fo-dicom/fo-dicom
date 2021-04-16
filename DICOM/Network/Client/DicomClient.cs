@@ -18,6 +18,32 @@ namespace Dicom.Network.Client
 {
     public interface IDicomClient
     {
+
+        /// <summary>
+        /// DICOM host.
+        /// </summary>
+        string Host { get; }
+
+        /// <summary>
+        /// Port.
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
+        /// True if TLS security should be enabled, false otherwise.
+        /// </summary>
+        bool UseTls { get; }
+
+        /// <summary>
+        /// Calling Application Entity Title.
+        /// </summary>
+        string CallingAe { get; }
+
+        /// <summary>
+        /// Called Application Entity Title.
+        /// </summary>
+        string CalledAe { get; }
+
         /// <summary>
         /// Gets or sets the logger that will be used by this DicomClient
         /// </summary>
@@ -64,6 +90,11 @@ namespace Dicom.Network.Client
         /// to send the remaining requests, if any.
         /// </summary>
         int? MaximumNumberOfRequestsPerAssociation { get; }
+
+        /// <summary>
+        /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
+        /// </summary>
+        bool IsSendRequired { get; }
 
         /// <summary>
         /// Gets or sets the handler of a client C-STORE request.
