@@ -791,7 +791,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
+            : base(tag, values.Select(x => ToDecimalString(x)).ToArray())
         {
         }
 
@@ -862,6 +862,16 @@ namespace FellowOakDicom
             }
 
             return base.Get<T>(item);
+        }
+
+        public static string ToDecimalString(decimal value)
+        {
+            var valueString = value.ToString(CultureInfo.InvariantCulture);
+            if (valueString.Length > 16)
+            {
+                valueString = value.ToString("G11", CultureInfo.InvariantCulture);
+            }
+            return valueString;
         }
 
         #endregion

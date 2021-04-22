@@ -127,6 +127,12 @@ namespace Dicom
 
         public static void ValidateDS(string content)
         {
+            // 16 bytes maximum
+            if (content.Length > 16)
+            {
+                throw new DicomValidationException(content, DicomVR.DS, "value exceeds maximum length of 16 characters");
+            }
+
             content=content.Trim();
             // This is not very inefficient - uses .NET regex caching
             if (!Regex.IsMatch(content, "^[+-]?((0|[1-9][0-9]*)([.][0-9]*)?|[.][0-9]+)([eE][-+]?[0-9]+)?$"))
