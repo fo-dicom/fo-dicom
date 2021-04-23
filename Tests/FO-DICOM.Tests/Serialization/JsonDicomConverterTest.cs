@@ -57,6 +57,55 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public void DeserializeISAsString()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00201206"": {
+                    ""vr"":""IS"",
+                    ""Value"":[311]
+                },
+                ""00201209"": {
+                    ""vr"":""IS"",
+                    ""Value"":[""311""]
+                },
+                ""00201204"": {
+                    ""vr"":""IS"",
+                    ""Value"":[]
+                }
+            }";
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            Assert.NotNull(dataset);
+            Assert.Equal(311, dataset.GetSingleValue<int>(DicomTag.NumberOfStudyRelatedSeries));
+            Assert.Equal(311, dataset.GetSingleValue<int>(DicomTag.NumberOfSeriesRelatedInstances));
+            Assert.Equal(0, dataset.GetValueCount(DicomTag.NumberOfPatientRelatedInstances));
+        }
+
+        [Fact]
+        public void DeserializeDSAsString()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00101030"": {
+                    ""vr"":""DS"",
+                    ""Value"":[84.5]
+                },
+                ""00101020"": {
+                    ""vr"":""DS"",
+                    ""Value"":[""174.5""]
+                }
+
+            }";
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            Assert.NotNull(dataset);
+            Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
+            Assert.Equal(174.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientSize));
+        }
+
+
+        [Fact]
         public void ParseEmptyValues()
         {
             var json = @"
@@ -668,47 +717,75 @@ namespace FellowOakDicom.Tests.Serialization
         private static bool ValueEquals(DicomDataset a, DicomDataset b)
         {
             if (a == null || b == null)
+            {
                 return a == b;
+            }
             else if (a == b)
+            {
                 return true;
+            }
             else
+            {
                 return a.Zip(b, ValueEquals).All(x => x);
+            }
         }
 
         private static bool ValueEquals(DicomItem a, DicomItem b)
         {
             if (a == null || b == null)
+            {
                 return a == b;
+            }
             else if (a == b)
+            {
                 return true;
+            }
             else if (a.ValueRepresentation != b.ValueRepresentation || (uint)a.Tag != (uint)b.Tag)
+            {
                 return false;
+            }
             else if (a is DicomElement elementA)
             {
                 if (!(b is DicomElement elementB))
+                {
                     return false;
+                }
                 else if (b is DicomDecimalString decimalStringB
                     && a is DicomDecimalString decimalStringA)
+                {
                     return decimalStringA.Get<decimal[]>().SequenceEqual(decimalStringB.Get<decimal[]>());
+                }
                 else
+                {
                     return ValueEquals(elementA.Buffer, elementB.Buffer);
+                }
             }
             else if (a is DicomSequence sequenceA)
             {
                 if (!(b is DicomSequence sequenceB))
+                {
                     return false;
+                }
                 else
+                {
                     return sequenceA.Items.Zip(sequenceB.Items, ValueEquals).All(x => x);
+                }
             }
             else if (a is DicomFragmentSequence fragmentSequenceA)
             {
                 if (!(b is DicomFragmentSequence fragmentSequenceB))
+                {
                     return false;
+                }
                 else
+                {
                     return fragmentSequenceA.Fragments.Zip(fragmentSequenceB.Fragments, ValueEquals).All(x => x);
+                }
             }
             else
+            {
                 return a.Equals(b);
+            }
         }
 
         private static bool ValueEquals(IByteBuffer a, IByteBuffer b)

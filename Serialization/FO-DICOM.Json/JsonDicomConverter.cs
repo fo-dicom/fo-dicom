@@ -195,6 +195,10 @@ namespace FellowOakDicom.Serialization
                     {
                         item = new DicomDecimalString(tag, dataBufferDS);
                     }
+                    else if (data is decimal[] dataAsNumbers)
+                    {
+                        item = new DicomDecimalString(tag, dataAsNumbers);
+                    }
                     else
                     {
                         item = new DicomDecimalString(tag, (string[])data);
@@ -227,6 +231,10 @@ namespace FellowOakDicom.Serialization
                     if (data is IByteBuffer dataBufferIS)
                     {
                         item = new DicomIntegerString(tag, dataBufferIS);
+                    }
+                    else if (data is string[] dataAsStrings)
+                    {
+                        item = new DicomIntegerString(tag, dataAsStrings);
                     }
                     else
                     {
@@ -308,6 +316,11 @@ namespace FellowOakDicom.Serialization
                     {
                         item = new DicomSignedVeryLong(tag, dataBufferSV);
                     }
+                    else if (data is string[] dataAsStrings)
+                    {
+                        var dataAsLongs = dataAsStrings.Select(s => long.Parse(s)).ToArray();
+                        item = new DicomSignedVeryLong(tag, dataAsLongs);
+                    }
                     else
                     {
                         item = new DicomSignedVeryLong(tag, (long[])data);
@@ -369,6 +382,11 @@ namespace FellowOakDicom.Serialization
                     if (data is IByteBuffer dataBufferUV)
                     {
                         item = new DicomUnsignedVeryLong(tag, dataBufferUV);
+                    }
+                    else if (data is string[] dataAsStrings)
+                    {
+                        var dataAsULongs = dataAsStrings.Select(s => ulong.Parse(s)).ToArray();
+                        item = new DicomUnsignedVeryLong(tag, dataAsULongs);
                     }
                     else
                     {
@@ -682,7 +700,7 @@ namespace FellowOakDicom.Serialization
                     data = ReadJsonMultiNumber<double>(token);
                     break;
                 case "IS":
-                    data = ReadJsonMultiNumber<int>(token);
+                    data = ReadJsonMultiNumberOrString<int>(token);
                     break;
                 case "SL":
                     data = ReadJsonMultiNumber<int>(token);
@@ -691,7 +709,7 @@ namespace FellowOakDicom.Serialization
                     data = ReadJsonMultiNumber<short>(token);
                     break;
                 case "SV":
-                    data = ReadJsonMultiNumber<long>(token);
+                    data = ReadJsonMultiNumberOrString<long>(token);
                     break;
                 case "UL":
                     data = ReadJsonMultiNumber<uint>(token);
@@ -700,10 +718,10 @@ namespace FellowOakDicom.Serialization
                     data = ReadJsonMultiNumber<ushort>(token);
                     break;
                 case "UV":
-                    data = ReadJsonMultiNumber<ulong>(token);
+                    data = ReadJsonMultiNumberOrString<ulong>(token);
                     break;
                 case "DS":
-                    data = ReadJsonMultiString(token);
+                    data = ReadJsonMultiNumberOrString<decimal>(token);
                     break;
                 default:
                     data = ReadJsonMultiString(token);
@@ -726,7 +744,7 @@ namespace FellowOakDicom.Serialization
             }
             else
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
         }
 
@@ -748,6 +766,33 @@ namespace FellowOakDicom.Serialization
             return data;
         }
 
+        private object ReadJsonMultiNumberOrString<T>(JToken itemObject)
+        {
+            if (itemObject["Value"] is JArray items)
+            {
+                if (items.Count == 0)
+                {
+                    return Array.Empty<T>();
+                }
+                else if (items.First().Type == JTokenType.String)
+                {
+                    return ReadJsonMultiStringValue(items);
+                }
+                else
+                {
+                    return ReadJsonMultiNumberValue<T>(items);
+                }
+            }
+            else if (itemObject["BulkDataURI"] is JToken bulk)
+            {
+                return ReadJsonBulkDataUri(bulk);
+            }
+            else
+            {
+                return Array.Empty<T>();
+            }
+        }
+
         private object ReadJsonMultiNumber<T>(JToken itemObject)
         {
             if (itemObject["Value"] is JToken token)
@@ -760,7 +805,7 @@ namespace FellowOakDicom.Serialization
             }
             else
             {
-                return new T[0];
+                return Array.Empty<T>();
             }
         }
 
@@ -806,7 +851,7 @@ namespace FellowOakDicom.Serialization
             }
             else
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
         }
 
@@ -824,7 +869,7 @@ namespace FellowOakDicom.Serialization
             }
             else
             {
-                return new DicomDataset[0];
+                return Array.Empty<DicomDataset>();
             }
         }
 

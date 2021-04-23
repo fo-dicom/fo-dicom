@@ -80,6 +80,7 @@ namespace FellowOakDicom.Serialization
         private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
 
         private delegate T GetValue<out T>(Utf8JsonReader reader);
+        private delegate bool TryParse<T>(string value, out T parsed);
         private delegate void WriteValue<in T>(Utf8JsonWriter writer, T value);
 
 
@@ -377,19 +378,19 @@ namespace FellowOakDicom.Serialization
                     else
                     {
                         var fix = FixDecimalString(val);
-                        if (ulong.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out ulong xulong))
+                        if (TryParseULong(fix, out ulong xulong))
                         {
                             writer.WriteNumberValue(xulong);
                         }
-                        else if (long.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out long xlong))
+                        else if (TryParseLong(fix, out long xlong))
                         {
                             writer.WriteNumberValue(xlong);
                         }
-                        else if (decimal.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal xdecimal))
+                        else if (TryParseDecimal(fix, out decimal xdecimal))
                         {
                             writer.WriteNumberValue(xdecimal);
                         }
-                        else if (double.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out double xdouble))
+                        else if (TryParseDouble(fix, out double xdouble))
                         {
                             writer.WriteNumberValue(xdouble);
                         }
@@ -620,34 +621,34 @@ namespace FellowOakDicom.Serialization
                     data = ReadJsonPersonName(ref reader);
                     break;
                 case "FL":
-                    data = ReadJsonMultiNumber<float>(ref reader, r => r.GetSingle());
+                    data = ReadJsonMultiNumber(ref reader, r => r.GetSingle());
                     break;
                 case "FD":
-                    data = ReadJsonMultiNumber<double>(ref reader, r => r.GetDouble());
+                    data = ReadJsonMultiNumber(ref reader, r => r.GetDouble());
                     break;
                 case "IS":
-                    data = ReadJsonMultiNumber<int>(ref reader, r => r.GetInt32());
+                    data = ReadJsonMultiNumberOrString(ref reader, r => r.GetInt32(), TryParseInt);
                     break;
                 case "SL":
-                    data = ReadJsonMultiNumber<int>(ref reader, r => r.GetInt32());
+                    data = ReadJsonMultiNumber(ref reader, r => r.GetInt32());
                     break;
                 case "SS":
-                    data = ReadJsonMultiNumber<short>(ref reader, r => r.GetInt16());
+                    data = ReadJsonMultiNumber(ref reader, r => r.GetInt16());
                     break;
                 case "SV":
-                    data = ReadJsonMultiNumber<long>(ref reader, r => r.GetInt64());
+                    data = ReadJsonMultiNumberOrString(ref reader, r => r.GetInt64(), TryParseLong);
                     break;
                 case "UL":
-                    data = ReadJsonMultiNumber<uint>(ref reader, r => r.GetUInt32());
+                    data = ReadJsonMultiNumber(ref reader, r => r.GetUInt32());
                     break;
                 case "US":
-                    data = ReadJsonMultiNumber<ushort>(ref reader, r => r.GetUInt16());
+                    data = ReadJsonMultiNumber(ref reader, r => r.GetUInt16());
                     break;
                 case "UV":
-                    data = ReadJsonMultiNumber<ulong>(ref reader, r => r.GetUInt64());
+                    data = ReadJsonMultiNumberOrString(ref reader, r => r.GetUInt64(), TryParseULong);
                     break;
                 case "DS":
-                    data = ReadJsonMultiNumber<decimal>(ref reader, r => r.GetDecimal());
+                    data = ReadJsonMultiNumberOrString(ref reader, r => r.GetDecimal(), TryParseDecimal);
                     break;
                 default:
                     data = ReadJsonMultiString(ref reader);
@@ -730,6 +731,64 @@ namespace FellowOakDicom.Serialization
             return data;
         }
 
+
+        private object ReadJsonMultiNumberOrString<T>(ref Utf8JsonReader reader, GetValue<T> getValue, TryParse<T> tryParse)
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                return Array.Empty<T>();
+            }
+            string propertyname = ReadPropertyName(ref reader);
+
+            if (propertyname == "Value")
+            {
+                return ReadJsonMultiNumberOrStringValue<T>(ref reader, getValue, tryParse);
+            }
+            else if (propertyname == "BulkDataURI")
+            {
+                return ReadJsonBulkDataUri(ref reader);
+            }
+            else
+            {
+                return Array.Empty<T>();
+            }
+        }
+
+        private static T[] ReadJsonMultiNumberOrStringValue<T>(ref Utf8JsonReader reader, GetValue<T> getValue, TryParse<T> tryParse)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                reader.Read();
+                return Array.Empty<T>();
+            }
+            AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+
+            var childValues = new List<T>();
+            while (reader.TokenType != JsonTokenType.EndArray)
+            {
+                if (reader.TokenType == JsonTokenType.Number)
+                {
+                    childValues.Add(getValue(reader));
+                }
+                else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "NaN")
+                {
+                    childValues.Add((T)(float.NaN as object));
+                }
+                else if (reader.TokenType == JsonTokenType.String && tryParse(reader.GetString(), out T parsed))
+                {
+                    childValues.Add(parsed);
+                }
+                else
+                {
+                    throw new JsonException("Malformed DICOM json, number expected");
+                }
+                reader.Read();
+            }
+            AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+
+            var data = childValues.ToArray();
+            return data;
+        }
 
         private object ReadJsonMultiNumber<T>(ref Utf8JsonReader reader, GetValue<T> getValue)
         {
@@ -960,6 +1019,21 @@ namespace FellowOakDicom.Serialization
             }
             return defaultValue;
         }
+
+        private static bool TryParseInt(string value, out int parsed)
+            => int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed);
+
+        private static bool TryParseDecimal(string value, out decimal parsed)
+            => decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
+
+        private static bool TryParseDouble(string value, out double parsed)
+            => double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
+
+        private static bool TryParseLong(string value, out long parsed)
+            => long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed);
+
+        private static bool TryParseULong(string value, out ulong parsed)
+            => ulong.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed);
 
     }
 
