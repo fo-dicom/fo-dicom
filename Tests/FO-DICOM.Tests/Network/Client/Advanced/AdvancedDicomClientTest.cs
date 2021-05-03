@@ -20,7 +20,6 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network.Client.Advanced
 {
-
     [Collection("Network"), Trait("Category", "Network")]
     public class AdvancedDicomClientTest
     {
@@ -114,11 +113,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomCEchoResponse cEchoResponse = null;
                 await using (var association = await client.OpenAssociationAsync(openAssociationRequest, CancellationToken.None))
                 {
-                    await foreach (var response in association.SendRequestAsync(cEchoRequest, CancellationToken.None))
-                    {
-                        cEchoResponse = response;
-                        break;
-                    }
+                    cEchoResponse = await association.SendEchoRequestAsync(cEchoRequest, CancellationToken.None).ConfigureAwait(false);
                 }
 
                 Assert.NotNull(cEchoResponse);

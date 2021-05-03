@@ -9,12 +9,10 @@ namespace FellowOakDicom.Network.Client.Advanced
 
         public DicomServiceOptions DicomServiceOptions { get; set; }
 
-        public IAdvancedDicomClientConnectionInterceptor ConnectionInterceptor { get; set; } = PassThroughAdvancedDicomClientConnectionInterceptor.Instance;
+        public IAdvancedDicomClientConnectionInterceptor ConnectionInterceptor { get; set; }
 
         public ILogger Logger { get; set; }
 
         public Encoding FallbackEncoding { get; set; }
-        
-        
     }
 }

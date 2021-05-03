@@ -21,7 +21,8 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// Initializes an instance of <see cref="DicomClient"/> out of DI-container.
         /// </summary>
         public static IAdvancedDicomClient Create() => Setup.ServiceProvider
-            .GetRequiredService<IAdvancedDicomClientFactory>().Create();
+            .GetRequiredService<IAdvancedDicomClientFactory>()
+            .Create();
     }
 
     public class DefaultAdvancedDicomClientFactory : IAdvancedDicomClientFactory

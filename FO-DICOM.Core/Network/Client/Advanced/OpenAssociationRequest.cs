@@ -5,5 +5,7 @@
         public OpenConnectionRequest ConnectionToOpen { get; set; }
         
         public DicomAssociation AssociationToOpen { get; set; }
+        
+        
     }
 }

@@ -1,10 +1,6 @@
-﻿using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
-using FellowOakDicom.Network.Client.Advanced.Events;
-using FellowOakDicom.Network.Client.States;
+﻿using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

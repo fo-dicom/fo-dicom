@@ -1,4 +1,5 @@
-﻿using FellowOakDicom.Network.Client.Advanced.Events;
+﻿using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,11 +13,7 @@ namespace FellowOakDicom.Network.Client.Advanced
 {
     public interface IAdvancedDicomClientAssociation : IAsyncDisposable
     {
-        IAdvancedDicomClientConnection Connection { get; }
-        
-        DicomAssociation Association { get; }
-
-        IAsyncEnumerable<DicomCEchoResponse> SendRequestAsync(DicomCEchoRequest dicomRequest, CancellationToken cancellationToken);
+        IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, CancellationToken cancellationToken);
     }
 
     public class AdvancedDicomClientAssociation : IAdvancedDicomClientAssociation
@@ -100,6 +97,8 @@ namespace FellowOakDicom.Network.Client.Advanced
                         foreach (var requestChannel in _requestChannels.Values)
                         {
                             await requestChannel.Writer.WriteAsync(connectionClosedEvent).ConfigureAwait(false);
+                            
+                            requestChannel.Writer.Complete();
                         }
                         return;
                     }
@@ -107,12 +106,7 @@ namespace FellowOakDicom.Network.Client.Advanced
             }        
         }
 
-        public IAsyncEnumerable<DicomCEchoResponse> SendRequestAsync(DicomCEchoRequest dicomRequest, CancellationToken cancellationToken)
-            => SendRequestAsync<DicomCEchoRequest, DicomCEchoResponse>(dicomRequest, cancellationToken);
-
-        private async IAsyncEnumerable<TResponse> SendRequestAsync<TRequest, TResponse>(TRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken)
-            where TRequest: DicomRequest
-            where TResponse: DicomResponse
+        public async IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken) 
         {
             if (dicomRequest == null)
             {
@@ -151,12 +145,12 @@ namespace FellowOakDicom.Network.Client.Advanced
                         {
                             case RequestPendingEvent requestPendingEvent:
                             {
-                                yield return (TResponse) requestPendingEvent.Response;
+                                yield return requestPendingEvent.Response;
                                 break;
                             }
                             case RequestCompletedEvent requestCompletedEvent:
                             {
-                                yield return (TResponse) requestCompletedEvent.Response;
+                                yield return requestCompletedEvent.Response;
                                 break;
                             }
                             case RequestTimedOutEvent requestTimedOutEvent:
@@ -186,7 +180,10 @@ namespace FellowOakDicom.Network.Client.Advanced
             }
             finally
             {
-                _requestChannels.TryRemove(messageId, out _);
+                if(!_requestChannels.TryRemove(messageId, out _))
+                {
+                    throw new DicomNetworkException($"This DICOM request has already been cleaned up: [{messageId}] {dicomRequest.GetType()}");
+                }
             }
         }
 
@@ -206,7 +203,7 @@ namespace FellowOakDicom.Network.Client.Advanced
             {
                 Connection?.Dispose();
 
-                if (!_eventCollector.IsCompleted && !_eventCollector.IsCanceled && !_eventCollector.IsFaulted)
+                if (!_eventCollector.IsCompleted)
                 {
                     _eventCollectorCts.Cancel();
                 }

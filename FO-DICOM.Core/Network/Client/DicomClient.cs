@@ -11,8 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced;
 using FellowOakDicom.Network.Client.EventArguments;
-using FellowOakDicom.Network.Client.States;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -133,10 +133,10 @@ namespace FellowOakDicom.Network.Client
 
     public class DicomClient : IDicomClient
     {
-        private readonly SemaphoreSlim _transitionLock = new SemaphoreSlim(1, 1);
-        private IDicomClientState State { get; set; }
-
+        private readonly IAdvancedDicomClient _advancedDicomClient;
+        
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
+        
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
 
@@ -145,7 +145,9 @@ namespace FellowOakDicom.Network.Client
         public bool UseTls { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
-        public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
+        
+        public bool IsSendRequired => QueuedRequests.Any();
+        
         public ILogger Logger { get; set; }
         public DicomClientOptions ClientOptions { get; set; }
         public DicomServiceOptions ServiceOptions { get; set; }
@@ -174,16 +176,14 @@ namespace FellowOakDicom.Network.Client
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
-        /// <param name="networkManager">The network manager that will be used to connect to the DICOM server</param>
-        /// <param name="logManager">The log manager that will be used to extract a default logger</param>
-        /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
+        /// <param name="advancedDicomClient">The advanced DICOM client that will be used to actually send the requests</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
-            INetworkManager networkManager,
-            ILogManager logManager,
-            ITranscoderManager transcoderManager)
+            IAdvancedDicomClient advancedDicomClient
+        )
         {
+            _advancedDicomClient = advancedDicomClient ?? throw new ArgumentNullException(nameof(advancedDicomClient));
             Host = host;
             Port = port;
             UseTls = useTls;
@@ -196,105 +196,6 @@ namespace FellowOakDicom.Network.Client
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            State = new DicomClientIdleState(this);
-            NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
-            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
-            Logger = logManager.GetLogger("FellowOakDicom.Network");
-        }
-
-        private async Task ExecuteWithinTransitionLock(Func<Task> task)
-        {
-            await _transitionLock.WaitAsync().ConfigureAwait(false);
-            try
-            {
-                await task().ConfigureAwait(false);
-            }
-            finally
-            {
-                _transitionLock.Release();
-            }
-        }
-
-        internal async Task<IDicomClientState> Transition(IDicomClientState newState, DicomClientCancellation cancellation)
-        {
-            Task InternalTransition()
-            {
-                var oldState = State;
-
-                Logger.Debug($"[{oldState}] --> [{newState}]");
-
-                oldState.Dispose();
-
-                State = newState ?? throw new ArgumentNullException(nameof(newState));
-
-                StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
-
-                return Task.CompletedTask;
-            }
-
-            await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
-
-            return await newState.GetNextStateAsync(cancellation).ConfigureAwait(false);
-        }
-
-        internal void NotifyAssociationAccepted(AssociationAcceptedEventArgs eventArgs)
-            => AssociationAccepted?.Invoke(this, eventArgs);
-
-        internal void NotifyAssociationRejected(AssociationRejectedEventArgs eventArgs)
-            => AssociationRejected?.Invoke(this, eventArgs);
-
-        internal void NotifyAssociationReleased()
-            => AssociationReleased?.Invoke(this, EventArgs.Empty);
-
-        internal void NotifyRequestTimedOut(RequestTimedOutEventArgs eventArgs)
-            => RequestTimedOut?.Invoke(this, eventArgs);
-
-        internal Task OnSendQueueEmptyAsync()
-            => State.OnSendQueueEmptyAsync();
-
-        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-            => State.OnRequestCompletedAsync(request, response);
-
-        internal Task OnRequestPendingAsync(DicomRequest request, DicomResponse response)
-            => State.OnRequestPendingAsync(request, response);
-
-        internal Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-            => State.OnRequestTimedOutAsync(request, timeout);
-
-        internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));
-
-        internal Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationRejectAsync(result, source, reason));
-
-        internal Task OnReceiveAssociationReleaseResponseAsync()
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponseAsync());
-
-        internal Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAbortAsync(source, reason));
-
-        internal Task OnConnectionClosedAsync(Exception exception)
-            => ExecuteWithinTransitionLock(() => State.OnConnectionClosedAsync(exception));
-
-        internal async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
-        {
-            if (OnCStoreRequest == null)
-            {
-                return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
-            }
-
-            return await OnCStoreRequest(request).ConfigureAwait(false);
-        }
-
-        internal async Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
-        {
-            if (OnNEventReportRequest == null)
-            {
-                return new DicomNEventReportResponse(request, DicomStatus.AttributeListError);
-            }
-
-            return await OnNEventReportRequest(request).ConfigureAwait(false);
         }
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
@@ -304,33 +205,139 @@ namespace FellowOakDicom.Network.Client
         }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
-            => State.AddRequestAsync(dicomRequest);
+        {
+            QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+            
+            return Task.CompletedTask;
+        }
 
-        public async Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
+        public Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
         {
             if (dicomRequests == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            var requests = dicomRequests.ToList();
-
-            if (!requests.Any())
+            foreach (DicomRequest dicomRequest in dicomRequests)
             {
-                return;
+                if (dicomRequest == null)
+                {
+                    continue;
+                }
+
+                QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
             }
 
-            foreach (var request in requests)
-            {
-                await State.AddRequestAsync(request).ConfigureAwait(false);
-            }
+            return Task.CompletedTask;
         }
 
-        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
+        public async Task SendAsync(CancellationToken cancellationToken = default,
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)
         {
-            var cancellation = new DicomClientCancellation(cancellationToken, cancellationMode);
-            await State.SendAsync(cancellation).ConfigureAwait(false);
+            var requests = new Queue<DicomRequest>();
+            
+            while (QueuedRequests.TryDequeue(out var request))
+            {
+                requests.Enqueue(request.Value);
+            }
+
+            var exception = (Exception)null;
+
+            while (requests.Count > 0 && exception == null)
+            {
+                OpenAssociationRequest openAssociationRequest = new OpenAssociationRequest
+                {
+                    ConnectionToOpen = new OpenConnectionRequest
+                    {
+                        Logger = Logger,
+                        FallbackEncoding = FallbackEncoding,
+                        DicomServiceOptions = ServiceOptions,
+                        NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                        {
+                            Host = Host,
+                            Port = Port,
+                            UseTls = UseTls,
+                            NoDelay = ServiceOptions.TcpNoDelay,
+                            IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
+                            Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
+                        }
+                    },
+                    AssociationToOpen = new DicomAssociation
+                    {
+                        CallingAE = CallingAe,
+                        CalledAE = CalledAe,
+                        RemoteHost = Host,
+                        RemotePort = Port,
+                        Options = ServiceOptions,
+                        MaxAsyncOpsInvoked = AsyncInvoked,
+                        MaxAsyncOpsPerformed = AsyncPerformed,
+                    }
+                };
+
+                foreach (var request in requests)
+                {
+                    openAssociationRequest.AssociationToOpen.PresentationContexts.AddFromRequest(request);
+                    openAssociationRequest.AssociationToOpen.ExtendedNegotiations.AddFromRequest(request);
+                }
+
+                foreach (var context in AdditionalPresentationContexts)
+                {
+                    openAssociationRequest.AssociationToOpen.PresentationContexts.Add(
+                        context.AbstractSyntax,
+                        context.UserRole,
+                        context.ProviderRole,
+                        context.GetTransferSyntaxes().ToArray());
+                }
+
+                foreach (var extendedNegotiation in AdditionalExtendedNegotiations)
+                {
+                    openAssociationRequest.AssociationToOpen.ExtendedNegotiations.AddOrUpdate(
+                        extendedNegotiation.SopClassUid,
+                        extendedNegotiation.RequestedApplicationInfo,
+                        extendedNegotiation.ServiceClassUid,
+                        extendedNegotiation.RelatedGeneralSopClasses.ToArray());
+                }
+
+                IAdvancedDicomClientAssociation association = null;
+                try
+                {
+                    association = await _advancedDicomClient.OpenAssociationAsync(openAssociationRequest, cancellationToken);
+
+                    var sendTasks = new List<IAsyncEnumerable<DicomResponse>>();
+
+                    // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
+                    while(requests.Count > 0)
+                    {
+                        sendTasks.Add(association.SendRequestAsync(requests.Dequeue(), cancellationToken));
+                    }
+
+                    // Wait for all requests to complete
+                    foreach (var sendTask in sendTasks)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        await foreach (var response in sendTask.WithCancellation(cancellationToken))
+                        {
+                            Logger.Debug("Received DICOM response {Status} for request [{RequestMessageId}]", response.Status.State, response.RequestMessageID);
+                        }
+                    }
+                    
+                    
+                }
+                catch (OperationCanceledException)
+                {
+                    Logger.Warn("DICOM request sending was cancelled");
+                }
+                finally
+                {
+                    if (association != null)
+                    {
+                        // TODO association release timeout?
+                        // TODO release / abort depending on cancellation mode
+                        await association.DisposeAsync();
+                    }
+                }
+            }
         }
     }
 }

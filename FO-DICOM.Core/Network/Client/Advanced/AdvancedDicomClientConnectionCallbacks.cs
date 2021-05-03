@@ -108,7 +108,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         {
             _events = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
-                SingleReader = false,
+                SingleReader = true,
                 SingleWriter = false,
                 AllowSynchronousContinuations = false
             });
@@ -129,23 +129,23 @@ namespace FellowOakDicom.Network.Client.Advanced
             }   
         }
         
-        public async Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => await _events.Writer.WriteAsync(new Events.DicomAssociationAcceptedEvent(association)).ConfigureAwait(false);
+        public async Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => await _events.Writer.WriteAsync(new DicomAssociationAcceptedEvent(association)).ConfigureAwait(false);
 
-        public async Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => await _events.Writer.WriteAsync(new Events.DicomAssociationRejectedEvent(result, source, reason)).ConfigureAwait(false);
+        public async Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => await _events.Writer.WriteAsync(new DicomAssociationRejectedEvent(result, source, reason)).ConfigureAwait(false);
 
-        public async Task OnReceiveAssociationReleaseResponseAsync() => await _events.Writer.WriteAsync(new Events.DicomAssociationReleasedEvent()).ConfigureAwait(false);
+        public async Task OnReceiveAssociationReleaseResponseAsync() => await _events.Writer.WriteAsync(new DicomAssociationReleasedEvent()).ConfigureAwait(false);
 
-        public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => await _events.Writer.WriteAsync(new Events.DicomAbortedEvent(source, reason)).ConfigureAwait(false);
+        public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => await _events.Writer.WriteAsync(new DicomAbortedEvent(source, reason)).ConfigureAwait(false);
 
-        public async Task OnConnectionClosedAsync(Exception exception) => await _events.Writer.WriteAsync(new Events.ConnectionClosedEvent(exception)).ConfigureAwait(false);
+        public async Task OnConnectionClosedAsync(Exception exception) => await _events.Writer.WriteAsync(new ConnectionClosedEvent(exception)).ConfigureAwait(false);
 
-        public async Task OnSendQueueEmptyAsync() => await _events.Writer.WriteAsync(new Events.SendQueueEmptyEvent()).ConfigureAwait(false);
+        public async Task OnSendQueueEmptyAsync() => await _events.Writer.WriteAsync(new SendQueueEmptyEvent()).ConfigureAwait(false);
 
-        public async Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => await _events.Writer.WriteAsync(new Events.RequestCompletedEvent(request, response)).ConfigureAwait(false);
+        public async Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => await _events.Writer.WriteAsync(new RequestCompletedEvent(request, response)).ConfigureAwait(false);
         
-        public async Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => await _events.Writer.WriteAsync(new Events.RequestPendingEvent(request, response)).ConfigureAwait(false);
+        public async Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => await _events.Writer.WriteAsync(new RequestPendingEvent(request, response)).ConfigureAwait(false);
 
-        public async Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => await _events.Writer.WriteAsync(new Events.RequestTimedOutEvent(request, timeout)).ConfigureAwait(false);
+        public async Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => await _events.Writer.WriteAsync(new RequestTimedOutEvent(request, timeout)).ConfigureAwait(false);
         
         public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => throw new NotImplementedException();
 
