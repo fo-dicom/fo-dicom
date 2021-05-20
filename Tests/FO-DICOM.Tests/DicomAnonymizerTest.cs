@@ -196,6 +196,22 @@ namespace FellowOakDicom.Tests
             Assert.Equal("kökö", anonymizedDicom.Dataset.GetString(DicomTag.PatientName));
         }
 
+        [Fact]
+        public void AnonymizeWithoutException()
+        {
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
+            dataset.Add(new DicomDecimalString(new DicomTag(0x01F1, 0x1033, new DicomPrivateCreator("ELSCINT1")), "0.8"));
+
+            var _anonymizer = new DicomAnonymizer(DicomAnonymizer.SecurityProfile.LoadProfile(null, (DicomAnonymizer.SecurityProfileOptions)15));
+
+            var ex = Record.Exception(
+                () =>
+                    _anonymizer.AnonymizeInPlace(dataset)
+                    );
+
+            Assert.Null(ex);
+        }
+
         #endregion
     }
 }

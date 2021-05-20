@@ -329,9 +329,9 @@ namespace FellowOakDicom
                 return;
             }
 
-            if (item is DicomStringElement _)
+            if (item is DicomStringElement stringElement)
             {
-                dataset.AddOrUpdate(tag, string.Empty);
+                dataset.AddOrUpdate(stringElement.ValueRepresentation, tag, string.Empty);
                 return;
             }
 
