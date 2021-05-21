@@ -98,10 +98,19 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Callback when a request has been completed (a final response was received, causing it to be removed from the pending queue)
+        /// One request can only receive one completed response
         /// </summary>
         /// <param name="request">The original request that was sent, which has now been fulfilled</param>
         /// <param name="response">The final response from the DICOM server</param>
         Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
+
+        /// <summary>
+        /// Callback when a request has received a pending response (this is not the final response, the request is still in the pending queue)
+        /// One request can receive multiple pending responses
+        /// </summary>
+        /// <param name="request">The original request that was sent</param>
+        /// <param name="response">A pending response from the DICOM server</param>
+        Task OnRequestPendingAsync(DicomRequest request, DicomResponse response);
 
         /// <summary>
         /// Callback when a request has timed out (no final response was received, but the timeout was exceeded and the request has been removed from the pending queue)
@@ -187,6 +196,7 @@ namespace FellowOakDicom.Network.Client
         public Task OnConnectionClosedAsync(Exception exception) => DicomClient.OnConnectionClosedAsync(exception);
 
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => DicomClient.OnRequestCompletedAsync(request, response);
+        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => DicomClient.OnRequestPendingAsync(request, response);
 
         public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => DicomClient.OnRequestTimedOutAsync(request, timeout);
 

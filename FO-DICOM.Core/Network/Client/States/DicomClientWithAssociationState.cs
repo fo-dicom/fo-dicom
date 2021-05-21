@@ -1,6 +1,7 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network.Client.Advanced;
 using System;
 
 namespace FellowOakDicom.Network.Client.States
@@ -11,7 +12,7 @@ namespace FellowOakDicom.Network.Client.States
         /// <summary>
         /// Gets the currently active association between the client and the server
         /// </summary>
-        public DicomAssociation Association { get; set; }
+        public IAdvancedDicomClientAssociation Association { get; set; }
 
         protected DicomClientWithAssociationState(IInitialisationWithAssociationParameters initialisationParameters) : base(initialisationParameters)
         {

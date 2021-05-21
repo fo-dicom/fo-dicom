@@ -7,6 +7,7 @@ using FellowOakDicom.IO;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -76,6 +77,7 @@ namespace FellowOakDicom
                 .AddLogManager<ConsoleLogManager>()
                 .AddNetworkManager<DesktopNetworkManager>()
                 .AddDicomClient()
+                .AddAdvancedDicomClient()
                 .AddDicomServer();
 
         private static IServiceCollection AddInternals(this IServiceCollection services)
@@ -85,6 +87,12 @@ namespace FellowOakDicom
         public static IServiceCollection AddDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
             => services   
                 .AddSingleton<IDicomClientFactory, DefaultDicomClientFactory>()
+                .Configure(options ?? (o => {}));
+        
+        public static IServiceCollection AddAdvancedDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
+            => services   
+                .AddSingleton<IAdvancedDicomClientFactory, DefaultAdvancedDicomClientFactory>()
+                .AddSingleton<IAdvancedDicomClientConnectionFactory, DefaultAdvancedDicomClientConnectionFactory>()
                 .Configure(options ?? (o => {}));
         
         public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServiceOptions> options = null) 
