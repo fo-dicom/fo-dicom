@@ -14,6 +14,8 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced;
+using FellowOakDicom.Network.Client.Advanced.Association;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -66,7 +68,10 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
         private IAdvancedDicomClient CreateClient()
         {
-            var client = AdvancedDicomClientFactory.Create();
+            var client = AdvancedDicomClientFactory.Create(new AdvancedDicomClientCreationRequest
+            {
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient))
+            });
             return client;
         }
 
@@ -85,9 +90,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 var client = CreateClient();
 
                 // TODO Alex perhaps a fluent API here?
-                var openAssociationRequest = new OpenAssociationRequest
+                var openAssociationRequest = new AdvancedDicomClientAssociationRequest
                 {
-                    ConnectionToOpen = new OpenConnectionRequest
+                    Connection = new AdvancedDicomClientConnectionRequest
                     {
                         NetworkStreamCreationOptions = new NetworkStreamCreationOptions
                         {
@@ -98,17 +103,14 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                         FallbackEncoding = DicomEncoding.Default,
                         DicomServiceOptions = new DicomServiceOptions()
                     },
-                    AssociationToOpen = new DicomAssociation(callingAE, calledAE)
-                    {
-                        RemoteHost = server,
-                        RemotePort = port,
-                    }
+                    CallingAE = callingAE,
+                    CalledAE = calledAE
                 };
 
                 var cEchoRequest = new DicomCEchoRequest();
 
-                openAssociationRequest.AssociationToOpen.PresentationContexts.AddFromRequest(cEchoRequest);
-                openAssociationRequest.AssociationToOpen.ExtendedNegotiations.AddFromRequest(cEchoRequest);
+                openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
+                openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
                 DicomCEchoResponse cEchoResponse = null;
                 await using (var association = await client.OpenAssociationAsync(openAssociationRequest, CancellationToken.None))

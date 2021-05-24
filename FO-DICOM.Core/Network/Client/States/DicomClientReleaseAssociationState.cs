@@ -1,3 +1,4 @@
+/*
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
@@ -148,7 +149,7 @@ namespace FellowOakDicom.Network.Client.States
 
                 /*
                  * Sometimes, the server is very swift at closing the connection, before we get a chance to process the Association Release response
-                 */
+                 #1#
                 _dicomClient.NotifyAssociationReleased();
 
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
@@ -195,3 +196,4 @@ namespace FellowOakDicom.Network.Client.States
         }
     }
 }
+*/

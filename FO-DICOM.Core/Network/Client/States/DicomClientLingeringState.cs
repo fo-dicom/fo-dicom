@@ -1,3 +1,4 @@
+/*
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
@@ -127,7 +128,7 @@ namespace FellowOakDicom.Network.Client.States
                 /*
                  * Our TaskCompletionSource should have been created with TaskCreationOptions.RunContinuationsAsynchronously, so we don't have to do anything special
                  * Any continuations will run asynchronously by default.
-                 */
+                 #1#
                 _onCancellationRequestedTaskCompletionSource.TrySetResult(true);
             }));
 
@@ -207,3 +208,4 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => $"LINGERING ASSOCIATION";
     }
 }
+*/

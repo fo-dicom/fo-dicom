@@ -14,6 +14,8 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,12 +65,17 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
+            var logManager = Setup.ServiceProvider.GetRequiredService<ILogManager>();
+            var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
+            var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
+            var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             return new DefaultDicomClientFactory(
-                Setup.ServiceProvider.GetRequiredService<ILogManager>(),
-                networkManager,
-                Setup.ServiceProvider.GetRequiredService<ITranscoderManager>(),
-                Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>(),
-                Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>());
+                new AdvancedDicomClientFactory(
+                    new AdvancedDicomClientConnectionFactory(networkManager, logManager, transcoderManager),
+                    logManager
+                ),
+                defaultClientOptions,
+                defaultServiceOptions);
         }
 
         [Fact]

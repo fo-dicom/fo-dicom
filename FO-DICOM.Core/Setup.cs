@@ -8,6 +8,7 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -91,8 +92,8 @@ namespace FellowOakDicom
         
         public static IServiceCollection AddAdvancedDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
             => services   
-                .AddSingleton<IAdvancedDicomClientFactory, DefaultAdvancedDicomClientFactory>()
-                .AddSingleton<IAdvancedDicomClientConnectionFactory, DefaultAdvancedDicomClientConnectionFactory>()
+                .AddSingleton<IAdvancedDicomClientFactory, AdvancedDicomClientFactory>()
+                .AddSingleton<IAdvancedDicomClientConnectionFactory, AdvancedDicomClientConnectionFactory>()
                 .Configure(options ?? (o => {}));
         
         public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServiceOptions> options = null) 

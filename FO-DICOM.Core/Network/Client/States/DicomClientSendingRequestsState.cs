@@ -1,3 +1,4 @@
+/*
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
@@ -33,12 +34,12 @@ namespace FellowOakDicom.Network.Client.States
 
         /**
          * Safety flag that prevents parallel sending of DICOM requests
-         */
+         #1#
         private int _sending;
         
         /**
          * Counter that tracks how many DICOM requests we've sent
-         */
+         #1#
         private int _numberOfSentRequests;
 
         public class InitialisationParameters : IInitialisationWithAssociationParameters
@@ -205,17 +206,17 @@ namespace FellowOakDicom.Network.Client.States
                 {
                     /*
                      * This event will be triggered when the DicomClientConnection believes it has finished its work by triggering the OnSendQueueEmpty event
-                     */
+                     #1#
                     var sendMoreRequests = _sendMoreRequests.WaitAsync();
 
                     /*
                      * This event will be triggered when the CancellationToken passed into SendAsync is cancelled
-                     */
+                     #1#
                     var onCancel = cancellationTaskCompletionSource.Task;
 
                     /*
                      * This event will be triggered when the pending queue becomes empty
-                     */
+                     #1#
                     var allRequestsHaveCompleted = _allRequestsHaveCompletedTaskCompletionSource.Task;
 
                     var winner = await Task.WhenAny(allRequestsHaveCompleted, sendMoreRequests, onCancel).ConfigureAwait(false);
@@ -376,3 +377,4 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => $"SENDING REQUESTS";
     }
 }
+*/

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Advanced
+namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
      public interface IAdvancedDicomClientConnectionCallbacks
     {

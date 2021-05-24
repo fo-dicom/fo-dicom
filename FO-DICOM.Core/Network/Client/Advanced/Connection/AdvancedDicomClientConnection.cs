@@ -7,7 +7,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Advanced
+namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
     public interface IAdvancedDicomClientConnection : IDicomClientConnection
     {

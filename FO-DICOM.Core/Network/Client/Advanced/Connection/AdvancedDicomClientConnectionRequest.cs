@@ -1,9 +1,9 @@
 ﻿using FellowOakDicom.Log;
 using System.Text;
 
-namespace FellowOakDicom.Network.Client.Advanced
+namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
-    public class OpenConnectionRequest
+    public class AdvancedDicomClientConnectionRequest
     {
         public NetworkStreamCreationOptions NetworkStreamCreationOptions { get; set; }
 

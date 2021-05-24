@@ -2,8 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -39,21 +38,17 @@ namespace FellowOakDicom.Network.Client
 
     public class DefaultDicomClientFactory : IDicomClientFactory
     {
-        private readonly ILogManager _logManager;
-        private readonly INetworkManager _networkManager;
-        private readonly ITranscoderManager _transcoderManager;
+        private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
         private readonly IOptions<DicomClientOptions> _defaultClientOptions;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
         public DefaultDicomClientFactory(
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager,
+            IAdvancedDicomClientFactory advancedDicomClientFactory,
             IOptions<DicomClientOptions> defaultClientOptions,
             IOptions<DicomServiceOptions> defaultServiceOptions
             )
         {
-            _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
-            _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
             _defaultClientOptions = defaultClientOptions ?? throw new ArgumentNullException(nameof(defaultClientOptions));
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
         }
@@ -63,7 +58,7 @@ namespace FellowOakDicom.Network.Client
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
 
-            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _networkManager, _logManager, _transcoderManager);
+            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _advancedDicomClientFactory);
         }
     }
 }

@@ -1,49 +1,38 @@
 ﻿// Copyright (c) 2012-2020 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
-    public interface IAdvancedDicomClientFactory
+    public class AdvancedDicomClientFactory : IAdvancedDicomClientFactory
     {
-        /// <summary>
-        /// Initializes an instance of <see cref="DicomClient"/>.
-        /// </summary>
-        IAdvancedDicomClient Create();
-    }
+        private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
+        private readonly ILogManager _logManager;
 
-    public static class AdvancedDicomClientFactory
-    {
+        public AdvancedDicomClientFactory(
+            IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory,
+            ILogManager logManager)
+        {
+            _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
+            _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+        }
+
+        IAdvancedDicomClient IAdvancedDicomClientFactory.Create(AdvancedDicomClientCreationRequest request)
+        {
+            var logger = request.Logger ?? _logManager.GetLogger("Dicom.Network");
+            
+            return new AdvancedDicomClient(_advancedDicomClientConnectionFactory, logger);
+        }
+        
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/> out of DI-container.
         /// </summary>
-        public static IAdvancedDicomClient Create() => Setup.ServiceProvider
+        public static IAdvancedDicomClient Create(AdvancedDicomClientCreationRequest request) => Setup.ServiceProvider
             .GetRequiredService<IAdvancedDicomClientFactory>()
-            .Create();
-    }
-
-    public class DefaultAdvancedDicomClientFactory : IAdvancedDicomClientFactory
-    {
-        private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
-        private readonly IOptions<AdvancedDicomClientOptions> _defaultAdvancedClientOptions;
-
-        public DefaultAdvancedDicomClientFactory(
-            IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory,
-            IOptions<AdvancedDicomClientOptions> defaultAdvancedClientOptions
-        )
-        {
-            _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
-            _defaultAdvancedClientOptions = defaultAdvancedClientOptions ?? throw new ArgumentNullException(nameof(defaultAdvancedClientOptions));
-        }
-
-        public virtual IAdvancedDicomClient Create()
-        {
-            var advancedClientOptions = _defaultAdvancedClientOptions.Value.Clone();
-
-            return new AdvancedDicomClient(_advancedDicomClientConnectionFactory, advancedClientOptions);
-        }
+            .Create(request);
     }
 }

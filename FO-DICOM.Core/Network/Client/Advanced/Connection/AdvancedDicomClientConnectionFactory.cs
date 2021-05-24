@@ -4,20 +4,15 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Advanced
+namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
-    public interface IAdvancedDicomClientConnectionFactory
-    {
-        Task<IAdvancedDicomClientConnection> ConnectAsync(OpenConnectionRequest request, CancellationToken cancellationToken);
-    }
-
-    public class DefaultAdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
+    public class AdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
     {
         private readonly INetworkManager _networkManager;
         private readonly ILogManager _logManager;
         private readonly ITranscoderManager _transcoderManager;
 
-        public DefaultAdvancedDicomClientConnectionFactory(
+        public AdvancedDicomClientConnectionFactory(
             INetworkManager networkManager, 
             ILogManager logManager,
             ITranscoderManager transcoderManager)
@@ -27,7 +22,7 @@ namespace FellowOakDicom.Network.Client.Advanced
             _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
         }
         
-        public async Task<IAdvancedDicomClientConnection> ConnectAsync(OpenConnectionRequest request, CancellationToken cancellationToken)
+        public async Task<IAdvancedDicomClientConnection> ConnectAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

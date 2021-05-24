@@ -1,4 +1,4 @@
-﻿using FellowOakDicom.Log;
+﻿using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Collections.Concurrent;
@@ -9,31 +9,37 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Advanced
+namespace FellowOakDicom.Network.Client.Advanced.Association
 {
     public interface IAdvancedDicomClientAssociation : IAsyncDisposable
     {
         IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, CancellationToken cancellationToken);
+
+        ValueTask ReleaseAsync(CancellationToken cancellationToken);
+        
+        ValueTask AbortAsync(CancellationToken cancellationToken);
     }
 
     public class AdvancedDicomClientAssociation : IAdvancedDicomClientAssociation
     {
+        private readonly AdvancedDicomClientAssociationRequest _request;
         private readonly Task _eventCollector;
         private readonly CancellationTokenSource _eventCollectorCts;
         private readonly ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>> _requestChannels;
         
-        private AdvancedDicomClientOptions Options { get; }
         public IAdvancedDicomClientConnection Connection { get; }
         public DicomAssociation Association { get; }
 
-        public AdvancedDicomClientAssociation(AdvancedDicomClientOptions advancedDicomClientOptions, IAdvancedDicomClientConnection connection,
+        public AdvancedDicomClientAssociation(
+            AdvancedDicomClientAssociationRequest request, 
+            IAdvancedDicomClientConnection connection,
             DicomAssociation association)
         {
+            _request = request;
             _eventCollectorCts = new CancellationTokenSource();
             _eventCollector = Task.Run(CollectEvents);
             _requestChannels = new ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>>();
 
-            Options = advancedDicomClientOptions ?? throw new ArgumentNullException(nameof(advancedDicomClientOptions));
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
             Association = association ?? throw new ArgumentNullException(nameof(association));
         }
@@ -65,6 +71,8 @@ namespace FellowOakDicom.Network.Client.Advanced
                         if (_requestChannels.TryGetValue(requestCompletedEvent.Request.MessageID, out var requestChannel))
                         {
                             await requestChannel.Writer.WriteAsync(requestCompletedEvent).ConfigureAwait(false);
+                            
+                            requestChannel.Writer.TryComplete();
                         }
                         if (Connection.IsSendNextMessageRequired)
                         {
@@ -77,6 +85,8 @@ namespace FellowOakDicom.Network.Client.Advanced
                         if (_requestChannels.TryGetValue(requestTimedOutEvent.Request.MessageID, out var requestChannel))
                         {
                             await requestChannel.Writer.WriteAsync(requestTimedOutEvent).ConfigureAwait(false);
+                            
+                            requestChannel.Writer.TryComplete();
                         }
                         if (Connection.IsSendNextMessageRequired)
                         {
@@ -89,6 +99,7 @@ namespace FellowOakDicom.Network.Client.Advanced
                         foreach (var requestChannel in _requestChannels.Values)
                         {
                             await requestChannel.Writer.WriteAsync(dicomAbortedEvent).ConfigureAwait(false);
+                            requestChannel.Writer.TryComplete();
                         }
                         return;
                     }
@@ -98,7 +109,7 @@ namespace FellowOakDicom.Network.Client.Advanced
                         {
                             await requestChannel.Writer.WriteAsync(connectionClosedEvent).ConfigureAwait(false);
                             
-                            requestChannel.Writer.Complete();
+                            requestChannel.Writer.TryComplete();
                         }
                         return;
                     }
@@ -187,17 +198,18 @@ namespace FellowOakDicom.Network.Client.Advanced
             }
         }
 
-        public async ValueTask DisposeAsync()
+        public async ValueTask ReleaseAsync(CancellationToken cancellationToken)
         {
             try
             {
                 await Connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
 
-                using var timeoutCts = new CancellationTokenSource(Options.AssociationReleaseTimeout);
+                using var timeoutCts = new CancellationTokenSource(_request.AssociationReleaseTimeout);
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken);
                 
-                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(timeoutCts.Token);
+                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cts.Token);
                 
-                await WaitForAssociationRelease(events, timeoutCts.Token).ConfigureAwait(false);
+                await WaitForAssociationRelease(events, cts.Token).ConfigureAwait(false);
             }
             finally
             {
@@ -210,20 +222,49 @@ namespace FellowOakDicom.Network.Client.Advanced
 
                 _eventCollectorCts.Dispose();
             }
+        }
 
-            async Task WaitForAssociationRelease(IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events, CancellationToken cancellationToken)
+        public async ValueTask AbortAsync(CancellationToken cancellationToken)
+        {
+            try
             {
-                await foreach (var @event in events.WithCancellation(cancellationToken))
+                await Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified).ConfigureAwait(false);
+
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken);
+                
+                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cts.Token);
+                
+                await WaitForAssociationRelease(events, cts.Token).ConfigureAwait(false);
+            }
+            finally
+            {
+                Connection?.Dispose();
+
+                if (!_eventCollector.IsCompleted)
                 {
-                    switch (@event)
-                    {
-                        case DicomAssociationReleasedEvent _:
-                            return;
-                        case DicomAbortedEvent _:
-                            return;
-                        case ConnectionClosedEvent _:
-                            return;
-                    }
+                    _eventCollectorCts.Cancel();
+                }
+
+                _eventCollectorCts.Dispose();
+            }
+        }
+
+        public ValueTask DisposeAsync() => ReleaseAsync(CancellationToken.None);
+
+        
+        private async Task WaitForAssociationRelease(IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events, CancellationToken cancellationToken)
+        {
+            await foreach (var @event in events.WithCancellation(cancellationToken))
+            {
+                switch (@event)
+                {
+                    case DicomAssociationReleasedEvent _:
+                        return;
+                    case DicomAbortedEvent _:
+                        return;
+                    case ConnectionClosedEvent _:
+                        return;
                 }
             }
         }
