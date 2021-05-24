@@ -1,4 +1,5 @@
 ﻿using FellowOakDicom.Network.Client.Advanced.Association;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// </summary>
     public interface IAdvancedDicomClient
     {
+        Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
         Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken);
     }
 }

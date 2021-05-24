@@ -11,6 +11,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
     public interface IAdvancedDicomClientConnection : IDicomClientConnection
     {
+        /// <summary>
+        /// Gets the DICOM service options.
+        /// </summary>
+        DicomServiceOptions Options { get; }
+        
+        /// <summary>
+        /// Gets the callbacks that can be used to listen to incoming DICOM events
+        /// </summary>
         IAdvancedDicomClientConnectionCallbacks Callbacks { get; }
     }
 
@@ -97,7 +105,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             _interceptor = interceptor ?? throw new ArgumentNullException(nameof(interceptor));
         }
 
-
         public INetworkStream NetworkStream => _inner.NetworkStream;
 
         public Task Listener => _inner.Listener;
@@ -105,6 +112,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public bool IsSendNextMessageRequired => _inner.IsSendNextMessageRequired;
 
         public bool IsSendQueueEmpty => _inner.IsSendQueueEmpty;
+
+        public DicomServiceOptions Options => _inner.Options;
         
         public IAdvancedDicomClientConnectionCallbacks Callbacks => _inner.Callbacks;
 

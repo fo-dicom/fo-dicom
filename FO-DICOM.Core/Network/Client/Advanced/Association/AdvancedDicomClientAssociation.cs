@@ -11,8 +11,14 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Association
 {
-    public interface IAdvancedDicomClientAssociation : IAsyncDisposable
+    /// <summary>
+    /// Represents an open DICOM association.
+    /// Disposing it is equivalent to calling <see cref="ReleaseAsync"/>
+    /// </summary>
+    public interface IAdvancedDicomClientAssociation
     {
+        DicomAssociation Association { get; }
+        
         IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, CancellationToken cancellationToken);
 
         ValueTask ReleaseAsync(CancellationToken cancellationToken);
@@ -204,17 +210,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 await Connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
 
-                using var timeoutCts = new CancellationTokenSource(_request.AssociationReleaseTimeout);
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken);
+                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cancellationToken);
                 
-                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cts.Token);
-                
-                await WaitForAssociationRelease(events, cts.Token).ConfigureAwait(false);
+                await WaitForAssociationRelease(events, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
-                Connection?.Dispose();
-
                 if (!_eventCollector.IsCompleted)
                 {
                     _eventCollectorCts.Cancel();
@@ -230,17 +231,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 await Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified).ConfigureAwait(false);
 
-                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken);
+                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cancellationToken);
                 
-                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cts.Token);
-                
-                await WaitForAssociationRelease(events, cts.Token).ConfigureAwait(false);
+                await WaitForAssociationRelease(events, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
-                Connection?.Dispose();
-
                 if (!_eventCollector.IsCompleted)
                 {
                     _eventCollectorCts.Cancel();
@@ -250,9 +246,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }
         }
 
-        public ValueTask DisposeAsync() => ReleaseAsync(CancellationToken.None);
-
-        
         private async Task WaitForAssociationRelease(IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events, CancellationToken cancellationToken)
         {
             await foreach (var @event in events.WithCancellation(cancellationToken))

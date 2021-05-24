@@ -84,25 +84,30 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
 
             using (CreateServer<DicomCEchoProvider>(port))
             {
                 var client = CreateClient();
 
                 // TODO Alex perhaps a fluent API here?
+                var connectionRequest = new AdvancedDicomClientConnectionRequest
+                {
+                    NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                    {
+                        Host = server,
+                        Port = port,
+                    },
+                    Logger = _logger.IncludePrefix(nameof(IAdvancedDicomClient)),
+                    FallbackEncoding = DicomEncoding.Default,
+                    DicomServiceOptions = new DicomServiceOptions()
+                };
+
+                var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+
                 var openAssociationRequest = new AdvancedDicomClientAssociationRequest
                 {
-                    Connection = new AdvancedDicomClientConnectionRequest
-                    {
-                        NetworkStreamCreationOptions = new NetworkStreamCreationOptions
-                        {
-                            Host = server,
-                            Port = port,
-                        },
-                        Logger = _logger.IncludePrefix(nameof(IAdvancedDicomClient)),
-                        FallbackEncoding = DicomEncoding.Default,
-                        DicomServiceOptions = new DicomServiceOptions()
-                    },
+                    Connection = connection,
                     CallingAE = callingAE,
                     CalledAE = calledAE
                 };
@@ -113,9 +118,15 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
                 DicomCEchoResponse cEchoResponse = null;
-                await using (var association = await client.OpenAssociationAsync(openAssociationRequest, CancellationToken.None))
+                var association = await client.OpenAssociationAsync(openAssociationRequest, cancellationToken);
+
+                try
                 {
                     cEchoResponse = await association.SendEchoRequestAsync(cEchoRequest, CancellationToken.None).ConfigureAwait(false);
+                }
+                finally
+                {
+                    await association.ReleaseAsync(CancellationToken.None);
                 }
 
                 Assert.NotNull(cEchoResponse);

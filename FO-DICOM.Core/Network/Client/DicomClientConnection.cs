@@ -130,7 +130,6 @@ namespace FellowOakDicom.Network.Client
         /// </returns>
         Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
 
-
         /// <summary>
         /// Callback for handling a client related N-EVENT-REPORT-RQ request, typically emanating from the client's N-ACTION request.
         /// </summary>

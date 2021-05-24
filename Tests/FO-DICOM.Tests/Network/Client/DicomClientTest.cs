@@ -967,7 +967,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        [Theory(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
+        [Theory(/*Skip = "These time based tests are troublesome in CI with varying degrees of host performance"*/)]
         [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 5)]
         public async Task SendAsync_Linger_ShouldLingerLongEnoughToReuseAssociation(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
@@ -1338,7 +1338,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
                 }
-                catch(IOException)
+                catch(DicomNetworkException)
                 { /* Ignore */ }
 
                 Assert.False(cancellation.IsCancellationRequested);
