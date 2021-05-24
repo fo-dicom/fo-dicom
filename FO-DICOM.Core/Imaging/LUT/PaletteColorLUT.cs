@@ -39,47 +39,17 @@ namespace FellowOakDicom.Imaging.LUT
         /// </summary>
         public Color32[] ColorMap
         {
-            get
-            {
-                return _lut;
-            }
-            set
-            {
-                _lut = value;
-            }
+            get => _lut;
+            set => _lut = value;
         }
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return int.MinValue;
-            }
-        }
+        public double MinimumOutputValue => int.MinValue;
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return int.MaxValue;
-            }
-        }
+        public double MaximumOutputValue => int.MaxValue;
 
-        public bool IsValid
-        {
-            get
-            {
-                return _lut != null;
-            }
-        }
+        public bool IsValid => _lut != null;
 
-        public int this[int value]
-        {
-            get
-            {
-                return _lut[(value - _first) > 0 ? (value - _first) : 0].Value;
-            }
-        }
+        public double this[double value] => _lut[(value - _first) > 0 ? unchecked((int)(value - _first)) : 0].Value;
 
         #endregion
 

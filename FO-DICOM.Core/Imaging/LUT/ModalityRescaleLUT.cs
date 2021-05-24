@@ -11,11 +11,7 @@ namespace FellowOakDicom.Imaging.LUT
     {
         #region Private Members
 
-        private GrayscaleRenderOptions _renderOptions;
-
-        private int _minValue;
-
-        private int _maxValue;
+        private readonly GrayscaleRenderOptions _renderOptions;
 
         #endregion
 
@@ -28,8 +24,8 @@ namespace FellowOakDicom.Imaging.LUT
         public ModalityRescaleLUT(GrayscaleRenderOptions options)
         {
             _renderOptions = options;
-            _minValue = this[options.BitDepth.MinimumValue];
-            _maxValue = this[options.BitDepth.MaximumValue];
+            MinimumOutputValue = this[options.BitDepth.MinimumValue];
+            MaximumOutputValue = this[options.BitDepth.MaximumValue];
         }
 
         #endregion
@@ -39,56 +35,20 @@ namespace FellowOakDicom.Imaging.LUT
         /// <summary>
         /// The modality rescale slope
         /// </summary>
-        public double RescaleSlope
-        {
-            get
-            {
-                return _renderOptions.RescaleSlope;
-            }
-        }
+        public double RescaleSlope => _renderOptions.RescaleSlope;
 
         /// <summary>
         /// The modality rescale intercept
         /// </summary>
-        public double RescaleIntercept
-        {
-            get
-            {
-                return _renderOptions.RescaleIntercept;
-            }
-        }
+        public double RescaleIntercept => _renderOptions.RescaleIntercept;
 
-        public bool IsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsValid => true;
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return _minValue;
-            }
-        }
+        public double MinimumOutputValue { get; }
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return _maxValue;
-            }
-        }
+        public double MaximumOutputValue { get; }
 
-        public int this[int value]
-        {
-            get
-            {
-                return unchecked((int)((value * RescaleSlope) + RescaleIntercept));
-            }
-        }
+        public double this[double value] => (value * RescaleSlope) + RescaleIntercept;
 
         #endregion
 

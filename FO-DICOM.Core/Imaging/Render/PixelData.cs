@@ -342,7 +342,7 @@ namespace FellowOakDicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        output[i] = lut[data[i]];
+                        output[i] = (int)lut[data[i]];
                     }
                 }
                 );
@@ -585,7 +585,7 @@ namespace FellowOakDicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        output[i] = lut[data[i]];
+                        output[i] = (int)lut[data[i]];
                     }
                 }
                 );
@@ -761,7 +761,7 @@ namespace FellowOakDicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        output[i] = lut[data[i]];
+                        output[i] = (int)lut[data[i]];
                     }
                 }
                 );
@@ -930,7 +930,7 @@ namespace FellowOakDicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        output[i] = lut[data[i]];
+                        output[i] = (int)lut[data[i]];
                     }
                 }
                 );
@@ -1094,7 +1094,7 @@ namespace FellowOakDicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width; i < e; i++)
                     {
-                        output[i] = lut[(int)data[i]];
+                        output[i] = unchecked((int)lut[(int)data[i]]);
                     }
                 }
                 );
@@ -1225,7 +1225,7 @@ namespace FellowOakDicom.Imaging.Render
                 {
                     for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++)
                     {
-                        output[i] = alphaFF | (lut[data[p++]] << 16) | (lut[data[p++]] << 8) | lut[data[p++]];
+                        output[i] = alphaFF | ((int)lut[data[p++]] << 16) | ((int)lut[data[p++]] << 8) | (int)lut[data[p++]];
                     }
                 }
                 );

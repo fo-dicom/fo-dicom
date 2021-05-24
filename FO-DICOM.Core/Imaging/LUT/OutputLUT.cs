@@ -34,53 +34,29 @@ namespace FellowOakDicom.Imaging.LUT
         /// <summary>
         /// Gets the color map
         /// </summary>
-        public Color32[] ColorMap
-        {
-            get
-            {
-                return _options.ColorMap;
-            }
-        }
+        public Color32[] ColorMap => _options.ColorMap;
 
         /// <summary>
         /// Get the minimum output value
         /// </summary>
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return int.MinValue;
-            }
-        }
+        public double MinimumOutputValue => int.MinValue;
 
         /// <summary>
         /// Get the maximum output value
         /// </summary>
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return int.MaxValue;
-            }
-        }
+        public double MaximumOutputValue => int.MaxValue;
 
         /// <summary>
         /// Returns true if the lookup table is valid
         /// </summary>
-        public bool IsValid
-        {
-            get
-            {
-                return this._options != null;
-            }
-        }
+        public bool IsValid => _options != null;
 
         /// <summary>
         /// Indexer to transform input value into output value
         /// </summary>
         /// <param name="value">Input value</param>
         /// <returns>Output value</returns>
-        public int this[int value]
+        public double this[double value]
         {
             get
             {
@@ -88,7 +64,7 @@ namespace FellowOakDicom.Imaging.LUT
                 {
                     if (value < 0) return _options.ColorMap[0].Value;
                     if (value > 255) return _options.ColorMap[255].Value;
-                    return _options.ColorMap[value].Value;
+                    return _options.ColorMap[unchecked((int)value)].Value;
                 }
             }
         }

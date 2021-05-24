@@ -35,37 +35,19 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public bool IsValid
-        {
-            get
-            {
-                return _lut.IsValid;
-            }
-        }
+        public bool IsValid => _lut.IsValid;
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return _lut.MinimumOutputValue;
-            }
-        }
+        public double MinimumOutputValue => _lut.MinimumOutputValue;
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return _lut.MaximumOutputValue;
-            }
-        }
+        public double MaximumOutputValue => _lut.MaximumOutputValue;
 
-        public int this[int value]
+        public double this[double value]
         {
             get
             {
                 unchecked
                 {
-                    int p = value + _offset;
+                    int p = (int)value + _offset;
                     if (p < 0) return _table[0];
                     if (p >= _table.Length) return _table[_table.Length - 1];
                     return _table[p];
@@ -85,7 +67,7 @@ namespace FellowOakDicom.Imaging.LUT
 
             for (int i = _minValue; i <= _maxValue; i++)
             {
-                _table[i + _offset] = _lut[i];
+                _table[i + _offset] = (int)_lut[i];
             }
         }
 

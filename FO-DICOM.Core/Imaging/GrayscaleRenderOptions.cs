@@ -208,7 +208,9 @@ namespace FellowOakDicom.Imaging
             options.ColorMap = GetColorMap(dataset);
 
             if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
                 options.ModalityLUTSequence = modalityLutSequence;
+            }
             if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
             {
                 options.VOILUTSequence = voiLutSequence;
@@ -232,7 +234,7 @@ namespace FellowOakDicom.Imaging
                 RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
             };
 
-            int padding = dataset.GetValueOrDefault(DicomTag.PixelPaddingValue, 0, Int32.MinValue);
+            int padding = dataset.GetValueOrDefault(DicomTag.PixelPaddingValue, 0, int.MinValue);
 
             var transcoder = new DicomTranscoder(
                 dataset.InternalTransferSyntax,
@@ -241,8 +243,14 @@ namespace FellowOakDicom.Imaging
             var pixels = transcoder.DecodePixelData(dataset, 0);
             var range = pixels.GetMinMax(padding);
 
-            if (range.Minimum < bits.MinimumValue || range.Minimum == Double.MaxValue) range.Minimum = bits.MinimumValue;
-            if (range.Maximum > bits.MaximumValue || range.Maximum == Double.MinValue) range.Maximum = bits.MaximumValue;
+            if (range.Minimum < bits.MinimumValue || range.Minimum == double.MaxValue)
+            {
+                range.Minimum = bits.MinimumValue;
+            }
+            if (range.Maximum > bits.MaximumValue || range.Maximum == double.MinValue)
+            {
+                range.Maximum = bits.MaximumValue;
+            }
 
             var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
             var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
@@ -254,7 +262,9 @@ namespace FellowOakDicom.Imaging
             options.ColorMap = GetColorMap(dataset);
 
             if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
                 options.ModalityLUTSequence = modalityLutSequence;
+            }
             if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
             {
                 options.VOILUTSequence = voiLutSequence;
@@ -288,9 +298,13 @@ namespace FellowOakDicom.Imaging
             options.ColorMap = GetColorMap(dataset);
 
             if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
                 options.ModalityLUTSequence = modalityLutSequence;
+            }
             if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+            {
                 options.VOILUTSequence = voiLutSequence;
+            }
 
             return options;
         }
@@ -334,9 +348,13 @@ namespace FellowOakDicom.Imaging
             options.ColorMap = GetColorMap(dataset);
 
             if (dataset.TryGetSequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
                 options.ModalityLUTSequence = modalityLutSequence;
+            }
             if (dataset.TryGetSequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+            {
                 options.VOILUTSequence = voiLutSequence;
+            }
 
             return options;
         }
@@ -354,7 +372,7 @@ namespace FellowOakDicom.Imaging
                        : ColorTable.Monochrome2;
         }
 
-        public static GrayscaleRenderOptions CreateLinearOption(BitDepth bits, int minValue, int maxValue)
+        public static GrayscaleRenderOptions CreateLinearOption(BitDepth bits, double minValue, double maxValue)
             => new GrayscaleRenderOptions(bits)
             {
                 WindowWidth = maxValue - minValue,

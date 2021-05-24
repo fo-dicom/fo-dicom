@@ -44,11 +44,11 @@ namespace FellowOakDicom.Imaging.LUT
 
         public bool IsValid => false; //always recalculate
 
-        public int MinimumOutputValue => _LUTDataArray[0];
+        public double MinimumOutputValue => _LUTDataArray[0];
 
-        public int MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
+        public double MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
 
-        public int this[int value]
+        public double this[double value]
         {
             get
             {
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Imaging.LUT
                     else if (value > (_firstInputValue + _nrOfEntries - 1))
                         return _LUTDataArray[_nrOfEntries - 1];
                     else
-                        return _LUTDataArray[value - _firstInputValue];
+                        return _LUTDataArray[unchecked((int)(value - _firstInputValue))];
                 }
             }
 
@@ -124,13 +124,15 @@ namespace FellowOakDicom.Imaging.LUT
         //Since .NET Core doesn't know Array.ConvertAll
         private TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Func<TInput, TOutput> converter)
         {
-            if (array == null)
-                throw new ArgumentNullException(nameof (array));
-            if (converter == null)
-                throw new ArgumentNullException(nameof (converter));
-            TOutput[] outputArray = new TOutput[array.Length];
+            array = array ?? throw new ArgumentNullException(nameof (array));
+            converter = converter ?? throw new ArgumentNullException(nameof (converter));
+
+            var outputArray = new TOutput[array.Length];
             for (int index = 0; index < array.Length; ++index)
+            {
                 outputArray[index] = converter(array[index]);
+            }
+
             return outputArray;
         }
 

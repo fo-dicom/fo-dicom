@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging;
+using System.IO;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
@@ -127,6 +128,7 @@ namespace FellowOakDicom.Tests.Imaging
             IImage myImg = myDicomImage.RenderImage(0);
             myImg.Render(3, true, true, 0);
         }
+
 
     }
 }

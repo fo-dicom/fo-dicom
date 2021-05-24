@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FellowOakDicom.Imaging.LUT
 {
@@ -10,20 +11,13 @@ namespace FellowOakDicom.Imaging.LUT
     {
         #region Private Members
 
-        private List<ILUT> _luts = new List<ILUT>();
+        private readonly List<ILUT> _luts = new List<ILUT>();
 
         #endregion
 
         #region Public Properties
 
-        public ILUT FinalLUT
-        {
-            get
-            {
-                if (_luts.Count > 0) return _luts[_luts.Count - 1];
-                return null;
-            }
-        }
+        public ILUT FinalLUT => _luts.LastOrDefault();
 
         #endregion
 
@@ -37,59 +31,37 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Members
 
-        public void Add(ILUT lut)
-        {
-            _luts.Add(lut);
-        }
+        public void Add(ILUT lut) => _luts.Add(lut);
 
         #endregion
 
         #region ILUT Members
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                ILUT lut = FinalLUT;
-                if (lut != null) return lut.MinimumOutputValue;
-                return 0;
-            }
-        }
+        public double MinimumOutputValue => FinalLUT?.MinimumOutputValue ?? 0;
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                ILUT lut = FinalLUT;
-                if (lut != null) return lut.MaximumOutputValue;
-                return 255;
-            }
-        }
+        public double MaximumOutputValue => FinalLUT?.MaximumOutputValue ?? 0;
 
-        public bool IsValid
+        public bool IsValid => _luts.All(l => l.IsValid);
+
+        public double this[double value]
         {
             get
             {
                 foreach (ILUT lut in _luts)
                 {
-                    if (!lut.IsValid) return false;
+                    value = lut[value];
                 }
-                return true;
-            }
-        }
 
-        public int this[int value]
-        {
-            get
-            {
-                foreach (ILUT lut in _luts) value = lut[value];
                 return value;
             }
         }
 
         public void Recalculate()
         {
-            foreach (ILUT lut in _luts) lut.Recalculate();
+            foreach (ILUT lut in _luts)
+            {
+                lut.Recalculate();
+            }
         }
 
         #endregion

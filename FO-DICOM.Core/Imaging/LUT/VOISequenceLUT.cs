@@ -38,15 +38,15 @@ namespace FellowOakDicom.Imaging.LUT
         public bool IsValid => false; //always recalculate
 
 
-        public int MinimumOutputValue => _LUTDataArray[0];
+        public double MinimumOutputValue => _LUTDataArray[0];
 
-        public int MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
+        public double MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
 
         public int NumberOfBitsPerEntry => _nrOfBitsPerEntry;
 
         public int NumberOfEntries => _nrOfEntries;
 
-        public int this[int value]
+        public double this[double value]
         {
             get
             {
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Imaging.LUT
                     }
                     else
                     {
-                        return _LUTDataArray[value - _firstInputValue];
+                        return _LUTDataArray[(int)(value - _firstInputValue)];
                     }
                 }
             }
