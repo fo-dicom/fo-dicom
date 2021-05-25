@@ -36,7 +36,7 @@ namespace FellowOakDicom.Network.Client.Advanced
             return await _advancedDicomClientConnectionFactory.ConnectAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken)
+        public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -47,22 +47,28 @@ namespace FellowOakDicom.Network.Client.Advanced
 
             _logger.Debug("Sending association request from {CallingAE} to {CalledAE}", request.CallingAE, request.CalledAE);
 
-            var connection = request.Connection;
-            
-            await connection.SendAssociationRequestAsync(ToDicomAssociation(request)).ConfigureAwait(false);
+            await connection.SendAssociationRequestAsync(ToDicomAssociation(connection, request)).ConfigureAwait(false);
 
-            await foreach (var @event in connection.Callbacks.GetEvents(cancellationToken))
+            await foreach (var @event in connection.Callbacks.GetEvents(cancellationToken).ConfigureAwait(false))
             {
                 switch (@event)
                 {
                     case DicomAssociationAcceptedEvent dicomAssociationAcceptedEvent:
-                        return new AdvancedDicomClientAssociation(request, connection, dicomAssociationAcceptedEvent.Association);
+                        _logger.Debug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
+
+                        return new AdvancedDicomClientAssociation(request, connection, dicomAssociationAcceptedEvent.Association, _logger);
                     case DicomAssociationRejectedEvent dicomAssociationRejectedEvent:
+                        _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it", request.CallingAE, request.CalledAE, request.CalledAE);
+                        
                         throw new DicomAssociationRejectedException(dicomAssociationRejectedEvent.Result, dicomAssociationRejectedEvent.Source,
                             dicomAssociationRejectedEvent.Reason);
                     case DicomAbortedEvent dicomAbortedEvent:
+                        _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it", request.CallingAE, request.CalledAE, request.CalledAE);
+
                         throw new DicomAssociationAbortedException(dicomAbortedEvent.Source, dicomAbortedEvent.Reason);
                     case ConnectionClosedEvent connectionClosedEvent:
+                        _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
+
                         if (connectionClosedEvent.Exception != null)
                         {
                             ExceptionDispatchInfo.Capture(connectionClosedEvent.Exception).Throw();
@@ -79,14 +85,14 @@ namespace FellowOakDicom.Network.Client.Advanced
             throw new DicomNetworkException("Failed to open a DICOM association. That's all we know.");
         }
 
-        private static DicomAssociation ToDicomAssociation(AdvancedDicomClientAssociationRequest request)
+        private static DicomAssociation ToDicomAssociation(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request)
         {
             var dicomAssociation = new DicomAssociation(request.CallingAE, request.CalledAE)
             {
-                Options = request.Connection.Options,
+                Options = connection.Options,
                 MaxAsyncOpsInvoked = request.MaxAsyncOpsInvoked,
                 MaxAsyncOpsPerformed = request.MaxAsyncOpsPerformed,
-                MaximumPDULength = request.Connection.Options.MaxPDULength,
+                MaximumPDULength = connection.Options.MaxPDULength,
             };
 
             foreach (var presentationContext in request.PresentationContexts)

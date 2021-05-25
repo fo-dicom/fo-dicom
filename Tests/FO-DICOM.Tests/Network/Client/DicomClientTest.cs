@@ -74,7 +74,9 @@ namespace FellowOakDicom.Tests.Network.Client
         private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
         {
             var client = DicomClientFactory.Create(host, port, useTls, callingAe, calledAe);
-            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ServiceOptions.LogDimseDatasets = false;
+            client.ServiceOptions.LogDataPDUs = false;
             return client;
         }
 
@@ -186,6 +188,13 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             for (var i = 0; i < expected; i++)
             {
+                _logger.Info("-----------------------------------------------------------------");
+                _logger.Info("-----------------------------------------------------------------");
+                _logger.Info("-----------------------------------------------------------------");
+                _logger.Info("-----------------------------------------------------------------");
+                _logger.Info("-----------------------------------------------------------------");
+                _logger.Info("-----------------------------------------------------------------");
+                _logger.Info("-----------------------------------------------------------------");
                 await client.AddRequestAsync(
                     new DicomCEchoRequest
                     {
@@ -198,7 +207,15 @@ namespace FellowOakDicom.Tests.Network.Client
                             }
                         }
                     }).ConfigureAwait(false);
+
                 await client.SendAsync().ConfigureAwait(false);
+                _logger.Info("*****************************************************************");
+                _logger.Info("*****************************************************************");
+                _logger.Info("*****************************************************************");
+                _logger.Info("*****************************************************************");
+                _logger.Info("*****************************************************************");
+                _logger.Info("*****************************************************************");
+                _logger.Info("*****************************************************************");
             }
 
             flag.Wait(10000);
@@ -1018,7 +1035,7 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Equal(numberOfRequests, receivedRequests.Count);
         }
 
-        [Theory(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
+        [Theory(/*Skip = "These time based tests are troublesome in CI with varying degrees of host performance"*/)]
         [InlineData( /*number of requests:*/ 6, /* seconds between each request: */ 1, /* linger: */ 10)]
         public async Task SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
@@ -1068,7 +1085,7 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Equal(numberOfRequests, receivedRequests.Count);
         }
 
-        [Theory(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
+        [Theory(/*Skip = "These time based tests are troublesome in CI with varying degrees of host performance"*/)]
         [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 2, /* linger: */ 1)]
         [InlineData( /*number of requests:*/ 2, /* seconds between each request: */ 3, /* linger: */ 2)]
         public async Task SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTime(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
@@ -1120,7 +1137,7 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Equal(numberOfRequests, receivedRequests.Count);
         }
 
-        [Fact(Skip = "These time based tests are troublesome in CI with varying degrees of host performance")]
+        [Fact(/*Skip = "These time based tests are troublesome in CI with varying degrees of host performance"*/)]
         public async Task SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTimeAfterLastRequest()
         {
             var numberOfRequests = 5;

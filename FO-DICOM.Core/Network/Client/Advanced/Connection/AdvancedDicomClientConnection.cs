@@ -88,7 +88,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => Callbacks.OnCStoreRequestAsync(request);
 
         public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => Callbacks.OnNEventReportRequestAsync(request);
-
     }
 
     public class InterceptingAdvancedDicomClientConnection : IAdvancedDicomClientConnection

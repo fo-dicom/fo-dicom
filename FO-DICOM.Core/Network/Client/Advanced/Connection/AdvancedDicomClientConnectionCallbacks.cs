@@ -137,7 +137,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => await _events.Writer.WriteAsync(new DicomAbortedEvent(source, reason)).ConfigureAwait(false);
 
-        public async Task OnConnectionClosedAsync(Exception exception) => await _events.Writer.WriteAsync(new ConnectionClosedEvent(exception)).ConfigureAwait(false);
+        public async Task OnConnectionClosedAsync(Exception exception)
+        {
+            await _events.Writer.WriteAsync(new ConnectionClosedEvent(exception)).ConfigureAwait(false);
+            
+            _events.Writer.Complete();
+        }
 
         public async Task OnSendQueueEmptyAsync() => await _events.Writer.WriteAsync(new SendQueueEmptyEvent()).ConfigureAwait(false);
 

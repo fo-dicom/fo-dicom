@@ -1,14 +1,7 @@
-﻿using FellowOakDicom.Network.Client.Advanced.Connection;
-
-namespace FellowOakDicom.Network.Client.Advanced.Association
+﻿namespace FellowOakDicom.Network.Client.Advanced.Association
 {
     public class AdvancedDicomClientAssociationRequest
     {
-        /// <summary>
-        /// Gets or sets the connection
-        /// </summary>
-        public IAdvancedDicomClientConnection Connection { get; set; }
-
         /// <summary>
         /// Gets the calling application entity.
         /// </summary>
@@ -28,7 +21,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// Gets or sets the supported maximum number of asynchronous operations performed.
         /// </summary>
         public int MaxAsyncOpsPerformed { get; set; }
-        
+
         /// <summary>
         /// Gets the supported presentation contexts.
         /// </summary>

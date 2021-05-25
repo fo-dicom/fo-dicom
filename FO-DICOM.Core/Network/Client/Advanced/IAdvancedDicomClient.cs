@@ -11,6 +11,6 @@ namespace FellowOakDicom.Network.Client.Advanced
     public interface IAdvancedDicomClient
     {
         Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
-        Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken);
+        Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken);
     }
 }

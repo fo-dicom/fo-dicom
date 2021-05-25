@@ -1,4 +1,5 @@
-﻿using FellowOakDicom.Network.Client.Advanced.Connection;
+﻿using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Collections.Concurrent;
@@ -15,7 +16,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
     /// Represents an open DICOM association.
     /// Disposing it is equivalent to calling <see cref="ReleaseAsync"/>
     /// </summary>
-    public interface IAdvancedDicomClientAssociation
+    public interface IAdvancedDicomClientAssociation: IDisposable
     {
         DicomAssociation Association { get; }
         
@@ -28,39 +29,53 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
     public class AdvancedDicomClientAssociation : IAdvancedDicomClientAssociation
     {
+        private const string _responseChannelIsGoneNote = "(Note: the response channel is gone. This can happen when the request is cancelled after it has been sent)";
+        private const string _responseChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the response channel. This should never happen, because response channels should be created with unlimited capacity";
+        private const string _associationChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the association channel. This should never happen, because the association channel should be created with unlimited capacity";
+        
         private readonly AdvancedDicomClientAssociationRequest _request;
+        private readonly ILogger _logger;
         private readonly Task _eventCollector;
         private readonly CancellationTokenSource _eventCollectorCts;
         private readonly ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>> _requestChannels;
+        private readonly Channel<IAdvancedDicomClientConnectionEvent> _associationChannel;
+        private readonly IAdvancedDicomClientConnection _connection;
         
-        public IAdvancedDicomClientConnection Connection { get; }
         public DicomAssociation Association { get; }
 
         public AdvancedDicomClientAssociation(
             AdvancedDicomClientAssociationRequest request, 
             IAdvancedDicomClientConnection connection,
-            DicomAssociation association)
+            DicomAssociation association,
+            ILogger logger)
         {
-            _request = request;
+            _request = request ?? throw new ArgumentNullException(nameof(request));
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _eventCollectorCts = new CancellationTokenSource();
             _eventCollector = Task.Run(CollectEvents);
             _requestChannels = new ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>>();
+            _associationChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
+            {
+                SingleReader = false, 
+                SingleWriter = false, 
+                AllowSynchronousContinuations = false
+            });
 
-            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
             Association = association ?? throw new ArgumentNullException(nameof(association));
         }
 
         private async Task CollectEvents()
         {
-            await foreach (var @event in Connection.Callbacks.GetEvents(_eventCollectorCts.Token))
+            await foreach (var @event in _connection.Callbacks.GetEvents(_eventCollectorCts.Token).ConfigureAwait(false))
             {
                 switch (@event)
                 {
                     case SendQueueEmptyEvent _:
                     {
-                        if (Connection.IsSendNextMessageRequired)
+                        if (_connection.IsSendNextMessageRequired)
                         {
-                            await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                            await _connection.SendNextMessageAsync().ConfigureAwait(false);
                         }
                         break;
                     }
@@ -68,7 +83,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     {
                         if (_requestChannels.TryGetValue(requestPendingEvent.Request.MessageID, out var requestChannel))
                         {
-                            await requestChannel.Writer.WriteAsync(requestPendingEvent).ConfigureAwait(false);
+                            if (!requestChannel.Writer.TryWrite(requestPendingEvent))
+                            {
+                                throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
+                            }
+                        }
+                        else
+                        {
+                            _logger.Debug($"Request [{{MessageID}}]: {{Status}} {_responseChannelIsGoneNote}", requestPendingEvent.Request.MessageID, requestPendingEvent.Response.Status.State);
                         }
                         break;
                     }
@@ -76,13 +98,21 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     {
                         if (_requestChannels.TryGetValue(requestCompletedEvent.Request.MessageID, out var requestChannel))
                         {
-                            await requestChannel.Writer.WriteAsync(requestCompletedEvent).ConfigureAwait(false);
+                            if (!requestChannel.Writer.TryWrite(requestCompletedEvent))
+                            {
+                                throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
+                            }
                             
                             requestChannel.Writer.TryComplete();
                         }
-                        if (Connection.IsSendNextMessageRequired)
+                        else
                         {
-                            await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                            _logger.Debug($"Request [{{MessageID}}]: {{Status}} {_responseChannelIsGoneNote}", requestCompletedEvent.Request.MessageID, requestCompletedEvent.Response.Status.State);
+                        }
+                        
+                        if (_connection.IsSendNextMessageRequired)
+                        {
+                            await _connection.SendNextMessageAsync().ConfigureAwait(false);
                         }
                         break;
                     }
@@ -90,34 +120,85 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     {
                         if (_requestChannels.TryGetValue(requestTimedOutEvent.Request.MessageID, out var requestChannel))
                         {
-                            await requestChannel.Writer.WriteAsync(requestTimedOutEvent).ConfigureAwait(false);
+                            if (!requestChannel.Writer.TryWrite(requestTimedOutEvent))
+                            {
+                                throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
+                            }
                             
                             requestChannel.Writer.TryComplete();
                         }
-                        if (Connection.IsSendNextMessageRequired)
+                        else
                         {
-                            await Connection.SendNextMessageAsync().ConfigureAwait(false);
+                            _logger.Debug($"Request [{{MessageID}}]: Time-Out after {{Timeout}} {_responseChannelIsGoneNote}", requestTimedOutEvent.Request.MessageID, requestTimedOutEvent.Timeout);
+                        }
+                        
+                        if (_connection.IsSendNextMessageRequired)
+                        {
+                            await _connection.SendNextMessageAsync().ConfigureAwait(false);
                         }
                         break;
                     }
                     case DicomAbortedEvent dicomAbortedEvent:
                     {
-                        foreach (var requestChannel in _requestChannels.Values)
+                        if (!_associationChannel.Writer.TryWrite(dicomAbortedEvent))
                         {
-                            await requestChannel.Writer.WriteAsync(dicomAbortedEvent).ConfigureAwait(false);
-                            requestChannel.Writer.TryComplete();
+                            throw new DicomNetworkException(_associationChannelDoesNotHaveUnlimitedCapacity);
                         }
-                        return;
+                        
+                        foreach (var messageId in _requestChannels.Keys)
+                        {
+                            if (_requestChannels.TryGetValue(messageId, out var requestChannel))
+                            {
+                                if (!requestChannel.Writer.TryWrite(dicomAbortedEvent))
+                                {
+                                    throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
+                                }
+
+                                requestChannel.Writer.TryComplete();
+                            }
+                            else
+                            {
+                                _logger.Debug($"Request [{{MessageID}}]: Aborted {_responseChannelIsGoneNote}", messageId);
+                            }
+                        }
+
+                        break;
+                    }
+                    case DicomAssociationReleasedEvent dicomAssociationReleasedEvent:
+                    {
+                        if (!_associationChannel.Writer.TryWrite(dicomAssociationReleasedEvent))
+                        {
+                            throw new DicomNetworkException(_associationChannelDoesNotHaveUnlimitedCapacity);
+                        }
+
+                        break;
                     }
                     case ConnectionClosedEvent connectionClosedEvent:
                     {
-                        foreach (var requestChannel in _requestChannels.Values)
+                        if (!_associationChannel.Writer.TryWrite(connectionClosedEvent))
                         {
-                            await requestChannel.Writer.WriteAsync(connectionClosedEvent).ConfigureAwait(false);
-                            
-                            requestChannel.Writer.TryComplete();
+                            throw new DicomNetworkException(_associationChannelDoesNotHaveUnlimitedCapacity);
                         }
-                        return;
+                        
+                        foreach (var messageId in _requestChannels.Keys)
+                        {
+                            if (_requestChannels.TryGetValue(messageId, out var requestChannel))
+                            {
+                                _logger.Debug("Request [{MessageID}]: Connection closed", messageId);
+                                
+                                if (!requestChannel.Writer.TryWrite(connectionClosedEvent))
+                                {
+                                    throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
+                                }
+
+                                requestChannel.Writer.TryComplete();
+                            }
+                            else
+                            {
+                                _logger.Debug($"Request [{{MessageID}}]: Connection closed {_responseChannelIsGoneNote}", messageId);
+                            }
+                        }
+                        break;
                     }
                 }
             }        
@@ -145,10 +226,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 throw new DicomNetworkException($"This DICOM request is already being sent: [{messageId}] {dicomRequest.GetType()}");
             }
-
             try
             {
-                await Connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
+                await _connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
 
                 while (await requestChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
                 {
@@ -162,24 +242,34 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         {
                             case RequestPendingEvent requestPendingEvent:
                             {
+                                _logger.Debug("{Request}: {Response}", dicomRequest.ToString(), requestPendingEvent.Response.ToString());
+
                                 yield return requestPendingEvent.Response;
                                 break;
                             }
                             case RequestCompletedEvent requestCompletedEvent:
                             {
+                                _logger.Debug("{Request}: {Response}", dicomRequest.ToString(), requestCompletedEvent.Response.ToString());
+
                                 yield return requestCompletedEvent.Response;
                                 break;
                             }
                             case RequestTimedOutEvent requestTimedOutEvent:
                             {
+                                _logger.Debug("{Request}: Time-Out after {Timeout}", dicomRequest.ToString(), requestTimedOutEvent.Timeout);
+
                                 throw new DicomRequestTimedOutException(requestTimedOutEvent.Request, requestTimedOutEvent.Timeout);
                             }
                             case DicomAbortedEvent dicomAbortedEvent:
                             {
+                                _logger.Debug("{Request}: Association was aborted", dicomRequest.ToString());
+
                                 throw new DicomAssociationAbortedException(dicomAbortedEvent.Source, dicomAbortedEvent.Reason);
                             }
                             case ConnectionClosedEvent connectionClosedEvent:
                             {
+                                _logger.Debug("{Request}: Connection was closed", dicomRequest.ToString());
+
                                 if (connectionClosedEvent.Exception != null)
                                 {
                                     ExceptionDispatchInfo.Capture(connectionClosedEvent.Exception).Throw();
@@ -199,7 +289,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 if(!_requestChannels.TryRemove(messageId, out _))
                 {
-                    throw new DicomNetworkException($"This DICOM request has already been cleaned up: [{messageId}] {dicomRequest.GetType()}");
+                    throw new DicomNetworkException($"The response channel {dicomRequest} has already been cleaned up, this should never happen");
                 }
             }
         }
@@ -208,20 +298,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         {
             try
             {
-                await Connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
+                await _connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
 
-                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cancellationToken);
-                
-                await WaitForAssociationRelease(events, cancellationToken).ConfigureAwait(false);
+                await WaitForAssociationRelease(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
-                if (!_eventCollector.IsCompleted)
-                {
-                    _eventCollectorCts.Cancel();
-                }
-
-                _eventCollectorCts.Dispose();
+                _eventCollectorCts.Cancel();
             }
         }
 
@@ -229,37 +312,48 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         {
             try
             {
-                await Connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified).ConfigureAwait(false);
+                await _connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified).ConfigureAwait(false);
 
-                IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events = Connection.Callbacks.GetEvents(cancellationToken);
-                
-                await WaitForAssociationRelease(events, cancellationToken).ConfigureAwait(false);
+                await WaitForAssociationRelease(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
-                if (!_eventCollector.IsCompleted)
-                {
-                    _eventCollectorCts.Cancel();
-                }
-
-                _eventCollectorCts.Dispose();
+                _eventCollectorCts.Cancel();
             }
         }
 
-        private async Task WaitForAssociationRelease(IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> events, CancellationToken cancellationToken)
+        private async Task WaitForAssociationRelease(CancellationToken cancellationToken)
         {
-            await foreach (var @event in events.WithCancellation(cancellationToken))
+            _logger.Debug("Waiting for association to be released");
+
+            while (await _associationChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                switch (@event)
+                cancellationToken.ThrowIfCancellationRequested();
+
+                while (_associationChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
                 {
-                    case DicomAssociationReleasedEvent _:
-                        return;
-                    case DicomAbortedEvent _:
-                        return;
-                    case ConnectionClosedEvent _:
-                        return;
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    switch (@event)
+                    {
+                        case DicomAssociationReleasedEvent _:
+                            _logger.Debug("Association has been released");
+                            return;
+                        case DicomAbortedEvent _:
+                            _logger.Debug("Association has been aborted");
+                            return;
+                        case ConnectionClosedEvent _:
+                            _logger.Debug("Connection has closed");
+                            return;
+                    }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _eventCollectorCts.Cancel();
+            _eventCollectorCts.Dispose();
         }
     }
 }

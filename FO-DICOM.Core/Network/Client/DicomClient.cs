@@ -122,7 +122,6 @@ namespace FellowOakDicom.Network.Client
     public class DicomClient : IDicomClient
     {
         private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
-        private readonly object _stateLock;
         private DicomClientState _state;
         private long _isSending;
 
@@ -186,7 +185,6 @@ namespace FellowOakDicom.Network.Client
             
             _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
             _state = DicomClientIdleState.Instance;
-            _stateLock = new object();
             _isSending = 0;
         }
 
@@ -233,6 +231,7 @@ namespace FellowOakDicom.Network.Client
                 // Already sending
                 return;
             }
+            
             try
             {
                 var advancedDicomClient = _advancedDicomClientFactory.Create(new AdvancedDicomClientCreationRequest {Logger = Logger});
@@ -269,19 +268,18 @@ namespace FellowOakDicom.Network.Client
 
                         SetState(DicomClientRequestAssociationState.Instance);
 
-                        var requests = new Queue<DicomRequest>();
+                        var requests = new List<DicomRequest>();
                         var numberOfRequests = 0;
 
                         while (numberOfRequests < maximumNumberOfRequestsPerAssociation
                                && QueuedRequests.TryDequeue(out var request))
                         {
-                            requests.Enqueue(request.Value);
+                            requests.Add(request.Value);
                             numberOfRequests++;
                         }
 
                         var associationRequest = new AdvancedDicomClientAssociationRequest
                         {
-                            Connection = connection,
                             CallingAE = CallingAe,
                             CalledAE = CalledAe,
                             MaxAsyncOpsInvoked = AsyncInvoked,
@@ -312,7 +310,7 @@ namespace FellowOakDicom.Network.Client
                                 extendedNegotiation.RelatedGeneralSopClasses.ToArray());
                         }
 
-                        association = await advancedDicomClient.OpenAssociationAsync(associationRequest, cancellationToken).ConfigureAwait(false);
+                        association = await advancedDicomClient.OpenAssociationAsync(connection, associationRequest, cancellationToken).ConfigureAwait(false);
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
 
@@ -324,37 +322,36 @@ namespace FellowOakDicom.Network.Client
 
                             var sendTasks = new List<IAsyncEnumerable<DicomResponse>>();
 
+                            Logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
+                            
                             // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
-                            while (requests.Count > 0)
+                            foreach(var request in requests)
                             {
-                                sendTasks.Add(association.SendRequestAsync(requests.Dequeue(), cancellationToken));
+                                Logger.Debug("Queueing {Request}", request.ToString(), sendTasks.Count);
+                                    
+                                sendTasks.Add(SendRequestAsync(association, request, cancellationToken));
                             }
 
                             // Wait for all requests to complete
-                            foreach (var sendTask in sendTasks)
+                            for (var index = 0; index < sendTasks.Count; index++)
                             {
+                                var request = requests[index];
+                                
+                                Logger.Debug("Waiting for {Request} to complete", request.ToString());
+
+                                var sendTask = sendTasks[index];
+                                
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                await foreach (var response in sendTask.WithCancellation(cancellationToken))
+                                await foreach (var _ in sendTask.WithCancellation(cancellationToken).ConfigureAwait(false))
                                 {
                                     cancellationToken.ThrowIfCancellationRequested();
-
-                                    Logger.Debug("Received DICOM response {Status} for request [{RequestMessageId}]", response.Status.State, response.RequestMessageID);
                                 }
+                                
+                                Logger.Debug("{Request} has completed", request.ToString());
                             }
 
-                            // Linger behavior: if the queue is empty, wait for a bit before closing the association
-                            if (exception != null
-                                && numberOfRequests < maximumNumberOfRequestsPerAssociation
-                                && QueuedRequests.IsEmpty
-                                && ClientOptions.AssociationLingerTimeoutInMs > 0)
-                            {
-                                Logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
-
-                                SetState(DicomClientLingeringState.Instance);
-
-                                await Task.Delay(ClientOptions.AssociationLingerTimeoutInMs, cancellationToken);
-                            }
+                            requests.Clear();
 
                             // If more requests were queued since we started, try to send those too over the same association
                             while (numberOfRequests < maximumNumberOfRequestsPerAssociation
@@ -362,9 +359,32 @@ namespace FellowOakDicom.Network.Client
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                requests.Enqueue(request.Value);
+                                requests.Add(request.Value);
 
                                 numberOfRequests++;
+                            }
+
+                            // Linger behavior: if the queue is empty, wait for a bit before closing the association
+                            if (requests.Count == 0
+                                && numberOfRequests < maximumNumberOfRequestsPerAssociation
+                                && ClientOptions.AssociationLingerTimeoutInMs > 0)
+                            {
+                                Logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
+
+                                SetState(DicomClientLingeringState.Instance);
+
+                                await Task.Delay(ClientOptions.AssociationLingerTimeoutInMs, cancellationToken).ConfigureAwait(false);
+                                
+                                // Add requests that were added after lingering
+                                while (numberOfRequests < maximumNumberOfRequestsPerAssociation
+                                       && QueuedRequests.TryDequeue(out var request))
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+
+                                    requests.Add(request.Value);
+
+                                    numberOfRequests++;
+                                }
                             }
                         }
 
@@ -413,7 +433,7 @@ namespace FellowOakDicom.Network.Client
                     {
                         if (association != null)
                         {
-                            await AbortAssociationAsync(association).ConfigureAwait(false);
+                           await AbortAssociationAsync(association).ConfigureAwait(false);
                         }
                         connection?.Dispose();
                     }
@@ -431,23 +451,73 @@ namespace FellowOakDicom.Network.Client
                 _isSending = 0;
             }
         }
+
+        /// <summary>
+        /// Helper method that sends a DICOM request over an advanced DICOM association
+        /// Timeout exceptions are caught and emitted as an event for backwards compatibility
+        /// </summary>
+        /// <param name="association">The association over which to send the request</param>
+        /// <param name="request">The request to send</param>
+        /// <param name="cancellationToken">The cancellation token that stops the entire process</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="DicomResponse"/></returns>
+        /// <exception cref="ArgumentNullException">When <paramref name="association"/> or <paramref name="request"/> are null</exception>
+        private async IAsyncEnumerable<DicomResponse> SendRequestAsync(IAdvancedDicomClientAssociation association, DicomRequest request, CancellationToken cancellationToken)
+        {
+            if (association == null)
+            {
+                throw new ArgumentNullException(nameof(association));
+            }
+
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            await using var enumerator = association.SendRequestAsync(request, cancellationToken).GetAsyncEnumerator(cancellationToken);
+            
+            while (true)
+            {
+                bool hasResponse = false;
+                try
+                {
+                    hasResponse = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                }
+                catch (DicomRequestTimedOutException e)
+                {
+                    RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
+                }
+
+                if (hasResponse)
+                {
+                    yield return enumerator.Current;
+                }
+                else
+                {
+                    yield break;
+                }
+            };
+        }
         
+        /// <summary>
+        /// Helper method that 'sets' the state of the DicomClient
+        /// This exists for backwards compatibility reasons. In the past, DicomClient was implemented using a state pattern.
+        /// While most of this was hidden away for consumers, DicomClient did expose a <see cref="StateChanged"/> event for expert scenarios.
+        /// In order to not break the existing consumers of this event, we still expose this event and properly emit the correct "states", even though the states itself are now empty
+        /// </summary>
+        /// <param name="state">The new state that should be set</param>
         private void SetState(DicomClientState state)
         {
             DicomClientState oldState;
             DicomClientState newState = state;
             
-            lock (_stateLock)
+            oldState = _state;
+
+            if (oldState == newState)
             {
-                oldState = _state;
-
-                if (oldState == newState)
-                {
-                    return;
-                }
-
-                _state = state;
+                return;
             }
+
+            _state = state;
             
             Logger.Debug($"[{oldState}] --> [{newState}]");
 
@@ -468,6 +538,10 @@ namespace FellowOakDicom.Network.Client
                 {
                     // Ignored
                 }
+                finally
+                {
+                    association.Dispose();
+                }
             }
 
             AssociationReleased?.Invoke(this, EventArgs.Empty);
@@ -486,6 +560,10 @@ namespace FellowOakDicom.Network.Client
                 catch (OperationCanceledException)
                 {
                     // Ignored
+                }
+                finally
+                {
+                    association.Dispose();
                 }
             }
             

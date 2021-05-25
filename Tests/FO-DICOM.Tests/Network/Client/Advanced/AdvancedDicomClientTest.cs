@@ -107,7 +107,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
                 var openAssociationRequest = new AdvancedDicomClientAssociationRequest
                 {
-                    Connection = connection,
                     CallingAE = callingAE,
                     CalledAE = calledAE
                 };
@@ -118,7 +117,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
                 DicomCEchoResponse cEchoResponse = null;
-                var association = await client.OpenAssociationAsync(openAssociationRequest, cancellationToken);
+                var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
 
                 try
                 {

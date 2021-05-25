@@ -491,8 +491,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 // Ensure requests are handled sequentially
                 client.NegotiateAsyncOps(1, 1);
 
-                // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
-                // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
                 var request1 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
                 {
                     OnResponseReceived = (req, res) =>
@@ -631,6 +629,14 @@ namespace FellowOakDicom.Tests.Network.Client
                 return new ConfigurableDesktopNetworkStreamDecorator(
                     _onStreamWrite,
                     new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
+                );
+            }
+
+            protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
+            {
+                return new ConfigurableDesktopNetworkStreamDecorator(
+                    _onStreamWrite,
+                    new DesktopNetworkStream(options)
                 );
             }
         }
