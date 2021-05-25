@@ -1149,6 +1149,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
 
+            server.SetResponseTimeout(TimeSpan.FromTicks(0));
+
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
@@ -1164,16 +1166,17 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (req, res) => responses.Add(res)
                 };
+                logger.Info($"Adding request {i}");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 if (client.IsSendRequired)
                 {
                     // Do not await here, because this task will only complete after the client has completely processed the request
-                    sendTasks.Add(client.SendAsync());
+                    sendTasks.Add(Task.Run(() => client.SendAsync()));
                 }
 
                 var secondsToWait = secondsBetweenEachRequest[i];
-                logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.Info($"Waiting {secondsToWait} seconds between requests");
                 await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
             }
             await Task.WhenAll(sendTasks).ConfigureAwait(false);

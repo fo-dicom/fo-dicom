@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced;
 using FellowOakDicom.Network.Client.Advanced.Association;
@@ -124,6 +123,7 @@ namespace FellowOakDicom.Network.Client
         private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
         private DicomClientState _state;
         private long _isSending;
+        private readonly Tasks.AsyncManualResetEvent _hasMoreRequests;
 
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
         
@@ -186,6 +186,7 @@ namespace FellowOakDicom.Network.Client
             _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
             _state = DicomClientIdleState.Instance;
             _isSending = 0;
+            _hasMoreRequests = new Tasks.AsyncManualResetEvent();
         }
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
@@ -197,6 +198,8 @@ namespace FellowOakDicom.Network.Client
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {
             QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+            
+            _hasMoreRequests.Set();
             
             return Task.CompletedTask;
         }
@@ -217,6 +220,8 @@ namespace FellowOakDicom.Network.Client
 
                 QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
             }
+            
+            _hasMoreRequests.Set();
 
             return Task.CompletedTask;
         }
@@ -277,6 +282,8 @@ namespace FellowOakDicom.Network.Client
                             requests.Add(request.Value);
                             numberOfRequests++;
                         }
+                        
+                        _hasMoreRequests.Reset();
 
                         var associationRequest = new AdvancedDicomClientAssociationRequest
                         {
@@ -364,6 +371,8 @@ namespace FellowOakDicom.Network.Client
                                 numberOfRequests++;
                             }
 
+                            _hasMoreRequests.Reset();
+                            
                             // Linger behavior: if the queue is empty, wait for a bit before closing the association
                             if (requests.Count == 0
                                 && numberOfRequests < maximumNumberOfRequestsPerAssociation
@@ -372,8 +381,11 @@ namespace FellowOakDicom.Network.Client
                                 Logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
 
                                 SetState(DicomClientLingeringState.Instance);
-
-                                await Task.Delay(ClientOptions.AssociationLingerTimeoutInMs, cancellationToken).ConfigureAwait(false);
+                                
+                                await Task.WhenAny(
+                                    _hasMoreRequests.WaitAsync(),
+                                    Task.Delay(ClientOptions.AssociationLingerTimeoutInMs, cancellationToken)
+                                ).ConfigureAwait(false);
                                 
                                 // Add requests that were added after lingering
                                 while (numberOfRequests < maximumNumberOfRequestsPerAssociation
@@ -385,6 +397,8 @@ namespace FellowOakDicom.Network.Client
 
                                     numberOfRequests++;
                                 }
+                                
+                                _hasMoreRequests.Reset();
                             }
                         }
 
