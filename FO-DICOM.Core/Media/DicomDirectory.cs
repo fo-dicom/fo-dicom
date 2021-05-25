@@ -56,7 +56,7 @@ namespace FellowOakDicom.Media
         /// <exception cref="ArgumentException">If applied file set ID is null or empty.</exception>
         public string FileSetID
         {
-            get => Dataset.GetSingleValue<string>(DicomTag.FileSetID);
+            get => Dataset.GetSingleValueOrDefault(DicomTag.FileSetID, string.Empty);
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))

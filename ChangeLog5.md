@@ -6,6 +6,7 @@
 * JsonDicom supports some VRs as number as well as as string. (#1161)
 * Fix anonymizing private tags with explicit transfer syntax (#1181)
 * Internal calculation of pixel values are done as double instead of int to avoid consequential errors when calculating (#1153)
+* Fix: DicomDirectory did throw exception on calling constructor with no parameters (#1176)
 
 #### 5.0.0-alpha4 (2021-03-01)
 

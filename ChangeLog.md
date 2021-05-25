@@ -7,7 +7,8 @@
 * FrameGeometry is enhanced so that it also works for DX, CR or MG images. (#1138)
 * Private Creator UN tags are converted to LO (#1146)
 * Bug fix: Ensure timeout detection can never stop prematurely
-* Fix parsing of datasets with a final SequenceDelimiterItem at the end (#1157) 
+* Fix parsing of datasets with a final SequenceDelimiterItem at the end (#1157)
+* Fix: DicomDirectory did throw exception on calling constructor with no parameters (#1176)
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)
