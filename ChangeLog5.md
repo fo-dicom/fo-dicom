@@ -1,5 +1,9 @@
 #### 5.0.0
 
+
+
+#### 5.0.0-alpha5 (2021-05-25)
+
 * Add missing properties to IDicomClient interface (#1171)
 * Fix unintended breaking change, where StringValue of tags with length 0 returned null, but should return string.empty.
 * Be more tollerant to recognize Encoding by ignoring the difference of Underlande and Space.
