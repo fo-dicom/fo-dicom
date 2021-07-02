@@ -298,6 +298,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.PatientRadiationDoseSRStorage.UID, DicomUID.PatientRadiationDoseSRStorage);
             _uids.Add(DicomUID.PlannedImagingAgentAdministrationSRStorage.UID, DicomUID.PlannedImagingAgentAdministrationSRStorage);
             _uids.Add(DicomUID.PerformedImagingAgentAdministrationSRStorage.UID, DicomUID.PerformedImagingAgentAdministrationSRStorage);
+            _uids.Add(DicomUID.EnhancedXRayRadiationDoseSRStorage.UID, DicomUID.EnhancedXRayRadiationDoseSRStorage);
             _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
@@ -1713,6 +1714,10 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.CouinaudLiverSegments7170.UID, DicomUID.CouinaudLiverSegments7170);
             _uids.Add(DicomUID.LiverSegmentationTypes7171.UID, DicomUID.LiverSegmentationTypes7171);
             _uids.Add(DicomUID.ContraindicationsForXAImaging1201.UID, DicomUID.ContraindicationsForXAImaging1201);
+            _uids.Add(DicomUID.NeurophysiologicStimulationModes3041.UID, DicomUID.NeurophysiologicStimulationModes3041);
+            _uids.Add(DicomUID.ReportedValueTypes10072.UID, DicomUID.ReportedValueTypes10072);
+            _uids.Add(DicomUID.ValueTimings10073.UID, DicomUID.ValueTimings10073);
+            _uids.Add(DicomUID.RDSRFrameOfReferenceOrigins10074.UID, DicomUID.RDSRFrameOfReferenceOrigins10074);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2563,6 +2568,9 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Performed Imaging Agent Administration SR Storage</summary>
         public static readonly DicomUID PerformedImagingAgentAdministrationSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.75", "Performed Imaging Agent Administration SR Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Enhanced X-Ray Radiation Dose SR Storage</summary>
+        public static readonly DicomUID EnhancedXRayRadiationDoseSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.76", "Enhanced X-Ray Radiation Dose SR Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Content Assessment Results Storage</summary>
         public static readonly DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
@@ -6808,6 +6816,18 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Contraindications For XA Imaging (1201)</summary>
         public static readonly DicomUID ContraindicationsForXAImaging1201 = new DicomUID("1.2.840.10008.6.1.1360", "Contraindications For XA Imaging (1201)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Neurophysiologic Stimulation Modes (3041)</summary>
+        public static readonly DicomUID NeurophysiologicStimulationModes3041 = new DicomUID("1.2.840.10008.6.1.1361", "Neurophysiologic Stimulation Modes (3041)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Reported Value Types (10072)</summary>
+        public static readonly DicomUID ReportedValueTypes10072 = new DicomUID("1.2.840.10008.6.1.1362", "Reported Value Types (10072)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Value Timings (10073)</summary>
+        public static readonly DicomUID ValueTimings10073 = new DicomUID("1.2.840.10008.6.1.1363", "Value Timings (10073)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RDSR Frame of Reference Origins (10074)</summary>
+        public static readonly DicomUID RDSRFrameOfReferenceOrigins10074 = new DicomUID("1.2.840.10008.6.1.1364", "RDSR Frame of Reference Origins (10074)", DicomUidType.ContextGroupName, false);
 
     }
 }

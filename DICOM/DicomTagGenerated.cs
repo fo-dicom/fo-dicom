@@ -2633,6 +2633,60 @@ namespace Dicom
         ///<summary>(0018,11A5) VR=DS VM=1 Compression Contact Area</summary>
         public readonly static DicomTag CompressionContactArea = new DicomTag(0x0018, 0x11A5);
 
+        ///<summary>(0018,11B0) VR=LO VM=1 Acquisition Mode</summary>
+        public readonly static DicomTag AcquisitionMode = new DicomTag(0x0018, 0x11B0);
+
+        ///<summary>(0018,11B1) VR=LO VM=1 Dose Mode Name</summary>
+        public readonly static DicomTag DoseModeName = new DicomTag(0x0018, 0x11B1);
+
+        ///<summary>(0018,11B2) VR=CS VM=1 Acquired Subtraction Mask Flag</summary>
+        public readonly static DicomTag AcquiredSubtractionMaskFlag = new DicomTag(0x0018, 0x11B2);
+
+        ///<summary>(0018,11B3) VR=CS VM=1 Fluoroscopy Persistence Flag</summary>
+        public readonly static DicomTag FluoroscopyPersistenceFlag = new DicomTag(0x0018, 0x11B3);
+
+        ///<summary>(0018,11B4) VR=CS VM=1 Fluoroscopy Last Image Hold Persistence Flag</summary>
+        public readonly static DicomTag FluoroscopyLastImageHoldPersistenceFlag = new DicomTag(0x0018, 0x11B4);
+
+        ///<summary>(0018,11B5) VR=IS VM=1 Upper Limit Number Of Persistent Fluoroscopy Frames</summary>
+        public readonly static DicomTag UpperLimitNumberOfPersistentFluoroscopyFrames = new DicomTag(0x0018, 0x11B5);
+
+        ///<summary>(0018,11B6) VR=CS VM=1 Contrast/Bolus Auto Injection Trigger Flag</summary>
+        public readonly static DicomTag ContrastBolusAutoInjectionTriggerFlag = new DicomTag(0x0018, 0x11B6);
+
+        ///<summary>(0018,11B7) VR=FD VM=1 Contrast/Bolus Injection Delay</summary>
+        public readonly static DicomTag ContrastBolusInjectionDelay = new DicomTag(0x0018, 0x11B7);
+
+        ///<summary>(0018,11B8) VR=SQ VM=1 XA Acquisition Phase Details Sequence</summary>
+        public readonly static DicomTag XAAcquisitionPhaseDetailsSequence = new DicomTag(0x0018, 0x11B8);
+
+        ///<summary>(0018,11B9) VR=FD VM=1 XA Acquisition Frame Rate</summary>
+        public readonly static DicomTag XAAcquisitionFrameRate = new DicomTag(0x0018, 0x11B9);
+
+        ///<summary>(0018,11BA) VR=SQ VM=1 XA Plane Details Sequence</summary>
+        public readonly static DicomTag XAPlaneDetailsSequence = new DicomTag(0x0018, 0x11BA);
+
+        ///<summary>(0018,11BB) VR=LO VM=1 Acquisition Field of View Label</summary>
+        public readonly static DicomTag AcquisitionFieldOfViewLabel = new DicomTag(0x0018, 0x11BB);
+
+        ///<summary>(0018,11BC) VR=SQ VM=1 X-Ray Filter Details Sequence</summary>
+        public readonly static DicomTag XRayFilterDetailsSequence = new DicomTag(0x0018, 0x11BC);
+
+        ///<summary>(0018,11BD) VR=FD VM=1 XA Acquisition Duration</summary>
+        public readonly static DicomTag XAAcquisitionDuration = new DicomTag(0x0018, 0x11BD);
+
+        ///<summary>(0018,11BE) VR=CS VM=1 Reconstruction Pipeline Type</summary>
+        public readonly static DicomTag ReconstructionPipelineType = new DicomTag(0x0018, 0x11BE);
+
+        ///<summary>(0018,11BF) VR=SQ VM=1 Image Filter Details Sequence</summary>
+        public readonly static DicomTag ImageFilterDetailsSequence = new DicomTag(0x0018, 0x11BF);
+
+        ///<summary>(0018,11C0) VR=CS VM=1 Applied Mask Subtraction Flag</summary>
+        public readonly static DicomTag AppliedMaskSubtractionFlag = new DicomTag(0x0018, 0x11C0);
+
+        ///<summary>(0018,11C1) VR=SQ VM=1 Requested Series Description Code Sequence</summary>
+        public readonly static DicomTag RequestedSeriesDescriptionCodeSequence = new DicomTag(0x0018, 0x11C1);
+
         ///<summary>(0018,1200) VR=DA VM=1-n Date of Last Calibration</summary>
         public readonly static DicomTag DateOfLastCalibration = new DicomTag(0x0018, 0x1200);
 
@@ -3139,6 +3193,9 @@ namespace Dicom
 
         ///<summary>(0018,6060) VR=FL VM=1-n R Wave Time Vector</summary>
         public readonly static DicomTag RWaveTimeVector = new DicomTag(0x0018, 0x6060);
+
+        ///<summary>(0018,6070) VR=US VM=1 Active Image Area Overlay Group</summary>
+        public readonly static DicomTag ActiveImageAreaOverlayGroup = new DicomTag(0x0018, 0x6070);
 
         ///<summary>(0018,7000) VR=CS VM=1 Detector Conditions Nominal Flag</summary>
         public readonly static DicomTag DetectorConditionsNominalFlag = new DicomTag(0x0018, 0x7000);
@@ -3827,8 +3884,8 @@ namespace Dicom
         ///<summary>(0018,9323) VR=CS VM=1-n Exposure Modulation Type</summary>
         public readonly static DicomTag ExposureModulationType = new DicomTag(0x0018, 0x9323);
 
-        ///<summary>(0018,9324) VR=FD VM=1 Estimated Dose Saving</summary>
-        public readonly static DicomTag EstimatedDoseSaving = new DicomTag(0x0018, 0x9324);
+        ///<summary>(0018,9324) VR=FD VM=1 Estimated Dose Saving (RETIRED)</summary>
+        public readonly static DicomTag EstimatedDoseSavingRETIRED = new DicomTag(0x0018, 0x9324);
 
         ///<summary>(0018,9325) VR=SQ VM=1 CT X-Ray Details Sequence</summary>
         public readonly static DicomTag CTXRayDetailsSequence = new DicomTag(0x0018, 0x9325);
@@ -7555,6 +7612,9 @@ namespace Dicom
 
         ///<summary>(0040,A032) VR=DT VM=1 Observation DateTime</summary>
         public readonly static DicomTag ObservationDateTime = new DicomTag(0x0040, 0xA032);
+
+        ///<summary>(0040,A033) VR=DT VM=1 Observation Start DateTime</summary>
+        public readonly static DicomTag ObservationStartDateTime = new DicomTag(0x0040, 0xA033);
 
         ///<summary>(0040,A040) VR=CS VM=1 Value Type</summary>
         public readonly static DicomTag ValueType = new DicomTag(0x0040, 0xA040);
@@ -11396,11 +11456,11 @@ namespace Dicom
         ///<summary>(3006,0042) VR=CS VM=1 Contour Geometric Type</summary>
         public readonly static DicomTag ContourGeometricType = new DicomTag(0x3006, 0x0042);
 
-        ///<summary>(3006,0044) VR=DS VM=1 Contour Slab Thickness</summary>
-        public readonly static DicomTag ContourSlabThickness = new DicomTag(0x3006, 0x0044);
+        ///<summary>(3006,0044) VR=DS VM=1 Contour Slab Thickness (RETIRED)</summary>
+        public readonly static DicomTag ContourSlabThicknessRETIRED = new DicomTag(0x3006, 0x0044);
 
-        ///<summary>(3006,0045) VR=DS VM=3 Contour Offset Vector</summary>
-        public readonly static DicomTag ContourOffsetVector = new DicomTag(0x3006, 0x0045);
+        ///<summary>(3006,0045) VR=DS VM=3 Contour Offset Vector (RETIRED)</summary>
+        public readonly static DicomTag ContourOffsetVectorRETIRED = new DicomTag(0x3006, 0x0045);
 
         ///<summary>(3006,0046) VR=IS VM=1 Number of Contour Points</summary>
         public readonly static DicomTag NumberOfContourPoints = new DicomTag(0x3006, 0x0046);
@@ -11408,8 +11468,11 @@ namespace Dicom
         ///<summary>(3006,0048) VR=IS VM=1 Contour Number</summary>
         public readonly static DicomTag ContourNumber = new DicomTag(0x3006, 0x0048);
 
-        ///<summary>(3006,0049) VR=IS VM=1-n Attached Contours</summary>
-        public readonly static DicomTag AttachedContours = new DicomTag(0x3006, 0x0049);
+        ///<summary>(3006,0049) VR=IS VM=1-n Attached Contours (RETIRED)</summary>
+        public readonly static DicomTag AttachedContoursRETIRED = new DicomTag(0x3006, 0x0049);
+
+        ///<summary>(3006,004A) VR=SQ VM=1 Source Pixel Planes Characteristics Sequence</summary>
+        public readonly static DicomTag SourcePixelPlanesCharacteristicsSequence = new DicomTag(0x3006, 0x004A);
 
         ///<summary>(3006,0050) VR=DS VM=3-3n Contour Data</summary>
         public readonly static DicomTag ContourData = new DicomTag(0x3006, 0x0050);

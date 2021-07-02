@@ -1,5 +1,6 @@
 #### 5.0.0
 
+* Update to DICOM Standard 2021b (#1189)
 
 
 #### 5.0.0-alpha5 (2021-05-25)
