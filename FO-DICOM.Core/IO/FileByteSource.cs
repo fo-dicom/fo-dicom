@@ -41,7 +41,9 @@ namespace FellowOakDicom.IO
         /// Initializes an instance of <see cref="FileByteSource"/>.
         /// </summary>
         /// <param name="file">File to read from.</param>
-        public FileByteSource(IFileReference file, FileReadOption readOption)
+        /// <param name="readOption">Option how to deal with large values, if they should be loaded directly into memory or lazy loaded on demand</param>
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
+        public FileByteSource(IFileReference file, FileReadOption readOption, int largeObjectSize)
         {
             _file = file;
             _stream = _file.OpenRead();
@@ -51,7 +53,7 @@ namespace FellowOakDicom.IO
             // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
             _readOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
-            LargeObjectSize = 64 * 1024;
+            LargeObjectSize = largeObjectSize <= 0 ? 64 * 1024 : largeObjectSize;
 
             _milestones = new Stack<long>();
             _lock = new object();

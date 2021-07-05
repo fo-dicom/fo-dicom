@@ -157,8 +157,9 @@ namespace FellowOakDicom.Media
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
+        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -171,7 +172,7 @@ namespace FellowOakDicom.Media
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
@@ -210,8 +211,9 @@ namespace FellowOakDicom.Media
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
+        public static new DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -221,7 +223,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                var source = new StreamByteSource(stream, readOption);
+                var source = new StreamByteSource(stream, readOption, largeObjectSize: largeObjectSize);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
@@ -262,8 +264,9 @@ namespace FellowOakDicom.Media
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -276,7 +279,7 @@ namespace FellowOakDicom.Media
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
@@ -317,8 +320,9 @@ namespace FellowOakDicom.Media
         /// <param name="fallbackEncoding">Encoding to apply if it cannot be identified from DICOM directory.</param>
         /// <param name="stop">Stop criterion in dataset.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public new static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default)
+        public new static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -328,7 +332,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                var source = new StreamByteSource(stream, readOption);
+                var source = new StreamByteSource(stream, readOption, largeObjectSize: largeObjectSize);
 
                 using var unvalidatedScop = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
@@ -359,7 +363,10 @@ namespace FellowOakDicom.Media
         /// </summary>
         protected override void OnSave()
         {
-            if (RootDirectoryRecord == null) throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
+            if (RootDirectoryRecord == null)
+            {
+                throw new InvalidOperationException("No DICOM files added, cannot save DICOM directory");
+            }
 
             _directoryRecordSequence.Items.Clear();
             var calculator = new DicomWriteLengthCalculator(FileMetaInfo.TransferSyntax, DicomWriteOptions.Default);
@@ -394,7 +401,10 @@ namespace FellowOakDicom.Media
 
                 var lastRoot = RootDirectoryRecord;
 
-                while (lastRoot.NextDirectoryRecord != null) lastRoot = lastRoot.NextDirectoryRecord;
+                while (lastRoot.NextDirectoryRecord != null)
+                {
+                    lastRoot = lastRoot.NextDirectoryRecord;
+                }
 
                 Dataset.AddOrUpdate(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset);
             }
@@ -413,7 +423,10 @@ namespace FellowOakDicom.Media
         {
             foreach (var item in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence))
             {
-                if (!(item is DicomDirectoryRecord record)) throw new InvalidOperationException("Unexpected type for directory record: " + item.GetType());
+                if (!(item is DicomDirectoryRecord record))
+                {
+                    throw new InvalidOperationException("Unexpected type for directory record: " + item.GetType());
+                }
 
                 record.Offset = _fileOffset;
 
@@ -463,7 +476,10 @@ namespace FellowOakDicom.Media
         /// <param name="referencedFileId">Referenced file ID.</param>
         public DicomDirectoryEntry AddFile(DicomFile dicomFile, string referencedFileId = "")
         {
-            if (dicomFile == null) throw new ArgumentNullException(nameof(dicomFile));
+            if (dicomFile == null)
+            {
+                throw new ArgumentNullException(nameof(dicomFile));
+            }
 
             return AddNewRecord(dicomFile.FileMetaInfo, dicomFile.Dataset, referencedFileId);
         }
@@ -722,7 +738,10 @@ namespace FellowOakDicom.Media
 
         private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem)
         {
-            if (recordItem == null) return;
+            if (recordItem == null)
+            {
+                return;
+            }
 
             _directoryRecordSequence.Items.Add(recordItem);
             if (recordItem.LowerLevelDirectoryRecord != null)
