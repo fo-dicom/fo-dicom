@@ -85,8 +85,8 @@ namespace FellowOakDicom.Imaging
                 PixelSpacingBetweenColumns = nominalPixelSpacing[1];
             }
 
-            var patientPosition = image.TryGetValues<double>(DicomTag.ImagePositionPatient, out var pos) ? pos : new double[] { };
-            var patientOrientation = image.TryGetValues<double>(DicomTag.ImageOrientationPatient, out var orient) ? orient : new double[] { };
+            var patientPosition = image.TryGetValues<double>(DicomTag.ImagePositionPatient, out var pos) ? pos : Array.Empty<double>();
+            var patientOrientation = image.TryGetValues<double>(DicomTag.ImageOrientationPatient, out var orient) ? orient : Array.Empty<double>();
             InitializeCalcualtedVolumeData(patientPosition, patientOrientation);
 
             InitializeTranformationMatrizes();
@@ -199,15 +199,15 @@ namespace FellowOakDicom.Imaging
             return new Point3D(transformed, 0);
         }
 
-        public Point2 TransformPatientPointToImage(Point3D patientPoint)
+        public Point2D TransformPatientPointToImage(Point3D patientPoint)
         {
             if (GeometryType == FrameGeometryType.None)
             {
                 throw new DicomImagingException("Cannot transform point in image without geometry data");
             }
-            var transformed = PatientToImageSpace * new double[] { patientPoint.X, patientPoint.Y, patientPoint.Z, 1 };
+            double[] transformed = PatientToImageSpace * new double[] { patientPoint.X, patientPoint.Y, patientPoint.Z, 1 };
             // validation, if the point is within the image plane, then the z-component of the transformed point should be zero
-            return new Point2((int)Math.Round(transformed[0]), (int)Math.Round(transformed[1]));
+            return new Point2D(transformed[0], transformed[1]);
         }
 
         #endregion
@@ -424,8 +424,8 @@ namespace FellowOakDicom.Imaging
                 return false;
 
             // now back from 3D patient space to 2D pixel space
-            startPoint = destinationFrame.TransformPatientPointToImage(lstProj[0]);
-            endPoint = destinationFrame.TransformPatientPointToImage(lstProj[1]);
+            startPoint = destinationFrame.TransformPatientPointToImage(lstProj[0]).Round();
+            endPoint = destinationFrame.TransformPatientPointToImage(lstProj[1]).Round();
             return true;
         }
 

@@ -1,6 +1,7 @@
 #### 5.0.0
 
 * Update to DICOM Standard 2021b (#1189)
+* New helper classes to build up a volume from a stack and calculate stacks/slices out of this volume in arbitrary orientation
 
 
 #### 5.0.0-alpha5 (2021-05-25)

@@ -52,6 +52,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Imaging\ReconstructionExtensions.cs" />
     <Compile Include="Imaging\WinFormsImage.cs" />
     <Compile Include="Imaging\WinFormsImageManager.cs" />
     <Compile Include="Imaging\WPFImage.cs" />
