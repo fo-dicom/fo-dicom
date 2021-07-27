@@ -80,8 +80,8 @@ namespace FellowOakDicom.Tests
 
             // shall not throw (regression test for #1186)
             ds.AddOrUpdate(DicomTag.FloatPixelData, new float[] { 1.0f, 2.0f });
-            ds.AddOrUpdate(DicomTag.TrackPointIndexList, new Int32[] { 1, 2 });
-            ds.AddOrUpdate(DicomTag.ExtendedOffsetTable, new Int64[] { 1, 2 });
+            ds.AddOrUpdate(DicomTag.TrackPointIndexList, new uint[] { 1, 2 });
+            ds.AddOrUpdate(DicomTag.ExtendedOffsetTable, new ulong[] { 1, 2 });
         }
 
         [Fact]

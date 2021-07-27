@@ -4,6 +4,7 @@
 * New helper classes to build up a volume from a stack and calculate stacks/slices out of this volume in arbitrary orientation
 * Optional parameter in DicomFile.Open methods to define the limit of large object size (#958)
 * Do not validate VM for VRs OF, OL and OV (#1186)
+* Add possibility to add values for the VRs UV, SV and OV
 
 #### 5.0.0-alpha5 (2021-05-25)
 
