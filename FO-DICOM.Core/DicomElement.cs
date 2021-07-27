@@ -1271,6 +1271,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.OL;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Other Double (OD)</summary>
@@ -1325,6 +1330,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.OF;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Other Very Long (OV)</summary>
@@ -1349,6 +1359,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.OV;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Person Name (PN)</summary>
