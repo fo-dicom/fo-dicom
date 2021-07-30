@@ -10,6 +10,8 @@
 * Fix parsing of datasets with a final SequenceDelimiterItem at the end (#1157)
 * Fix: DicomDirectory did throw exception on calling constructor with no parameters (#1176)
 * Update to DICOM Standard 2021b (#1189)
+* Do not validate VM for VRs OF, OL and OV (#1186)
+* Add possibility to add values for the VRs UV, SV and OV
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)

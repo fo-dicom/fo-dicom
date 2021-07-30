@@ -277,8 +277,8 @@ namespace Dicom
             }
         }
 
- 
-        /// <summary>        
+
+        /// <summary>
         /// Returns the number of values in the specified <paramref name="tag"/>.
         /// </summary>
         /// <param name="tag">Requested DICOM tag.</param>
@@ -1449,6 +1449,17 @@ namespace Dicom
                 }
             }
 
+            if (vr == DicomVR.OV)
+            {
+                if (values == null) return DoAdd(new DicomOtherVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomOtherVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+
+                if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
+                {
+                    return DoAdd(new DicomOtherVeryLong(tag, (IByteBuffer)values[0]), allowUpdate);
+                }
+            }
+
             if (vr == DicomVR.OW)
             {
                 if (values == null) return DoAdd(new DicomOtherWord(tag, EmptyBuffer.Value), allowUpdate);
@@ -1506,6 +1517,17 @@ namespace Dicom
             {
                 if (values == null) return DoAdd(new DicomShortText(tag, encoding, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
+            }
+
+            if (vr == DicomVR.SV)
+            {
+                if (values == null) return DoAdd(new DicomSignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(long)) return DoAdd(new DicomSignedVeryLong(tag, values.Cast<long>().ToArray()), allowUpdate);
+
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, long.Parse, out IEnumerable<long> parsedValues))
+                {
+                    return DoAdd(new DicomSignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                }
             }
 
             if (vr == DicomVR.TM)
@@ -1575,6 +1597,17 @@ namespace Dicom
             {
                 if (values == null) return DoAdd(new DicomUnlimitedText(tag, encoding, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, encoding, values.Cast<string>().FirstOrDefault()), allowUpdate);
+            }
+
+            if (vr == DicomVR.UV)
+            {
+                if (values == null) return DoAdd(new DicomUnsignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomUnsignedVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ulong.Parse, out IEnumerable<ulong> parsedValues))
+                {
+                    return DoAdd(new DicomUnsignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                }
             }
 
             throw new InvalidOperationException(
