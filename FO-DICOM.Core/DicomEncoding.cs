@@ -21,6 +21,10 @@ namespace FellowOakDicom
             try
             {
                 RegisterEncodingProvider();
+                foreach (var encodingName in _knownEncodingNames)
+                {
+                    RegisterEncoding(encodingName.Key, encodingName.Value);
+                }
             }
             catch
             {
@@ -28,10 +32,7 @@ namespace FellowOakDicom
             }
         }
 
-        static void RegisterEncodingProvider()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        }
+        static void RegisterEncodingProvider() => Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         /// <summary>
         /// Default DICOM encoding.
@@ -59,43 +60,22 @@ namespace FellowOakDicom
                 return Default;
             }
 
-            return charset.Trim().Replace("_", " ") switch
-            {
-                "ISO IR 13" => Encoding.GetEncoding("shift_jis"), // JIS X 0201 (Shift JIS)
-                "ISO IR 100" => Encoding.GetEncoding("iso-8859-1"), // Latin Alphabet No. 1
-                "ISO IR 101" => Encoding.GetEncoding("iso-8859-2"), // Latin Alphabet No. 2
-                "ISO IR 109" => Encoding.GetEncoding("iso-8859-3"), // Latin Alphabet No. 3
-                "ISO IR 110" => Encoding.GetEncoding("iso-8859-4"), // Latin Alphabet No. 4
-                "ISO IR 126" => Encoding.GetEncoding("iso-8859-7"), // Greek
-                "ISO IR 127" => Encoding.GetEncoding("iso-8859-6"), // Arabic
-                "ISO IR 138" => Encoding.GetEncoding("iso-8859-8"), // Hebrew
-                "ISO IR 144" => Encoding.GetEncoding("iso-8859-5"), // Cyrillic
-                "ISO IR 148" => Encoding.GetEncoding("iso-8859-9"), // Latin Alphabet No. 5 (Turkish)
-                "ISO IR 149" => Encoding.GetEncoding("x-cp20949"), // KS X 1001 (Hangul and Hanja)
-                "ISO IR 166" => Encoding.GetEncoding("windows-874"), // TIS 620-2533 (Thai)
-                "ISO IR 192" => Encoding.GetEncoding("utf-8"), // Unicode in UTF-8
-                "GBK" => Encoding.GetEncoding("GBK"), // Chinese (Simplified)
-                "GB18030" => Encoding.GetEncoding("GB18030"), // Chinese (supersedes GBK)
-                "ISO 2022 IR 6" => Encoding.GetEncoding("us-ascii"), // ASCII
-                "ISO 2022 IR 13" => Encoding.GetEncoding("shift_jis"), // JIS X 0201 (Shift JIS) Extended
-                "ISO 2022 IR 87" => Encoding.GetEncoding("iso-2022-jp"), // JIS X 0208 (Kanji) Extended
-                "ISO 2022 IR 100" => Encoding.GetEncoding("iso-8859-1"), // Latin Alphabet No. 1 Extended
-                "ISO 2022 IR 101" => Encoding.GetEncoding("iso-8859-2"), // Latin Alphabet No. 2 Extended
-                "ISO 2022 IR 109" => Encoding.GetEncoding("iso-8859-3"), // Latin Alphabet No. 3 Extended
-                "ISO 2022 IR 110" => Encoding.GetEncoding("iso-8859-4"), // Latin Alphabet No. 4 Extended
-                "ISO 2022 IR 127" => Encoding.GetEncoding("iso-8859-6"), // Arabic Extended
-                "ISO 2022 IR 126" => Encoding.GetEncoding("iso-8859-7"), // Greek Extended
-                "ISO 2022 IR 138" => Encoding.GetEncoding("iso-8859-8"), // Hebrew Extended
-                "ISO 2022 IR 144" => Encoding.GetEncoding("iso-8859-5"), // Cyrillic Extended
-                "ISO 2022 IR 148" => Encoding.GetEncoding("iso-8859-9"), // Latin Alphabet No. 5 (Turkish) Extended
-                "ISO 2022 IR 149" => Encoding.GetEncoding("x-cp20949"), // KS X 1001 (Hangul and Hanja) Extended
-                "ISO 2022 IR 159" => Encoding.GetEncoding("iso-2022-jp"), // JIS X 0212 (Kanji) Extended
-                "ISO 2022 IR 166" => Encoding.GetEncoding("windows-874"), // TIS 620-2533 (Thai) Extended
-                "ISO 2022 IR 58" => Encoding.GetEncoding("gb2312"), // Chinese (Simplified) Extended
-                "ISO 2022 GBK" => Encoding.GetEncoding("GBK"), // Chinese (Simplified) Extended (supersedes GB2312)
-                _ => Default // unknown encoding... return ASCII instead of throwing exception
-            };
+            return _knownEncodings.TryGetValue(charset.Trim().Replace("_", " "), out Encoding encoding)
+                ? encoding
+                : Default;
         }
+
+        /// <summary>
+        /// Register an encoding for a specific character set value.
+        /// Can be used to add an encoding that is not handled by the library, or a private encoding.
+        /// Can also be used to map an existing character set to another encoding. 
+        /// </summary>
+        /// <param name="charset">The name of the character set as given
+        /// in the Specific Character Set DICOM attribute.</param>
+        /// <param name="encoding">The name of the character encoding used to decode the DICOM tag values
+        /// as defined in the .NET framework.</param>
+        public static void RegisterEncoding(string charset, string encoding) =>
+            _knownEncodings[charset] = Encoding.GetEncoding(encoding);
 
         /// <summary>
         /// Get charset from encoding.
@@ -129,6 +109,44 @@ namespace FellowOakDicom
             };
         }
 
+        private static readonly IDictionary<string, string> _knownEncodingNames = new Dictionary<string, string>
+        {
+            {"ISO IR 13", "shift_jis"}, // JIS X 0201 (Shift JIS)
+            {"ISO IR 100", "iso-8859-1"}, // Latin Alphabet No. 1
+            {"ISO IR 101", "iso-8859-2"}, // Latin Alphabet No. 2
+            {"ISO IR 109", "iso-8859-3"}, // Latin Alphabet No. 3
+            {"ISO IR 110", "iso-8859-4"}, // Latin Alphabet No. 4
+            {"ISO IR 126", "iso-8859-7"}, // Greek
+            {"ISO IR 127", "iso-8859-6"}, // Arabic
+            {"ISO IR 138", "iso-8859-8"}, // Hebrew
+            {"ISO IR 144", "iso-8859-5"}, // Cyrillic
+            {"ISO IR 148", "iso-8859-9"}, // Latin Alphabet No. 5 (Turkish)
+            {"ISO IR 149", "x-cp20949"}, // KS X 1001 (Hangul and Hanja)
+            {"ISO IR 166", "windows-874"}, // TIS 620-2533 (Thai)
+            {"ISO IR 192", "utf-8"}, // Unicode in UTF-8
+            {"GBK", "GBK"}, // Chinese (Simplified)
+            {"GB18030", "GB18030"}, // Chinese (supersedes GBK)
+            {"ISO 2022 IR 6", "us-ascii"}, // ASCII
+            {"ISO 2022 IR 13", "shift_jis"}, // JIS X 0201 (Shift JIS) Extended
+            {"ISO 2022 IR 87", "iso-2022-jp"}, // JIS X 0208 (Kanji) Extended
+            {"ISO 2022 IR 100", "iso-8859-1"}, // Latin Alphabet No. 1 Extended
+            {"ISO 2022 IR 101", "iso-8859-2"}, // Latin Alphabet No. 2 Extended
+            {"ISO 2022 IR 109", "iso-8859-3"}, // Latin Alphabet No. 3 Extended
+            {"ISO 2022 IR 110", "iso-8859-4"}, // Latin Alphabet No. 4 Extended
+            {"ISO 2022 IR 127", "iso-8859-6"}, // Arabic Extended
+            {"ISO 2022 IR 126", "iso-8859-7"}, // Greek Extended
+            {"ISO 2022 IR 138", "iso-8859-8"}, // Hebrew Extended
+            {"ISO 2022 IR 144", "iso-8859-5"}, // Cyrillic Extended
+            {"ISO 2022 IR 148", "iso-8859-9"}, // Latin Alphabet No. 5 (Turkish) Extended
+            {"ISO 2022 IR 149", "x-cp20949"}, // KS X 1001 (Hangul and Hanja) Extended
+            {"ISO 2022 IR 159", "iso-2022-jp"}, // JIS X 0212 (Kanji) Extended
+            {"ISO 2022 IR 166", "windows-874"}, // TIS 620-2533 (Thai) Extended
+            {"ISO 2022 IR 58", "gb2312"}, // Chinese (Simplified) Extended
+            {"ISO 2022 GBK", "GBK"}, // Chinese (Simplified) Extended (supersedes GB2312)
+        };
+
+        private static readonly IDictionary<string, Encoding> _knownEncodings = new Dictionary<string, Encoding>();
+        
         private static Encoding GetCodeForEncoding(byte code1, byte code2, byte code3) =>
             code1 switch
             {
@@ -165,12 +183,12 @@ namespace FellowOakDicom
                         _ => Default
                     },
                     0x29 => code3 switch
-                        {
-                            0x43 => Encoding.GetEncoding("x-cp20949"),
-                            0x44 => Encoding.GetEncoding("iso-2022-jp"),
-                            0x41 => Encoding.GetEncoding("gb2312"),
-                            _ => Default
-                        },
+                    {
+                        0x43 => Encoding.GetEncoding("x-cp20949"),
+                        0x44 => Encoding.GetEncoding("iso-2022-jp"),
+                        0x41 => Encoding.GetEncoding("gb2312"),
+                        _ => Default
+                    },
                     0x42 => Encoding.GetEncoding("iso-2022-jp"),
                     _ => Default
                 },
@@ -184,7 +202,7 @@ namespace FellowOakDicom
             0x0a, // LF
             0x09, // TAB
             0x0c // FF
-        }; 
+        };
 
         // Delimiters in PN values that reset the encoding
         private static readonly byte[] _pnDelimiters =
@@ -193,7 +211,7 @@ namespace FellowOakDicom
             0x3d, // =
         };
 
-        public static string DecodeBytes(IByteBuffer buffer, Encoding[] encodings, bool isPN)
+        internal static string DecodeBytes(IByteBuffer buffer, Encoding[] encodings, bool isPN)
         {
             var firstEncoding = encodings?.FirstOrDefault() ?? Default;
             var value = buffer.Data;
@@ -218,7 +236,7 @@ namespace FellowOakDicom
 
             var decodedString = new StringBuilder();
             var delimiters = isPN ? _pnDelimiters : _textDelimiters;
-            
+
             for (int i = 0; i < escapeIndexes.Count; i++)
             {
                 var start = i == 0 ? 0 : escapeIndexes[i - 1];

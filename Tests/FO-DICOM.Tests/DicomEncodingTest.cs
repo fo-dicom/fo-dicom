@@ -105,6 +105,50 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void RegisterNewEncoding()
+        {
+            DicomEncoding.RegisterEncoding("KOI 8", "koi8-r");
+            var ds = new DicomDataset
+            {
+                new DicomCodeString(DicomTag.SpecificCharacterSet, "KOI 8"),
+            };
+            // Грозный^Иван encoded in KOI-8
+            var koi8Name = new byte[] {0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce};
+            IByteBuffer buffer = new MemoryByteBuffer(koi8Name);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+            ds.Add(patientName);
+
+            Assert.Equal("Грозный^Иван", ds.GetString(DicomTag.PatientName));
+        }
+
+        [Fact]
+        public void OverwriteRegisteredEncoding()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO IR 144"),
+            };
+
+            try
+            {
+                // patch the encoding - without this, the name would display as gibberish
+                DicomEncoding.RegisterEncoding("ISO IR 144", "koi8-r");
+
+                // Грозный^Иван encoded in KOI-8 instead of iso-8859-5
+                var koi8Name = new byte[] {0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce};
+                IByteBuffer buffer = new MemoryByteBuffer(koi8Name);
+                var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+                ds.Add(patientName); // patient name would show gibberish
+                Assert.Equal("Грозный^Иван", ds.GetString(DicomTag.PatientName));
+            }
+            finally
+            {
+                // set back the correct encoding to avoid breaking other tests
+                DicomEncoding.RegisterEncoding("ISO IR 144", "iso-8859-5");
+            }
+        }
+
+        [Fact]
         public void GetNestedCharacterSetInSequence()
         {
             var ds = DicomFile.Open(TestData.Resolve($"charset/chrSQEncoding.dcm")).Dataset;
@@ -132,6 +176,21 @@ namespace FellowOakDicom.Tests
             };
             Assert.Equal( expectedEncodings, item.TextEncodings);
             Assert.Equal("ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう", item.GetString(DicomTag.PatientName));
+        }
+
+        [Fact]
+        public void ReplacementCharactersUsedForBadEncoding()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO IR 192"),
+            };
+            // not a valid UTF-8 encoding
+            var badName = new byte[] { 0xc4, 0xe9, 0xef, 0xed, 0xf5, 0xf3, 0xe9, 0xef, 0xf2 };
+            IByteBuffer buffer = new MemoryByteBuffer(badName);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+            ds.Add(patientName);
+            Assert.Equal("���������", ds.GetString(DicomTag.PatientName));
         }
 
         public static readonly IEnumerable<object[]> FileNames = new[]

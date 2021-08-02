@@ -4,6 +4,7 @@
 * New helper classes to build up a volume from a stack and calculate stacks/slices out of this volume in arbitrary orientation
 * Optional parameter in DicomFile.Open methods to define the limit of large object size (#958)
 * Add initial support for code extensions (#43)
+* Add possibility to register additional encodings via `DicomEncoding.RegisterEncoding()` 
 
 #### 5.0.0-alpha5 (2021-05-25)
 

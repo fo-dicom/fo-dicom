@@ -14,7 +14,7 @@ namespace FellowOakDicom.Benchmark
             // benchmark opening files
             BenchmarkRunner.Run<OpenFileBenchmarks>();
 
-            // bencharm instanciating a server
+            // benchmark instantiating a server
             BenchmarkRunner.Run<ServerBenchmarks>();
 
             // benchmark json serialization and deserialization

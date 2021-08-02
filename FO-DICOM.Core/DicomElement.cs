@@ -94,7 +94,7 @@ namespace FellowOakDicom
             : base(tag, buffer)
         {
             _bufferEncodings = encodings ?? DicomEncoding.DefaultArray;
-            TargetEncodings = (Encoding[])_bufferEncodings.Clone();
+            TargetEncodings = _bufferEncodings;
         }
 
         #endregion
