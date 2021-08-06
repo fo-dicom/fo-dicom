@@ -1208,6 +1208,11 @@ namespace Dicom
         public override DicomVR ValueRepresentation => DicomVR.OL;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Other Double (OD)</summary>
@@ -1262,6 +1267,11 @@ namespace Dicom
         public override DicomVR ValueRepresentation => DicomVR.OF;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Other Very Long (OV)</summary>
@@ -1292,6 +1302,11 @@ namespace Dicom
         }
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Person Name (PN)</summary>
@@ -1645,7 +1660,7 @@ namespace Dicom
             {
                 if (_formats == null)
                 {
-                    _formats = new[] 
+                    _formats = new[]
                                 {
                                     "HHmmss",
                                     "HH",

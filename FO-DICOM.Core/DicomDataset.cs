@@ -1238,6 +1238,17 @@ namespace FellowOakDicom
                 }
             }
 
+            if (vr == DicomVR.OV)
+            {
+                if (values == null) return DoAdd(new DicomOtherVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomOtherVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+
+                if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
+                {
+                    return DoAdd(new DicomOtherVeryLong(tag, (IByteBuffer)values[0]), allowUpdate);
+                }
+            }
+
             if (vr == DicomVR.OW)
             {
                 if (values == null) return DoAdd(new DicomOtherWord(tag, EmptyBuffer.Value), allowUpdate);
@@ -1295,6 +1306,17 @@ namespace FellowOakDicom
             {
                 if (values == null) return DoAdd(new DicomShortText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = TextEncodings }, allowUpdate);
+            }
+
+            if (vr == DicomVR.SV)
+            {
+                if (values == null) return DoAdd(new DicomSignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(long)) return DoAdd(new DicomSignedVeryLong(tag, values.Cast<long>().ToArray()), allowUpdate);
+
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, long.Parse, out IEnumerable<long> parsedValues))
+                {
+                    return DoAdd(new DicomSignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                }
             }
 
             if (vr == DicomVR.TM)
@@ -1365,7 +1387,18 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomUnlimitedText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
-            
+
+            if (vr == DicomVR.UV)
+            {
+                if (values == null) return DoAdd(new DicomUnsignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomUnsignedVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ulong.Parse, out IEnumerable<ulong> parsedValues))
+                {
+                    return DoAdd(new DicomUnsignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                }
+            }
+
             throw new InvalidOperationException(
                 $"Unable to create DICOM element of type {vr.Code} with values of type {typeof(T)}");
         }

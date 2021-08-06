@@ -82,10 +82,9 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="encoding">Encoding.</param>
         /// <returns>Charset.</returns>
-        public static string GetCharset(Encoding encoding)
-        {
+        public static string GetCharset(Encoding encoding) =>
             // Do we always want the extended charsets?
-            return encoding?.WebName switch
+            encoding?.WebName switch
             {
                 null => "ISO 2022 IR 6",
                 "windows-874" => "ISO 2022 IR 166", // TIS 620-2533 (Thai) Extended
@@ -107,7 +106,6 @@ namespace FellowOakDicom
                 "utf-8" => "ISO_IR 192", // Unicode in UTF-8
                 _ => throw new ArgumentException("No DICOM charset found for requested encoding.", nameof(encoding))
             };
-        }
 
         private static readonly IDictionary<string, string> _knownEncodingNames = new Dictionary<string, string>
         {
