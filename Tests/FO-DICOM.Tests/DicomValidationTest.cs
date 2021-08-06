@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using Xunit;
@@ -66,6 +67,21 @@ namespace FellowOakDicom.Tests
             var leadingZeroUid = validUid + ".03";
             var ex2 = Assert.ThrowsAny<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.SeriesInstanceUID, leadingZeroUid));
             Assert.Contains("leading zero", ex2.Message);
+        }
+
+        [Fact]
+        public void DicomValidation_NoVMValidationForOX()
+        {
+            var ds = new DicomDataset
+            {
+                { DicomTag.Rows, (ushort)1 },
+                { DicomTag.Columns, (ushort)2 },
+            };
+
+            // shall not throw (regression test for #1186)
+            ds.AddOrUpdate(DicomTag.FloatPixelData, new float[] { 1.0f, 2.0f });
+            ds.AddOrUpdate(DicomTag.TrackPointIndexList, new uint[] { 1, 2 });
+            ds.AddOrUpdate(DicomTag.ExtendedOffsetTable, new ulong[] { 1, 2 });
         }
 
         [Fact]
