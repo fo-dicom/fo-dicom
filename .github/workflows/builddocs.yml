@@ -1,0 +1,52 @@
+name: DocBuild
+
+on:
+  push:
+    branches: 
+      - development
+      - autodoc
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_docs:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout development
+        uses: actions/checkout@v2
+        with:
+          # replace with development
+          ref: autodoc
+          path: dev
+      - name: Get last commit message
+        run: |
+          cd dev
+          echo "LAST_COMMIT=$(echo `git log -1 --pretty=%B`)" >> $GITHUB_ENV
+          cd ..
+      - name: Checkout gh-pages
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: doc
+      - name: Install requirements
+        run: choco install docfx -y
+      - name: Build documentation
+        run: |
+          cd dev/Documentation
+          set GenerateDocumentation=1
+          dotnet build ../FO-DICOM.Full.sln
+          docfx docfx.json
+          cd ../../doc
+          git config --global core.autocrlf false
+          git config --global user.email "fo-dicom@noreply.com"
+          git config --global user.name "CI Build"
+          cp -r ../dev/Documentation/_site/* dev
+          git add -A
+          if [ `git status -s | wc -l` = 0 ]; then
+            echo "No changes in built documentation, skipping"
+            exit 0
+          fi
+          git commit -m "$LAST_COMMIT" -q
+          git push origin gh-pages -q
