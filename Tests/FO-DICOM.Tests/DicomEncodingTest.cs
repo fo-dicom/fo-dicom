@@ -163,7 +163,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal("ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう", item.GetString(DicomTag.PatientName));
         }
 
-        [Fact()]
+        [Fact]
         public void GetInheritedCharacterSetInSequence()
         {
             var ds = DicomFile.Open(TestData.Resolve($"charset/chrSQEncoding1.dcm")).Dataset;

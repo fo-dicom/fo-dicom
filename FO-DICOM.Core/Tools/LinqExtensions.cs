@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FellowOakDicom.Tools
 {
@@ -25,16 +26,10 @@ namespace FellowOakDicom.Tools
             }
         }
 
+
         public static IEnumerable<T> FilterByType<T>(this IEnumerable<object> input)
-        {
-            foreach(var obj in input)
-            {
-                if (obj is T typedvalue)
-                {
-                    yield return typedvalue;
-                }
-            }
-        }
+            => input.Where(o => o is T).Cast<T>();
+
 
     }
 }
