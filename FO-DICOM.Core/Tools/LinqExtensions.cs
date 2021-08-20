@@ -25,5 +25,16 @@ namespace FellowOakDicom.Tools
             }
         }
 
+        public static IEnumerable<T> FilterByType<T>(this IEnumerable<object> input)
+        {
+            foreach(var obj in input)
+            {
+                if (obj is T typedvalue)
+                {
+                    yield return typedvalue;
+                }
+            }
+        }
+
     }
 }

@@ -99,7 +99,7 @@ namespace FellowOakDicom.Tests
             var asciiPart = new byte[] {0x41, 0x53, 0x43, 0x49, 0x49}; // "ASCII"
             IByteBuffer buffer = new MemoryByteBuffer(asciiPart.Concat(rawData).ToArray());
 
-            var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
             ds.Add(patientName);
             Assert.Equal("ASCII" + expectedName, ds.GetString(DicomTag.PatientName));
         }
@@ -115,7 +115,7 @@ namespace FellowOakDicom.Tests
             // Грозный^Иван encoded in KOI-8
             var koi8Name = new byte[] {0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce};
             IByteBuffer buffer = new MemoryByteBuffer(koi8Name);
-            var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
             ds.Add(patientName);
 
             Assert.Equal("Грозный^Иван", ds.GetString(DicomTag.PatientName));
@@ -137,7 +137,7 @@ namespace FellowOakDicom.Tests
                 // Грозный^Иван encoded in KOI-8 instead of iso-8859-5
                 var koi8Name = new byte[] {0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce};
                 IByteBuffer buffer = new MemoryByteBuffer(koi8Name);
-                var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+                var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
                 ds.Add(patientName); // patient name would show gibberish
                 Assert.Equal("Грозный^Иван", ds.GetString(DicomTag.PatientName));
             }
@@ -159,11 +159,11 @@ namespace FellowOakDicom.Tests
                 Encoding.GetEncoding("shift_jis"),
                 Encoding.GetEncoding("iso-2022-jp")
             };
-            Assert.Equal( expectedEncodings, item.TextEncodings);
+            Assert.Equal( expectedEncodings, item.GetEncodingsForSerialization());
             Assert.Equal("ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう", item.GetString(DicomTag.PatientName));
         }
 
-        [Fact(Skip = "Not yet implemented")]
+        [Fact()]
         public void GetInheritedCharacterSetInSequence()
         {
             var ds = DicomFile.Open(TestData.Resolve($"charset/chrSQEncoding1.dcm")).Dataset;
@@ -174,7 +174,7 @@ namespace FellowOakDicom.Tests
                 Encoding.GetEncoding("shift_jis"),
                 Encoding.GetEncoding("iso-2022-jp")
             };
-            Assert.Equal( expectedEncodings, item.TextEncodings);
+            Assert.Equal( expectedEncodings, item.GetEncodingsForSerialization());
             Assert.Equal("ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう", item.GetString(DicomTag.PatientName));
         }
 
@@ -188,7 +188,7 @@ namespace FellowOakDicom.Tests
             // not a valid UTF-8 encoding
             var badName = new byte[] { 0xc4, 0xe9, 0xef, 0xed, 0xf5, 0xf3, 0xe9, 0xef, 0xf2 };
             IByteBuffer buffer = new MemoryByteBuffer(badName);
-            var patientName = new DicomPersonName(DicomTag.PatientName, ds.TextEncodings, buffer);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
             ds.Add(patientName);
             Assert.Equal("���������", ds.GetString(DicomTag.PatientName));
         }
