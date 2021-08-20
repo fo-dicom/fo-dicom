@@ -9,13 +9,18 @@ using Xunit;
 
 namespace FellowOakDicom.Tests
 {
-    public class GlobalFixture : IDisposable
+    /// <summary>
+    /// A fixture that configures the default services used in FellowOakDicom,
+    /// except for the LogManager, which is replaced by a the CollectingConsoleLogManager
+    /// to allow testing log messages.
+    /// </summary>
+    public class GlobalFixture: IDisposable
     {
 
         public GlobalFixture()
         {
             var serviceCollection = new ServiceCollection()
-                .AddFellowOakDicom();
+                .AddFellowOakDicom().AddLogManager<CollectingConsoleLogManager>();
 
             var defaultServiceProvider = serviceCollection.BuildServiceProvider();
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
@@ -46,7 +51,6 @@ namespace FellowOakDicom.Tests
         }
     }
 
-
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GlobalFixture>
     { }
@@ -61,15 +65,13 @@ namespace FellowOakDicom.Tests
 
     [CollectionDefinition("ImageSharp")]
     public class ImageSharpCollection : ICollectionFixture<GlobalFixture>
-    {}
+    { }
 
     [CollectionDefinition("Validation")]
     public class ValidationCollection: ICollectionFixture<GlobalFixture>
     { }
 
     [CollectionDefinition("WithTranscoder")]
-    public class WidthTranscoderCollection : ICollectionFixture<GlobalFixture>
+    public class WithTranscoderCollection : ICollectionFixture<GlobalFixture>
     { }
-
-
 }

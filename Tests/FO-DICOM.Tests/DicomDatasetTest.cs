@@ -567,8 +567,6 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_ByteArrayFromStringElement_ReturnsValidArray()
         {
-            // preload encodings
-            DicomEncoding.GetCharset(Encoding.ASCII);
             // now the actual unit-test
             var encoding = Encoding.GetEncoding("SHIFT_JIS");
             var tag = DicomTag.AdditionalPatientHistory;
@@ -590,8 +588,6 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomEncoding_AppliedToNestedDatasetsOnWriting()
         {
-            // preload encodings
-            DicomEncoding.GetCharset(Encoding.ASCII);
             // now the actual unit-test
             var encoding = Encoding.GetEncoding("SHIFT_JIS");
             var tag = DicomTag.AdditionalPatientHistory;
@@ -632,8 +628,6 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomEncoding_AppliedToMultipleNestedDatasetsWithDifferentEncodingsOnWriting()
         {
-            // preload encodings
-            DicomEncoding.GetCharset(Encoding.ASCII);
             // now the actual unit-test
             var encoding1 = Encoding.GetEncoding("SHIFT_JIS");
             var encoding2 = Encoding.UTF8;
@@ -688,7 +682,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AddOrUpdate_NonDefaultEncodedStringElement_StringIsPreserved()
         {
-            var encoding = Encoding.GetEncoding("SHIFT_JIS"); 
+            var encoding = Encoding.GetEncoding("SHIFT_JIS");
             var tag = DicomTag.AdditionalPatientHistory;
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
 

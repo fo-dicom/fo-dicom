@@ -256,7 +256,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="stream">Stream to read.</param>
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
-        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passed, then the default of 64k is used.</param>
         /// <returns>Read <see cref="DicomFile"/>.</returns>
         public static DicomFile Open(Stream stream, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
             => Open(stream, DicomEncoding.Default, readOption: readOption, largeObjectSize: largeObjectSize);
