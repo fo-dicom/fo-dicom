@@ -688,13 +688,16 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void AddOrUpdate_NonDefaultEncodedStringElement_StringIsPreserved()
         {
-            var encoding = Encoding.GetEncoding("SHIFT_JIS");
+            var encoding = Encoding.GetEncoding("SHIFT_JIS"); 
             var tag = DicomTag.AdditionalPatientHistory;
             const string expected = "YamadaTarou山田太郎ﾔﾏﾀﾞﾀﾛｳ";
 
             var dataset = new DicomDataset();
             dataset.AddOrUpdate(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding));
             dataset.AddOrUpdate(tag, expected);
+
+            // simulate some kind of serialization, so that the buffer data is created correctly
+            dataset.OnBeforeSerializing();
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);

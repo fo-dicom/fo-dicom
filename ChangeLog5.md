@@ -3,6 +3,8 @@
 * Update to DICOM Standard 2021b (#1189)
 * New helper classes to build up a volume from a stack and calculate stacks/slices out of this volume in arbitrary orientation
 * Optional parameter in DicomFile.Open methods to define the limit of large object size (#958)
+* Add initial support for code extensions (#43)
+* Add possibility to register additional encodings via `DicomEncoding.RegisterEncoding()` 
 * Do not validate VM for VRs OF, OL and OV (#1186)
 * Add possibility to add values for the VRs UV, SV and OV
 
@@ -10,7 +12,7 @@
 
 * Add missing properties to IDicomClient interface (#1171)
 * Fix unintended breaking change, where StringValue of tags with length 0 returned null, but should return string.empty.
-* Be more tollerant to recognize Encoding by ignoring the difference of Underlande and Space.
+* Be more tolerant to recognize Encoding by ignoring the difference of underscore and space.
 * JsonDicom supports some VRs as number as well as as string. (#1161)
 * Fix anonymizing private tags with explicit transfer syntax (#1181)
 * Internal calculation of pixel values are done as double instead of int to avoid consequential errors when calculating (#1153)
@@ -70,7 +72,7 @@
   If you are in a "DI-Environment" like Asp.Net, then inject a `IDicomClientFactory` instance and use this to create a DicomClient. otherwise call `DicomClientFactory.CreateDicomClient(...)`.  This is a wrapper around accessing the internal DI container , getting the registered IDicomClientFactory and then calling this. So this is more overhead.
 * DicomServiceOptions cannot be passed as parameter to DicomServer constructor/factory any more, but the values of options have to be set to the created instance of DicomServer.
 * Classes `DicomFileReader`, `DicomReader`, `DicomReaderCallbackObserver` etc are now internal instead of public, because the resulting Datasets are wrong/inconsistent and need further changes. Therefore its usage is dangerous for users. (#823)
-* Removed obsolte methods/classes/properties
+* Removed obsolete methods/classes/properties
   * `DicomValidation.AutoValidation`: Call `DicomSetupBuilder.SkipValidation()` instead.
   * `Dicom.Network.DicomClient`: use `FellowOakDicom.Network.Client.DicomClient` instead.
   * `Dicom.Network.IDicomServiceUser`: use `IDicomClientConnection` instead.
@@ -82,7 +84,7 @@
   * `DicomUIDGenerator.Generate()` and `DicomUIDGenerator.GenerateNew()`: use `DicomUIDGenerator.GenerateDerivedFromUUID()`
   * `DicomImage.Dataset`, `DicomImage.PixelData` and `DicomImage.PhotometricInterpretation`: do not load the DicomImage directly from filename if you also need access to the dataset, but load the DicomDataset from file first and then construct the DicomImage from this loaded DicomDataset. Then you can access both.
 * DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
-* DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncoding`, that is applied to all string-based tags.
+* DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncodings`, that is applied to all string-based tags.
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
 
    

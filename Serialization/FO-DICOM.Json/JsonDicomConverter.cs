@@ -22,7 +22,7 @@ namespace FellowOakDicom.Serialization
     {
         private readonly bool _writeTagsAsKeywords;
         private readonly bool _autoValidate;
-        private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
+        private readonly static Encoding[] _jsonTextEncodings = { Encoding.UTF8 };
 
         /// <summary>
         /// Initialize the JsonDicomConverter.
@@ -247,7 +247,7 @@ namespace FellowOakDicom.Serialization
                 case "LT":
                     if (data is IByteBuffer dataBufferLT)
                     {
-                        item = new DicomLongText(tag, _jsonTextEncoding, dataBufferLT);
+                        item = new DicomLongText(tag, _jsonTextEncodings, dataBufferLT);
                     }
                     else
                     {
@@ -304,7 +304,7 @@ namespace FellowOakDicom.Serialization
                 case "ST":
                     if (data is IByteBuffer dataBufferST)
                     {
-                        item = new DicomShortText(tag, _jsonTextEncoding, dataBufferST);
+                        item = new DicomShortText(tag, _jsonTextEncodings, dataBufferST);
                     }
                     else
                     {
@@ -332,7 +332,7 @@ namespace FellowOakDicom.Serialization
                 case "UC":
                     if (data is IByteBuffer dataBufferUC)
                     {
-                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC);
+                        item = new DicomUnlimitedCharacters(tag, _jsonTextEncodings, dataBufferUC);
                     }
                     else
                     {
@@ -371,7 +371,7 @@ namespace FellowOakDicom.Serialization
                 case "UT":
                     if (data is IByteBuffer dataBufferUT)
                     {
-                        item = new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT);
+                        item = new DicomUnlimitedText(tag, _jsonTextEncodings, dataBufferUT);
                     }
                     else
                     {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FellowOakDicom.Tools
 {
@@ -24,6 +25,11 @@ namespace FellowOakDicom.Tools
                 first = second;
             }
         }
+
+
+        public static IEnumerable<T> FilterByType<T>(this IEnumerable<object> input)
+            => input.Where(o => o is T).Cast<T>();
+
 
     }
 }

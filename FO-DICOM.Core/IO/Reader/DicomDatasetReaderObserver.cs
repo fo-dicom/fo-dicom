@@ -14,7 +14,7 @@ namespace FellowOakDicom.IO.Reader
 
         private readonly Stack<DicomDataset> _datasets;
 
-        private readonly Stack<Encoding> _encodings;
+        private readonly Stack<Encoding[]> _encodings;
 
         private readonly Stack<DicomSequence> _sequences;
 
@@ -35,8 +35,8 @@ namespace FellowOakDicom.IO.Reader
             _datasets = new Stack<DicomDataset>();
             _datasets.Push(dataset);
 
-            _encodings = new Stack<Encoding>();
-            _encodings.Push(fallbackEncoding);
+            _encodings = new Stack<Encoding[]>();
+            _encodings.Push(new [] { fallbackEncoding });
 
             _sequences = new Stack<DicomSequence>();
         }
@@ -79,13 +79,13 @@ namespace FellowOakDicom.IO.Reader
             };
             if (element.Tag == DicomTag.SpecificCharacterSet)
             {
-                Encoding encoding = _encodings.Peek();
+                Encoding[] encodings = _encodings.Peek();
                 if (element.Count > 0)
                 {
-                    encoding = DicomEncoding.GetEncoding(element.Get<string>(0));
+                    encodings = DicomEncoding.GetEncodings(element.Get<string[]>(0));
                 }
                 _encodings.Pop();
-                _encodings.Push(encoding);
+                _encodings.Push(encodings);
             }
 
             DicomDataset ds = _datasets.Peek();
@@ -110,7 +110,9 @@ namespace FellowOakDicom.IO.Reader
 
             _datasets.Push(item);
 
-            _encodings.Push(_encodings.Peek());
+            var encoding = _encodings.Peek();
+            item.SetFallbackEncodings(encoding);
+            _encodings.Push(encoding);
         }
 
         public void OnEndSequenceItem()
