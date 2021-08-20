@@ -77,7 +77,7 @@ namespace FellowOakDicom.Serialization
 
         private readonly bool _writeTagsAsKeywords;
         private readonly bool _autoValidate;
-        private readonly static Encoding _jsonTextEncoding = Encoding.UTF8;
+        private readonly static Encoding[] _jsonTextEncodings = { Encoding.UTF8 };
 
         private delegate T GetValue<out T>(Utf8JsonReader reader);
         private delegate bool TryParse<T>(string value, out T parsed);
@@ -252,7 +252,7 @@ namespace FellowOakDicom.Serialization
                             : new DicomIntegerString(tag, (int[])data),
                 "LO" => new DicomLongString(tag, (string[])data),
                 "LT" => data is IByteBuffer dataBufferLT
-                            ? new DicomLongText(tag, _jsonTextEncoding, dataBufferLT)
+                            ? new DicomLongText(tag, _jsonTextEncodings, dataBufferLT)
                             : new DicomLongText(tag, data.GetAsStringArray().GetSingleOrEmpty()),
                 "OB" => new DicomOtherByte(tag, (IByteBuffer)data),
                 "OD" => new DicomOtherDouble(tag, (IByteBuffer)data),
@@ -270,14 +270,14 @@ namespace FellowOakDicom.Serialization
                             ? new DicomSignedShort(tag, dataBufferSS)
                             : new DicomSignedShort(tag, (short[])data),
                 "ST" => data is IByteBuffer dataBufferST
-                            ? new DicomShortText(tag, _jsonTextEncoding, dataBufferST)
+                            ? new DicomShortText(tag, _jsonTextEncodings, dataBufferST)
                             : new DicomShortText(tag, data.GetAsStringArray().GetFirstOrEmpty()),
                 "SV" => data is IByteBuffer dataBufferSV
                                 ? new DicomSignedVeryLong(tag, dataBufferSV)
                                 : new DicomSignedVeryLong(tag, (long[])data),
                 "TM" => new DicomTime(tag, (string[])data),
                 "UC" => data is IByteBuffer dataBufferUC
-                            ? new DicomUnlimitedCharacters(tag, _jsonTextEncoding, dataBufferUC)
+                            ? new DicomUnlimitedCharacters(tag, _jsonTextEncodings, dataBufferUC)
                             : new DicomUnlimitedCharacters(tag, data.GetAsStringArray().SingleOrDefault()),
                 "UI" => new DicomUniqueIdentifier(tag, (string[])data),
                 "UL" => data is IByteBuffer dataBufferUL
@@ -289,7 +289,7 @@ namespace FellowOakDicom.Serialization
                             ? new DicomUnsignedShort(tag, dataBufferUS)
                             : new DicomUnsignedShort(tag, (ushort[])data),
                 "UT" => data is IByteBuffer dataBufferUT
-                            ? new DicomUnlimitedText(tag, _jsonTextEncoding, dataBufferUT)
+                            ? new DicomUnlimitedText(tag, _jsonTextEncodings, dataBufferUT)
                             : new DicomUnlimitedText(tag, data.GetAsStringArray().GetSingleOrEmpty()),
                 "UV" => data is IByteBuffer dataBufferUV
                             ? new DicomUnsignedVeryLong(tag, dataBufferUV)

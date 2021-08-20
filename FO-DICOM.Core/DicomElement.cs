@@ -1121,11 +1121,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomLongString(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
-        {
-        }
-
         public DicomLongString(DicomTag tag, Encoding[] encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
@@ -1147,11 +1142,6 @@ namespace FellowOakDicom
 
         public DicomLongText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomLongText(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
         {
         }
 
@@ -1402,11 +1392,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomPersonName(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
-        {
-        }
-
         public DicomPersonName(DicomTag tag, Encoding[] encodings, IByteBuffer data)
             : base(tag, encodings, data)
         {
@@ -1544,11 +1529,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
-        {
-        }
-
         public DicomShortString(DicomTag tag, Encoding[] encodings, IByteBuffer data)
             : base(tag, encodings, data)
         {
@@ -1629,11 +1609,6 @@ namespace FellowOakDicom
 
         public DicomShortText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
         {
         }
 
@@ -1769,11 +1744,6 @@ namespace FellowOakDicom
 
         public DicomUnlimitedCharacters(DicomTag tag, params string[] values)
             : base(tag, values)
-        {
-        }
-
-        public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
         {
         }
 
@@ -1936,11 +1906,6 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
-        {
-        }
-
         public DicomUniversalResource(DicomTag tag, Encoding[] encodings, IByteBuffer data)
             : base(tag, encodings, data)
         {
@@ -1997,11 +1962,6 @@ namespace FellowOakDicom
 
         public DicomUnlimitedText(DicomTag tag, string value)
             : base(tag, value)
-        {
-        }
-
-        public DicomUnlimitedText(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, new [] { encoding }, data)
         {
         }
 

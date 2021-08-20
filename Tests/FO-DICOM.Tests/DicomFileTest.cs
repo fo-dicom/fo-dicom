@@ -37,7 +37,7 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset(_minimumDatatset)
             {
-                new DicomLongString(tag, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
+                new DicomLongString(tag, DicomEncoding.DefaultArray, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
             };
 
             var outFile = new DicomFile(dataset);
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset(_minimumDatatset)
             {
-                new DicomLongString(tag, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
+                new DicomLongString(tag, DicomEncoding.DefaultArray, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
             };
 
             var outFile = new DicomFile(dataset);

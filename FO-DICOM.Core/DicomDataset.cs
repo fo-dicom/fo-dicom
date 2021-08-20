@@ -22,7 +22,7 @@ namespace FellowOakDicom
         private readonly IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
-        private Encoding[] _defaultEncodings = { DicomEncoding.Default };
+        private Encoding[] _defaultEncodings = DicomEncoding.DefaultArray;
 
         #endregion
 
@@ -128,8 +128,7 @@ namespace FellowOakDicom
         internal Encoding[] TextEncodings
         {
             // TODO: get parent encoding for sequence item if SpecificCharacterSet is not present
-            get => TryGetValues<string>(DicomTag.SpecificCharacterSet, out var charsets) ? 
-                DicomEncoding.GetEncodings(charsets) : _defaultEncodings;
+            get => TryGetValues<string>(DicomTag.SpecificCharacterSet, out var charsets) ? DicomEncoding.GetEncodings(charsets) : _defaultEncodings;
             set
             {
                 _defaultEncodings = value;
@@ -1184,13 +1183,13 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.LO)
             {
-                if (values == null) return DoAdd(new DicomLongString(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomLongString(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomLongString(tag, values.Cast<string>().ToArray()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
             if (vr == DicomVR.LT)
             {
-                if (values == null) return DoAdd(new DicomLongText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomLongText(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
@@ -1262,13 +1261,13 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.PN)
             {
-                if (values == null) return DoAdd(new DicomPersonName(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomPersonName(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomPersonName(tag, values.Cast<string>().ToArray()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
             if (vr == DicomVR.SH)
             {
-                if (values == null) return DoAdd(new DicomShortString(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomShortString(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomShortString(tag, values.Cast<string>().ToArray()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
@@ -1304,7 +1303,7 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.ST)
             {
-                if (values == null) return DoAdd(new DicomShortText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomShortText(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
@@ -1331,7 +1330,7 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UC)
             {
-                if (values == null) return DoAdd(new DicomUnlimitedCharacters(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomUnlimitedCharacters(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedCharacters(tag, values.Cast<string>().ToArray()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
@@ -1367,7 +1366,7 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UR)
             {
-                if (values == null) return DoAdd(new DicomUniversalResource(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomUniversalResource(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 
@@ -1384,7 +1383,7 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UT)
             {
-                if (values == null) return DoAdd(new DicomUnlimitedText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
+                if (values == null) return DoAdd(new DicomUnlimitedText(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = TextEncodings }, allowUpdate);
             }
 

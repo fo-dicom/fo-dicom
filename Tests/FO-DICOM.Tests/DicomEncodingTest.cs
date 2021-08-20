@@ -57,7 +57,7 @@ namespace FellowOakDicom.Tests
                 { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
                 { DicomTag.SOPInstanceUID, "1.2.345.67890" }
             };
-            ds.AddOrUpdate(new DicomPersonName(DicomTag.PatientName, DicomEncoding.Default, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO_IR 100").GetBytes("Hölzl^Günther"))));
+            ds.AddOrUpdate(new DicomPersonName(DicomTag.PatientName, DicomEncoding.DefaultArray, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO_IR 100").GetBytes("Hölzl^Günther"))));
             var firstFile = new DicomFile(ds);
             var filestream = new MemoryStream();
             firstFile.Save(filestream);
