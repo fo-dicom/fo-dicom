@@ -12,6 +12,7 @@
 * Update to DICOM Standard 2021b (#1189)
 * Do not validate VM for VRs OF, OL and OV (#1186)
 * Add possibility to add values for the VRs UV, SV and OV
+* Bug fix: Anonymizer not parsing items in sequences (#1202)
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)
