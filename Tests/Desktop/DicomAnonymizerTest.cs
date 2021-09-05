@@ -193,6 +193,51 @@ namespace Dicom
         }
 
         [Fact]
+        public void AnonymizeInPlace_SequenceToKeep_NestedDatasetsShouldBeParsed()
+        {
+            const string fileName = "GH610.dcm";
+            var tag1 = DicomTag.ROIContourSequence;
+            var tag2 = DicomTag.ContourSequence;
+            var tag3 = DicomTag.ContourImageSequence;
+            var generatedUid1 = DicomUIDGenerator.GenerateNew();
+            var generatedUid2 = DicomUIDGenerator.GenerateNew();
+
+#if NETFX_CORE
+            var dataset = Dicom.Helpers.ApplicationContent.OpenDicomFileAsync($"Data/{fileName}").Result.Dataset;
+#else
+            var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
+#endif      
+            dataset.Add(new DicomSequence(tag1, new DicomDataset(
+                new DicomSequence(tag2, new DicomDataset(
+                    new DicomSequence(tag3,
+                    new DicomDataset(
+                        new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUID, generatedUid1.UID),
+                        new DicomIntegerString(DicomTag.ReferencedFrameNumber, 1)
+                        ),
+                    new DicomDataset(
+                        new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUID, generatedUid2.UID),
+                        new DicomIntegerString(DicomTag.ReferencedFrameNumber, 2)
+                        )
+                    ))
+                ))
+            ));
+
+            var anonymizer = new DicomAnonymizer();
+            anonymizer.AnonymizeInPlace(dataset);
+
+            Assert.True(dataset.Contains(tag1));
+
+            var sequence1 = dataset.Get<DicomSequence>(tag1);
+            var sequence2 = sequence1.Items[0].Get<DicomSequence>(tag2);
+            var sequence3 = sequence2.Items[0].Get<DicomSequence>(tag3);
+            Assert.NotEqual(sequence3.Items[0].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID), sequence3.Items[1].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID));
+            Assert.NotEqual(generatedUid1, sequence3.Items[0].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID));
+            Assert.NotEqual(generatedUid2, sequence3.Items[1].Get<DicomUID>(DicomTag.ReferencedSOPInstanceUID));
+            Assert.Equal(1, sequence3.Items[0].Get<int>(DicomTag.ReferencedFrameNumber));
+            Assert.Equal(2, sequence3.Items[1].Get<int>(DicomTag.ReferencedFrameNumber));
+        }
+
+        [Fact]
         public void AnonymizeInPlace_BasicProfile()
         {
             const string fileName = "CT1_J2KI";
