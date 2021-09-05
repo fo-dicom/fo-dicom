@@ -188,6 +188,15 @@ namespace FellowOakDicom
                 var parenthesis = new[] { '(', ')' };
                 var tag = item.Tag.ToString().Trim(parenthesis);
                 var action = Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
+
+                if (item is DicomSequence sequenceItem && (action.Key == null || action.Value == SecurityProfileActions.K))
+                {
+                    foreach (DicomDataset sqDataset in sequenceItem)
+                    {
+                        AnonymizeInPlace(sqDataset);
+                    }
+                }
+
                 if (action.Key != null)
                 {
                     var vr = item.ValueRepresentation;
@@ -197,9 +206,18 @@ namespace FellowOakDicom
                         case SecurityProfileActions.U: // UID
                         case SecurityProfileActions.C: // Clean
                         case SecurityProfileActions.D: // Dummy
-                            if (vr == DicomVR.UI) ReplaceUID(dataset, item);
-                            else if (vr.ValueType == typeof(string)) ReplaceString(dataset, item, "ANONYMOUS");
-                            else BlankItem(dataset, item, true);
+                            if (vr == DicomVR.UI)
+                            {
+                                ReplaceUID(dataset, item);
+                            }
+                            else if (vr.ValueType == typeof(string))
+                            {
+                                ReplaceString(dataset, item, "ANONYMOUS");
+                            }
+                            else
+                            {
+                                BlankItem(dataset, item, true);
+                            }
                             break;
                         case SecurityProfileActions.K: // Keep
                             break;
@@ -227,16 +245,6 @@ namespace FellowOakDicom
             dataset.Remove(item => toRemove.Contains(item));
         }
 
-        /// <summary>Clones and anonymizes a dataset</summary>
-        /// <param name="dataset">The dataset to be cloned and anonymized</param>
-        /// <returns>Anonymized dataset.</returns>
-        public DicomDataset Anonymize(DicomDataset dataset)
-        {
-            var clone = dataset.Clone();
-            AnonymizeInPlace(clone);
-            return clone;
-        }
-
         /// <summary>Anonymizes the dataset of an existing Dicom file</summary>
         /// <param name="file">The file containing the dataset to be altered</param>
         public void AnonymizeInPlace(DicomFile file)
@@ -246,6 +254,16 @@ namespace FellowOakDicom
             {
                 file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             }
+        }
+
+        /// <summary>Clones and anonymizes a dataset</summary>
+        /// <param name="dataset">The dataset to be cloned and anonymized</param>
+        /// <returns>Anonymized dataset.</returns>
+        public DicomDataset Anonymize(DicomDataset dataset)
+        {
+            var clone = dataset.Clone();
+            AnonymizeInPlace(clone);
+            return clone;
         }
 
         /// <summary>Creates a new Dicom file with an anonymized dataset</summary>
