@@ -13,34 +13,25 @@ namespace FellowOakDicom.Tests
     /// <summary>
     /// A fixture that configures the default services used in FellowOakDicom.
     /// </summary>
-    public class GlobalFixture : FixtureBase<ConsoleLogManager>
+    public class GlobalFixture : IDisposable
     {
-    }
 
-    /// <summary>
-    /// A fixture that configures the default services used in FellowOakDicom,
-    /// except for the LogManager, which is replaced by a the CollectingConsoleLogManager
-    /// to allow testing log messages.
-    /// </summary>
-    public class LogCollectingFixture : FixtureBase<CollectingConsoleLogManager>
-    {
-    }
-
-    public class FixtureBase<TLogManager> : IDisposable where TLogManager : class, ILogManager
-    {
-        protected FixtureBase()
+        public GlobalFixture()
         {
-            var serviceCollection = new ServiceCollection().AddFellowOakDicom();
-            // a ConsoleLogManager is already added
-            if (typeof(TLogManager) != typeof(ConsoleLogManager))
-            {
-                serviceCollection = serviceCollection.AddLogManager<TLogManager>();
-            }
+            var serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom();
 
             var defaultServiceProvider = serviceCollection.BuildServiceProvider();
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
 
 #if !NET462
+
+            serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddLogManager<CollectingConsoleLogManager>();
+
+            var collectionLogServiceProvider = serviceCollection.BuildServiceProvider();
+            serviceProviders.Register("Logging", collectionLogServiceProvider);
 
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
@@ -73,7 +64,7 @@ namespace FellowOakDicom.Tests
     }
 
     [CollectionDefinition("Logging")]
-    public class LoggingCollection : ICollectionFixture<LogCollectingFixture>
+    public class LoggingCollection : ICollectionFixture<GlobalFixture>
     {
     }
 
