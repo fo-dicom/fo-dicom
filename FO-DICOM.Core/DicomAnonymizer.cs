@@ -400,7 +400,7 @@ namespace FellowOakDicom
         /// <param name="newString">The replacement string.</param>
         private static void ReplaceString(DicomDataset dataset, DicomItem item, string newString)
         {
-            dataset.AddOrUpdate(item.Tag, newString);
+            dataset.AddOrUpdate(item.ValueRepresentation, item.Tag, newString);
         }
 
         /// <summary>

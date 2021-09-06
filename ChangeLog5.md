@@ -8,6 +8,7 @@
 * Do not validate VM for VRs OF, OL and OV (#1186)
 * Add possibility to add values for the VRs UV, SV and OV
 * Bug fix: Anonymizer not parsing items in sequences (#1202)
+* Fix anonymization of string values in private tags with VR UN
 
 #### 5.0.0-alpha5 (2021-05-25)
 
