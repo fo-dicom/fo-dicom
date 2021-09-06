@@ -158,9 +158,16 @@ namespace FellowOakDicom
             { "ISO 2022 GBK", "GBK" }, // Chinese (Simplified) Extended (supersedes GB2312)
         };
 
+        /// <summary>
+        /// The known encodings with character replacement fallback handlers.
+        /// </summary>
         private static readonly IDictionary<string, Encoding> _knownEncodings =
             new Dictionary<string, Encoding>();
 
+        /// <summary>
+        /// The known encodings with exception fallback handlers.
+        /// Used to detect encoding/decoding errors.
+        /// </summary>
         private static readonly IDictionary<int, Encoding> _strictEncodings =
             new Dictionary<int, Encoding>();
 
@@ -322,7 +329,7 @@ namespace FellowOakDicom
                     if (delimiters.Contains(fragment[i]))
                     {
                         // the encoding is reset after a delimiter
-                        return GetStringFromEncoding(fragment, encoding, seqLength, i) +
+                        return GetStringFromEncoding(fragment, encoding, seqLength, i - seqLength) +
                                GetStringFromEncoding(fragment, encodings[0], i, fragment.Length - i);
                     }
                 }
@@ -346,16 +353,8 @@ namespace FellowOakDicom
             }
         }
 
-        private static ILogger _logger;
-
-        private static ILogger Logger
-        {
-            get
-            {
-                _logger ??= Setup.ServiceProvider.GetRequiredService<ILogManager>()
-                    .GetLogger("FellowOakDicom.DicomEncoding");
-                return _logger;
-            }
-        }
+        private static ILogger Logger =>
+            Setup.ServiceProvider.GetRequiredService<ILogManager>()
+                .GetLogger("FellowOakDicom.DicomEncoding");
     }
 }

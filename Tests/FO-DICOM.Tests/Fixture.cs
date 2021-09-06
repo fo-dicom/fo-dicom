@@ -4,23 +4,38 @@
 using System;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
+using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests
 {
     /// <summary>
+    /// A fixture that configures the default services used in FellowOakDicom.
+    /// </summary>
+    public class GlobalFixture : FixtureBase<ConsoleLogManager>
+    {
+    }
+
+    /// <summary>
     /// A fixture that configures the default services used in FellowOakDicom,
     /// except for the LogManager, which is replaced by a the CollectingConsoleLogManager
     /// to allow testing log messages.
     /// </summary>
-    public class GlobalFixture: IDisposable
+    public class LogCollectingFixture : FixtureBase<CollectingConsoleLogManager>
     {
+    }
 
-        public GlobalFixture()
+    public class FixtureBase<TLogManager> : IDisposable where TLogManager : class, ILogManager
+    {
+        protected FixtureBase()
         {
-            var serviceCollection = new ServiceCollection()
-                .AddFellowOakDicom().AddLogManager<CollectingConsoleLogManager>();
+            var serviceCollection = new ServiceCollection().AddFellowOakDicom();
+            // a ConsoleLogManager is already added
+            if (typeof(TLogManager) != typeof(ConsoleLogManager))
+            {
+                serviceCollection = serviceCollection.AddLogManager<TLogManager>();
+            }
 
             var defaultServiceProvider = serviceCollection.BuildServiceProvider();
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
@@ -51,27 +66,39 @@ namespace FellowOakDicom.Tests
         }
     }
 
+
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
+
+    [CollectionDefinition("Logging")]
+    public class LoggingCollection : ICollectionFixture<LogCollectingFixture>
+    {
+    }
 
     [CollectionDefinition("Network")]
     public class NetworkCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
 
     [CollectionDefinition("Imaging")]
     public class ImagingCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
 
     [CollectionDefinition("ImageSharp")]
     public class ImageSharpCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
 
     [CollectionDefinition("Validation")]
-    public class ValidationCollection: ICollectionFixture<GlobalFixture>
-    { }
+    public class ValidationCollection : ICollectionFixture<GlobalFixture>
+    {
+    }
 
     [CollectionDefinition("WithTranscoder")]
     public class WithTranscoderCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
 }

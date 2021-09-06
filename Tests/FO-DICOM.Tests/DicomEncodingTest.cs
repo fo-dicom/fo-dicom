@@ -12,7 +12,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests
 {
-    [Collection("General")]
+    [Collection("Logging")]
     public class DicomEncodingTest
     {
         [Fact]
