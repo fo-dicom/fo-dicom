@@ -4,7 +4,6 @@
 using System;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
-using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -24,14 +23,14 @@ namespace FellowOakDicom.Tests
             var defaultServiceProvider = serviceCollection.BuildServiceProvider();
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
 
-#if !NET462
-
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
                 .AddLogManager<CollectingConsoleLogManager>();
 
             var collectionLogServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register("Logging", collectionLogServiceProvider);
+
+#if !NET462
 
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
