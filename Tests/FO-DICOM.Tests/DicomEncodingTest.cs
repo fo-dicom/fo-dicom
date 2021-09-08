@@ -6,12 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Log;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests
 {
-
-    [Collection("General")]
+    [Collection("Logging")]
     public class DicomEncodingTest
     {
         [Fact]
@@ -26,8 +27,12 @@ namespace FellowOakDicom.Tests
         public void GetEncoding_NonMatchingCharset_ReturnsUSASCII()
         {
             var expected = Encoding.ASCII.CodePage;
+            var logCollector = NewLogCollector();
             var actual = DicomEncoding.GetEncoding("Invalid").CodePage;
             Assert.Equal(expected, actual);
+            Assert.Equal(1, logCollector.NumberOfWarnings);
+            var expectedWarning = "'Invalid' is not a valid DICOM encoding - using ASCII encoding instead.";
+            Assert.Equal(expectedWarning, logCollector.WarningAt(0));
         }
 
         [Fact]
@@ -57,22 +62,35 @@ namespace FellowOakDicom.Tests
                 { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
                 { DicomTag.SOPInstanceUID, "1.2.345.67890" }
             };
-            ds.AddOrUpdate(new DicomPersonName(DicomTag.PatientName, DicomEncoding.DefaultArray, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO_IR 100").GetBytes("Hölzl^Günther"))));
+            ds.AddOrUpdate(new DicomPersonName(DicomTag.PatientName, DicomEncoding.DefaultArray,
+                new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO_IR 100").GetBytes("Hölzl^Günther"))));
             var firstFile = new DicomFile(ds);
             var filestream = new MemoryStream();
             firstFile.Save(filestream);
 
             filestream.Flush();
 
+            var logCollector = NewLogCollector();
             filestream.Position = 0;
             var secondFile = DicomFile.Open(filestream);
-            // the dataset has be read with Default enconding ASCII and therefore "ö" and "ü" should not be recognized
+
+            // the dataset has been read with default ASCII encoding and therefore "ö" and "ü" should not be recognized
             Assert.Equal("H?lzl^G?nther", secondFile.Dataset.GetString(DicomTag.PatientName));
 
+            // a warning is issued on accessing the incorrectly decoded value
+            Assert.Equal(1, logCollector.NumberOfWarnings);
+            var expectedWarning =
+                "Could not decode string 'H?lzl^G?nther' with given encoding, using replacement characters.";
+            Assert.Equal(1, logCollector.NumberOfWarnings);
+            Assert.Equal(expectedWarning, logCollector.WarningAt(0));
+
+            logCollector.Reset();
             filestream.Position = 0;
             var thirdFile = DicomFile.Open(filestream, DicomEncoding.GetEncoding("ISO_IR 100"));
+
             // if reading with middle european encoding as fallback default the "ö" and "ü" should be recognized
             Assert.Equal("Hölzl^Günther", thirdFile.Dataset.GetString(DicomTag.PatientName));
+            Assert.Equal(0, logCollector.NumberOfWarnings);
         }
 
         [Theory]
@@ -96,7 +114,7 @@ namespace FellowOakDicom.Tests
 
             // combine ASCII text with text encoded with another single byte encoding
             // and use the respective code extension
-            var asciiPart = new byte[] {0x41, 0x53, 0x43, 0x49, 0x49}; // "ASCII"
+            var asciiPart = new byte[] { 0x41, 0x53, 0x43, 0x49, 0x49 }; // "ASCII"
             IByteBuffer buffer = new MemoryByteBuffer(asciiPart.Concat(rawData).ToArray());
 
             var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
@@ -113,7 +131,7 @@ namespace FellowOakDicom.Tests
                 new DicomCodeString(DicomTag.SpecificCharacterSet, "KOI 8"),
             };
             // Грозный^Иван encoded in KOI-8
-            var koi8Name = new byte[] {0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce};
+            var koi8Name = new byte[] { 0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce };
             IByteBuffer buffer = new MemoryByteBuffer(koi8Name);
             var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
             ds.Add(patientName);
@@ -135,7 +153,7 @@ namespace FellowOakDicom.Tests
                 DicomEncoding.RegisterEncoding("ISO IR 144", "koi8-r");
 
                 // Грозный^Иван encoded in KOI-8 instead of iso-8859-5
-                var koi8Name = new byte[] {0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce};
+                var koi8Name = new byte[] { 0xe7, 0xd2, 0xcf, 0xda, 0xce, 0xd9, 0xca, 0x5e, 0xe9, 0xd7, 0xc1, 0xce };
                 IByteBuffer buffer = new MemoryByteBuffer(koi8Name);
                 var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
                 ds.Add(patientName); // patient name would show gibberish
@@ -154,12 +172,12 @@ namespace FellowOakDicom.Tests
             var ds = DicomFile.Open(TestData.Resolve($"charset/chrSQEncoding.dcm")).Dataset;
             var sequence = ds.GetSequence(DicomTag.RequestedProcedureCodeSequence);
             var item = sequence.Items.First();
-            var expectedEncodings = new []
+            var expectedEncodings = new[]
             {
                 Encoding.GetEncoding("shift_jis"),
                 Encoding.GetEncoding("iso-2022-jp")
             };
-            Assert.Equal( expectedEncodings, item.GetEncodingsForSerialization());
+            Assert.Equal(expectedEncodings, item.GetEncodingsForSerialization());
             Assert.Equal("ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう", item.GetString(DicomTag.PatientName));
         }
 
@@ -169,12 +187,12 @@ namespace FellowOakDicom.Tests
             var ds = DicomFile.Open(TestData.Resolve($"charset/chrSQEncoding1.dcm")).Dataset;
             var sequence = ds.GetSequence(DicomTag.RequestedProcedureCodeSequence);
             var item = sequence.Items.First();
-            var expectedEncodings = new []
+            var expectedEncodings = new[]
             {
                 Encoding.GetEncoding("shift_jis"),
                 Encoding.GetEncoding("iso-2022-jp")
             };
-            Assert.Equal( expectedEncodings, item.GetEncodingsForSerialization());
+            Assert.Equal(expectedEncodings, item.GetEncodingsForSerialization());
             Assert.Equal("ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう", item.GetString(DicomTag.PatientName));
         }
 
@@ -185,30 +203,86 @@ namespace FellowOakDicom.Tests
             {
                 new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO IR 192"),
             };
+            var logCollector = NewLogCollector();
             // not a valid UTF-8 encoding
             var badName = new byte[] { 0xc4, 0xe9, 0xef, 0xed, 0xf5, 0xf3, 0xe9, 0xef, 0xf2 };
             IByteBuffer buffer = new MemoryByteBuffer(badName);
             var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
             ds.Add(patientName);
             Assert.Equal("���������", ds.GetString(DicomTag.PatientName));
+            Assert.Equal(1, logCollector.NumberOfWarnings);
+            var expectedMessage =
+                "Could not decode string '���������' with given encoding, using replacement characters.";
+            Assert.Equal(expectedMessage, logCollector.WarningAt(0));
+        }
+
+        [Fact]
+        public void AsciiUsedIfEncodingIsNotInCharacterSet()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomCodeString(DicomTag.SpecificCharacterSet, @"\ISO 2022 IR 100")
+            };
+            var logCollector = NewLogCollector();
+
+            // Buc^Jérôme encoded, but with the escape sequence  for the second component
+            // pointing to shift_jis instead of Latin-1
+            var name = new byte[]
+                { 0x1b, 0x2d, 0x41, 0x42, 0x75, 0x63, 0x5e, 0x1b, 0x28, 0x4a, 0x4a, 0xe9, 0x72, 0xf4, 0x6d, 0x65 };
+            IByteBuffer buffer = new MemoryByteBuffer(name);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
+            ds.Add(patientName);
+            Assert.Equal("Buc^J?r?me", ds.GetString(DicomTag.PatientName));
+            Assert.Equal(2, logCollector.NumberOfWarnings);
+            var expectedMessage =
+                "Found escape sequence for 'shift_jis', which is not defined";
+            Assert.StartsWith(expectedMessage, logCollector.WarningAt(0));
+            expectedMessage =
+                "Could not decode string 'J?r?me' with given encoding, using replacement characters.";
+            Assert.Equal(expectedMessage, logCollector.WarningAt(1));
+        }
+
+        [Fact]
+        public void AsciiUsedForUnknownEscapeSequence()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomCodeString(DicomTag.SpecificCharacterSet, @"\ISO 2022 IR 100")
+            };
+            var logCollector = NewLogCollector();
+
+            // Buc^Jérôme encoded, but with an invalid escape sequence instead of Latin-1 for the second component
+            var name = new byte[]
+                { 0x1b, 0x2d, 0x41, 0x42, 0x75, 0x63, 0x5e, 0x1b, 0x28, 0x4b, 0x4a, 0xe9, 0x72, 0xf4, 0x6d, 0x65 };
+            IByteBuffer buffer = new MemoryByteBuffer(name);
+            var patientName = new DicomPersonName(DicomTag.PatientName, ds.GetEncodingsForSerialization(), buffer);
+            ds.Add(patientName);
+            Assert.Equal("Buc^J?r?me", ds.GetString(DicomTag.PatientName));
+            Assert.Equal(2, logCollector.NumberOfWarnings);
+            var expectedMessage =
+                "Unknown escape sequence found in string, using ASCII encoding.";
+            Assert.Equal(expectedMessage, logCollector.WarningAt(0));
+            expectedMessage =
+                "Could not decode string 'J?r?me' with given encoding, using replacement characters.";
+            Assert.Equal(expectedMessage, logCollector.WarningAt(1));
         }
 
         public static readonly IEnumerable<object[]> FileNames = new[]
         {
-            new [] {"chrArab", "قباني^لنزار"},
-            new [] {"chrFren", "Buc^Jérôme"},
-            new [] {"chrGerm", "Äneas^Rüdiger"},
-            new [] {"chrGreek", "Διονυσιος"},
-            new [] {"chrH31", "Yamada^Tarou=山田^太郎=やまだ^たろう"},
-            new [] {"chrH32", "ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう"},
-            new [] {"chrHbrw", "שרון^דבורה"},
-            new [] {"chrI2", "Hong^Gildong=洪^吉洞=홍^길동"},
-            new [] {"chrJapMulti", "やまだ^たろう"},
-            new [] {"chrJapMultiExplicitIR6", "やまだ^たろう"},
-            new [] {"chrKoreanMulti", "김희중"},
-            new [] {"chrRuss", "Люкceмбypг"},
-            new [] {"chrX1", "Wang^XiaoDong=王^小東="},
-            new [] {"chrX2", "Wang^XiaoDong=王^小东="},
+            new[] { "chrArab", "قباني^لنزار" },
+            new[] { "chrFren", "Buc^Jérôme" },
+            new[] { "chrGerm", "Äneas^Rüdiger" },
+            new[] { "chrGreek", "Διονυσιος" },
+            new[] { "chrH31", "Yamada^Tarou=山田^太郎=やまだ^たろう" },
+            new[] { "chrH32", "ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう" },
+            new[] { "chrHbrw", "שרון^דבורה" },
+            new[] { "chrI2", "Hong^Gildong=洪^吉洞=홍^길동" },
+            new[] { "chrJapMulti", "やまだ^たろう" },
+            new[] { "chrJapMultiExplicitIR6", "やまだ^たろう" },
+            new[] { "chrKoreanMulti", "김희중" },
+            new[] { "chrRuss", "Люкceмбypг" },
+            new[] { "chrX1", "Wang^XiaoDong=王^小東=" },
+            new[] { "chrX2", "Wang^XiaoDong=王^小东=" },
         };
 
         public static readonly IEnumerable<object[]> EncodedNames = new[]
@@ -236,5 +310,13 @@ namespace FellowOakDicom.Tests
             new object[] { "ISO 2022 IR 166", "นามสกุล",
                 new byte[] { 0x1b, 0x2d, 0x54, 0xb9, 0xd2, 0xc1, 0xca, 0xa1, 0xd8, 0xc5 } }
         };
+
+        private CollectingConsoleLogger NewLogCollector()
+        {
+            var logger = (CollectingConsoleLogger) Setup.ServiceProvider.GetRequiredService<ILogManager>()
+                .GetLogger("FellowOakDicom.DicomEncoding");
+            logger.Reset();
+            return logger;
+        }
     }
 }

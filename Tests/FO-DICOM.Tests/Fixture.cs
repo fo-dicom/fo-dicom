@@ -9,6 +9,9 @@ using Xunit;
 
 namespace FellowOakDicom.Tests
 {
+    /// <summary>
+    /// A fixture that configures the default services used in FellowOakDicom.
+    /// </summary>
     public class GlobalFixture : IDisposable
     {
 
@@ -19,6 +22,13 @@ namespace FellowOakDicom.Tests
 
             var defaultServiceProvider = serviceCollection.BuildServiceProvider();
             var serviceProviders = new TestServiceProviderHost(defaultServiceProvider);
+
+            serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddLogManager<CollectingConsoleLogManager>();
+
+            var collectionLogServiceProvider = serviceCollection.BuildServiceProvider();
+            serviceProviders.Register("Logging", collectionLogServiceProvider);
 
 #if !NET462
 
@@ -49,27 +59,36 @@ namespace FellowOakDicom.Tests
 
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
+
+    [CollectionDefinition("Logging")]
+    public class LoggingCollection : ICollectionFixture<GlobalFixture>
+    {
+    }
 
     [CollectionDefinition("Network")]
     public class NetworkCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
 
     [CollectionDefinition("Imaging")]
     public class ImagingCollection : ICollectionFixture<GlobalFixture>
-    { }
+    {
+    }
 
     [CollectionDefinition("ImageSharp")]
     public class ImageSharpCollection : ICollectionFixture<GlobalFixture>
-    {}
+    {
+    }
 
     [CollectionDefinition("Validation")]
-    public class ValidationCollection: ICollectionFixture<GlobalFixture>
-    { }
+    public class ValidationCollection : ICollectionFixture<GlobalFixture>
+    {
+    }
 
     [CollectionDefinition("WithTranscoder")]
-    public class WidthTranscoderCollection : ICollectionFixture<GlobalFixture>
-    { }
-
-
+    public class WithTranscoderCollection : ICollectionFixture<GlobalFixture>
+    {
+    }
 }

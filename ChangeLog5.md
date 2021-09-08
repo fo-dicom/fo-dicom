@@ -7,6 +7,7 @@
 * Add possibility to register additional encodings via `DicomEncoding.RegisterEncoding()` 
 * Do not validate VM for VRs OF, OL and OV (#1186)
 * Add possibility to add values for the VRs UV, SV and OV
+* Log warning messages on decoding errors (#1200)
 * Bug fix: Anonymizer not parsing items in sequences (#1202)
 * Fix anonymization of string values in private tags with VR UN
 
