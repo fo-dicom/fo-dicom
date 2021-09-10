@@ -1,4 +1,7 @@
-#### v.4.0.8 (TBD)
+#### v.4.0.9 (TBD)
+
+
+#### v.4.0.8 (09/10/2020)
 * Add missing properties to IDicomClient interface (#1171)
 * Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
 * Bug fix: Incorrect failed validation for Vr Type DS, both .NET Core and Framework (#1141)
