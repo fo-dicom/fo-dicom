@@ -16,20 +16,30 @@
       {
         "files": [ "**/*.yml" ],
         "src": "obj/api",
-        "dest": "api"
+        "dest": "api/"
       },
       {
-        "files": [ "*.md" ],
+        "files": [ "index.md", "toc.yml" ],
+      },
+      {
+        "files": [ "features.md", "toc.yml" ],
+        "src": "intro",
+        "dest": "intro/"
+      },
+      {
+        "files": [ "usage.md", "toc.yml" ],
+        "src": "usage",
+        "dest": "usage/"
       },
       {
         "files": [ "ChangeLog5.md", "Contributors.md" ],
         "src": "..",
-        "dest": "."
+        "dest": "usage/"
       },
       {
         "files": [ "CONTRIBUTING.md" ],
         "src": "../.github",
-        "dest": "."
+        "dest": "usage/"
       }
     ],
     "template": [
@@ -38,7 +48,7 @@
     ],
     "globalMetadata": {
       "_appTitle": "fo-dicom API",
-      "_enableSearch": true
+      "_enableSearch": "true"
     },
     "markdownEngineName": "markdig",
     "dest": "_site",

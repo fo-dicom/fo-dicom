@@ -1,0 +1,16 @@
+- name: User Documentation
+  items:
+  - name: Usage Notes
+    href: usage.md
+  - name: Upgrade from version 4 to version 5 (Wiki link)
+    href: https://github.com/fo-dicom/fo-dicom/wiki/Upgrade-from-version-4-to-version-5
+  - name: Sample applications (external repository)
+    href: https://github.com/fo-dicom/fo-dicom-samples        
+- name: Project Documentation
+  items:
+  - name: Release Notes
+    href: ChangeLog5.html
+  - name: Contributung Guidelines
+    href: CONTRIBUTING.html
+  - name: List of Contributers
+    href: Contributors.html

@@ -1,5 +1,4 @@
 - name: Usage
-  homepage: usage.md
+  href: usage/
 - name: API Documentation
-  href: _site/API/
-  homepage: toc.html
+  href: api/FellowOakDicom.html
