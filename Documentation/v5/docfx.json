@@ -5,7 +5,7 @@
         {
           "files": [ "**/*.cs" ],
           "exclude": [ "**/bin/**", "**/obj/**", "External/**" ],
-          "src": "../FO-DICOM.Core"
+          "src": "../../FO-DICOM.Core"
         }
       ],
       "dest": "obj/api"
@@ -22,32 +22,32 @@
         "files": [ "index.md", "toc.yml" ],
       },
       {
-        "files": [ "features.md", "toc.yml" ],
-        "src": "intro",
-        "dest": "intro/"
-      },
-      {
-        "files": [ "usage.md", "toc.yml" ],
+        "files": [ "*.md", "toc.yml" ],
         "src": "usage",
         "dest": "usage/"
       },
       {
         "files": [ "ChangeLog5.md", "Contributors.md" ],
-        "src": "..",
-        "dest": "usage/"
+        "src": "../..",
+        "dest": "developer/"
+      },
+      {
+      "files": [ "*.md", "toc.yml" ],
+        "src": "developer",
+        "dest": "developer/"
       },
       {
         "files": [ "CONTRIBUTING.md" ],
-        "src": "../.github",
-        "dest": "usage/"
+       "src": "../../.github",
+        "dest": "developer/"
       }
     ],
     "template": [
       "default",
-      "templates/fo-dicom"
+      "../templates/fo-dicom"
     ],
     "globalMetadata": {
-      "_appTitle": "fo-dicom API",
+      "_appTitle": "fo-dicom 5 API",
       "_enableSearch": "true"
     },
     "markdownEngineName": "markdig",

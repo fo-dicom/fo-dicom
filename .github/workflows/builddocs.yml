@@ -36,13 +36,16 @@ jobs:
         run: |
           cd dev/Documentation
           set GenerateDocumentation=1
+          # dotnet build ../DICOM.Full.sln
           dotnet build ../FO-DICOM.Full.sln
-          docfx docfx.json
+          docfx v4/docfx.json
+          docfx v5/docfx.json
           cd ../../doc
           git config --global core.autocrlf false
           git config --global user.email "fo-dicom@noreply.com"
           git config --global user.name "CI Build"
-          cp -r ../dev/Documentation/_site/* dev
+          cp -r ../dev/Documentation/v4/_site/* dev/v4
+          cp -r ../dev/Documentation/v5/_site/* dev/v5
           git add -A
           if [ `git status -s | wc -l` = 0 ]; then
             echo "No changes in built documentation, skipping"

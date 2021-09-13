@@ -1,0 +1,57 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "**/*.cs" ],
+          "exclude": [ "**/bin/**", "**/obj/**", "External/**" ],
+          "src": "../../DICOM"
+        }
+      ],
+      "dest": "obj/api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "**/*.yml" ],
+        "src": "obj/api",
+        "dest": "api/"
+      },
+      {
+        "files": [ "index.md", "toc.yml" ],
+      },
+      {
+        "files": [ "*.md", "toc.yml" ],
+        "src": "usage",
+        "dest": "usage/"
+      },
+      {
+        "files": [ "ChangeLog.md", "Contributors.md" ],
+        "src": "../..",
+        "dest": "developer/"
+      },
+      {
+     "files": [ "*.md", "toc.yml" ],
+        "src": "developer",
+        "dest": "developer/"
+      },
+      {
+        "files": [ "CONTRIBUTING.md" ],
+        "src": "../../.github",
+        "dest": "developer/"
+      }
+    ],
+    "template": [
+      "default",
+      "../templates/fo-dicom"
+    ],
+    "globalMetadata": {
+      "_appTitle": "fo-dicom 4 API",
+      "_enableSearch": "true"
+    },
+    "markdownEngineName": "markdig",
+    "dest": "_site",
+    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ]
+  }
+}

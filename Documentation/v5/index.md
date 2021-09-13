@@ -1,4 +1,4 @@
-# fo-dicom Documentation
+# Documentation for fo-dicom version 5
 
 Fellow Oak DICOM, a DICOM toolkit in C# for all .NET Standard 2.0 compatible frameworks
 
