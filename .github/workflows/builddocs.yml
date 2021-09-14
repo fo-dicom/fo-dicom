@@ -17,7 +17,7 @@ jobs:
       - name: Checkout development
         uses: actions/checkout@v2
         with:
-          # replace with development
+          # TODO: replace with development
           ref: autodoc
           path: dev
       - name: Get last commit message
@@ -25,11 +25,14 @@ jobs:
           cd dev
           echo "LAST_COMMIT=$(echo `git log -1 --pretty=%B`)" >> $GITHUB_ENV
           cd ..
-      - name: Checkout gh-pages
-        uses: actions/checkout@v2
-        with:
-          ref: gh-pages
-          path: doc
+      - name: Checkout gh-pages repository
+        env: 
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        run: |
+          # TODO: replace with fo-dicom user
+          git clone https://$API_TOKEN_GITHUB@github.com/mrbean-bremen/fo-dicom.github.io doc
+          cd doc
+          git checkout master
       - name: Install requirements
         run: choco install docfx -y
       - name: Build documentation
@@ -51,5 +54,5 @@ jobs:
             echo "No changes in built documentation, skipping"
             exit 0
           fi
-          git commit -m "$LAST_COMMIT" -q
-          git push origin gh-pages -q
+          git commit -m "$LAST_COMMIT"
+          git push origin master
