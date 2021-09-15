@@ -12,6 +12,8 @@ timeout /T 5
 
 @dotnet build ./../Platform/FO-DICOM.Imaging.ImageSharp/FO-DICOM.Imaging.ImageSharp.csproj --configuration Release
 
+@dotnet build ./../Logging/FO-DICOM.NLog/FO-DICOM.NLog.csproj --configuration Release
+
 
 echo.
 echo fo-dicom NuGet package builder for FO-DICOM.Imaging.Desktop
