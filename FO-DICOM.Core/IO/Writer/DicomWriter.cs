@@ -300,7 +300,7 @@ namespace FellowOakDicom.IO.Writer
 
         private static void WriteBuffer(IByteTarget target, IByteBuffer buffer, uint largeObjectSize)
         {
-            var offset = 0;
+            long offset = 0;
             var remainingSize = buffer.Size;
 
             while (remainingSize > largeObjectSize)
@@ -316,7 +316,7 @@ namespace FellowOakDicom.IO.Writer
 
         private static async Task WriteBufferAsync(IByteTarget target, IByteBuffer buffer, uint largeObjectSize)
         {
-            var offset = 0;
+            long offset = 0;
             var remainingSize = buffer.Size;
 
             while (remainingSize > largeObjectSize)
