@@ -1,5 +1,6 @@
 #### 5.0.1 (TBD)
 
+* Fix IO Exception with >2GB images (#1148)
 
 #### 5.0.0 (2021-09-13)
 
