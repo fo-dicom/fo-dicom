@@ -1,5 +1,5 @@
 #### 5.0.1 (TBD)
-
+* Add generated API documentation for versions 4 and 5
 
 #### 5.0.0 (2021-09-13)
 

@@ -28,7 +28,7 @@
   items:
   - name: Logging configuration  
     href: logging_config.html
-- name: Miscelleneous
+- name: Miscellaneous
   items:
   - name: Upgrade from version 4 to version 5
     href: upgrade4to5.html

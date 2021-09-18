@@ -45,8 +45,12 @@ Package | Description
 [fo-dicom.Drawing](https://www.nuget.org/packages/fo-dicom.Drawing/) | .NET Core library providing *System.Drawing* based image rendering and printing
 [fo-dicom.ImageSharp](https://www.nuget.org/packages/fo-dicom.ImageSharp/) | .NET Standard library providing *SixLabors.ImageSharp* based image rendering
 
-### API Documentation
-The API documentation for the core library (represented by *fo-dicom.Desktop*) and the *log4net*, *NLog* and *Serilog* connectors is available [here](https://fo-dicom.github.io/).
+### Documentation
+Documentation, including API documentation, is available via GitHub pages:
+- documentation for the latest release for [fo-dicom 4](https://fo-dicom.github.io/fo-dicom.github.io/stable/v4/index.html) and
+  [fo-dicom 5](https://fo-dicom.github.io/fo-dicom.github.io/stable/v5/index.html)
+- documentation for the development version for [fo-dicom 4](https://fo-dicom.github.io/fo-dicom.github.io/dev/v4/index.html) and
+  [fo-dicom 5](https://fo-dicom.github.io/fo-dicom.github.io/dev/v5/index.html)
 
 ### Usage Notes
 
