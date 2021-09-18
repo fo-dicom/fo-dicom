@@ -10,64 +10,69 @@
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
 
 ### Features
-* Portable Class Library (PCL)
-* Targets .NET 4.5 and higher, .NET Core (.NET Standard 1.3 and higher), Universal Windows Platform, Xamarin iOS, Xamarin Android, Mono and Unity
-* DICOM dictionary version 2018b
+* Targets .NET Standard 2.0
+* DICOM dictionary version 2021b
 * High-performance, fully asynchronous `async`/`await` API
-* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (limited on .NET Core, Xamarin, Mono and Unity platforms)
+* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (via additional package)
 * Supports very large datasets with content loading on demand
-* Platform-specific image rendering
-* JSON support
-* XML export
+* Image rendering to System.Drawing.Bitmap or SixLabors.ImageSharp
+* JSON and XML export/import
 * Anonymization
+* DICOM services
+* Customize components via DI container 
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
 
 ### NuGet Packages
-*Valid for version 3.1.0 (incl. pre-releases) and later*
+*Valid for version 5.0.0 and later*
 
 Package | Description
 ------- | -----------
-[fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Dependencies package including core libraries for Microsoft and Xamarin platforms
-[fo-dicom.Portable](https://www.nuget.org/packages/fo-dicom.Portable/) | Core library for PCL Profile 111
-[fo-dicom.Desktop](https://www.nuget.org/packages/fo-dicom.Desktop/) | Core library and native codec libraries for .NET 4.5.2 and higher
-[fo-dicom.NetCore](https://www.nuget.org/packages/fo-dicom.NetCore/) | Core library for .NET Core applications, Level 1.3 and higher
-[fo-dicom.Universal](https://www.nuget.org/packages/fo-dicom.Universal/) | Core library and native codec libraries for Universal Windows Platform
-[fo-dicom.Android](https://www.nuget.org/packages/fo-dicom.Android/) | Core library for Xamarin Android
-[fo-dicom.iOS](https://www.nuget.org/packages/fo-dicom.iOS/) | Core library for Xamarin iOS (Unified)
-[fo-dicom.Mono](https://www.nuget.org/packages/fo-dicom.Mono/) | Core library for Mono 4.5 and higher
-[fo-dicom.log4net](https://www.nuget.org/packages/fo-dicom.log4net/) | .NET connector to enable *fo-dicom* logging with log4net
-[fo-dicom.MetroLog](https://www.nuget.org/packages/fo-dicom.MetroLog/) | PCL Profile 111 connector to enable *fo-dicom* logging with MetroLog
+[fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Core package containing parser, services and tools.
+[fo-dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with referencte to System.Drawing, required for rendering into Bitmaps
+[fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Desktop/) | Library with reference to ImageSharp, can be used for platform independent rendering
 [fo-dicom.NLog](https://www.nuget.org/packages/fo-dicom.NLog/) | .NET connector to enable *fo-dicom* logging with NLog
-[fo-dicom.Serilog](https://www.nuget.org/packages/fo-dicom.Serilog/) | .NET connector to enable *fo-dicom* logging with Serilog
-[fo-dicom.Json](https://www.nuget.org/packages/fo-dicom.Json/) | PCL profile 111 library for JSON I/O support
-[fo-dicom.Drawing](https://www.nuget.org/packages/fo-dicom.Drawing/) | .NET Core library providing *System.Drawing* based image rendering and printing
-[fo-dicom.ImageSharp](https://www.nuget.org/packages/fo-dicom.ImageSharp/) | .NET Standard library providing *SixLabors.ImageSharp* based image rendering
+[fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform Dicom codecs for fo-dicom, developed by Efferent Health (https://github.com/Efferent-Health/fo-dicom.Codecs)
+
 
 ### API Documentation
-The API documentation for the core library (represented by *fo-dicom.Desktop*) and the *log4net*, *NLog* and *Serilog* connectors is available [here](https://fo-dicom.github.io/).
+The API documentation for the core library is available [here](https://fo-dicom.github.io/).
 
 ### Usage Notes
 
 #### Image rendering configuration
-Out-of-the-box, *fo-dicom* for .NET defaults to *Windows Forms*-style image rendering. To switch to WPF-style image rendering, call:
+Out-of-the-box, *fo-dicom* for defaults to a internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget packe you desire and then call:
 
-    ImageManager.SetImplementation(WPFImageManager.Instance);
+    new DicomSetupBuilder()
+        .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<WinFormsImageManager>())
+	.Build();
+	
+or
+
+    new DicomSetupBuilder()
+        .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>())
+	.Build();
+
+Then when rendering you can cast the IImage to the type by
+
+    var image = new DicomImage("filename.dcm");
+    var bitmap = image.RenderImage().As<Bitmap>();
+
+or
+
+    var image = new DicomImage("filename.dcm");
+    var shartimage = image.RenderImage().AsSharpImage();
 
 #### Logging configuration
-By default, logging defaults to the no-op `NullLogerManager`. On .NET, several log managers are available and can be enabled like this:
+By default, logging defaults to the no-op `NullLogerManager`. There are several logmanagers configurable within `DicomSetupBuilder` like
+
+    s.AddLogManager<ConsoleLogManager>()  // or ...
+    s.AddLogManager<NLogManager>()   // or ...
+    
 
     LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
     LogManager.SetImplementation(NLogManager.Instance);        // or ...
-
-On *Universal Windows Platform*, *Xamarin iOS*, *Xamarin Android* and *Mono* there is only one operational log manager available, namely `MetroLogManager.Instance`.
-
-#### Cross-platform development
-
-To facilitate cross-platform development, the core library is strong name signed and denoted *Dicom.Core.dll* on all platforms. From an assembly reference point-of-view this convention makes the core assemblies mutually replaceable. It is thus possible to develop a Portable Class Library that depends on the PCL *Dicom.Core* assembly, and when the developed Portable Class Library is used in a platform-specific application, the PCL *Dicom.Core* assembly can be replaced with the platform-specific *Dicom.Core* assembly without needing to re-build anything. *fo-dicom.Json* and *fo-dicom.MetroLog* are examples of portable class libraries that depend on the PCL *Dicom.Core.dll*.
-
-The assembly naming convention is often referred to as the [bait-and-switch trick](http://log.paulbetts.org/the-bait-and-switch-pcl-trick/). The *fo-dicom* package supports the *bait-and-switch trick* by automatically selecting the best suited *Dicom.Core* assembly depending on the targeted platform of the development project upon download from NuGet.
 
 ### Sample applications
 There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
@@ -80,7 +85,7 @@ that were previously included in the *Examples* sub-folder of the VS solutions.
 var file = DicomFile.Open(@"test.dcm");             // Alt 1
 var file = await DicomFile.OpenAsync(@"test.dcm");  // Alt 2
 
-var patientid = file.Dataset.Get<string>(DicomTag.PatientID);
+var patientid = file.Dataset.GetString(DicomTag.PatientID);
 
 file.Dataset.AddOrUpdate(DicomTag.PatientName, "DOE^JOHN");
 
@@ -95,13 +100,12 @@ await file.SaveAsync(@"output.dcm");  // Alt 2
 ```csharp
 var image = new DicomImage(@"test.dcm");
 image.RenderImage().AsBitmap().Save(@"test.jpg");                     // Windows Forms
-image.RenderImage().AsUIImage().AsJPEG().Save(@"test.jpg", true);     // iOS
 
 ```
 
 #### C-Store SCU
 ```csharp
-var client = new DicomClient("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
+var client = DicomClientFactory.Create("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 await client.AddRequestAsync(new DicomCStoreRequest(@"test.dcm"));
 await client.SendAsync();
 ```
@@ -110,7 +114,7 @@ await client.SendAsync();
 ```csharp
 var server = new DicomServer<DicomCEchoProvider>(12345);
 
-var client = new DicomClient("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
+var client = DicomClientFactory.Create("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 client.NegotiateAsyncOps();
 for (int i = 0; i < 10; i++)
     await client.AddRequestAsync(new DicomCEchoRequest());
@@ -124,7 +128,7 @@ cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
 	Console.WriteLine("Study UID: {0}", rp.Dataset.Get<string>(DicomTag.StudyInstanceUID));
 };
 
-var client = new DicomClient("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
+var client = DicomClientFactory.Create("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
 await client.AddRequestAsync(cfind);
 await client.SendAsync();
 ```
@@ -133,7 +137,7 @@ await client.SendAsync();
 ```csharp
 var cmove = new DicomCMoveRequest("DEST-AE", studyInstanceUid);
 
-var client = new DicomClient("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
+var client = DicomClientFactory.Create("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
 await client.AddRequestAsync(cmove);
 await client.SendAsync(); 
 ```
@@ -142,7 +146,7 @@ await client.SendAsync();
 ```csharp
 // It is better to increase 'associationLingerTimeoutInMs' default is 50 ms, which may not be
 // be sufficient
-var dicomClient = new Dicom.Network.Client.DicomClient("127.0.0.1", 12345, false, "SCU-AE", "SCP-AE",
+var dicomClient = DicomClientFactory.Create("127.0.0.1", 12345, false, "SCU-AE", "SCP-AE",
 DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs,5000);
 var txnUid = DicomUIDGenerator.GenerateDerivedFromUUID().UID;
 var nActionDicomDataSet = new DicomDataset
