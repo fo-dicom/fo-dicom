@@ -1,7 +1,7 @@
-Starting with version 2.0.0, *fo-dicom* supports asynchronous operations via the `async`/`await` pattern (or [Task-based Asynchronous Pattern, TAP](https://msdn.microsoft.com/en-us/library/hh873175.aspx)).
+*fo-dicom* supports asynchronous operations via the `async`/`await` pattern (or [Task-based Asynchronous Pattern, TAP](https://msdn.microsoft.com/en-us/library/hh873175.aspx)).
 
-### New API
-The public API has been extended with the following methods:
+### Asynchronous  API
+The public API has been extended with the following methods for asynchronous operation:
 
     DicomFile
     {
@@ -24,7 +24,7 @@ The public API has been extended with the following methods:
     }
 
 ### Usage
-To read a DICOM file asynchronously with this updated API, you can now make the call:
+To read a DICOM file asynchronously using this API, you can make the call:
 
     var dicomFile = await DicomFile.OpenAsync("some file name");
 

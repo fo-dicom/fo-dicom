@@ -1,3 +1,5 @@
+*This documentation may be outdated and shall be reworked for fo-dicom 5*
+
 **NOTE! This image rendering API applies from version 2.0.0 and to version 4.0.x of _fo-dicom_.**
 
 We have implemented an image abstraction layer that facilitates the adoption of *fo-dicom* image rendering functionality to various platforms.

@@ -1,3 +1,5 @@
+*This documentation is outdated and shall be reworked for fo-dicom 5*
+
 After updating the *fo-dicom* package via *NuGet* in for example your web application, you may encounter a reflection type load exception where the loader error property of that exception indicates that:
 > Dicom.dll version 1.0.0.xx couldn't be found.
 

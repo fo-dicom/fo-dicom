@@ -2,8 +2,6 @@
   items:
   - name: Prerequisites
     href: prerequisites.html
-  - name: Native codecs on .NET
-    href: native_codecs.html
   - name: Assembly binding redirect
     href: binding_redirect.html
 - name: Workflow

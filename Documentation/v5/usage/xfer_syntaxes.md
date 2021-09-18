@@ -1,3 +1,5 @@
+*This documentation may be outdated and shall be reworked for fo-dicom 5*
+
 Name | UID | Desktop<sup>1</sup> | Universal<sup>2</sup> | .NET&nbsp;Core | Android | &nbsp;iOS&nbsp; | Mono | Unity | Name
 --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | ---
 Implicit VR Little Endian<sup>3</sup> | 1.2.840.10008.1.2 | ✔️  | ✔️  | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | Implicit VR Little Endian
