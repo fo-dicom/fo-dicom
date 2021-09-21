@@ -1229,11 +1229,11 @@ namespace Dicom.Network
     /// <summary>Abort source</summary>
     public enum DicomAbortSource
     {
-        /// <summary>Unknown</summary>
-        Unknown = 0,
-
         /// <summary>Service user</summary>
-        ServiceUser = 1,
+        ServiceUser = 0,
+
+        /// <summary>Reserved</summary>
+        Reserved = 1,
 
         /// <summary>Service provider</summary>
         ServiceProvider = 2
