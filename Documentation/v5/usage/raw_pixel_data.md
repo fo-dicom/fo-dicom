@@ -3,15 +3,19 @@
 **A:**
 You can for example obtain the pixel data from a `DicomDataset` called `dataset` for a specific frame with index `idx` like this:
 
+```csharp
     var header = DicomPixelData.Create(dataset);
     var pixelData = PixelDataFactory.Create(header, idx);
+```
 
 The `PixelDataFactory.Create` creates different pixel data types depending on dataset properties such as bits allocated, pixel representation etc. Check the actual type of `pixelData` to obtain a pixel array that you can operate on:
 
+```csharp
     if (pixelData is GrayscalePixelDataU16) {
       ushort[] pixels = ((GrayscalePixelDataU16)pixelData).Data;
       ...
     }
+```
 
 etc.
 

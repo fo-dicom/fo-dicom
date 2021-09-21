@@ -4,9 +4,11 @@ The `Color32[]` property `GrayscaleColorMap` has been added to the `DicomImage` 
 
 Example of applying arbitrary color map and then render image:
 
+```csharp
     var di = new DicomImage(dicomFileName);
     di.GrayscaleColorMap = ColorTable.LoadLUT(lutFileName);
     var image = di.RenderImage();
+```
 
 By default, grayscale images are rendered via the `Monochrome1` or `Monochrome2` color tables: 
 
@@ -14,6 +16,7 @@ By default, grayscale images are rendered via the `Monochrome1` or `Monochrome2`
 
 To override this selection upon rendering, for example using a color table loaded from file via `ColorTable.LoadLUT` or by composing a 256 item `Color32` array, the following helper method can be applied to create an LUT that simultaneously accounts for the image properties specified in the dataset:
 
+```csharp
     public static ILUT CreateFromDataset(DicomDataset dataset, Color32[] colorTable)
     {
       var options = GrayscaleRenderOptions.FromDataset(dataset);
@@ -38,6 +41,7 @@ To override this selection upon rendering, for example using a color table loade
 
       return new PrecalculatedLUT(composite, options.BitDepth.MinimumValue, options.BitDepth.MaximumValue);
     }
+```
 
 Creating a composite LUT using a non-monochrome color table such as the "green-fire-blue" color scheme and rendering the same image via the `ImageGraphic.RenderImage(ILUT)` method would then yield the following result:
 

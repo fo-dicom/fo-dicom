@@ -1,9 +1,9 @@
 ## GetValue-Methods in DicomDataset
 
-Since **fo-dicom version 4.0.0** there is a new API to get data from
-DicomDataset
+In *fo-dicom* there is a API with various options to get data from
+DicomDataset in a typed way. 
 
-* *public T GetDicomItem<T>(DicomTag tag) where T:DicomItem*
+* `public T GetDicomItem<T>(DicomTag tag) where T:DicomItem`
 
   Gets the DicomItem of the specified tag.   
   *param T:* Type of the return value. Must inherit from DicomItem.
@@ -11,7 +11,7 @@ DicomDataset
   the instance.
   
   
-* *public DicomSequence GetSequence(DicomTag tag)*
+* `public DicomSequence GetSequence(DicomTag tag)`
 
   Gets the sequence of the specified tag.
   *param tag:* Requested DICOM tag.
@@ -20,7 +20,7 @@ DicomDataset
   is not a sequence
 
 
-* *public bool TryGetSequence(DicomTag tag, out DicomSequence sequence)*
+* `public bool TryGetSequence(DicomTag tag, out DicomSequence sequence)`
 
   Gets the sequence of the specifiedtag.
   *param tag:* Requested DICOM tag.
@@ -29,14 +29,14 @@ DicomDataset
   otherwise.
 
 
-* *public int GetValueCount(DicomTag tag)*
+* `public int GetValueCount(DicomTag tag)`
 
   Returns the number of values in the specified tag.
   *param tag:* Requested DICOM tag.
   *exception DicomDataException:* If the dataset does not contain tag.
 
 
-* *public T GetValue<T>(DicomTag tag, int index)*
+* `public T GetValue<T>(DicomTag tag, int index)`
 
   Gets the index-th element value of the specified tag.
   *type T:* Type of the return value. This cannot be an array type.
@@ -47,7 +47,7 @@ DicomDataset
   specified /// <paramref name="index">item index</paramref> is out-of-range.
 
 
-* *public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)*
+* `public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)`
 
   Tries to get the index-th element value of the specified tag.
   *type T:* Type of the return value. This cannot be an array type.    
@@ -58,7 +58,7 @@ DicomDataset
   otherwise `false`.
 
 
-* *public T GetValueOrDefault<T>(DicomTag tag, int index, T defaultValue)*
+* `public T GetValueOrDefault<T>(DicomTag tag, int index, T defaultValue)`
 
   Gets the index-th element value of the specified tag or the provided
   defaultValue if the requested value is not contained in the dataset.
@@ -69,7 +69,7 @@ DicomDataset
   does not exist.
 
 
-* *public T[] GetValues<T>(DicomTag tag)*
+* `public T[] GetValues<T>(DicomTag tag)`
 
   Gets the array of element values of the specified tag.
   *type T:* Type of the return value. This cannot be an array type.    
@@ -78,7 +78,7 @@ DicomDataset
   *exception DicomDataException:* If the dataset does not contain tag.
 
 
-* *public bool TryGetValues<T>(DicomTag tag, out T[] values)
+* `public bool TryGetValues<T>(DicomTag tag, out T[] values)`
 
   Tries to get the array of element values of the specified tag.
   *type T:* Type of the return value. This cannot be an array type.    
@@ -88,29 +88,25 @@ DicomDataset
   otherwise `false`.
 
 
-* *public T GetSingleValue<T>(DicomTag tag)*
+* `public T GetSingleValue<T>(DicomTag tag)`
 
-  Gets the element value of the specified tag, whose value multiplicity has to
-  be 1.
+  Gets the element value of the specified tag, whose value multiplicity has to be 1.
   *type T:* Type of the return value. This cannot be an array type.    
   *param tag:* Requested DICOM tag.    
   *returns:* Element values corresponding to tag.    
-  *exception DicomDataException:* If the dataset does not contain tag, is empty
-  or is multi-valued.
+  *exception DicomDataException:* If the dataset does not contain tag, is empty or is multi-valued.
 
 
-* *public bool TryGetSingleValue<T>(DicomTag tag, out T value)
+* `public bool TryGetSingleValue<T>(DicomTag tag, out T value)`
 
-  Tries to get the element value of the specified tag, whose value multiplicity
-  has to be 1.*
+  Tries to get the element value of the specified tag, whose value multiplicity has to be 1.
   *type T:* Type of the return value. This cannot be an array type.    
   *param tag:* Requested DICOM tag.    
   *param elementValue:* Element value corresponding to tag.    
-  *returns:* Returns `true` if the element values could be exctracted,
-  otherwise `false`.
+  *returns:* Returns `true` if the element values could be exctracted, otherwise `false`.
 
 
-* *public T GetSingleValueOrDefault<T>(DicomTag tag, T defaultValue)*
+* `public T GetSingleValueOrDefault<T>(DicomTag tag, T defaultValue)`
 
   Gets the element value of the specified tag, whose value multiplicity has to
   be 1, or the provided defaultValue if the element value does not exist.
@@ -120,7 +116,7 @@ DicomDataset
   does not exist.
   
 
-* *public string GetString(DicomTag tag)*
+* `public string GetString(DicomTag tag)`
 
   Gets a string representation of the value of the specified tag.  
   *param tag:* Requested DICOM tag.    
@@ -128,7 +124,7 @@ DicomDataset
   *exception DicomDataException:* If the dataset does not contain tag.
 
 
-* *public bool TryGetString(DicomTag tag, out string stringValue)*
+* `public bool TryGetString(DicomTag tag, out string stringValue)`
 
   Tries to get a string representation of the value of the specified tag.
   *param tag:* Requested DICOM tag.    

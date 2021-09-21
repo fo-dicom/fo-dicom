@@ -8,7 +8,7 @@ Out-of-the-box, fo-dicom for .NET defaults to Windows Forms-style image renderin
 
 By default, logging defaults to the no-op NullLogerManager. Several log managers are available and can be enabled like this:
 
-```cs
+```csharp
 LogManager.SetImplementation(ConsoleLogManager.Instance); // or ...
 
 LogManager.SetImplementation(NLogManager.Instance); // or ...

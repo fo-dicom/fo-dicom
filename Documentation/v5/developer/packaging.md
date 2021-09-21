@@ -1,14 +1,7 @@
-### Visual Studio 2017 build tools
-**Setup/01_Build.cmd** is now updated to use Visual Studio 2017 build tools. When running the command file, error messages may occur at the beginning of the run, similar to the following:
+### Visual Studio build tools
 
-> DICOM.Universal.csproj: error MSB4019: The imported project "C:\Program Files (x86)\MSBuild\Microsoft\WindowsXaml\v15.0\Microsoft.Windows.UI.Xaml.CSharp.targets" was not found. Confirm that the path in the <Import> declaration is correct, and that the file exists on disk.
+**Setup/00_BuildAndPack5.cmd** can help you to build and package the projects, that are also available on nuget.
 
-These errors do not seem to have any impact on the actual build, but should nevertheless be avoided.
+The path of *dotnet.exe* has to be included in `path` environment variable, so that the script can run successfully.
 
-As far as I have been able to find out, the errors are due to a mismatch in the **msbuild** installation related to Visual Studio 2017. The problem is most easily solved by:
-
-1. Creating a folder *v15.0* in the *C:\Program Files (x86)\MSBuild\Microsoft\WindowsXaml* folder.
-2. From the folder *C:\Program Files (x86)\MSBuild\Microsoft\WindowsXaml\v14.0*, copy the following files:
-    * Microsoft.Windows.UI.Xaml.Common.Targets
-    * Microsoft.Windows.UI.Xaml.CPP.Targets
-    * Microsoft.Windows.UI.Xaml.CSharp.Targets
+The projects, that are targeting .Net Standard or .Net Core are built in release confguration and automatically create nuget packages. This feature is not available in projects that target Net Framework. So for `FO-DICOM.Imaging.Desktop` a call to *nuget.exe* has to be done to create a package for this project.

@@ -2,6 +2,7 @@ To add private tags to the default DICOM dictionary in *fo-dicom* so that tag de
 
 The private tags file should have the same layout as the [Private Dictionary.xml](https://github.com/fo-dicom/fo-dicom/blob/development/DICOM/Dictionaries/Private%20Dictionary.xml) file in the repository:
 
+```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <dictionaries>
       <dictionary creator="PRIVATE CREATOR #1">
@@ -15,7 +16,10 @@ The private tags file should have the same layout as the [Private Dictionary.xml
       </dictionary>
       ...
     </dictionaries>
+```
 
 Then, in your code, add the following line to add the private tags to the collection of existing standard and private tags:
 
+```csharp
     DicomDictionary.Default.Load("path_to_your_private_tags.xml", DicomDictionaryFormat.XML);
+```

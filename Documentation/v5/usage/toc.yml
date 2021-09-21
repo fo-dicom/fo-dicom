@@ -2,8 +2,6 @@
   items:
   - name: Prerequisites
     href: prerequisites.html
-  - name: Assembly binding redirect
-    href: binding_redirect.html
 - name: Workflow
   items:
   - name: Asynchronous operations

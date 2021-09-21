@@ -3,8 +3,8 @@
 Fellow Oak DICOM, a DICOM toolkit in C# for all .NET Standard 2.0 compatible frameworks.
 
 _Note_:
-`fo-dicom 5` is the first version based on .NET Standard 2.0, earlier versions used Portable Class Library (PCL) instead.
-If you still need to rely on PCL, check the latest `fo-dicom 4.x` release and the respective documentation.
+`fo-dicom 5` is the first version based on .NET Standard 2.0, earlier versions are available targeting Portable Class Library (PCL), NetFramework, Xamarin, Mono, Unity or NetCore instead.
+If you still need to rely on PCL or on one of the other listed frameworks, check the latest `fo-dicom 4.x` release and the respective documentation.
 
 ## Main features
 - Targets .NET Standard 2.0 and will work on all platform supporting that standard
@@ -30,3 +30,4 @@ Package | Description
 [fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Desktop/) | Library with reference to ImageSharp, can be used for platform independent rendering
 [fo-dicom.NLog](https://www.nuget.org/packages/fo-dicom.NLog/) | .NET connector to enable `fo-dicom` logging with NLog
 [fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform DICOM codecs for `fo-dicom`, developed by [Efferent Health] (https://github.com/Efferent-Health/fo-dicom.Codecs)
+

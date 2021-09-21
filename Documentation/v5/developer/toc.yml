@@ -1,7 +1,9 @@
+- name: Developer
+  href: index.html
 - name: Build process
   items:
   - name: Build Notes
-    href: prerequisites.html
+    href: buildnotes.html
   - name: NuGet packaging
     href: packaging.html
 - name: Contributing

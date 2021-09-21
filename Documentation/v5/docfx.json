@@ -47,7 +47,7 @@
       "../templates/fo-dicom"
     ],
     "globalMetadata": {
-      "_appTitle": "fo-dicom 5 API",
+      "_appTitle": "Fellow Oak DICOM 5 API",
       "_enableSearch": "true"
     },
     "markdownEngineName": "markdig",

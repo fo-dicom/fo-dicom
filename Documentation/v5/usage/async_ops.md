@@ -3,6 +3,7 @@
 ### Asynchronous  API
 The public API has been extended with the following methods for asynchronous operation:
 
+```csharp
     DicomFile
     {
       Task SaveAsync(string fileName)
@@ -22,18 +23,25 @@ The public API has been extended with the following methods for asynchronous ope
     {
       Task SendAsync(DicomClientCancellationMode cancellationMode, CancellationToken cancellationToken);
     }
+```
 
 ### Usage
 To read a DICOM file asynchronously using this API, you can make the call:
 
+```csharp
     var dicomFile = await DicomFile.OpenAsync("some file name");
+```
 
 To save an existing file:
 
+```csharp
     await dicomFile.SaveAsync("some other file name");
+```
 
 To asynchronously send a service request to some DICOM server:
 
+```csharp
     var client = new DicomClient("DICOMSERVER", 11112, false, "SCU", "ANY-SCP");
     await client.AddRequestAsync(new DicomCEchoRequest());
     await client.SendAsync();
+```
