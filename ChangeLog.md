@@ -1,4 +1,5 @@
 #### v.4.0.9 (TBD)
+* Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 
 
 #### v.4.0.8 (09/10/2020)
