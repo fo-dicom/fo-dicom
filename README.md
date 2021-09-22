@@ -36,8 +36,13 @@ Package | Description
 [fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform Dicom codecs for fo-dicom, developed by Efferent Health (https://github.com/Efferent-Health/fo-dicom.Codecs)
 
 
-### API Documentation
-The API documentation for the core library is available [here](https://fo-dicom.github.io/).
+### Documentation
+Documentation, including API documentation, is available via GitHub pages:
+- documentation for the latest release for [fo-dicom 4](https://fo-dicom.github.io/fo-dicom.github.io/stable/v4/index.html) and
+  [fo-dicom 5](https://fo-dicom.github.io/fo-dicom.github.io/stable/v5/index.html)
+- documentation for the development version for [fo-dicom 4](https://fo-dicom.github.io/fo-dicom.github.io/dev/v4/index.html) and
+  [fo-dicom 5](https://fo-dicom.github.io/fo-dicom.github.io/dev/v5/index.html)
+
 
 ### Usage Notes
 

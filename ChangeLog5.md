@@ -1,5 +1,6 @@
 #### 5.0.1 (TBD)
 
+* Add generated API documentation for versions 4 and 5
 * Fix IO Exception with >2GB images (#1148)
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 
