@@ -23,7 +23,7 @@ jobs:
           cd dev
           echo "LAST_COMMIT=$(echo `git log -1 --pretty=%B`)" >> $GITHUB_ENV
           cd ..
-      - name: Checkout gh-pages repository
+      - name: Checkout documentation repository
         env: 
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         run: |
