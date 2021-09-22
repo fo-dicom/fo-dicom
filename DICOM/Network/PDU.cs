@@ -1232,8 +1232,8 @@ namespace Dicom.Network
         /// <summary>Service user</summary>
         ServiceUser = 0,
 
-        /// <summary>Reserved</summary>
-        Reserved = 1,
+        /// <summary>Unknown</summary>
+        Unknown = 1,
 
         /// <summary>Service provider</summary>
         ServiceProvider = 2
