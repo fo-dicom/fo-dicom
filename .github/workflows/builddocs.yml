@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - development
-      - autodoc
 
 defaults:
   run:
@@ -17,8 +16,7 @@ jobs:
       - name: Checkout development
         uses: actions/checkout@v2
         with:
-          # TODO: replace with development
-          ref: autodoc
+          ref: development
           path: dev
       - name: Get last commit message
         run: |
@@ -29,8 +27,7 @@ jobs:
         env: 
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         run: |
-          # TODO: replace with fo-dicom user
-          git clone https://$API_TOKEN_GITHUB@github.com/mrbean-bremen/fo-dicom.github.io doc
+          git clone https://$API_TOKEN_GITHUB@github.com/fo-dicom/fo-dicom.github.io doc
           cd doc
           git checkout master
       - name: Install requirements
