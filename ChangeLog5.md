@@ -3,6 +3,7 @@
 * Add generated API documentation for versions 4 and 5
 * Fix IO Exception with >2GB images (#1148)
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
+* Vulnerability fix: Use secure version of `System.Text.Encodings.Web` package (#1223) 
 
 #### 5.0.0 (2021-09-13)
 
