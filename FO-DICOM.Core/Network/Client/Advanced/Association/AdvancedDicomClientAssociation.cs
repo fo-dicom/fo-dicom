@@ -53,7 +53,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _eventCollectorCts = new CancellationTokenSource();
-            _eventCollector = Task.Run(CollectEvents);
+            _eventCollector = Task.Run(() => CollectEventsAsync(_eventCollectorCts.Token));
             _requestChannels = new ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>>();
             _associationChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
@@ -65,9 +65,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             Association = association ?? throw new ArgumentNullException(nameof(association));
         }
 
-        private async Task CollectEvents()
+        private async Task CollectEventsAsync(CancellationToken cancellationToken)
         {
-            await foreach (var @event in _connection.Callbacks.GetEvents(_eventCollectorCts.Token).ConfigureAwait(false))
+            await foreach (var @event in _connection.Callbacks.GetEvents(cancellationToken).ConfigureAwait(false))
             {
                 switch (@event)
                 {
