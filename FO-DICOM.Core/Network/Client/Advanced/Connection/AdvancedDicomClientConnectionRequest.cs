@@ -14,5 +14,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public ILogger Logger { get; set; }
 
         public Encoding FallbackEncoding { get; set; }
+
+        public AdvancedDicomClientConnectionRequestHandlers RequestHandlers { get; set; }
     }
 }

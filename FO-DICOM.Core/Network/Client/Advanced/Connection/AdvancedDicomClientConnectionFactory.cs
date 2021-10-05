@@ -28,7 +28,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             var networkStream = await Task.Run(() => _networkManager.CreateNetworkStream(request.NetworkStreamCreationOptions), cancellationToken).ConfigureAwait(false);
 
-            var callbacks = new AdvancedDicomClientConnectionCallbacks();
+            var callbacks = new AdvancedDicomClientConnectionCallbacks(request.RequestHandlers);
 
             IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(callbacks, networkStream, request.FallbackEncoding, request.DicomServiceOptions, request.Logger, _logManager, _networkManager, _transcoderManager);
 

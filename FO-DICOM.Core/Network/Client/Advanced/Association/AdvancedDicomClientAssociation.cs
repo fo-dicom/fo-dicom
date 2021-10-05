@@ -33,7 +33,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private const string _responseChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the response channel. This should never happen, because response channels should be created with unlimited capacity";
         private const string _associationChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the association channel. This should never happen, because the association channel should be created with unlimited capacity";
         
-        private readonly AdvancedDicomClientAssociationRequest _request;
         private readonly ILogger _logger;
         private readonly Task _eventCollector;
         private readonly CancellationTokenSource _eventCollectorCts;
@@ -43,13 +42,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         
         public DicomAssociation Association { get; }
 
-        public AdvancedDicomClientAssociation(
-            AdvancedDicomClientAssociationRequest request, 
-            IAdvancedDicomClientConnection connection,
-            DicomAssociation association,
-            ILogger logger)
+        public AdvancedDicomClientAssociation(IAdvancedDicomClientConnection connection, DicomAssociation association, ILogger logger)
         {
-            _request = request ?? throw new ArgumentNullException(nameof(request));
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _eventCollectorCts = new CancellationTokenSource();

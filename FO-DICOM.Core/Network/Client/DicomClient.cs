@@ -88,21 +88,6 @@ namespace FellowOakDicom.Network.Client
         DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
 
         /// <summary>
-        /// Gets the network manager that will be used to open connections.
-        /// </summary>
-        INetworkManager NetworkManager { get; }
-
-        /// <summary>
-        /// Gets the log manager that will be used to log information to.
-        /// </summary>
-        ILogManager LogManager { get; }
-
-        /// <summary>
-        /// Gets the transcoder manager that will be used to transcode incoming or outgoing DICOM files.
-        /// </summary>
-        ITranscoderManager TranscoderManager { get; }
-
-        /// <summary>
         /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
         /// </summary>
         bool IsSendRequired { get; }
@@ -308,6 +293,11 @@ namespace FellowOakDicom.Network.Client
                                 NoDelay = ServiceOptions.TcpNoDelay,
                                 IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
                                 Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
+                            },
+                            RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers
+                            {
+                                OnCStoreRequest = OnCStoreRequest,
+                                OnNEventReportRequest = OnNEventReportRequest
                             }
                         };
 

@@ -36,7 +36,8 @@ namespace FellowOakDicom.Network.Client.Advanced
             return await _advancedDicomClientConnectionFactory.ConnectAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken)
+        public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request,
+            CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -54,31 +55,41 @@ namespace FellowOakDicom.Network.Client.Advanced
                 switch (@event)
                 {
                     case DicomAssociationAcceptedEvent dicomAssociationAcceptedEvent:
-                        _logger.Debug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
+                        {
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
 
-                        return new AdvancedDicomClientAssociation(request, connection, dicomAssociationAcceptedEvent.Association, _logger);
+                            return new AdvancedDicomClientAssociation(connection, dicomAssociationAcceptedEvent.Association, _logger);
+                        }
                     case DicomAssociationRejectedEvent dicomAssociationRejectedEvent:
-                        _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it", request.CallingAE, request.CalledAE, request.CalledAE);
-                        
-                        throw new DicomAssociationRejectedException(dicomAssociationRejectedEvent.Result, dicomAssociationRejectedEvent.Source,
-                            dicomAssociationRejectedEvent.Reason);
+                        {
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it", request.CallingAE, request.CalledAE,
+                                request.CalledAE);
+
+                            throw new DicomAssociationRejectedException(dicomAssociationRejectedEvent.Result, dicomAssociationRejectedEvent.Source,
+                                dicomAssociationRejectedEvent.Reason);
+                        }
                     case DicomAbortedEvent dicomAbortedEvent:
-                        _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it", request.CallingAE, request.CalledAE, request.CalledAE);
+                        {
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it", request.CallingAE, request.CalledAE,
+                                request.CalledAE);
 
-                        throw new DicomAssociationAbortedException(dicomAbortedEvent.Source, dicomAbortedEvent.Reason);
+                            throw new DicomAssociationAbortedException(dicomAbortedEvent.Source, dicomAbortedEvent.Reason);
+                        }
                     case ConnectionClosedEvent connectionClosedEvent:
-                        _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
-
-                        if (connectionClosedEvent.Exception != null)
                         {
-                            ExceptionDispatchInfo.Capture(connectionClosedEvent.Exception).Throw();
-                        }
-                        else
-                        {
-                            throw new DicomNetworkException("Connection was lost before an association could be established");
-                        }
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
 
-                        break;
+                            if (connectionClosedEvent.Exception != null)
+                            {
+                                ExceptionDispatchInfo.Capture(connectionClosedEvent.Exception).Throw();
+                            }
+                            else
+                            {
+                                throw new DicomNetworkException("Connection was lost before an association could be established");
+                            }
+
+                            break;
+                        }
                 }
             }
 

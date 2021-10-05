@@ -102,10 +102,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     
     public class AdvancedDicomClientConnectionCallbacks : IAdvancedDicomClientConnectionCallbacks
     {
+        private readonly AdvancedDicomClientConnectionRequestHandlers _requestHandlers;
         private readonly Channel<IAdvancedDicomClientConnectionEvent> _events;
 
-        public AdvancedDicomClientConnectionCallbacks()
+        public AdvancedDicomClientConnectionCallbacks(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
         {
+            _requestHandlers = requestHandlers;
             _events = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
                 SingleReader = true,
@@ -151,9 +153,29 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public async Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => await _events.Writer.WriteAsync(new RequestPendingEvent(request, response)).ConfigureAwait(false);
 
         public async Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => await _events.Writer.WriteAsync(new RequestTimedOutEvent(request, timeout)).ConfigureAwait(false);
-        
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => throw new NotImplementedException();
 
-        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => throw new NotImplementedException();
+        public async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        {
+            var onCStoreRequest = _requestHandlers?.OnCStoreRequest;
+
+            if (onCStoreRequest == null)
+            {
+                throw new DicomNetworkException("This DICOM client did not provide a request handler for incoming C-STORE requests (typically following a C-GET request)");
+            }
+
+            return await onCStoreRequest(request).ConfigureAwait(false);
+        }
+
+        public async Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
+        {
+            var onNEventReportRequest = _requestHandlers?.OnNEventReportRequest;
+
+            if (onNEventReportRequest == null)
+            {
+                throw new DicomNetworkException("This DICOM client did not provide a request handler for incoming N-EVENTREPORT requests");
+            }
+
+            return await onNEventReportRequest(request).ConfigureAwait(false);
+        }
     }
 }
