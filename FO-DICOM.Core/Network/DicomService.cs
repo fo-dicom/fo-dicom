@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1382,7 +1383,7 @@ namespace FellowOakDicom.Network
 
             if (exception != null)
             {
-                throw exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             return true;
