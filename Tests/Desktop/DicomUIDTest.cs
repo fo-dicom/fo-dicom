@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -181,7 +181,7 @@ namespace Dicom
                 yield return new object[] { DicomUID.AbstractMultiDimensionalImageModel, DicomUidType.ApplicationHostingModel, false };
                 yield return new object[] { DicomUID.NuclearMedicineImageStorageRetiredRETIRED, DicomUidType.SOPClass, true };
                 yield return new object[] { DicomUID.SPM2GRAY, DicomUidType.FrameOfReference, false };
-                yield return new object[] { DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED, DicomUidType.SOPClass, true };
+                yield return new object[] { DicomUID.GeneralPurposeWorklistInformationModelFindRETIRED, DicomUidType.SOPClass, true };
                 yield return new object[] { DicomUID.TransducerOrientation6, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.UltrasoundTransducerGeometry12033, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomUidType.TransferSyntax, true };

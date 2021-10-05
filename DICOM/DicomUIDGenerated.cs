@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -295,6 +295,7 @@ namespace Dicom
             _uids.Add(DicomUID.PatientRadiationDoseSRStorage.UID, DicomUID.PatientRadiationDoseSRStorage);
             _uids.Add(DicomUID.PlannedImagingAgentAdministrationSRStorage.UID, DicomUID.PlannedImagingAgentAdministrationSRStorage);
             _uids.Add(DicomUID.PerformedImagingAgentAdministrationSRStorage.UID, DicomUID.PerformedImagingAgentAdministrationSRStorage);
+            _uids.Add(DicomUID.EnhancedXRayRadiationDoseSRStorage.UID, DicomUID.EnhancedXRayRadiationDoseSRStorage);
             _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
@@ -312,6 +313,8 @@ namespace Dicom
             _uids.Add(DicomUID.ProtocolApprovalInformationModelFind.UID, DicomUID.ProtocolApprovalInformationModelFind);
             _uids.Add(DicomUID.ProtocolApprovalInformationModelMove.UID, DicomUID.ProtocolApprovalInformationModelMove);
             _uids.Add(DicomUID.ProtocolApprovalInformationModelGet.UID, DicomUID.ProtocolApprovalInformationModelGet);
+            _uids.Add(DicomUID.XADefinedProcedureProtocolStorage.UID, DicomUID.XADefinedProcedureProtocolStorage);
+            _uids.Add(DicomUID.XAPerformedProcedureProtocolStorage.UID, DicomUID.XAPerformedProcedureProtocolStorage);
             _uids.Add(DicomUID.RTImageStorage.UID, DicomUID.RTImageStorage);
             _uids.Add(DicomUID.RTDoseStorage.UID, DicomUID.RTDoseStorage);
             _uids.Add(DicomUID.RTStructureSetStorage.UID, DicomUID.RTStructureSetStorage);
@@ -358,7 +361,7 @@ namespace Dicom
             _uids.Add(DicomUID.DefinedProcedureProtocolInformationModelGet.UID, DicomUID.DefinedProcedureProtocolInformationModelGet);
             _uids.Add(DicomUID.ModalityWorklistInformationModelFind.UID, DicomUID.ModalityWorklistInformationModelFind);
             _uids.Add(DicomUID.GeneralPurposeWorklistManagementMetaRETIRED.UID, DicomUID.GeneralPurposeWorklistManagementMetaRETIRED);
-            _uids.Add(DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED.UID, DicomUID.GeneralPurposeWorklistInformationModelFINDRETIRED);
+            _uids.Add(DicomUID.GeneralPurposeWorklistInformationModelFindRETIRED.UID, DicomUID.GeneralPurposeWorklistInformationModelFindRETIRED);
             _uids.Add(DicomUID.GeneralPurposeScheduledProcedureStepRETIRED.UID, DicomUID.GeneralPurposeScheduledProcedureStepRETIRED);
             _uids.Add(DicomUID.GeneralPurposePerformedProcedureStepRETIRED.UID, DicomUID.GeneralPurposePerformedProcedureStepRETIRED);
             _uids.Add(DicomUID.InstanceAvailabilityNotification.UID, DicomUID.InstanceAvailabilityNotification);
@@ -1485,7 +1488,7 @@ namespace Dicom
             _uids.Add(DicomUID.RTProcessOutput7023.UID, DicomUID.RTProcessOutput7023);
             _uids.Add(DicomUID.RTProcessInput7024.UID, DicomUID.RTProcessInput7024);
             _uids.Add(DicomUID.RTProcessInputUsed7025.UID, DicomUID.RTProcessInputUsed7025);
-            _uids.Add(DicomUID.ProstateSectorAnatomy6300.UID, DicomUID.ProstateSectorAnatomy6300);
+            _uids.Add(DicomUID.ProstateAnatomy6300.UID, DicomUID.ProstateAnatomy6300);
             _uids.Add(DicomUID.ProstateSectorAnatomyFromPIRADSV26301.UID, DicomUID.ProstateSectorAnatomyFromPIRADSV26301);
             _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302);
             _uids.Add(DicomUID.ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303.UID, DicomUID.ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303);
@@ -1703,6 +1706,15 @@ namespace Dicom
             _uids.Add(DicomUID.LesionVisualFindings4408.UID, DicomUID.LesionVisualFindings4408);
             _uids.Add(DicomUID.LesionVisualFindings4409.UID, DicomUID.LesionVisualFindings4409);
             _uids.Add(DicomUID.AbdominopelvicVessels12125.UID, DicomUID.AbdominopelvicVessels12125);
+            _uids.Add(DicomUID.NumericValueFailureQualifier43.UID, DicomUID.NumericValueFailureQualifier43);
+            _uids.Add(DicomUID.NumericValueUnknownQualifier44.UID, DicomUID.NumericValueUnknownQualifier44);
+            _uids.Add(DicomUID.CouinaudLiverSegments7170.UID, DicomUID.CouinaudLiverSegments7170);
+            _uids.Add(DicomUID.LiverSegmentationTypes7171.UID, DicomUID.LiverSegmentationTypes7171);
+            _uids.Add(DicomUID.ContraindicationsForXAImaging1201.UID, DicomUID.ContraindicationsForXAImaging1201);
+            _uids.Add(DicomUID.NeurophysiologicStimulationModes3041.UID, DicomUID.NeurophysiologicStimulationModes3041);
+            _uids.Add(DicomUID.ReportedValueTypes10072.UID, DicomUID.ReportedValueTypes10072);
+            _uids.Add(DicomUID.ValueTimings10073.UID, DicomUID.ValueTimings10073);
+            _uids.Add(DicomUID.RDSRFrameOfReferenceOrigins10074.UID, DicomUID.RDSRFrameOfReferenceOrigins10074);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2554,6 +2566,9 @@ namespace Dicom
         ///<summary>SOP Class: Performed Imaging Agent Administration SR Storage</summary>
         public static readonly DicomUID PerformedImagingAgentAdministrationSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.75", "Performed Imaging Agent Administration SR Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Enhanced X-Ray Radiation Dose SR Storage</summary>
+        public static readonly DicomUID EnhancedXRayRadiationDoseSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.76", "Enhanced X-Ray Radiation Dose SR Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: Content Assessment Results Storage</summary>
         public static readonly DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
 
@@ -2604,6 +2619,12 @@ namespace Dicom
 
         ///<summary>SOP Class: Protocol Approval Information Model - GET</summary>
         public static readonly DicomUID ProtocolApprovalInformationModelGet = new DicomUID("1.2.840.10008.5.1.4.1.1.200.6", "Protocol Approval Information Model - GET", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: XA Defined Procedure Protocol Storage</summary>
+        public static readonly DicomUID XADefinedProcedureProtocolStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.200.7", "XA Defined Procedure Protocol Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: XA Performed Procedure Protocol Storage</summary>
+        public static readonly DicomUID XAPerformedProcedureProtocolStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.200.8", "XA Performed Procedure Protocol Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: RT Image Storage</summary>
         public static readonly DicomUID RTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.1", "RT Image Storage", DicomUidType.SOPClass, false);
@@ -2744,7 +2765,7 @@ namespace Dicom
         public static readonly DicomUID GeneralPurposeWorklistManagementMetaRETIRED = new DicomUID("1.2.840.10008.5.1.4.32", "General Purpose Worklist Management Meta SOP Class (Retired)", DicomUidType.MetaSOPClass, true);
 
         ///<summary>SOP Class: General Purpose Worklist Information Model - FIND (Retired)</summary>
-        public static readonly DicomUID GeneralPurposeWorklistInformationModelFINDRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.1", "General Purpose Worklist Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
+        public static readonly DicomUID GeneralPurposeWorklistInformationModelFindRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.1", "General Purpose Worklist Information Model - FIND (Retired)", DicomUidType.SOPClass, true);
 
         ///<summary>SOP Class: General Purpose Scheduled Procedure Step SOP Class (Retired)</summary>
         public static readonly DicomUID GeneralPurposeScheduledProcedureStepRETIRED = new DicomUID("1.2.840.10008.5.1.4.32.2", "General Purpose Scheduled Procedure Step SOP Class (Retired)", DicomUidType.SOPClass, true);
@@ -6124,8 +6145,8 @@ namespace Dicom
         ///<summary>Context Group Name: RT Process Input Used (7025)</summary>
         public static readonly DicomUID RTProcessInputUsed7025 = new DicomUID("1.2.840.10008.6.1.1137", "RT Process Input Used (7025)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Prostate Sector Anatomy (6300)</summary>
-        public static readonly DicomUID ProstateSectorAnatomy6300 = new DicomUID("1.2.840.10008.6.1.1138", "Prostate Sector Anatomy (6300)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Prostate Anatomy (6300)</summary>
+        public static readonly DicomUID ProstateAnatomy6300 = new DicomUID("1.2.840.10008.6.1.1138", "Prostate Anatomy (6300)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Prostate Sector Anatomy from PI-RADS v2 (6301)</summary>
         public static readonly DicomUID ProstateSectorAnatomyFromPIRADSV26301 = new DicomUID("1.2.840.10008.6.1.1139", "Prostate Sector Anatomy from PI-RADS v2 (6301)", DicomUidType.ContextGroupName, false);
@@ -6777,6 +6798,33 @@ namespace Dicom
 
         ///<summary>Context Group Name: Abdominopelvic Vessels (12125)</summary>
         public static readonly DicomUID AbdominopelvicVessels12125 = new DicomUID("1.2.840.10008.6.1.1355", "Abdominopelvic Vessels (12125)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Numeric Value Failure Qualifier (43)</summary>
+        public static readonly DicomUID NumericValueFailureQualifier43 = new DicomUID("1.2.840.10008.6.1.1356", "Numeric Value Failure Qualifier (43)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Numeric Value Unknown Qualifier (44)</summary>
+        public static readonly DicomUID NumericValueUnknownQualifier44 = new DicomUID("1.2.840.10008.6.1.1357", "Numeric Value Unknown Qualifier (44)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Couinaud Liver Segments (7170)</summary>
+        public static readonly DicomUID CouinaudLiverSegments7170 = new DicomUID("1.2.840.10008.6.1.1358", "Couinaud Liver Segments (7170)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Liver Segmentation Types (7171)</summary>
+        public static readonly DicomUID LiverSegmentationTypes7171 = new DicomUID("1.2.840.10008.6.1.1359", "Liver Segmentation Types (7171)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Contraindications For XA Imaging (1201)</summary>
+        public static readonly DicomUID ContraindicationsForXAImaging1201 = new DicomUID("1.2.840.10008.6.1.1360", "Contraindications For XA Imaging (1201)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Neurophysiologic Stimulation Modes (3041)</summary>
+        public static readonly DicomUID NeurophysiologicStimulationModes3041 = new DicomUID("1.2.840.10008.6.1.1361", "Neurophysiologic Stimulation Modes (3041)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Reported Value Types (10072)</summary>
+        public static readonly DicomUID ReportedValueTypes10072 = new DicomUID("1.2.840.10008.6.1.1362", "Reported Value Types (10072)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Value Timings (10073)</summary>
+        public static readonly DicomUID ValueTimings10073 = new DicomUID("1.2.840.10008.6.1.1363", "Value Timings (10073)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RDSR Frame of Reference Origins (10074)</summary>
+        public static readonly DicomUID RDSRFrameOfReferenceOrigins10074 = new DicomUID("1.2.840.10008.6.1.1364", "RDSR Frame of Reference Origins (10074)", DicomUidType.ContextGroupName, false);
 
     }
 }

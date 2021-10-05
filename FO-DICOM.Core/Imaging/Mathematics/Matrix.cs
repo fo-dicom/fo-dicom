@@ -1046,7 +1046,7 @@ namespace FellowOakDicom.Imaging.Mathematics
                     double hfa = _matrix[2, 1] * _matrix[1, 2] * _matrix[0, 0];
                     double idb = _matrix[2, 2] * _matrix[1, 0] * _matrix[0, 1];
                     double gec = _matrix[2, 0] * _matrix[1, 1] * _matrix[0, 2];
-                    return (aei + bfg + cdh) - (hfa + idb + gec);
+                    return aei + bfg + cdh - (hfa + idb + gec);
                 }
 
                 if (dimensions == 4)
@@ -1308,7 +1308,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("[");
             for (int r = 0, rows = Rows; r < rows; r++)
             {
@@ -1464,6 +1464,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static double[] operator *(MatrixD a, double[] b)
         {
+            if (a.Columns == 4) return Multiply4(a, b);
             if (a.Columns != b.Length) throw new ArgumentException("Unable to multiply matrix and vector of different inner dimensions");
 
             var x = new double[a.Rows];
@@ -1478,6 +1479,17 @@ namespace FellowOakDicom.Imaging.Mathematics
 
             return x;
         }
+
+
+        private static double[] Multiply4(MatrixD a, double[] b)
+            => new double[]
+            {
+                a[0, 0]*b[0] + a[0, 1]*b[1] + a[0, 2]*b[2] + a[0, 3]*b[3],
+                a[1, 0]*b[0] + a[1, 1]*b[1] + a[1, 2]*b[2] + a[1, 3]*b[3],
+                a[2, 0]*b[0] + a[2, 1]*b[1] + a[2, 2]*b[2] + a[2, 3]*b[3],
+                a[3, 0]*b[0] + a[3, 1]*b[1] + a[3, 2]*b[2] + a[3, 3]*b[3]
+            };
+
 
         public static MatrixD operator *(MatrixD a, double d)
         {

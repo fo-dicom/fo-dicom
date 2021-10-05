@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.StructuredReport;
+using FellowOakDicom.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace FellowOakDicom
         private readonly IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
-        private Encoding _defaultEncoding = DicomEncoding.Default;
+        private Encoding[] _fallbackEncodings = DicomEncoding.DefaultArray;
 
         #endregion
 
@@ -125,16 +126,27 @@ namespace FellowOakDicom
             }
         }
 
-        internal Encoding TextEncoding
+        /// <summary>
+        /// Sets the fallback encodings that are used for string-based values if the dataset does not contain an explicit SpecificCharacterSet entry.
+        /// This value is set before serializing the Dataset into a stream and when some encodings are inherited from parent datasets.
+        /// </summary>
+        internal void SetFallbackEncodings(Encoding[] value)
         {
-            get => TryGetString(DicomTag.SpecificCharacterSet, out var charset) ? DicomEncoding.GetEncoding(charset) : _defaultEncoding;
-            set
-            {
-                _defaultEncoding = value;
-                // the default-encoding has been set, but still: if there is a DicomTag.SpeicificCharacterSet, then this will overrule all.
-                ApplyTextEncoding(TextEncoding);
-            }
+            _fallbackEncodings = value;
         }
+
+        /// <summary>
+        /// Gets the encodings used for string-based values by evaluating SpecificCharacterSet value or by using the fallback-encoding if there is no explicit Tag.
+        /// This method is intended to be called before serializing the dataset into a stream to determine the encoding to be used.
+        /// </summary>
+        /// <returns></returns>
+        internal Encoding[] GetEncodingsForSerialization()
+        {
+            return TryGetValues<string>(DicomTag.SpecificCharacterSet, out var charsets)
+                ? DicomEncoding.GetEncodings(charsets)
+                : _fallbackEncodings;
+        }
+
 
         internal bool _validateItems = true;
         internal bool ValidateItems
@@ -444,8 +456,8 @@ namespace FellowOakDicom
         /// </summary>
         /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
-        /// <param name="elementValue">Element values corresponding to <paramref name="tag"/>.</param>
-        /// <returns>Returns <code>true</code> if the element values could be exctracted, otherwise <code>false</code>.</returns>
+        /// <param name="values">Element values corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>true</code> if the element values could be extracted, otherwise <code>false</code>.</returns>
         public bool TryGetValues<T>(DicomTag tag, out T[] values)
         {
             if (typeof(T).GetTypeInfo().IsArray) {
@@ -1182,14 +1194,14 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.LO)
             {
-                if (values == null) return DoAdd(new DicomLongString(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongString(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomLongString(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongString(tag, values.Cast<string>().ToArray()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
             }
 
             if (vr == DicomVR.LT)
             {
-                if (values == null) return DoAdd(new DicomLongText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomLongText(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomLongText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
             }
 
             if (vr == DicomVR.OB)
@@ -1236,6 +1248,17 @@ namespace FellowOakDicom
                 }
             }
 
+            if (vr == DicomVR.OV)
+            {
+                if (values == null) return DoAdd(new DicomOtherVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomOtherVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+
+                if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
+                {
+                    return DoAdd(new DicomOtherVeryLong(tag, (IByteBuffer)values[0]), allowUpdate);
+                }
+            }
+
             if (vr == DicomVR.OW)
             {
                 if (values == null) return DoAdd(new DicomOtherWord(tag, EmptyBuffer.Value), allowUpdate);
@@ -1249,14 +1272,14 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.PN)
             {
-                if (values == null) return DoAdd(new DicomPersonName(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomPersonName(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomPersonName(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomPersonName(tag, values.Cast<string>().ToArray()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
             }
 
             if (vr == DicomVR.SH)
             {
-                if (values == null) return DoAdd(new DicomShortString(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortString(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomShortString(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortString(tag, values.Cast<string>().ToArray()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
             }
 
             if (vr == DicomVR.SL)
@@ -1291,8 +1314,19 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.ST)
             {
-                if (values == null) return DoAdd(new DicomShortText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomShortText(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomShortText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
+            }
+
+            if (vr == DicomVR.SV)
+            {
+                if (values == null) return DoAdd(new DicomSignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(long)) return DoAdd(new DicomSignedVeryLong(tag, values.Cast<long>().ToArray()), allowUpdate);
+
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, long.Parse, out IEnumerable<long> parsedValues))
+                {
+                    return DoAdd(new DicomSignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                }
             }
 
             if (vr == DicomVR.TM)
@@ -1307,8 +1341,8 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UC)
             {
-                if (values == null) return DoAdd(new DicomUnlimitedCharacters(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedCharacters(tag, values.Cast<string>().ToArray()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomUnlimitedCharacters(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedCharacters(tag, values.Cast<string>().ToArray()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
             }
 
             if (vr == DicomVR.UI)
@@ -1343,8 +1377,8 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UR)
             {
-                if (values == null) return DoAdd(new DicomUniversalResource(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomUniversalResource(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUniversalResource(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
             }
 
             if (vr == DicomVR.US)
@@ -1360,8 +1394,19 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UT)
             {
-                if (values == null) return DoAdd(new DicomUnlimitedText(tag, DicomEncoding.Default, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncoding = TextEncoding }, allowUpdate);
+                if (values == null) return DoAdd(new DicomUnlimitedText(tag, DicomEncoding.DefaultArray, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(string)) return DoAdd(new DicomUnlimitedText(tag, values.Cast<string>().FirstOrDefault()) { TargetEncodings = DicomEncoding.DefaultArray }, allowUpdate);
+            }
+
+            if (vr == DicomVR.UV)
+            {
+                if (values == null) return DoAdd(new DicomUnsignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomUnsignedVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ulong.Parse, out IEnumerable<ulong> parsedValues))
+                {
+                    return DoAdd(new DicomUnsignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                }
             }
 
             throw new InvalidOperationException(
@@ -1395,18 +1440,20 @@ namespace FellowOakDicom
         }
 
 
-        private void ApplyTextEncoding(Encoding value)
+        private void SetTargetEncodingsToStringElements(Encoding[] values)
         {
-            foreach(var txt in this.Where(x => x is DicomStringElement))
+
+            foreach(var txt in this.FilterByType<DicomStringElement>())
             {
-                (txt as DicomStringElement).TargetEncoding = value;
+                txt.TargetEncodings = values;
             }
         }
 
 
         internal void OnBeforeSerializing()
         {
-            ApplyTextEncoding(TextEncoding);
+            // first evaluate the encoding, and then apply
+            SetTargetEncodingsToStringElements(GetEncodingsForSerialization());
         }
 
         #endregion

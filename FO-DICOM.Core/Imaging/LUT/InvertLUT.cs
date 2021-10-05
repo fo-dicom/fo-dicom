@@ -11,10 +11,6 @@ namespace FellowOakDicom.Imaging.LUT
     {
         #region Private Members
 
-        private int _minValue;
-
-        private int _maxValue;
-
         #endregion
 
         #region Public Constructors
@@ -24,47 +20,23 @@ namespace FellowOakDicom.Imaging.LUT
         /// </summary>
         /// <param name="minValue">Miniumum input value</param>
         /// <param name="maxValue">Maximum output value</param>
-        public InvertLUT(int minValue, int maxValue)
+        public InvertLUT(double minValue, double maxValue)
         {
-            _minValue = minValue;
-            _maxValue = maxValue;
+            MinimumOutputValue = minValue;
+            MaximumOutputValue = maxValue;
         }
 
         #endregion
 
         #region Public Properties
 
-        public bool IsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsValid => true;
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return _minValue;
-            }
-        }
+        public double MinimumOutputValue { get; }
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return _maxValue;
-            }
-        }
+        public double MaximumOutputValue { get; }
 
-        public int this[int value]
-        {
-            get
-            {
-                return _maxValue - value;
-            }
-        }
+        public double this[double value] => MaximumOutputValue - value;
 
         #endregion
 

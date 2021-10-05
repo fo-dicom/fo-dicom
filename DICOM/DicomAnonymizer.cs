@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2020 fo-dicom contributors.
+// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Dicom.IO.Buffer;
@@ -179,57 +179,70 @@ namespace Dicom
         /// <param name="dataset">The dataset to be altered</param>
         public void AnonymizeInPlace(DicomDataset dataset)
         {
-            var toRemove = new List<DicomItem>();
-            var itemList = dataset.ToArray();
-
             var encoding = DicomEncoding.Default;
             if (dataset.TryGetSingleValue<string>(DicomTag.SpecificCharacterSet, out var characterSet))
             {
                 encoding = DicomEncoding.GetEncoding(characterSet);
             }
 
-            foreach (var item in itemList)
+            Action<DicomDataset> parseDataset = null;
+            parseDataset = (ds) =>
             {
-                var parenthesis = new[] { '(', ')' };
-                var tag = item.Tag.ToString().Trim(parenthesis);
-                var action = Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
-                if (action.Key != null)
+                var toRemove = new List<DicomItem>();
+                var itemList = ds.ToArray();
+                foreach (var item in itemList)
                 {
+                    var parenthesis = new[] { '(', ')' };
+                    var tag = item.Tag.ToString().Trim(parenthesis);
+                    var action = Profile.FirstOrDefault(pair => pair.Key.IsMatch(tag));
                     var vr = item.ValueRepresentation;
 
-                    switch (action.Value)
+                    if (vr == DicomVR.SQ && (action.Key == null || action.Value == SecurityProfileActions.K))
                     {
-                        case SecurityProfileActions.U: // UID
-                        case SecurityProfileActions.C: // Clean
-                        case SecurityProfileActions.D: // Dummy
-                            if (vr == DicomVR.UI) ReplaceUID(dataset, item);
-                            else if (vr.ValueType == typeof(string)) ReplaceString(dataset, encoding, item, "ANONYMOUS");
-                            else BlankItem(dataset, item, true);
-                            break;
-                        case SecurityProfileActions.K: // Keep
-                            break;
-                        case SecurityProfileActions.X: // Remove
-                            toRemove.Add(item);
-                            break;
-                        case SecurityProfileActions.Z: // Zero-length
-                            BlankItem(dataset, item, false);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(action));
+                        foreach (DicomDataset sqDataset in item as DicomSequence)
+                        {
+                            parseDataset(sqDataset);
+                        };
+                    }
+
+                    if (action.Key != null)
+                    {
+                        switch (action.Value)
+                        {
+                            case SecurityProfileActions.U: // UID
+                            case SecurityProfileActions.C: // Clean
+                            case SecurityProfileActions.D: // Dummy
+                                if (vr == DicomVR.UI) ReplaceUID(ds, item);
+                                else if (vr.ValueType == typeof(string)) ReplaceString(ds, encoding, item, "ANONYMOUS");
+                                else BlankItem(ds, item, true);
+                                break;
+                            case SecurityProfileActions.K: // Keep
+                                break;
+                            case SecurityProfileActions.X: // Remove
+                                toRemove.Add(item);
+                                break;
+                            case SecurityProfileActions.Z: // Zero-length
+                                BlankItem(ds, item, false);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(action));
+                        }
+                    }
+
+                    if (item.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
+                    {
+                        ReplaceString(ds, encoding, item, Profile.PatientName);
+                    }
+                    else if (item.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
+                    {
+                        ReplaceString(ds, encoding, item, Profile.PatientID);
                     }
                 }
 
-                if (item.Tag.Equals(DicomTag.PatientName) && Profile.PatientName != null)
-                {
-                    ReplaceString(dataset, encoding, item, Profile.PatientName);
-                }
-                else if (item.Tag.Equals(DicomTag.PatientID) && Profile.PatientID != null)
-                {
-                    ReplaceString(dataset, encoding, item, Profile.PatientID);
-                }
-            }
+                ds.Remove(item => toRemove.Contains(item));
+            };
 
-            dataset.Remove(item => toRemove.Contains(item));
+            parseDataset(dataset);
         }
 
         /// <summary>Clones and anonymizes a dataset</summary>

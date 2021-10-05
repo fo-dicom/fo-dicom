@@ -141,6 +141,7 @@
     <Compile Include="Bugs\GH553.cs" />
     <Compile Include="Bugs\GH597.cs" />
     <Compile Include="Bugs\GH625.cs" />
+    <Compile Include="Bugs\GH1157.cs" />
     <Compile Include="Bugs\GH626.cs" />
     <Compile Include="Bugs\GH645.cs" />
     <Compile Include="Bugs\GH745.cs" />
@@ -272,6 +273,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Test Data\10200904.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\DIRW0007">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Test Data\D_CLUNIE_CT1_RLE_FRAGS.dcm">

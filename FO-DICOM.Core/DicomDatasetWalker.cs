@@ -234,7 +234,7 @@ namespace FellowOakDicom
                     items.Enqueue(item);
                     foreach (var sqi in sq)
                     {
-                        sqi.TextEncoding = dataset.TextEncoding;
+                        sqi.SetFallbackEncodings(dataset.GetEncodingsForSerialization());
                         sqi.OnBeforeSerializing();
                         items.Enqueue(new BeginDicomSequenceItem(sqi));
                         BuildWalkQueue(sqi, items);

@@ -1,14 +1,14 @@
-// Copyright (c) 2012-2020 fo-dicom contributors.
+// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+
+using Dicom.Imaging.Mathematics;
+
+#if !NET35
+using System.Threading.Tasks;
+#endif
 
 namespace Dicom.Imaging.Render
 {
-    using Dicom.Imaging.Mathematics;
-    using System;
-
-#if !NET35
-    using System.Threading.Tasks;
-#endif
 
     /// <summary>
     /// The Overlay Graphic which render overlay over pixel data

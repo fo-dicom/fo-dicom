@@ -1,10 +1,22 @@
-#### v.4.0.8 (TBD)
+#### v.4.0.9 (TBD)
+* Bug fix: Correct Source PDU Field in Association Abort Request (#984)
+
+
+#### v.4.0.8 (09/10/2020)
+* Add missing properties to IDicomClient interface (#1171)
 * Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
 * Bug fix: Incorrect failed validation for Vr Type DS, both .NET Core and Framework (#1141)
-* Update to DICOM Standard 2020e. Nema now also provides Keywords for the UIDs, these are now used. Breaking change: some UID keywords have changed.
+* Update to DICOM Standard 2021a. Nema now also provides Keywords for the UIDs, these are now used. Breaking change: some UID keywords have changed.
 * Bug fix: Some non-retired DicomTags had a name including "RETIRED". Now fixed the generation of DicomTag names. (#1131)
 * FrameGeometry is enhanced so that it also works for DX, CR or MG images. (#1138)
 * Private Creator UN tags are converted to LO (#1146)
+* Bug fix: Ensure timeout detection can never stop prematurely
+* Fix parsing of datasets with a final SequenceDelimiterItem at the end (#1157)
+* Fix: DicomDirectory did throw exception on calling constructor with no parameters (#1176)
+* Update to DICOM Standard 2021b (#1189)
+* Do not validate VM for VRs OF, OL and OV (#1186)
+* Add possibility to add values for the VRs UV, SV and OV
+* Bug fix: Anonymizer not parsing items in sequences (#1202)
 
 #### v.4.0.7 (11/1/2020)
 * Bug fix: Not able to open deflated dicom file which contains squence (#1097)

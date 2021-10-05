@@ -67,3 +67,7 @@ Platform/Mono/Dictionaries/*.xml.gz
 !.vscode/launch.json
 !.vscode/extensions.json
 /Platform/Mono/.vs/DICOM.Mono
+
+# Documentation generation
+/Documentation/log.txt
+/Documentation/**/_site/

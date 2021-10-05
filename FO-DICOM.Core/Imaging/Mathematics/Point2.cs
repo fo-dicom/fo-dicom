@@ -7,7 +7,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 {
 
     /// <summary>
-    /// Coordinate in 2D space
+    /// Coordinate in 2D space with integer values
     /// </summary>
     public class Point2 : IComparable<Point2>, IEquatable<Point2>
     {
@@ -46,17 +46,11 @@ namespace FellowOakDicom.Imaging.Mathematics
             return X == other.X && Y == other.Y;
         }
 
-        public override int GetHashCode()
-        {
-            return X ^ Y;
-        }
+        public override int GetHashCode() => X ^ Y;
 
         /// <summary>Gets a human-readable string representing this <see cref="Point2"/> object.</summary>
         /// <returns>String representation</returns>
-        public override string ToString()
-        {
-            return String.Format("({0},{1})", X, Y);
-        }
+        public override string ToString() => string.Format("({0},{1})", X, Y);
 
         /// <summary>IComparable interface implementation</summary>
         /// <param name="other">Point to compare</param>

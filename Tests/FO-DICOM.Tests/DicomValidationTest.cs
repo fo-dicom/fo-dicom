@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using Xunit;
@@ -69,6 +70,21 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void DicomValidation_NoVMValidationForOX()
+        {
+            var ds = new DicomDataset
+            {
+                { DicomTag.Rows, (ushort)1 },
+                { DicomTag.Columns, (ushort)2 },
+            };
+
+            // shall not throw (regression test for #1186)
+            ds.AddOrUpdate(DicomTag.FloatPixelData, new float[] { 1.0f, 2.0f });
+            ds.AddOrUpdate(DicomTag.TrackPointIndexList, new uint[] { 1, 2 });
+            ds.AddOrUpdate(DicomTag.ExtendedOffsetTable, new ulong[] { 1, 2 });
+        }
+
+        [Fact]
         public void DicomValidation_ValidateCodeString()
         {
             var ds = new DicomDataset();
@@ -80,6 +96,17 @@ namespace FellowOakDicom.Tests
             Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ReferencedFileID, "HUGOHUGOHUGOHUGO1"));
         }
 
+        [Fact]
+        public void DicomValidation_ValidateDS()
+        {
+            var ds = new DicomDataset();
+            var validDS = "0.333333333333  "; // 16 chars
+            ds.Add(DicomTag.RescaleSlope, validDS);
+            Assert.Equal(validDS, ds.GetSingleValue<string>(DicomTag.RescaleSlope));
+
+            var notValidDS = "0.333333333333   "; // 17 chars
+            Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.RescaleSlope, notValidDS));
+        }
 
         [Fact]
         public void AddInvalidUIDMultiplicity()

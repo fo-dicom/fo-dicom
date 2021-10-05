@@ -1,0 +1,55 @@
+name: DocBuild
+
+on:
+  push:
+    branches: 
+      - development
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_docs:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout development
+        uses: actions/checkout@v2
+        with:
+          ref: development
+          path: dev
+      - name: Get last commit message
+        run: |
+          cd dev
+          echo "LAST_COMMIT=$(echo `git log -1 --pretty=%B`)" >> $GITHUB_ENV
+          cd ..
+      - name: Checkout documentation repository
+        env: 
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        run: |
+          git clone https://$API_TOKEN_GITHUB@github.com/fo-dicom/fo-dicom.github.io doc
+          cd doc
+          git checkout master
+      - name: Install requirements
+        run: choco install docfx -y
+      - name: Build documentation
+        run: |
+          cd dev/Documentation
+          set GenerateDocumentation=1
+          # dotnet build ../DICOM.Full.sln
+          dotnet build ../FO-DICOM.Full.sln
+          docfx v4/docfx.json
+          docfx v5/docfx.json
+          cd ../../doc
+          git config --global core.autocrlf false
+          git config --global user.email "fo-dicom@noreply.com"
+          git config --global user.name "CI Build"
+          cp -r ../dev/Documentation/v4/_site/* dev/v4
+          cp -r ../dev/Documentation/v5/_site/* dev/v5
+          git add -A
+          if [ `git status -s | wc -l` = 0 ]; then
+            echo "No changes in built documentation, skipping"
+            exit 0
+          fi
+          git commit -m "$LAST_COMMIT"
+          git push origin master

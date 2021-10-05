@@ -3887,8 +3887,8 @@ namespace FellowOakDicom
         ///<summary>(0018,9323) VR=CS VM=1-n Exposure Modulation Type</summary>
         public readonly static DicomTag ExposureModulationType = new DicomTag(0x0018, 0x9323);
 
-        ///<summary>(0018,9324) VR=FD VM=1 Estimated Dose Saving</summary>
-        public readonly static DicomTag EstimatedDoseSaving = new DicomTag(0x0018, 0x9324);
+        ///<summary>(0018,9324) VR=FD VM=1 Estimated Dose Saving (RETIRED)</summary>
+        public readonly static DicomTag EstimatedDoseSavingRETIRED = new DicomTag(0x0018, 0x9324);
 
         ///<summary>(0018,9325) VR=SQ VM=1 CT X-Ray Details Sequence</summary>
         public readonly static DicomTag CTXRayDetailsSequence = new DicomTag(0x0018, 0x9325);

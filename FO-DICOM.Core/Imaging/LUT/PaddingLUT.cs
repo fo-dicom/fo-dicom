@@ -29,39 +29,15 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public double PixelPaddingValue
-        {
-            get
-            {
-                return _paddingValue;
-            }
-        }
+        public double PixelPaddingValue => _paddingValue;
 
-        public int MinimumOutputValue
-        {
-            get
-            {
-                return _minValue;
-            }
-        }
+        public double MinimumOutputValue => _minValue;
 
-        public int MaximumOutputValue
-        {
-            get
-            {
-                return _maxValue;
-            }
-        }
+        public double MaximumOutputValue => _maxValue;
 
-        public bool IsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsValid => true;
 
-        public int this[int value]
+        public double this[double value]
         {
             get
             {

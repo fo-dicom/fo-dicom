@@ -12,9 +12,9 @@ namespace FellowOakDicom.IO.Buffer
     {
 
         /// <summary>
-        /// Creates a new MemoryByteBuffer based on a byte-array. This class takes over ownersip of the array, so only pass an array that will not be used/manipulated by other classes, or pass a new instance of byte array
+        /// Creates a new MemoryByteBuffer based on a byte-array. This class takes over ownership of the array, so only pass an array that will not be used/manipulated by other classes, or pass a new instance of byte array
         /// </summary>
-        /// <param name="Data"></param>
+        /// <param name="data"></param>
         public MemoryByteBuffer(byte[] data)
         {
             Data = data;

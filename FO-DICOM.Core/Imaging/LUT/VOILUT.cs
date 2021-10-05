@@ -13,7 +13,7 @@ namespace FellowOakDicom.Imaging.LUT
     {
         #region Private Members
 
-        private GrayscaleRenderOptions _renderOptions;
+        private readonly GrayscaleRenderOptions _renderOptions;
 
         #endregion
 
@@ -47,15 +47,15 @@ namespace FellowOakDicom.Imaging.LUT
 
         protected int WindowEnd { get; private set; }
 
-        public int MinimumOutputValue => 0;
+        public double MinimumOutputValue => 0;
 
-        public int MaximumOutputValue => 255;
+        public double MaximumOutputValue => 255;
 
         public int OutputRange => 255;
 
         public bool IsValid => false; // always recalculate
 
-        public abstract int this[int value] { get; }
+        public abstract double this[double value] { get; }
 
         #endregion
 
@@ -90,6 +90,8 @@ namespace FellowOakDicom.Imaging.LUT
             {
                 case "SIGMOID":
                     return new VOISigmoidLUT(options);
+                case "LINEAR_EXACT": // DICOM C.11.2.1.3.2
+                    return new VOILinearExactLUT(options);
                 default:
                     break;
             }
@@ -121,7 +123,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public override int this[int value]
+        public override double this[double value]
         {
             get
             {
@@ -135,7 +137,7 @@ namespace FellowOakDicom.Imaging.LUT
                     {
                         return Math.Min(MaximumOutputValue,
                             Math.Max(MinimumOutputValue,
-                            (int)Math.Round((((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * OutputRange + MinimumOutputValue)
+                            (((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * OutputRange + MinimumOutputValue
                             ));
                     }
                 }
@@ -144,6 +146,53 @@ namespace FellowOakDicom.Imaging.LUT
 
         #endregion
     }
+
+
+    /// <summary>
+    /// LINEAR_EXACT VOI LUT
+    /// </summary>
+    public class VOILinearExactLUT : VOILUT
+    {
+
+        #region Public Constructors
+
+        /// <summary>
+        /// Initialize new instance of <seealso cref="VOILinearLUT"/>
+        /// </summary>
+        /// <param name="options">Render options</param>
+        public VOILinearExactLUT(GrayscaleRenderOptions options)
+            : base(options)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public override double this[double value]
+        {
+            get
+            {
+                unchecked
+                {
+                    if (WindowWidth == 1)
+                    {
+                        return value < WindowCenterMin05 ? MinimumOutputValue : MaximumOutputValue;
+                    }
+                    else
+                    {
+                        return Math.Min(MaximumOutputValue,
+                            Math.Max(MinimumOutputValue,
+                            (value - WindowCenter) / WindowWidth * OutputRange + MinimumOutputValue
+                            ));
+                    }
+                }
+            }
+        }
+
+        #endregion
+    }
+
 
     /// <summary>
     /// SIGMOID VOI LUT
@@ -165,13 +214,13 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public override int this[int value]
+        public override double this[double value]
         {
             get
             {
                 unchecked
                 {
-                    return (int)Math.Round(255.0 / (1.0 + Math.Exp(-4.0 * ((value - WindowCenter) / WindowWidth))));
+                    return 255.0 / (1.0 + Math.Exp(-4.0 * ((value - WindowCenter) / WindowWidth)));
                 }
             }
         }

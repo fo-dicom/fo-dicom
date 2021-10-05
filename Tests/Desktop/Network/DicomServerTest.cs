@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -236,7 +236,8 @@ namespace Dicom.Network
         [Fact, TestPriority(1)]
         public void Send_PrivateNotRegisteredSOPClass_SendFails()
         {
-            var uid = new DicomUID("1.1.1.1", "Private Fo-Dicom Storage", DicomUidType.SOPClass);
+            // use a different UID that the one in test Send_PrivateRegisteredSOPClass_SendSucceeds, which will be registered in DicomUID class.
+            var uid = new DicomUID("1.1.1.2", "Private Fo-Dicom Storage", DicomUidType.SOPClass);
             var ds = new DicomDataset(
                new DicomUniqueIdentifier(DicomTag.SOPClassUID, uid),
                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3.4.5"));

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2020 fo-dicom contributors.
+﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -1229,11 +1229,11 @@ namespace Dicom.Network
     /// <summary>Abort source</summary>
     public enum DicomAbortSource
     {
-        /// <summary>Unknown</summary>
-        Unknown = 0,
-
         /// <summary>Service user</summary>
-        ServiceUser = 1,
+        ServiceUser = 0,
+
+        /// <summary>Unknown</summary>
+        Unknown = 1,
 
         /// <summary>Service provider</summary>
         ServiceProvider = 2

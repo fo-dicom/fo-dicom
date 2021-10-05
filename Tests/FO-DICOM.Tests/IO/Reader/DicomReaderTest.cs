@@ -78,6 +78,34 @@ namespace FellowOakDicom.Tests.IO.Reader
             await DicomFile.OpenAsync(filename);
         }
 
+        [Fact]
+        public void ReadWithCustomLargeObjectSize()
+        {
+            var ds = new DicomDataset
+            {
+                { DicomTag.SOPInstanceUID, DicomUID.Generate() },
+                { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
+                { DicomTag.ImageComments, " ".PadLeft(8000) }
+            };
+            var df = new DicomFile(ds);
+            var memoryStream = new MemoryStream();
+            df.Save(memoryStream);
+
+            // read with default option
+            memoryStream.Position = 0;
+            var defaultFile = DicomFile.Open(memoryStream);
+            var imageComment = defaultFile.Dataset.GetDicomItem<DicomLongText>(DicomTag.ImageComments);
+
+            Assert.IsType<MemoryByteBuffer>(imageComment.Buffer);
+
+            // read with custom option
+            memoryStream.Position = 0;
+            var customFile = DicomFile.Open(memoryStream, largeObjectSize: 4000);
+            imageComment = customFile.Dataset.GetDicomItem<DicomLongText>(DicomTag.ImageComments);
+
+            Assert.IsType<StreamByteBuffer>(imageComment.Buffer);
+        }
+
         #endregion
 
         #region Support data

@@ -38,7 +38,8 @@ namespace FellowOakDicom.IO
         /// Initializes a new instance of <see cref="StreamByteSource"/>.
         /// </summary>
         /// <param name="stream">Stream to read from.</param>
-        public StreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default)
+        /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
+        public StreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             _stream = stream;
             _endian = Endian.LocalMachine;
@@ -47,7 +48,7 @@ namespace FellowOakDicom.IO
             // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
             _readOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
-            LargeObjectSize = 64 * 1024;
+            LargeObjectSize = largeObjectSize <= 0 ? 64 * 1024 : largeObjectSize;
 
             _milestones = new Stack<long>();
             _lock = new object();

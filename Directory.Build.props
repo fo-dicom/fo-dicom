@@ -9,4 +9,8 @@
         <FileVersion>5.0.0.0</FileVersion>
         <InformationalVersion>5.0.0</InformationalVersion>
     </PropertyGroup>
+
+    <PropertyGroup Condition="$(GenerateDocumentation)==1">
+        <DocumentationFile>bin\$(Configuration)\$(MSBuildProjectName).xml</DocumentationFile>
+    </PropertyGroup>
 </Project>

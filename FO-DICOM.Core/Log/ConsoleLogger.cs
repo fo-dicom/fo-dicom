@@ -21,7 +21,7 @@ namespace FellowOakDicom.Log
         /// <summary>
         /// Initializes an instance of the <see cref="ConsoleLogger"/>.
         /// </summary>
-        private ConsoleLogger() : base(Console.Out)
+        protected ConsoleLogger() : base(Console.Out)
         {
         }
 

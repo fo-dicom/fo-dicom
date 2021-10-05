@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2021 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2021a">
+<dictionary version="2021b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -1297,7 +1297,7 @@
     <tag group="0018" element="9321" keyword="CTExposureSequence" vr="SQ" vm="1">CT Exposure Sequence</tag>
     <tag group="0018" element="9322" keyword="ReconstructionPixelSpacing" vr="FD" vm="2">Reconstruction Pixel Spacing</tag>
     <tag group="0018" element="9323" keyword="ExposureModulationType" vr="CS" vm="1-n">Exposure Modulation Type</tag>
-    <tag group="0018" element="9324" keyword="EstimatedDoseSaving" vr="FD" vm="1">Estimated Dose Saving</tag>
+    <tag group="0018" element="9324" keyword="EstimatedDoseSaving" vr="FD" vm="1" retired="true">Estimated Dose Saving</tag>
     <tag group="0018" element="9325" keyword="CTXRayDetailsSequence" vr="SQ" vm="1">CT X-Ray Details Sequence</tag>
     <tag group="0018" element="9326" keyword="CTPositionSequence" vr="SQ" vm="1">CT Position Sequence</tag>
     <tag group="0018" element="9327" keyword="TablePosition" vr="FD" vm="1">Table Position</tag>
@@ -5210,6 +5210,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.73" keyword="PatientRadiationDoseSRStorage" type="SOP Class">Patient Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.74" keyword="PlannedImagingAgentAdministrationSRStorage" type="SOP Class">Planned Imaging Agent Administration SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.75" keyword="PerformedImagingAgentAdministrationSRStorage" type="SOP Class">Performed Imaging Agent Administration SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.76" keyword="EnhancedXRayRadiationDoseSRStorage" type="SOP Class">Enhanced X-Ray Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
@@ -6625,4 +6626,8 @@
     <uid uid="1.2.840.10008.6.1.1358" keyword="CouinaudLiverSegments7170" type="Context Group Name">Couinaud Liver Segments (7170)</uid>
     <uid uid="1.2.840.10008.6.1.1359" keyword="LiverSegmentationTypes7171" type="Context Group Name">Liver Segmentation Types (7171)</uid>
     <uid uid="1.2.840.10008.6.1.1360" keyword="ContraindicationsForXAImaging1201" type="Context Group Name">Contraindications For XA Imaging (1201)</uid>
+    <uid uid="1.2.840.10008.6.1.1361" keyword="NeurophysiologicStimulationModes3041" type="Context Group Name">Neurophysiologic Stimulation Modes (3041)</uid>
+    <uid uid="1.2.840.10008.6.1.1362" keyword="ReportedValueTypes10072" type="Context Group Name">Reported Value Types (10072)</uid>
+    <uid uid="1.2.840.10008.6.1.1363" keyword="ValueTimings10073" type="Context Group Name">Value Timings (10073)</uid>
+    <uid uid="1.2.840.10008.6.1.1364" keyword="RDSRFrameOfReferenceOrigins10074" type="Context Group Name">RDSR Frame of Reference Origins (10074)</uid>
 </dictionary>

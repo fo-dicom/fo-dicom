@@ -59,6 +59,25 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public void DeserializeMalformatedIS()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00201206"": {
+                    ""vr"":""IS"",
+                    ""Value"":[311.5]
+                }
+            }";
+            var exception = Record.Exception(() =>
+            {
+                var ds = DicomJson.ConvertJsonToDicom(json);
+            }
+            );
+            Assert.NotNull(exception);
+        }
+
+        [Fact]
         public void ParseEmptyValues()
         {
             var json = @"
@@ -85,6 +104,50 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.NotNull(tagValue.GetDicomItem<DicomFloatingPointSingle>(DicomTag.SelectorFLValue));
             var convertedJson = DicomJson.ConvertDicomToJson(tagValue);
             Assert.NotNull(convertedJson);
+        }
+
+        [Fact]
+        public void DeserializeISAsString()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00201206"": {
+                    ""vr"":""IS"",
+                    ""Value"":[311]
+                },
+                ""00201209"": {
+                    ""vr"":""IS"",
+                    ""Value"":[""311""]
+                }
+
+            }";
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.Equal(311, dataset.GetSingleValue<int>(DicomTag.NumberOfStudyRelatedSeries));
+            Assert.Equal(311, dataset.GetSingleValue<int>(DicomTag.NumberOfSeriesRelatedInstances));
+        }
+
+        [Fact]
+        public void DeserializeDSAsString()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00101030"": {
+                    ""vr"":""DS"",
+                    ""Value"":[84.5]
+                },
+                ""00101020"": {
+                    ""vr"":""DS"",
+                    ""Value"":[""174.5""]
+                }
+
+            }";
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
+            Assert.Equal(174.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientSize));
         }
 
         [Fact]

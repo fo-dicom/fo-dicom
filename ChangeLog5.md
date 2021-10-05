@@ -1,4 +1,46 @@
-#### 5.0.0
+#### 5.0.1 (TBD)
+
+* Add generated API documentation for versions 4 and 5
+* Fix IO Exception with >2GB images (#1148)
+* Bug fix: Correct Source PDU Field in Association Abort Request (#984)
+
+#### 5.0.0 (2021-09-13)
+
+* Update to DICOM Standard 2021b (#1189)
+* New helper classes to build up a volume from a stack and calculate stacks/slices out of this volume in arbitrary orientation
+* Optional parameter in DicomFile.Open methods to define the limit of large object size (#958)
+* Add initial support for code extensions (#43)
+* Add possibility to register additional encodings via `DicomEncoding.RegisterEncoding()` 
+* Do not validate VM for VRs OF, OL and OV (#1186)
+* Add possibility to add values for the VRs UV, SV and OV
+* Log warning messages on decoding errors (#1200)
+* Bug fix: Anonymizer not parsing items in sequences (#1202)
+* Fix anonymization of string values in private tags with VR UN
+
+#### 5.0.0-alpha5 (2021-05-25)
+
+* Add missing properties to IDicomClient interface (#1171)
+* Fix unintended breaking change, where StringValue of tags with length 0 returned null, but should return string.empty.
+* Be more tolerant to recognize Encoding by ignoring the difference of underscore and space.
+* JsonDicom supports some VRs as number as well as as string. (#1161)
+* Fix anonymizing private tags with explicit transfer syntax (#1181)
+* Internal calculation of pixel values are done as double instead of int to avoid consequential errors when calculating (#1153)
+* Fix: DicomDirectory did throw exception on calling constructor with no parameters (#1176)
+
+#### 5.0.0-alpha4 (2021-03-01)
+
+* Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
+* NLogManager constructor should be public (#1136)
+* Update to DICOM Standard 2020e (#1132)
+* Use Color32 instead of System.Drawing.Color (#1140)
+* FrameGeometry is enhanced so that it also works for DX, CR or MG images. (#1138)
+* DicomServerFactory missed the method overload to pass the userState object
+* Private Creator UN tags are converted to LO (#1146)
+* Bug fix: Ensure timeout detection can never stop prematurely
+* Fix parsing of datasets with a final SequenceDelimiterItem at the end. (#1157)
+
+
+#### 5.0.0-alpha3 and prior (2020-11-01)
 
 ##### Changes:
 
@@ -27,7 +69,6 @@
 * Optimize DicomTag.GetHashCode()
 * Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
 * Make DicomService more memory efficient. Use existing streams in PDU and do not create new Memorystreams for every PDU. (#1091)
-* Bug fix: No DICOM charset found for GB18030 in .NET Core (#1125)
 
 ##### Breaking changes:
 
@@ -40,7 +81,7 @@
   If you are in a "DI-Environment" like Asp.Net, then inject a `IDicomClientFactory` instance and use this to create a DicomClient. otherwise call `DicomClientFactory.CreateDicomClient(...)`.  This is a wrapper around accessing the internal DI container , getting the registered IDicomClientFactory and then calling this. So this is more overhead.
 * DicomServiceOptions cannot be passed as parameter to DicomServer constructor/factory any more, but the values of options have to be set to the created instance of DicomServer.
 * Classes `DicomFileReader`, `DicomReader`, `DicomReaderCallbackObserver` etc are now internal instead of public, because the resulting Datasets are wrong/inconsistent and need further changes. Therefore its usage is dangerous for users. (#823)
-* Removed obsolte methods/classes/properties
+* Removed obsolete methods/classes/properties
   * `DicomValidation.AutoValidation`: Call `DicomSetupBuilder.SkipValidation()` instead.
   * `Dicom.Network.DicomClient`: use `FellowOakDicom.Network.Client.DicomClient` instead.
   * `Dicom.Network.IDicomServiceUser`: use `IDicomClientConnection` instead.
@@ -52,7 +93,7 @@
   * `DicomUIDGenerator.Generate()` and `DicomUIDGenerator.GenerateNew()`: use `DicomUIDGenerator.GenerateDerivedFromUUID()`
   * `DicomImage.Dataset`, `DicomImage.PixelData` and `DicomImage.PhotometricInterpretation`: do not load the DicomImage directly from filename if you also need access to the dataset, but load the DicomDataset from file first and then construct the DicomImage from this loaded DicomDataset. Then you can access both.
 * DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
-* DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncoding`, that is applied to all string-based tags.
+* DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncodings`, that is applied to all string-based tags.
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
 
    

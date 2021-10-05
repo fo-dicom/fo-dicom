@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright (c) 2012-2020 fo-dicom contributors.        -->
+<!-- Copyright (c) 2012-2021 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2020e">
+<dictionary version="2021b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -880,6 +880,24 @@
     <tag group="0018" element="11A3" keyword="CompressionPressure" vr="DS" vm="1">Compression Pressure</tag>
     <tag group="0018" element="11A4" keyword="PaddleDescription" vr="LO" vm="1">Paddle Description</tag>
     <tag group="0018" element="11A5" keyword="CompressionContactArea" vr="DS" vm="1">Compression Contact Area</tag>
+    <tag group="0018" element="11B0" keyword="AcquisitionMode" vr="LO" vm="1">Acquisition Mode</tag>
+    <tag group="0018" element="11B1" keyword="DoseModeName" vr="LO" vm="1">Dose Mode Name</tag>
+    <tag group="0018" element="11B2" keyword="AcquiredSubtractionMaskFlag" vr="CS" vm="1">Acquired Subtraction Mask Flag</tag>
+    <tag group="0018" element="11B3" keyword="FluoroscopyPersistenceFlag" vr="CS" vm="1">Fluoroscopy Persistence Flag</tag>
+    <tag group="0018" element="11B4" keyword="FluoroscopyLastImageHoldPersistenceFlag" vr="CS" vm="1">Fluoroscopy Last Image Hold Persistence Flag</tag>
+    <tag group="0018" element="11B5" keyword="UpperLimitNumberOfPersistentFluoroscopyFrames" vr="IS" vm="1">Upper Limit Number Of Persistent Fluoroscopy Frames</tag>
+    <tag group="0018" element="11B6" keyword="ContrastBolusAutoInjectionTriggerFlag" vr="CS" vm="1">Contrast/Bolus Auto Injection Trigger Flag</tag>
+    <tag group="0018" element="11B7" keyword="ContrastBolusInjectionDelay" vr="FD" vm="1">Contrast/Bolus Injection Delay</tag>
+    <tag group="0018" element="11B8" keyword="XAAcquisitionPhaseDetailsSequence" vr="SQ" vm="1">XA Acquisition Phase Details Sequence</tag>
+    <tag group="0018" element="11B9" keyword="XAAcquisitionFrameRate" vr="FD" vm="1">XA Acquisition Frame Rate</tag>
+    <tag group="0018" element="11BA" keyword="XAPlaneDetailsSequence" vr="SQ" vm="1">XA Plane Details Sequence</tag>
+    <tag group="0018" element="11BB" keyword="AcquisitionFieldOfViewLabel" vr="LO" vm="1">Acquisition Field of View Label</tag>
+    <tag group="0018" element="11BC" keyword="XRayFilterDetailsSequence" vr="SQ" vm="1">X-Ray Filter Details Sequence</tag>
+    <tag group="0018" element="11BD" keyword="XAAcquisitionDuration" vr="FD" vm="1">XA Acquisition Duration</tag>
+    <tag group="0018" element="11BE" keyword="ReconstructionPipelineType" vr="CS" vm="1">Reconstruction Pipeline Type</tag>
+    <tag group="0018" element="11BF" keyword="ImageFilterDetailsSequence" vr="SQ" vm="1">Image Filter Details Sequence</tag>
+    <tag group="0018" element="11C0" keyword="AppliedMaskSubtractionFlag" vr="CS" vm="1">Applied Mask Subtraction Flag</tag>
+    <tag group="0018" element="11C1" keyword="RequestedSeriesDescriptionCodeSequence" vr="SQ" vm="1">Requested Series Description Code Sequence</tag>
     <tag group="0018" element="1200" keyword="DateOfLastCalibration" vr="DA" vm="1-n">Date of Last Calibration</tag>
     <tag group="0018" element="1201" keyword="TimeOfLastCalibration" vr="TM" vm="1-n">Time of Last Calibration</tag>
     <tag group="0018" element="1202" keyword="DateTimeOfLastCalibration" vr="DT" vm="1">DateTime of Last Calibration</tag>
@@ -1049,6 +1067,7 @@
     <tag group="0018" element="6058" keyword="TableOfPixelValues" vr="UL" vm="1-n">Table of Pixel Values</tag>
     <tag group="0018" element="605A" keyword="TableOfParameterValues" vr="FL" vm="1-n">Table of Parameter Values</tag>
     <tag group="0018" element="6060" keyword="RWaveTimeVector" vr="FL" vm="1-n">R Wave Time Vector</tag>
+    <tag group="0018" element="6070" keyword="ActiveImageAreaOverlayGroup" vr="US" vm="1">Active Image Area Overlay Group</tag>
     <tag group="0018" element="7000" keyword="DetectorConditionsNominalFlag" vr="CS" vm="1">Detector Conditions Nominal Flag</tag>
     <tag group="0018" element="7001" keyword="DetectorTemperature" vr="DS" vm="1">Detector Temperature</tag>
     <tag group="0018" element="7004" keyword="DetectorType" vr="CS" vm="1">Detector Type</tag>
@@ -1278,7 +1297,7 @@
     <tag group="0018" element="9321" keyword="CTExposureSequence" vr="SQ" vm="1">CT Exposure Sequence</tag>
     <tag group="0018" element="9322" keyword="ReconstructionPixelSpacing" vr="FD" vm="2">Reconstruction Pixel Spacing</tag>
     <tag group="0018" element="9323" keyword="ExposureModulationType" vr="CS" vm="1-n">Exposure Modulation Type</tag>
-    <tag group="0018" element="9324" keyword="EstimatedDoseSaving" vr="FD" vm="1">Estimated Dose Saving</tag>
+    <tag group="0018" element="9324" keyword="EstimatedDoseSaving" vr="FD" vm="1" retired="true">Estimated Dose Saving</tag>
     <tag group="0018" element="9325" keyword="CTXRayDetailsSequence" vr="SQ" vm="1">CT X-Ray Details Sequence</tag>
     <tag group="0018" element="9326" keyword="CTPositionSequence" vr="SQ" vm="1">CT Position Sequence</tag>
     <tag group="0018" element="9327" keyword="TablePosition" vr="FD" vm="1">Table Position</tag>
@@ -2521,6 +2540,7 @@
     <tag group="0040" element="A028" keyword="DocumentingOrganizationIdentifierCodeSequenceTrial" vr="SQ" vm="1" retired="true">Documenting Organization Identifier Code Sequence (Trial)</tag>
     <tag group="0040" element="A030" keyword="VerificationDateTime" vr="DT" vm="1">Verification DateTime</tag>
     <tag group="0040" element="A032" keyword="ObservationDateTime" vr="DT" vm="1">Observation DateTime</tag>
+    <tag group="0040" element="A033" keyword="ObservationStartDateTime" vr="DT" vm="1">Observation Start DateTime</tag>
     <tag group="0040" element="A040" keyword="ValueType" vr="CS" vm="1">Value Type</tag>
     <tag group="0040" element="A043" keyword="ConceptNameCodeSequence" vr="SQ" vm="1">Concept Name Code Sequence</tag>
     <tag group="0040" element="A047" keyword="MeasurementPrecisionDescriptionTrial" vr="LO" vm="1" retired="true">Measurement Precision Description (Trial)</tag>
@@ -3801,11 +3821,12 @@
     <tag group="3006" element="0039" keyword="ROIContourSequence" vr="SQ" vm="1">ROI Contour Sequence</tag>
     <tag group="3006" element="0040" keyword="ContourSequence" vr="SQ" vm="1">Contour Sequence</tag>
     <tag group="3006" element="0042" keyword="ContourGeometricType" vr="CS" vm="1">Contour Geometric Type</tag>
-    <tag group="3006" element="0044" keyword="ContourSlabThickness" vr="DS" vm="1">Contour Slab Thickness</tag>
-    <tag group="3006" element="0045" keyword="ContourOffsetVector" vr="DS" vm="3">Contour Offset Vector</tag>
+    <tag group="3006" element="0044" keyword="ContourSlabThickness" vr="DS" vm="1" retired="true">Contour Slab Thickness</tag>
+    <tag group="3006" element="0045" keyword="ContourOffsetVector" vr="DS" vm="3" retired="true">Contour Offset Vector</tag>
     <tag group="3006" element="0046" keyword="NumberOfContourPoints" vr="IS" vm="1">Number of Contour Points</tag>
     <tag group="3006" element="0048" keyword="ContourNumber" vr="IS" vm="1">Contour Number</tag>
-    <tag group="3006" element="0049" keyword="AttachedContours" vr="IS" vm="1-n">Attached Contours</tag>
+    <tag group="3006" element="0049" keyword="AttachedContours" vr="IS" vm="1-n" retired="true">Attached Contours</tag>
+    <tag group="3006" element="004A" keyword="SourcePixelPlanesCharacteristicsSequence" vr="SQ" vm="1">Source Pixel Planes Characteristics Sequence</tag>
     <tag group="3006" element="0050" keyword="ContourData" vr="DS" vm="3-3n">Contour Data</tag>
     <tag group="3006" element="0080" keyword="RTROIObservationsSequence" vr="SQ" vm="1">RT ROI Observations Sequence</tag>
     <tag group="3006" element="0082" keyword="ObservationNumber" vr="IS" vm="1">Observation Number</tag>
@@ -5189,6 +5210,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.73" keyword="PatientRadiationDoseSRStorage" type="SOP Class">Patient Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.74" keyword="PlannedImagingAgentAdministrationSRStorage" type="SOP Class">Planned Imaging Agent Administration SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.75" keyword="PerformedImagingAgentAdministrationSRStorage" type="SOP Class">Performed Imaging Agent Administration SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.76" keyword="EnhancedXRayRadiationDoseSRStorage" type="SOP Class">Enhanced X-Ray Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
@@ -5206,6 +5228,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.200.4" keyword="ProtocolApprovalInformationModelFind" type="SOP Class">Protocol Approval Information Model - FIND</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.200.5" keyword="ProtocolApprovalInformationModelMove" type="SOP Class">Protocol Approval Information Model - MOVE</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.200.6" keyword="ProtocolApprovalInformationModelGet" type="SOP Class">Protocol Approval Information Model - GET</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.200.7" keyword="XADefinedProcedureProtocolStorage" type="SOP Class">XA Defined Procedure Protocol Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.200.8" keyword="XAPerformedProcedureProtocolStorage" type="SOP Class">XA Performed Procedure Protocol Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.1" keyword="RTImageStorage" type="SOP Class">RT Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.2" keyword="RTDoseStorage" type="SOP Class">RT Dose Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.3" keyword="RTStructureSetStorage" type="SOP Class">RT Structure Set Storage</uid>
@@ -5252,7 +5276,7 @@
     <uid uid="1.2.840.10008.5.1.4.20.3" keyword="DefinedProcedureProtocolInformationModelGet" type="SOP Class">Defined Procedure Protocol Information Model - GET</uid>
     <uid uid="1.2.840.10008.5.1.4.31" keyword="ModalityWorklistInformationModelFind" type="SOP Class">Modality Worklist Information Model - FIND</uid>
     <uid uid="1.2.840.10008.5.1.4.32" keyword="GeneralPurposeWorklistManagementMeta" type="Meta SOP Class" retired="true">General Purpose Worklist Management Meta SOP Class (Retired)</uid>
-    <uid uid="1.2.840.10008.5.1.4.32.1" keyword="GeneralPurposeWorklistInformationModelFIND" type="SOP Class" retired="true">General Purpose Worklist Information Model - FIND (Retired)</uid>
+    <uid uid="1.2.840.10008.5.1.4.32.1" keyword="GeneralPurposeWorklistInformationModelFind" type="SOP Class" retired="true">General Purpose Worklist Information Model - FIND (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.32.2" keyword="GeneralPurposeScheduledProcedureStep" type="SOP Class" retired="true">General Purpose Scheduled Procedure Step SOP Class (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.32.3" keyword="GeneralPurposePerformedProcedureStep" type="SOP Class" retired="true">General Purpose Performed Procedure Step SOP Class (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.33" keyword="InstanceAvailabilityNotification" type="SOP Class">Instance Availability Notification SOP Class</uid>
@@ -6379,7 +6403,7 @@
     <uid uid="1.2.840.10008.6.1.1135" keyword="RTProcessOutput7023" type="Context Group Name">RT Process Output (7023)</uid>
     <uid uid="1.2.840.10008.6.1.1136" keyword="RTProcessInput7024" type="Context Group Name">RT Process Input (7024)</uid>
     <uid uid="1.2.840.10008.6.1.1137" keyword="RTProcessInputUsed7025" type="Context Group Name">RT Process Input Used (7025)</uid>
-    <uid uid="1.2.840.10008.6.1.1138" keyword="ProstateSectorAnatomy6300" type="Context Group Name">Prostate Sector Anatomy (6300)</uid>
+    <uid uid="1.2.840.10008.6.1.1138" keyword="ProstateAnatomy6300" type="Context Group Name">Prostate Anatomy (6300)</uid>
     <uid uid="1.2.840.10008.6.1.1139" keyword="ProstateSectorAnatomyFromPIRADSV26301" type="Context Group Name">Prostate Sector Anatomy from PI-RADS v2 (6301)</uid>
     <uid uid="1.2.840.10008.6.1.1140" keyword="ProstateSectorAnatomyFromEuropeanConcensus16SectorMinimalModel6302" type="Context Group Name">Prostate Sector Anatomy from European Concensus 16 Sector (Minimal) Model (6302)</uid>
     <uid uid="1.2.840.10008.6.1.1141" keyword="ProstateSectorAnatomyFromEuropeanConcensus27SectorOptimalModel6303" type="Context Group Name">Prostate Sector Anatomy from European Concensus 27 Sector (Optimal) Model (6303)</uid>
@@ -6597,4 +6621,13 @@
     <uid uid="1.2.840.10008.6.1.1353" keyword="LesionVisualFindings4408" type="Context Group Name">Lesion Visual Findings (4408)</uid>
     <uid uid="1.2.840.10008.6.1.1354" keyword="LesionVisualFindings4409" type="Context Group Name">Lesion Visual Findings (4409)</uid>
     <uid uid="1.2.840.10008.6.1.1355" keyword="AbdominopelvicVessels12125" type="Context Group Name">Abdominopelvic Vessels (12125)</uid>
+    <uid uid="1.2.840.10008.6.1.1356" keyword="NumericValueFailureQualifier43" type="Context Group Name">Numeric Value Failure Qualifier (43)</uid>
+    <uid uid="1.2.840.10008.6.1.1357" keyword="NumericValueUnknownQualifier44" type="Context Group Name">Numeric Value Unknown Qualifier (44)</uid>
+    <uid uid="1.2.840.10008.6.1.1358" keyword="CouinaudLiverSegments7170" type="Context Group Name">Couinaud Liver Segments (7170)</uid>
+    <uid uid="1.2.840.10008.6.1.1359" keyword="LiverSegmentationTypes7171" type="Context Group Name">Liver Segmentation Types (7171)</uid>
+    <uid uid="1.2.840.10008.6.1.1360" keyword="ContraindicationsForXAImaging1201" type="Context Group Name">Contraindications For XA Imaging (1201)</uid>
+    <uid uid="1.2.840.10008.6.1.1361" keyword="NeurophysiologicStimulationModes3041" type="Context Group Name">Neurophysiologic Stimulation Modes (3041)</uid>
+    <uid uid="1.2.840.10008.6.1.1362" keyword="ReportedValueTypes10072" type="Context Group Name">Reported Value Types (10072)</uid>
+    <uid uid="1.2.840.10008.6.1.1363" keyword="ValueTimings10073" type="Context Group Name">Value Timings (10073)</uid>
+    <uid uid="1.2.840.10008.6.1.1364" keyword="RDSRFrameOfReferenceOrigins10074" type="Context Group Name">RDSR Frame of Reference Origins (10074)</uid>
 </dictionary>

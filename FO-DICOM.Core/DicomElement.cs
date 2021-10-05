@@ -71,10 +71,10 @@ namespace FellowOakDicom
 
         #region FIELDS
 
-        private string _value = null;
+        private string _value;
 
-        private readonly Encoding _bufferEncoding;
-        private Encoding _targetEncoding = DicomEncoding.Default;
+        private readonly Encoding[] _bufferEncodings;
+        private Encoding[] _targetEncodings;
 
         #endregion
 
@@ -90,29 +90,35 @@ namespace FellowOakDicom
             }
         }
 
-        protected DicomStringElement(DicomTag tag, Encoding encoding, IByteBuffer buffer)
+        protected DicomStringElement(DicomTag tag, Encoding[] encodings, IByteBuffer buffer)
             : base(tag, buffer)
         {
-            _bufferEncoding = encoding;
-            TargetEncoding = encoding;
+            _bufferEncodings = encodings ?? DicomEncoding.DefaultArray;
+            TargetEncodings = _bufferEncodings;
         }
 
         #endregion
 
         #region Public Properties
 
-        public Encoding TargetEncoding
+        public Encoding[] TargetEncodings
         {
-            get => _targetEncoding;
+            get => _targetEncodings;
             set
             {
-                if (!(Buffer is LazyByteBuffer) && (Buffer != EmptyBuffer.Value) && value != _bufferEncoding)
+                if (!(Buffer is LazyByteBuffer) && (Buffer != EmptyBuffer.Value) && !value.SequenceEqual(_bufferEncodings))
                 {
                     _value = StringValue;
                     Buffer = new LazyByteBuffer(StringToBytes);
                 }
-                _targetEncoding = value;
+                _targetEncodings = value;
             }
+        }
+
+        public Encoding TargetEncoding
+        {
+            get => _targetEncodings?.FirstOrDefault() ?? DicomEncoding.Default;
+            set => _targetEncodings = new[] { value };
         }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
@@ -125,8 +131,10 @@ namespace FellowOakDicom
             {
                 if (_value == null && Buffer != null && (Buffer != EmptyBuffer.Value))
                 {
-                    _value = _bufferEncoding.GetString(Buffer.Data, 0, (int)Buffer.Size)
-                            .TrimEnd((char)ValueRepresentation.PaddingValue);
+                    _value = Buffer == EmptyBuffer.Value
+                        ? string.Empty
+                        : DicomEncoding.DecodeBytes(Buffer, _bufferEncodings, ValueRepresentation == DicomVR.PN)
+                                .TrimEnd((char)ValueRepresentation.PaddingValue);
                 }
                 return _value;
             }
@@ -170,9 +178,8 @@ namespace FellowOakDicom
                 return Array.Empty<byte>();
             }
 
-            var encoding = TargetEncoding ?? DicomEncoding.Default;
-
-            byte[] bytes = encoding.GetBytes(_value);
+            // TODO: handle multi-charset
+            byte[] bytes = TargetEncoding.GetBytes(_value);
 
             if (bytes.Length.IsOdd())
             {
@@ -195,7 +202,7 @@ namespace FellowOakDicom
         #region FIELDS
 
         private int _count = -1;
-        private string[] _values = null;
+        private string[] _values;
 
         #endregion
 
@@ -206,8 +213,8 @@ namespace FellowOakDicom
         {
         }
 
-        protected DicomMultiStringElement(DicomTag tag, Encoding encoding, IByteBuffer buffer)
-            : base(tag, encoding, buffer)
+        protected DicomMultiStringElement(DicomTag tag, Encoding[] encodings, IByteBuffer buffer)
+            : base(tag, encodings, buffer)
         {
         }
 
@@ -303,7 +310,7 @@ namespace FellowOakDicom
 
         private const DateTimeStyles _dicomDateElementStyle = DateTimeStyles.NoCurrentDateDefault;
 
-        private DateTime[] _values = null;
+        private DateTime[] _values;
 
         #endregion
 
@@ -352,7 +359,7 @@ namespace FellowOakDicom
         /// <param name="dateFormats">Supported date/time formats.</param>
         /// <param name="buffer">Byte buffer from which to read values.</param>
         protected DicomDateElement(DicomTag tag, string[] dateFormats, IByteBuffer buffer)
-            : base(tag, DicomEncoding.Default, buffer)
+            : base(tag, null, buffer)
         {
             DateFormats = dateFormats;
         }
@@ -561,7 +568,7 @@ namespace FellowOakDicom
         }
 
         public DicomApplicationEntity(DicomTag tag, IByteBuffer data)
-            : base(tag, DicomEncoding.Default, data)
+            : base(tag, null, data)
         {
         }
 
@@ -587,7 +594,7 @@ namespace FellowOakDicom
         }
 
         public DicomAgeString(DicomTag tag, IByteBuffer data)
-            : base(tag, DicomEncoding.Default, data)
+            : base(tag, null, data)
         {
         }
 
@@ -700,7 +707,7 @@ namespace FellowOakDicom
         }
 
         public DicomCodeString(DicomTag tag, IByteBuffer data)
-            : base(tag, DicomEncoding.Default, data)
+            : base(tag, null, data)
         {
         }
 
@@ -789,7 +796,7 @@ namespace FellowOakDicom
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
+            : base(tag, values.Select(x => ToDecimalString(x)).ToArray())
         {
         }
 
@@ -799,7 +806,7 @@ namespace FellowOakDicom
         }
 
         public DicomDecimalString(DicomTag tag, IByteBuffer data)
-            : base(tag, DicomEncoding.Default, data)
+            : base(tag, null, data)
         {
         }
 
@@ -860,6 +867,16 @@ namespace FellowOakDicom
             }
 
             return base.Get<T>(item);
+        }
+
+        public static string ToDecimalString(decimal value)
+        {
+            var valueString = value.ToString(CultureInfo.InvariantCulture);
+            if (valueString.Length > 16)
+            {
+                valueString = value.ToString("G11", CultureInfo.InvariantCulture);
+            }
+            return valueString;
         }
 
         #endregion
@@ -1005,7 +1022,7 @@ namespace FellowOakDicom
         }
 
         public DicomIntegerString(DicomTag tag, IByteBuffer data)
-            : base(tag, DicomEncoding.Default, data)
+            : base(tag, null, data)
         {
         }
 
@@ -1104,7 +1121,7 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomLongString(DicomTag tag, Encoding encoding, IByteBuffer data)
+        public DicomLongString(DicomTag tag, Encoding[] encoding, IByteBuffer data)
             : base(tag, encoding, data)
         {
         }
@@ -1128,8 +1145,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomLongText(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomLongText(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 
@@ -1259,6 +1276,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.OL;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Other Double (OD)</summary>
@@ -1313,6 +1335,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.OF;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Other Very Long (OV)</summary>
@@ -1337,6 +1364,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.OV;
 
         #endregion
+
+        protected override void ValidateVM()
+        {
+            // do not check length of items
+        }
     }
 
     /// <summary>Person Name (PN)</summary>
@@ -1360,8 +1392,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomPersonName(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomPersonName(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 
@@ -1497,8 +1529,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomShortString(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomShortString(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 
@@ -1580,8 +1612,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomShortText(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomShortText(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 
@@ -1715,8 +1747,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUnlimitedCharacters(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomUnlimitedCharacters(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 
@@ -1763,7 +1795,7 @@ namespace FellowOakDicom
         }
 
         public DicomUniqueIdentifier(DicomTag tag, IByteBuffer data)
-            : base(tag, DicomEncoding.Default, data)
+            : base(tag, null, data)
         {
         }
 
@@ -1874,8 +1906,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUniversalResource(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomUniversalResource(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 
@@ -1933,8 +1965,8 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomUnlimitedText(DicomTag tag, Encoding encoding, IByteBuffer data)
-            : base(tag, encoding, data)
+        public DicomUnlimitedText(DicomTag tag, Encoding[] encodings, IByteBuffer data)
+            : base(tag, encodings, data)
         {
         }
 

@@ -567,8 +567,6 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_ByteArrayFromStringElement_ReturnsValidArray()
         {
-            // preload encodings
-            DicomEncoding.GetCharset(Encoding.ASCII);
             // now the actual unit-test
             var encoding = Encoding.GetEncoding("SHIFT_JIS");
             var tag = DicomTag.AdditionalPatientHistory;
@@ -590,8 +588,6 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomEncoding_AppliedToNestedDatasetsOnWriting()
         {
-            // preload encodings
-            DicomEncoding.GetCharset(Encoding.ASCII);
             // now the actual unit-test
             var encoding = Encoding.GetEncoding("SHIFT_JIS");
             var tag = DicomTag.AdditionalPatientHistory;
@@ -632,8 +628,6 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomEncoding_AppliedToMultipleNestedDatasetsWithDifferentEncodingsOnWriting()
         {
-            // preload encodings
-            DicomEncoding.GetCharset(Encoding.ASCII);
             // now the actual unit-test
             var encoding1 = Encoding.GetEncoding("SHIFT_JIS");
             var encoding2 = Encoding.UTF8;
@@ -695,6 +689,9 @@ namespace FellowOakDicom.Tests
             var dataset = new DicomDataset();
             dataset.AddOrUpdate(DicomTag.SpecificCharacterSet, DicomEncoding.GetCharset(encoding));
             dataset.AddOrUpdate(tag, expected);
+
+            // simulate some kind of serialization, so that the buffer data is created correctly
+            dataset.OnBeforeSerializing();
 
             var actual = encoding.GetString(dataset.GetDicomItem<DicomElement>(tag).Buffer.Data);
             Assert.Equal(expected, actual);

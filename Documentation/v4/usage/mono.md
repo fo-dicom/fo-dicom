@@ -1,0 +1,2 @@
+## Linux
+When installing the *fo-dicom.Mono* NuGet package on a Linux distribution, e.g. Ubuntu, it is necessary to use a recent version of *MonoDevelop* that uses NuGet version 2.12 or later. *MonoDevelop* version 6.1.1 has been confirmed to work.

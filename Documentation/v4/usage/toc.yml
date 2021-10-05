@@ -1,0 +1,42 @@
+- name: Installation
+  items:
+  - name: Prerequisites
+    href: prerequisites.html
+  - name: Native codecs on .NET
+    href: native_codecs.html
+  - name: Assembly binding redirect
+    href: binding_redirect.html
+- name: Workflow
+  items:
+  - name: Asynchronous operations
+    href: async_ops.html
+- name: Data manipulation
+  items:
+  - name: Getting data
+    href: getting_data.html
+  - name: Adding private tags to dictionary
+    href: add_private_tags.html
+- name: Imaging
+  items:
+  - name: Supported Transfer Syntaxes
+    href: xfer_syntaxes.html
+  - name: Image rendering
+    href: image_rendering.html
+  - name: Raw pixel data
+    href: raw_pixel_data.html
+  - name: LUT application    
+    href: lut_application.html
+- name: Logging
+  items:
+  - name: Logging configuration
+    href: logging_config.html
+- name: Platform Notes
+  items:
+  - name: Mono
+    href: mono.html
+  - name: Unity
+    href: unity.html 
+- name: Miscellaneous
+  items:
+  - name: Sample applications (external repository)
+    href: https://github.com/fo-dicom/fo-dicom-samples

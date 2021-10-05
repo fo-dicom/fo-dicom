@@ -43,7 +43,7 @@ namespace FellowOakDicom.Tests
             byte[] b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
             byte[] c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей^Арсеньевич");
             Assert.Equal(c, b);
-            // foloowing test checks also padding with space!
+            // following test checks also padding with space!
             target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей")
             {
                 TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144")
