@@ -78,6 +78,9 @@ namespace FellowOakDicom.Serialization
         private readonly bool _writeTagsAsKeywords;
         private readonly bool _autoValidate;
         private readonly static Encoding[] _jsonTextEncodings = { Encoding.UTF8 };
+        private readonly static char _personNameComponentGroupDelimiter = '=';
+        private readonly static string[] _personNameComponentGroupNames = { "Alphabetic", "Ideographic", "Phonetic" };
+
 
         private delegate T GetValue<out T>(Utf8JsonReader reader);
         private delegate bool TryParse<T>(string value, out T parsed);
@@ -561,9 +564,22 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
+                        var componentGroupValues = val.Split(_personNameComponentGroupDelimiter);
+                        int i = 0;
+
                         writer.WriteStartObject();
-                        writer.WritePropertyName("Alphabetic");
-                        writer.WriteStringValue(val);
+                        foreach (var componentGroupValue in componentGroupValues)
+                        {
+                            // Based on standard http://dicom.nema.org/dicom/2013/output/chtml/part18/sect_F.2.html
+                            // 1. Empty values are skipped
+                            // 2. Leading componentGroups even if null need to have delimiters. Trailing componentGroup delimiter can be omitted
+                            if (!string.IsNullOrWhiteSpace(componentGroupValue))
+                            {
+                                writer.WritePropertyName(_personNameComponentGroupNames[i]);
+                                writer.WriteStringValue(componentGroupValue);
+                            }
+                            i++;
+                        }
                         writer.WriteEndObject();
                     }
                 }
@@ -875,17 +891,51 @@ namespace FellowOakDicom.Serialization
                         }
                         else if (reader.TokenType == JsonTokenType.StartObject)
                         {
+                            // parse
                             reader.Read(); // read into object
+                            var componentGroupCount = 3;
+                            var componentGroupValues = new string[componentGroupCount];
                             while (reader.TokenType != JsonTokenType.EndObject)
                             {
                                 if (reader.TokenType == JsonTokenType.PropertyName
                                     && reader.GetString() == "Alphabetic")
                                 {
                                     reader.Read(); // skip propertyname
-                                    childStrings.Add(reader.GetString()); // read value
+                                    componentGroupValues[0] = reader.GetString(); // read value
+                                }
+                                else if (reader.TokenType == JsonTokenType.PropertyName
+                                    && reader.GetString() == "Ideographic")
+                                {
+                                    reader.Read(); // skip propertyname
+                                    componentGroupValues[1] = reader.GetString(); // read value
+                                }
+                                else if (reader.TokenType == JsonTokenType.PropertyName
+                                    && reader.GetString() == "Phonetic")
+                                {
+                                    reader.Read(); // skip propertyname
+                                    componentGroupValues[2] = reader.GetString(); // read value
                                 }
                                 reader.Read();
                             }
+
+                            //build
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (int i = 0; i < componentGroupCount; i++)
+                            {
+                                var val = componentGroupValues[i];
+
+                                if (!string.IsNullOrWhiteSpace(val))
+                                {
+                                    stringBuilder.Append(val);
+
+                                }
+                                stringBuilder.Append(_personNameComponentGroupDelimiter);
+                            }
+
+                            //remove optional trailing delimiters
+                            string pnVal = stringBuilder.ToString().TrimEnd(_personNameComponentGroupDelimiter);
+
+                            childStrings.Add(pnVal); // add value
                             AssumeAndSkip(ref reader, JsonTokenType.EndObject);
                         }
                         else

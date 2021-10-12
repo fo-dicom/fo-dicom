@@ -632,6 +632,37 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("^Bob^^Dr.", reconstituated[0].GetSingleValue<string>(DicomTag.ReferringPhysicianName));
         }
 
+
+        /// <summary>
+        ///     Test Patient name component group deserialization
+        /// </summary>
+        [Theory]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\", \"Phonetic\": \"pho\" }] } }", "Kalle=ideo=pho")]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\",  \"Phonetic\": \"pho\" }] } }", "Kalle==pho")]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\" }] } }", "Kalle=ideo")]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Ideographic\": \"ideo\"}] } }", "=ideo")]
+        public void TestJsonToDicomPNConverstion(string json, string expectedResult)
+        {
+            var reconstituated = DicomJson.ConvertJsonToDicom(json);
+            Assert.Equal(expectedResult, reconstituated.GetString(DicomTag.PatientName));
+        }
+
+        [Theory]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Alphabetic\":\"Kalle\",\"Ideographic\":\"ideo\",\"Phonetic\":\"pho\"}]}}", "Kalle=ideo=pho")]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Alphabetic\":\"Kalle\",\"Phonetic\":\"pho\"}]}}", "Kalle==pho")]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Alphabetic\":\"Kalle\",\"Ideographic\":\"ideo\"}]}}", "Kalle=ideo")]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Ideographic\":\"ideo\"}]}}", "=ideo")]
+        public void TestDicomToJsonPNConversion(string expectedJson, string value)
+        {
+            var originalDataset = new DicomDataset {
+                { DicomTag.PatientName, value }
+            };
+           
+            var json = DicomJson.ConvertDicomToJson(originalDataset);
+
+            Assert.Equal(expectedJson, json);
+        }
+
         /// <summary>
         /// vr is not first position of json properties.
         /// </summary>
