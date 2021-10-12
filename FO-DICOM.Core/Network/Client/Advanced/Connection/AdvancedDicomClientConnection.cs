@@ -9,10 +9,15 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
+    /// <summary>
+    /// Represents an open DICOM connection, which contains two things:<br/>
+    /// 1. An open TCP socket to the port where the other AE is running<br/>
+    /// 2. A DICOM listener that collects incoming DICOM messages over this socket<br/>
+    /// </summary>
     public interface IAdvancedDicomClientConnection : IDicomClientConnection
     {
         /// <summary>
-        /// Gets the DICOM service options.
+        /// Gets the DICOM service options. These configure low level details that change the behavior of the DICOM listener
         /// </summary>
         DicomServiceOptions Options { get; }
         

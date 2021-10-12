@@ -3,7 +3,6 @@
 
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -80,8 +79,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly ILogger _logger;
         private readonly Task _eventCollector;
         private readonly CancellationTokenSource _eventCollectorCts;
-        private readonly ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>> _requestChannels;
-        private readonly Channel<IAdvancedDicomClientConnectionEvent> _associationChannel;
+        private readonly ConcurrentDictionary<int, Channel<IAdvancedDicomClientEvent>> _requestChannels;
+        private readonly Channel<IAdvancedDicomClientEvent> _associationChannel;
         private readonly IAdvancedDicomClientConnection _connection;
         
         private long _isDisposed;
@@ -95,8 +94,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _eventCollectorCts = new CancellationTokenSource();
             _eventCollector = Task.Run(() => CollectEventsAsync(_eventCollectorCts.Token));
-            _requestChannels = new ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>>();
-            _associationChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
+            _requestChannels = new ConcurrentDictionary<int, Channel<IAdvancedDicomClientEvent>>();
+            _associationChannel = Channel.CreateUnbounded<IAdvancedDicomClientEvent>(new UnboundedChannelOptions
             {
                 SingleReader = false, 
                 SingleWriter = false, 
@@ -274,7 +273,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             cancellationToken.ThrowIfCancellationRequested();
             
-            var requestChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
+            var requestChannel = Channel.CreateUnbounded<IAdvancedDicomClientEvent>(new UnboundedChannelOptions
             {
                 SingleReader = true,
                 SingleWriter = true,
@@ -295,7 +294,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    while (requestChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
+                    while (requestChannel.Reader.TryRead(out IAdvancedDicomClientEvent @event))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -395,7 +394,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                while (_associationChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
+                while (_associationChannel.Reader.TryRead(out IAdvancedDicomClientEvent @event))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

@@ -23,6 +23,11 @@ namespace FellowOakDicom.Network.Client.Advanced
 
         IAdvancedDicomClient IAdvancedDicomClientFactory.Create(AdvancedDicomClientCreationRequest request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var logger = request.Logger ?? _logManager.GetLogger("Dicom.Network");
             
             return new AdvancedDicomClient(_advancedDicomClientConnectionFactory, logger);

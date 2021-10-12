@@ -11,6 +11,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     /// </summary>
     public interface IAdvancedDicomClientConnectionFactory
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         Task<IAdvancedDicomClientConnection> ConnectAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
     }
 }

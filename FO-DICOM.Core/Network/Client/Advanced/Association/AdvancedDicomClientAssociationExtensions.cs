@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Association
 {
-    public static class AdvancedDicomClientAssociationExtensions 
+    public static class AdvancedDicomClientAssociationExtensions
     {
         /// <summary>
         /// Sends a C-ECHO request over the provided association
@@ -16,7 +16,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// <param name="cancellationToken">The token that cancels the request</param>
         /// <returns></returns>
         /// <exception cref="DicomNetworkException"></exception>
-        public static async Task<DicomCEchoResponse> SendEchoRequestAsync(this IAdvancedDicomClientAssociation association, DicomCEchoRequest dicomRequest, CancellationToken cancellationToken)
+        public static async Task<DicomCEchoResponse> SendEchoRequestAsync(this IAdvancedDicomClientAssociation association, DicomCEchoRequest dicomRequest,
+            CancellationToken cancellationToken)
         {
             await foreach (var response in association.SendRequestAsync(dicomRequest, cancellationToken).ConfigureAwait(false))
             {
@@ -25,5 +26,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             throw new DicomNetworkException($"C-ECHO request {dicomRequest.MessageID} failed: no DICOM events received");
         }
+
+        // TODO Add C-STORE, C-FIND, C-MOVE and C-ECHO
     }
 }

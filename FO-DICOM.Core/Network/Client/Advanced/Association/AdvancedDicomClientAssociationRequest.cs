@@ -3,6 +3,9 @@
 
 namespace FellowOakDicom.Network.Client.Advanced.Association
 {
+    /// <summary>
+    /// Contains all the possible parameters that can change how a DICOM association is requested
+    /// </summary>
     public class AdvancedDicomClientAssociationRequest
     {
         /// <summary>

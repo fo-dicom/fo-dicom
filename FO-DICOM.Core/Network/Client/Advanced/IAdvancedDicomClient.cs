@@ -30,10 +30,16 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// </summary>
         /// <param name="request">The connection request that specifies the details of the connection that should be opened</param>
         /// <param name="cancellationToken">The token that will cancel the opening of the connection</param>
-        /// <returns></returns>
+        /// <returns>A new instance of <see cref="IAdvancedDicomClientConnection"/></returns>
         Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
         
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken);
     }
 }

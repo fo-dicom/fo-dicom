@@ -4,7 +4,6 @@
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -23,6 +22,7 @@ namespace FellowOakDicom.Network.Client.Advanced
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <inheritdoc cref="IAdvancedDicomClient.OpenConnectionAsync"/>
         public async Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -39,6 +39,7 @@ namespace FellowOakDicom.Network.Client.Advanced
             return await _advancedDicomClientConnectionFactory.ConnectAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc cref="IAdvancedDicomClient.OpenAssociationAsync"/>
         public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request,
             CancellationToken cancellationToken)
         {

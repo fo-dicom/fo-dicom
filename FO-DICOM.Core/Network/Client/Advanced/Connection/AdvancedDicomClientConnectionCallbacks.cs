@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Network.Client.Advanced.Events;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -100,18 +99,18 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// Gets an IAsyncEnumerable of all the DICOM events that are provided to this callback instance
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that stops enumerating the events</param>
-        IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> GetEvents(CancellationToken cancellationToken);
+        IAsyncEnumerable<IAdvancedDicomClientEvent> GetEvents(CancellationToken cancellationToken);
     }
     
     public class AdvancedDicomClientConnectionCallbacks : IAdvancedDicomClientConnectionCallbacks
     {
         private readonly AdvancedDicomClientConnectionRequestHandlers _requestHandlers;
-        private readonly Channel<IAdvancedDicomClientConnectionEvent> _events;
+        private readonly Channel<IAdvancedDicomClientEvent> _events;
 
         public AdvancedDicomClientConnectionCallbacks(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
         {
             _requestHandlers = requestHandlers;
-            _events = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
+            _events = Channel.CreateUnbounded<IAdvancedDicomClientEvent>(new UnboundedChannelOptions
             {
                 SingleReader = true,
                 SingleWriter = false,
@@ -119,13 +118,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             });
         }
         
-        public async IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> GetEvents([EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<IAdvancedDicomClientEvent> GetEvents([EnumeratorCancellation] CancellationToken cancellationToken)
         {
             while (await _events.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 
-                while (_events.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
+                while (_events.Reader.TryRead(out IAdvancedDicomClientEvent @event))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     
