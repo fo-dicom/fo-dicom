@@ -249,23 +249,6 @@ namespace Dicom.Serialization
             Assert.Equal("Kalle", reconstituated.GetString(DicomTag.PatientName));
         }
 
-        /// <summary>
-        ///     Test Patient name component group deserialization
-        /// </summary>
-        [Theory]
-        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\", \"Phonetic\": \"pho\" }] } }", "Kalle=ideo=pho")]
-        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\",  \"Phonetic\": \"pho\" }] } }", "Kalle==pho")]
-        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\" }] } }", "Kalle=ideo")]
-        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Ideographic\": \"ideo\"}] } }", "==ideo")]
-        public void TestPNComponentGroupDeserialization(string json, string expectedResult)
-        {
-            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            Assert.Equal(expectedResult, reconstituated.GetString(DicomTag.PatientName));
-        }
-
-        /// <summary>
-        ///     Test Patient name component group deserialization
-        /// </summary>
         [Theory]
         [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\", \"Phonetic\": \"pho\" }] } }", "Kalle=ideo=pho")]
         [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\",  \"Phonetic\": \"pho\" }] } }", "Kalle==pho")]

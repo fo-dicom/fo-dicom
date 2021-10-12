@@ -312,10 +312,6 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("Kalle", reconstituated.GetString(DicomTag.PatientName));
         }
 
-
-        /// <summary>
-        ///     Test Patient name component group deserialization
-        /// </summary>
         [Theory]
         [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\", \"Phonetic\": \"pho\" }] } }", "Kalle=ideo=pho")]
         [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\",  \"Phonetic\": \"pho\" }] } }", "Kalle==pho")]

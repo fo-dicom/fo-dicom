@@ -632,10 +632,6 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("^Bob^^Dr.", reconstituated[0].GetSingleValue<string>(DicomTag.ReferringPhysicianName));
         }
 
-
-        /// <summary>
-        ///     Test Patient name component group deserialization
-        /// </summary>
         [Theory]
         [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\", \"Phonetic\": \"pho\" }] } }", "Kalle=ideo=pho")]
         [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\",  \"Phonetic\": \"pho\" }] } }", "Kalle==pho")]
