@@ -20,6 +20,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
     {
         DicomAssociation Association { get; }
         
+        bool IsDisposed { get; }
+        
         IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, CancellationToken cancellationToken);
 
         ValueTask ReleaseAsync(CancellationToken cancellationToken);
@@ -41,7 +43,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly IAdvancedDicomClientConnection _connection;
         
         private long _isDisposed;
-        private bool IsDisposed => (ulong)Interlocked.Read(ref _isDisposed) > 0;
+        public bool IsDisposed => (ulong)Interlocked.Read(ref _isDisposed) > 0;
         
         public DicomAssociation Association { get; }
 

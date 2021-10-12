@@ -428,8 +428,6 @@ namespace FellowOakDicom.Network.Client
                         }
 
                         await ReleaseAssociationAsync(association).ConfigureAwait(false);
-
-                        association = null;
                     }
                     catch (DicomAssociationRejectedException e)
                     {
@@ -441,39 +439,37 @@ namespace FellowOakDicom.Network.Client
                     {
                         _logger.Warn("DICOM request sending was cancelled");
 
-                        if (association != null)
+                        if (association != null && association.IsDisposed == false)
                         {
                             switch (cancellationMode)
                             {
                                 case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                                     await ReleaseAssociationAsync(association).ConfigureAwait(false);
                                     
-                                    association = null;
-                                    
                                     break;
                                 case DicomClientCancellationMode.ImmediatelyAbortAssociation:
                                     await AbortAssociationAsync(association).ConfigureAwait(false);
 
-                                    association = null;
-                            
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(cancellationMode), cancellationMode, null);
                             }
                         }
                     }
-                    catch (DicomNetworkException e)
+                    catch (Exception e)
                     {
                         _logger.Error("An error occurred while sending DICOM requests: {Error}", e);
 
                         exception = e;
+
+                        if (association != null && association.IsDisposed == false)
+                        {
+                            await AbortAssociationAsync(association).ConfigureAwait(false);
+                        }
                     }
                     finally
                     {
-                        if (association != null)
-                        {
-                           await AbortAssociationAsync(association).ConfigureAwait(false);
-                        }
+                        association?.Dispose();
                         connection?.Dispose();
                     }
                 }
@@ -530,10 +526,6 @@ namespace FellowOakDicom.Network.Client
                 RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
 
                 _logger.Debug("{Request} has timed out", request.ToString());
-            }
-            catch (Exception e) when (!(e is OperationCanceledException))
-            {
-                throw new DicomNetworkException($"DICOM request {request} has failed", e);
             }
         }
         
