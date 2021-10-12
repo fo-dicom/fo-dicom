@@ -393,11 +393,13 @@ namespace FellowOakDicom.Network.Client
                                 
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                await foreach (var _ in sendTask.WithCancellation(cancellationToken).ConfigureAwait(false))
+                                await using var responseEnumerator = sendTask.GetAsyncEnumerator(cancellationToken);
+
+                                while (await responseEnumerator.MoveNextAsync())
                                 {
                                     cancellationToken.ThrowIfCancellationRequested();
                                 }
-                                
+
                                 _logger.Debug("{Request} has completed", request.ToString());
                             }
 
