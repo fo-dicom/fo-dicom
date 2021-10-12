@@ -21,7 +21,6 @@ namespace FellowOakDicom.Network.Client
 {
     public interface IDicomClient
     {
-
         /// <summary>
         /// DICOM host.
         /// </summary>
