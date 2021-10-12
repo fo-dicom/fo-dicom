@@ -370,39 +370,19 @@ namespace FellowOakDicom.Network.Client
 
                             SetState(DicomClientSendingRequestsState.Instance);
 
-                            var sendTasks = new List<IAsyncEnumerable<DicomResponse>>();
 
                             _logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
+                            var sendTasks = new List<Task>(requests.Count);
                             
                             // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
                             foreach(var request in requests)
                             {
-                                _logger.Debug("Queueing {Request}", request.ToString(), sendTasks.Count);
-                                    
                                 sendTasks.Add(SendRequestAsync(association, request, cancellationToken));
                             }
 
-                            // Wait for all requests to complete
-                            for (var index = 0; index < sendTasks.Count; index++)
-                            {
-                                var request = requests[index];
-                                
-                                _logger.Debug("Waiting for {Request} to complete", request.ToString());
-
-                                var sendTask = sendTasks[index];
-                                
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                await using var responseEnumerator = sendTask.GetAsyncEnumerator(cancellationToken);
-
-                                while (await responseEnumerator.MoveNextAsync())
-                                {
-                                    cancellationToken.ThrowIfCancellationRequested();
-                                }
-
-                                _logger.Debug("{Request} has completed", request.ToString());
-                            }
-
+                            // Now wait for the requests to complete
+                            await Task.WhenAll(sendTasks).ConfigureAwait(false);
+                            
                             requests.Clear();
 
                             // If more requests were queued since we started, try to send those too over the same association
@@ -482,7 +462,7 @@ namespace FellowOakDicom.Network.Client
                             }
                         }
                     }
-                    catch (Exception e)
+                    catch (DicomNetworkException e)
                     {
                         _logger.Error("An error occurred while sending DICOM requests: {Error}", e);
 
@@ -520,7 +500,7 @@ namespace FellowOakDicom.Network.Client
         /// <param name="cancellationToken">The cancellation token that stops the entire process</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="DicomResponse"/></returns>
         /// <exception cref="ArgumentNullException">When <paramref name="association"/> or <paramref name="request"/> are null</exception>
-        private async IAsyncEnumerable<DicomResponse> SendRequestAsync(IAdvancedDicomClientAssociation association, DicomRequest request, CancellationToken cancellationToken)
+        private async Task SendRequestAsync(IAdvancedDicomClientAssociation association, DicomRequest request, CancellationToken cancellationToken)
         {
             if (association == null)
             {
@@ -531,30 +511,30 @@ namespace FellowOakDicom.Network.Client
             {
                 throw new ArgumentNullException(nameof(request));
             }
-
-            await using var enumerator = association.SendRequestAsync(request, cancellationToken).GetAsyncEnumerator(cancellationToken);
             
-            while (true)
-            {
-                bool hasResponse = false;
-                try
-                {
-                    hasResponse = await enumerator.MoveNextAsync().ConfigureAwait(false);
-                }
-                catch (DicomRequestTimedOutException e)
-                {
-                    RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
-                }
+            _logger.Debug("{Request} is being enqueued for sending", request.ToString());
 
-                if (hasResponse)
+            try
+            {
+                await using var enumerator = association.SendRequestAsync(request, cancellationToken).GetAsyncEnumerator(cancellationToken);
+
+                while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                 {
-                    yield return enumerator.Current;
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
-                else
-                {
-                    yield break;
-                }
-            };
+                
+                _logger.Debug("{Request} has completed", request.ToString());
+            }
+            catch (DicomRequestTimedOutException e)
+            {
+                RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
+                
+                _logger.Debug("{Request} has timed out", request.ToString());
+            }
+            catch (Exception e)
+            {
+                throw new DicomNetworkException($"DICOM request {request} has failed", e);
+            }
         }
         
         /// <summary>
