@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
@@ -202,6 +203,20 @@ namespace FellowOakDicom.Network
         #endregion
 
         #region METHODS
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (!_disposed)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM service is already disposed and can no longer be used");
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -235,6 +250,8 @@ namespace FellowOakDicom.Network
         /// <param name="request">Request to send.</param>
         public virtual Task SendRequestAsync(DicomRequest request)
         {
+            ThrowIfAlreadyDisposed();
+            
             return SendMessageAsync(request);
         }
 
@@ -244,6 +261,8 @@ namespace FellowOakDicom.Network
         /// <param name="response">Response to send.</param>
         protected Task SendResponseAsync(DicomResponse response)
         {
+            ThrowIfAlreadyDisposed();
+            
             return SendMessageAsync(response);
         }
 
@@ -984,6 +1003,8 @@ namespace FellowOakDicom.Network
 
         internal async Task SendNextMessageAsync()
         {
+            ThrowIfAlreadyDisposed();
+            
             var sendQueueEmpty = false;
 
             while (true)
@@ -1407,6 +1428,8 @@ namespace FellowOakDicom.Network
         /// <param name="association">DICOM association.</param>
         protected Task SendAssociationRequestAsync(DicomAssociation association)
         {
+            ThrowIfAlreadyDisposed();
+            
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName)
             {
@@ -1425,6 +1448,8 @@ namespace FellowOakDicom.Network
         /// <param name="association">DICOM association.</param>
         protected Task SendAssociationAcceptAsync(DicomAssociation association)
         {
+            ThrowIfAlreadyDisposed();
+            
             Association = association;
 
             // reject all presentation contexts that have not already been accepted or rejected
@@ -1449,6 +1474,7 @@ namespace FellowOakDicom.Network
         /// <param name="reason">Rejection reason.</param>
         protected Task SendAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
+            ThrowIfAlreadyDisposed();
             Logger.Info("{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]", LogID,
                 result, source, reason);
             return SendPDUAsync(new AAssociateRJ(result, source, reason));
@@ -1459,6 +1485,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         protected Task SendAssociationReleaseRequestAsync()
         {
+            ThrowIfAlreadyDisposed();
             Logger.Info("{logId} -> Association release request", LogID);
             return SendPDUAsync(new AReleaseRQ());
         }
@@ -1468,6 +1495,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         protected Task SendAssociationReleaseResponseAsync()
         {
+            ThrowIfAlreadyDisposed();
             Logger.Info("{logId} -> Association release response", LogID);
             return SendPDUAsync(new AReleaseRP());
         }
@@ -1479,6 +1507,7 @@ namespace FellowOakDicom.Network
         /// <param name="reason">Abort reason.</param>
         protected Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
+            ThrowIfAlreadyDisposed();
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
             return SendPDUAsync(new AAbort(source, reason));
         }
