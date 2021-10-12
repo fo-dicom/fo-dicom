@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,6 @@ using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;
-using System.Runtime.ExceptionServices;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -150,6 +150,7 @@ namespace FellowOakDicom.Network.Client
     public class DicomClient : IDicomClient
     {
         private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
+        private ILogger _logger;
         private DicomClientState _state;
         private long _isSending;
         private readonly Tasks.AsyncManualResetEvent _hasMoreRequests;
@@ -166,8 +167,13 @@ namespace FellowOakDicom.Network.Client
         public string CalledAe { get; }
         
         public bool IsSendRequired => _isSending == 0 && QueuedRequests.Any();
-        
-        public ILogger Logger { get; set; }
+
+        public ILogger Logger
+        {
+            get => _logger;
+            set => _logger = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
         public DicomClientOptions ClientOptions { get; set; }
         public DicomServiceOptions ServiceOptions { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
@@ -192,10 +198,12 @@ namespace FellowOakDicom.Network.Client
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
+        /// <param name="logger">The l</param>
         /// <param name="advancedDicomClientFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
+            ILogger logger,
             IAdvancedDicomClientFactory advancedDicomClientFactory
         )
         {
@@ -212,6 +220,7 @@ namespace FellowOakDicom.Network.Client
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
             _state = DicomClientIdleState.Instance;
             _isSending = 0;
@@ -363,12 +372,12 @@ namespace FellowOakDicom.Network.Client
 
                             var sendTasks = new List<IAsyncEnumerable<DicomResponse>>();
 
-                            Logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
+                            _logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
                             
                             // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
                             foreach(var request in requests)
                             {
-                                Logger.Debug("Queueing {Request}", request.ToString(), sendTasks.Count);
+                                _logger.Debug("Queueing {Request}", request.ToString(), sendTasks.Count);
                                     
                                 sendTasks.Add(SendRequestAsync(association, request, cancellationToken));
                             }
@@ -378,7 +387,7 @@ namespace FellowOakDicom.Network.Client
                             {
                                 var request = requests[index];
                                 
-                                Logger.Debug("Waiting for {Request} to complete", request.ToString());
+                                _logger.Debug("Waiting for {Request} to complete", request.ToString());
 
                                 var sendTask = sendTasks[index];
                                 
@@ -389,7 +398,7 @@ namespace FellowOakDicom.Network.Client
                                     cancellationToken.ThrowIfCancellationRequested();
                                 }
                                 
-                                Logger.Debug("{Request} has completed", request.ToString());
+                                _logger.Debug("{Request} has completed", request.ToString());
                             }
 
                             requests.Clear();
@@ -412,7 +421,7 @@ namespace FellowOakDicom.Network.Client
                                 && numberOfRequests < maximumNumberOfRequestsPerAssociation
                                 && ClientOptions.AssociationLingerTimeoutInMs > 0)
                             {
-                                Logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
+                                _logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
 
                                 SetState(DicomClientLingeringState.Instance);
                                 
@@ -448,7 +457,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (OperationCanceledException)
                     {
-                        Logger.Warn("DICOM request sending was cancelled");
+                        _logger.Warn("DICOM request sending was cancelled");
 
                         if (association != null)
                         {
@@ -473,7 +482,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("An error occurred while sending DICOM requests: {Error}", e);
+                        _logger.Error("An error occurred while sending DICOM requests: {Error}", e);
 
                         exception = e;
                     }
@@ -567,7 +576,7 @@ namespace FellowOakDicom.Network.Client
 
             _state = state;
             
-            Logger.Debug($"[{oldState}] --> [{newState}]");
+            _logger.Debug($"[{oldState}] --> [{newState}]");
 
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
         }

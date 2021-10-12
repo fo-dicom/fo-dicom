@@ -75,7 +75,8 @@ namespace FellowOakDicom.Tests.Network.Client
                     logManager
                 ),
                 defaultClientOptions,
-                defaultServiceOptions);
+                defaultServiceOptions,
+                logManager);
         }
 
         [Fact]

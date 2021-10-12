@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
 using System;
 using FellowOakDicom.Network.Client.Advanced;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,24 +42,28 @@ namespace FellowOakDicom.Network.Client
         private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
         private readonly IOptions<DicomClientOptions> _defaultClientOptions;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
+        private readonly ILogManager _logManager;
 
         public DefaultDicomClientFactory(
             IAdvancedDicomClientFactory advancedDicomClientFactory,
             IOptions<DicomClientOptions> defaultClientOptions,
-            IOptions<DicomServiceOptions> defaultServiceOptions
-            )
+            IOptions<DicomServiceOptions> defaultServiceOptions,
+            ILogManager logManager
+        )
         {
             _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
             _defaultClientOptions = defaultClientOptions ?? throw new ArgumentNullException(nameof(defaultClientOptions));
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
+            _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
         }
 
         public virtual IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
         {
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
+            var logger = _logManager.GetLogger("Dicom.Network");
 
-            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _advancedDicomClientFactory);
+            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, logger, _advancedDicomClientFactory);
         }
     }
 }
