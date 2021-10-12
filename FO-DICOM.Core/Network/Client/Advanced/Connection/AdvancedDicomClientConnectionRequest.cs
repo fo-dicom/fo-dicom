@@ -35,7 +35,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// <summary>
         /// The encoding that will be used as a fallback if no encoding can be derived from the DICOM dataset
         /// </summary>
-        public Encoding FallbackEncoding { get; set; }
+        public Encoding FallbackEncoding { get; set; } = DicomEncoding.Default;
 
         /// <summary>
         /// The request handlers that will handle reverse requests.
