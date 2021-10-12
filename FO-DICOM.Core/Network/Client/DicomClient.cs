@@ -522,16 +522,16 @@ namespace FellowOakDicom.Network.Client
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                 }
-                
+
                 _logger.Debug("{Request} has completed", request.ToString());
             }
             catch (DicomRequestTimedOutException e)
             {
                 RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
-                
+
                 _logger.Debug("{Request} has timed out", request.ToString());
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is OperationCanceledException))
             {
                 throw new DicomNetworkException($"DICOM request {request} has failed", e);
             }
