@@ -230,8 +230,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             cancellationToken.ThrowIfCancellationRequested();
             
-            _logger.Debug("Setting up request channel for request {Request}", dicomRequest.ToString());
-
             var requestChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
                 SingleReader = true,
