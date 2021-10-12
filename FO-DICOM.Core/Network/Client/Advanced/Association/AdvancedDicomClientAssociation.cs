@@ -40,6 +40,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly Channel<IAdvancedDicomClientConnectionEvent> _associationChannel;
         private readonly IAdvancedDicomClientConnection _connection;
         
+        private long _isDisposed;
+        private bool IsDisposed => (ulong)Interlocked.Read(ref _isDisposed) > 0;
+        
         public DicomAssociation Association { get; }
 
         public AdvancedDicomClientAssociation(IAdvancedDicomClientConnection connection, DicomAssociation association, ILogger logger)
@@ -58,6 +61,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             Association = association ?? throw new ArgumentNullException(nameof(association));
         }
+        
+        /// <summary>
+        /// The finalizer will be called when this instance is not disposed properly.
+        /// </summary>
+        /// <remarks>Failing to dispose indicates wrong usage</remarks>
+        ~AdvancedDicomClientAssociation() => Dispose(false);
 
         private async Task CollectEventsAsync(CancellationToken cancellationToken)
         {
@@ -168,7 +177,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     }
                     case DicomAssociationReleasedEvent dicomAssociationReleasedEvent:
                     {
-                        _logger.Debug("Association released");
+                        _logger.Debug("Association {Association} released", AssociationToString(Association));
 
                         if (!_associationChannel.Writer.TryWrite(dicomAssociationReleasedEvent))
                         {
@@ -212,12 +221,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
         public async IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken) 
         {
+            ThrowIfAlreadyDisposed();
+
             if (dicomRequest == null)
             {
                 throw new ArgumentNullException(nameof(dicomRequest));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
+            
+            _logger.Debug("Setting up request channel for request {Request}", dicomRequest.ToString());
 
             var requestChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
@@ -302,6 +315,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
         public async ValueTask ReleaseAsync(CancellationToken cancellationToken)
         {
+            ThrowIfAlreadyDisposed();
+
             try
             {
                 await _connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
@@ -316,6 +331,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
         public async ValueTask AbortAsync(CancellationToken cancellationToken)
         {
+            ThrowIfAlreadyDisposed();
+
             try
             {
                 await _connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified).ConfigureAwait(false);
@@ -330,7 +347,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
         private async Task WaitForAssociationRelease(CancellationToken cancellationToken)
         {
-            _logger.Debug("Waiting for association to be released");
+            _logger.Debug("Waiting for association {Association} to be released", AssociationToString(Association));
 
             while (await _associationChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
             {
@@ -343,10 +360,10 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     switch (@event)
                     {
                         case DicomAssociationReleasedEvent _:
-                            _logger.Debug("Association has been released");
+                            _logger.Debug("Association {Association} has been released", AssociationToString(Association));
                             return;
                         case DicomAbortedEvent _:
-                            _logger.Debug("Association has been aborted");
+                            _logger.Debug("Association {Association} has been aborted", AssociationToString(Association));
                             return;
                         case ConnectionClosedEvent _:
                             _logger.Debug("Connection has closed");
@@ -355,11 +372,48 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                 }
             }
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (!IsDisposed)
+                return;
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM association is already disposed and can no longer be used");
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            // Guard against multiple disposals
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0)
+            {
+                return;
+            }
+            
             _eventCollectorCts.Cancel();
             _eventCollectorCts.Dispose();
+
+            if (!disposing)
+            {
+                _logger.Warn($"DICOM association {AssociationToString(Association)} was not disposed correctly, but was garbage collected instead");
+            }
+        }
+
+        private static string AssociationToString(DicomAssociation association)
+        {
+            var callingAE = association.CallingAE ?? "<no calling AE>";
+            var calledAE = association.CalledAE ?? "<no called AE>";
+            var remoteHost = association.RemoteHost ?? "<no remote host>";
+            var remotePort = association.RemotePort;
+            return $"from {callingAE} to {calledAE} @{remoteHost}:{remotePort}";
         }
     }
 }
