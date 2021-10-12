@@ -72,3 +72,4 @@
 * [Gabriel Schafflützel](https://github.com/gasupidupi)
 * [mrbean-bremen](https://github.com/mrbean-bremen)
 * [Michael Möring](https://github.com/MichaelM223)
+* [Smitha Saligrama](https://github.com/smithago)
