@@ -6,7 +6,7 @@ namespace FellowOakDicom.Network
     public class ConnectionClosedPrematurelyException : DicomNetworkException
     {
         public ConnectionClosedPrematurelyException()
-            : base($"The connection closed prematurely")
+            : base("The connection closed prematurely")
         {
         }
     }
