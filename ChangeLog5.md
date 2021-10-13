@@ -1,6 +1,8 @@
 #### 5.0.1 (TBD)
 
 * Add generated API documentation for versions 4 and 5
+* Add "AdvancedDicomClient". (#1144) This "expert" API gives full control over the connection, association and requests when sending DICOM requests
+* Rewrite "DicomClient" based on the new AdvancedDicomClient. The state based implementation is gone. The public API has remained the same.
 * Fix IO Exception with >2GB images (#1148)
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 
