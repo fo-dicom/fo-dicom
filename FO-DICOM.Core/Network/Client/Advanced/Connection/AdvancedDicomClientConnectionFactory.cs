@@ -9,6 +9,16 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
+    /// <summary>
+    /// The factory that is responsible for creating new DICOM connections
+    /// </summary>
+    public interface IAdvancedDicomClientConnectionFactory
+    {
+        /// <inheritdoc cref="IAdvancedDicomClient.OpenConnectionAsync"/>
+        Task<IAdvancedDicomClientConnection> ConnectAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
+    }
+    
+    /// <inheritdoc cref="IAdvancedDicomClientConnectionFactory"/>
     public class AdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
     {
         private readonly INetworkManager _networkManager;
@@ -27,6 +37,11 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         
         public async Task<IAdvancedDicomClientConnection> ConnectAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             cancellationToken.ThrowIfCancellationRequested();
             
             INetworkStream networkStream = null;
