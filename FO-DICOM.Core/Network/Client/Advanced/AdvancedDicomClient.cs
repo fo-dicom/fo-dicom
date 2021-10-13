@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
+    /// <inheritdoc cref="IAdvancedDicomClient"/>
     public class AdvancedDicomClient : IAdvancedDicomClient
     {
         private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;

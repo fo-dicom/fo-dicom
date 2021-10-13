@@ -15,11 +15,19 @@ namespace FellowOakDicom.Network.Client.Advanced
     
     public class ConnectionClosedEvent : IAdvancedDicomClientEvent
     {
+        public static readonly ConnectionClosedEvent WithoutException = new ConnectionClosedEvent();
+        public static ConnectionClosedEvent WithException(Exception exception) => new ConnectionClosedEvent(exception);
+        
         public Exception Exception { get; }
 
-        public ConnectionClosedEvent(Exception exception)
+        private ConnectionClosedEvent()
         {
-            Exception = exception;
+            
+        }
+
+        private ConnectionClosedEvent(Exception exception)
+        {
+            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
     }
     
@@ -58,8 +66,16 @@ namespace FellowOakDicom.Network.Client.Advanced
             Reason = reason;
         }
     }
-    
-    public class DicomAssociationReleasedEvent : IAdvancedDicomClientEvent { }
+
+    public class DicomAssociationReleasedEvent : IAdvancedDicomClientEvent
+    {
+        public static readonly DicomAssociationReleasedEvent Instance = new DicomAssociationReleasedEvent();
+
+        private DicomAssociationReleasedEvent()
+        {
+            
+        }
+    }
 
     public class RequestCompletedEvent : IAdvancedDicomClientEvent
     {
@@ -96,6 +112,11 @@ namespace FellowOakDicom.Network.Client.Advanced
             Timeout = timeout;
         }
     }
-    
-    public class SendQueueEmptyEvent : IAdvancedDicomClientEvent { }
+
+    public class SendQueueEmptyEvent : IAdvancedDicomClientEvent
+    {
+        public static readonly SendQueueEmptyEvent Instance = new SendQueueEmptyEvent();
+
+        private SendQueueEmptyEvent() {}
+    }
 }

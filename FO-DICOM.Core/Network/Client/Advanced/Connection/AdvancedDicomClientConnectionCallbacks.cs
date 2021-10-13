@@ -137,18 +137,22 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         public async Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => await _events.Writer.WriteAsync(new DicomAssociationRejectedEvent(result, source, reason)).ConfigureAwait(false);
 
-        public async Task OnReceiveAssociationReleaseResponseAsync() => await _events.Writer.WriteAsync(new DicomAssociationReleasedEvent()).ConfigureAwait(false);
+        public async Task OnReceiveAssociationReleaseResponseAsync() => await _events.Writer.WriteAsync(DicomAssociationReleasedEvent.Instance).ConfigureAwait(false);
 
         public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => await _events.Writer.WriteAsync(new DicomAbortedEvent(source, reason)).ConfigureAwait(false);
 
         public async Task OnConnectionClosedAsync(Exception exception)
         {
-            await _events.Writer.WriteAsync(new ConnectionClosedEvent(exception)).ConfigureAwait(false);
+            var @event = exception == null
+                ? ConnectionClosedEvent.WithoutException
+                : ConnectionClosedEvent.WithException(exception);
+            
+            await _events.Writer.WriteAsync(@event).ConfigureAwait(false);
             
             _events.Writer.Complete();
         }
 
-        public async Task OnSendQueueEmptyAsync() => await _events.Writer.WriteAsync(new SendQueueEmptyEvent()).ConfigureAwait(false);
+        public async Task OnSendQueueEmptyAsync() => await _events.Writer.WriteAsync(SendQueueEmptyEvent.Instance).ConfigureAwait(false);
 
         public async Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => await _events.Writer.WriteAsync(new RequestCompletedEvent(request, response)).ConfigureAwait(false);
         
