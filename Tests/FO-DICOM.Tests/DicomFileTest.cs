@@ -119,6 +119,15 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void Open_TooSmallFile_Raises()
+        {
+            var stream = new MemoryStream(new byte[20]);
+            var exception = Record.Exception( () => DicomFile.Open(stream));
+            Assert.IsType<DicomFileException>(exception);
+            Assert.StartsWith("Not a valid DICOM file", exception.Message);
+        }
+
+        [Fact]
         public void Save_ToFile_FileExistsOnDisk()
         {
             var saveFile = new DicomFile(_minimumDatatset);
