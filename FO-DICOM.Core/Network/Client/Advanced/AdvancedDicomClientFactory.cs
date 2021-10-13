@@ -3,8 +3,8 @@
 
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Connection;
-using System;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {

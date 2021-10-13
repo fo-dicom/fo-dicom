@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
-        /// <summary>
+    /// <summary>
     /// Represents an advanced DICOM client that exposes the highest amount of manual control over the underlying DICOM communication when sending DICOM requests<br/>
     /// Using an advanced DICOM client, it is possible to manage the lifetime of a DICOM connection + association in a fine-grained manner and send any number of DICOM requests over it<br/>
     /// <br/>
@@ -36,7 +36,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <param name="cancellationToken">The token that will cancel the opening of the connection</param>
         /// <returns>A new instance of <see cref="IAdvancedDicomClientConnection"/></returns>
         Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Opens a new DICOM association over an existing TCP connection
         /// </summary>
@@ -51,9 +51,10 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <exception cref="DicomAssociationAbortedException">When the association is aborted prematurely</exception>
         /// <exception cref="DicomNetworkException">When the connection is lost without an underlying IO exception</exception>
         /// <exception cref="System.IO.IOException">When the connection is lost</exception>
-        Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken);
+        Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request,
+            CancellationToken cancellationToken);
     }
-    
+
     /// <inheritdoc cref="IAdvancedDicomClient"/>
     public class AdvancedDicomClient : IAdvancedDicomClient
     {
@@ -118,20 +119,20 @@ namespace FellowOakDicom.Network.Client.Advanced
                             var result = dicomAssociationRejectedEvent.Result;
                             var source = dicomAssociationRejectedEvent.Source;
                             var reason = dicomAssociationRejectedEvent.Reason;
-                            
-                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it: {Result} {Source} {Reason}", 
+
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it: {Result} {Source} {Reason}",
                                 request.CallingAE, request.CalledAE, request.CalledAE, result, source, reason);
-                            
+
                             throw new DicomAssociationRejectedException(result, source, reason);
                         }
                     case DicomAbortedEvent dicomAbortedEvent:
                         {
                             var source = dicomAbortedEvent.Source;
                             var reason = dicomAbortedEvent.Reason;
-                            
-                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it: {Source} {Reason}", 
+
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it: {Source} {Reason}",
                                 request.CallingAE, request.CalledAE, request.CalledAE, source, reason);
-                            
+
                             throw new DicomAssociationAbortedException(source, reason);
                         }
                     case ConnectionClosedEvent connectionClosedEvent:

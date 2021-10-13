@@ -1,6 +1,12 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced;
+using FellowOakDicom.Network.Client.Advanced.Association;
+using FellowOakDicom.Network.Client.Advanced.Connection;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Network.Client.States;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,12 +16,6 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Log;
-using FellowOakDicom.Network.Client.Advanced;
-using FellowOakDicom.Network.Client.Advanced.Association;
-using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Network.Client.EventArguments;
-using FellowOakDicom.Network.Client.States;
 
 namespace FellowOakDicom.Network.Client
 {

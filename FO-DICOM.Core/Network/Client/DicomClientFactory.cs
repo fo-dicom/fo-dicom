@@ -2,10 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
-using System;
 using FellowOakDicom.Network.Client.Advanced;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace FellowOakDicom.Network.Client
 {
