@@ -27,6 +27,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         IAdvancedDicomClientConnectionCallbacks Callbacks { get; }
     }
 
+    /// <inheritdoc cref="IAdvancedDicomClientConnection" />
     public class AdvancedDicomClientConnection : DicomService, IAdvancedDicomClientConnection
     {
         public IAdvancedDicomClientConnectionCallbacks Callbacks { get; }

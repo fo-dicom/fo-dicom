@@ -8,6 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
+    public interface IAdvancedDicomClientFactory
+    {
+        /// <summary>
+        /// Initializes an instance of <see cref="IAdvancedDicomClient"/>.
+        /// </summary>
+        IAdvancedDicomClient Create(AdvancedDicomClientCreationRequest request);
+    }
+    
+    /// <inheritdoc cref="IAdvancedDicomClientFactory"/>
     public class AdvancedDicomClientFactory : IAdvancedDicomClientFactory
     {
         private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
@@ -34,7 +43,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         }
         
         /// <summary>
-        /// Initializes an instance of <see cref="DicomClient"/> out of DI-container.
+        /// Initializes an instance of <see cref="IAdvancedDicomClient"/> outside of the DI-container.
         /// </summary>
         public static IAdvancedDicomClient Create(AdvancedDicomClientCreationRequest request) => Setup.ServiceProvider
             .GetRequiredService<IAdvancedDicomClientFactory>()

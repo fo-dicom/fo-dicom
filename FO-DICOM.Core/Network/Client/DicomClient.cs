@@ -108,7 +108,10 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
+        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClient"/>
+        /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
+        [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
         event EventHandler<StateChangedEventArgs> StateChanged;
 
         /// <summary>
@@ -184,6 +187,8 @@ namespace FellowOakDicom.Network.Client
         public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler AssociationReleased;
+        
+
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
@@ -529,12 +534,13 @@ namespace FellowOakDicom.Network.Client
         }
         
         /// <summary>
-        /// Helper method that 'sets' the state of the DicomClient
-        /// This exists for backwards compatibility reasons. In the past, DicomClient was implemented using a state pattern.
+        /// Helper method that 'sets' the state of the DicomClient<br/>
+        /// This exists for backwards compatibility reasons. In the past, DicomClient was implemented using a state pattern.<br/>
         /// While most of this was hidden away for consumers, DicomClient did expose a <see cref="StateChanged"/> event for expert scenarios.
         /// In order to not break the existing consumers of this event, we still expose this event and properly emit the correct "states", even though the states itself are now empty
         /// </summary>
         /// <param name="state">The new state that should be set</param>
+        [Obsolete]
         private void SetState(DicomClientState state)
         {
             DicomClientState oldState;

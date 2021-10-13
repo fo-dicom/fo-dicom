@@ -12,7 +12,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     public interface IAdvancedDicomClientConnectionFactory
     {
         /// <summary>
-        /// 
+        /// Opens a new TCP connection and starts a DICOM listener
         /// </summary>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
