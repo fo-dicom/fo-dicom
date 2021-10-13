@@ -4,6 +4,7 @@
 * Fix IO Exception with >2GB images (#1148)
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 * Bug fix: Correct Person Name VR Json model (#1235)
+* Vulnerability fix: Use secure version of `System.Text.Encodings.Web` package (#1223) 
 
 #### 5.0.0 (2021-09-13)
 
