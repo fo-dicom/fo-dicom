@@ -34,6 +34,8 @@ namespace FellowOakDicom
 
         public abstract T Get<T>(int item = -1);
 
+        public abstract void Add<T>(T value);
+
         public override void Validate()
         {
             if (Buffer is BulkDataUriByteBuffer bulkbuffer && !bulkbuffer.IsMemory)
@@ -43,6 +45,23 @@ namespace FellowOakDicom
             }
             ValidateString();
             ValidateVM();
+        }
+
+        /// <summary>
+        /// Check if adding a value would exceed the maximum values allowed for this tag.
+        /// </summary>
+        /// <exception cref="DicomValidationException">A value cannot be added.</exception>
+        protected void ValidateVMForAddedValue()
+        {
+            if (!Tag.IsPrivate && (Count > 0))
+            {
+                var entry = Tag.DictionaryEntry;
+                if (Count + 1 > entry.ValueMultiplicity.Maximum)
+                {
+                    throw new DicomValidationException(ToString(), ValueRepresentation,
+                        $"Adding a value would exceed the maximum Value Multiplicity {entry.ValueMultiplicity.Maximum}");
+                }
+            }
         }
 
         protected virtual void ValidateVM()
@@ -123,7 +142,7 @@ namespace FellowOakDicom
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
         /// <value>Number of value items</value>
-        public override int Count => 1;
+        public override int Count => Length > 0 ? 1 : 0;
 
         protected string StringValue
         {
@@ -153,7 +172,7 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(string[]) || typeof(T) == typeof(object[]))
             {
-                return (T)(object)(new string[] { StringValue });
+                return (T)(object)(new[] { StringValue });
             }
 
             if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable)))
@@ -167,6 +186,24 @@ namespace FellowOakDicom
             }
 
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
+        }
+
+        /// <summary>
+        /// Append a new value to the element. No more than one value is allowed,
+        /// so this can be used only for an empty element. 
+        /// </summary>
+        /// <exception cref="InvalidCastException">The value is not of string or object type.</exception>
+        /// <exception cref="DicomValidationException">The element has already a value.</exception>
+        public override void Add<T>(T value)
+        {
+            ValidateVMForAddedValue();
+            if (typeof(T) != typeof(string) && typeof(T) != typeof(object))
+            {
+                throw new InvalidCastException($"Expected a string value, got a value of type {typeof(T)} instead.");
+            }
+
+            _value = value.ToString();
+            Buffer = new LazyByteBuffer(StringToBytes);
         }
 
         #endregion
@@ -189,6 +226,11 @@ namespace FellowOakDicom
 
             return bytes;
         }
+
+        /// <summary>
+        /// Reset the string value so that it will be recalculated on next access.
+        /// </summary>
+        protected virtual void ResetStringValue() => _value = null;
 
         protected override void ValidateString()
         {
@@ -298,8 +340,58 @@ namespace FellowOakDicom
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
+        /// <summary>
+        /// Append a new value to the element.  
+        /// </summary>
+        /// <exception cref="InvalidCastException">The value is not of string or object type.</exception>
+        /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
+        public override void Add<T>(T value)
+        {
+            ValidateVMForAddedValue();
+            if (typeof(T) != typeof(string) && typeof(T) != typeof(object))
+            {
+                throw new InvalidCastException($"Expected a string value, got a value of type {typeof(T)} instead.");
+            }
+
+            var stringValue = value.ToString();
+            ValueRepresentation.ValidateString(stringValue);
+            var bufferSize = Buffer.Size;
+            if (bufferSize > 0)
+            {
+                stringValue = "\\" + stringValue;
+            }
+            
+            var byteValue = TargetEncoding.GetBytes(stringValue);
+            if (bufferSize > 0 && !bufferSize.IsOdd() &&
+                Buffer.Data[bufferSize - 1] == ValueRepresentation.PaddingValue)
+            {
+                bufferSize -= 1;
+            }
+
+            var needsPadding = (bufferSize + byteValue.Length).IsOdd();
+            var arraySize = bufferSize + byteValue.Length + (needsPadding ? 1 : 0);
+            var newBufferData = new byte[arraySize];
+            Array.Copy(Buffer.GetByteRange(0, (int)bufferSize), newBufferData, bufferSize);
+            Array.Copy(byteValue, 0, newBufferData, bufferSize, byteValue.Length);
+            if (needsPadding)
+            {
+                newBufferData[arraySize - 1] = ValueRepresentation.PaddingValue;
+            }
+
+            Buffer = new LazyByteBuffer(() => newBufferData);
+
+            // make sure all string values are recalculated on next access
+            ResetStringValue();
+        }
+
         #endregion
 
+        protected override void ResetStringValue()
+        {
+            base.ResetStringValue();
+            _values = null;
+        }
+        
     }
 
     public abstract class DicomDateElement : DicomMultiStringElement
@@ -468,7 +560,7 @@ namespace FellowOakDicom
         #region Constructors
 
         protected DicomValueElement(DicomTag tag, params Tv[] values)
-            : this(tag, ByteConverter.ToByteBuffer<Tv>(values))
+            : this(tag, ByteConverter.ToByteBuffer(values))
         {
         }
 
@@ -553,8 +645,54 @@ namespace FellowOakDicom
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
+        /// <summary>
+        /// Append a new value to the element.
+        /// </summary>
+        /// <exception cref="InvalidCastException">The value is not of a type that can be casted to the element type (Tv).</exception>
+        /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
+        /// <exception cref="NotSupportedException">The element class does not support adding values.</exception>
+        public override void Add<T>(T value)
+        {
+            ValidateVMForAddedValue();
+            byte[] addedValueAsBytes;
+            try
+            {
+                // we don't want to convert strings to numbers, or truncate floats to integrals -
+                // handle these cases here as Convert.ToXXX() would support them
+                if (typeof(T) == typeof(string) ||
+                    ((typeof(T) == typeof(double) || typeof(T) == typeof(float))
+                     && typeof(Tv) != typeof(double) && typeof(Tv) != typeof(float)))
+                {
+                    throw new InvalidCastException();
+                }
+
+                addedValueAsBytes = AddedValueAsBytes(value);
+                if (addedValueAsBytes == null)
+                {
+                    throw new NotSupportedException($"Adding values not supported for VR {ValueRepresentation}.");
+                }
+            }
+            catch (Exception ex) when (ex is FormatException || ex is OverflowException || ex is InvalidCastException)
+            {
+                throw new InvalidCastException(
+                    $"Cannot add value of type {typeof(T)} to element with VR {ValueRepresentation}.");
+            }
+
+            var bufferSize = Buffer.Size;
+            var newBufferData = new byte[bufferSize + addedValueAsBytes.Length];
+            Array.Copy(Buffer.Data, newBufferData, bufferSize);
+            Array.Copy(addedValueAsBytes, 0, newBufferData, bufferSize, addedValueAsBytes.Length);
+            Buffer = new MemoryByteBuffer(newBufferData);
+        }
+
         #endregion
 
+        /// <summary>
+        /// Override to allow adding a value of the given type to the element.
+        /// </summary>
+        /// <returns>A byte array with the binary representation of the value
+        /// according to the element type (Tv).</returns>
+        protected virtual byte[] AddedValueAsBytes<T>(T value) => null;
     }
 
     /// <summary>Application Entity (AE)</summary>
@@ -579,7 +717,6 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.AE;
 
         #endregion
-
     }
 
     /// <summary>Age String (AS)</summary>
@@ -605,7 +742,6 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.AS;
 
         #endregion
-
     }
 
     /// <summary>Attribute Tag (AT)</summary>
@@ -693,6 +829,24 @@ namespace FellowOakDicom
                 $"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
+        /// <summary>
+        /// Append a new DicomTag value to the element.   
+        /// </summary>
+        /// <exception cref="InvalidCastException">The value is not of type DicomTag.</exception>
+        /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
+        public override void Add<T>(T value)
+        {
+            ValidateVMForAddedValue();
+            if (typeof(T) == typeof(DicomTag))
+            {
+                _values = _values.Append(value as DicomTag).ToArray();
+            }
+            else
+            {
+                throw new InvalidCastException($"Unable to convert {value} value to DicomTag");
+            }
+        }
+
         #endregion
     }
 
@@ -718,7 +872,6 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.CS;
 
         #endregion
-
     }
 
     /// <summary>Date (DA)</summary>
@@ -780,7 +933,6 @@ namespace FellowOakDicom
         }
 
         #endregion
-
     }
 
     /// <summary>Decimal String (DS)</summary>
@@ -881,6 +1033,24 @@ namespace FellowOakDicom
 
         #endregion
 
+        /// <summary>
+        /// Append a new value to the element. Allows to add int, double or float values or strings.  
+        /// </summary>
+        /// <exception cref="InvalidCastException">The value is not of a correct type.</exception>
+        /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
+        public override void Add<T>(T value)
+        {
+            if (typeof(T) == typeof(float) || 
+                typeof(T) == typeof(double) || 
+                typeof(T) == typeof(int))
+            {
+                base.Add(value.ToString());
+            }
+            else
+            {
+                base.Add(value);
+            }
+        }
     }
 
     /// <summary>Date Time (DT)</summary>
@@ -980,6 +1150,12 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.FD;
 
         #endregion
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            double newValue = Convert.ToDouble(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 
     /// <summary>Floating Point Single (FL)</summary>
@@ -1004,6 +1180,12 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.FL;
 
         #endregion
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            float newValue = (float)Convert.ToDouble(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 
     /// <summary>Integer String (IS)</summary>
@@ -1108,6 +1290,22 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+        /// <summary>
+        /// Append a new value to the element. Allows to add int values or strings.  
+        /// </summary>
+        /// <exception cref="InvalidCastException">The value is not of string or int type.</exception>
+        /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
+        public override void Add<T>(T value)
+        {
+            if (typeof(T) == typeof(int))
+            {
+                base.Add(value.ToString());
+            }
+            else
+            {
+                base.Add(value);
+            }
+        }
         #endregion
     }
 
@@ -1565,6 +1763,12 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.SL;
 
         #endregion
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            int newValue = Convert.ToInt32(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 
     /// <summary>Signed Short (SS)</summary>
@@ -1594,12 +1798,18 @@ namespace FellowOakDicom
 
         public override T Get<T>(int item = -1)
         {
-            if (typeof(T) == typeof(int) || typeof(T) == typeof(int[])) return (T)(object)base.Get<T>(item);
+            if (typeof(T) == typeof(int) || typeof(T) == typeof(int[])) return base.Get<T>(item);
 
             return base.Get<T>(item);
         }
 
         #endregion
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            short newValue = Convert.ToInt16(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 
     /// <summary>Short Text (ST)</summary>
@@ -1648,6 +1858,12 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.SV;
 
         #endregion
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            long newValue = Convert.ToInt64(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 
     /// <summary>Time (TM)</summary>
@@ -1864,6 +2080,12 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.UL;
 
         #endregion
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            uint newValue = Convert.ToUInt32(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 
     /// <summary>Unknown (UN)</summary>
@@ -1947,9 +2169,15 @@ namespace FellowOakDicom
 
         public override T Get<T>(int item = -1)
         {
-            if (typeof(T) == typeof(int) || typeof(T) == typeof(int[])) return (T)(object)base.Get<T>(item);
+            if (typeof(T) == typeof(int) || typeof(T) == typeof(int[])) return base.Get<T>(item);
 
             return base.Get<T>(item);
+        }
+
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            ushort newValue = Convert.ToUInt16(value);
+            return BitConverter.GetBytes(newValue);
         }
 
         #endregion
@@ -2001,5 +2229,11 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.UV;
 
         #endregion
+        
+        protected override byte[] AddedValueAsBytes<T>(T value)
+        {
+            ulong newValue = Convert.ToUInt64(value);
+            return BitConverter.GetBytes(newValue);
+        }
     }
 }

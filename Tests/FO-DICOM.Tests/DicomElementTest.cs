@@ -164,8 +164,9 @@ namespace FellowOakDicom.Tests
         {
             const ushort expected = 1;
             var element = new DicomUnsignedShort(DicomTag.ALinesPerFrame, expected);
-            var actual = element.Get<ushort?>().Value;
-            Assert.Equal(expected, actual);
+            var actual = element.Get<ushort?>();
+            Assert.True(actual.HasValue);
+            Assert.Equal(expected, actual.Value);
         }
 
         [Fact]
@@ -173,8 +174,9 @@ namespace FellowOakDicom.Tests
         {
             const Mock expected = Mock.Two;
             var element = new DicomSignedLong(DicomTag.ReferencePixelX0, (int)expected);
-            var actual = element.Get<Mock?>().Value;
-            Assert.Equal(expected, actual);
+            var actual = element.Get<Mock?>();
+            Assert.True(actual.HasValue);
+            Assert.Equal(expected, actual.Value);
         }
 
         [Fact]
@@ -182,8 +184,9 @@ namespace FellowOakDicom.Tests
         {
             const double expected = -30.0;
             var element = new DicomIntegerString(DicomTag.EchoPeakPosition, (int)expected);
-            var actual = element.Get<double?>().Value;
-            Assert.Equal(expected, actual);
+            var actual = element.Get<double?>();
+            Assert.True(actual.HasValue);
+            Assert.Equal(expected, actual.Value);
         }
 
         [Fact]
@@ -191,8 +194,9 @@ namespace FellowOakDicom.Tests
         {
             const Mock expected = Mock.One;
             var element = new DicomIntegerString(DicomTag.NumberOfBeams, (int)expected);
-            var actual = element.Get<Mock?>().Value;
-            Assert.Equal(expected, actual);
+            var actual = element.Get<Mock?>();
+            Assert.True(actual.HasValue);
+            Assert.Equal(expected, actual.Value);
         }
 
         [Fact]
@@ -200,8 +204,9 @@ namespace FellowOakDicom.Tests
         {
             const int expected = -30;
             var element = new DicomDecimalString(DicomTag.ChannelOffset, expected);
-            var actual = element.Get<int?>().Value;
-            Assert.Equal(expected, actual);
+            var actual = element.Get<int?>();
+            Assert.True(actual.HasValue);
+            Assert.Equal(expected, actual.Value);
         }
 
         [Fact]
@@ -209,8 +214,9 @@ namespace FellowOakDicom.Tests
         {
             const Mock expected = Mock.Zero;
             var element = new DicomCodeString(DicomTag.AcquisitionStatus, expected.ToString());
-            var actual = element.Get<Mock?>().Value;
-            Assert.Equal(expected, actual);
+            var actual = element.Get<Mock?>();
+            Assert.True(actual.HasValue);
+            Assert.Equal(expected, actual.Value);
         }
 
         [Fact]
@@ -408,11 +414,263 @@ namespace FellowOakDicom.Tests
             Assert.IsType<DicomDataException>(exception);
         }
 
+        [Fact]
+        public void AddValue_ToOtherVR_Throws()
+        {
+            var otherByte = new DicomOtherByte(DicomTag.SelectorOBValue);
+            var exception = Record.Exception( () => otherByte.Add(new byte[] {0x33} ));
+            Assert.IsType<NotSupportedException>(exception);
+            var otherWord = new DicomOtherWord(DicomTag.SelectorOWValue);
+            exception = Record.Exception( () => otherWord.Add(new byte[] {0x33} ));
+            Assert.IsType<NotSupportedException>(exception);
+            var otherFloat = new DicomOtherFloat(DicomTag.SelectorOFValue);
+            exception = Record.Exception( () => otherFloat.Add(1.23f));
+            Assert.IsType<NotSupportedException>(exception);
+            var otherDouble = new DicomOtherDouble(DicomTag.SelectorODValue);
+            exception = Record.Exception( () => otherDouble.Add(1.23));
+            Assert.IsType<NotSupportedException>(exception);
+            var otherLong = new DicomOtherLong(DicomTag.SelectorOLValue);
+            exception = Record.Exception( () => otherLong.Add(1234567));
+            Assert.IsType<NotSupportedException>(exception);
+            var otherVeryLong = new DicomOtherVeryLong(DicomTag.SelectorOVValue);
+            exception = Record.Exception( () => otherVeryLong.Add(12345678901234));
+            Assert.IsType<NotSupportedException>(exception);
+        }
+
+        [Fact]
+        public void AddString_ToEmptyMultiStringElement()
+        {
+            var tag = DicomTag.AccessionNumber;
+            var element = new DicomShortString(tag);
+            element.Add("AN345");
+            Assert.Equal(1, element.Count);
+            Assert.Equal("AN345", element.Get<string>(0));
+        }
+
+        [Fact]
+        public void AddAdditionalString_ToMultiStringElement()
+        {
+            var tag = DicomTag.ImageType;
+            var element = new DicomCodeString(tag, "Derived", "Secondary");
+            element.Add("MIP");
+            Assert.Equal(3, element.Count);
+            Assert.Equal("Derived", element.Get<string>(0));
+            Assert.Equal("MIP", element.Get<string>(2));
+        }
+
+        [Fact]
+        public void AddTooManyValues_ToMultiStringElement_Throws()
+        {
+            var element = new DicomCodeString(DicomTag.Modality, "US");
+            var exception = Record.Exception(() => element.Add("MR"));
+            Assert.IsType<DicomValidationException>(exception);
+            Assert.Equal(1, element.Count);
+        }
+
+        [Fact]
+        public void AddingNumber_ToMultiStringElement_Throws()
+        {
+            var tag = DicomTag.ImageType;
+            var element = new DicomCodeString(tag, "Derived", "Secondary");
+            var exception = Record.Exception(() => element.Add(42));
+            Assert.IsType<InvalidCastException>(exception);
+        }
+
+        [Fact]
+        public void AddAdditionalValue_ToIntegerString()
+        {
+            var element = new DicomIntegerString(DicomTag.SelectorISValue, String.Empty);
+            element.Add("1234");
+            element.Add(5678);
+            element.Add("-9101112");
+            Assert.Equal(3, element.Count);
+            Assert.Equal(1234, element.Get<int>(0));
+            Assert.Equal(5678, element.Get<int>(1));
+            Assert.Equal(-9101112, element.Get<int>(2));
+        }
+
+        [Fact]
+        public void AddAdditionalValue_ToDecimalString()
+        {
+            var element = new DicomDecimalString(DicomTag.SelectorDSValue, String.Empty);
+            element.Add("-1234");
+            element.Add(5678);
+            element.Add(-10f);
+            element.Add("0.1234e3");
+            Assert.Equal(4, element.Count);
+            Assert.Equal(-1234, element.Get<double>(0));
+            Assert.Equal(5678, element.Get<double>(1));
+            Assert.Equal(-10, element.Get<double>(2));
+            Assert.Equal(123.4, element.Get<double>(3));
+        }
+
+        [Fact]
+        public void AddingInvalidString_ToMultiStringElement_Throws()
+        {
+            var element = new DicomShortString(DicomTag.AccessionNumber);
+            var exception = Record.Exception(() => element.Add("TooLongAccessionNumber"));
+            Assert.IsType<DicomValidationException>(exception);
+        }
+
+        [Fact]
+        public void AddString_ToEmpty_SingleStringElement()
+        {
+            var element = new DicomShortText(DicomTag.InstitutionAddress, null);
+            element.Add("Some address");
+            Assert.Equal(1, element.Count);
+            Assert.Equal("Some address", element.Get<string>());
+        }
+
+        [Fact]
+        public void AddingAdditionalString_ToSingleStringElement_Throws()
+        {
+            var element = new DicomShortText(DicomTag.InstitutionAddress, "Some address");
+            var exception = Record.Exception(() => element.Add("Another address"));
+            Assert.IsType<DicomValidationException>(exception);
+        }
+
+        [Fact]
+        public void AddingInvalidValue_ToSingleStringElement_Throws()
+        {
+            var element = new DicomShortText(DicomTag.InstitutionAddress, null);
+            var exception = Record.Exception(() => element.Add(new DateTime()));
+            Assert.IsType<InvalidCastException>(exception);
+        }
+
+        [Fact]
+        public void AddValue_ToFD()
+        {
+            var element = new DicomFloatingPointDouble(DicomTag.SpectralWidth);
+            element.Add(123.4567);
+            element.Add(89.2f);
+            Assert.Equal(2, element.Count);
+            Assert.Equal(123.4567, element.Get<double>(0), 8);
+            Assert.Equal(89.2, element.Get<double>(1), 5);
+        }
+
+        [Fact]
+        public void AddIllegalValues_ToFD()
+        {
+            var element = new DicomFloatingPointDouble(DicomTag.SpectralWidth);
+            var exception = Record.Exception(() => element.Add("12.56"));
+            Assert.IsType<InvalidCastException>(exception);
+            exception = Record.Exception(() => element.Add(new DateTime()));
+            Assert.IsType<InvalidCastException>(exception);
+        }
+
+        [Fact]
+        public void AddValue_ToFL()
+        {
+            var element = new DicomFloatingPointSingle(DicomTag.FilterThicknessMaximum);
+            element.Add(123.4567);
+            element.Add(89.2f);
+            element.Add(42);
+            Assert.Equal(3, element.Count);
+            Assert.Equal(123.4567, element.Get<float>(0), 5);
+            Assert.Equal(89.2, element.Get<float>(1), 5);
+            Assert.Equal(42, element.Get<float>(2), 5);
+        }
+
+        [Fact]
+        public void AddIllegalValues_ToFL()
+        {
+            var element = new DicomFloatingPointSingle(DicomTag.LocalizingCursorPosition);
+            var exception = Record.Exception(() => element.Add("not a number"));
+            Assert.IsType<InvalidCastException>(exception);
+            exception = Record.Exception(() => element.Add(new TimeSpan()));
+            Assert.IsType<InvalidCastException>(exception);
+        }
+
+        [Fact]
+        public void AddValue_ToSS()
+        {
+            var element = new DicomSignedShort(DicomTag.VerticesOfTheRegion);
+            element.Add(short.MaxValue);
+            element.Add(short.MinValue);
+            element.Add(0);
+            Assert.Equal(3, element.Count);
+            Assert.Equal(32767, element.Get<short>(0));
+            Assert.Equal(-32768, element.Get<short>(1));
+            Assert.Equal(0, element.Get<short>(2));
+        }
+
+        [Fact]
+        public void AddValue_ToUS()
+        {
+            var element = new DicomUnsignedShort(DicomTag.LUTFrameRange);
+            element.Add(ushort.MaxValue);
+            element.Add(0);
+            Assert.Equal(2, element.Count);
+            Assert.Equal(65535, element.Get<ushort>(0));
+            Assert.Equal(0, element.Get<ushort>(1));
+        }
+
+        [Fact]
+        public void AddValue_ToUL()
+        {
+            var element = new DicomUnsignedLong(DicomTag.PrivateDataElementValueMultiplicity);
+            element.Add(uint.MaxValue);
+            element.Add(0);
+            Assert.Equal(2, element.Count);
+            Assert.Equal(4294967295, element.Get<uint>(0));
+            Assert.Equal(0u, element.Get<uint>(1));
+        }
+
+        [Fact]
+        public void AddValue_ToSV()
+        {
+            var element = new DicomSignedVeryLong(DicomTag.SelectorSVValue);
+            element.Add(long.MaxValue);
+            element.Add(long.MinValue);
+            element.Add(0);
+            Assert.Equal(3, element.Count);
+            Assert.Equal(9223372036854775807, element.Get<long>(0));
+            Assert.Equal(-9223372036854775808, element.Get<long>(1));
+            Assert.Equal(0, element.Get<long>(2));
+        }
+
+        [Fact]
+        public void AddValue_ToUV()
+        {
+            var element = new DicomUnsignedVeryLong(DicomTag.SelectorUVValue);
+            element.Add(ulong.MaxValue);
+            element.Add(0);
+            Assert.Equal(2, element.Count);
+            Assert.Equal(ulong.MaxValue, element.Get<ulong>(0));
+            Assert.Equal(0ul, element.Get<ulong>(1));
+        }
+
+        [Theory]
+        [MemberData(nameof(IllegalValuesToAdd))]
+        public void AddIllegalValues(DicomElement element, object illegalValue1, object illegalValue2)
+        {
+            var exception = Record.Exception(() => element.Add("1234"));
+            Assert.IsType<InvalidCastException>(exception);
+            exception = Record.Exception(() => element.Add(12.34));
+            Assert.IsType<InvalidCastException>(exception);
+            exception = Record.Exception(() => element.Add(new DateTime()));
+            Assert.IsType<InvalidCastException>(exception);
+            exception = Record.Exception(() => element.Add(illegalValue1));
+            Assert.IsType<InvalidCastException>(exception);
+            exception = Record.Exception(() => element.Add(illegalValue2));
+            Assert.IsType<InvalidCastException>(exception);
+        }
+
+        public static readonly IEnumerable<object[]> IllegalValuesToAdd = new[]
+        {
+            new object[] { new DicomSignedShort(DicomTag.LUTFrameRange), 32768, -32769 },
+            new object[] { new DicomUnsignedShort(DicomTag.VerticesOfTheRegion), 65536, -1 },
+            new object[] { new DicomSignedLong(DicomTag.DisplayedAreaTopLeftHandCorner), 2147483648, -2147483649 },
+            new object[] { new DicomUnsignedLong(DicomTag.PrivateDataElementValueMultiplicity), 4294967296, -3 },
+            new object[] { new DicomSignedVeryLong(DicomTag.SelectorSVValue), 9223372036854775808, 10223372036854775808 },
+            new object[] { new DicomUnsignedVeryLong(DicomTag.SelectorUVValue), -1, -300 }
+        };
+
         #endregion
 
         #region Support methods
 
-        internal void TestDicomDecimalStringGetItem<T>()
+        private void TestDicomDecimalStringGetItem<T>()
         {
             var expected = 45.0m;
             var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
@@ -420,7 +678,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture), actual);
         }
 
-        internal void TestDicomDecimalStringGetArray<T>()
+        private void TestDicomDecimalStringGetArray<T>()
         {
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
@@ -428,7 +686,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture)), actual);
         }
 
-        internal void TestDicomIntegerStringGetItem<T>()
+        private void TestDicomIntegerStringGetItem<T>()
         {
             var expected = 45;
             var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, 35, expected, 55);
@@ -436,7 +694,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
-        internal void TestDicomIntegerStringGetArray<T>()
+        private void TestDicomIntegerStringGetArray<T>()
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, expected);
@@ -444,7 +702,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
-        internal void TestDicomIntegerStringGetArrayFromString<T>()
+        private void TestDicomIntegerStringGetArrayFromString<T>()
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, new[] { "35.0", "45.0000", "55" });

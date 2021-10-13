@@ -17,6 +17,8 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static bool IsOdd(this int v) => (v & 1) == 1;
 
+        public static bool IsOdd(this long v) => (v & 1) == 1;
+
         public static bool IsOdd(this uint v) => (v & 1) == 1;
 
 
