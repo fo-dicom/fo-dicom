@@ -498,7 +498,8 @@ namespace FellowOakDicom
             switch (result)
             {
                 case DicomReaderResult.Processing:
-                    throw new DicomFileException(dicomFile, $"Invalid read return state: {result}");
+                    throw new DicomFileException(dicomFile,
+                        $"Failed to parse {dicomFile} - probably not a valid DICOM file");
                 case DicomReaderResult.Error:
                     throw new DicomFileException(dicomFile, $"Not a valid DICOM file: {dicomFile}");
             }
