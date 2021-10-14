@@ -90,7 +90,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
                 {
-                    Host = server.IPAddress,
+                    Host = "127.0.0.1",
                     Port = server.Port,
                 },
                 Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
@@ -142,7 +142,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
                 {
-                    Host = server.IPAddress,
+                    Host = "127.0.0.1",
                     Port = server.Port,
                 },
                 Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
