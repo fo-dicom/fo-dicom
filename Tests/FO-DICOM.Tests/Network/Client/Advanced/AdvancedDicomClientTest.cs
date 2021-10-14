@@ -186,4 +186,3 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         }
     }
 }
-
