@@ -74,132 +74,115 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
         #endregion
 
-        public class Echo : AdvancedDicomClientTest
+        [Fact]
+        public async Task SendAsync_C_ECHO_ReturnsResponse()
         {
-            public Echo(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
+            var port = Ports.GetNext();
+            var callingAE = "SCU";
+            var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
 
-            [Fact]
-            public async Task SendAsync_SingleRequest_Recognized()
+            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+
+            var client = CreateClient();
+
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
-                var server = "127.0.0.1";
-                var port = Ports.GetNext();
-                var callingAE = "SCU";
-                var calledAE = "ANY-SCP";
-                var cancellationToken = CancellationToken.None;
-
-                using (CreateServer<AsyncDicomCEchoProvider>(port))
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
                 {
-                    var client = CreateClient();
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
 
-                    var connectionRequest = new AdvancedDicomClientConnectionRequest
-                    {
-                        NetworkStreamCreationOptions = new NetworkStreamCreationOptions
-                        {
-                            Host = server,
-                            Port = port,
-                        },
-                        Logger = _logger.IncludePrefix(nameof(IAdvancedDicomClient)),
-                        FallbackEncoding = DicomEncoding.Default,
-                        DicomServiceOptions = new DicomServiceOptions()
-                    };
+            using var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
 
-                    var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+            var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = callingAE,
+                CalledAE = calledAE
+            };
 
-                    var openAssociationRequest = new AdvancedDicomClientAssociationRequest
-                    {
-                        CallingAE = callingAE,
-                        CalledAE = calledAE
-                    };
+            var cEchoRequest = new DicomCEchoRequest();
 
-                    var cEchoRequest = new DicomCEchoRequest();
+            openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
-                    openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
-                    openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
+            DicomCEchoResponse cEchoResponse = null;
 
-                    DicomCEchoResponse cEchoResponse = null;
-                    var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
-
-                    try
-                    {
-                        cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, CancellationToken.None).ConfigureAwait(false);
-                    }
-                    finally
-                    {
-                        await association.ReleaseAsync(CancellationToken.None);
-                    }
-
-                    Assert.NotNull(cEchoResponse);
-                    Assert.Equal(DicomState.Success, cEchoResponse.Status.State);
-                }
+            using var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
+            try
+            {
+                cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                await association.ReleaseAsync(cancellationToken);
             }
 
+            Assert.NotNull(cEchoResponse);
+            Assert.Equal(DicomState.Success, cEchoResponse.Status.State);
         }
 
-        public class Find : AdvancedDicomClientTest
+        [Fact]
+        public async Task SendAsync_C_FIND_ReturnsResponse()
         {
-            public Find(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
+            var port = Ports.GetNext();
+            var callingAE = "SCU";
+            var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
 
-            [Fact]
-            public async Task SendAsync_SingleRequest_Recognized()
+            var server = CreateServer<PendingAsyncDicomCFindProvider>(port);
+            var client = CreateClient();
+
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
-                var server = "127.0.0.1";
-                var port = Ports.GetNext();
-                var callingAE = "SCU";
-                var calledAE = "ANY-SCP";
-                var cancellationToken = CancellationToken.None;
-
-                using (CreateServer<PendingAsyncDicomCFindProvider>(port))
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
                 {
-                    var client = CreateClient();
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
 
-                    var connectionRequest = new AdvancedDicomClientConnectionRequest
-                    {
-                        NetworkStreamCreationOptions = new NetworkStreamCreationOptions
-                        {
-                            Host = server,
-                            Port = port,
-                        },
-                        Logger = _logger.IncludePrefix(nameof(IAdvancedDicomClient)),
-                        FallbackEncoding = DicomEncoding.Default,
-                        DicomServiceOptions = new DicomServiceOptions()
-                    };
+            var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
 
-                    var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+            var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = callingAE,
+                CalledAE = calledAE
+            };
 
-                    var openAssociationRequest = new AdvancedDicomClientAssociationRequest
-                    {
-                        CallingAE = callingAE,
-                        CalledAE = calledAE
-                    };
+            var cFindRequest = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
 
-                    var cFindRequest = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
+            openAssociationRequest.PresentationContexts.AddFromRequest(cFindRequest);
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(cFindRequest);
 
-                    openAssociationRequest.PresentationContexts.AddFromRequest(cFindRequest);
-                    openAssociationRequest.ExtendedNegotiations.AddFromRequest(cFindRequest);
+            var responses = new List<DicomCFindResponse>();
+            var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
 
-                    var responses = new List<DicomCFindResponse>();
-                    var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
-
-                    try
-                    {
-                        await foreach (var response in association.SendCFindRequestAsync(cFindRequest, CancellationToken.None).ConfigureAwait(false))
-                        {
-                            responses.Add(response);
-                        }
-                    }
-                    finally
-                    {
-                        await association.ReleaseAsync(CancellationToken.None);
-                    }
-
-                    Assert.NotEmpty(responses);
-                    Assert.Equal(3, responses.Count);
-                    Assert.Equal(DicomState.Pending, responses[0].Status.State);
-                    Assert.Equal(DicomState.Pending, responses[1].Status.State);
-                    Assert.Equal(DicomState.Success, responses[2].Status.State);
+            try
+            {
+                await foreach (var response in association.SendCFindRequestAsync(cFindRequest, cancellationToken).ConfigureAwait(false))
+                {
+                    responses.Add(response);
                 }
             }
+            finally
+            {
+                await association.ReleaseAsync(cancellationToken);
+            }
 
+            Assert.NotEmpty(responses);
+            Assert.Equal(3, responses.Count);
+            Assert.Equal(DicomState.Pending, responses[0].Status.State);
+            Assert.Equal(DicomState.Pending, responses[1].Status.State);
+            Assert.Equal(DicomState.Success, responses[2].Status.State);
         }
     }
 }
