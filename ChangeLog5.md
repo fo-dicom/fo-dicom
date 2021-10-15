@@ -5,6 +5,7 @@
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 * Bug fix: Correct Person Name VR Json model (#1235)
 * Vulnerability fix: Use secure version of `System.Text.Encodings.Web` package (#1223) 
+* Change: `DicomFile.Open` now throws a `DicomFileException` if the file size is less than 132 bytes (#641)
 
 #### 5.0.0 (2021-09-13)
 
