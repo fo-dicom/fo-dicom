@@ -990,6 +990,13 @@ namespace FellowOakDicom
         }
 
         /// <summary>
+        /// Does nothing. Can be overwritten in derived classes to check if the tag is allowed.
+        /// </summary>
+        protected virtual void ValidateTag(DicomTag tag)
+        {
+        }
+        
+        /// <summary>
         /// Add a collection of DICOM items to the dataset.
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
@@ -1004,6 +1011,7 @@ namespace FellowOakDicom
                     foreach (var item in items.Where(i => i != null))
                     {
                         var tag = item.Tag;
+                        ValidateTag(tag);
                         if (tag.IsPrivate)
                         {
                             tag = GetPrivateTag(tag);
@@ -1019,6 +1027,7 @@ namespace FellowOakDicom
                     foreach (var item in items.Where(i => i != null))
                     {
                         var tag = item.Tag;
+                        ValidateTag(tag);
                         if (tag.IsPrivate)
                         {
                             tag = GetPrivateTag(tag);
@@ -1044,6 +1053,7 @@ namespace FellowOakDicom
             if (item != null)
             {
                 var tag = item.Tag;
+                ValidateTag(tag);
                 if (tag.IsPrivate)
                 {
                     tag = GetPrivateTag(tag);

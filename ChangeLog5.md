@@ -7,6 +7,7 @@
 * Vulnerability fix: Use secure version of `System.Text.Encodings.Web` package (#1223) 
 * Change: `DicomFile.Open` now throws a `DicomFileException` if the file size is less than 132 bytes (#641)
 * Add XML documentation to nuget package
+* Change: Trying to add a DICOM element with invalid group ID to DICOM meta information now throws `DicomDataException` (#750)
 
 #### 5.0.0 (2021-09-13)
 
