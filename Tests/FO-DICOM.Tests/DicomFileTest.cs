@@ -7,6 +7,7 @@ using FellowOakDicom.Tests.Helpers;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,6 +17,27 @@ namespace FellowOakDicom.Tests
     [Collection("General")]
     public class DicomFileTest
     {
+        private class StreamNoSeek : MemoryStream
+        {
+            public override bool CanSeek => false;
+
+            public void Reset()
+            {
+                base.Seek(0, SeekOrigin.Begin);
+            }
+
+            public override long Seek(long offset, SeekOrigin loc)
+            {
+                throw new NotSupportedException();
+            }
+            public override long Position
+            {
+                set => throw new NotSupportedException();
+            }
+
+        }
+
+
         #region Fields
 
         private const string _minimumDatasetInstanceUid = "1.2.3";
@@ -24,6 +46,72 @@ namespace FellowOakDicom.Tests
             new DicomDataset(
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
+
+        private static readonly DicomDataset _allVrDatatset =
+            new DicomDataset(_minimumDatatset)
+            {
+                // random tags with all VRs except SQ
+                new DicomApplicationEntity(DicomTag.StationAETitle, "MYPACS"),
+                new DicomAgeString(DicomTag.PatientAge, "050Y"),
+                new DicomAttributeTag(DicomTag.DimensionIndexPointer, new DicomTag(0x0054, 0x0080)),
+                new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO IR 192"),
+                new DicomDate(DicomTag.InstanceCreationDate, "20200101"),
+                new DicomDecimalString(DicomTag.EventElapsedTimes, "1234.5678"),
+                new DicomDateTime(DicomTag.AcquisitionDateTime, "20111101082000"),
+                new DicomFloatingPointSingle(DicomTag.ExaminedBodyThickness, 123.456f),
+                new DicomFloatingPointDouble(DicomTag.OutlineRightVerticalEdge, 123.456789),
+                new DicomIntegerString(DicomTag.ReferencedFrameNumber, "25"),
+                new DicomLongString(DicomTag.ManufacturerModelName, "ACME Vision"),
+                new DicomLongText(DicomTag.AdditionalPatientHistory, "У пациента насморк"),
+                new DicomOtherByte(DicomTag.DarkCurrentCounts, new byte[] { 12, 13, 14, 15, 16, 17 }),
+                new DicomOtherDouble(DicomTag.DoubleFloatPixelData, new double[] { 12.3, 13.4, 14.5 }),
+                new DicomOtherFloat(DicomTag.FloatPixelData, new float[] { 1.2f, 2.3f, 3.4f, 4.5f }),
+                new DicomOtherLong(DicomTag.SelectorOLValue, new uint[] { 123456, 789012 }),
+                new DicomOtherVeryLong(DicomTag.SelectorOVValue,  new ulong[] { 12, 13, 14, 15 }),
+                new DicomOtherWord(DicomTag.SelectorOWValue, new ushort[] { 1234, 5678 }),
+                new DicomPersonName(DicomTag.OtherPatientNames, "Doe^John\\Doe^Jane"),
+                new DicomShortString(DicomTag.AccessionNumber, "ACC-123"),
+                new DicomSignedLong(DicomTag.ReferencePixelX0, -12345),
+                new DicomSignedShort(DicomTag.TIDOffset, -2030),
+                new DicomShortText(DicomTag.SelectorSTValue, "Some short text"),
+                new DicomSignedVeryLong(DicomTag.SelectorSVValue, -1234567890),
+                new DicomTime(DicomTag.SeriesTime, "113022.45"),
+                new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "Some very long text"),
+                new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "123.4.5.89"),
+                new DicomUnsignedLong(DicomTag.SimpleFrameList, 12345),
+                new DicomUnknown(DicomTag.SelectorUNValue, new byte[] { 1, 2 }),
+                new DicomUniversalResource(DicomTag.SelectorURValue, "https://example.com"),
+                new DicomUnsignedShort(DicomTag.BitsAllocated, 8),
+                new DicomUnlimitedText(DicomTag.SelectorUTValue, "More text..."),
+                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, 1234567890),
+            };
+        #endregion
+
+        #region Helpers
+
+        private bool DatasetsAreEqual(DicomDataset dataset1, DicomDataset dataset2)
+        {
+            var count = dataset1.Count();
+            if (count != dataset2.Count())
+            {
+                return false;
+            }
+
+            var tagComparer = new DicomTagComparer();
+            var valueComparer = new DicomValueComparer();
+            for (var i = 0; i < count; i++)
+            {
+                var element1 = dataset1.ElementAt(i);
+                var element2 = dataset2.ElementAt(i);
+                if (!tagComparer.Equals(element1, element2) ||
+                    !valueComparer.Equals(element1, element2))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         #endregion
 
@@ -148,54 +236,6 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void Open_File_FromStream()
-        {
-            var dataset = new DicomDataset(_minimumDatatset)
-            {
-                // random tags with all VRs except SQ
-                new DicomApplicationEntity(DicomTag.StationAETitle, "MYPACS"),
-                new DicomAgeString(DicomTag.PatientAge, "050Y"),
-                new DicomAttributeTag(DicomTag.DimensionIndexPointer, new DicomTag(0x0054, 0x0080)),
-                new DicomCodeString(DicomTag.ImageType, "DERIVED\\SECONDARY"),
-                new DicomDate(DicomTag.InstanceCreationDate, "20200101"),
-                new DicomDecimalString(DicomTag.EventElapsedTimes, "1234.5678"),
-                new DicomDateTime(DicomTag.AcquisitionDateTime, "20111101082000"),
-                new DicomFloatingPointSingle(DicomTag.ExaminedBodyThickness, 123.456f),
-                new DicomFloatingPointDouble(DicomTag.OutlineRightVerticalEdge, 123.456789),
-                new DicomIntegerString(DicomTag.ReferencedFrameNumber, "25"),
-                new DicomLongString(DicomTag.ManufacturerModelName, "ACME Vision"),
-                new DicomLongText(DicomTag.AdditionalPatientHistory, "У пациента насморк"),
-                new DicomOtherByte(DicomTag.DarkCurrentCounts, new byte[] { 12, 13, 14, 15, 16, 17 }),
-                new DicomOtherDouble(DicomTag.DoubleFloatPixelData, new double[] { 12.3, 13.4, 14.5 }),
-                new DicomOtherFloat(DicomTag.FloatPixelData, new float[] { 1.2f, 2.3f, 3.4f, 4.5f }),
-                new DicomOtherLong(DicomTag.SelectorOLValue, new uint[] { 123456, 789012 }),
-                new DicomOtherVeryLong(DicomTag.SelectorOVValue,  new ulong[] { 12, 13, 14, 15 }),
-                new DicomOtherWord(DicomTag.SelectorOWValue, new ushort[] { 1234, 5678 }),
-                new DicomPersonName(DicomTag.PatientName, "Doe^John"),
-                new DicomShortString(DicomTag.AccessionNumber, "ACC-123"),
-                new DicomSignedLong(DicomTag.ReferencePixelX0, -12345),
-                new DicomSignedShort(DicomTag.TIDOffset, -2030),
-                new DicomShortText(DicomTag.SelectorSTValue, "Some short text"),
-                new DicomSignedVeryLong(DicomTag.SelectorSVValue, -1234567890),
-                new DicomTime(DicomTag.SeriesTime, "113022.45"),
-                new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "Some very long text"),
-                new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "123.4.5.89"),
-                new DicomUnsignedLong(DicomTag.SimpleFrameList, 12345),
-                new DicomUnknown(DicomTag.SelectorUNValue, new byte[] { 1, 2 }),
-                new DicomUniversalResource(DicomTag.SelectorURValue, "https://example.com"),
-                new DicomUnsignedShort(DicomTag.BitsAllocated, 8),
-                new DicomUnlimitedText(DicomTag.SelectorUTValue, "More text..."),
-                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, 1234567890),
-            };
-            var saveFile = new DicomFile(dataset);
-            var stream = new MemoryStream();
-            saveFile.Save(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-            var exception = Record.Exception(() => DicomFile.Open(stream));
-            Assert.Null(exception);
-        }
-
-        [Fact]
         public void Open_FromFile_YieldsValidDicomFile()
         {
             var saveFile = new DicomFile(_minimumDatatset);
@@ -207,6 +247,28 @@ namespace FellowOakDicom.Tests
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
             IOHelper.DeleteIfExists(fileName);
+        }
+
+        [Fact]
+        public void Open_FromStream_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(_allVrDatatset);
+            var stream = new MemoryStream();
+            saveFile.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var openFile = DicomFile.Open(stream);
+            Assert.True(DatasetsAreEqual(saveFile.Dataset, openFile.Dataset));
+        }
+
+        [Fact]
+        public void Open_FromStream_UsingNoSeek_YieldsValidDicomFile()
+        {
+            var saveFile = new DicomFile(_allVrDatatset);
+            var stream = new StreamNoSeek();
+            saveFile.Save(stream);
+            stream.Reset();
+            var openFile = DicomFile.Open(stream);
+            Assert.True(DatasetsAreEqual(saveFile.Dataset, openFile.Dataset));
         }
 
         [Fact]
