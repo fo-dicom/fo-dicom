@@ -11,22 +11,22 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// <summary>
         /// Gets the calling application entity.
         /// </summary>
-        public string CallingAE { get; internal set; }
+        public string CallingAE { get; set; }
 
         /// <summary>
         /// Gets the called application entity.
         /// </summary>
-        public string CalledAE { get; internal set; }
+        public string CalledAE { get; set; }
 
         /// <summary>
         /// Gets or sets the supported maximum number of asynchronous operations invoked.
         /// </summary>
-        public int MaxAsyncOpsInvoked { get; set; }
+        public int MaxAsyncOpsInvoked { get; set; } = 1;
 
         /// <summary>
         /// Gets or sets the supported maximum number of asynchronous operations performed.
         /// </summary>
-        public int MaxAsyncOpsPerformed { get; set; }
+        public int MaxAsyncOpsPerformed { get; set; } = 1;
 
         /// <summary>
         /// Gets the supported presentation contexts.
