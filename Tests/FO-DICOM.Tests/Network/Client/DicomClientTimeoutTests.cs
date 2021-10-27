@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             return new DefaultDicomClientFactory(
                 new AdvancedDicomClientFactory(
-                    new AdvancedDicomClientConnectionFactory(networkManager, logManager, transcoderManager),
+                    new AdvancedDicomClientConnectionFactory(networkManager, logManager, transcoderManager, defaultServiceOptions),
                     logManager
                 ),
                 defaultClientOptions,
