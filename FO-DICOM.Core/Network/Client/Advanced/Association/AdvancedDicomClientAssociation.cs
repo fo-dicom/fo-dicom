@@ -70,6 +70,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         ValueTask AbortAsync(CancellationToken cancellationToken);
     }
 
+    /// <inheritdoc cref="IAdvancedDicomClientAssociation"/>>
     public class AdvancedDicomClientAssociation : IAdvancedDicomClientAssociation
     {
         private const string _responseChannelIsGoneNote = "(Note: the response channel is gone. This can happen when the request is cancelled after it has been sent)";
@@ -84,10 +85,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly IAdvancedDicomClientConnection _connection;
         
         private long _isDisposed;
+        
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public bool IsDisposed => (ulong)Interlocked.Read(ref _isDisposed) > 0;
         
+        /// <inheritdoc cref="IAdvancedDicomClientAssociation.Association"/>
         public DicomAssociation Association { get; }
 
+        /// <summary>
+        /// Initializes a new instance
+        /// </summary>
         public AdvancedDicomClientAssociation(IAdvancedDicomClientConnection connection, DicomAssociation association, ILogger logger)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
@@ -262,6 +269,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }        
         }
 
+        /// <inheritdoc cref="IAdvancedDicomClientAssociation.SendRequestAsync"/>
         public async IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken) 
         {
             ThrowIfAlreadyDisposed();
@@ -354,6 +362,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }
         }
 
+        /// <inheritdoc cref="IAdvancedDicomClientAssociation.ReleaseAsync"/>
         public async ValueTask ReleaseAsync(CancellationToken cancellationToken)
         {
             ThrowIfAlreadyDisposed();
@@ -370,6 +379,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }
         }
 
+        /// <inheritdoc cref="IAdvancedDicomClientAssociation.AbortAsync"/>
         public async ValueTask AbortAsync(CancellationToken cancellationToken)
         {
             ThrowIfAlreadyDisposed();
@@ -425,6 +435,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM association is already disposed and can no longer be used");
 
+        /// <inheritdoc cref="IAdvancedDicomClientAssociation.Dispose"/>
         public void Dispose()
         {
             Dispose(true);

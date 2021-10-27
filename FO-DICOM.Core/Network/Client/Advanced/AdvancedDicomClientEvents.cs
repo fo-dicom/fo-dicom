@@ -18,7 +18,16 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// </summary>
     public class ConnectionClosedEvent : IAdvancedDicomClientEvent
     {
+        /// <summary>
+        /// When the connection closed without an error
+        /// </summary>
         public static readonly ConnectionClosedEvent WithoutException = new ConnectionClosedEvent();
+        
+        /// <summary>
+        /// When the connection closed with an error
+        /// </summary>
+        /// <param name="exception">The error that occured while trying to read from or write to the connection</param>
+        /// <returns></returns>
         public static ConnectionClosedEvent WithException(Exception exception) => new ConnectionClosedEvent(exception);
         
         /// <summary>
@@ -52,6 +61,9 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// </summary>
         public DicomAbortReason Reason { get; }
 
+        /// <summary>
+        /// Initializes a new DicomAbortedEvent 
+        /// </summary>
         public DicomAbortedEvent(DicomAbortSource source, DicomAbortReason reason)
         {
             Source = source;
@@ -66,6 +78,9 @@ namespace FellowOakDicom.Network.Client.Advanced
     {
         public DicomAssociation Association { get; }
 
+        /// <summary>
+        /// Initializes a new DicomAssociationAcceptedEvent
+        /// </summary>
         public DicomAssociationAcceptedEvent(DicomAssociation association)
         {
             Association = association ?? throw new ArgumentNullException(nameof(association));
@@ -92,6 +107,9 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// </summary>
         public DicomRejectReason Reason { get; }
 
+        /// <summary>
+        /// Initializes a new DicomAssociationRejectedEvent
+        /// </summary>
         public DicomAssociationRejectedEvent(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             Result = result;
@@ -105,6 +123,9 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// </summary>
     public class DicomAssociationReleasedEvent : IAdvancedDicomClientEvent
     {
+        /// <summary>
+        /// An instance of DicomAssociationReleasedEvent, which is a singleton since this event does not have any parameters
+        /// </summary>
         public static readonly DicomAssociationReleasedEvent Instance = new DicomAssociationReleasedEvent();
 
         private DicomAssociationReleasedEvent()
@@ -118,9 +139,19 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// </summary>
     public class RequestCompletedEvent : IAdvancedDicomClientEvent
     {
+        /// <summary>
+        /// The original request
+        /// </summary>
         public DicomRequest Request { get; }
+        
+        /// <summary>
+        /// The final response
+        /// </summary>
         public DicomResponse Response { get; }
 
+        /// <summary>
+        /// Initializes a new RequestCompletedEvent
+        /// </summary>
         public RequestCompletedEvent(DicomRequest request, DicomResponse response)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
@@ -143,6 +174,9 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// </summary>
         public DicomResponse Response { get; }
 
+        /// <summary>
+        /// Initializes a new RequestPendingEvent 
+        /// </summary>
         public RequestPendingEvent(DicomRequest request, DicomResponse response)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
@@ -165,6 +199,9 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// </summary>
         public TimeSpan Timeout { get; }
 
+        /// <summary>
+        /// Initializes a new RequestTimedOutEvent 
+        /// </summary>
         public RequestTimedOutEvent(DicomRequest request, TimeSpan timeout)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
@@ -177,6 +214,9 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// </summary>
     public class SendQueueEmptyEvent : IAdvancedDicomClientEvent
     {
+        /// <summary>
+        /// An instance of SendQueueEmptyEvent, which is a singleton since this event does not have any parameters
+        /// </summary>
         public static readonly SendQueueEmptyEvent Instance = new SendQueueEmptyEvent();
 
         private SendQueueEmptyEvent() {}

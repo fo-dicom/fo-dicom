@@ -61,6 +61,12 @@ namespace FellowOakDicom.Network.Client.Advanced
         private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Initializes an advanced DICOM client
+        /// </summary>
+        /// <param name="advancedDicomClientConnectionFactory">The factory that will be used to open connections</param>
+        /// <param name="logger">The logger where diagnostic information will be written to</param>
+        /// <exception cref="ArgumentNullException">When either the factory or the logger is null</exception>
         public AdvancedDicomClient(IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory, ILogger logger)
         {
             _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
