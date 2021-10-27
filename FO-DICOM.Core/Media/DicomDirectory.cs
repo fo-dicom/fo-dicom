@@ -716,20 +716,11 @@ namespace FellowOakDicom.Media
             DicomDirectoryReaderObserver dirObserver,
             DicomReaderResult result)
         {
-            if (result == DicomReaderResult.Processing)
-            {
-                throw new DicomFileException(df, $"Invalid read return state: {result}");
-            }
-            if (result == DicomReaderResult.Error)
-            {
-                return null;
-            }
+            HandleOpenError(df, result);
+            
             df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
             df.Format = reader.FileFormat;
-
             df.Dataset.InternalTransferSyntax = reader.Syntax;
-
             df._directoryRecordSequence = df.Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence);
             df.RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
 

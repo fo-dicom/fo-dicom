@@ -229,18 +229,10 @@ namespace FellowOakDicom
                     new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
                     stop);
 
-                if (result == DicomReaderResult.Processing)
-                {
-                    throw new DicomFileException(df, $"Invalid read return state: {result}");
-                }
-                if (result == DicomReaderResult.Error)
-                {
-                    return null;
-                }
+                HandleOpenError(df, result);
+
                 df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
                 df.Format = reader.FileFormat;
-
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
                 return df;
@@ -290,18 +282,10 @@ namespace FellowOakDicom
                     new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
                     stop);
 
-                if (result == DicomReaderResult.Processing)
-                {
-                    throw new DicomFileException(df, $"Invalid read return state: {result}");
-                }
-                if (result == DicomReaderResult.Error)
-                {
-                    return null;
-                }
+                HandleOpenError(df, result);
+
                 df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
                 df.Format = reader.FileFormat;
-
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
                 return df;
@@ -358,16 +342,9 @@ namespace FellowOakDicom
                         new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
                         stop).ConfigureAwait(false);
 
-                if (result == DicomReaderResult.Processing)
-                {
-                    throw new DicomFileException(df, $"Invalid read return state: {result}");
-                }
-                if (result == DicomReaderResult.Error)
-                {
-                    return null;
-                }
-                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+                HandleOpenError(df, result);
 
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
                 df.Format = reader.FileFormat;
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
@@ -419,16 +396,9 @@ namespace FellowOakDicom
                         new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding),
                         stop).ConfigureAwait(false);
 
-                if (result == DicomReaderResult.Processing)
-                {
-                    throw new DicomFileException(df, $"Invalid read return state: {result}");
-                }
-                if (result == DicomReaderResult.Error)
-                {
-                    return null;
-                }
-                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
+                HandleOpenError(df, result);
 
+                df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
                 df.Format = reader.FileFormat;
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
@@ -498,18 +468,10 @@ namespace FellowOakDicom
                     new DicomDatasetReaderObserver(df.FileMetaInfo),
                     new DicomDatasetReaderObserver(df.Dataset, fallbackEncoding));
 
-                if (result == DicomReaderResult.Processing)
-                {
-                    throw new DicomFileException(df, $"Invalid read return state: {result}");
-                }
-                if (result == DicomReaderResult.Error)
-                {
-                    return null;
-                }
+                HandleOpenError(df, result);
+
                 df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
-
                 df.Format = reader.FileFormat;
-
                 df.Dataset.InternalTransferSyntax = reader.Syntax;
 
                 return df;
@@ -525,6 +487,22 @@ namespace FellowOakDicom
         /// </summary>
         protected virtual void OnSave()
         {
+        }
+
+        /// <summary>
+        /// Throw if reading the file resulted in an error.
+        /// </summary>
+        /// <exception cref="DicomFileException">If the file could not be read properly.</exception>
+        protected static void HandleOpenError(DicomFile dicomFile, DicomReaderResult result)
+        {
+            switch (result)
+            {
+                case DicomReaderResult.Processing:
+                    throw new DicomFileException(dicomFile,
+                        $"Failed to parse {dicomFile} - probably not a valid DICOM file");
+                case DicomReaderResult.Error:
+                    throw new DicomFileException(dicomFile, $"Not a valid DICOM file: {dicomFile}");
+            }
         }
 
         /// <summary>

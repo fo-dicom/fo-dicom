@@ -249,6 +249,33 @@ namespace Dicom.Serialization
             Assert.Equal("Kalle", reconstituated.GetString(DicomTag.PatientName));
         }
 
+        [Theory]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\", \"Phonetic\": \"pho\" }] } }", "Kalle=ideo=pho")]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\",  \"Phonetic\": \"pho\" }] } }", "Kalle==pho")]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Alphabetic\": \"Kalle\", \"Ideographic\": \"ideo\" }] } }", "Kalle=ideo")]
+        [InlineData("{\"PatientName\": { \"vr\": \"PN\", \"Value\": [{ \"Ideographic\": \"ideo\"}] } }", "=ideo")]
+        public void TestJsonToDicomPNConverstion(string json, string expectedResult)
+        {
+            var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+            Assert.Equal(expectedResult, reconstituated.GetString(DicomTag.PatientName));
+        }
+
+        [Theory]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Alphabetic\":\"Kalle\",\"Ideographic\":\"ideo\",\"Phonetic\":\"pho\"}]}}", "Kalle=ideo=pho")]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Alphabetic\":\"Kalle\",\"Phonetic\":\"pho\"}]}}", "Kalle==pho")]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Alphabetic\":\"Kalle\",\"Ideographic\":\"ideo\"}]}}", "Kalle=ideo")]
+        [InlineData("{\"00100010\":{\"vr\":\"PN\",\"Value\":[{\"Ideographic\":\"ideo\"}]}}", "=ideo")]
+        public void TestDicomToJsonPNConversion(string expectedJson, string value)
+        {
+            var originalDataset = new DicomDataset {
+                { DicomTag.PatientName, value }
+            };
+
+            var json = JsonConvert.SerializeObject(originalDataset, new JsonDicomConverter());
+
+            Assert.Equal(expectedJson, json);
+        }
+
         /// <summary>
         /// Test deserializing a dicom dataset containing a bulk data URI.
         /// </summary>

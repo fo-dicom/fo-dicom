@@ -5,6 +5,7 @@ echo ================
 echo. 
 
 timeout /T 5
+set GenerateDocumentation=1
 
 @dotnet build ./../FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release
 

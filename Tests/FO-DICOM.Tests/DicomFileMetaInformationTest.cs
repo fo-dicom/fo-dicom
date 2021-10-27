@@ -76,6 +76,14 @@ namespace FellowOakDicom.Tests
             Assert.Null(exception);
         }
 
+        [Fact]
+        public void AddingRegularTag_ToMetaInformation_ShouldThrow()
+        {
+            var metaInfo = new DicomFileMetaInformation();
+            var exception = Record.Exception(() => metaInfo.AddOrUpdate(DicomTag.PatientName, "Doe^John"));
+            Assert.IsType<DicomDataException>(exception);
+        }
+
         [Theory]
         [MemberData(nameof(NewOptionalAttributes))]
         public void Save_NewOptionalAttributes_SavedWhenExisting(DicomItem item)
