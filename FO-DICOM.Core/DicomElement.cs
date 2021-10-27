@@ -47,13 +47,16 @@ namespace FellowOakDicom
             ValidateVM();
         }
 
+        /// <summary> Number of defined values in a DICOM element. Used internally only. </summary>
+        protected virtual int NumberOfValues => Count;
+
         /// <summary>
         /// Check if adding a value would exceed the maximum values allowed for this tag.
         /// </summary>
         /// <exception cref="DicomValidationException">A value cannot be added.</exception>
         protected void ValidateVMForAddedValue()
         {
-            if (!Tag.IsPrivate && (Count > 0))
+            if (!Tag.IsPrivate && (NumberOfValues > 0))
             {
                 var entry = Tag.DictionaryEntry;
                 if (Count + 1 > entry.ValueMultiplicity.Maximum)
@@ -66,8 +69,7 @@ namespace FellowOakDicom
 
         protected virtual void ValidateVM()
         {
-            if (!Tag.IsPrivate
-                && (Count > 0))
+            if (!Tag.IsPrivate && (Count > 0))
             {
                 var entry = Tag.DictionaryEntry;
                 if (Count < entry.ValueMultiplicity.Minimum || Count > entry.ValueMultiplicity.Maximum)
@@ -140,9 +142,13 @@ namespace FellowOakDicom
             set => _targetEncodings = new[] { value };
         }
 
-        /// <summary>Gets the number of values that the DICOM element contains.</summary>
-        /// <value>Number of value items</value>
-        public override int Count => Length > 0 ? 1 : 0;
+        /// <summary>
+        /// Always returns 1 as the number of contained values,
+        /// as no values are handled as an empty string value.
+        /// </summary>
+        public override int Count => 1;
+        
+        protected override int NumberOfValues => Length > 0 ? 1 : 0;
 
         protected string StringValue
         {
