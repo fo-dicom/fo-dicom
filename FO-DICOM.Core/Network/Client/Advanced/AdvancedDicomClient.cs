@@ -79,6 +79,11 @@ namespace FellowOakDicom.Network.Client.Advanced
 
             var networkStreamOptions = request.NetworkStreamCreationOptions;
 
+            if (networkStreamOptions == null)
+            {
+                throw new ArgumentException(nameof(AdvancedDicomClientConnectionRequest.NetworkStreamCreationOptions) + " cannot be null");
+            }
+
             _logger.Debug("Opening connection to {Host}:{Port}", networkStreamOptions.Host, networkStreamOptions.Port);
 
             return await _advancedDicomClientConnectionFactory.ConnectAsync(request, cancellationToken).ConfigureAwait(false);
@@ -91,6 +96,11 @@ namespace FellowOakDicom.Network.Client.Advanced
             if (connection == null)
             {
                 throw new ArgumentNullException(nameof(connection));
+            }
+
+            if (!connection.TryClaimForAssociation())
+            {
+                throw new DicomNetworkException("A connection can only be used once for one association. Create a new connection to open another association");
             }
 
             if (request == null)
@@ -153,7 +163,7 @@ namespace FellowOakDicom.Network.Client.Advanced
                 }
             }
 
-            throw new DicomNetworkException("Failed to open a DICOM association. That's all we know.");
+            throw new DicomNetworkException("Failed to open a DICOM association because the connection is already closed");
         }
 
         private static DicomAssociation ToDicomAssociation(IAdvancedDicomClientConnection connection, AdvancedDicomClientAssociationRequest request)

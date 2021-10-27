@@ -5,6 +5,7 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Connection
@@ -25,11 +26,19 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// Gets the callbacks that can be used to listen to incoming DICOM events
         /// </summary>
         IAdvancedDicomClientConnectionCallbacks Callbacks { get; }
+
+        /// <summary>
+        /// Tries to claim this connection to open a new association
+        /// This will only work once.
+        /// </summary>
+        internal bool TryClaimForAssociation();
     }
 
     /// <inheritdoc cref="IAdvancedDicomClientConnection" />
     public class AdvancedDicomClientConnection : DicomService, IAdvancedDicomClientConnection
     {
+        private int _claimed;
+        
         public IAdvancedDicomClientConnectionCallbacks Callbacks { get; }
         
         public INetworkStream NetworkStream { get; }
@@ -94,6 +103,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => Callbacks.OnCStoreRequestAsync(request);
 
         public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => Callbacks.OnNEventReportRequestAsync(request);
+
+        bool IAdvancedDicomClientConnection.TryClaimForAssociation() => Interlocked.CompareExchange(ref _claimed, 1, 0) == 0;
     }
 
     public class InterceptingAdvancedDicomClientConnection : IAdvancedDicomClientConnection
@@ -121,7 +132,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public DicomServiceOptions Options => _inner.Options;
         
         public IAdvancedDicomClientConnectionCallbacks Callbacks => _inner.Callbacks;
-
+        
         public void StartListener()
             => _inner.StartListener();
 
@@ -169,6 +180,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
             => _inner.OnNEventReportRequestAsync(request);
+        
+        bool IAdvancedDicomClientConnection.TryClaimForAssociation() => _inner.TryClaimForAssociation();
         
         public void Dispose() => _inner.Dispose();
     }
