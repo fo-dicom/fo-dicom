@@ -451,10 +451,10 @@ namespace FellowOakDicom.Tests
         public void AddAdditionalString_ToMultiStringElement()
         {
             var tag = DicomTag.ImageType;
-            var element = new DicomCodeString(tag, "Derived", "Secondary");
+            var element = new DicomCodeString(tag, "DERIVED", "SECONDARY");
             element.Add("MIP");
             Assert.Equal(3, element.Count);
-            Assert.Equal("Derived", element.Get<string>(0));
+            Assert.Equal("DERIVED", element.Get<string>(0));
             Assert.Equal("MIP", element.Get<string>(2));
         }
 
@@ -465,6 +465,31 @@ namespace FellowOakDicom.Tests
             var exception = Record.Exception(() => element.Add("MR"));
             Assert.IsType<DicomValidationException>(exception);
             Assert.Equal(1, element.Count);
+        }
+
+        [Fact]
+        public void AddValues_ToElementInDataset_Throws()
+        {
+            var element = new DicomCodeString(DicomTag.ImageType, "DERIVED", "SECONDARY");
+            var dataset = new DicomDataset
+            {
+                element
+            };
+
+            var exception = Record.Exception(() => element.Add("MIP"));
+            Assert.IsType<DicomDataException>(exception);
+            Assert.Equal(2, element.Count);
+        }
+
+        [Fact]
+        public void AddValues_ToElementAddedToDataset_Throws()
+        {
+            var element = new DicomCodeString(DicomTag.ImageType, "DERIVED", "SECONDARY");
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(element);
+            var exception = Record.Exception(() => element.Add("MIP"));
+            Assert.IsType<DicomDataException>(exception);
+            Assert.Equal(2, element.Count);
         }
 
         [Fact]

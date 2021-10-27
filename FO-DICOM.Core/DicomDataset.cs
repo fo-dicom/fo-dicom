@@ -96,6 +96,7 @@ namespace FellowOakDicom
                         {
                             item.Validate();
                         }
+                        item.IsMutable = false;
                         _items[item.Tag.IsPrivate ? GetPrivateTag(item.Tag) : item.Tag] = item;
                     }
                 }
@@ -1019,6 +1020,7 @@ namespace FellowOakDicom
                         }
 
                         if (ValidateItems) item.Validate();
+                        item.IsMutable = false;
                         _items[tag] = item;
                     }
                 }
@@ -1035,6 +1037,7 @@ namespace FellowOakDicom
                         }
 
                         if (ValidateItems) item.Validate();
+                        item.IsMutable = false;
                         _items.Add(tag, item);
                     }
                 }
@@ -1060,6 +1063,7 @@ namespace FellowOakDicom
                     item.Tag = tag;
                 }
                 if (ValidateItems) item.Validate();
+                item.IsMutable = false;
 
                 if (allowUpdate)
                 {

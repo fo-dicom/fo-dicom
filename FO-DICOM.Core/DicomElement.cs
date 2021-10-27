@@ -22,12 +22,13 @@ namespace FellowOakDicom
             : base(tag)
         {
             Buffer = data;
+            IsMutable = true;
         }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
         /// <value>Number of value items</value>
         public abstract int Count { get; }
-
+        
         public IByteBuffer Buffer { get; protected set; }
 
         public uint Length => (uint)(Buffer?.Size ?? 0);
@@ -53,9 +54,15 @@ namespace FellowOakDicom
         /// <summary>
         /// Check if adding a value would exceed the maximum values allowed for this tag.
         /// </summary>
-        /// <exception cref="DicomValidationException">A value cannot be added.</exception>
+        /// <exception cref="DicomDataException">The element is already added to a dataset.</exception>
+        /// <exception cref="DicomValidationException">Adding a value would exceed the tag VM.</exception>
         protected void ValidateVMForAddedValue()
         {
+            if (!IsMutable)
+            {
+                throw new DicomDataException($"Values cannot be added after the element is added to a dataset.");
+            }
+
             if (!Tag.IsPrivate && (NumberOfValues > 0))
             {
                 var entry = Tag.DictionaryEntry;

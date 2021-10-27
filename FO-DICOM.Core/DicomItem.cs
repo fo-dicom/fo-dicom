@@ -18,6 +18,7 @@ namespace FellowOakDicom
         protected DicomItem(DicomTag tag)
         {
             Tag = tag;
+            IsMutable = false;
         }
 
         /// <summary>
@@ -82,5 +83,10 @@ namespace FellowOakDicom
         public virtual void Validate()
         { }
 
+        /// <summary>
+        /// Returns true if values can be appended to the item.
+        /// Appending items is only allowed for DICOM elements outside of a dataset. 
+        /// </summary>
+        internal bool IsMutable { get; set; }
     }
 }
