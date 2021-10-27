@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,15 +25,18 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         private readonly INetworkManager _networkManager;
         private readonly ILogManager _logManager;
         private readonly ITranscoderManager _transcoderManager;
+        private readonly IOptions<DicomServiceOptions> _defaultDicomServiceOptions;
 
         public AdvancedDicomClientConnectionFactory(
             INetworkManager networkManager, 
             ILogManager logManager,
-            ITranscoderManager transcoderManager)
+            ITranscoderManager transcoderManager,
+            IOptions<DicomServiceOptions> defaultDicomServiceOptions)
         {
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
             _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            _defaultDicomServiceOptions = defaultDicomServiceOptions;
         }
         
         public async Task<IAdvancedDicomClientConnection> ConnectAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
@@ -40,6 +44,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
+            }
+
+            if (request.Logger == null)
+            {
+                request.Logger = _logManager.GetLogger("Dicom.Network");
+            }
+
+            if (request.DicomServiceOptions == null)
+            {
+                request.DicomServiceOptions = _defaultDicomServiceOptions.Value;
             }
 
             cancellationToken.ThrowIfCancellationRequested();
