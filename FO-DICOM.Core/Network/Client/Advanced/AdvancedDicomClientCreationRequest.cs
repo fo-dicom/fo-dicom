@@ -2,6 +2,9 @@
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
+    /// <summary>
+    /// Represents the parameters that modify the creation of an advanced DICOM client
+    /// </summary>
     public class AdvancedDicomClientCreationRequest
     {
         /// <summary>

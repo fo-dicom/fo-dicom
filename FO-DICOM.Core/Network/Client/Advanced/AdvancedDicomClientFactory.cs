@@ -8,6 +8,9 @@ using System;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
+    /// <summary>
+    /// Factory that is in charge of creating instances of <see cref="IAdvancedDicomClient"/>
+    /// </summary>
     public interface IAdvancedDicomClientFactory
     {
         /// <summary>
