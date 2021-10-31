@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 namespace FellowOakDicom.Serialization
 {
 
-
+    [Obsolete("Please use DicomJsonConverter instead.")]
     public class DicomArrayJsonConverter : JsonConverter<DicomDataset[]>
     {
         private readonly bool _writeTagsAsKeywords;
@@ -155,17 +155,20 @@ namespace FellowOakDicom.Serialization
         /// </returns>
         public override DicomDataset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var dataset = ReadJsonDataset(ref reader);
+            var dataset = ReadJsonDataset(ref reader, readEndObject: false);
             return dataset;
         }
 
 
-        private DicomDataset ReadJsonDataset(ref Utf8JsonReader reader)
+        private DicomDataset ReadJsonDataset(ref Utf8JsonReader reader, bool readEndObject)
         {
             var dataset = _autoValidate
                 ? new DicomDataset()
                 : new DicomDataset().NotValidated();
-            if (reader.TokenType != JsonTokenType.StartObject) { return null; }
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new JsonException($"Expected the start of a JSON object but found {reader.TokenType}");
+            }
             reader.Read();
 
             while (reader.TokenType != JsonTokenType.EndObject)
@@ -177,7 +180,11 @@ namespace FellowOakDicom.Serialization
                 var item = ReadJsonDicomItem(tag, ref reader);
                 dataset.Add(item);
             }
-            AssumeAndSkip(ref reader, JsonTokenType.EndObject);
+
+            if (readEndObject)
+            {
+                AssumeAndSkip(ref reader, JsonTokenType.EndObject);
+            }
 
             foreach (var item in dataset)
             {
@@ -976,7 +983,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else if (reader.TokenType == JsonTokenType.StartObject)
                     {
-                        childItems.Add(ReadJsonDataset(ref reader));
+                        childItems.Add(ReadJsonDataset(ref reader, readEndObject: true));
                     }
                     else
                     {

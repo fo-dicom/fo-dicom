@@ -1076,6 +1076,13 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal(validAccelarationValue, recoveredString);
         }
 
+        [Fact]
+        public static void GivenInvalidJsonToken_WhenDeserialization_ThenThrowsJsonException()
+        {
+            string invalidDatasetJson = "12345";
+            Assert.Throws<JsonException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
+        }
+
 
         [Fact]
         public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
