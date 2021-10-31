@@ -1083,7 +1083,6 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Throws<JsonException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
         }
 
-
         [Fact]
         public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
         {

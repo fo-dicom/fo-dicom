@@ -155,12 +155,12 @@ namespace FellowOakDicom.Serialization
         /// </returns>
         public override DicomDataset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var dataset = ReadJsonDataset(ref reader, readEndObject: false);
+            var dataset = ReadJsonDataset(ref reader);
             return dataset;
         }
 
 
-        private DicomDataset ReadJsonDataset(ref Utf8JsonReader reader, bool readEndObject)
+        private DicomDataset ReadJsonDataset(ref Utf8JsonReader reader)
         {
             var dataset = _autoValidate
                 ? new DicomDataset()
@@ -179,11 +179,6 @@ namespace FellowOakDicom.Serialization
                 reader.Read(); // move to value
                 var item = ReadJsonDicomItem(tag, ref reader);
                 dataset.Add(item);
-            }
-
-            if (readEndObject)
-            {
-                AssumeAndSkip(ref reader, JsonTokenType.EndObject);
             }
 
             foreach (var item in dataset)
@@ -983,7 +978,8 @@ namespace FellowOakDicom.Serialization
                     }
                     else if (reader.TokenType == JsonTokenType.StartObject)
                     {
-                        childItems.Add(ReadJsonDataset(ref reader, readEndObject: true));
+                        childItems.Add(ReadJsonDataset(ref reader));
+                        AssumeAndSkip(ref reader, JsonTokenType.EndObject);
                     }
                     else
                     {
