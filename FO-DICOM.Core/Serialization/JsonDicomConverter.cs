@@ -49,7 +49,21 @@ namespace FellowOakDicom.Serialization
             var conv = new DicomJsonConverter(writeTagsAsKeywords: _writeTagsAsKeywords);
             while (reader.TokenType != JsonTokenType.EndArray)
             {
-                var ds = conv.Read(ref reader, typeToConvert, options);
+                DicomDataset ds;
+                switch (reader.TokenType)
+                {
+                    case JsonTokenType.StartObject:
+                        ds = conv.Read(ref reader, typeToConvert, options);
+                        reader.AssumeAndSkip(JsonTokenType.EndObject);
+                        break;
+                    case JsonTokenType.Null:
+                        ds = null;
+                        reader.Read();
+                        break;
+                    default:
+                        throw new JsonException($"Expected either the start of an object or null but found {reader.TokenType}");
+                }
+
                 datasetList.Add(ds);
             }
             reader.Read();
@@ -173,7 +187,7 @@ namespace FellowOakDicom.Serialization
 
             while (reader.TokenType != JsonTokenType.EndObject)
             {
-                Assume(ref reader, JsonTokenType.PropertyName);
+                reader.Assume(JsonTokenType.PropertyName);
                 var tagstr = reader.GetString();
                 DicomTag tag = ParseTag(tagstr);
                 reader.Read(); // move to value
@@ -599,10 +613,10 @@ namespace FellowOakDicom.Serialization
 
         private DicomItem ReadJsonDicomItem(DicomTag tag, ref Utf8JsonReader reader)
         {
-            AssumeAndSkip(ref reader, JsonTokenType.StartObject);
+            reader.AssumeAndSkip(JsonTokenType.StartObject);
             var currentDepth = reader.CurrentDepth;
 
-            Assume(ref reader, JsonTokenType.PropertyName);
+            reader.Assume(JsonTokenType.PropertyName);
 
             string vr;
             var property = reader.GetString();
@@ -678,7 +692,7 @@ namespace FellowOakDicom.Serialization
             {
                 // skip this data
             }
-            AssumeAndSkip(ref reader, JsonTokenType.EndObject);
+            reader.AssumeAndSkip(JsonTokenType.EndObject);
 
             DicomItem item = CreateDicomItem(tag, vr, data);
             return item;
@@ -711,7 +725,7 @@ namespace FellowOakDicom.Serialization
 
         private static string ReadPropertyName(ref Utf8JsonReader reader)
         {
-            Assume(ref reader, JsonTokenType.PropertyName);
+            reader.Assume(JsonTokenType.PropertyName);
             var propertyname = reader.GetString();
             reader.Read();
             return propertyname;
@@ -725,7 +739,7 @@ namespace FellowOakDicom.Serialization
                 reader.Read();
                 return Array.Empty<string>();
             }
-            AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+            reader.AssumeAndSkip(JsonTokenType.StartArray);
             var childStrings = new List<string>();
 
             while (reader.TokenType != JsonTokenType.EndArray)
@@ -744,7 +758,7 @@ namespace FellowOakDicom.Serialization
                 }
                 reader.Read();
             }
-            AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+            reader.AssumeAndSkip(JsonTokenType.EndArray);
             var data = childStrings.ToArray();
             return data;
         }
@@ -779,7 +793,7 @@ namespace FellowOakDicom.Serialization
                 reader.Read();
                 return Array.Empty<T>();
             }
-            AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+            reader.AssumeAndSkip(JsonTokenType.StartArray);
 
             var childValues = new List<T>();
             while (reader.TokenType != JsonTokenType.EndArray)
@@ -802,7 +816,7 @@ namespace FellowOakDicom.Serialization
                 }
                 reader.Read();
             }
-            AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+            reader.AssumeAndSkip(JsonTokenType.EndArray);
 
             var data = childValues.ToArray();
             return data;
@@ -838,7 +852,7 @@ namespace FellowOakDicom.Serialization
                 reader.Read();
                 return Array.Empty<T>();
             }
-            AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+            reader.AssumeAndSkip(JsonTokenType.StartArray);
 
             var childValues = new List<T>();
             while (reader.TokenType != JsonTokenType.EndArray)
@@ -857,7 +871,7 @@ namespace FellowOakDicom.Serialization
                 }
                 reader.Read();
             }
-            AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+            reader.AssumeAndSkip(JsonTokenType.EndArray);
 
             var data = childValues.ToArray();
             return data;
@@ -881,7 +895,7 @@ namespace FellowOakDicom.Serialization
                 }
                 else
                 {
-                    AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+                    reader.AssumeAndSkip(JsonTokenType.StartArray);
 
                     var childStrings = new List<string>();
                     while (reader.TokenType != JsonTokenType.EndArray)
@@ -938,14 +952,14 @@ namespace FellowOakDicom.Serialization
                             string pnVal = stringBuilder.ToString().TrimEnd(_personNameComponentGroupDelimiter);
 
                             childStrings.Add(pnVal); // add value
-                            AssumeAndSkip(ref reader, JsonTokenType.EndObject);
+                            reader.AssumeAndSkip(JsonTokenType.EndObject);
                         }
                         else
                         {
                             // TODO: invalid. handle this?
                         }
                     }
-                    AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+                    reader.AssumeAndSkip(JsonTokenType.EndArray);
                     var data = childStrings.ToArray();
                     return data;
                 }
@@ -967,7 +981,7 @@ namespace FellowOakDicom.Serialization
 
             if (propertyName == "Value")
             {
-                AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+                reader.AssumeAndSkip(JsonTokenType.StartArray);
                 var childItems = new List<DicomDataset>();
                 while (reader.TokenType != JsonTokenType.EndArray)
                 {
@@ -979,14 +993,14 @@ namespace FellowOakDicom.Serialization
                     else if (reader.TokenType == JsonTokenType.StartObject)
                     {
                         childItems.Add(ReadJsonDataset(ref reader));
-                        AssumeAndSkip(ref reader, JsonTokenType.EndObject);
+                        reader.AssumeAndSkip(JsonTokenType.EndObject);
                     }
                     else
                     {
                         throw new JsonException("Malformed DICOM json, object expected");
                     }
                 }
-                AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+                reader.AssumeAndSkip(JsonTokenType.EndArray);
                 var data = childItems.ToArray();
                 return data;
             }
@@ -1019,11 +1033,11 @@ namespace FellowOakDicom.Serialization
 
         private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader)
         {
-            AssumeAndSkip(ref reader, JsonTokenType.StartArray);
+            reader.AssumeAndSkip(JsonTokenType.StartArray);
             if (reader.TokenType != JsonTokenType.String) { throw new JsonException("Malformed DICOM json. string expected"); }
             var data = new MemoryByteBuffer(reader.GetBytesFromBase64());
             reader.Read();
-            AssumeAndSkip(ref reader, JsonTokenType.EndArray);
+            reader.AssumeAndSkip(JsonTokenType.EndArray);
             return data;
         }
 
@@ -1038,22 +1052,6 @@ namespace FellowOakDicom.Serialization
 
 
         #endregion
-
-
-        private static void Assume(ref Utf8JsonReader reader, JsonTokenType tokenType)
-        {
-            if (reader.TokenType != tokenType)
-            {
-                throw new JsonException($"invalid: {tokenType} expected at position {reader.TokenStartIndex}, instead found {reader.TokenType}");
-            }
-        }
-
-
-        private static void AssumeAndSkip(ref Utf8JsonReader reader, JsonTokenType tokenType)
-        {
-            Assume(ref reader, tokenType);
-            reader.Read();
-        }
 
 
         private string FindValue(Utf8JsonReader reader, string property, string defaultValue)
