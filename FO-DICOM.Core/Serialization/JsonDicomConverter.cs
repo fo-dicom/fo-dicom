@@ -61,7 +61,7 @@ namespace FellowOakDicom.Serialization
                         reader.Read();
                         break;
                     default:
-                        throw new JsonException($"Expected either the start of an object or null but found {reader.TokenType}");
+                        throw new JsonException($"Expected either the start of an object or null but found '{reader.TokenType}'.");
                 }
 
                 datasetList.Add(ds);
@@ -181,7 +181,7 @@ namespace FellowOakDicom.Serialization
                 : new DicomDataset().NotValidated();
             if (reader.TokenType != JsonTokenType.StartObject)
             {
-                throw new JsonException($"Expected the start of a JSON object but found {reader.TokenType}");
+                throw new JsonException($"Expected the start of an object but found '{reader.TokenType}'.");
             }
             reader.Read();
 
