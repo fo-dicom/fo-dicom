@@ -459,6 +459,18 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void AddAdditionalStrings_ToMultiStringElement()
+        {
+            var tag = DicomTag.ImageType;
+            var element = new DicomCodeString(tag, "DERIVED", "SECONDARY");
+            element.Add(new[] { "MIP", "RADIAL" });
+            Assert.Equal(4, element.Count);
+            Assert.Equal("DERIVED", element.Get<string>(0));
+            Assert.Equal("MIP", element.Get<string>(2));
+            Assert.Equal("RADIAL", element.Get<string>(3));
+        }
+
+        [Fact]
         public void AddTooManyValues_ToMultiStringElement_Throws()
         {
             var element = new DicomCodeString(DicomTag.Modality, "US");
@@ -502,7 +514,7 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void AddAdditionalValue_ToIntegerString()
+        public void AddValue_ToIS()
         {
             var element = new DicomIntegerString(DicomTag.SelectorISValue, String.Empty);
             element.Add("1234");
@@ -515,7 +527,20 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void AddAdditionalValue_ToDecimalString()
+        public void AddValues_ToIS()
+        {
+            var element = new DicomIntegerString(DicomTag.SelectorISValue, String.Empty);
+            element.Add(new [] {"1234", "5678"});
+            element.Add(new [] {-9101112, 42});
+            Assert.Equal(4, element.Count);
+            Assert.Equal(1234, element.Get<int>(0));
+            Assert.Equal(5678, element.Get<int>(1));
+            Assert.Equal(-9101112, element.Get<int>(2));
+            Assert.Equal(42, element.Get<int>(3));
+        }
+
+        [Fact]
+        public void AddValue_ToDS()
         {
             var element = new DicomDecimalString(DicomTag.SelectorDSValue, String.Empty);
             element.Add("-1234");
@@ -525,6 +550,20 @@ namespace FellowOakDicom.Tests
             Assert.Equal(4, element.Count);
             Assert.Equal(-1234, element.Get<double>(0));
             Assert.Equal(5678, element.Get<double>(1));
+            Assert.Equal(-10, element.Get<double>(2));
+            Assert.Equal(123.4, element.Get<double>(3));
+        }
+
+        [Fact]
+        public void AddValues_ToDS()
+        {
+            var element = new DicomDecimalString(DicomTag.SelectorDSValue, String.Empty);
+            element.Add(new[] { -1234, 5678 });
+            Assert.Equal(2, element.Count);
+            Assert.Equal(-1234, element.Get<double>(0));
+            Assert.Equal(5678, element.Get<double>(1));
+            element.Add(new[] { -10, 0.1234e3 });
+            Assert.Equal(4, element.Count);
             Assert.Equal(-10, element.Get<double>(2));
             Assert.Equal(123.4, element.Get<double>(3));
         }
@@ -563,6 +602,27 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void AddValue_ToAT()
+        {
+            var element = new DicomAttributeTag(DicomTag.DataElementsSigned);
+            element.Add(new DicomTag(0x0020, 0x0111));
+            element.Add(0x00200112);
+            Assert.Equal(2, element.Count);
+            Assert.Equal(0x00200111u, element.Get<DicomTag>(0));
+            Assert.Equal(0x00200112u, element.Get<DicomTag>(1));
+        }
+
+        [Fact]
+        public void AddValues_ToAT()
+        {
+            var element = new DicomAttributeTag(DicomTag.DataElementsSigned);
+            element.Add(new [] { new DicomTag(0x0020, 0x0111), new DicomTag(0x0020, 0x0112) });
+            Assert.Equal(2, element.Count);
+            Assert.Equal(0x00200111u, element.Get<DicomTag>(0));
+            Assert.Equal(0x00200112u, element.Get<DicomTag>(1));
+        }
+
+        [Fact]
         public void AddValue_ToFD()
         {
             var element = new DicomFloatingPointDouble(DicomTag.SpectralWidth);
@@ -571,6 +631,17 @@ namespace FellowOakDicom.Tests
             Assert.Equal(2, element.Count);
             Assert.Equal(123.4567, element.Get<double>(0), 8);
             Assert.Equal(89.2, element.Get<double>(1), 5);
+        }
+
+        [Fact]
+        public void AddValues_ToFD()
+        {
+            var element = new DicomFloatingPointDouble(DicomTag.InversionTimes);
+            element.Add(new[] { 123.4567, 76.5, 337 });
+            Assert.Equal(3, element.Count);
+            Assert.Equal(123.4567, element.Get<double>(0), 8);
+            Assert.Equal(76.5, element.Get<double>(1), 5);
+            Assert.Equal(337, element.Get<double>(2), 8);
         }
 
         [Fact]
@@ -631,6 +702,16 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void AddValues_ToUS()
+        {
+            var element = new DicomUnsignedShort(DicomTag.LUTFrameRange);
+            element.Add(new[] { 1, 37, 5, 57 });
+            Assert.Equal(4, element.Count);
+            Assert.Equal(1, element.Get<ushort>(0));
+            Assert.Equal(57, element.Get<ushort>(3));
+        }
+
+        [Fact]
         public void AddValue_ToUL()
         {
             var element = new DicomUnsignedLong(DicomTag.PrivateDataElementValueMultiplicity);
@@ -648,6 +729,17 @@ namespace FellowOakDicom.Tests
             element.Add(long.MaxValue);
             element.Add(long.MinValue);
             element.Add(0);
+            Assert.Equal(3, element.Count);
+            Assert.Equal(9223372036854775807, element.Get<long>(0));
+            Assert.Equal(-9223372036854775808, element.Get<long>(1));
+            Assert.Equal(0, element.Get<long>(2));
+        }
+
+        [Fact]
+        public void AddValues_ToSV()
+        {
+            var element = new DicomSignedVeryLong(DicomTag.SelectorSVValue);
+            element.Add(new[] { long.MaxValue, long.MinValue, 0 });
             Assert.Equal(3, element.Count);
             Assert.Equal(9223372036854775807, element.Get<long>(0));
             Assert.Equal(-9223372036854775808, element.Get<long>(1));

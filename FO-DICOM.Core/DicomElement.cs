@@ -35,7 +35,22 @@ namespace FellowOakDicom
 
         public abstract T Get<T>(int item = -1);
 
-        public abstract void Add<T>(T value);
+        public void Add<T>(T value)
+        {
+            if (CanAddArray && typeof(T).IsArray)
+            {
+                var values = value as Array;
+                ValidateVMForAddedValues(values.Length);
+                foreach (var singleValue in values)
+                {
+                    DoAdd(singleValue);
+                }
+            }
+            else
+            {
+                DoAdd(value);
+            }
+        }
 
         public override void Validate()
         {
@@ -52,11 +67,12 @@ namespace FellowOakDicom
         protected virtual int NumberOfValues => Count;
 
         /// <summary>
-        /// Check if adding a value would exceed the maximum values allowed for this tag.
+        /// Check if adding values would exceed the maximum values allowed for this tag.
         /// </summary>
+        /// <param name="count">The number of values to add.</param>
         /// <exception cref="DicomDataException">The element is already added to a dataset.</exception>
         /// <exception cref="DicomValidationException">Adding a value would exceed the tag VM.</exception>
-        protected void ValidateVMForAddedValue()
+        protected void ValidateVMForAddedValues(int count = 1)
         {
             if (!IsMutable)
             {
@@ -66,10 +82,10 @@ namespace FellowOakDicom
             if (!Tag.IsPrivate && (NumberOfValues > 0))
             {
                 var entry = Tag.DictionaryEntry;
-                if (Count + 1 > entry.ValueMultiplicity.Maximum)
+                if (Count + count > entry.ValueMultiplicity.Maximum)
                 {
                     throw new DicomValidationException(ToString(), ValueRepresentation,
-                        $"Adding a value would exceed the maximum Value Multiplicity {entry.ValueMultiplicity.Maximum}");
+                        $"Adding the given value would exceed the maximum Value Multiplicity {entry.ValueMultiplicity.Maximum}");
                 }
             }
         }
@@ -87,6 +103,16 @@ namespace FellowOakDicom
         }
 
         protected virtual void ValidateString() { }
+
+        /// <summary>
+        /// Adds a single value to the element.
+        /// </summary>
+        protected abstract void DoAdd<T>(T value);
+
+        /// <summary>
+        /// Defines if <see cref="Add"/> allows to add multiple values as array.
+        /// </summary>
+        protected virtual bool CanAddArray => true;
 
     }
 
@@ -207,9 +233,9 @@ namespace FellowOakDicom
         /// </summary>
         /// <exception cref="InvalidCastException">The value is not of string or object type.</exception>
         /// <exception cref="DicomValidationException">The element has already a value.</exception>
-        public override void Add<T>(T value)
+        protected override void DoAdd<T>(T value)
         {
-            ValidateVMForAddedValue();
+            ValidateVMForAddedValues();
             if (typeof(T) != typeof(string) && typeof(T) != typeof(object))
             {
                 throw new InvalidCastException($"Expected a string value, got a value of type {typeof(T)} instead.");
@@ -218,6 +244,11 @@ namespace FellowOakDicom
             _value = value.ToString();
             Buffer = new LazyByteBuffer(StringToBytes);
         }
+
+        /// <summary>
+        /// Do not allow to add more than one value.
+        /// </summary>
+        protected override bool CanAddArray => false;
 
         #endregion
 
@@ -243,7 +274,7 @@ namespace FellowOakDicom
         /// <summary>
         /// Reset the string value so that it will be recalculated on next access.
         /// </summary>
-        protected virtual void ResetStringValue() => _value = null;
+        protected virtual void ClearCachedValues() => _value = null;
 
         protected override void ValidateString()
         {
@@ -353,17 +384,22 @@ namespace FellowOakDicom
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
+        #endregion
+
+        #region Protected Members
+        
         /// <summary>
         /// Append a new value to the element.  
         /// </summary>
         /// <exception cref="InvalidCastException">The value is not of string or object type.</exception>
         /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
-        public override void Add<T>(T value)
+        protected override void DoAdd<T>(T value)
         {
-            ValidateVMForAddedValue();
+            ValidateVMForAddedValues();
             if (typeof(T) != typeof(string) && typeof(T) != typeof(object))
             {
-                throw new InvalidCastException($"Expected a string value, got a value of type {typeof(T)} instead.");
+                throw new InvalidCastException(
+                    $"Expected a string value, got a value of type {typeof(T)} instead.");
             }
 
             var stringValue = value.ToString();
@@ -373,7 +409,7 @@ namespace FellowOakDicom
             {
                 stringValue = "\\" + stringValue;
             }
-            
+
             var byteValue = TargetEncoding.GetBytes(stringValue);
             if (bufferSize > 0 && !bufferSize.IsOdd() &&
                 Buffer.Data[bufferSize - 1] == ValueRepresentation.PaddingValue)
@@ -394,17 +430,20 @@ namespace FellowOakDicom
             Buffer = new LazyByteBuffer(() => newBufferData);
 
             // make sure all string values are recalculated on next access
-            ResetStringValue();
-        }
-
-        #endregion
-
-        protected override void ResetStringValue()
-        {
-            base.ResetStringValue();
-            _values = null;
+            ClearCachedValues();
         }
         
+        protected override void ClearCachedValues()
+        {
+            base.ClearCachedValues();
+            _values = null;
+        }
+
+        protected override bool CanAddArray => true;
+        
+        protected override int NumberOfValues => Count;
+
+        #endregion
     }
 
     public abstract class DicomDateElement : DicomMultiStringElement
@@ -562,6 +601,12 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+        protected override void ClearCachedValues()
+        {
+            base.ClearCachedValues();
+            _values = null;
+        }
+
         #endregion
 
     }
@@ -664,9 +709,9 @@ namespace FellowOakDicom
         /// <exception cref="InvalidCastException">The value is not of a type that can be casted to the element type (Tv).</exception>
         /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
         /// <exception cref="NotSupportedException">The element class does not support adding values.</exception>
-        public override void Add<T>(T value)
+        protected override void DoAdd<T>(T value)
         {
-            ValidateVMForAddedValue();
+            ValidateVMForAddedValues();
             byte[] addedValueAsBytes;
             try
             {
@@ -845,19 +890,18 @@ namespace FellowOakDicom
         /// <summary>
         /// Append a new DicomTag value to the element.   
         /// </summary>
-        /// <exception cref="InvalidCastException">The value is not of type DicomTag.</exception>
+        /// <exception cref="InvalidCastException">The value is not of type DicomTag, int or uint.</exception>
         /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
-        public override void Add<T>(T value)
+        protected override void DoAdd<T>(T value)
         {
-            ValidateVMForAddedValue();
-            if (typeof(T) == typeof(DicomTag))
+            ValidateVMForAddedValues();
+            Values = value switch
             {
-                _values = _values.Append(value as DicomTag).ToArray();
-            }
-            else
-            {
-                throw new InvalidCastException($"Unable to convert {value} value to DicomTag");
-            }
+                DicomTag tag => Values.Append(tag).ToArray(),
+                uint _ => Values.Append(((uint)(object)value)).ToArray(),
+                int _ => Values.Append(((uint)(int)(object)value)).ToArray(),
+                _ => throw new InvalidCastException($"Unable to convert {value} value to DicomTag")
+            };
         }
 
         #endregion
@@ -1046,24 +1090,39 @@ namespace FellowOakDicom
 
         #endregion
 
+        #region Protected Members
+
         /// <summary>
         /// Append a new value to the element. Allows to add int, double or float values or strings.  
         /// </summary>
         /// <exception cref="InvalidCastException">The value is not of a correct type.</exception>
         /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
-        public override void Add<T>(T value)
+        protected override void DoAdd<T>(T value)
         {
-            if (typeof(T) == typeof(float) || 
-                typeof(T) == typeof(double) || 
-                typeof(T) == typeof(int))
+            switch (value)
             {
-                base.Add(value.ToString());
-            }
-            else
-            {
-                base.Add(value);
+                case float _:
+                    base.DoAdd(((float)(object)value).ToString(CultureInfo.InvariantCulture));
+                    break;
+                case double _:
+                    base.DoAdd(((double)(object)value).ToString(CultureInfo.InvariantCulture));
+                    break;
+                case int _:
+                    base.DoAdd(value.ToString());
+                    break;
+                default:
+                    base.DoAdd(value);
+                    break;
             }
         }
+        
+        protected override void ClearCachedValues()
+        {
+            base.ClearCachedValues();
+            _values = null;
+        }
+
+        #endregion
     }
 
     /// <summary>Date Time (DT)</summary>
@@ -1303,22 +1362,33 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+        #endregion
+        
+        #region Protected Members
+
         /// <summary>
         /// Append a new value to the element. Allows to add int values or strings.  
         /// </summary>
         /// <exception cref="InvalidCastException">The value is not of string or int type.</exception>
         /// <exception cref="DicomValidationException">The element has already the maximum number of values.</exception>
-        public override void Add<T>(T value)
+        protected override void DoAdd<T>(T value)
         {
-            if (typeof(T) == typeof(int))
+            if (value is int)
             {
-                base.Add(value.ToString());
+                base.DoAdd(value.ToString());
             }
             else
             {
-                base.Add(value);
+                base.DoAdd(value);
             }
         }
+
+        protected override void ClearCachedValues()
+        {
+            base.ClearCachedValues();
+            _values = null;
+        }
+
         #endregion
     }
 
