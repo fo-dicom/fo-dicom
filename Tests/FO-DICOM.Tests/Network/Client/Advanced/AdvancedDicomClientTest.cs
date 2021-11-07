@@ -582,6 +582,59 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             Assert.Equal(DicomState.Success, responses[2].Status.State);
         }
 
+        [Fact]
+        public async Task C_STORE_ReturnsResponse()
+        {
+            var port = Ports.GetNext();
+            var callingAE = "SCU";
+            var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
+
+            var server = CreateServer<AsyncDicomCStoreProvider>(port);
+            var client = CreateClient();
+
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
+            {
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                {
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
+
+            var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+
+            var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = callingAE,
+                CalledAE = calledAE
+            };
+
+            var cStoreRequest = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"));
+
+            openAssociationRequest.PresentationContexts.AddFromRequest(cStoreRequest);
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(cStoreRequest);
+
+            DicomCStoreResponse response = null;
+
+            var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
+
+            try
+            {
+                response = await association.SendCStoreRequestAsync(cStoreRequest, cancellationToken);
+            }
+            finally
+            {
+                await association.ReleaseAsync(cancellationToken);
+            }
+
+            Assert.NotNull(response);
+            Assert.Equal(DicomState.Success, response.Status.State);
+        }
+
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
             public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
