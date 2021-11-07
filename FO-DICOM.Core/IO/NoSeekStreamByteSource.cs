@@ -35,7 +35,7 @@ namespace FellowOakDicom.IO
     }
 
     /// <summary>
-    /// Stream byte source for reading.
+    /// Stream byte source for reading streams without seek capability.
     /// </summary>
     public class NoSeekStreamByteSource : IByteSource
     {
@@ -66,11 +66,15 @@ namespace FellowOakDicom.IO
 
         #region FIELDS
 
+        /// <summary> The actual stream source. </summary>
         private readonly StreamByteSource _byteSource;
 
+        /// <summary> The buffer needed to emulate Seek / SetPosition. </summary>
         private readonly MemoryStream _buffer;
 
         private readonly BinaryReader _bufferReader;
+
+        private readonly BinaryWriter _bufferWriter;
 
         private BufferState _bufferState;
 
@@ -91,16 +95,13 @@ namespace FellowOakDicom.IO
             _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
             _buffer = new MemoryStream();
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine);
+            _bufferWriter = EndianBinaryWriter.Create(_buffer, Endian.LocalMachine);
             _bufferState = BufferState.Unused;
         }
 
         #endregion
 
         #region PROPERTIES
-
-        #endregion
-
-        #region METHODS
 
         /// <inheritdoc />
         public Endian Endian
@@ -124,6 +125,10 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public int MilestonesCount => _byteSource.MilestonesCount;
 
+        #endregion
+
+        #region METHODS
+
         /// <inheritdoc />
         public byte GetUInt8()
         {
@@ -142,24 +147,20 @@ namespace FellowOakDicom.IO
 
                     _buffer.SetLength(0);
                 }
+                else
+                {
+                    return _bufferReader.ReadByte();
+                }
             }
 
             var data = _byteSource.GetUInt8();
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer(1);
-                _buffer.WriteByte(data);
+                _bufferWriter.Write(data);
             }
 
             return data;
-        }
-
-        private void ResizeBuffer(int i)
-        {
-            if (_buffer.Length < _buffer.Position + i)
-            {
-                _buffer.SetLength(_buffer.Position + i);
-            }
         }
 
         /// <inheritdoc />
@@ -167,34 +168,21 @@ namespace FellowOakDicom.IO
         {
             if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
             {
-                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
-                if (bufferByteCount <= 2)
+                var filled = FillBufferForReading(2);
+                var read = _bufferReader.ReadInt16();
+                if (filled)
                 {
-                    UpdateBufferState();
-                    if (bufferByteCount < 2)
-                    {
-                        _buffer.SetLength(0);
-                    }
+                    _buffer.SetLength(0);
                 }
 
-                if (bufferByteCount >= 2)
-                {
-                    var read = _bufferReader.ReadInt16();
-                    if (bufferByteCount == 2)
-                    {
-                        _buffer.SetLength(0);
-                    }
-
-                    return read;
-                }
+                return read;
             }
 
             var data = _bufferReader.ReadInt16();
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer(2);
-                _buffer.WriteByte((byte)data);
-                _buffer.WriteByte((byte)(data >> 8));
+                _bufferWriter.Write(data);
             }
 
             return data;
@@ -205,34 +193,21 @@ namespace FellowOakDicom.IO
         {
             if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
             {
-                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
-                if (bufferByteCount <= 2)
+                var filled = FillBufferForReading(2);
+                var read = _bufferReader.ReadUInt16();
+                if (filled)
                 {
-                    UpdateBufferState();
-                    if (bufferByteCount < 2)
-                    {
-                        _buffer.SetLength(0);
-                    }
+                    _buffer.SetLength(0);
                 }
 
-                if (bufferByteCount >= 2)
-                {
-                    var read = _bufferReader.ReadUInt16();
-                    if (bufferByteCount == 2)
-                    {
-                        _buffer.SetLength(0);
-                    }
-
-                    return read;
-                }
+                return read;
             }
 
             var data = _byteSource.GetUInt16();
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer(2);
-                _buffer.WriteByte((byte)data);
-                _buffer.WriteByte((byte)(data >> 8));
+                _bufferWriter.Write(data);
             }
 
             return data;
@@ -243,45 +218,21 @@ namespace FellowOakDicom.IO
         {
             if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
             {
-                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
-                if (bufferByteCount <= 4)
+                var filled = FillBufferForReading(4);
+                var read = _bufferReader.ReadInt32();
+                if (filled)
                 {
-                    UpdateBufferState();
-                    if (bufferByteCount == 2)
-                    {
-                        var lower = _bufferReader.ReadUInt16();
-                        var upper = GetUInt16();
-                        var read = (int)(lower + (uint)upper << 16);
-                        _buffer.SetLength(0);
-                        return read;
-                    }
-
-                    if (bufferByteCount < 4)
-                    {
-                        _buffer.SetLength(0);
-                    }
+                    _buffer.SetLength(0);
                 }
 
-                if (bufferByteCount >= 4)
-                {
-                    var read = _bufferReader.ReadInt32();
-                    if (bufferByteCount == 4)
-                    {
-                        _buffer.SetLength(0);
-                    }
-
-                    return read;
-                }
+                return read;
             }
 
             var data = _byteSource.GetInt32();
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer(4);
-                _buffer.WriteByte((byte)data);
-                _buffer.WriteByte((byte)(data >> 8));
-                _buffer.WriteByte((byte)(data >> 16));
-                _buffer.WriteByte((byte)(data >> 24));
+                _bufferWriter.Write(data);
             }
 
             return data;
@@ -292,62 +243,125 @@ namespace FellowOakDicom.IO
         {
             if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
             {
-                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
-                if (bufferByteCount <= 4)
+                var filled = FillBufferForReading(4);
+                var read = _bufferReader.ReadUInt32();
+                if (filled)
                 {
-                    UpdateBufferState();
-
-                    if (bufferByteCount == 2)
-                    {
-                        var lower = _bufferReader.ReadUInt16();
-                        var upper = GetUInt16();
-                        var read = (lower + (uint)upper << 16);
-                        _buffer.SetLength(0);
-                        return read;
-                    }
-
-                    if (bufferByteCount < 4)
-                    {
-                        _buffer.SetLength(0);
-                    }
+                    _buffer.SetLength(0);
                 }
 
-                if (bufferByteCount >= 4)
-                {
-                    var read = _bufferReader.ReadUInt32();
-                    if (bufferByteCount == 4)
-                    {
-                        _buffer.SetLength(0);
-                    }
-
-                    return read;
-                }
+                return read;
             }
 
             var data = _byteSource.GetUInt32();
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer(4);
-                _buffer.WriteByte((byte)data);
-                _buffer.WriteByte((byte)(data >> 8));
-                _buffer.WriteByte((byte)(data >> 16));
-                _buffer.WriteByte((byte)(data >> 24));
+                _bufferWriter.Write(data);
             }
 
             return data;
         }
 
         /// <inheritdoc />
-        public long GetInt64() => _byteSource.GetInt64();
+        public long GetInt64()
+        {
+            if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
+            {
+                var filled = FillBufferForReading(8);
+                var read = _bufferReader.ReadInt64();
+                if (filled)
+                {
+                    _buffer.SetLength(0);
+                }
+
+                return read;
+            }
+
+            var data = _byteSource.GetInt64();
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer(8);
+                _bufferWriter.Write(data);
+            }
+
+            return data;
+        }
 
         /// <inheritdoc />
-        public ulong GetUInt64() => _byteSource.GetUInt64();
+        public ulong GetUInt64()
+        {
+            if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
+            {
+                var filled = FillBufferForReading(8);
+                var read = _bufferReader.ReadUInt64();
+                if (filled)
+                {
+                    _buffer.SetLength(0);
+                }
+
+                return read;
+            }
+
+            var data = _byteSource.GetUInt64();
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer(8);
+                _bufferWriter.Write(data);
+            }
+
+            return data;
+        }
 
         /// <inheritdoc />
-        public float GetSingle() => _byteSource.GetSingle();
+        public float GetSingle()
+        {
+            if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
+            {
+                var filled = FillBufferForReading(4);
+                var read = _bufferReader.ReadSingle();
+                if (filled)
+                {
+                    _buffer.SetLength(0);
+                }
+
+                return read;
+            }
+
+            var data = _byteSource.GetSingle();
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer(4);
+                _bufferWriter.Write(data);
+            }
+
+            return data;
+        }
 
         /// <inheritdoc />
-        public double GetDouble() => _byteSource.GetDouble();
+        public double GetDouble()
+        {
+            if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
+            {
+                var filled = FillBufferForReading(8);
+                var read = _bufferReader.ReadDouble();
+                if (filled)
+                {
+                    _buffer.SetLength(0);
+                }
+
+                return read;
+            }
+
+            var data = _byteSource.GetDouble();
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer(8);
+                _bufferWriter.Write(data);
+            }
+
+            return data;
+        }
 
         /// <inheritdoc />
         public byte[] GetBytes(int count)
@@ -385,7 +399,7 @@ namespace FellowOakDicom.IO
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer(count);
-                _buffer.Write(data, 0, count);
+                _bufferWriter.Write(data);
             }
 
             return data;
@@ -398,23 +412,7 @@ namespace FellowOakDicom.IO
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
 
         /// <inheritdoc />
-        public void Skip(uint count)
-        {
-            if (_bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite)
-            {
-                // TODO
-            }
-
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer((int)count);
-                _buffer.Write(_byteSource.GetBytes((int)count), 0, (int)count);
-            }
-            else
-            {
-                _byteSource.Skip(count);
-            }
-        }
+        public void Skip(uint count) => GetBytes((int)count);
 
         /// <inheritdoc />
         public void Mark()
@@ -443,7 +441,7 @@ namespace FellowOakDicom.IO
             if (_bufferState == BufferState.Write || _bufferState == BufferState.ReadWrite)
             {
                 _buffer.Position = 0;
-                _bufferState = BufferState.Read;
+                _bufferState = _buffer.Length > 0 ? BufferState.Read : BufferState.Unused;
             }
             else
             {
@@ -452,41 +450,64 @@ namespace FellowOakDicom.IO
         }
 
         /// <inheritdoc />
-        public void PushMilestone(uint count)
-        {
-            // TODO: milestone support
-            _byteSource.PushMilestone(count);
-        }
+        public void PushMilestone(uint count) => _byteSource.PushMilestone(count);
 
         /// <inheritdoc />
-        public void PopMilestone()
-        {
-            _byteSource.PopMilestone();
-        }
+        public void PopMilestone() => _byteSource.PopMilestone();
 
         /// <inheritdoc />
-        public bool HasReachedMilestone()
-        {
-            return _byteSource.HasReachedMilestone();
-        }
+        public bool HasReachedMilestone() => _byteSource.HasReachedMilestone();
 
         /// <inheritdoc />
         public bool Require(uint count) => Require(count, null, null);
 
         /// <inheritdoc />
-        public bool Require(uint count, ByteSourceCallback callback, object state)
-        {
-            // TODO: read into buffer and check for EOF instead?
-            // alternatively move the error handling into the read part and do nothing here
-            return _byteSource.Require(count, callback, state);
-        }
+        public bool Require(uint count, ByteSourceCallback callback, object state) =>
+            _byteSource.Require(count, callback, state);
 
 
         /// <inheritdoc />
         public Stream GetStream() => _byteSource.GetStream();
 
+        private void ResizeBuffer(int count)
+        {
+            if (_buffer.Length < _buffer.Position + count)
+            {
+                // the buffer most times does not change its capacity,
+                // so this is not expansive to call
+                _buffer.SetLength(_buffer.Position + count);
+            }
+        }
+
         private void UpdateBufferState() =>
             _bufferState = _bufferState == BufferState.Read ? BufferState.Unused : BufferState.Write;
+
+        /// <summary>
+        /// If there is not enough data to read the given count of bytes,
+        /// the remaining bytes are read from the original stream and added to the buffer.
+        /// We need to have the bytes as contiguous memory for subsequently using ReadXXX
+        /// to read number in the correct Endianess.
+        /// </summary>
+        /// <param name="count">Number of bytes to read (2-8).</param>
+        /// <returns>True if the buffer is exhausted after reading the given number of bytes.</returns>
+        private bool FillBufferForReading(int count)
+        {
+            var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
+            if (bufferByteCount <= count)
+            {
+                UpdateBufferState();
+                if (bufferByteCount < count)
+                {
+                    var nrBytesToRead = count - bufferByteCount;
+                    _bufferReader.ReadBytes(nrBytesToRead);
+                    _buffer.Position -= nrBytesToRead;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
 
         #endregion
     }

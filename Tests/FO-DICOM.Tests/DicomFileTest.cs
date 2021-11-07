@@ -7,13 +7,11 @@ using FellowOakDicom.Tests.Helpers;
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace FellowOakDicom.Tests
 {
-
     [Collection("General")]
     public class DicomFileTest
     {
@@ -30,11 +28,11 @@ namespace FellowOakDicom.Tests
             {
                 throw new NotSupportedException();
             }
+
             public override long Position
             {
                 set => throw new NotSupportedException();
             }
-
         }
 
 
@@ -67,7 +65,7 @@ namespace FellowOakDicom.Tests
                 new DicomOtherDouble(DicomTag.DoubleFloatPixelData, new double[] { 12.3, 13.4, 14.5 }),
                 new DicomOtherFloat(DicomTag.FloatPixelData, new float[] { 1.2f, 2.3f, 3.4f, 4.5f }),
                 new DicomOtherLong(DicomTag.SelectorOLValue, new uint[] { 123456, 789012 }),
-                new DicomOtherVeryLong(DicomTag.SelectorOVValue,  new ulong[] { 12, 13, 14, 15 }),
+                new DicomOtherVeryLong(DicomTag.SelectorOVValue, new ulong[] { 12, 13, 14, 15 }),
                 new DicomOtherWord(DicomTag.SelectorOWValue, new ushort[] { 1234, 5678 }),
                 new DicomPersonName(DicomTag.OtherPatientNames, "Doe^John\\Doe^Jane"),
                 new DicomShortString(DicomTag.AccessionNumber, "ACC-123"),
@@ -85,33 +83,10 @@ namespace FellowOakDicom.Tests
                 new DicomUnlimitedText(DicomTag.SelectorUTValue, "More text..."),
                 new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, 1234567890),
             };
+
         #endregion
 
         #region Helpers
-
-        private bool DatasetsAreEqual(DicomDataset dataset1, DicomDataset dataset2)
-        {
-            var count = dataset1.Count();
-            if (count != dataset2.Count())
-            {
-                return false;
-            }
-
-            var tagComparer = new DicomTagComparer();
-            var valueComparer = new DicomValueComparer();
-            for (var i = 0; i < count; i++)
-            {
-                var element1 = dataset1.ElementAt(i);
-                var element2 = dataset2.ElementAt(i);
-                if (!tagComparer.Equals(element1, element2) ||
-                    !valueComparer.Equals(element1, element2))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
 
         #endregion
 
@@ -125,7 +100,8 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset(_minimumDatatset)
             {
-                new DicomLongString(tag, DicomEncoding.DefaultArray, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
+                new DicomLongString(tag, DicomEncoding.DefaultArray,
+                    new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
             };
 
             var outFile = new DicomFile(dataset);
@@ -147,7 +123,8 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset(_minimumDatatset)
             {
-                new DicomLongString(tag, DicomEncoding.DefaultArray, new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
+                new DicomLongString(tag, DicomEncoding.DefaultArray,
+                    new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
             };
 
             var outFile = new DicomFile(dataset);
@@ -192,7 +169,7 @@ namespace FellowOakDicom.Tests
             var dataset = new DicomDataset(_minimumDatatset)
             {
                 new DicomLongString(tag, expected),
-                { DicomTag.SpecificCharacterSet,"ISO IR 192"  }
+                { DicomTag.SpecificCharacterSet, "ISO IR 192" }
             };
 
             var outFile = new DicomFile(dataset);
@@ -210,7 +187,7 @@ namespace FellowOakDicom.Tests
         public void Open_TooSmallFile_Raises()
         {
             var stream = new MemoryStream(new byte[20]);
-            var exception = Record.Exception( () => DicomFile.Open(stream));
+            var exception = Record.Exception(() => DicomFile.Open(stream));
             Assert.IsType<DicomFileException>(exception);
             Assert.StartsWith("Not a valid DICOM file", exception.Message);
         }
@@ -257,7 +234,7 @@ namespace FellowOakDicom.Tests
             saveFile.Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
             var openFile = DicomFile.Open(stream);
-            Assert.True(DatasetsAreEqual(saveFile.Dataset, openFile.Dataset));
+            Assert.True(new DicomDatasetComparer().Equals(saveFile.Dataset, openFile.Dataset));
         }
 
         [Fact]
@@ -268,7 +245,18 @@ namespace FellowOakDicom.Tests
             saveFile.Save(stream);
             stream.Reset();
             var openFile = DicomFile.Open(stream);
-            Assert.True(DatasetsAreEqual(saveFile.Dataset, openFile.Dataset));
+            Assert.True(new DicomDatasetComparer().Equals(saveFile.Dataset, openFile.Dataset));
+        }
+
+        [Fact]
+        public void Open_SequencesFromStream_UsingNoSeek_YieldsValidDicomFile()
+        {
+            var file = DicomFile.Open(TestData.Resolve("test_SR.dcm"));
+            var stream = new StreamNoSeek();
+            file.Save(stream);
+            stream.Reset();
+            var openFile = DicomFile.Open(stream);
+            Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
         [Fact]
@@ -300,6 +288,7 @@ namespace FellowOakDicom.Tests
                 var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
                 Assert.Equal(expected, actual);
             }
+
             IOHelper.DeleteIfExists(fileName);
         }
 
@@ -340,7 +329,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
         {
-            static bool criterion(ParseState state) => state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            static bool criterion(ParseState state) =>
+                state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
