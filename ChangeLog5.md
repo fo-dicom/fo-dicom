@@ -10,6 +10,8 @@
 * Change: `DicomFile.Open` now throws a `DicomFileException` if the file size is less than 132 bytes (#641)
 * Add XML documentation to nuget package
 * Change: Trying to add a DICOM element with invalid group ID to DICOM meta information now throws `DicomDataException` (#750)
+* Bug fix: Prevent DicomJsonConverter from consuming root end object token (#1251)
+* Add missing handling of UV, SV and OV in DicomDatasetReaderObserver.OnElement
 
 #### 5.0.0 (2021-09-13)
 

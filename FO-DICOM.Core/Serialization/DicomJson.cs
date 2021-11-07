@@ -15,7 +15,7 @@ namespace FellowOakDicom.Serialization
             var options = new JsonSerializerOptions();
             options.Converters.Add(new DicomJsonConverter(writeTagsAsKeywords: writeTagsAsKeywords));
             options.WriteIndented = formatIndented;
-            var conv = JsonSerializer.Serialize<DicomDataset>(dataset, options);
+            var conv = JsonSerializer.Serialize(dataset, options);
             return conv;
         }
 
@@ -35,7 +35,7 @@ namespace FellowOakDicom.Serialization
         public static DicomDataset[] ConvertJsonToDicomArray(string json)
         {
             var options = new JsonSerializerOptions();
-            options.Converters.Add(new DicomArrayJsonConverter());
+            options.Converters.Add(new DicomJsonConverter(writeTagsAsKeywords: false, autoValidate: true));
             options.ReadCommentHandling = JsonCommentHandling.Skip;
             var ds = JsonSerializer.Deserialize<DicomDataset[]>(json, options);
             return ds;
