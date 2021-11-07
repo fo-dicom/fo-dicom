@@ -86,8 +86,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         
         private long _isDisposed;
         
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public bool IsDisposed => (ulong)Interlocked.Read(ref _isDisposed) > 0;
+        public bool IsDisposed => Interlocked.Read(ref _isDisposed) > 0;
         
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.Association"/>
         public DicomAssociation Association { get; }

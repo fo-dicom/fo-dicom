@@ -34,7 +34,7 @@ namespace FellowOakDicom.Network
 
         private const int _maxBytesToRead = 16384;
 
-        private bool _disposed = false;
+        private long _isDisposed;
 
         private bool _isInitialized;
 
@@ -110,7 +110,17 @@ namespace FellowOakDicom.Network
 
             _isInitialized = false;
         }
-
+        
+        #endregion
+        
+        #region FINALIZER 
+        
+        /// <summary>
+        /// The finalizer will be called when this instance is not disposed properly.
+        /// </summary>
+        /// <remarks>Failing to dispose indicates wrong usage</remarks>
+        ~DicomService() => Dispose(false);
+        
         #endregion
 
         #region PROPERTIES
@@ -199,7 +209,7 @@ namespace FellowOakDicom.Network
         /// The transcoder manager being used by this DICOM service
         /// </summary>
         private ITranscoderManager TranscoderManager { get; }
-
+        
         #endregion
 
         #region METHODS
@@ -207,7 +217,7 @@ namespace FellowOakDicom.Network
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfAlreadyDisposed()
         {
-            if (!_disposed)
+            if (Interlocked.Read(ref _isDisposed) > 0)
             {
                 return;
             }
@@ -229,7 +239,8 @@ namespace FellowOakDicom.Network
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed)
+            // Guard against multiple concurrent disposals
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0)
             {
                 return;
             }
@@ -240,8 +251,10 @@ namespace FellowOakDicom.Network
                 _network?.Dispose();
                 _pduQueueWatcher?.Dispose();
             }
-
-            _disposed = true;
+            else
+            {
+                Logger?.Warn($"DICOM service {GetType().FullName} was not disposed correctly, but was garbage collected instead");
+            }
         }
 
         /// <summary>
