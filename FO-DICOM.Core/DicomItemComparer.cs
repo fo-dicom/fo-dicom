@@ -57,11 +57,12 @@ namespace FellowOakDicom
                     return false;
                 }
 
+                var datasetComparer = new DicomDatasetComparer();
                 for (var i = 0; i < itemsCount; i++)
                 {
                     var dataset1 = xSequence.Items[i];
                     var dataset2 = ySequence.Items[i];
-                    if (!new DicomDatasetComparer().Equals(dataset1, dataset2))
+                    if (!datasetComparer.Equals(dataset1, dataset2))
                     {
                         return false;
                     }
