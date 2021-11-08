@@ -10,6 +10,7 @@
 * Change: Trying to add a DICOM element with invalid group ID to DICOM meta information now throws `DicomDataException` (#750)
 * Bug fix: Prevent DicomJsonConverter from consuming root end object token (#1251)
 * Add missing handling of UV, SV and OV in DicomDatasetReaderObserver.OnElement
+* Fix rendering of single color image
 
 #### 5.0.0 (2021-09-13)
 
