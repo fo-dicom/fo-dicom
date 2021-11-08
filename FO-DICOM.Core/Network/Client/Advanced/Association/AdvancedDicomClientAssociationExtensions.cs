@@ -69,7 +69,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         }
         
         /// <summary>
-        /// Sends a C-FIND request over the provided association
+        /// Sends a C-MOVE request over the provided association
         /// </summary>
         /// <param name="association">The association with another AE to send to the request to</param>
         /// <param name="request">The request to send</param>
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// <returns>(Typically) One pending C-MOVE response per stored SOP instance, and lastly one success C-MOVE response</returns>
         public static async IAsyncEnumerable<DicomCMoveResponse> SendCMoveRequestAsync(
             this IAdvancedDicomClientAssociation association, 
-            DicomCFindRequest request,
+            DicomCMoveRequest request,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await foreach (var response in association.SendRequestAsync(request, cancellationToken).ConfigureAwait(false))

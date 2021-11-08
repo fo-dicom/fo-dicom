@@ -310,7 +310,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
             openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
-
             IAdvancedDicomClientAssociation association = null;
             DicomAssociationRejectedException exception = null;
             try
@@ -633,6 +632,64 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             Assert.NotNull(response);
             Assert.Equal(DicomState.Success, response.Status.State);
+        }
+
+        [Fact]
+        public async Task C_MOVE_ReturnsResponse()
+        {
+            var port = Ports.GetNext();
+            var callingAE = "SCU";
+            var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
+
+            var server = CreateServer<AsyncDicomCMoveProvider>(port);
+            var client = CreateClient();
+
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
+            {
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                {
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
+
+            var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+
+            var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = callingAE,
+                CalledAE = calledAE
+            };
+
+            var cMoveRequest = new DicomCMoveRequest("OTHER-SCP", "123");
+
+            openAssociationRequest.PresentationContexts.AddFromRequest(cMoveRequest);
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(cMoveRequest);
+
+            var responses = new List<DicomCMoveResponse>();
+            var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
+
+            try
+            {
+                await foreach (var response in association.SendCMoveRequestAsync(cMoveRequest, cancellationToken))
+                {
+                    responses.Add(response);
+                }
+            }
+            finally
+            {
+                await association.ReleaseAsync(cancellationToken);
+            }
+
+            Assert.NotEmpty(responses);
+            Assert.Equal(3, responses.Count);
+            Assert.Equal(DicomState.Pending, responses[0].Status.State);
+            Assert.Equal(DicomState.Pending, responses[1].Status.State);
+            Assert.Equal(DicomState.Success, responses[2].Status.State);
         }
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
