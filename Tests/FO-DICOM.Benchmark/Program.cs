@@ -3,26 +3,14 @@
 
 using BenchmarkDotNet.Running;
 
-
 namespace FellowOakDicom.Benchmark
 {
     static class Program
     {
-
-        static void Main(string[] args)
+        static void Main()
         {
-            // benchmark opening files
-            BenchmarkRunner.Run<OpenFileBenchmarks>();
-
-            // benchmark instantiating a server
-            BenchmarkRunner.Run<ServerBenchmarks>();
-
-            // benchmark json serialization and deserialization
-            BenchmarkRunner.Run<JsonBenchmarks>();
-
-            // benchmark parsing datasets
-            BenchmarkRunner.Run<ParseDatasetBenchmark>();
+            // Run all benchmarks in assembly
+            BenchmarkRunner.Run(typeof(Program).Assembly);
         }
-
     }
 }
