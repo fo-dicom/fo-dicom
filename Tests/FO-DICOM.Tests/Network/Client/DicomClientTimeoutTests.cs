@@ -446,8 +446,8 @@ namespace FellowOakDicom.Tests.Network.Client
                     }
                 }
 
-                var timedOutRequests = new List<DicomRequest>();
-                client.RequestTimedOut += (sender, args) => { timedOutRequests.Add(args.Request); };
+                var timedOutRequests = new ConcurrentStack<DicomRequest>();
+                client.RequestTimedOut += (sender, args) => { timedOutRequests.Push(args.Request); };
 
                 var sendTask = client.SendAsync();
                 var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
