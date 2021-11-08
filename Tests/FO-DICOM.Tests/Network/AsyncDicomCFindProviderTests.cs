@@ -171,8 +171,11 @@ namespace FellowOakDicom.Tests.Network
 
         public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
         {
+            await Task.Yield();
             yield return new DicomCFindResponse(request, DicomStatus.Pending);
+            await Task.Yield();
             yield return new DicomCFindResponse(request, DicomStatus.Pending);
+            await Task.Yield();
             yield return new DicomCFindResponse(request, DicomStatus.Success);
         }
 
