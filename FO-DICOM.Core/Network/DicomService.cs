@@ -217,7 +217,7 @@ namespace FellowOakDicom.Network
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfAlreadyDisposed()
         {
-            if (Interlocked.Read(ref _isDisposed) > 0)
+            if (Interlocked.Read(ref _isDisposed) == 0)
             {
                 return;
             }
