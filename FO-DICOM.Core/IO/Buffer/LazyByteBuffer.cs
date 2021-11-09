@@ -7,24 +7,20 @@ namespace FellowOakDicom.IO.Buffer
 {
     public sealed class LazyByteBuffer : IByteBuffer
     {
-        private readonly Lazy<byte[]> _bytes;
+        private readonly Func<byte[]> _bytes;
 
         public LazyByteBuffer(Func<byte[]> bytes)
         {
-            _bytes = new Lazy<byte[]>(bytes, LazyThreadSafetyMode.PublicationOnly);
+            _bytes = bytes ?? throw new ArgumentNullException(nameof(bytes));
         }
 
+        private byte[] Bytes => _bytes();
+        
         public bool IsMemory => true;
 
-        public long Size => _bytes.Value.LongLength;
+        public long Size => Bytes.LongLength;
 
-        public byte[] Data => _bytes.Value;
-
-        public void CopyToStream(Stream s, long offset, int count)
-            => s.Write(_bytes.Value, (int)offset, count);
-
-        public Task CopyToStreamAsync(Stream s, long offset, int count)
-            => s.WriteAsync(_bytes.Value, (int)offset, count);
+        public byte[] Data => Bytes;
 
         public byte[] GetByteRange(long offset, int count)
         {
@@ -47,7 +43,7 @@ namespace FellowOakDicom.IO.Buffer
                 throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
             }
 
-            var content = _bytes.Value;
+            var content = Data;
 
             Array.Copy(content, (int)offset, output, 0, count);
         }
