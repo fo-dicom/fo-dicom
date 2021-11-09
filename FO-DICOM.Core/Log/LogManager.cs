@@ -36,7 +36,7 @@ namespace FellowOakDicom.Log
         /// <summary>
         /// Manager for null ("do nothing") loggers.
         /// </summary>
-        private class NullLoggerManager : LogManager
+        public class NullLoggerManager : LogManager
         {
             /// <summary>
             /// Singleton instance of null logger manager.
@@ -54,7 +54,7 @@ namespace FellowOakDicom.Log
             /// <summary>
             /// Initializes an instance of the null logger manager.
             /// </summary>
-            private NullLoggerManager()
+            public NullLoggerManager()
             {
             }
 
