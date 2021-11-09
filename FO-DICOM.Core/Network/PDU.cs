@@ -175,6 +175,7 @@ namespace FellowOakDicom.Network
 
         #region Read Methods
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckOffset(int bytes, string name)
         {
             if (_ms.Position + bytes > _ms.Length)
