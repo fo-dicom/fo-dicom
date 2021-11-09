@@ -55,7 +55,7 @@ namespace FellowOakDicom.IO.Buffer
 
             if (!stream.CanWrite)
             {
-                throw new ArgumentException("Cannot copy to non-writable stream");
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
             var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
@@ -90,7 +90,7 @@ namespace FellowOakDicom.IO.Buffer
 
             if (!stream.CanWrite)
             {
-                throw new ArgumentException("Cannot copy to non-writable stream");
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
             var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);

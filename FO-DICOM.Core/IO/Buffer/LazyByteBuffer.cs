@@ -61,7 +61,7 @@ namespace FellowOakDicom.IO.Buffer
 
             if (!stream.CanWrite)
             {
-                throw new ArgumentException("Cannot copy to non-writable stream");
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
             byte[] data = Data;
@@ -78,7 +78,7 @@ namespace FellowOakDicom.IO.Buffer
 
             if (!stream.CanWrite)
             {
-                throw new ArgumentException("Cannot copy to non-writable stream");
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
             byte[] data = Data;

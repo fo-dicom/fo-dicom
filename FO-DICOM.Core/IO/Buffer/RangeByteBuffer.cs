@@ -43,7 +43,7 @@ namespace FellowOakDicom.IO.Buffer
 
             if (!stream.CanWrite)
             {
-                throw new ArgumentException("Cannot copy to non-writable stream");
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
             int bufferSize = 1024 * 1024;
@@ -78,7 +78,7 @@ namespace FellowOakDicom.IO.Buffer
 
             if (!stream.CanWrite)
             {
-                throw new ArgumentException("Cannot copy to non-writable stream");
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
             int bufferSize = 1024 * 1024;
