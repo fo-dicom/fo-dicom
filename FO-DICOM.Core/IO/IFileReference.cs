@@ -1,6 +1,7 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -87,6 +88,15 @@ namespace FellowOakDicom.IO
         /// <param name="count">Number of bytes to select.</param>
         /// <returns>The specified sub-range of bytes in the file.</returns>
         byte[] GetByteRange(long offset, int count);
+
+        /// <summary>
+        /// Gets a sub-range of the bytes in the file.
+        /// </summary>
+        /// <param name="offset">Offset from the start position of the file.</param>
+        /// <param name="count">Number of bytes to select.</param>
+        /// <param name="output">The output array where the contents will be written </param>
+        /// <returns>The specified sub-range of bytes in the file.</returns>
+        void GetByteRange(long offset, int count, byte[] output);
 
         #endregion
     }

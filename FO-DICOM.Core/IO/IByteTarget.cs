@@ -1,13 +1,11 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
 {
-
     /// <summary>
     /// Callback delegate for asynchronous <see cref="IByteTarget"/> operations.
     /// </summary>
@@ -101,9 +99,11 @@ namespace FellowOakDicom.IO
         /// <returns>Avaitable <see cref="Task"/>.</returns>
         Task WriteAsync(byte[] buffer, uint offset, uint count);
 
-        void ApplyToStream(Action<Stream> action);
-
-        Task ApplyToStreamAsync(Func<Stream, Task> action);
-
+        /// <summary>
+        /// Exposes the current byte target as a writable stream
+        /// Do not dispose of this stream! It will be disposed when the byte target is disposed
+        /// </summary>
+        /// <returns>A stream that, when written to, will write to the underlying byte target</returns>
+        Stream AsWritableStream();
     }
 }

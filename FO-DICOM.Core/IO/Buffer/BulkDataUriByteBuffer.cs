@@ -3,11 +3,11 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
-
     /// <summary>
     /// Byte buffer representing a Bulk Data byte buffer, e.g. as in the DICOM Json model, in PS3.18 Chapter F.2.2.
     /// </summary>
@@ -40,7 +40,7 @@ namespace FellowOakDicom.IO.Buffer
         public virtual byte[] Data
         {
             get => _buffer
-                ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Data until either GetData() has been called.");
+                   ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Data until either GetData() has been called.");
             set => _buffer = value;
         }
 
@@ -58,28 +58,67 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             var range = new byte[count];
-            Array.Copy(Data, (int)offset, range, 0, count);
+            GetByteRange(offset, count, range);
             return range;
         }
 
-        public void CopyToStream(Stream s, long offset, int count)
+        public void GetByteRange(long offset, int count, byte[] output)
         {
-            if (_buffer == null)
+            if (output == null)
             {
-                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
+                throw new ArgumentNullException(nameof(output));
             }
 
-            s.Write(Data, (int)offset, count);
+            if (output.Length < count)
+            {
+                throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+
+            Array.Copy(Data, (int)offset, output, 0, count);
         }
 
-        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        public void CopyToStream(Stream stream)
         {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanWrite)
+            {
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+
             if (_buffer == null)
             {
                 throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
             }
 
-            return s.WriteAsync(Data, (int)offset, count);
+            byte[] data = Data;
+
+            stream.Write(data, 0, data.Length);
+        }
+
+        public Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanWrite)
+            {
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+
+            if (_buffer == null)
+            {
+                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
+            }
+
+            byte[] data = Data;
+
+            return stream.WriteAsync(data, 0, data.Length, cancellationToken);
         }
 
         /// <summary>
@@ -87,7 +126,6 @@ namespace FellowOakDicom.IO.Buffer
         /// </summary>
         public virtual long Size
             => _buffer?.Length
-                ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Size until the Data property has been set.");
-
+               ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Size until the Data property has been set.");
     }
 }

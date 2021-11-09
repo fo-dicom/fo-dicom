@@ -1,15 +1,16 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Buffers;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
-
     public class SwapByteBuffer : IByteBuffer
     {
-
         public SwapByteBuffer(IByteBuffer buffer, int unitSize)
         {
             Internal = buffer;
@@ -22,7 +23,7 @@ namespace FellowOakDicom.IO.Buffer
 
         public bool IsMemory => Internal.IsMemory;
 
-        public long Size=> Internal.Size;
+        public long Size => Internal.Size;
 
         public byte[] Data
         {
@@ -52,11 +53,89 @@ namespace FellowOakDicom.IO.Buffer
             return data;
         }
 
-        public void CopyToStream(Stream s, long offset, int count)
-            => s.Write(GetByteRange(offset, count), 0, count);
+        public void GetByteRange(long offset, int count, byte[] output)
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+            if (output.Length < count)
+            {
+                throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+            
+            Internal.GetByteRange(offset, count, output);
+            Endian.SwapBytes(UnitSize, output);
+        }
 
-        public Task CopyToStreamAsync(Stream s, long offset, int count)
-            => s.WriteAsync(GetByteRange(offset, count), 0, count);
+        public void CopyToStream(Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
+            if (!stream.CanWrite)
+            {
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+
+            int bufferSize = 1024 * 1024;
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            long remaining = Size;
+            long offset = 0;
+            try
+            {
+                while (offset < remaining)
+                {
+                    var count = (int)Math.Min(remaining - offset, bufferSize);
+
+                    GetByteRange(offset, count, buffer);
+
+                    stream.Write(buffer, 0, count);
+
+                    offset += count;
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        public async Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanWrite)
+            {
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+
+            int bufferSize = 1024 * 1024;
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            long size = Size;
+            long offset = 0;
+            try
+            {
+                while (offset < size)
+                {
+                    var count = (int)Math.Min(size - offset, bufferSize);
+
+                    GetByteRange(offset, count, buffer);
+
+                    await stream.WriteAsync(buffer, 0, count, cancellationToken);
+
+                    offset += count;
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
@@ -62,9 +63,28 @@ namespace FellowOakDicom.IO.Buffer
         public byte[] GetByteRange(long offset, int count)
         {
             var data = new byte[count];
-            System.Buffer.BlockCopy(Buffer.Data, (int)offset, data, 0, (int)Math.Min(Buffer.Size - offset, count));
+            GetByteRange(offset, count, data);
             return data;
         }
+
+        public void GetByteRange(long offset, int count, byte[] output)
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            if (output.Length < count)
+            {
+                throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+            
+            System.Buffer.BlockCopy(Buffer.Data, (int)offset, output, 0, (int)Math.Min(Buffer.Size - offset, count));
+        }
+
+        public void CopyToStream(Stream stream) => throw new NotImplementedException();
+
+        public Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken) => throw new NotImplementedException();
 
         public void CopyToStream(Stream s, long offset, int count)
         {

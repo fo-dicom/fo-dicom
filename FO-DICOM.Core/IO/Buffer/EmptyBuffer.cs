@@ -3,11 +3,11 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
-
     public sealed class EmptyBuffer : IByteBuffer
     {
         public static readonly IByteBuffer Value = new EmptyBuffer();
@@ -35,7 +35,7 @@ namespace FellowOakDicom.IO.Buffer
             return Data;
         }
 
-        public void CopyToStream(Stream s, long offset, int count)
+        public void GetByteRange(long offset, int count, byte[] output)
         {
             if (offset != 0 || count != 0)
             {
@@ -45,16 +45,32 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-        public Task CopyToStreamAsync(Stream s, long offset, int count)
+        public void CopyToStream(Stream stream)
         {
-            if (offset != 0 || count != 0)
+            if (stream == null)
             {
-                throw new ArgumentOutOfRangeException(
-                    nameof(offset),
-                    "Offset and count cannot be greater than 0 in EmptyBuffer");
+                throw new ArgumentNullException(nameof(stream));
             }
+
+            if (!stream.CanWrite)
+            {
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+        }
+
+        public Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanWrite)
+            {
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+
             return Task.CompletedTask;
         }
-
     }
 }

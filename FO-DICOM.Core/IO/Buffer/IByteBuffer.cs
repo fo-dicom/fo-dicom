@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
@@ -33,11 +35,28 @@ namespace FellowOakDicom.IO.Buffer
         /// <param name="offset">Offset from beginning of data array.</param>
         /// <param name="count">Number of bytes to return.</param>
         /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
+        [Obsolete("Use the overload that takes an output byte array instead")]
         byte[] GetByteRange(long offset, int count);
 
-        void CopyToStream(Stream s, long offset, int count);
+        /// <summary>
+        /// Gets a subset of the data.
+        /// </summary>
+        /// <param name="offset">Offset from beginning of data array.</param>
+        /// <param name="count">Number of bytes to return.</param>
+        /// <param name="output">The array where the data will be written to</param>
+        void GetByteRange(long offset, int count, byte[] output);
 
-        Task CopyToStreamAsync(Stream s, long offset, int count);
+        /// <summary>
+        /// Copies the contents of this buffer to the provided <paramref name="stream"/>
+        /// </summary>
+        /// <param name="stream">A stream that will receive the contents of this buffer</param>
+        void CopyToStream(Stream stream);
 
+        /// <summary>
+        /// Copies the contents of this buffer to the provided <paramref name="stream"/>
+        /// </summary>
+        /// <param name="stream">A stream that will receive the contents of this buffer</param>
+        /// <param name="cancellationToken">A cancellation token that halts the execution of the copy operation</param>
+        Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken);
     }
 }

@@ -149,11 +149,6 @@ namespace FellowOakDicom.IO
             _stream.Write(buffer, (int)offset, (int)count);
         }
 
-        public void ApplyToStream(Action<Stream> action)
-        {
-            action(_stream);
-        }
-
         /// <summary>
         /// Asynchronously write array of <see cref="byte"/>s to target.
         /// </summary>
@@ -166,10 +161,11 @@ namespace FellowOakDicom.IO
             return _stream.WriteAsync(buffer, (int)offset, (int)count);
         }
 
-        public Task ApplyToStreamAsync(Func<Stream, Task> action)
-        {
-            return action(_stream);
-        }
-
+        /// <summary>
+        /// Exposes the current byte target as a writable stream
+        /// Do not dispose of this stream! It will be disposed when the byte target is disposed
+        /// </summary>
+        /// <returns>A stream that, when written to, will write to the underlying byte target</returns>
+        public Stream AsWritableStream() => _stream;
     }
 }

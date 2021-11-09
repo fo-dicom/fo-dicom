@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -140,11 +141,25 @@ namespace FellowOakDicom.IO
         {
             byte[] buffer = new byte[count];
 
-            using var fs = OpenRead();
-            fs.Seek(offset, SeekOrigin.Begin);
-            fs.Read(buffer, 0, count);
+            GetByteRange(offset, count, buffer);
 
             return buffer;
+        }
+
+        public void GetByteRange(long offset, int count, byte[] output)
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+            if (output.Length < count)
+            {
+                throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+            
+            using var fs = OpenRead();
+            fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(output, 0, count);
         }
 
         /// <summary>
