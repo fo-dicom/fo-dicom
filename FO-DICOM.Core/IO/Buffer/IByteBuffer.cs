@@ -44,7 +44,6 @@ namespace FellowOakDicom.IO.Buffer
         /// <param name="offset">Offset from beginning of data array.</param>
         /// <param name="count">Number of bytes to return.</param>
         /// <param name="output">The array where the data will be written to</param>
-        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
         void GetByteRange(long offset, int count, byte[] output);
 
         /// <summary>
