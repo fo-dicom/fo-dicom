@@ -11,6 +11,7 @@
 * Bug fix: Prevent DicomJsonConverter from consuming root end object token (#1251)
 * Add missing handling of UV, SV and OV in DicomDatasetReaderObserver.OnElement
 * Drastically reduce memory consumption when saving a DICOM file
+* Fix rendering of single color image
 
 #### 5.0.0 (2021-09-13)
 

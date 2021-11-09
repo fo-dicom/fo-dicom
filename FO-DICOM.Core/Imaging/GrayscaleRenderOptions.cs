@@ -255,7 +255,7 @@ namespace FellowOakDicom.Imaging
             var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
             var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
 
-            options.WindowWidth = Math.Abs(max - min);
+            options.WindowWidth = Math.Max(1, Math.Abs(max - min));
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
