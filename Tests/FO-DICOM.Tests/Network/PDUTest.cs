@@ -5,6 +5,7 @@ using FellowOakDicom.Network;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using FellowOakDicom.IO;
 using Xunit;
 using System.Threading.Tasks;
@@ -151,7 +152,7 @@ namespace FellowOakDicom.Tests.Network
             using (var raw = reject.Write())
             using (var stream = new MemoryStream())
             {
-                await raw.WritePDUAsync(stream);
+                await raw.WritePDUAsync(stream, CancellationToken.None);
                 var actual = stream.ToArray();
 
                 Assert.Equal(expected, actual);
