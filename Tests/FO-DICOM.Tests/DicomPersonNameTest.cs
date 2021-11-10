@@ -49,6 +49,7 @@ namespace FellowOakDicom.Tests
             {
                 TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144")
             };
+            b = new byte[(int)target.Buffer.Size];
             target.Buffer.GetByteRange(0, (int)target.Buffer.Size, b);
             c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей ");
             Assert.Equal(c, b);
