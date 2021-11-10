@@ -69,32 +69,16 @@ namespace FellowOakDicom.IO.Buffer
             System.Buffer.BlockCopy(Buffer.Data, (int)offset, output, 0, (int)Math.Min(Buffer.Size - offset, count));
         }
 
-        public void CopyToStream(Stream stream) => throw new NotImplementedException();
-
-        public Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken) => throw new NotImplementedException();
-
-        public void CopyToStream(Stream s, long offset, int count)
+        public void CopyToStream(Stream s)
         {
-            s.Write(Buffer.Data, (int)offset, (int)Math.Min(Buffer.Size - offset, count));
-            if (count > Buffer.Size - offset)
-            {
-                for (var i = 0; i < count - (Buffer.Size - offset); i++)
-                {
-                    s.WriteByte(0);
-                }
-            }
+            s.Write(Buffer.Data, 0, (int)Buffer.Size);
+            s.WriteByte(0);
         }
 
-        public async Task CopyToStreamAsync(Stream s, long offset, int count)
+        public async Task CopyToStreamAsync(Stream s, CancellationToken cancellationToken)
         {
-            await s.WriteAsync(Buffer.Data, (int)offset, (int)Math.Min(Buffer.Size - offset, count));
-            if (count > Buffer.Size - offset)
-            {
-                for (var i = 0; i < count - (Buffer.Size - offset); i++)
-                {
-                    s.WriteByte(0);
-                }
-            }
+            await s.WriteAsync(Buffer.Data, 0, (int)Buffer.Size, cancellationToken).ConfigureAwait(false);
+            s.WriteByte(0);
         }
 
         /// <summary>
