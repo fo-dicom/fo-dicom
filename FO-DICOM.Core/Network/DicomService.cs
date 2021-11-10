@@ -1381,7 +1381,7 @@ namespace FellowOakDicom.Network
 
             if (exception != null)
             {
-                throw exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             return true;
