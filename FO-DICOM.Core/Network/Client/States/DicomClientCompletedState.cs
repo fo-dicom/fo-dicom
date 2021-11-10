@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -120,7 +121,8 @@ namespace FellowOakDicom.Network.Client.States
                         _dicomClient.Logger.Warn($"[{this}] An error occurred and no active connection was detected, so no cleanup will happen!");
                     }
 
-                    throw parameters.ExceptionToThrow;
+                    ExceptionDispatchInfo.Capture(parameters.ExceptionToThrow).Throw();
+                    return null; // We will never get here
                 }
 
                 default:
