@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void Read_ValidExplicitVRData_YieldsSuccess(DicomTag tag, DicomVR vr, string data, byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
-            var source = StreamByteSourceFactory.Create(stream);
+            var source = new StreamByteSource(stream);
             var reader = new DicomReader { IsExplicitVR = true };
 
             var observer = new LastElementObserver();
@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void Read_ValidExplicitVRSequence_YieldsSuccess(byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
-            var source = StreamByteSourceFactory.Create(stream);
+            var source = new StreamByteSource(stream);
             var reader = new DicomReader { IsExplicitVR = true };
 
             var observer = new MockObserver();

@@ -308,7 +308,7 @@ namespace FellowOakDicom.IO.Reader
                 }
 
                 decompressed.Seek(0, SeekOrigin.Begin);
-                return StreamByteSourceFactory.Create(decompressed);
+                return new StreamByteSource(decompressed);
             }
 
 

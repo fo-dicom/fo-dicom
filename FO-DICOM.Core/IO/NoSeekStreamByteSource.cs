@@ -406,7 +406,29 @@ namespace FellowOakDicom.IO
         }
 
         /// <inheritdoc />
-        public IByteBuffer GetBuffer(uint count) => _byteSource.GetBuffer(count);
+        public IByteBuffer GetBuffer(uint count)
+        {
+            IByteBuffer buffer;
+            if (count == 0)
+            {
+                buffer = EmptyBuffer.Value;
+            }
+            else if (count >= _byteSource.LargeObjectSize && _byteSource.ReadOption == FileReadOption.ReadLargeOnDemand)
+            {
+                buffer = new StreamByteBuffer(_byteSource.GetStream(), _byteSource.Position, count);
+                Skip(count);
+            }
+            else if (count >= _byteSource.LargeObjectSize && _byteSource.ReadOption == FileReadOption.SkipLargeTags)
+            {
+                buffer = null;
+                Skip(count);
+            }
+            else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
+            {
+                buffer = new MemoryByteBuffer(GetBytes((int)count));
+            }
+            return buffer;
+        }
 
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));

@@ -248,10 +248,17 @@ namespace FellowOakDicom.Tests
             Assert.True(new DicomDatasetComparer().Equals(saveFile.Dataset, openFile.Dataset));
         }
 
-        [Fact]
-        public void Open_SequencesFromStream_UsingNoSeek_YieldsValidDicomFile()
+        [Theory]
+        [InlineData("test_SR.dcm")] // nested sequences
+        [InlineData("10200904.dcm")] // RLELossless
+//        [InlineData("Deflated.dcm")] // Deflated Little Endian Explicit
+        [InlineData("genFile.dcm")] // JPEGBaseline
+//        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
+//        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
+        [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
+        public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
         {
-            var file = DicomFile.Open(TestData.Resolve("test_SR.dcm"));
+            var file = DicomFile.Open(TestData.Resolve(fileName));
             var stream = new StreamNoSeek();
             file.Save(stream);
             stream.Reset();
