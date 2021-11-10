@@ -10,27 +10,28 @@ using System.Threading.Tasks;
 using FellowOakDicom.IO;
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace FellowOakDicom.Network
 {
     #region Raw PDU
 
     /// <summary>Encapsulates PDU data for reading or writing</summary>
-    public class RawPDU : IDisposable
+    public class RawPDU : IDisposable, IAsyncDisposable
     {
         #region Private members
 
         private readonly Encoding _encoding;
 
-        private readonly MemoryStream _ms;
+        private readonly Stream _stream;
+        
+        private readonly bool _leaveOpen;
 
         private readonly BinaryReader _br;
 
         private readonly BinaryWriter _bw;
 
         private readonly Stack<long> _m16;
-
-        private readonly Stack<long> _m32;
 
         #endregion
 
@@ -45,11 +46,27 @@ namespace FellowOakDicom.Network
         {
             Type = type;
             _encoding = encoding ?? DicomEncoding.Default;
-            _ms = new MemoryStream();
-            _ms.Seek(0, SeekOrigin.Begin);
-            _bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
+            _stream = new MemoryStream();
+            _leaveOpen = true;
+            _stream.Seek(0, SeekOrigin.Begin);
+            _bw = EndianBinaryWriter.Create(_stream, _encoding, Endian.Big, _leaveOpen);
             _m16 = new Stack<long>();
-            _m32 = new Stack<long>();
+        }
+
+        /// <summary>
+        /// Initializes new PDU for writing to a stream
+        /// </summary>
+        /// <param name="type">Type of PDU</param>
+        /// <param name="encoding">The encoding to use for encoding text</param>
+        /// <param name="stream">The stream to write to</param>
+        /// <param name="leaveOpen">Whether the stream should be disposed or not when this RawPDU is disposed</param>
+        public RawPDU(byte type, Encoding encoding, Stream stream, bool leaveOpen)
+        {
+            Type = type;
+            _encoding = encoding ?? DicomEncoding.Default;
+            _stream = stream;
+            _leaveOpen = leaveOpen;
+            _bw = EndianBinaryWriter.Create(_stream, _encoding, Endian.Big, _leaveOpen);
         }
 
         /// <summary>
@@ -59,11 +76,12 @@ namespace FellowOakDicom.Network
         /// <param name="encoding">The encoding to use for decoding text</param>
         public RawPDU(byte[] buffer, Encoding encoding = null)
         {
-            _ms = new MemoryStream(buffer);
+            _stream = new MemoryStream(buffer);
+            _leaveOpen = true;
             _encoding = encoding ?? DicomEncoding.Default;
-            _br = EndianBinaryReader.Create(_ms, _encoding, Endian.Big);
+            _br = EndianBinaryReader.Create(_stream, _encoding, Endian.Big, _leaveOpen);
             Type = _br.ReadByte();
-            _ms.Seek(6, SeekOrigin.Begin);
+            _stream.Seek(6, SeekOrigin.Begin);
         }
 
         /// <summary>
@@ -71,14 +89,16 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <remarks>The created object takes ownership of the stream</remarks>
         /// <param name="stream">Stream</param>
+        /// <param name="encoding">The encoding to use for decoding text</param>
         public RawPDU(MemoryStream stream, Encoding encoding = null)
         {
             _encoding = encoding ?? DicomEncoding.Default;
-            _ms = stream;
-            _ms.Seek(0, SeekOrigin.Begin);
-            _br = EndianBinaryReader.Create(_ms, Endian.Big);
+            _stream = stream;
+            _leaveOpen = true;
+            _stream.Seek(0, SeekOrigin.Begin);
+            _br = EndianBinaryReader.Create(_stream, Endian.Big, _leaveOpen);
             Type = _br.ReadByte();
-            _ms.Seek(6, SeekOrigin.Begin);
+            _stream.Seek(6, SeekOrigin.Begin);
         }
 
         #endregion
@@ -89,7 +109,7 @@ namespace FellowOakDicom.Network
         public byte Type { get; }
 
         /// <summary>PDU length</summary>
-        public uint Length => (uint)_ms.Length;
+        public uint Length => (uint)_stream.Length;
 
         #endregion
 
@@ -108,9 +128,9 @@ namespace FellowOakDicom.Network
 
                 s.Write(preamble, 0, 6);
                 
-                _ms.Seek(0, SeekOrigin.Begin);
+                _stream.Seek(0, SeekOrigin.Begin);
                 
-                _ms.CopyTo(s);
+                _stream.CopyTo(s);
                 
                 s.Flush();
             }
@@ -124,18 +144,18 @@ namespace FellowOakDicom.Network
         /// Writes PDU to stream
         /// </summary>
         /// <param name="s">Output stream</param>
-        public async Task WritePDUAsync(Stream s)
+        public async Task WritePDUAsync(Stream s, CancellationToken cancellationToken)
         {
             byte[] preamble = ArrayPool<byte>.Shared.Rent(6);
             try
             {
                 GetCommonFields(preamble);
 
-                await s.WriteAsync(preamble, 0, 6).ConfigureAwait(false);
+                await s.WriteAsync(preamble, 0, 6, cancellationToken).ConfigureAwait(false);
                 
-                _ms.Seek(0, SeekOrigin.Begin);
+                _stream.Seek(0, SeekOrigin.Begin);
                 
-                await _ms.CopyToAsync(s).ConfigureAwait(false);
+                await _stream.CopyToAsync(s, 81920, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -170,7 +190,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public void Reset()
         {
-            _ms.Seek(0, SeekOrigin.Begin);
+            _stream.Seek(0, SeekOrigin.Begin);
         }
 
         #region Read Methods
@@ -178,9 +198,9 @@ namespace FellowOakDicom.Network
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckOffset(int bytes, string name)
         {
-            if (_ms.Position + bytes > _ms.Length)
+            if (_stream.Position + bytes > _stream.Length)
             {
-                var msg = $"{ToString()} (offset={_ms.Position}, bytes={bytes}, field=\"{name}\") Requested offset out of range!";
+                var msg = $"{ToString()} (offset={_stream.Position}, bytes={bytes}, field=\"{name}\") Requested offset out of range!";
                 throw new DicomNetworkException(msg);
             }
         }
@@ -253,7 +273,7 @@ namespace FellowOakDicom.Network
         public void SkipBytes(string name, int count)
         {
             CheckOffset(count, name);
-            _ms.Seek(count, SeekOrigin.Current);
+            _stream.Seek(count, SeekOrigin.Current);
         }
 
         #endregion
@@ -342,7 +362,7 @@ namespace FellowOakDicom.Network
         /// <param name="name">Field name</param>
         public void MarkLength16(string name)
         {
-            _m16.Push(_ms.Position);
+            _m16.Push(_stream.Position);
             _bw.Write((ushort)0);
         }
 
@@ -352,32 +372,10 @@ namespace FellowOakDicom.Network
         public void WriteLength16()
         {
             var p1 = _m16.Pop();
-            var p2 = _ms.Position;
-            _ms.Position = p1;
+            var p2 = _stream.Position;
+            _stream.Position = p1;
             _bw.Write((ushort)(p2 - p1 - 2));
-            _ms.Position = p2;
-        }
-
-        /// <summary>
-        /// Marks position to write 32-bit length value
-        /// </summary>
-        /// <param name="name">Field name</param>
-        public void MarkLength32(string name)
-        {
-            _m32.Push(_ms.Position);
-            _bw.Write((uint)0);
-        }
-
-        /// <summary>
-        /// Writes 32-bit length to top length marker
-        /// </summary>
-        public void WriteLength32()
-        {
-            var p1 = _m32.Pop();
-            var p2 = _ms.Position;
-            _ms.Position = p1;
-            _bw.Write((uint)(p2 - p1 - 4));
-            _ms.Position = p2;
+            _stream.Position = p2;
         }
 
         private static char[] ToCharArray(string s, int l, char p)
@@ -396,8 +394,32 @@ namespace FellowOakDicom.Network
 
         public void Dispose()
         {
-            _ms.Dispose();
             _br?.Dispose();
+            _bw?.Dispose();
+            
+            if (_leaveOpen)
+            {
+                _stream.Flush();
+            }
+            else
+            {
+                _stream.Dispose();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            _br?.Dispose();
+            _bw?.Dispose();
+            
+            if (_leaveOpen)
+            {
+                await _stream.FlushAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                _stream.Dispose();
+            }
         }
 
         /// <summary>
@@ -409,7 +431,7 @@ namespace FellowOakDicom.Network
             {
                 buffer[0] = Type;
 
-                var length = (uint)_ms.Length;
+                var length = (uint)_stream.Length;
                 buffer[2] = (byte)((length & 0xff000000U) >> 24);
                 buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
                 buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
@@ -433,6 +455,11 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <returns>PDU buffer</returns>
         RawPDU Write();
+        
+        /// <summary>
+        /// Writes PDU to stream
+        /// </summary>
+        Task WriteAsync(Stream stream, CancellationToken cancellationToken);
 
         /// <summary>
         /// Reads PDU from PDU buffer
@@ -480,6 +507,22 @@ namespace FellowOakDicom.Network
         {
             var pdu = new RawPDU(0x01);
 
+            Write(pdu);
+
+            return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var rawPdu = new RawPDU(0x01);
+
+            Write(rawPdu);
+
+            await rawPdu.WritePDUAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void Write(RawPDU pdu)
+        {
             pdu.Write("Version", (ushort)0x0001);
             pdu.Write("Reserved", 0x00, 2);
             pdu.Write("Called AE", _assoc.CalledAE, 16, ' ');
@@ -611,8 +654,6 @@ namespace FellowOakDicom.Network
             }
 
             pdu.WriteLength16();
-
-            return pdu;
         }
 
         #endregion
@@ -799,6 +840,22 @@ namespace FellowOakDicom.Network
         {
             var pdu = new RawPDU(0x02);
 
+            Write(pdu);
+
+            return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var rawPdu = new RawPDU(0x02);
+
+            Write(rawPdu);
+
+            await rawPdu.WritePDUAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void Write(RawPDU pdu)
+        {
             pdu.Write("Version", (ushort)0x0001);
             pdu.Write("Reserved", 0x00, 2);
             pdu.Write("Called AE", _assoc.CalledAE, 16, ' ');
@@ -900,8 +957,6 @@ namespace FellowOakDicom.Network
             }
 
             pdu.WriteLength16();
-
-            return pdu;
         }
 
         #endregion
@@ -1146,11 +1201,27 @@ namespace FellowOakDicom.Network
         public RawPDU Write()
         {
             var pdu = new RawPDU(0x03);
+            
+            Write(pdu);
+            
+            return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var rawPdu = new RawPDU(0x03);
+
+            Write(rawPdu);
+
+            await rawPdu.WritePDUAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void Write(RawPDU pdu)
+        {
             pdu.Write("Reserved", 0x00);
             pdu.Write("Result", (byte)Result);
             pdu.Write("Source", (byte)Source);
             pdu.Write("Reason", (byte)((byte)Reason & 0xf));
-            return pdu;
         }
 
         /// <summary>
@@ -1188,8 +1259,24 @@ namespace FellowOakDicom.Network
         public RawPDU Write()
         {
             var pdu = new RawPDU(0x05);
-            pdu.Write("Reserved", (uint)0x00000000);
+            
+            Write(pdu);
+            
             return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var rawPdu = new RawPDU(0x05);
+
+            Write(rawPdu);
+
+            await rawPdu.WritePDUAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void Write(RawPDU pdu)
+        {
+            pdu.Write("Reserved", (uint)0x00000000);
         }
 
         /// <summary>
@@ -1221,8 +1308,24 @@ namespace FellowOakDicom.Network
         public RawPDU Write()
         {
             var pdu = new RawPDU(0x06);
-            pdu.Write("Reserved", (uint)0x00000000);
+
+            Write(pdu);
+            
             return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var rawPdu = new RawPDU(0x06);
+
+            Write(rawPdu);
+
+            await rawPdu.WritePDUAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void Write(RawPDU pdu)
+        {
+            pdu.Write("Reserved", (uint)0x00000000);
         }
 
         /// <summary>
@@ -1315,11 +1418,27 @@ namespace FellowOakDicom.Network
         public RawPDU Write()
         {
             var pdu = new RawPDU(0x07);
+            
+            Write(pdu);
+            
+            return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var rawPdu = new RawPDU(0x07);
+
+            Write(rawPdu);
+
+            await rawPdu.WritePDUAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+        
+        private void Write(RawPDU pdu)
+        {
             pdu.Write("Reserved", 0x00);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Source", (byte)Source);
             pdu.Write("Reason", (byte)Reason);
-            return pdu;
         }
 
         #endregion
@@ -1386,11 +1505,47 @@ namespace FellowOakDicom.Network
         public RawPDU Write()
         {
             var pdu = new RawPDU(0x04);
+
+            Write(pdu);
+            
+            return pdu;
+        }
+
+        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await using var pdu = new RawPDU(0x04, DicomEncoding.Default, stream, true);
+
+            // For P-DATA-F, we manually compose the preamble because we cannot use the length of the memory stream (because there is no memory stream) 
+            byte[] preamble = ArrayPool<byte>.Shared.Rent(6);
+            var length = GetLengthOfPDVs();
+            try
+            {
+                unchecked
+                {
+                    preamble[0] = 0x04;
+                    preamble[2] = (byte)((length & 0xff000000U) >> 24);
+                    preamble[3] = (byte)((length & 0x00ff0000U) >> 16);
+                    preamble[4] = (byte)((length & 0x0000ff00U) >> 8);
+                    preamble[5] = (byte)(length & 0x000000ffU);
+                }
+
+                await stream.WriteAsync(preamble, 0, 6, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(preamble);
+            }
+            
+            
+            Write(pdu);
+        }
+
+        private void Write(RawPDU pdu)
+        {
             foreach (var pdv in PDVs)
             {
                 pdv.Write(pdu);
             }
-            return pdu;
         }
 
         #endregion
@@ -1477,11 +1632,10 @@ namespace FellowOakDicom.Network
         public void Write(RawPDU pdu)
         {
             var mch = (byte)((IsLastFragment ? 2 : 0) + (IsCommand ? 1 : 0));
-            pdu.MarkLength32("PDV-Length");
+            pdu.Write("PDV-Length", 2 + (uint) Value.Length);
             pdu.Write("Presentation Context ID", PCID);
             pdu.Write("Message Control Header", mch);
             pdu.Write("PDV Value", Value);
-            pdu.WriteLength32();
         }
 
         #endregion
