@@ -53,20 +53,7 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-        /// <summary>
-        /// Gets a subset of the data.
-        /// </summary>
-        /// <param name="offset">Offset from beginning of data array.</param>
-        /// <param name="count">Number of bytes to return.</param>
-        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        /// <remarks>Allows for reach to the padded byte at the end of the even length buffer.</remarks>
-        public byte[] GetByteRange(long offset, int count)
-        {
-            var data = new byte[count];
-            GetByteRange(offset, count, data);
-            return data;
-        }
-
+        /// <inheritdoc />
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)

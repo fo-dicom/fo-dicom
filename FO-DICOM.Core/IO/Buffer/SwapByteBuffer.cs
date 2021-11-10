@@ -46,13 +46,6 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-        public byte[] GetByteRange(long offset, int count)
-        {
-            byte[] data = Internal.GetByteRange(offset, count);
-            Endian.SwapBytes(UnitSize, data);
-            return data;
-        }
-
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)

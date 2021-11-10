@@ -36,7 +36,8 @@ namespace FellowOakDicom.Tests.IO.Buffer
             var buffer = new TempFileBuffer(data);
 
             var expected = new ArraySegment<byte>(data, offset, count);
-            var actual = buffer.GetByteRange(offset, count);
+            var actual = new byte[count];
+            buffer.GetByteRange(offset, count, actual);
             Assert.Equal(expected, actual);
         }
 

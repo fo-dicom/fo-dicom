@@ -5,6 +5,7 @@ using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -267,16 +268,34 @@ namespace FellowOakDicom
                 var end = escapeIndexes[i];
                 if (end > start)
                 {
-                    var fragment = buffer.GetByteRange(start, end - start);
-                    var decodedFragment = DecodeFragment(fragment, encodings, delimiters);
-                    decodedString.Append(decodedFragment);
+                    var length = end - start;
+                    var fragment = ArrayPool<byte>.Shared.Rent(length);
+                    try
+                    {
+                        buffer.GetByteRange(start, length, fragment);
+                        var decodedFragment = DecodeFragment(fragment, length, encodings, delimiters);
+                        decodedString.Append(decodedFragment);
+                    }
+                    finally
+                    {
+                        ArrayPool<byte>.Shared.Return(fragment);
+                    }
                 }
             }
 
             var lastIndex = escapeIndexes.Last();
-            var lastFragment = buffer.GetByteRange(lastIndex, (int)buffer.Size - lastIndex);
-            var lastDecodedFragment = DecodeFragment(lastFragment, encodings, delimiters);
-            decodedString.Append(lastDecodedFragment);
+            var lastFragmentLength = (int)buffer.Size - lastIndex;
+            var lastFragment = ArrayPool<byte>.Shared.Rent(lastFragmentLength);
+            try
+            {
+                buffer.GetByteRange(lastIndex, lastFragmentLength, lastFragment);
+                var lastDecodedFragment = DecodeFragment(lastFragment, lastFragmentLength, encodings, delimiters);
+                decodedString.Append(lastDecodedFragment);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(lastFragment);
+            }
 
             return decodedString.ToString();
         }
@@ -287,13 +306,13 @@ namespace FellowOakDicom
             936 // gb2312
         };
 
-        private static string DecodeFragment(byte[] fragment, Encoding[] encodings, byte[] delimiters)
+        private static string DecodeFragment(byte[] fragment, int fragmentLength, Encoding[] encodings, byte[] delimiters)
         {
             var seqLength = 0;
             Encoding encoding;
             if (fragment[0] == 0x1b) // ESC
             {
-                seqLength = fragment.Length >= 3 && fragment[1] == '$' && fragment[2] == '(' || fragment[2] == ')'
+                seqLength = fragmentLength >= 3 && fragment[1] == '$' && fragment[2] == '(' || fragment[2] == ')'
                     ? 4
                     : 3;
                 encoding = GetCodeForEncoding(fragment[1], fragment[2], seqLength == 4 ? fragment[3] : (byte)0);
@@ -324,18 +343,18 @@ namespace FellowOakDicom
             }
             else
             {
-                for (int i = seqLength; i < fragment.Length - 1; i++)
+                for (int i = seqLength; i < fragmentLength - 1; i++)
                 {
                     if (delimiters.Contains(fragment[i]))
                     {
                         // the encoding is reset after a delimiter
                         return GetStringFromEncoding(fragment, encoding, seqLength, i - seqLength) +
-                               GetStringFromEncoding(fragment, encodings[0], i, fragment.Length - i);
+                               GetStringFromEncoding(fragment, encodings[0], i, fragmentLength - i);
                     }
                 }
             }
 
-            return GetStringFromEncoding(fragment, encoding, seqLength, fragment.Length - seqLength);
+            return GetStringFromEncoding(fragment, encoding, seqLength, fragmentLength - seqLength);
         }
 
         private static string GetStringFromEncoding(byte[] fragment, Encoding encoding, int index, int count)

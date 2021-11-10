@@ -46,32 +46,27 @@ namespace FellowOakDicom.IO.Buffer
         /// <summary>
         /// Gets the size of the buffered data.
         /// </summary>
-        public long Size { get; private set; }
+        public long Size { get; }
 
         /// <summary>
         /// Gets the data.
         /// </summary>
-        public byte[] Data => GetByteRange(0, (int)Size);
+        public byte[] Data
+        {
+            get
+            {
+                var size = (int)Size;
+                var data = new byte[size];
+                GetByteRange(0, size, data);
+                return data;
+            }
+        }
 
         #endregion
 
         #region METHODS
 
-        /// <summary>
-        /// Gets a subset of the data.
-        /// </summary>
-        /// <param name="offset">Offset from beginning of data array.</param>
-        /// <param name="count">Number of bytes to return.</param>
-        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        public byte[] GetByteRange(long offset, int count)
-        {
-            var buffer = new byte[count];
-
-            GetByteRange(offset, count, buffer);
-
-            return buffer;
-        }
-
+        /// <inheritdoc />
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)
