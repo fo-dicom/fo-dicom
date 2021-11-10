@@ -12,6 +12,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ namespace FellowOakDicom.Network
         private bool _isInitialized;
 
         private readonly INetworkStream _network;
+        
+        private readonly Stream _writeStream;
 
         private readonly object _lock;
 
@@ -91,6 +94,7 @@ namespace FellowOakDicom.Network
             _isDisconnectedFlag = new AsyncManualResetEvent();
 
             _network = stream;
+            _writeStream = new BufferedStream(_network.AsStream());
             _lock = new object();
             _pduQueue = new Queue<PDU>();
             _pduQueueWatcher = new ManualResetEventSlim(true);
@@ -223,6 +227,7 @@ namespace FellowOakDicom.Network
             {
                 _dimseStream?.Dispose();
                 _network?.Dispose();
+                _writeStream?.Dispose();
                 _pduQueueWatcher?.Dispose();
             }
 
@@ -359,7 +364,9 @@ namespace FellowOakDicom.Network
 
                 try
                 {
-                    await pdu.Write().WritePDUAsync(_network.AsStream()).ConfigureAwait(false);
+                    await pdu.WriteAsync(_writeStream, CancellationToken.None).ConfigureAwait(false);
+
+                    await _writeStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {
@@ -446,7 +453,7 @@ namespace FellowOakDicom.Network
                         _readLength -= count;
                     }
 
-                    var raw = new RawPDU(ms);
+                    using var raw = new RawPDU(ms);
 
                     switch (raw.Type)
                     {
