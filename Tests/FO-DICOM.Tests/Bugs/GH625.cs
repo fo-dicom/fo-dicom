@@ -21,10 +21,12 @@ namespace FellowOakDicom.Tests.Bugs
             var memoryBuffer = new MemoryByteBuffer(bigEndianArray.ToArray());
             var endianArray = EndianByteBuffer.Create(memoryBuffer, Endian.Big, 2);
 
-            var first = endianArray.GetByteRange(0, 2).ToArray();
+            var first = new byte[2];
+            endianArray.GetByteRange(0, 2, first);
             Assert.Equal(bigEndianArray, memoryBuffer.Data); // buffer data altered
 
-            var second = endianArray.GetByteRange(0, 2).ToArray();
+            var second = new byte[2];
+            endianArray.GetByteRange(0, 2, second);
             Assert.Equal(bigEndianArray, memoryBuffer.Data); // buffer data altered
 
             Assert.Equal(first, littleEndianArray); // first call wrong endian

@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,17 +71,8 @@ namespace FellowOakDicom.IO.Buffer
         #endregion
 
         #region METHODS
-
+        
         /// <inheritdoc />
-        public byte[] GetByteRange(long offset, int count)
-        {
-            var data = new byte[count];
-
-            GetByteRange(offset, count, data);
-
-            return data;
-        }
-
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)
@@ -110,8 +102,17 @@ namespace FellowOakDicom.IO.Buffer
 
                 else
                 {
-                    var temp = Buffers[pos].GetByteRange(offset, remain);
-                    System.Buffer.BlockCopy(temp, 0, output, offset2, remain);
+                    var temp = ArrayPool<byte>.Shared.Rent(remain);
+                    try
+                    {
+                        Buffers[pos].GetByteRange(offset, remain, temp);
+                        
+                        System.Buffer.BlockCopy(temp, 0, output, offset2, remain);
+                    }
+                    finally
+                    {
+                        ArrayPool<byte>.Shared.Return(temp);
+                    }
                 }
 
                 count -= remain;

@@ -44,24 +44,8 @@ namespace FellowOakDicom.IO.Buffer
             set => _buffer = value;
         }
 
-        /// <summary>
-        /// Gets a subset of the data. Throws an InvalidOperationException if the Data has not been set.
-        /// </summary>
-        /// <param name="offset">Offset from beginning of data array.</param>
-        /// <param name="count">Number of bytes to return.</param>
-        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        public virtual byte[] GetByteRange(long offset, int count)
-        {
-            if (_buffer == null)
-            {
-                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
-            }
-
-            var range = new byte[count];
-            GetByteRange(offset, count, range);
-            return range;
-        }
-
+        
+        /// <inheritdoc />
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)
@@ -72,6 +56,11 @@ namespace FellowOakDicom.IO.Buffer
             if (output.Length < count)
             {
                 throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+            
+            if (_buffer == null)
+            {
+                throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide GetByteRange data until the Data property has been set.");
             }
 
             Array.Copy(Data, (int)offset, output, 0, count);

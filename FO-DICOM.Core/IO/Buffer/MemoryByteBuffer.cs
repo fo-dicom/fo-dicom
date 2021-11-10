@@ -25,15 +25,7 @@ namespace FellowOakDicom.IO.Buffer
 
         public long Size => Data.Length;
 
-        public byte[] GetByteRange(long offset, int count)
-        {
-            byte[] buffer = new byte[count];
-
-            GetByteRange(offset, count, buffer);
-
-            return buffer;
-        }
-
+        /// <inheritdoc />
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)
