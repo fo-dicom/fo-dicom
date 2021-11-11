@@ -1,4 +1,7 @@
-#### 5.0.1 (TBD)
+#### 5.0.2 (TBD)
+
+
+#### 5.0.1 (2021-11-11)
 
 * Add generated API documentation for versions 4 and 5
 * Fix IO Exception with >2GB images (#1148)
