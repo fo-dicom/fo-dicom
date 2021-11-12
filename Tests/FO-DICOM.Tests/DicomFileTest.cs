@@ -254,7 +254,7 @@ namespace FellowOakDicom.Tests
 //        [InlineData("Deflated.dcm")] // Deflated Little Endian Explicit
         [InlineData("genFile.dcm")] // JPEGBaseline
 //        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
-//        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
+        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
         [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
         public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
         {

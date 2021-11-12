@@ -81,7 +81,7 @@ namespace FellowOakDicom.IO
         public long Marker => _mark;
 
         /// <inheritdoc />
-        public bool IsEOF => _stream.Position >= _stream.Length;
+        public bool IsEOF => Position >= _stream.Length;
 
         /// <inheritdoc />
         public bool CanRewind => _stream.CanSeek;
@@ -175,7 +175,7 @@ namespace FellowOakDicom.IO
         {
             lock (_lock)
             {
-                _milestones.Push(_stream.Position + count);
+                _milestones.Push(Position + count);
             }
         }
 
@@ -193,7 +193,7 @@ namespace FellowOakDicom.IO
         {
             lock (_lock)
             {
-                return _milestones.Count > 0 && _stream.Position >= _milestones.Peek();
+                return _milestones.Count > 0 && Position >= _milestones.Peek();
             }
         }
 
@@ -205,7 +205,7 @@ namespace FellowOakDicom.IO
         {
             lock (_lock)
             {
-                return (_stream.Length - _stream.Position) >= count;
+                return (_stream.Length - Position) >= count;
             }
         }
 
