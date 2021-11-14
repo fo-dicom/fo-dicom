@@ -230,6 +230,20 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>
+        /// Read bytes from PDU
+        /// </summary>
+        /// <param name="name">Name of field</param>
+        /// <param name="buffer">The buffer to read data into</param>
+        /// <param name="index">The starting point in the buffer</param>
+        /// <param name="count">Number of bytes to read</param>
+        /// <returns>Field value</returns>
+        public void ReadBytes(string name, byte[] buffer, int index, int count)
+        {
+            CheckOffset(count, name);
+            _br.Read(buffer, index, count);
+        }
+
+        /// <summary>
         /// Read ushort from PDU
         /// </summary>
         /// <param name="name">Name of field</param>
@@ -261,9 +275,17 @@ namespace FellowOakDicom.Network
         /// <returns>Field value</returns>
         public string ReadString(string name, int numberOfBytes)
         {
-            var bytes = ReadBytes(name, numberOfBytes);
-
-            return _encoding.GetString(bytes).Trim(_trimChars);
+            var buffer = ArrayPool<byte>.Shared.Rent(numberOfBytes);
+            try
+            {
+                ReadBytes(name, buffer, 0, numberOfBytes);
+                
+                return _encoding.GetString(buffer, 0, numberOfBytes).Trim(_trimChars);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         /// <summary>
@@ -313,6 +335,18 @@ namespace FellowOakDicom.Network
         public void Write(string name, byte[] value)
         {
             _bw.Write(value);
+        }
+
+        /// <summary>
+        /// Writes byte[] to PDU
+        /// </summary>
+        /// <param name="name">Field name</param>
+        /// <param name="value">Field value</param>
+        /// <param name="index">The zero based index at which to start reading from the <paramref name="value"/></param>
+        /// <param name="count">How mant bytes from <paramref name="value"/> to write</param>
+        public void Write(string name, byte[] value, int index, int count)
+        {
+            _bw.Write(value, index, count);
         }
 
         /// <summary>
