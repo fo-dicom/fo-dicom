@@ -1610,7 +1610,7 @@ namespace FellowOakDicom.Network
     #region P-Data-TF
 
     /// <summary>P-DATA-TF</summary>
-    public class PDataTF : PDU
+    public class PDataTF : PDU, IDisposable
     {
 
         /// <summary>
@@ -1708,6 +1708,16 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            foreach (var pdv in PDVs)
+            {
+                pdv.Dispose();
+            }
+
+            PDVs.Clear();
+        }
     }
 
     #endregion
@@ -1715,7 +1725,7 @@ namespace FellowOakDicom.Network
     #region PDV
 
     /// <summary>PDV</summary>
-    public class PDV
+    public class PDV: IDisposable
     {
 
         /// <summary>
@@ -1734,6 +1744,8 @@ namespace FellowOakDicom.Network
 
             PCID = pcid;
             Value = value;
+            ValueLength = value.Length;
+            IsValueRented = false;
             IsCommand = command;
             IsLastFragment = last;
         }
@@ -1749,7 +1761,11 @@ namespace FellowOakDicom.Network
         public byte PCID { get; set; }
 
         /// <summary>PDV data</summary>
-        public byte[] Value { get; set; } = Array.Empty<byte>();
+        public byte[] Value { get; private set; } = Array.Empty<byte>();
+
+        public int ValueLength { get; private set; }
+        
+        public bool IsValueRented { get; private set; }
 
         /// <summary>PDV is command</summary>
         public bool IsCommand { get; set; } = false;
@@ -1758,7 +1774,7 @@ namespace FellowOakDicom.Network
         public bool IsLastFragment { get; set; } = false;
 
         /// <summary>Length of this PDV</summary>
-        public uint PDVLength => (uint)Value.Length + 6;
+        public uint PDVLength => (uint)ValueLength + 6;
 
         public override string ToString() => $"PDV [PCID: {PCID}; Length: {Value.Length}; Command: {IsCommand}; Last: {IsLastFragment}]";
 
@@ -1771,10 +1787,10 @@ namespace FellowOakDicom.Network
         public void Write(RawPDU pdu)
         {
             var mch = (byte)((IsLastFragment ? 2 : 0) + (IsCommand ? 1 : 0));
-            pdu.Write("PDV-Length", 2 + (uint) Value.Length);
+            pdu.Write("PDV-Length", 2 + (uint) ValueLength);
             pdu.Write("Presentation Context ID", PCID);
             pdu.Write("Message Control Header", mch);
-            pdu.Write("PDV Value", Value);
+            pdu.Write("PDV Value", Value, 0, ValueLength);
         }
 
         #endregion
@@ -1788,15 +1804,28 @@ namespace FellowOakDicom.Network
         public uint Read(RawPDU raw)
         {
             var len = raw.ReadUInt32("PDV-Length");
+            var valueLength = (int)len - 2;
+            var value = ArrayPool<byte>.Shared.Rent(valueLength);
             PCID = raw.ReadByte("Presentation Context ID");
             var mch = raw.ReadByte("Message Control Header");
-            Value = raw.ReadBytes("PDV Value", (int)len - 2);
+            raw.ReadBytes("PDV Value", value, 0, valueLength);
+            Value = value;
+            ValueLength = valueLength;
+            IsValueRented = true;
             IsCommand = (mch & 0x01) != 0;
             IsLastFragment = (mch & 0x02) != 0;
             return len + 4;
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            if (IsValueRented)
+            {
+                ArrayPool<byte>.Shared.Return(Value);
+            }
+        }
     }
 
     #endregion

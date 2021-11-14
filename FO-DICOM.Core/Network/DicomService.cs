@@ -542,7 +542,7 @@ namespace FellowOakDicom.Network
                                 }
                             case 0x04:
                                 {
-                                    var pdu = new PDataTF();
+                                    using var pdu = new PDataTF();
                                     pdu.Read(raw);
                                     if (Options.LogDataPDUs)
                                     {
@@ -697,7 +697,7 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    await _dimseStream.WriteAsync(pdv.Value, 0, pdv.Value.Length).ConfigureAwait(false);
+                    await _dimseStream.WriteAsync(pdv.Value, 0, pdv.ValueLength).ConfigureAwait(false);
 
                     if (pdv.IsLastFragment)
                     {
@@ -1680,6 +1680,7 @@ namespace FellowOakDicom.Network
                 // Immediately stop sending PDUs if the message is no longer pending (e.g. because it timed out)
                 if (_dicomMessage is DicomRequest req && !_service.IsStillPending(req))
                 {
+                    _pdu.Dispose();
                     _pdu = new PDataTF();
                     return;
                 }
@@ -1700,6 +1701,7 @@ namespace FellowOakDicom.Network
 
                     _dicomMessage.LastPDUSent = DateTime.Now;
 
+                    _pdu.Dispose();
                     _pdu = new PDataTF();
                 }
             }
