@@ -72,13 +72,15 @@ namespace FellowOakDicom.IO
         /// <summary> The buffer needed to emulate Seek / SetPosition. </summary>
         private readonly MemoryStream _buffer;
 
-        private readonly BinaryReader _bufferReader;
+        private BinaryReader _bufferReader;
 
-        private readonly BinaryWriter _bufferWriter;
+        private BinaryWriter _bufferWriter;
 
         private bool _marked;
 
         private BufferState _bufferState;
+
+        private readonly object _lock;
 
         #endregion
 
@@ -99,6 +101,7 @@ namespace FellowOakDicom.IO
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine);
             _bufferWriter = EndianBinaryWriter.Create(_buffer, Endian.LocalMachine);
             _bufferState = BufferState.Unused;
+            _lock = new object();
         }
 
         #endregion
@@ -109,7 +112,18 @@ namespace FellowOakDicom.IO
         public Endian Endian
         {
             get => _byteSource.Endian;
-            set => _byteSource.Endian = value;
+            set
+            {
+                if (_byteSource.Endian != value)
+                {
+                    _byteSource.Endian = value;
+                    lock (_lock)
+                    {
+                        _bufferReader = EndianBinaryReader.Create(_buffer, value);
+                        _bufferWriter = EndianBinaryWriter.Create(_buffer, value);
+                    }
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -531,13 +545,13 @@ namespace FellowOakDicom.IO
         }
 
         /// <summary>
-        /// If there is not enough data to read the given count of bytes,
+        /// If there is not enough data to read a number with the given count of bytes,
         /// the remaining bytes are read from the original stream and added to the buffer.
         /// We need to have the bytes as contiguous memory for subsequently using ReadXXX
-        /// to read number in the correct Endianess.
+        /// to read the number in the correct Endianess.
         /// </summary>
-        /// <param name="count">Number of bytes to read (2-8).</param>
-        /// <returns>True if the buffer is exhausted after reading the given number of bytes.</returns>
+        /// <param name="count">Number of bytes to read, e.g. the size of the type to read (2-8).</param>
+        /// <returns>True if the buffer will be exhausted after reading the given number of bytes.</returns>
         private bool FillBufferForReading(int count)
         {
             var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
@@ -547,8 +561,12 @@ namespace FellowOakDicom.IO
                 if (bufferByteCount < count)
                 {
                     var nrBytesToRead = count - bufferByteCount;
-                    _bufferReader.ReadBytes(nrBytesToRead);
-                    _buffer.Position -= nrBytesToRead;
+                    // make sure the read data is placed at the end of the buffer
+                    _buffer.Position = _buffer.Length;
+                    ResizeBuffer(nrBytesToRead);
+                    _byteSource.GetBytes(nrBytesToRead);
+                    // set the position back for reading the number
+                    _buffer.Position = _buffer.Length - count;
                 }
 
                 return true;
