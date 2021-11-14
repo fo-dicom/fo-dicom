@@ -40,13 +40,13 @@ namespace FellowOakDicom.Tests
 
         private const string _minimumDatasetInstanceUid = "1.2.3";
 
-        private static readonly DicomDataset _minimumDatatset =
+        private static readonly DicomDataset _minimumDataset =
             new DicomDataset(
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
                 new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"));
 
-        private static readonly DicomDataset _allVrDatatset =
-            new DicomDataset(_minimumDatatset)
+        private static readonly DicomDataset _allVrDataset =
+            new DicomDataset(_minimumDataset)
             {
                 // random tags with all VRs except SQ
                 new DicomApplicationEntity(DicomTag.StationAETitle, "MYPACS"),
@@ -98,7 +98,7 @@ namespace FellowOakDicom.Tests
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(_minimumDatatset)
+            var dataset = new DicomDataset(_minimumDataset)
             {
                 new DicomLongString(tag, DicomEncoding.DefaultArray,
                     new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
@@ -121,7 +121,7 @@ namespace FellowOakDicom.Tests
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(_minimumDatatset)
+            var dataset = new DicomDataset(_minimumDataset)
             {
                 new DicomLongString(tag, DicomEncoding.DefaultArray,
                     new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
@@ -144,7 +144,7 @@ namespace FellowOakDicom.Tests
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(_minimumDatatset)
+            var dataset = new DicomDataset(_minimumDataset)
             {
                 new DicomLongString(tag, expected)
             };
@@ -166,7 +166,7 @@ namespace FellowOakDicom.Tests
             var expected = "Händer Å Fötter";
             var tag = DicomTag.DoseComment;
 
-            var dataset = new DicomDataset(_minimumDatatset)
+            var dataset = new DicomDataset(_minimumDataset)
             {
                 new DicomLongString(tag, expected),
                 { DicomTag.SpecificCharacterSet, "ISO IR 192" }
@@ -195,7 +195,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Save_ToFile_FileExistsOnDisk()
         {
-            var saveFile = new DicomFile(_minimumDatatset);
+            var saveFile = new DicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
             Assert.True(File.Exists(fileName));
@@ -205,7 +205,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsync_ToFile_FileExistsOnDisk()
         {
-            var saveFile = new DicomFile(_minimumDatatset);
+            var saveFile = new DicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
@@ -215,7 +215,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_FromFile_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(_minimumDatatset);
+            var saveFile = new DicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
@@ -227,38 +227,9 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void Open_FromStream_YieldsValidDicomFile()
-        {
-            var saveFile = new DicomFile(_allVrDatatset);
-            var stream = new MemoryStream();
-            saveFile.Save(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-            var openFile = DicomFile.Open(stream);
-            Assert.True(new DicomDatasetComparer().Equals(saveFile.Dataset, openFile.Dataset));
-        }
-
-        [Fact]
         public void Open_FromStream_UsingNoSeek_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(_allVrDatatset);
-            var stream = new StreamNoSeek();
-            saveFile.Save(stream);
-            stream.Reset();
-            var openFile = DicomFile.Open(stream);
-            Assert.True(new DicomDatasetComparer().Equals(saveFile.Dataset, openFile.Dataset));
-        }
-
-        [Theory]
-        [InlineData("test_SR.dcm")] // nested sequences
-        [InlineData("10200904.dcm")] // RLELossless
-//        [InlineData("Deflated.dcm")] // Deflated Little Endian Explicit
-        [InlineData("genFile.dcm")] // JPEGBaseline
-//        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
-        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
-        [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
-        public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
-        {
-            var file = DicomFile.Open(TestData.Resolve(fileName));
+            var file = new DicomFile(_allVrDataset);
             var stream = new StreamNoSeek();
             file.Save(stream);
             stream.Reset();
@@ -266,10 +237,67 @@ namespace FellowOakDicom.Tests
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
+        [Theory]
+        [InlineData("test_SR.dcm")] // nested sequences
+        [InlineData("GH184.dcm")] // private nested sequences
+        [InlineData("GH223.dcm")] // empty sequence item
+        [InlineData("10200904.dcm")] // RLELossless
+        [InlineData("GH227.dcm")] // Deflated Little Endian Explicit
+        [InlineData("genFile.dcm")] // JPEGBaseline
+        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
+        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
+        [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
+        [InlineData("ETIAM_video_002.dcm")]  // MPEG2 Main Profile
+        [InlineData("GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm")] // Big Endian
+//        [InlineData("GH133.dcm")]
+        public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
+        {
+            var file = DicomFile.Open(TestData.Resolve(fileName), FileReadOption.ReadLargeOnDemand);
+            var stream = new StreamNoSeek();
+            file.Save(stream);
+            stream.Reset();
+            var openFile = DicomFile.Open(stream, FileReadOption.ReadLargeOnDemand);
+            Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
+        }
+
+        [Theory]
+        [InlineData("test_SR.dcm")] // nested sequences
+        [InlineData("GH184.dcm")] // private nested sequences
+        [InlineData("GH223.dcm")] // empty sequence item
+        [InlineData("10200904.dcm")] // RLELossless
+        [InlineData("GH227.dcm")] // Deflated Little Endian Explicit
+        [InlineData("genFile.dcm")] // JPEGBaseline
+        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
+        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
+        [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
+        [InlineData("ETIAM_video_002.dcm")]  // MPEG2 Main Profile
+        [InlineData("GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm")] // Big Endian
+        [InlineData("GH133.dcm")]
+        public void Open_FileFromStream_YieldsValidDicomFile(string fileName)
+        {
+            var file = DicomFile.Open(TestData.Resolve(fileName));
+            var stream = new MemoryStream();
+            file.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var openFile = DicomFile.Open(stream);
+            Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
+        }
+
+        [Fact]
+        public void Open_FromStream_YieldsValidDicomFile()
+        {
+            var file = new DicomFile(_allVrDataset);
+            var stream = new MemoryStream();
+            file.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var openFile = DicomFile.Open(stream);
+            Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
+        }
+
         [Fact]
         public async Task OpenAsync_FromFile_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(_minimumDatatset);
+            var saveFile = new DicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
@@ -283,7 +311,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StreamOfMemoryMappedFile_YieldsValidDicomFile()
         {
-            var saveFile = new DicomFile(_minimumDatatset);
+            var saveFile = new DicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 

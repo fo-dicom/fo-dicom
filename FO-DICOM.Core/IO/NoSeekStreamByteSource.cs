@@ -96,6 +96,13 @@ namespace FellowOakDicom.IO
         public NoSeekStreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default,
             int largeObjectSize = 0)
         {
+            if (readOption == FileReadOption.Default || readOption == FileReadOption.ReadLargeOnDemand)
+            {
+                // with a no-seek stream we are not able to read large tags on demand,
+                // so we default to read all tags
+                // TODO: log warning?
+                readOption = FileReadOption.ReadAll;
+            }
             _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
             _buffer = new MemoryStream();
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine);
@@ -521,7 +528,16 @@ namespace FellowOakDicom.IO
 
 
         /// <inheritdoc />
-        public Stream GetStream() => _byteSource.GetStream();
+        public Stream GetStream()
+        {
+            // load the rest of the file into the buffer and return the buffer
+            // this is inefficient, but difficult to change without changing decompression
+            // where this is needed (for deflated transfer syntax)
+            Mark();
+            GetBytes((int)(_byteSource.GetStream().Length - Position));
+            Rewind();
+            return _buffer;
+        }
 
         private void ResizeBuffer(int count)
         {
