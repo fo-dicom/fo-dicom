@@ -249,7 +249,7 @@ namespace FellowOakDicom.Tests
         [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
         [InlineData("ETIAM_video_002.dcm")]  // MPEG2 Main Profile
         [InlineData("GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm")] // Big Endian
-//        [InlineData("GH133.dcm")]
+        [InlineData("GH133.dcm")] // regression test for milestone handling
         public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
         {
             var file = DicomFile.Open(TestData.Resolve(fileName), FileReadOption.ReadLargeOnDemand);

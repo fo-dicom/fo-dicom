@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,6 +81,8 @@ namespace FellowOakDicom.IO
 
         private BufferState _bufferState;
 
+        private readonly Stack<long> _milestones;
+
         private readonly object _lock;
 
         #endregion
@@ -103,11 +106,15 @@ namespace FellowOakDicom.IO
                 // TODO: log warning?
                 readOption = FileReadOption.ReadAll;
             }
+
             _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
             _buffer = new MemoryStream();
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine);
             _bufferWriter = EndianBinaryWriter.Create(_buffer, Endian.LocalMachine);
             _bufferState = BufferState.Unused;
+            // we cannot use the milestones of the stream byte source, as these don't
+            // account for the buffer
+            _milestones = new Stack<long>();
             _lock = new object();
         }
 
@@ -511,13 +518,31 @@ namespace FellowOakDicom.IO
         }
 
         /// <inheritdoc />
-        public void PushMilestone(uint count) => _byteSource.PushMilestone(count);
+        public void PushMilestone(uint count)
+        {
+            lock (_lock)
+            {
+                _milestones.Push(Position + count);
+            }
+        }
 
         /// <inheritdoc />
-        public void PopMilestone() => _byteSource.PopMilestone();
+        public void PopMilestone()
+        {
+            lock (_lock)
+            {
+                _milestones.Pop();
+            }
+        }
 
         /// <inheritdoc />
-        public bool HasReachedMilestone() => _byteSource.HasReachedMilestone();
+        public bool HasReachedMilestone()
+        {
+            lock (_lock)
+            {
+                return _milestones.Count > 0 && Position >= _milestones.Peek();
+            }
+        }
 
         /// <inheritdoc />
         public bool Require(uint count) => Require(count, null, null);

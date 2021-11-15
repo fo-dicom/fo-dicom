@@ -175,7 +175,7 @@ namespace FellowOakDicom.IO
         {
             lock (_lock)
             {
-                _milestones.Push(Position + count);
+                _milestones.Push(_stream.Position + count);
             }
         }
 
@@ -193,7 +193,7 @@ namespace FellowOakDicom.IO
         {
             lock (_lock)
             {
-                return _milestones.Count > 0 && Position >= _milestones.Peek();
+                return _milestones.Count > 0 && _stream.Position >= _milestones.Peek();
             }
         }
 
