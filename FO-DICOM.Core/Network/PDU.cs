@@ -1727,25 +1727,44 @@ namespace FellowOakDicom.Network
     /// <summary>PDV</summary>
     public class PDV: IDisposable
     {
-
         /// <summary>
         /// Initializes new PDV
         /// </summary>
         /// <param name="pcid">Presentation context ID</param>
         /// <param name="value">PDV data</param>
+        /// <param name="valueLength">The length of the PDV data (how many bytes in value that are actual data)</param>
+        /// <param name="isValueRented">Whether or not the value is rented and should be returned to the shared array pool when disposed</param>
         /// <param name="command">Is command</param>
         /// <param name="last">Is last fragment of command or data</param>
-        public PDV(byte pcid, byte[] value, bool command, bool last)
+        public PDV(byte pcid, byte[] value, int valueLength, bool isValueRented, bool command, bool last)
         {
-            if (value.Length % 2 == 1)
+            if (valueLength > value.Length)
             {
-                Array.Resize(ref value, value.Length + 1);
+                throw new ArgumentException($"Invalid value passed to PDV constructor: valueLength = {valueLength} but actual value is only {value.Length} bytes long");
+            }
+            if (valueLength % 2 == 1)
+            {
+                if (isValueRented)
+                {
+                    if (value.Length == valueLength)
+                    {
+                        throw new InvalidOperationException(
+                            "Cannot create a PDV with odd number of bytes in value, and the provided rented byte array is not large enough to pad it");
+                    }
+                }
+                else
+                {
+                    Array.Resize(ref value, value.Length + 1);
+                }
+
+                value[valueLength] = 0;
+                valueLength += 1;
             }
 
             PCID = pcid;
             Value = value;
-            ValueLength = value.Length;
-            IsValueRented = false;
+            ValueLength = valueLength;
+            IsValueRented = isValueRented;
             IsCommand = command;
             IsLastFragment = last;
         }
