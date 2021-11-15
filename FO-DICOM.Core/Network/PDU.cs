@@ -468,7 +468,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
         /// </summary>
-        public void GetCommonFields(byte[] buffer, uint length)
+        internal void GetCommonFields(byte[] buffer, uint length)
         {
             unchecked
             {
