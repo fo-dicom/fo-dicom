@@ -28,12 +28,6 @@ namespace FellowOakDicom.IO.Buffer
         /// Initializes a <see cref="TempFileBuffer"/> object.
         /// </summary>
         /// <param name="data">Byte array subject to buffering.</param>
-        public TempFileBuffer(byte[] data): this(data, null) { }
-
-        /// <summary>
-        /// Initializes a <see cref="TempFileBuffer"/> object.
-        /// </summary>
-        /// <param name="data">Byte array subject to buffering.</param>
         public TempFileBuffer(byte[] data, List<string> messages = null)
         {
             _messages = messages ?? new List<string>();
