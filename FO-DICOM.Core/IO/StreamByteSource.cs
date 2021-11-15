@@ -81,7 +81,7 @@ namespace FellowOakDicom.IO
         public long Marker => _mark;
 
         /// <inheritdoc />
-        public bool IsEOF => Position >= _stream.Length;
+        public bool IsEOF => _stream.Position >= _stream.Length;
 
         /// <inheritdoc />
         public bool CanRewind => _stream.CanSeek;

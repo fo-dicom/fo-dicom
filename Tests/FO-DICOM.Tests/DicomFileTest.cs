@@ -5,6 +5,7 @@ using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Tests.Helpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Threading.Tasks;
@@ -34,7 +35,6 @@ namespace FellowOakDicom.Tests
                 set => throw new NotSupportedException();
             }
         }
-
 
         #region Fields
 
@@ -238,18 +238,7 @@ namespace FellowOakDicom.Tests
         }
 
         [Theory]
-        [InlineData("test_SR.dcm")] // nested sequences
-        [InlineData("GH184.dcm")] // private nested sequences
-        [InlineData("GH223.dcm")] // empty sequence item
-        [InlineData("10200904.dcm")] // RLELossless
-        [InlineData("GH227.dcm")] // Deflated Little Endian Explicit
-        [InlineData("genFile.dcm")] // JPEGBaseline
-        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
-        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
-        [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
-        [InlineData("ETIAM_video_002.dcm")]  // MPEG2 Main Profile
-        [InlineData("GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm")] // Big Endian
-        [InlineData("GH133.dcm")] // regression test for milestone handling
+        [MemberData(nameof(FileNames))]
         public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
         {
             var file = DicomFile.Open(TestData.Resolve(fileName), FileReadOption.ReadLargeOnDemand);
@@ -261,18 +250,7 @@ namespace FellowOakDicom.Tests
         }
 
         [Theory]
-        [InlineData("test_SR.dcm")] // nested sequences
-        [InlineData("GH184.dcm")] // private nested sequences
-        [InlineData("GH223.dcm")] // empty sequence item
-        [InlineData("10200904.dcm")] // RLELossless
-        [InlineData("GH227.dcm")] // Deflated Little Endian Explicit
-        [InlineData("genFile.dcm")] // JPEGBaseline
-        [InlineData("GH1261.dcm")] // JPEGLossless Non-hierarchical 1stOrderPrediction
-        [InlineData("GH064.dcm")] // JPEG2000 Lossless Only
-        [InlineData("GH195.dcm")] // JPEGExtended Process 2+4
-        [InlineData("ETIAM_video_002.dcm")]  // MPEG2 Main Profile
-        [InlineData("GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm")] // Big Endian
-        [InlineData("GH133.dcm")]
+        [MemberData(nameof(FileNames))]
         public void Open_FileFromStream_YieldsValidDicomFile(string fileName)
         {
             var file = DicomFile.Open(TestData.Resolve(fileName));
@@ -282,6 +260,22 @@ namespace FellowOakDicom.Tests
             var openFile = DicomFile.Open(stream);
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
+
+        public static readonly IEnumerable<object[]> FileNames = new[]
+        {
+            new object[] { "test_SR.dcm" }, // nested sequences
+            new object[] { "GH184.dcm" }, // private nested sequences
+            new object[] { "GH223.dcm" }, // empty sequence item
+            new object[] { "10200904.dcm" }, // RLELossless
+            new object[] { "GH227.dcm" }, // Deflated Little Endian Explicit
+            new object[] { "genFile.dcm" }, // JPEGBaseline
+            new object[] { "GH1261.dcm" }, // JPEGLossless Non-hierarchical 1stOrderPrediction
+            new object[] { "GH064.dcm" }, // JPEG2000 Lossless Only
+            new object[] { "GH195.dcm" }, // JPEGExtended Process 2+4
+            new object[] { "ETIAM_video_002.dcm" }, // MPEG2 Main Profile
+            new object[] { "GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm" }, // Big Endian
+            new object[] { "GH133.dcm" } // regression test for milestone handling
+        };
 
         [Fact]
         public void Open_FromStream_YieldsValidDicomFile()
@@ -302,9 +296,7 @@ namespace FellowOakDicom.Tests
             saveFile.Save(fileName);
 
             var openFile = await DicomFile.OpenAsync(fileName);
-            var expected = _minimumDatasetInstanceUid;
-            var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
-            Assert.Equal(expected, actual);
+            Assert.True(new DicomDatasetComparer().Equals(_minimumDataset, openFile.Dataset));
             IOHelper.DeleteIfExists(fileName);
         }
 
@@ -319,9 +311,7 @@ namespace FellowOakDicom.Tests
             using (var stream = file.CreateViewStream())
             {
                 var openFile = DicomFile.Open(stream);
-                var expected = _minimumDatasetInstanceUid;
-                var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
-                Assert.Equal(expected, actual);
+                Assert.True(new DicomDatasetComparer().Equals(_minimumDataset, openFile.Dataset));
             }
 
             IOHelper.DeleteIfExists(fileName);

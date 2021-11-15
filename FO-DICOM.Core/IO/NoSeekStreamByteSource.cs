@@ -73,8 +73,10 @@ namespace FellowOakDicom.IO
         /// <summary> The buffer needed to emulate Seek / SetPosition. </summary>
         private readonly MemoryStream _buffer;
 
+        /// <summary> Reader for buffer that accounts for Endianess. </summary>
         private BinaryReader _bufferReader;
 
+        /// <summary> Writer for buffer that accounts for Endianess. </summary>
         private BinaryWriter _bufferWriter;
 
         private bool _marked;
@@ -130,9 +132,9 @@ namespace FellowOakDicom.IO
             {
                 if (_byteSource.Endian != value)
                 {
-                    _byteSource.Endian = value;
                     lock (_lock)
                     {
+                        _byteSource.Endian = value;
                         _bufferReader = EndianBinaryReader.Create(_buffer, value);
                         _bufferWriter = EndianBinaryWriter.Create(_buffer, value);
                     }
@@ -164,7 +166,7 @@ namespace FellowOakDicom.IO
         public bool CanRewind => _byteSource.CanRewind;
 
         /// <inheritdoc />
-        public int MilestonesCount => _byteSource.MilestonesCount;
+        public int MilestonesCount => _milestones.Count;
 
         private bool IsReadingBuffer => _bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite;
 
@@ -199,7 +201,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetUInt8();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(1);
+                ResizeBuffer(sizeof(byte));
                 _bufferWriter.Write(data);
             }
 
@@ -211,7 +213,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(2);
+                var filled = FillBufferForReading(sizeof(short));
                 var read = _bufferReader.ReadInt16();
                 if (filled)
                 {
@@ -224,7 +226,7 @@ namespace FellowOakDicom.IO
             var data = _bufferReader.ReadInt16();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(2);
+                ResizeBuffer(sizeof(short));
                 _bufferWriter.Write(data);
             }
 
@@ -236,7 +238,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(2);
+                var filled = FillBufferForReading(sizeof(ushort));
                 var read = _bufferReader.ReadUInt16();
                 if (filled)
                 {
@@ -249,7 +251,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetUInt16();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(2);
+                ResizeBuffer(sizeof(ushort));
                 _bufferWriter.Write(data);
             }
 
@@ -261,7 +263,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(4);
+                var filled = FillBufferForReading(sizeof(int));
                 var read = _bufferReader.ReadInt32();
                 if (filled)
                 {
@@ -274,7 +276,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetInt32();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(4);
+                ResizeBuffer(sizeof(int));
                 _bufferWriter.Write(data);
             }
 
@@ -286,7 +288,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(4);
+                var filled = FillBufferForReading(sizeof(uint));
                 var read = _bufferReader.ReadUInt32();
                 if (filled)
                 {
@@ -299,7 +301,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetUInt32();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(4);
+                ResizeBuffer(sizeof(uint));
                 _bufferWriter.Write(data);
             }
 
@@ -311,7 +313,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(8);
+                var filled = FillBufferForReading(sizeof(long));
                 var read = _bufferReader.ReadInt64();
                 if (filled)
                 {
@@ -324,7 +326,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetInt64();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(8);
+                ResizeBuffer(sizeof(long));
                 _bufferWriter.Write(data);
             }
 
@@ -336,7 +338,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(8);
+                var filled = FillBufferForReading(sizeof(ulong));
                 var read = _bufferReader.ReadUInt64();
                 if (filled)
                 {
@@ -349,7 +351,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetUInt64();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(8);
+                ResizeBuffer(sizeof(ulong));
                 _bufferWriter.Write(data);
             }
 
@@ -361,7 +363,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(4);
+                var filled = FillBufferForReading(sizeof(float));
                 var read = _bufferReader.ReadSingle();
                 if (filled)
                 {
@@ -374,7 +376,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetSingle();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(4);
+                ResizeBuffer(sizeof(float));
                 _bufferWriter.Write(data);
             }
 
@@ -386,7 +388,7 @@ namespace FellowOakDicom.IO
         {
             if (IsReadingBuffer)
             {
-                var filled = FillBufferForReading(8);
+                var filled = FillBufferForReading(sizeof(double));
                 var read = _bufferReader.ReadDouble();
                 if (filled)
                 {
@@ -399,7 +401,7 @@ namespace FellowOakDicom.IO
             var data = _byteSource.GetDouble();
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(8);
+                ResizeBuffer(sizeof(double));
                 _bufferWriter.Write(data);
             }
 
