@@ -3,8 +3,11 @@
 
 using FellowOakDicom.IO.Buffer;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using FellowOakDicom.Tests.Helpers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.IO.Buffer
 {
@@ -32,13 +35,23 @@ namespace FellowOakDicom.Tests.IO.Buffer
         [InlineData(12, 0)]
         public void GetByteRange_CompareWithInitializer_ExactMatch(int offset, int count)
         {
-            var data = Enumerable.Range(0, 254).Select(i => (byte)i).ToArray();
-            var buffer = new TempFileBuffer(data);
+            var messages = new List<string>();
+            try
+            {
+                var data = Enumerable.Range(0, 254).Select(i => (byte)i).ToArray();
+                var buffer = new TempFileBuffer(data, messages);
 
-            var expected = new ArraySegment<byte>(data, offset, count);
-            var actual = new byte[count];
-            buffer.GetByteRange(offset, count, actual);
-            Assert.Equal(expected, actual);
+                var expected = new ArraySegment<byte>(data, offset, count);
+                var actual = new byte[count];
+                buffer.GetByteRange(offset, count, actual);
+                Assert.Equal(expected, actual);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Test failed. " +
+                                    $"Messages: {Environment.NewLine}" +
+                                    $"{string.Join(Environment.NewLine, messages)}", e);
+            }
         }
 
         #endregion

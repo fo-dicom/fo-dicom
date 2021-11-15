@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -49,12 +50,14 @@ namespace FellowOakDicom.IO
         /// Creates a temporary file and returns its name.
         /// </summary>
         /// <returns>Name of the temporary file.</returns>
-        public static IFileReference Create()
+        public static IFileReference Create(List<string> messages = null)
         {
+            messages?.Add("[TemporaryFile] Creating file reference");
             IFileReference file;
 
             if (_storagePath != null)
             {
+                messages?.Add("[TemporaryFile] Storage path is configured, set to " + _storagePath);
                 // create file in user specified path
                 var path = Path.Combine(_storagePath, Guid.NewGuid().ToString());
                 file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(path);
@@ -62,8 +65,10 @@ namespace FellowOakDicom.IO
             }
             else
             {
+                messages?.Add("[TemporaryFile] Storage path is not configured, using Path.GetTempFileName");
+
                 // allow OS to create file in system temp path
-                file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(Path.GetTempFileName());
+                file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(Path.GetTempFileName(), messages);
             }
             file.IsTempFile = true;
 
