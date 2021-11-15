@@ -120,7 +120,7 @@ namespace FellowOakDicom.IO
         /// <param name="overwrite">True if <paramref name="dstFileName"/> should be overwritten if it already exists, false otherwise.</param>
         public void Move(string dstFileName, bool overwrite = false)
         {
-            // delete if overwriting; let File.Move thow IOException if not
+            // delete if overwriting; let File.Move throw IOException if not
             if (File.Exists(dstFileName) && overwrite)
             {
                 File.Delete(dstFileName);
