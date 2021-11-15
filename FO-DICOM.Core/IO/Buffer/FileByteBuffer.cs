@@ -56,7 +56,8 @@ namespace FellowOakDicom.IO.Buffer
                 throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
-            var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
+            var bufferSize = 1024 * 1024;
+            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             try
             {
                 using var fileStream = File.OpenRead();
@@ -64,13 +65,13 @@ namespace FellowOakDicom.IO.Buffer
 
                 int totalNumberOfBytesRead = 0;
                 int numberOfBytesRead;
-                int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
+                int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 while (numberOfBytesToRead > 0
                        && (numberOfBytesRead = fileStream.Read(buffer, 0, numberOfBytesToRead)) > 0)
                 {
                     stream.Write(buffer, 0, numberOfBytesRead);
                     totalNumberOfBytesRead += numberOfBytesRead;
-                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
+                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
                 }
             }
             finally
@@ -91,7 +92,8 @@ namespace FellowOakDicom.IO.Buffer
                 throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
-            var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
+            var bufferSize = 1024 * 1024;
+            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             try
             {
                 using var fileStream = File.OpenRead();
@@ -99,14 +101,14 @@ namespace FellowOakDicom.IO.Buffer
 
                 int totalNumberOfBytesRead = 0;
                 int numberOfBytesRead;
-                int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
+                int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 while (numberOfBytesToRead > 0
                        && (numberOfBytesRead = await fileStream.ReadAsync(buffer, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
                 {
                     await stream.WriteAsync(buffer, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
 
                     totalNumberOfBytesRead += numberOfBytesRead;
-                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
+                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
                 }
             }
             finally
