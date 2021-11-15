@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -10,7 +11,7 @@ namespace FellowOakDicom.IO
     public class FileReferenceFactory : IFileReferenceFactory
     {
 
-        public IFileReference Create(string fileName) => new FileReference(fileName);
+        public IFileReference Create(string fileName, List<string> messages = null) => new FileReference(fileName, messages);
 
     }
 
@@ -19,14 +20,17 @@ namespace FellowOakDicom.IO
     /// </summary>
     public sealed class FileReference : IFileReference
     {
+        private readonly List<string> _messages;
         private bool _isTempFile;
 
         /// <summary>
         /// Initializes a <see cref="DesktopFileReference"/> object.
         /// </summary>
         /// <param name="fileName">File name.</param>
-        public FileReference(string fileName)
+        public FileReference(string fileName, List<string> messages = null)
         {
+            _messages = messages ?? new List<string>();
+            _messages.Add("[FileReference] Constructor called: " + fileName);
             Name = fileName;
             IsTempFile = false;
         }
@@ -36,8 +40,10 @@ namespace FellowOakDicom.IO
         /// </summary>
         ~FileReference()
         {
+            _messages.Add("[FileReference] Destructor called");
             if (IsTempFile)
             {
+                _messages.Add("[FileReference] Calling TemporaryFileRemover.Delete(this)");
                 TemporaryFileRemover.Delete(this);
             }
         }
@@ -59,6 +65,7 @@ namespace FellowOakDicom.IO
             get => _isTempFile;
             set
             {
+                _messages.Add($"[FileReference] Setting IsTempFile to {value}, stack trace = {Environment.NewLine}{Environment.StackTrace}");
                 if (value && Exists)
                 {
                     try
@@ -109,7 +116,11 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Delete the file.
         /// </summary>
-        public void Delete() => File.Delete(Name);
+        public void Delete()
+        {
+            _messages.Add($"[FileReference] Delete() called, stack trace: {Environment.StackTrace}");
+            File.Delete(Name);
+        }
 
         /// <summary>
         /// Moves file and updates internal reference.
@@ -120,6 +131,7 @@ namespace FellowOakDicom.IO
         /// <param name="overwrite">True if <paramref name="dstFileName"/> should be overwritten if it already exists, false otherwise.</param>
         public void Move(string dstFileName, bool overwrite = false)
         {
+            _messages.Add($"[FileReference] Move() called, stack trace: {Environment.StackTrace}");
             // delete if overwriting; let File.Move throw IOException if not
             if (File.Exists(dstFileName) && overwrite)
             {
@@ -156,6 +168,8 @@ namespace FellowOakDicom.IO
             {
                 throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
             }
+            
+            _messages.Add($"[FileReference] GetByteRange() called");
             
             using var fs = OpenRead();
             fs.Seek(offset, SeekOrigin.Begin);
