@@ -1612,23 +1612,29 @@ namespace FellowOakDicom.Network
     /// <summary>P-DATA-TF</summary>
     public class PDataTF : PDU, IDisposable
     {
-
+        private long _isDisposed;
+        
         /// <summary>
         /// Initializes new P-DATA-TF
         /// </summary>
         public PDataTF()
         {
         }
+        
+        /// <summary>
+        /// The finalizer will be called when this instance is not disposed properly.
+        /// </summary>
+        /// <remarks>Failing to dispose indicates wrong usage</remarks>
+        ~PDataTF() => Dispose(false);
 
+        private bool IsDisposed => (ulong)Interlocked.Read(ref this._isDisposed) > 0;
+        
         /// <summary>PDVs in this P-DATA-TF</summary>
         public List<PDV> PDVs { get; } = new List<PDV>();
-
+        
         /// <summary>Calculates the total length of the PDVs in this P-DATA-TF</summary>
         /// <returns>Length of PDVs</returns>
-        public uint GetLengthOfPDVs()
-        {
-            return (uint)PDVs.Sum(pdv => pdv.PDVLength);
-        }
+        public uint GetLengthOfPDVs() => (uint)PDVs.Sum(pdv => pdv.PDVLength);
 
         public override string ToString()
         {
@@ -1640,6 +1646,43 @@ namespace FellowOakDicom.Network
 
             return value;
         }
+        
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            // Guard against multiple disposals
+            // because subsequent disposals can return arrays to the pool that have already been loaned out to other consumers
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0)
+                return;
+            
+            foreach (var pdv in PDVs)
+            {
+                pdv.Dispose();
+            }
+
+            PDVs.Clear();
+
+            if (!disposing)
+            {
+                // We could raise an event or log something here. Empty for now.
+            }
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (!IsDisposed)
+                return;
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException("The PDataTF is already disposed and cannot be used anymore");
 
         #region Write
 
@@ -1649,6 +1692,8 @@ namespace FellowOakDicom.Network
         /// <returns>PDU buffer</returns>
         public RawPDU Write()
         {
+            ThrowIfAlreadyDisposed();
+            
             var pdu = new RawPDU(0x04);
 
             Write(pdu);
@@ -1658,6 +1703,8 @@ namespace FellowOakDicom.Network
 
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
+            ThrowIfAlreadyDisposed();
+            
             // Instead of using rented byte arrays, P-DATA-TF PDVs are written directly to the underlying stream
             await using var pdu = new RawPDU(0x04, DicomEncoding.Default, stream, true);
             
@@ -1697,6 +1744,8 @@ namespace FellowOakDicom.Network
         /// <param name="raw">PDU buffer</param>
         public void Read(RawPDU raw)
         {
+            ThrowIfAlreadyDisposed();
+            
             var len = raw.Length - 6;
             uint read = 0;
             while (read < len)
@@ -1708,16 +1757,6 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            foreach (var pdv in PDVs)
-            {
-                pdv.Dispose();
-            }
-
-            PDVs.Clear();
-        }
     }
 
     #endregion
@@ -1775,6 +1814,14 @@ namespace FellowOakDicom.Network
         public PDV()
         {
         }
+        
+        /// <summary>
+        /// The finalizer will be called when this instance is not disposed properly.
+        /// </summary>
+        /// <remarks>Failing to dispose indicates wrong usage</remarks>
+        ~PDV() => Dispose(false);
+        
+        private long _isDisposed;
 
         /// <summary>Presentation context ID</summary>
         public byte PCID { get; set; }
@@ -1805,6 +1852,8 @@ namespace FellowOakDicom.Network
         /// <param name="pdu">PDU buffer</param>
         public void Write(RawPDU pdu)
         {
+            ThrowIfAlreadyDisposed();
+            
             var mch = (byte)((IsLastFragment ? 2 : 0) + (IsCommand ? 1 : 0));
             pdu.Write("PDV-Length", 2 + (uint) ValueLength);
             pdu.Write("Presentation Context ID", PCID);
@@ -1822,6 +1871,8 @@ namespace FellowOakDicom.Network
         /// <param name="raw">PDU buffer</param>
         public uint Read(RawPDU raw)
         {
+            ThrowIfAlreadyDisposed();
+            
             var len = raw.ReadUInt32("PDV-Length");
             var valueLength = (int)len - 2;
             var value = ArrayPool<byte>.Shared.Rent(valueLength);
@@ -1837,14 +1888,47 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
+        
+        #region Disposal
+        
+        private bool IsDisposed => (ulong)Interlocked.Read(ref this._isDisposed) > 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (!IsDisposed)
+                return;
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException("The PDV is already disposed and cannot be used anymore");
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            // Guard against multiple disposals
+            // because subsequent disposals can return arrays to the pool that have already been loaned out to other consumers
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0)
+                return;
+            
             if (IsValueRented)
             {
                 ArrayPool<byte>.Shared.Return(Value);
             }
+
+            if (!disposing)
+            {
+                // We could raise an event or log something here. Empty for now.
+            }
         }
+        
+        #endregion
     }
 
     #endregion
