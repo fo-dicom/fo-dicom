@@ -63,7 +63,7 @@ namespace FellowOakDicom.IO.Buffer
                 using var fileStream = File.OpenRead();
                 fileStream.Position = Position;
 
-                int totalNumberOfBytesRead = 0;
+                long totalNumberOfBytesRead = 0L;
                 int numberOfBytesRead;
                 int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 while (numberOfBytesToRead > 0
@@ -99,7 +99,7 @@ namespace FellowOakDicom.IO.Buffer
                 using var fileStream = File.OpenRead();
                 fileStream.Position = Position;
 
-                int totalNumberOfBytesRead = 0;
+                long totalNumberOfBytesRead = 0L;
                 int numberOfBytesRead;
                 int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 while (numberOfBytesToRead > 0

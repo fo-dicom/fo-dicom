@@ -85,7 +85,7 @@ namespace FellowOakDicom.IO.Buffer
             {
                 Stream.Position = Position;
 
-                int totalNumberOfBytesRead = 0;
+                long totalNumberOfBytesRead = 0L;
                 int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 int numberOfBytesRead;
                 while(numberOfBytesToRead > 0 
@@ -125,7 +125,7 @@ namespace FellowOakDicom.IO.Buffer
             {
                 Stream.Position = Position;
                 
-                int totalNumberOfBytesRead = 0;
+                long totalNumberOfBytesRead = 0L;
                 int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 int numberOfBytesRead;
                 while(numberOfBytesToRead > 0 
