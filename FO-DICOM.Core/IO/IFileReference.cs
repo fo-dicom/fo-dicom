@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -13,7 +12,7 @@ namespace FellowOakDicom.IO
     /// </summary>
     public interface IFileReferenceFactory
     {
-        IFileReference Create(string fileName, List<string> messages = null);
+        IFileReference Create(string fileName);
     }
 
     /// <summary>
