@@ -14,6 +14,8 @@ namespace FellowOakDicom.Benchmark
 {
     [MemoryDiagnoser]
     [MaxIterationCount(25)]
+    [MaxWarmupCount(10)]
+    [InvocationCount(128,16)]
     public class ServerBenchmarks
     {
         private string _rootPath;
