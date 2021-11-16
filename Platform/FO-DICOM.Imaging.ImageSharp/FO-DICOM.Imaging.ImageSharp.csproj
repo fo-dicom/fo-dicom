@@ -5,7 +5,7 @@
     <RootNamespace>FellowOakDicom.Imaging.ImageSharp</RootNamespace>
     <AssemblyName>fo-dicom.Imaging.ImageSharp</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.0.0</Version>
+    <Version>5.0.1</Version>
     <Authors>fo-dicom contributors</Authors>
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
