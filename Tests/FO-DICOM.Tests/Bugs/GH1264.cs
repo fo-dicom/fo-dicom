@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using FellowOakDicom.Serialization;
-using Newtonsoft.Json;
+using System.Linq;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.IO.Writer;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
@@ -11,7 +12,7 @@ namespace FellowOakDicom.Tests.Bugs
         public void OpenDicomFileFromStream()
         {
             // Arrange
-            var inputFile = TestData.Resolve("TestPattern_RGB.dcm");
+            var inputFile = TestData.Resolve("10200904.dcm");
             var outputFile = new FileInfo("./GH1264.dcm");
 
             outputFile.Delete();
@@ -23,21 +24,29 @@ namespace FellowOakDicom.Tests.Bugs
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            var dicomFileFromPath = DicomFile.Open(inputFile);
-            var dicomFileFromStream = DicomFile.Open(ms);
+            var fileByteDicomFile = DicomFile.Open(inputFile, FileReadOption.ReadAll);
+            var streamByteDicomFile = DicomFile.Open(ms, FileReadOption.ReadAll);
 
             // Act
-            dicomFileFromStream.Save(outputFile.FullName);
-            var reopenedDicomFile = DicomFile.Open(outputFile.FullName);
+            streamByteDicomFile.Save(outputFile.FullName);
+
+            var reopenedDicomFile = DicomFile.Open(outputFile.FullName, FileReadOption.ReadAll);
 
             // Assert
-            var jsonDicomConverter = new JsonDicomConverter(false, false);
-            var dicomFileFromPathJson = JsonConvert.SerializeObject(dicomFileFromPath.Dataset, jsonDicomConverter);
-            var dicomFileFromStreamJson = JsonConvert.SerializeObject(dicomFileFromStream.Dataset, jsonDicomConverter);
-            var actual = JsonConvert.SerializeObject(reopenedDicomFile.Dataset, jsonDicomConverter);
+            var fileBytePixelData = DicomPixelData.Create(fileByteDicomFile.Dataset);
+            var streamBytePixelData = DicomPixelData.Create(streamByteDicomFile.Dataset);
+            var reopenedPixelData = DicomPixelData.Create(reopenedDicomFile.Dataset);
 
-            Assert.Equal(dicomFileFromPathJson, dicomFileFromStreamJson);
-            Assert.Equal(actual, dicomFileFromStreamJson);
+            Assert.Equal(79, fileBytePixelData.NumberOfFrames);
+            Assert.Equal(79, streamBytePixelData.NumberOfFrames);
+            Assert.Equal(79, reopenedPixelData.NumberOfFrames);
+
+            var fileByteFrame1 = fileBytePixelData.GetFrame(0);
+            var streamByteFrame1 = streamBytePixelData.GetFrame(0);
+            var reopenedFrame1 = reopenedPixelData.GetFrame(0);
+
+            Assert.Equal(fileByteFrame1.Size, streamByteFrame1.Size);
+            Assert.Equal(fileByteFrame1.Size, reopenedFrame1.Size);
         }
     }
 }
