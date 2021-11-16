@@ -8,6 +8,7 @@
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.Tests</AssemblyName>
     <LangVersion>8.0</LangVersion>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
