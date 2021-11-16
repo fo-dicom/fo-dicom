@@ -407,9 +407,9 @@ namespace FellowOakDicom.Network
         {
             unchecked
             {
-                buffer[0] = Type;
-
                 var length = (uint)_ms.Length;
+                buffer[0] = Type;
+                buffer[1] = 0;
                 buffer[2] = (byte)((length & 0xff000000U) >> 24);
                 buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
                 buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
