@@ -311,7 +311,9 @@ namespace FellowOakDicom.Tests
             using (var stream = file.CreateViewStream())
             {
                 var openFile = DicomFile.Open(stream);
-                Assert.True(new DicomDatasetComparer().Equals(_minimumDataset, openFile.Dataset));
+                var expected = _minimumDatasetInstanceUid;
+                var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
+                Assert.Equal(expected, actual);
             }
 
             IOHelper.DeleteIfExists(fileName);
