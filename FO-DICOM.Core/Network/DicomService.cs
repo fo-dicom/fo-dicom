@@ -8,7 +8,6 @@ using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -389,8 +388,6 @@ namespace FellowOakDicom.Network
         {
             while (IsConnected)
             {
-                // This is the buffer we use move data from the incoming network stream to the PDU
-                var buffer = ArrayPool<byte>.Shared.Rent(_maxBytesToRead);
                 try
                 {
                     var stream = _network.AsStream();
@@ -398,6 +395,7 @@ namespace FellowOakDicom.Network
                     // Read PDU header
                     _readLength = 6;
 
+                    var buffer = new byte[6];
                     var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
 
                     do
@@ -410,13 +408,11 @@ namespace FellowOakDicom.Network
                         }
 
                         _readLength -= count;
-                        
                         if (_readLength > 0)
                         {
                             count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength).ConfigureAwait(false);
                         }
-                    }
-                    while (_readLength > 0);
+                    } while (_readLength > 0);
 
                     var length = BitConverter.ToInt32(buffer, 2);
                     length = Endian.Swap(length);
@@ -426,13 +422,12 @@ namespace FellowOakDicom.Network
                     // Read PDU
                     var ms = new MemoryStream();
 
-                    ms.Write(buffer, 0, 6);
-
+                    ms.Write(buffer, 0, buffer.Length);
                     while (_readLength > 0)
                     {
                         int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
-
-                        count = await stream.ReadAsync(buffer, 0, bytesToRead).ConfigureAwait(false);
+                        var tempBuffer = new byte[bytesToRead];
+                        count = await stream.ReadAsync(tempBuffer, 0, bytesToRead).ConfigureAwait(false);
 
                         if (count == 0)
                         {
@@ -441,7 +436,7 @@ namespace FellowOakDicom.Network
                             return;
                         }
 
-                        ms.Write(buffer, 0, count);
+                        ms.Write(tempBuffer, 0, count);
 
                         _readLength -= count;
                     }
@@ -452,7 +447,12 @@ namespace FellowOakDicom.Network
                     {
                         case 0x01:
                             {
-                                Association = new DicomAssociation { RemoteHost = _network.RemoteHost, RemotePort = _network.RemotePort, Options = Options };
+                                Association = new DicomAssociation
+                                {
+                                    RemoteHost = _network.RemoteHost,
+                                    RemotePort = _network.RemotePort,
+                                    Options = Options
+                                };
 
                                 var pdu = new AAssociateRQ(Association);
                                 if (DoHandlePDUBytes != null)
@@ -616,10 +616,6 @@ namespace FellowOakDicom.Network
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
-                }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(buffer);
                 }
             }
         }
