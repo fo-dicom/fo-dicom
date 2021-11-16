@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using FellowOakDicom.Imaging;
-using FellowOakDicom.IO.Writer;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
@@ -12,25 +11,25 @@ namespace FellowOakDicom.Tests.Bugs
         public void OpenDicomFileFromStream()
         {
             // Arrange
-            var inputFile = TestData.Resolve("10200904.dcm");
+            var inputFile = new FileInfo(TestData.Resolve("10200904.dcm"));
             var outputFile = new FileInfo("./GH1264.dcm");
 
             outputFile.Delete();
 
-            using var fs = File.OpenRead(inputFile);
+            using var fs = File.OpenRead(inputFile.FullName);
             using var ms = new MemoryStream();
 
             fs.CopyTo(ms);
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            var fileByteDicomFile = DicomFile.Open(inputFile, FileReadOption.ReadAll);
-            var streamByteDicomFile = DicomFile.Open(ms, FileReadOption.ReadAll);
+            var fileByteDicomFile = DicomFile.Open(inputFile.FullName);
+            var streamByteDicomFile = DicomFile.Open(ms);
 
             // Act
             streamByteDicomFile.Save(outputFile.FullName);
 
-            var reopenedDicomFile = DicomFile.Open(outputFile.FullName, FileReadOption.ReadAll);
+            var reopenedDicomFile = DicomFile.Open(outputFile.FullName);
 
             // Assert
             var fileBytePixelData = DicomPixelData.Create(fileByteDicomFile.Dataset);
@@ -47,6 +46,13 @@ namespace FellowOakDicom.Tests.Bugs
 
             Assert.Equal(fileByteFrame1.Size, streamByteFrame1.Size);
             Assert.Equal(fileByteFrame1.Size, reopenedFrame1.Size);
+
+            var fileByteLastItem = fileByteDicomFile.Dataset.Last();
+            var streamByteLastItem = streamByteDicomFile.Dataset.Last();
+            var reopenedLastItem = reopenedDicomFile.Dataset.Last();
+
+            Assert.Equal(fileByteLastItem.Tag, streamByteLastItem.Tag);
+            Assert.Equal(fileByteLastItem.Tag, reopenedLastItem.Tag);
         }
     }
 }
