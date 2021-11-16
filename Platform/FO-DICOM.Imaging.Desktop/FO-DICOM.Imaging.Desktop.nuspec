@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>fo-dicom.Imaging.Desktop</id>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <title>Fellow Oak DICOM System.Drawing support</title>
     <authors>fo-dicom contributors</authors>
     <license type="expression">MS-PL</license>
@@ -12,7 +12,7 @@
     <description>System.Drawing support</description>
     <copyright>Copyright (c) fo-dicom contributors 2012-2021</copyright>
     <dependencies>
-      <dependency id="fo-dicom" version="5.0.0" />
+      <dependency id="fo-dicom" version="5.0.1" />
     </dependencies>
   </metadata>
 
