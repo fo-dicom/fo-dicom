@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
@@ -78,8 +79,6 @@ namespace FellowOakDicom.IO
 
         /// <summary> Writer for buffer that accounts for Endianess. </summary>
         private BinaryWriter _bufferWriter;
-
-        private bool _marked;
 
         private BufferState _bufferState;
 
@@ -170,243 +169,38 @@ namespace FellowOakDicom.IO
 
         private bool IsReadingBuffer => _bufferState == BufferState.Read || _bufferState == BufferState.ReadWrite;
 
+        private bool IsWritingBuffer => _bufferState == BufferState.Write || _bufferState == BufferState.ReadWrite;
+
         #endregion
 
         #region METHODS
 
         /// <inheritdoc />
-        public byte GetUInt8()
-        {
-            if (IsReadingBuffer)
-            {
-                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
-                if (bufferByteCount <= 1)
-                {
-                    UpdateBufferState();
-                    if (bufferByteCount == 1)
-                    {
-                        var read = _bufferReader.ReadByte();
-                        ClearBuffer();
-                        return read;
-                    }
-
-                    ClearBuffer();
-                }
-                else
-                {
-                    return _bufferReader.ReadByte();
-                }
-            }
-
-            var data = _byteSource.GetUInt8();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(byte));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public byte GetUInt8() => GetNumber(_byteSource.GetUInt8, _bufferReader.ReadByte, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public short GetInt16()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(short));
-                var read = _bufferReader.ReadInt16();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _bufferReader.ReadInt16();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(short));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public short GetInt16() => GetNumber(_byteSource.GetInt16, _bufferReader.ReadInt16, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public ushort GetUInt16()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(ushort));
-                var read = _bufferReader.ReadUInt16();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetUInt16();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(ushort));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public ushort GetUInt16() => GetNumber(_byteSource.GetUInt16, _bufferReader.ReadUInt16, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public int GetInt32()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(int));
-                var read = _bufferReader.ReadInt32();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetInt32();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(int));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public int GetInt32() => GetNumber(_byteSource.GetInt32, _bufferReader.ReadInt32, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public uint GetUInt32()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(uint));
-                var read = _bufferReader.ReadUInt32();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetUInt32();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(uint));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public uint GetUInt32() => GetNumber(_byteSource.GetUInt32, _bufferReader.ReadUInt32, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public long GetInt64()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(long));
-                var read = _bufferReader.ReadInt64();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetInt64();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(long));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public long GetInt64() => GetNumber(_byteSource.GetInt64, _bufferReader.ReadInt64, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public ulong GetUInt64()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(ulong));
-                var read = _bufferReader.ReadUInt64();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetUInt64();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(ulong));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public ulong GetUInt64() => GetNumber(_byteSource.GetUInt64, _bufferReader.ReadUInt64, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public float GetSingle()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(float));
-                var read = _bufferReader.ReadSingle();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetSingle();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(float));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public float GetSingle() => GetNumber(_byteSource.GetSingle, _bufferReader.ReadSingle, _bufferWriter.Write);
 
         /// <inheritdoc />
-        public double GetDouble()
-        {
-            if (IsReadingBuffer)
-            {
-                var filled = FillBufferForReading(sizeof(double));
-                var read = _bufferReader.ReadDouble();
-                if (filled)
-                {
-                    ClearBuffer();
-                }
-
-                return read;
-            }
-
-            var data = _byteSource.GetDouble();
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(sizeof(double));
-                _bufferWriter.Write(data);
-            }
-
-            return data;
-        }
+        public double GetDouble() => GetNumber(_byteSource.GetDouble, _bufferReader.ReadDouble, _bufferWriter.Write);
 
         /// <inheritdoc />
         public byte[] GetBytes(int count)
@@ -458,11 +252,6 @@ namespace FellowOakDicom.IO
             {
                 buffer = EmptyBuffer.Value;
             }
-            else if (count >= _byteSource.LargeObjectSize && _byteSource.ReadOption == FileReadOption.ReadLargeOnDemand)
-            {
-                buffer = new StreamByteBuffer(_byteSource.GetStream(), _byteSource.Position, count);
-                Skip(count);
-            }
             else if (count >= _byteSource.LargeObjectSize && _byteSource.ReadOption == FileReadOption.SkipLargeTags)
             {
                 buffer = null;
@@ -489,7 +278,6 @@ namespace FellowOakDicom.IO
             // all following reads will be copied into the buffer
             var position = _buffer.Position;
             _bufferState = position < _buffer.Length ? BufferState.ReadWrite : BufferState.Write;
-            _marked = true;
             if (position > 0)
             {
                 var nrRemainingBytes = (int)(_buffer.Length - position);
@@ -507,11 +295,10 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public void Rewind()
         {
-            if (_marked)
+            if (IsWritingBuffer)
             {
                 _buffer.Position = 0;
                 _bufferState = _buffer.Length > 0 ? BufferState.Read : BufferState.Unused;
-                _marked = false;
             }
             else
             {
@@ -581,7 +368,8 @@ namespace FellowOakDicom.IO
 
         private void ClearBuffer()
         {
-            if (!_marked)
+            // we can only clean the buffer if we are not in buffering mode   
+            if (!IsWritingBuffer)
             {
                 _buffer.SetLength(0);
             }
@@ -616,6 +404,39 @@ namespace FellowOakDicom.IO
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Read and return a number of type T from the stream at current position, accounting for the buffer.
+        /// </summary>
+        private T GetNumber<T>(Func<T> getter, Func<T> reader, Action<T> writer) where T : struct
+        {
+            if (IsReadingBuffer)
+            {
+                // if we are reading the buffer, we have to handle the case that the buffer is 
+                // not large enough to hold the number; in this case, it is filled with the remaining
+                // part from the stream
+                var filled = FillBufferForReading(Marshal.SizeOf(typeof(T)));
+                var read = reader();
+                if (filled)
+                {
+                    // if we have read the whole buffer, we can clear it 
+                    ClearBuffer();
+                }
+
+                return read;
+            }
+
+            // read the data from the stream
+            var data = getter();
+            if (_bufferState == BufferState.Write)
+            {
+                // if we in buffering mode (after Mark()), also write the data to the buffer
+                ResizeBuffer(Marshal.SizeOf(typeof(T)));
+                writer(data);
+            }
+
+            return data;
         }
 
         #endregion
