@@ -39,7 +39,7 @@ namespace FellowOakDicom.IO.Buffer
         }
 
         /// <inheritdoc />
-        public void GetByteRange(long offset, int count, byte[] output) => Internal.GetByteRange(Offset + offset, Math.Max(count, Length), output);
+        public void GetByteRange(long offset, int count, byte[] output) => Internal.GetByteRange(Offset + offset, Math.Min(count, Length), output);
 
         public void CopyToStream(Stream stream)
         {
