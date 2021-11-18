@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -85,6 +86,8 @@ namespace FellowOakDicom.IO
         private readonly Stack<long> _milestones;
 
         private readonly object _lock;
+
+        private const int _tempBufferSize = 4096;
 
         #endregion
 
@@ -268,8 +271,53 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
 
+        // public void Skip(uint count) => GetBytes((int)count);
+        
         /// <inheritdoc />
-        public void Skip(uint count) => GetBytes((int)count);
+        public void Skip(uint count)
+        {
+            if (IsReadingBuffer)
+            {
+                var bufferByteCount = (uint)(_buffer.Length - _buffer.Position);
+                if (bufferByteCount <= count)
+                {
+                    UpdateBufferState();
+                    _buffer.Position = _buffer.Length;
+                    ClearBuffer();
+                    count -= bufferByteCount;
+                    if (count == 0)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer((int)count);
+                _byteSource.ReadBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
+                _buffer.Position += count;
+            }
+            else
+            {
+                var bufferSize = Math.Min((int)count, _tempBufferSize);
+                var temp = ArrayPool<byte>.Shared.Rent(bufferSize);
+                try
+                {
+                    while (count > _tempBufferSize)
+                    {
+                        _byteSource.ReadBytes(temp, 0, _tempBufferSize);
+                        count -= _tempBufferSize;
+                    }
+
+                    _byteSource.ReadBytes(temp, 0, (int)count);
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(temp);
+                }
+            }
+        }
 
         /// <inheritdoc />
         public void Mark()
