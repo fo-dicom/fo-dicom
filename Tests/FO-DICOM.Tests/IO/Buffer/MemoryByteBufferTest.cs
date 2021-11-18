@@ -13,6 +13,17 @@ namespace FellowOakDicom.Tests.IO.Buffer
     [Collection("General")]
     public class MemoryBufferTest
     {
+        [Fact]
+        public void Data_CompareWithInitializer_ExactMatch()
+        {
+            var expected = Enumerable.Range(0, 254).Select(i => (byte)i).ToArray();
+            var buffer = new MemoryByteBuffer(expected);
+
+            var actual = buffer.Data;
+
+            Assert.Equal(expected, actual);
+        }
+
         [Theory]
         [InlineData(0, 7)]
         [InlineData(4, 3)]
