@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -86,11 +87,9 @@ namespace FellowOakDicom
             }
 
             var valueComparer = new DicomValueComparer();
-            for (var i = 0; i < count; i++)
+            foreach (var elements in dataset1.Zip(dataset2, Tuple.Create))
             {
-                var element1 = dataset1.ElementAt(i);
-                var element2 = dataset2.ElementAt(i);
-                if (!valueComparer.Equals(element1, element2))
+                if (!valueComparer.Equals(elements.Item1, elements.Item2))
                 {
                     return false;
                 }
