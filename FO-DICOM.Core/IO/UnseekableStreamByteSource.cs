@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Log;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -33,14 +35,14 @@ namespace FellowOakDicom.IO
                 return new StreamByteSource(stream, readOption, largeObjectSize);
             }
 
-            return new NoSeekStreamByteSource(stream, readOption, largeObjectSize);
+            return new UnseekableStreamByteSource(stream, readOption, largeObjectSize);
         }
     }
 
     /// <summary>
     /// Stream byte source for reading streams without seek capability.
     /// </summary>
-    public class NoSeekStreamByteSource : IByteSource
+    public class UnseekableStreamByteSource : IByteSource
     {
         enum BufferState
         {
@@ -75,10 +77,10 @@ namespace FellowOakDicom.IO
         /// <summary> The buffer needed to emulate Seek / SetPosition. </summary>
         private readonly MemoryStream _buffer;
 
-        /// <summary> Reader for buffer that accounts for Endianess. </summary>
+        /// <summary> Reader for buffer that accounts for Endianness. </summary>
         private BinaryReader _bufferReader;
 
-        /// <summary> Writer for buffer that accounts for Endianess. </summary>
+        /// <summary> Writer for buffer that accounts for Endianness. </summary>
         private BinaryWriter _bufferWriter;
 
         private BufferState _bufferState;
@@ -94,20 +96,20 @@ namespace FellowOakDicom.IO
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes a new instance of <see cref="NoSeekStreamByteSource"/>.
+        /// Initializes a new instance of <see cref="UnseekableStreamByteSource"/>.
         /// </summary>
         /// <param name="stream">Stream to read from.</param>
         /// <param name="readOption">Defines the handling of large tags.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not.
         /// If 0 is passed, then the default of 64k is used.</param>
-        public NoSeekStreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default,
+        public UnseekableStreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default,
             int largeObjectSize = 0)
         {
             if (readOption == FileReadOption.Default || readOption == FileReadOption.ReadLargeOnDemand)
             {
-                // with a no-seek stream we are not able to read large tags on demand,
-                // so we default to read all tags
-                // TODO: log warning?
+                var logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.IO");
+                logger.Warn("Reading large files on demand is not possible with unseekable streams," +
+                            " reading all tags immediately instead.");
                 readOption = FileReadOption.ReadAll;
             }
 
@@ -231,7 +233,10 @@ namespace FellowOakDicom.IO
                     var nrBytesInBuffer = (int)(_buffer.Length - _buffer.Position);
                     var bytesInBuffer = _bufferReader.ReadBytes(nrBytesInBuffer);
                     var bytesInSource = GetBytes(count - nrBytesInBuffer);
-                    return bytesInBuffer.Concat(bytesInSource).ToArray();
+                    var bytes = new byte[bytesInBuffer.Length + bytesInSource.Length];
+                    bytesInBuffer.CopyTo(bytes, 0); 
+                    bytesInSource.CopyTo(bytes, bytesInBuffer.Length);                    
+                    return bytes;
                 }
 
                 return _bufferReader.ReadBytes(count);
@@ -406,7 +411,7 @@ namespace FellowOakDicom.IO
             if (_buffer.Length < _buffer.Position + count)
             {
                 // the buffer most times does not change its capacity,
-                // so this is not expansive to call
+                // so this is not expensive to call
                 _buffer.SetLength(_buffer.Position + count);
             }
         }
@@ -427,7 +432,7 @@ namespace FellowOakDicom.IO
         /// If there is not enough data to read a number with the given count of bytes,
         /// the remaining bytes are read from the original stream and added to the buffer.
         /// We need to have the bytes as contiguous memory for subsequently using ReadXXX
-        /// to read the number in the correct Endianess.
+        /// to read the number in the correct Endianness.
         /// </summary>
         /// <param name="count">Number of bytes to read, e.g. the size of the type to read (2-8).</param>
         /// <returns>True if the buffer will be exhausted after reading the given number of bytes.</returns>

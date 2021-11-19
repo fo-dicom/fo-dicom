@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests
     [Collection("General")]
     public class DicomFileTest
     {
-        private class StreamNoSeek : MemoryStream
+        private class UnseekableStream : MemoryStream
         {
             public override bool CanSeek => false;
 
@@ -230,7 +230,7 @@ namespace FellowOakDicom.Tests
         public void Open_FromStream_UsingNoSeek_YieldsValidDicomFile()
         {
             var file = new DicomFile(_allVrDataset);
-            var stream = new StreamNoSeek();
+            var stream = new UnseekableStream();
             file.Save(stream);
             stream.Reset();
             var openFile = DicomFile.Open(stream);
@@ -241,8 +241,8 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(FileNames))]
         public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
         {
-            var file = DicomFile.Open(TestData.Resolve(fileName), FileReadOption.ReadLargeOnDemand);
-            var stream = new StreamNoSeek();
+            var file = DicomFile.Open(TestData.Resolve(fileName), FileReadOption.SkipLargeTags);
+            var stream = new UnseekableStream();
             file.Save(stream);
             stream.Reset();
             var openFile = DicomFile.Open(stream, FileReadOption.ReadLargeOnDemand);

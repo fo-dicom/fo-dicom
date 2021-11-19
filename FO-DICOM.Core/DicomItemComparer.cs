@@ -8,20 +8,7 @@ namespace FellowOakDicom
 {
     public class DicomTagComparer : IEqualityComparer<DicomItem>
     {
-        public bool Equals(DicomItem x, DicomItem y)
-        {
-            if ((x == null) != (y == null))
-            {
-                return false;
-            }
-
-            if (x == null)
-            {
-                return true;
-            }
-
-            return x.Tag == y.Tag;
-        }
+        public bool Equals(DicomItem x, DicomItem y) => x?.Tag == y?.Tag;
 
         public int GetHashCode(DicomItem obj) => obj.Tag.GetHashCode();
     }
@@ -31,16 +18,6 @@ namespace FellowOakDicom
     {
         public bool Equals(DicomItem item1, DicomItem item2)
         {
-            if ((item1 == null) != (item2 == null))
-            {
-                return false;
-            }
-
-            if (item1 == null)
-            {
-                return true;
-            }
-
             if (item1 is DicomElement xElement && item2 is DicomElement yElement)
             {
                 var xValue = string.Join("\\", xElement.Get<string[]>());
@@ -70,7 +47,7 @@ namespace FellowOakDicom
             }
             else
             {
-                return item1.Tag == item2.Tag;
+                return item1?.Tag == item2?.Tag;
             }
 
             return true;
