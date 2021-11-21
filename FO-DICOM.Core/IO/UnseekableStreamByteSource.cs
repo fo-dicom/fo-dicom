@@ -8,7 +8,6 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -87,8 +86,6 @@ namespace FellowOakDicom.IO
 
         private readonly Stack<long> _milestones;
 
-        private readonly object _lock;
-
         private const int _tempBufferSize = 4096;
 
         #endregion
@@ -121,7 +118,6 @@ namespace FellowOakDicom.IO
             // we cannot use the milestones of the stream byte source, as these don't
             // account for the buffer
             _milestones = new Stack<long>();
-            _lock = new object();
         }
 
         #endregion
@@ -136,12 +132,9 @@ namespace FellowOakDicom.IO
             {
                 if (_byteSource.Endian != value)
                 {
-                    lock (_lock)
-                    {
-                        _byteSource.Endian = value;
-                        _bufferReader = EndianBinaryReader.Create(_buffer, value);
-                        _bufferWriter = EndianBinaryWriter.Create(_buffer, value);
-                    }
+                    _byteSource.Endian = value;
+                    _bufferReader = EndianBinaryReader.Create(_buffer, value);
+                    _bufferWriter = EndianBinaryWriter.Create(_buffer, value);
                 }
             }
         }
@@ -234,8 +227,8 @@ namespace FellowOakDicom.IO
                     var bytesInBuffer = _bufferReader.ReadBytes(nrBytesInBuffer);
                     var bytesInSource = GetBytes(count - nrBytesInBuffer);
                     var bytes = new byte[bytesInBuffer.Length + bytesInSource.Length];
-                    bytesInBuffer.CopyTo(bytes, 0); 
-                    bytesInSource.CopyTo(bytes, bytesInBuffer.Length);                    
+                    bytesInBuffer.CopyTo(bytes, 0);
+                    bytesInSource.CopyTo(bytes, bytesInBuffer.Length);
                     return bytes;
                 }
 
@@ -277,7 +270,7 @@ namespace FellowOakDicom.IO
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
 
         // public void Skip(uint count) => GetBytes((int)count);
-        
+
         /// <inheritdoc />
         public void Skip(uint count)
         {
@@ -360,31 +353,13 @@ namespace FellowOakDicom.IO
         }
 
         /// <inheritdoc />
-        public void PushMilestone(uint count)
-        {
-            lock (_lock)
-            {
-                _milestones.Push(Position + count);
-            }
-        }
+        public void PushMilestone(uint count) => _milestones.Push(Position + count);
 
         /// <inheritdoc />
-        public void PopMilestone()
-        {
-            lock (_lock)
-            {
-                _milestones.Pop();
-            }
-        }
+        public void PopMilestone() => _milestones.Pop();
 
         /// <inheritdoc />
-        public bool HasReachedMilestone()
-        {
-            lock (_lock)
-            {
-                return _milestones.Count > 0 && Position >= _milestones.Peek();
-            }
-        }
+        public bool HasReachedMilestone() => _milestones.Count > 0 && Position >= _milestones.Peek();
 
         /// <inheritdoc />
         public bool Require(uint count) => Require(count, null, null);
