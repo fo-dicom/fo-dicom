@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -93,20 +94,25 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(bufferSize);
+            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             try
             {
                 Stream.Position = Position;
 
+                long totalNumberOfBytesRead = 0L;
+                int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 int numberOfBytesRead;
-                while((numberOfBytesRead = Stream.Read(buffer, 0, bufferSize)) > 0)
+                while(numberOfBytesToRead > 0 
+                      && (numberOfBytesRead = Stream.Read(buffer, 0, numberOfBytesToRead)) > 0)
                 {
                     stream.Write(buffer, 0, numberOfBytesRead);
+                    totalNumberOfBytesRead += numberOfBytesRead;
+                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
                 }
             }
             finally
             {
-                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
+                ArrayPool<byte>.Shared.Return(buffer);
             }   
         }
 
@@ -128,20 +134,25 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(bufferSize);
+            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             try
             {
                 Stream.Position = Position;
                 
+                long totalNumberOfBytesRead = 0L;
+                int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 int numberOfBytesRead;
-                while((numberOfBytesRead = await Stream.ReadAsync(buffer, 0, bufferSize, cancellationToken).ConfigureAwait(false)) > 0)
+                while(numberOfBytesToRead > 0 
+                    && (numberOfBytesRead = await Stream.ReadAsync(buffer, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
                 {
                     await stream.WriteAsync(buffer, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
+                    totalNumberOfBytesRead += numberOfBytesRead;
+                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
                 }
             }
             finally
             {
-                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
+                ArrayPool<byte>.Shared.Return(buffer);
             }      
         }
     }
