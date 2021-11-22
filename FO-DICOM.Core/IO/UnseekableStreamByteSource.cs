@@ -13,30 +13,6 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
 {
-    /// <summary>
-    /// Factory for creating a stream byte source for reading.
-    /// </summary>
-    public static class StreamByteSourceFactory
-    {
-        /// <summary>
-        /// Returns a newly created  instance of a stream byte source class.
-        /// The actual class depends on the stream capabilities.
-        /// </summary>
-        /// <param name="stream">Stream to read from.</param>
-        /// <param name="readOption">Defines the handling of large tags.</param>
-        /// <param name="largeObjectSize">Custom limit of what are large values and what are not.
-        /// If 0 is passed, then the default of 64k is used.</param>
-        public static IByteSource Create(Stream stream, FileReadOption readOption = FileReadOption.Default,
-            int largeObjectSize = 0)
-        {
-            if (stream.CanSeek)
-            {
-                return new StreamByteSource(stream, readOption, largeObjectSize);
-            }
-
-            return new UnseekableStreamByteSource(stream, readOption, largeObjectSize);
-        }
-    }
 
     /// <summary>
     /// Stream byte source for reading streams without seek capability.
@@ -99,14 +75,12 @@ namespace FellowOakDicom.IO
         /// <param name="readOption">Defines the handling of large tags.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not.
         /// If 0 is passed, then the default of 64k is used.</param>
-        public UnseekableStreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default,
-            int largeObjectSize = 0)
+        public UnseekableStreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (readOption == FileReadOption.Default || readOption == FileReadOption.ReadLargeOnDemand)
             {
                 var logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.IO");
-                logger.Warn("Reading large files on demand is not possible with unseekable streams," +
-                            " reading all tags immediately instead.");
+                logger.Warn("Reading large files on demand is not possible with unseekable streams, reading all tags immediately instead.");
                 readOption = FileReadOption.ReadAll;
             }
 
@@ -268,8 +242,6 @@ namespace FellowOakDicom.IO
 
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
-
-        // public void Skip(uint count) => GetBytes((int)count);
 
         /// <inheritdoc />
         public void Skip(uint count)
