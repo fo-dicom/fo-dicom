@@ -258,7 +258,7 @@ namespace FellowOakDicom.IO.Reader
                 throw new DicomReaderException("Attempted to read invalid DICOM file");
             }
 
-            // Adopt transfer syntax endianess to byte source.
+            // Adopt transfer syntax endianness to byte source.
             source.Endian = syntax.Endian;
         }
 
