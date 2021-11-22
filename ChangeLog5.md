@@ -1,5 +1,5 @@
 #### 5.0.2 (TBD)
-
+* Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 
 #### 5.0.1 (2021-11-11)
 
@@ -15,7 +15,6 @@
 * Add missing handling of UV, SV and OV in DicomDatasetReaderObserver.OnElement
 * Drastically reduce memory consumption when saving a DICOM file
 * Fix rendering of single color image
-* Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 
 #### 5.0.0 (2021-09-13)
 
