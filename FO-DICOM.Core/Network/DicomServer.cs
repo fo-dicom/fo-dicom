@@ -27,7 +27,9 @@ namespace FellowOakDicom.Network
 
         private readonly List<RunningDicomService> _services;
 
-        private readonly CancellationTokenSource _cancellationSource;
+        private readonly CancellationTokenSource _cancellationSource;       
+
+        private readonly CancellationToken _cancellationToken;
 
         private string _ipAddress;
 
@@ -68,6 +70,7 @@ namespace FellowOakDicom.Network
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
 
             _cancellationSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationSource.Token;
             _services = new List<RunningDicomService>();
 
             IsListening = false;
@@ -277,12 +280,12 @@ namespace FellowOakDicom.Network
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
-                while (!_cancellationSource.IsCancellationRequested)
+                while (!_cancellationToken.IsCancellationRequested)
                 {
                     await _hasNonMaxServicesFlag.WaitAsync().ConfigureAwait(false);
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificateName, noDelay, _cancellationSource.Token)
+                        .AcceptNetworkStreamAsync(_certificateName, noDelay, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)
@@ -330,7 +333,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         private async Task RemoveUnusedServicesAsync()
         {
-            while (!_cancellationSource.IsCancellationRequested)
+            while (!_cancellationToken.IsCancellationRequested)
             {
                 try
                 {
