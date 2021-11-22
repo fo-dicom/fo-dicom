@@ -71,7 +71,7 @@ namespace FellowOakDicom.IO.Buffer
         public void CopyToStream(Stream s)
         {
             // Writing the contents of the uneven buffer
-            s.Write(Buffer.Data, 0, (int)Buffer.Size);
+            Buffer.CopyToStream(s);
             
             // Writing another single byte, so that the contents are even
             s.WriteByte(0);
@@ -80,7 +80,7 @@ namespace FellowOakDicom.IO.Buffer
         public async Task CopyToStreamAsync(Stream s, CancellationToken cancellationToken)
         {
             // Writing the contents of the uneven buffer
-            await s.WriteAsync(Buffer.Data, 0, (int)Buffer.Size, cancellationToken).ConfigureAwait(false);
+            await Buffer.CopyToStreamAsync(s, cancellationToken).ConfigureAwait(false);
             
             // Writing another single byte, so that the contents are even
             s.WriteByte(0);
