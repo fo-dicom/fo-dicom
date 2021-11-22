@@ -677,7 +677,7 @@ namespace FellowOakDicom.Network
                             var command = new DicomDataset().NotValidated();
 
                             var reader = new DicomReader { IsExplicitVR = false };
-                            reader.Read(new StreamByteSource(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
+                            reader.Read(StreamByteSourceFactory.Create(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
 
                             _dimseStream = null;
                             _dimseStreamFile = null;
