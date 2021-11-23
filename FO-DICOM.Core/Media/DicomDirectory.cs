@@ -223,7 +223,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                var source = new StreamByteSource(stream, readOption, largeObjectSize: largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize: largeObjectSize);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
@@ -332,7 +332,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                var source = new StreamByteSource(stream, readOption, largeObjectSize: largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize: largeObjectSize);
 
                 using var unvalidatedScop = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();

@@ -272,7 +272,7 @@ namespace FellowOakDicom
 
             try
             {
-                var source = new StreamByteSource(stream, readOption, largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
@@ -385,7 +385,7 @@ namespace FellowOakDicom
 
             try
             {
-                var source = new StreamByteSource(stream, readOption, largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize);
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
                 var result =
