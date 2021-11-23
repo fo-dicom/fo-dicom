@@ -105,13 +105,9 @@ namespace FellowOakDicom.Network
             try
             {
                 GetCommonFields(preamble);
-
                 s.Write(preamble, 0, 6);
-                
                 _ms.Seek(0, SeekOrigin.Begin);
-                
                 _ms.CopyTo(s);
-                
                 s.Flush();
             }
             finally
@@ -130,11 +126,8 @@ namespace FellowOakDicom.Network
             try
             {
                 GetCommonFields(preamble);
-
                 await s.WriteAsync(preamble, 0, 6).ConfigureAwait(false);
-                
                 _ms.Seek(0, SeekOrigin.Begin);
-                
                 await _ms.CopyToAsync(s).ConfigureAwait(false);
             }
             finally
