@@ -625,6 +625,20 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
 
+
+        [Fact]
+        public void SerializeArrayOfDicomDatasets()
+        {
+            var dataset1 = BuildZooDataset();
+            var dataset2 = BuildAllTypesDataset_();
+
+            var json = DicomJson.ConvertDicomToJson(new[] { dataset1, dataset2 });
+            var reconstructed = DicomJson.ConvertJsonToDicomArray(json);
+            Assert.True(ValueEquals(dataset1, reconstructed[0]));
+            Assert.True(ValueEquals(dataset2, reconstructed[1]));
+        }
+
+
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
