@@ -28,9 +28,7 @@ namespace FellowOakDicom.IO.Buffer
 
         public byte[] Data => File.GetByteRange(Position, (int)Size);
 
-        public byte[] GetByteRange(long offset, int count)
-            => File.GetByteRange(Position + offset, count);
-
+        /// <inheritdoc />
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)

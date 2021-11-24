@@ -19,22 +19,11 @@ namespace FellowOakDicom.IO.Buffer
 
         public bool IsMemory => true;
 
-        public byte[] Data { get; private set; }
+        public byte[] Data { get; }
 
         public long Size => 0;
 
-        public byte[] GetByteRange(long offset, int count)
-        {
-            if (offset != 0 || count != 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(offset),
-                    "Offset and count cannot be greater than 0 in EmptyBuffer");
-            }
-
-            return Data;
-        }
-
+        /// <inheritdoc />
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (offset != 0 || count != 0)

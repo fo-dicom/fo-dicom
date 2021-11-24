@@ -4,6 +4,7 @@
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO.Buffer;
 using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -99,8 +100,16 @@ namespace FellowOakDicom.IO
             }
             else
             {
-                byte[] temp = buffer.GetByteRange(size * n, size);
-                System.Buffer.BlockCopy(temp, 0, values, 0, size);
+                byte[] temp = ArrayPool<byte>.Shared.Rent(size);
+                try
+                {
+                    buffer.GetByteRange(size * n, size, temp);
+                    System.Buffer.BlockCopy(temp, 0, values, 0, size);
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(temp);
+                }
             }
             return values[0];
         }

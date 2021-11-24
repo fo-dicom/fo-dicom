@@ -3,7 +3,10 @@
 
 using FellowOakDicom.IO.Buffer;
 using System;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Buffer
@@ -36,8 +39,49 @@ namespace FellowOakDicom.Tests.IO.Buffer
             var buffer = new TempFileBuffer(data);
 
             var expected = new ArraySegment<byte>(data, offset, count);
-            var actual = buffer.GetByteRange(offset, count);
+            var actual = new byte[count];
+            buffer.GetByteRange(offset, count, actual);
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CopyToStream_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var bytes = new byte[10_000];
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte) (i % 256);
+            }
+            var fileByteBuffer = new TempFileBuffer(bytes);
+
+            using var ms = new MemoryStream(bytes.Length);
+
+            // Act
+            fileByteBuffer.CopyToStream(ms);
+
+            // Assert
+            Assert.Equal(bytes, ms.ToArray());
+        }
+
+        [Fact]
+        public async Task CopyToStreamAsync_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var bytes = new byte[10_000];
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte) (i % 256);
+            }
+            var fileByteBuffer = new TempFileBuffer(bytes);
+
+            using var ms = new MemoryStream(bytes.Length);
+
+            // Act
+            await fileByteBuffer.CopyToStreamAsync(ms, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            Assert.Equal(bytes, ms.ToArray());
         }
 
         #endregion

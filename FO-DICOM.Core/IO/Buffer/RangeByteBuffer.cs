@@ -28,11 +28,18 @@ namespace FellowOakDicom.IO.Buffer
 
         public long Size => Length;
 
-        public byte[] Data => Internal.GetByteRange(Offset, Length);
+        public byte[] Data
+        {
+            get
+            {
+                var data = new byte[Length];
+                Internal.GetByteRange(Offset, Length, data);
+                return data;
+            }
+        }
 
-        public byte[] GetByteRange(long offset, int count) => Internal.GetByteRange(Offset + offset, Math.Max(count, Length));
-
-        public void GetByteRange(long offset, int count, byte[] output) => Internal.GetByteRange(Offset + offset, Math.Max(count, Length), output);
+        /// <inheritdoc />
+        public void GetByteRange(long offset, int count, byte[] output) => Internal.GetByteRange(Offset + offset, Math.Min(count, Length), output);
 
         public void CopyToStream(Stream stream)
         {

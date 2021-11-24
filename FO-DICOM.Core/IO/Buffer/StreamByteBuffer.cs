@@ -42,20 +42,6 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-        public byte[] GetByteRange(long offset, int count)
-        {
-            if (!Stream.CanRead)
-            {
-                throw new DicomIoException("cannot read from stream - maybe closed");
-            }
-
-            byte[] buffer = new byte[count];
-            
-            GetByteRange(offset, count, buffer);
-            
-            return buffer;
-        }
-
         public void GetByteRange(long offset, int count, byte[] output)
         {
             if (output == null)

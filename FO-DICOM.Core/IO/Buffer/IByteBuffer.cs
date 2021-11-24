@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,18 +27,9 @@ namespace FellowOakDicom.IO.Buffer
         /// Gets the data.
         /// </summary>
         byte[] Data { get; }
-
+        
         /// <summary>
-        /// Gets a subset of the data.
-        /// </summary>
-        /// <param name="offset">Offset from beginning of data array.</param>
-        /// <param name="count">Number of bytes to return.</param>
-        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        [Obsolete("Use the overload that takes an output byte array instead")]
-        byte[] GetByteRange(long offset, int count);
-
-        /// <summary>
-        /// Gets a subset of the data.
+        /// Gets a subset of the data and fills it in the provided output buffer
         /// </summary>
         /// <param name="offset">Offset from beginning of data array.</param>
         /// <param name="count">Number of bytes to return.</param>
