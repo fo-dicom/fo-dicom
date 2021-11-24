@@ -389,30 +389,22 @@ namespace FellowOakDicom.Network
         {
             _br?.Dispose();
             _bw?.Dispose();
-            
-            if (_leaveOpen)
-            {
-                _stream.Flush();
-            }
-            else
+            if (!_leaveOpen)
             {
                 _stream.Dispose();
             }
         }
 
-        public async ValueTask DisposeAsync()
+        public ValueTask DisposeAsync()
         {
             _br?.Dispose();
             _bw?.Dispose();
-            
-            if (_leaveOpen)
-            {
-                await _stream.FlushAsync().ConfigureAwait(false);
-            }
-            else
+            if(!_leaveOpen)
             {
                 _stream.Dispose();
             }
+
+            return default;
         }
 
         /// <summary>
