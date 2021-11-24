@@ -226,8 +226,8 @@ namespace FellowOakDicom.Network
             if (disposing)
             {
                 _dimseStream?.Dispose();
-                _network?.Dispose();
                 _writeStream?.Dispose();
+                _network?.Dispose();
                 _pduQueueWatcher?.Dispose();
             }
 
