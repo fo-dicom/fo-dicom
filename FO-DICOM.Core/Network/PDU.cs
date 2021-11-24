@@ -1568,7 +1568,6 @@ namespace FellowOakDicom.Network
                 ArrayPool<byte>.Shared.Return(preamble);
             }
             
-            
             Write(pdu);
         }
 
