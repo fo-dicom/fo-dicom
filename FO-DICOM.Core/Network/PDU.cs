@@ -1508,7 +1508,7 @@ namespace FellowOakDicom.Network
         {
             await using var pdu = new RawPDU(0x04, DicomEncoding.Default, stream, true);
 
-            // For P-DATA-F, we manually compose the preamble because we cannot use the length of the memory stream (because there is no memory stream) 
+            // For P-DATA-TF, we manually compose the preamble because we cannot use the length of the memory stream (because there is no memory stream) 
             byte[] preamble = ArrayPool<byte>.Shared.Rent(6);
             var length = GetLengthOfPDVs();
             try
@@ -1516,6 +1516,7 @@ namespace FellowOakDicom.Network
                 unchecked
                 {
                     preamble[0] = 0x04;
+                    preamble[1] = 0;
                     preamble[2] = (byte)((length & 0xff000000U) >> 24);
                     preamble[3] = (byte)((length & 0x00ff0000U) >> 16);
                     preamble[4] = (byte)((length & 0x0000ff00U) >> 8);
