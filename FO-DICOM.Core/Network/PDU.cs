@@ -369,7 +369,17 @@ namespace FellowOakDicom.Network
         /// <param name="value">Field value</param>
         public void Write(string name, string value)
         {
-            _bw.Write(value.ToCharArray());
+            int numberOfBytes = _encoding.GetMaxByteCount(value.Length);
+            var buffer = ArrayPool<byte>.Shared.Rent(numberOfBytes);
+            try
+            {
+                numberOfBytes = _encoding.GetBytes(value, 0, value.Length, buffer, 0);
+                _bw.Write(buffer, 0, numberOfBytes);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         /// <summary>
