@@ -424,7 +424,7 @@ namespace FellowOakDicom.Network
                     _readLength = length;
 
                     // Read PDU
-                    var ms = new MemoryStream();
+                    var ms = new MemoryStream(_readLength);
 
                     ms.Write(buffer, 0, 6);
 
@@ -452,7 +452,12 @@ namespace FellowOakDicom.Network
                     {
                         case 0x01:
                             {
-                                Association = new DicomAssociation { RemoteHost = _network.RemoteHost, RemotePort = _network.RemotePort, Options = Options };
+                                Association = new DicomAssociation
+                                {
+                                    RemoteHost = _network.RemoteHost,
+                                    RemotePort = _network.RemotePort, 
+                                    Options = Options
+                                };
 
                                 var pdu = new AAssociateRQ(Association);
                                 if (DoHandlePDUBytes != null)
