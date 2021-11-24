@@ -411,15 +411,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
         /// </summary>
-        private void GetCommonFields(byte[] buffer)
-        {
-            GetCommonFields(buffer, (uint)_stream.Length);
-        }
+        internal void GetCommonFields(byte[] buffer) => GetCommonFields(buffer, (uint)_stream.Length);
 
         /// <summary>
         /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
         /// </summary>
-        public void GetCommonFields(byte[] buffer, uint length)
+        internal void GetCommonFields(byte[] buffer, uint length)
         {
             unchecked
             {
@@ -442,12 +439,6 @@ namespace FellowOakDicom.Network
     /// </summary>
     public interface PDU
     {
-        /// <summary>
-        /// Writes PDU to PDU buffer
-        /// </summary>
-        /// <returns>PDU buffer</returns>
-        RawPDU Write();
-        
         /// <summary>
         /// Writes PDU to stream
         /// </summary>
@@ -492,18 +483,11 @@ namespace FellowOakDicom.Network
         #region Write
 
         /// <summary>
-        /// Writes A-ASSOCIATE-RQ to PDU buffer
+        /// Writes A-ASSOCIATE-RQ to the provided stream
         /// </summary>
-        /// <returns>PDU buffer</returns>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x01);
-
-            Write(pdu);
-
-            return pdu;
-        }
-
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-RQ Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
@@ -843,18 +827,11 @@ namespace FellowOakDicom.Network
         #region Write
 
         /// <summary>
-        /// Writes A-ASSOCIATE-AC to PDU buffer
+        /// Writes A-ASSOCIATE-AC to the provided stream
         /// </summary>
-        /// <returns>PDU buffer</returns>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x02);
-
-            Write(pdu);
-
-            return pdu;
-        }
-
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-AC Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
@@ -1222,19 +1199,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Writes A-ASSOCIATE-RJ to PDU buffer
         /// </summary>
-        /// <returns>PDU buffer</returns>
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         /// <remarks>When writing the rejection reason to the <see cref="RawPDU"/> object, the <see cref="DicomRejectSource"/>
         /// specification in the underlying value is masked out, to ensure that the reason code matches the codes specified
         /// in Table 9-21 of DICOM Standard PS 3.8.</remarks>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x03);
-            
-            Write(pdu);
-            
-            return pdu;
-        }
-
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-RJ is always 4 bytes
@@ -1298,18 +1268,11 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>
-        /// Writes A-RELEASE-RQ to PDU buffer
+        /// Writes A-RELEASE-RQ to the provided stream
         /// </summary>
-        /// <returns>PDU buffer</returns>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x05);
-            
-            Write(pdu);
-            
-            return pdu;
-        }
-
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-RELEASE-RQ is always one uint (reserved)
@@ -1364,18 +1327,11 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>
-        /// Writes A-RELEASE-RP to PDU buffer
+        /// Writes A-RELEASE-RP to the provided stream
         /// </summary>
-        /// <returns>PDU buffer</returns>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x06);
-
-            Write(pdu);
-            
-            return pdu;
-        }
-
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-RELEASE-RP is always one uint (reserved)
@@ -1489,20 +1445,13 @@ namespace FellowOakDicom.Network
         public override string ToString() => "A-ABORT";
 
         #region Write
-
+        
         /// <summary>
-        /// Writes A-ABORT to PDU buffer
+        /// Writes A-ABORT to the provided stream
         /// </summary>
-        /// <returns>PDU buffer</returns>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x07);
-            
-            Write(pdu);
-            
-            return pdu;
-        }
-
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ABORT is always 4 bytes
@@ -1595,18 +1544,11 @@ namespace FellowOakDicom.Network
         #region Write
 
         /// <summary>
-        /// Writes P-DATA-TF to PDU buffer
+        /// Writes P-DATA-TF to the provided stream
         /// </summary>
-        /// <returns>PDU buffer</returns>
-        public RawPDU Write()
-        {
-            var pdu = new RawPDU(0x04);
-
-            Write(pdu);
-            
-            return pdu;
-        }
-
+        /// <param name="stream">The stream to write the PDU to</param>
+        /// <param name="cancellationToken">The token that cancels the write operation</param>
+        /// <returns>A Task that represents the asynchronous operation</returns>
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // Instead of using rented byte arrays, P-DATA-TF PDVs are written directly to the underlying stream

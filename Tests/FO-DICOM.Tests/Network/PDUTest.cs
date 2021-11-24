@@ -12,20 +12,20 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Tests.Network
 {
-
     [Collection("Network")]
     public class PDUTest
     {
         #region Unit tests
 
         [Fact]
-        public void Write_AeWithNonAsciiCharacters_ShouldBeAsciified()
+        public async Task Write_AeWithNonAsciiCharacters_ShouldBeAsciified()
         {
             var notExpected = "GÖTEBORG";
             var request = new AAssociateRQ(new DicomAssociation("MALMÖ", notExpected));
 
-            var writePdu = request.Write();
-            var readPdu = ConvertWriteToReadPdu(writePdu);
+            using var ms = new MemoryStream();
+            await request.WriteAsync(ms, CancellationToken.None);
+            var readPdu = new RawPDU(ms);
 
             readPdu.Reset();
             readPdu.SkipBytes("Unknown", 10);
@@ -49,15 +49,15 @@ namespace FellowOakDicom.Tests.Network
 
         [Theory]
         [MemberData(nameof(ExtendedNegotiationTestData))]
-        public void AssociateRQ_WriteRead_ExpectedExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID commonServiceClass, DicomUID[] relatedSopClasses)
+        public async Task AssociateRQ_WriteRead_ExpectedExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID commonServiceClass, DicomUID[] relatedSopClasses)
         {
             var association = new DicomAssociation("testCalling", "testCalled");
             association.ExtendedNegotiations.Add(sopClassUid, applicationInfo, commonServiceClass, relatedSopClasses);
 
             var rq = new AAssociateRQ(association);
-            var writePdu = rq.Write();
-
-            var readPdu = ConvertWriteToReadPdu(writePdu);
+            using var ms = new MemoryStream();
+            await rq.WriteAsync(ms, CancellationToken.None);
+            var readPdu = new RawPDU(ms);
 
             var testAssociation = new DicomAssociation();
             var rq2 = new AAssociateRQ(testAssociation);
@@ -75,7 +75,7 @@ namespace FellowOakDicom.Tests.Network
 
         [Theory]
         [MemberData(nameof(ExtendedNegotiationTestData))]
-        public void AssociateAC_WriteRead_ExpectedExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID commonServiceClass, DicomUID[] relatedSopClasses)
+        public async Task AssociateAC_WriteRead_ExpectedExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID commonServiceClass, DicomUID[] relatedSopClasses)
         {
             var inAssociation = new DicomAssociation("testCalling", "testCalled");
             inAssociation.ExtendedNegotiations.Add(sopClassUid, applicationInfo, commonServiceClass, relatedSopClasses);
@@ -84,9 +84,10 @@ namespace FellowOakDicom.Tests.Network
             inAssociation.ExtendedNegotiations.AcceptApplicationInfo(sopClassUid, acceptedApplicationInfo);
 
             var ac = new AAssociateAC(inAssociation);
-            var writePdu = ac.Write();
+            using var ms = new MemoryStream();
+            await ac.WriteAsync(ms, CancellationToken.None);
 
-            var readPdu = ConvertWriteToReadPdu(writePdu);
+            var readPdu = new RawPDU(ms);
 
             var outAssociation = new DicomAssociation();
             outAssociation.ExtendedNegotiations.Add(sopClassUid, applicationInfo);
@@ -116,12 +117,11 @@ namespace FellowOakDicom.Tests.Network
 
         [Theory]
         [MemberData(nameof(RawPDUTestData))]
-        public void AssociateRJ_Write_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string _)
+        public async Task AssociateRJ_Write_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string _)
         {
-            using var raw = reject.Write();
-            using var stream = new MemoryStream();
-            raw.WritePDU(stream);
-            var actual = stream.ToArray();
+            using var rawMs = new MemoryStream();
+            await reject.WriteAsync(rawMs, CancellationToken.None);
+            var actual = rawMs.ToArray();
 
             Assert.Equal(expected, actual);
         }
@@ -149,14 +149,11 @@ namespace FellowOakDicom.Tests.Network
         [MemberData(nameof(RawPDUTestData))]
         public async Task AssociateRJ_WriteAsync_BytesCorrectlyWritten(byte[] expected, AAssociateRJ reject, string _)
         {
-            using (var raw = reject.Write())
-            using (var stream = new MemoryStream())
-            {
-                await raw.WritePDUAsync(stream, CancellationToken.None);
-                var actual = stream.ToArray();
+            using var stream = new MemoryStream();
+            await reject.WriteAsync(stream, CancellationToken.None);
+            var actual = stream.ToArray();
 
-                Assert.Equal(expected, actual);
-            }
+            Assert.Equal(expected, actual);
         }
 
         #endregion
