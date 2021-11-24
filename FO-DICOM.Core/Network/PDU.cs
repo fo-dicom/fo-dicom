@@ -391,7 +391,7 @@ namespace FellowOakDicom.Network
         /// <param name="pad">Padding character</param>
         public void Write(string name, string value, int count, char pad)
         {
-            _bw.Write(ToCharArray(value, count, pad));
+            Write(name, value.PadRight(count, pad));
         }
 
         /// <summary>
@@ -414,16 +414,6 @@ namespace FellowOakDicom.Network
             _stream.Position = p1;
             _bw.Write((ushort)(p2 - p1 - 2));
             _stream.Position = p2;
-        }
-
-        private static char[] ToCharArray(string s, int l, char p)
-        {
-            var c = new char[l];
-            for (var i = 0; i < l; i++)
-            {
-                c[i] = i < s.Length ? s[i] : p;
-            }
-            return c;
         }
 
         #endregion
