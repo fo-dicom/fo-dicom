@@ -7,6 +7,12 @@ namespace FellowOakDicom.Network
 {
     public class DicomServiceOptions
     {
+        /// <summary>
+        /// Singleton instance that contains the default values
+        /// Never modify this instance!
+        /// </summary>
+        internal static readonly DicomServiceOptions Default = new DicomServiceOptions(); 
+        
         /// <summary>Gets or sets whether or not to write message to log for each P-Data-TF PDU sent or received.</summary>
         public bool LogDataPDUs { get; set; } = false;
 

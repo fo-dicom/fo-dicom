@@ -605,7 +605,7 @@ namespace FellowOakDicom.Network
             pdu.Write("Item-Type", 0x51);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? new DicomServiceOptions().MaxPDULength);
+            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength);
 
             // Implementation Class UID
             pdu.Write("Item-Type", 0x52);
@@ -939,7 +939,7 @@ namespace FellowOakDicom.Network
             pdu.Write("Item-Type", 0x51);
             pdu.Write("Reserved", 0x00);
             pdu.Write("Item-Length", (ushort)0x0004);
-            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? new DicomServiceOptions().MaxPDULength);
+            pdu.Write("Max PDU Length", _assoc.Options?.MaxPDULength ?? DicomServiceOptions.Default.MaxPDULength);
 
             // Implementation Class UID
             pdu.Write("Item-Type", 0x52);
