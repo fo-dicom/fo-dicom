@@ -88,7 +88,7 @@ namespace FellowOakDicom.Network
             _encoding = encoding ?? DicomEncoding.Default;
             _br = EndianBinaryReader.Create(_stream, _encoding, Endian.Big, _leaveOpen);
             Type = _br.ReadByte();
-            _stream.Seek(6, SeekOrigin.Begin);
+            _stream.Seek(CommonFieldsLength, SeekOrigin.Begin);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace FellowOakDicom.Network
             _stream.Seek(0, SeekOrigin.Begin);
             _br = EndianBinaryReader.Create(_stream, Endian.Big, _leaveOpen);
             Type = _br.ReadByte();
-            _stream.Seek(6, SeekOrigin.Begin);
+            _stream.Seek(CommonFieldsLength, SeekOrigin.Begin);
         }
 
         #endregion
@@ -697,7 +697,7 @@ namespace FellowOakDicom.Network
         /// <param name="raw">PDU buffer</param>
         public void Read(RawPDU raw)
         {
-            var l = raw.Length - 6;
+            var l = raw.Length - RawPDU.CommonFieldsLength;
 
             raw.ReadUInt16("Version");
             raw.SkipBytes("Reserved", 2);
@@ -1012,7 +1012,7 @@ namespace FellowOakDicom.Network
             _assoc.MaxAsyncOpsInvoked = 1;
             _assoc.MaxAsyncOpsPerformed = 1;
 
-            var l = raw.Length - 6;
+            var l = raw.Length - RawPDU.CommonFieldsLength;
 
             raw.ReadUInt16("Version");
             raw.SkipBytes("Reserved", 2);
@@ -1554,7 +1554,7 @@ namespace FellowOakDicom.Network
 
         public override string ToString()
         {
-            var value = $"P-DATA-TF [Length: {6 + GetLengthOfPDVs()}]";
+            var value = $"P-DATA-TF [Length: {RawPDU.CommonFieldsLength + GetLengthOfPDVs()}]";
             foreach (var pdv in PDVs)
             {
                 value += "\n\t" + pdv.ToString();
@@ -1577,13 +1577,13 @@ namespace FellowOakDicom.Network
             await using var pdu = new RawPDU(0x04, DicomEncoding.Default, stream, true);
             
             // For P-DATA-TF, we manually compose the preamble because we cannot use the length of the memory stream (because there is no memory stream) 
-            byte[] preamble = ArrayPool<byte>.Shared.Rent(6);
+            byte[] preamble = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength);
             var length = GetLengthOfPDVs();
             try
             {
                 pdu.GetCommonFields(preamble, length);
 
-                await stream.WriteAsync(preamble, 0, 6, cancellationToken).ConfigureAwait(false);
+                await stream.WriteAsync(preamble, 0, RawPDU.CommonFieldsLength, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -1611,7 +1611,7 @@ namespace FellowOakDicom.Network
         /// <param name="raw">PDU buffer</param>
         public void Read(RawPDU raw)
         {
-            var len = raw.Length - 6;
+            var len = raw.Length - RawPDU.CommonFieldsLength;
             uint read = 0;
             while (read < len)
             {
