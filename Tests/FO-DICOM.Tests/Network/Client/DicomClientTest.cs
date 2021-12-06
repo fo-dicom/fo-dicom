@@ -1338,7 +1338,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 await client.AddRequestsAsync(new[] { echoRequest1, echoRequest2, echoRequest3 }).ConfigureAwait(false);
 
-                using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+                using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
                 try
                 {
