@@ -64,7 +64,7 @@ jobs:
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml"
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
