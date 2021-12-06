@@ -17,7 +17,7 @@ jobs:
         run: |
           Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
           Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
       - name: Setup MSBuild
@@ -39,7 +39,7 @@ jobs:
   v4-net-core-21:
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
       - name: Setup MSBuild
@@ -60,7 +60,7 @@ jobs:
   v5-net-framework:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -74,7 +74,7 @@ jobs:
   v5-net-core-21:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0 --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -88,7 +88,7 @@ jobs:
   v5-net-core-31:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -104,7 +104,7 @@ jobs:
   benchmarks:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework netcoreapp3.1
     - name: run benchmarks
