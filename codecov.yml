@@ -1,0 +1,22 @@
+# Documentation: https://docs.codecov.io/docs/codecov-yaml
+
+codecov:
+  # Avoid "Missing base report"
+  # https://github.com/codecov/support/issues/363
+  # https://docs.codecov.io/docs/comparing-commits
+  allow_coverage_offsets: true
+
+  # Avoid Report Expired
+  # https://docs.codecov.io/docs/codecov-yaml#section-expired-reports
+  max_report_age: off
+
+coverage:
+  # Use integer precision
+  # https://docs.codecov.com/docs/codecovyml-reference#coverageprecision
+  precision: 0
+
+  # Explicitly control coverage status checks
+  # https://docs.codecov.com/docs/commit-status#disabling-a-status
+  status:
+    project: on
+    patch: off
