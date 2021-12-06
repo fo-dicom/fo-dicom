@@ -17,7 +17,7 @@ jobs:
         run: |
           Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
           Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
       - name: Setup MSBuild
@@ -39,7 +39,7 @@ jobs:
   v4-net-core-21:
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
       - name: Setup MSBuild
@@ -60,21 +60,23 @@ jobs:
   v5-net-framework:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml"
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
           name: test-v5-net-framework.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
+    - name: Upload code coverage
+      uses: codecov/codecov-action@v2
       
   v5-net-core-21:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --framework netstandard2.0 --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -88,21 +90,23 @@ jobs:
   v5-net-core-31:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnetcore31.xml"
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework netcoreapp3.1 --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnetcore31.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
           name: test-v5-net-core-31.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnetcore31.xml
+    - name: Upload code coverage 
+      uses: codecov/codecov-action@v2
 
   benchmarks:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework netcoreapp3.1
     - name: run benchmarks
