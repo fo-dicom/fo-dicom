@@ -327,7 +327,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                                 _logger.Debug("{Request}: {Response}", dicomRequest.ToString(), requestCompletedEvent.Response.ToString());
 
                                 yield return requestCompletedEvent.Response;
-                                break;
+                                yield break;
                             }
                             case RequestTimedOutEvent requestTimedOutEvent:
                             {
