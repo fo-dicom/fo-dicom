@@ -94,23 +94,45 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="bytesToSwap">Number of bytes to swap.</param>
         /// <param name="bytes">Array of bytes.</param>
-        public static void SwapBytes(int bytesToSwap, byte[] bytes)
+        public static void SwapBytes(int bytesToSwap, byte[] bytes) => SwapBytes(bytesToSwap, bytes, bytes.Length);
+
+        /// <summary>
+        /// Swap bytes in sequences of <paramref name="bytesToSwap"/>.
+        /// </summary>
+        /// <param name="bytesToSwap">Number of bytes to swap.</param>
+        /// <param name="bytes">Array of bytes.</param>
+        /// <param name="count">The maximum number of bytes in the array that should be processed</param>
+        public static void SwapBytes(int bytesToSwap, byte[] bytes, int count)
         {
-            if (bytesToSwap == 1) return;
+            if (count > bytes.Length)
+            {
+                throw new ArgumentException($"Cannot swap {count} bytes of an array that only contains {bytes.Length} bytes");
+            }
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (bytesToSwap == 1)
+            {
+                return;
+            }
+
             if (bytesToSwap == 2)
             {
-                SwapBytes2(bytes);
+                SwapBytes2(bytes, count);
                 return;
             }
             if (bytesToSwap == 4)
             {
-                SwapBytes4(bytes);
+                SwapBytes4(bytes, count);
                 return;
             }
 
             unchecked
             {
-                var l = bytes.Length - (bytes.Length % bytesToSwap);
+                var l = count - (count % bytesToSwap);
                 for (var i = 0; i < l; i += bytesToSwap)
                 {
                     Array.Reverse(bytes, i, bytesToSwap);
@@ -122,16 +144,21 @@ namespace FellowOakDicom.IO
         /// Swap bytes in sequences of 2.
         /// </summary>
         /// <param name="bytes">Array of bytes.</param>
-        public static void SwapBytes2(byte[] bytes)
+        public static void SwapBytes2(byte[] bytes) => SwapBytes2(bytes, bytes.Length);
+
+        /// <summary>
+        /// Swap bytes in sequences of 2.
+        /// </summary>
+        /// <param name="bytes">Array of bytes.</param>
+        /// <param name="count">The maximum number of bytes in the array that should be processed</param>
+        public static void SwapBytes2(byte[] bytes, int count)
         {
             unchecked
             {
-                var l = bytes.Length - bytes.Length % 2;
+                var l = count - count % 2;
                 for (var i = 0; i < l; i += 2)
                 {
-                    var b = bytes[i + 1];
-                    bytes[i + 1] = bytes[i];
-                    bytes[i] = b;
+                    (bytes[i + 1], bytes[i]) = (bytes[i], bytes[i + 1]);
                 }
             }
         }
@@ -140,11 +167,18 @@ namespace FellowOakDicom.IO
         /// Swap bytes in sequences of 4.
         /// </summary>
         /// <param name="bytes">Array of bytes.</param>
-        public static void SwapBytes4(byte[] bytes)
+        public static void SwapBytes4(byte[] bytes) => SwapBytes4(bytes, bytes.Length);
+
+        /// <summary>
+        /// Swap bytes in sequences of 4.
+        /// </summary>
+        /// <param name="bytes">Array of bytes.</param>
+        /// <param name="count">The maximum number of bytes in the array that should be processed</param>
+        public static void SwapBytes4(byte[] bytes, int count)
         {
             unchecked
             {
-                var l = bytes.Length - (bytes.Length % 4);
+                var l = count - (count % 4);
                 for (var i = 0; i < l; i += 4)
                 {
                     var b = bytes[i + 3];

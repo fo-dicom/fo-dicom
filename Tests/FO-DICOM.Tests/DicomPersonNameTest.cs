@@ -40,7 +40,8 @@ namespace FellowOakDicom.Tests
         {
             var target = new DicomPersonName(DicomTag.PatientName, "Тарковский", "Андрей", "Арсеньевич");
             target.TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144");
-            byte[] b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
+            var b = new byte[(int)target.Buffer.Size];
+            target.Buffer.GetByteRange(0, (int)target.Buffer.Size, b);
             byte[] c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей^Арсеньевич");
             Assert.Equal(c, b);
             // following test checks also padding with space!
@@ -48,7 +49,8 @@ namespace FellowOakDicom.Tests
             {
                 TargetEncoding = DicomEncoding.GetEncoding("ISO IR 144")
             };
-            b = target.Buffer.GetByteRange(0, (int)target.Buffer.Size);
+            b = new byte[(int)target.Buffer.Size];
+            target.Buffer.GetByteRange(0, (int)target.Buffer.Size, b);
             c = Encoding.GetEncoding("iso-8859-5").GetBytes("Тарковский^Андрей ");
             Assert.Equal(c, b);
         }

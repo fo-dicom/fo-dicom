@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Writer
@@ -72,7 +73,7 @@ namespace FellowOakDicom.IO.Writer
                 buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
             }
 
-            WriteBuffer(_target, buffer, _options.LargeObjectSize);
+            WriteBuffer(_target, buffer);
 
             return true;
         }
@@ -99,7 +100,7 @@ namespace FellowOakDicom.IO.Writer
                 buffer = new SwapByteBuffer(buffer, element.ValueRepresentation.UnitSize);
             }
 
-            await WriteBufferAsync(_target, buffer, _options.LargeObjectSize).ConfigureAwait(false);
+            await WriteBufferAsync(_target, buffer, CancellationToken.None).ConfigureAwait(false);
             return true;
         }
 
@@ -213,7 +214,7 @@ namespace FellowOakDicom.IO.Writer
                 }
             }
 
-            WriteBuffer(_target, buffer, _options.LargeObjectSize);
+            WriteBuffer(_target, buffer);
 
             return true;
         }
@@ -236,7 +237,7 @@ namespace FellowOakDicom.IO.Writer
                 }
             }
 
-            await WriteBufferAsync(_target, buffer, _options.LargeObjectSize).ConfigureAwait(false);
+            await WriteBufferAsync(_target, buffer, CancellationToken.None).ConfigureAwait(false);
 
             return true;
         }
@@ -298,37 +299,10 @@ namespace FellowOakDicom.IO.Writer
             }
         }
 
-        private static void WriteBuffer(IByteTarget target, IByteBuffer buffer, uint largeObjectSize)
-        {
-            long offset = 0;
-            var remainingSize = buffer.Size;
+        private static void WriteBuffer(IByteTarget target, IByteBuffer buffer)
+            => buffer.CopyToStream(target.AsWritableStream());
 
-            while (remainingSize > largeObjectSize)
-            {
-                target.ApplyToStream(s => buffer.CopyToStream(s, offset, (int)largeObjectSize));
-
-                offset += (int)largeObjectSize;
-                remainingSize -= largeObjectSize;
-            }
-
-            target.ApplyToStream(s => buffer.CopyToStream(s, offset, (int)remainingSize));
-        }
-
-        private static async Task WriteBufferAsync(IByteTarget target, IByteBuffer buffer, uint largeObjectSize)
-        {
-            long offset = 0;
-            var remainingSize = buffer.Size;
-
-            while (remainingSize > largeObjectSize)
-            {
-                await target.ApplyToStreamAsync(s => buffer.CopyToStreamAsync(s, offset, (int)largeObjectSize));
-
-                offset += (int)largeObjectSize;
-                remainingSize -= largeObjectSize;
-            }
-
-            await target.ApplyToStreamAsync(s => buffer.CopyToStreamAsync(s, offset, (int)remainingSize));
-        }
-
+        private static Task WriteBufferAsync(IByteTarget target, IByteBuffer buffer, CancellationToken cancellationToken)
+            => buffer.CopyToStreamAsync(target.AsWritableStream(), cancellationToken);
     }
 }

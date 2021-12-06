@@ -1,4 +1,9 @@
-#### 5.0.1 (TBD)
+#### 5.0.2 (TBD)
+* Fix issue where opening a DICOM file from a stream writes too much data when saving it again (#1264)
+* Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
+* Add method to convert an array of DicomDatasets into a json string (#1271)
+
+#### 5.0.1 (2021-11-11)
 
 * Add generated API documentation for versions 4 and 5
 * Add "AdvancedDicomClient". (#1144) This "expert" API gives full control over the connection, association and requests when sending DICOM requests
@@ -12,6 +17,8 @@
 * Change: Trying to add a DICOM element with invalid group ID to DICOM meta information now throws `DicomDataException` (#750)
 * Bug fix: Prevent DicomJsonConverter from consuming root end object token (#1251)
 * Add missing handling of UV, SV and OV in DicomDatasetReaderObserver.OnElement
+* Drastically reduce memory consumption when saving a DICOM file
+* Fix rendering of single color image
 
 #### 5.0.0 (2021-09-13)
 

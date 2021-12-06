@@ -30,83 +30,79 @@ namespace FellowOakDicom.Log
         ILogger ILogManager.GetLogger(string name) => GetLoggerImpl(name);
 
         #endregion
-
-        #region INNER TYPES
+    }
+    
+    /// <summary>
+    /// Manager for null ("do nothing") loggers.
+    /// </summary>
+    public class NullLoggerManager : LogManager
+    {
+        /// <summary>
+        /// Singleton instance of null logger manager.
+        /// </summary>
+        public static readonly LogManager Instance;
 
         /// <summary>
-        /// Manager for null ("do nothing") loggers.
+        /// Initializes the static fields.
         /// </summary>
-        private class NullLoggerManager : LogManager
+        static NullLoggerManager()
         {
-            /// <summary>
-            /// Singleton instance of null logger manager.
-            /// </summary>
-            public static readonly LogManager Instance;
-
-            /// <summary>
-            /// Initializes the static fields.
-            /// </summary>
-            static NullLoggerManager()
-            {
-                Instance = new NullLoggerManager();
-            }
-
-            /// <summary>
-            /// Initializes an instance of the null logger manager.
-            /// </summary>
-            private NullLoggerManager()
-            {
-            }
-
-            /// <summary>
-            /// Get logger from the current log manager implementation.
-            /// </summary>
-            /// <param name="name">Classifier name, typically namespace or type name.</param>
-            /// <returns>Logger from the current log manager implementation.</returns>
-            protected override Logger GetLoggerImpl(string name)
-            {
-                return NullLogger.Instance;
-            }
+            Instance = new NullLoggerManager();
         }
 
         /// <summary>
-        /// Null logger, provides a no-op logger implementation.
+        /// Initializes an instance of the null logger manager.
         /// </summary>
-        private class NullLogger : Logger
+        public NullLoggerManager()
         {
-            /// <summary>
-            /// Singleton instance of the <see cref="NullLogger"/> class.
-            /// </summary>
-            public static readonly Logger Instance;
-
-            /// <summary>
-            /// Initializes the static fields of <see cref="NullLogger"/>.
-            /// </summary>
-            static NullLogger()
-            {
-                Instance = new NullLogger();
-            }
-
-            /// <summary>
-            /// Initializes an instance of <see cref="NullLogger"/>.
-            /// </summary>
-            private NullLogger()
-            {
-            }
-
-            /// <summary>
-            /// Dispatch a log message.
-            /// </summary>
-            /// <param name="level">Log level.</param>
-            /// <param name="msg">Log message format string.</param>
-            /// <param name="args">Arguments corresponding to the <paramref name="msg">log message</paramref>.</param>
-            /// <remarks>The <see cref="NullLogger"/> Log method overloads do nothing.</remarks>
-            public override void Log(LogLevel level, string msg, params object[] args)
-            {
-                // Do nothing
-            }
         }
 
-        #endregion
+        /// <summary>
+        /// Get logger from the current log manager implementation.
+        /// </summary>
+        /// <param name="name">Classifier name, typically namespace or type name.</param>
+        /// <returns>Logger from the current log manager implementation.</returns>
+        protected override Logger GetLoggerImpl(string name)
+        {
+            return NullLogger.Instance;
+        }
+    }
+
+    /// <summary>
+    /// Null logger, provides a no-op logger implementation.
+    /// </summary>
+    public class NullLogger : Logger
+    {
+        /// <summary>
+        /// Singleton instance of the <see cref="NullLogger"/> class.
+        /// </summary>
+        public static readonly Logger Instance;
+
+        /// <summary>
+        /// Initializes the static fields of <see cref="NullLogger"/>.
+        /// </summary>
+        static NullLogger()
+        {
+            Instance = new NullLogger();
+        }
+
+        /// <summary>
+        /// Initializes an instance of <see cref="NullLogger"/>.
+        /// </summary>
+        public NullLogger()
+        {
+        }
+
+        /// <summary>
+        /// Dispatch a log message.
+        /// </summary>
+        /// <param name="level">Log level.</param>
+        /// <param name="msg">Log message format string.</param>
+        /// <param name="args">Arguments corresponding to the <paramref name="msg">log message</paramref>.</param>
+        /// <remarks>The <see cref="NullLogger"/> Log method overloads do nothing.</remarks>
+        public override void Log(LogLevel level, string msg, params object[] args)
+        {
+            // Do nothing
+        }
     }
 }

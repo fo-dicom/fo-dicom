@@ -4,6 +4,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
 ![build development](https://github.com/fo-dicom/fo-dicom/workflows/build/badge.svg?branch=development)
+[![codecov](https://codecov.io/gh/fo-dicom/fo-dicom/branch/development/graph/badge.svg)](https://codecov.io/gh/fo-dicom/fo-dicom)
 [![Join the chat at https://gitter.im/fo-dicom/fo-dicom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fo-dicom/fo-dicom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ### License

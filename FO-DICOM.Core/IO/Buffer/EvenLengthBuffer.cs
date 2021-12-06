@@ -3,11 +3,11 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
-
     /// <summary>
     /// Wrapper class for uneven length buffers that needs to be represented as even length buffers.
     /// </summary>
@@ -52,42 +52,38 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-        /// <summary>
-        /// Gets a subset of the data.
-        /// </summary>
-        /// <param name="offset">Offset from beginning of data array.</param>
-        /// <param name="count">Number of bytes to return.</param>
-        /// <returns>Requested sub-range of the <see name="Data"/> array.</returns>
-        /// <remarks>Allows for reach to the padded byte at the end of the even length buffer.</remarks>
-        public byte[] GetByteRange(long offset, int count)
+        /// <inheritdoc />
+        public void GetByteRange(long offset, int count, byte[] output)
         {
-            var data = new byte[count];
-            System.Buffer.BlockCopy(Buffer.Data, (int)offset, data, 0, (int)Math.Min(Buffer.Size - offset, count));
-            return data;
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            if (output.Length < count)
+            {
+                throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+            
+            System.Buffer.BlockCopy(Buffer.Data, (int)offset, output, 0, (int)Math.Min(Buffer.Size - offset, count));
         }
 
-        public void CopyToStream(Stream s, long offset, int count)
+        public void CopyToStream(Stream s)
         {
-            s.Write(Buffer.Data, (int)offset, (int)Math.Min(Buffer.Size - offset, count));
-            if (count > Buffer.Size - offset)
-            {
-                for (var i = 0; i < count - (Buffer.Size - offset); i++)
-                {
-                    s.WriteByte(0);
-                }
-            }
+            // Writing the contents of the uneven buffer
+            Buffer.CopyToStream(s);
+            
+            // Writing another single byte, so that the contents are even
+            s.WriteByte(0);
         }
 
-        public async Task CopyToStreamAsync(Stream s, long offset, int count)
+        public async Task CopyToStreamAsync(Stream s, CancellationToken cancellationToken)
         {
-            await s.WriteAsync(Buffer.Data, (int)offset, (int)Math.Min(Buffer.Size - offset, count));
-            if (count > Buffer.Size - offset)
-            {
-                for (var i = 0; i < count - (Buffer.Size - offset); i++)
-                {
-                    s.WriteByte(0);
-                }
-            }
+            // Writing the contents of the uneven buffer
+            await Buffer.CopyToStreamAsync(s, cancellationToken).ConfigureAwait(false);
+            
+            // Writing another single byte, so that the contents are even
+            s.WriteByte(0);
         }
 
         /// <summary>

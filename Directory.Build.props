@@ -5,9 +5,9 @@
         <Copyright>Copyright © fo-dicom contributors 2012-2021</Copyright>
         <Description>fo-dicom</Description>
 
-        <AssemblyVersion>5.0.0</AssemblyVersion>
-        <FileVersion>5.0.0.0</FileVersion>
-        <InformationalVersion>5.0.0</InformationalVersion>
+        <AssemblyVersion>5.0.1</AssemblyVersion>
+        <FileVersion>5.0.1.0</FileVersion>
+        <InformationalVersion>5.0.1</InformationalVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(GenerateDocumentation)==1">

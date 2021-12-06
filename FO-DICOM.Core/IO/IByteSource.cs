@@ -21,7 +21,7 @@ namespace FellowOakDicom.IO
     public interface IByteSource
     {
         /// <summary>
-        /// Gets or sets the endianess.
+        /// Gets or sets the endianness.
         /// </summary>
         Endian Endian { get; set; }
 

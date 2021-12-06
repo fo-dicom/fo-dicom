@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.IO;
+using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace FellowOakDicom.Network
 {
@@ -99,11 +101,19 @@ namespace FellowOakDicom.Network
         /// <param name="s">Output stream</param>
         public void WritePDU(Stream s)
         {
-            byte[] preamble = GetCommonFields();
-            _ms.Seek(0, SeekOrigin.Begin);
-            var merged = new MergeStream(new MemoryStream(preamble), _ms);
-            merged.CopyTo(s);
-            s.Flush();
+            byte[] preamble = ArrayPool<byte>.Shared.Rent(6);
+            try
+            {
+                GetCommonFields(preamble);
+                s.Write(preamble, 0, 6);
+                _ms.Seek(0, SeekOrigin.Begin);
+                _ms.CopyTo(s);
+                s.Flush();
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(preamble);
+            }
         }
 
         /// <summary>
@@ -112,10 +122,18 @@ namespace FellowOakDicom.Network
         /// <param name="s">Output stream</param>
         public async Task WritePDUAsync(Stream s)
         {
-            byte[] preamble = GetCommonFields();
-            _ms.Seek(0, SeekOrigin.Begin);
-            var merged = new MergeStream(new MemoryStream(preamble), _ms);
-            await merged.CopyToAsync(s).ConfigureAwait(false);
+            byte[] preamble = ArrayPool<byte>.Shared.Rent(6);
+            try
+            {
+                GetCommonFields(preamble);
+                await s.WriteAsync(preamble, 0, 6).ConfigureAwait(false);
+                _ms.Seek(0, SeekOrigin.Begin);
+                await _ms.CopyToAsync(s).ConfigureAwait(false);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(preamble);
+            }
         }
 
         /// <summary>
@@ -150,6 +168,7 @@ namespace FellowOakDicom.Network
 
         #region Read Methods
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckOffset(int bytes, string name)
         {
             if (_ms.Position + bytes > _ms.Length)
@@ -377,22 +396,18 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
         /// </summary>
-        private byte[] GetCommonFields()
+        private void GetCommonFields(byte[] buffer)
         {
-            var buffer = new byte[6];
-
             unchecked
             {
-                buffer[0] = Type;
-
                 var length = (uint)_ms.Length;
+                buffer[0] = Type;
+                buffer[1] = 0;
                 buffer[2] = (byte)((length & 0xff000000U) >> 24);
                 buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
                 buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
                 buffer[5] = (byte)(length & 0x000000ffU);
             }
-
-            return buffer;
         }
 
     }

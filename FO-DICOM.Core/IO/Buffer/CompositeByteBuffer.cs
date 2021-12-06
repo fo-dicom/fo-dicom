@@ -2,9 +2,11 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
@@ -45,7 +47,21 @@ namespace FellowOakDicom.IO.Buffer
         public IList<IByteBuffer> Buffers { get; }
 
         /// <inheritdoc />
-        public bool IsMemory => true;
+        public bool IsMemory
+        {
+            get
+            {
+                foreach (var b in Buffers)
+                {
+                    if (!b.IsMemory)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
 
         /// <inheritdoc />
         public long Size => Buffers.Sum(x => x.Size);
@@ -69,10 +85,19 @@ namespace FellowOakDicom.IO.Buffer
         #endregion
 
         #region METHODS
-
+        
         /// <inheritdoc />
-        public byte[] GetByteRange(long offset, int count)
+        public void GetByteRange(long offset, int count, byte[] output)
         {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+            if (output.Length < count)
+            {
+                throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
+            }
+            
             var pos = 0;
             for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++)
             {
@@ -80,28 +105,28 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             var offset2 = 0;
-            var data = new byte[count];
             for (; pos < Buffers.Count && count > 0; pos++)
             {
                 var remain = (int)Math.Min(Buffers[pos].Size - offset, count);
 
                 if (Buffers[pos].IsMemory)
                 {
-                    try
-                    {
-                        System.Buffer.BlockCopy(Buffers[pos].Data, (int)offset, data, offset2, remain);
-                    }
-                    catch (Exception)
-                    {
-                        data = Buffers[pos].Data.ToArray();
-                    }
-
+                   System.Buffer.BlockCopy(Buffers[pos].Data, (int)offset, output, offset2, remain);
                 }
 
                 else
                 {
-                    var temp = Buffers[pos].GetByteRange(offset, remain);
-                    System.Buffer.BlockCopy(temp, 0, data, offset2, remain);
+                    var temp = ArrayPool<byte>.Shared.Rent(remain);
+                    try
+                    {
+                        Buffers[pos].GetByteRange(offset, remain, temp);
+                        
+                        System.Buffer.BlockCopy(temp, 0, output, offset2, remain);
+                    }
+                    finally
+                    {
+                        ArrayPool<byte>.Shared.Return(temp);
+                    }
                 }
 
                 count -= remain;
@@ -111,52 +136,41 @@ namespace FellowOakDicom.IO.Buffer
                     offset = 0;
                 }
             }
-
-            return data;
         }
 
-
-        public void CopyToStream(Stream s, long offset, int count)
+        public void CopyToStream(Stream stream)
         {
-            var pos = 0;
-            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++)
+            if (stream == null)
             {
-                offset -= Buffers[pos].Size;
+                throw new ArgumentNullException(nameof(stream));
             }
 
-            for (; pos < Buffers.Count && count > 0; pos++)
+            if (!stream.CanWrite)
             {
-                var remain = (int)Math.Min(Buffers[pos].Size - offset, count);
-
-                Buffers[pos].CopyToStream(s, offset, remain);
-
-                count -= remain;
-                if (offset > 0)
-                {
-                    offset = 0;
-                }
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+            
+            foreach (var buffer in Buffers)
+            {
+                buffer.CopyToStream(stream);
             }
         }
 
-        public async Task CopyToStreamAsync(Stream s, long offset, int count)
+        public async Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken)
         {
-            var pos = 0;
-            for (; pos < Buffers.Count && offset > Buffers[pos].Size; pos++)
+            if (stream == null)
             {
-                offset -= Buffers[pos].Size;
+                throw new ArgumentNullException(nameof(stream));
             }
 
-            for (; pos < Buffers.Count && count > 0; pos++)
+            if (!stream.CanWrite)
             {
-                var remain = (int)Math.Min(Buffers[pos].Size - offset, count);
-
-                await Buffers[pos].CopyToStreamAsync(s, offset, remain);
-
-                count -= remain;
-                if (offset > 0)
-                {
-                    offset = 0;
-                }
+                throw new InvalidOperationException("Cannot copy to non-writable stream");
+            }
+            
+            foreach (var buffer in Buffers)
+            {
+                await buffer.CopyToStreamAsync(stream, cancellationToken);
             }
         }
 

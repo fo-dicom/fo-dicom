@@ -174,8 +174,9 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
+            while (!server.IsListening) { Thread.Sleep(10); }
             server.Stop();
-            Thread.Sleep(1000);
+            while (server.IsListening) { Thread.Sleep(10); }
 
             var dicomServer = DicomServerRegistry.Get(port)?.DicomServer;
             Assert.NotNull(dicomServer);
