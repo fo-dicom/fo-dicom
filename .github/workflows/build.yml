@@ -70,6 +70,8 @@ jobs:
       with:
           name: test-v5-net-framework.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
+    - name: Upload code coverage
+      uses: codecov/codecov-action@v2
       
   v5-net-core-21:
     runs-on: windows-2019
