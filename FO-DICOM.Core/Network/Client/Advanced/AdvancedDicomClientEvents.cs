@@ -50,12 +50,10 @@ namespace FellowOakDicom.Network.Client.Advanced
         {
             if (Exception != null)
             {
-                ExceptionDispatchInfo.Capture(Exception).Throw();
+                throw new ConnectionClosedPrematurelyException(Exception);
             }
-            else
-            {
-                throw new ConnectionClosedPrematurelyException();
-            }
+
+            throw new ConnectionClosedPrematurelyException();
         }
     }
     
