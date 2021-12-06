@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Runtime.ExceptionServices;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
@@ -43,6 +44,18 @@ namespace FellowOakDicom.Network.Client.Advanced
         private ConnectionClosedEvent(Exception exception)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+        }
+
+        internal void ThrowException()
+        {
+            if (Exception != null)
+            {
+                ExceptionDispatchInfo.Capture(Exception).Throw();
+            }
+            else
+            {
+                throw new ConnectionClosedPrematurelyException();
+            }
         }
     }
     

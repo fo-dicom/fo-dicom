@@ -7,7 +7,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -85,6 +84,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly IAdvancedDicomClientConnection _connection;
         
         private long _isDisposed;
+        private ConnectionClosedEvent _connectionClosedEvent;
         
         public bool IsDisposed => Interlocked.Read(ref _isDisposed) > 0;
         
@@ -237,6 +237,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     }
                     case ConnectionClosedEvent connectionClosedEvent:
                     {
+                        if (Interlocked.CompareExchange(ref _connectionClosedEvent, connectionClosedEvent, null) != null)
+                        {
+                            // Already disconnected
+                            return;
+                        }
+                        
                         _logger.Debug("Connection closed");
 
                         if (!_associationChannel.Writer.TryWrite(connectionClosedEvent))
@@ -267,16 +273,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                 }
             }        
         }
-
+        
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.SendRequestAsync"/>
         public async IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken) 
         {
-            ThrowIfAlreadyDisposed();
-
             if (dicomRequest == null)
             {
                 throw new ArgumentNullException(nameof(dicomRequest));
             }
+            
+            ThrowIfAlreadyDisposed();
 
             cancellationToken.ThrowIfCancellationRequested();
             
@@ -295,6 +301,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }
             try
             {
+                ThrowIfAlreadyDisconnected();
+
                 await _connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
 
                 while (await requestChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
@@ -337,14 +345,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             {
                                 _logger.Debug("{Request}: Connection was closed", dicomRequest.ToString());
 
-                                if (connectionClosedEvent.Exception != null)
-                                {
-                                    ExceptionDispatchInfo.Capture(connectionClosedEvent.Exception).Throw();
-                                }
-                                else
-                                {
-                                    throw new ConnectionClosedPrematurelyException();
-                                }
+                                connectionClosedEvent.ThrowException();
 
                                 break;
                             }
@@ -368,6 +369,11 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             try
             {
+                if (IsDisconnected)
+                {
+                    return;
+                }
+
                 await _connection.SendAssociationReleaseRequestAsync().ConfigureAwait(false);
 
                 await WaitForAssociationRelease(cancellationToken).ConfigureAwait(false);
@@ -385,6 +391,11 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             try
             {
+                if (IsDisconnected)
+                {
+                    return;
+                }
+
                 await _connection.SendAbortAsync(DicomAbortSource.ServiceUser, DicomAbortReason.NotSpecified).ConfigureAwait(false);
 
                 await WaitForAssociationRelease(cancellationToken).ConfigureAwait(false);
@@ -422,7 +433,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                 }
             }
         }
+
+        private bool IsDisconnected => Interlocked.CompareExchange(ref _connectionClosedEvent, null, null) != null;
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisconnected()
+        {
+            var connectionClosedEvent = Interlocked.CompareExchange(ref _connectionClosedEvent, null, null);
+            connectionClosedEvent?.ThrowException();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfAlreadyDisposed()
         {
