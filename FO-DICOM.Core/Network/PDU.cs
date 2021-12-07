@@ -1534,22 +1534,29 @@ namespace FellowOakDicom.Network
     /// <summary>P-DATA-TF</summary>
     public class PDataTF : PDU, IDisposable
     {
+        private List<PDV> _pdVs;
 
         /// <summary>
         /// Initializes new P-DATA-TF
         /// </summary>
         public PDataTF()
         {
+            _pdVs = new List<PDV>();
         }
 
+        /// <summary>
+        /// Finalizes P-DATA-TF to avoid issues with improper disposal
+        /// </summary>
+        ~PDataTF() => Dispose(false);
+
         /// <summary>PDVs in this P-DATA-TF</summary>
-        public List<PDV> PDVs { get; } = new List<PDV>();
+        public List<PDV> PDVs => _pdVs;
 
         /// <summary>Calculates the total length of the PDVs in this P-DATA-TF</summary>
         /// <returns>Length of PDVs</returns>
         public uint GetLengthOfPDVs()
         {
-            return (uint)PDVs.Sum(pdv => pdv.PDVLength);
+            return (uint)_pdVs.Sum(pdv => pdv.PDVLength);
         }
 
         public override string ToString()
@@ -1557,7 +1564,7 @@ namespace FellowOakDicom.Network
             var value = $"P-DATA-TF [Length: {RawPDU.CommonFieldsLength + GetLengthOfPDVs()}]";
             foreach (var pdv in PDVs)
             {
-                value += "\n\t" + pdv.ToString();
+                value += "\n\t" + pdv;
             }
 
             return value;
@@ -1595,7 +1602,7 @@ namespace FellowOakDicom.Network
 
         private void Write(RawPDU pdu)
         {
-            foreach (var pdv in PDVs)
+            foreach (var pdv in _pdVs)
             {
                 pdv.Write(pdu);
             }
@@ -1617,20 +1624,25 @@ namespace FellowOakDicom.Network
             {
                 var pdv = new PDV();
                 read += pdv.Read(raw);
-                PDVs.Add(pdv);
+                _pdVs.Add(pdv);
             }
         }
 
         #endregion
 
-        public void Dispose()
+        /// <summary>
+        /// Disposes and clears the PDVs 
+        /// </summary>
+        public void Dispose() => Dispose(true);
+
+        private void Dispose(bool disposing)
         {
-            foreach (var pdv in PDVs)
+            var pdvs = Interlocked.Exchange(ref _pdVs, new List<PDV>());
+            
+            foreach (var pdv in pdvs)
             {
                 pdv.Dispose();
             }
-
-            PDVs.Clear();
         }
     }
 
@@ -1641,7 +1653,11 @@ namespace FellowOakDicom.Network
     /// <summary>PDV</summary>
     public class PDV: IDisposable
     {
-
+        /// <summary>
+        /// Flag to avoid double disposal
+        /// </summary>
+        private int _isDisposed;
+        
         /// <summary>
         /// Initializes new PDV
         /// </summary>
@@ -1670,6 +1686,11 @@ namespace FellowOakDicom.Network
         public PDV()
         {
         }
+
+        /// <summary>
+        /// Finalizes PDV to avoid issues with improper disposal
+        /// </summary>
+        ~PDV() => Dispose(false);
 
         /// <summary>Presentation context ID</summary>
         public byte PCID { get; set; }
@@ -1733,8 +1754,16 @@ namespace FellowOakDicom.Network
 
         #endregion
 
-        public void Dispose()
+        public void Dispose() => Dispose(true);
+
+        private void Dispose(bool disposing)
         {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0)
+            {
+                // Already disposed
+                return;
+            }
+
             if (IsValueRented)
             {
                 ArrayPool<byte>.Shared.Return(Value);
