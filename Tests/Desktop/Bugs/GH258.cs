@@ -13,7 +13,7 @@ namespace Dicom.Bugs
 
     public class GH258
     {
-        [Fact]
+        [Fact(Skip = "Flaky test, setting static global properties in tests")]
         public void Log_ExceptionInFormattedString_DisplaysExceptionMessage()
         {
             var name = nameof(GH258) + "A";
@@ -28,7 +28,7 @@ namespace Dicom.Bugs
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
+        [Fact(Skip = "Flaky test, setting static global properties in tests")]
         public void Log_ExceptionNotInFormattedString_ExceptionLoggedNotIncludedInMessage()
         {
             var name = nameof(GH258) + "B";
