@@ -204,7 +204,8 @@ namespace FellowOakDicom.Network.Client.States
             if (winner == associationRequestTimesOut)
             {
                 _dicomClient.Logger.Warn($"[{this}] Association request timeout");
-                return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
+                var exception = new DicomAssociationRequestTimedoutException();
+                return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onCancellationRequested)
