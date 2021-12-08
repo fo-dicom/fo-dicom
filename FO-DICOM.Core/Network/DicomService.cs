@@ -765,9 +765,12 @@ namespace FellowOakDicom.Network
                                 catch (Exception e)
                                 {
                                     // failed to parse received DICOM file; send error response instead of aborting connection
-                                    await SendResponseAsync(new DicomCStoreResponse(request,
-                                            new DicomStatus(DicomStatus.ProcessingFailure, e.Message)))
-                                        .ConfigureAwait(false);
+                                    string errorComment = e.Message;
+                                    if (errorComment.Length > DicomVR.LO.MaximumLength)
+                                    {
+                                        errorComment = errorComment.Substring(0, (int) DicomVR.LO.MaximumLength - 2) + "..";
+                                    }
+                                    await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
                                     await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
