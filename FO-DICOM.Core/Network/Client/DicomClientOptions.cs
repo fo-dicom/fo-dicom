@@ -27,6 +27,11 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         public int? MaximumNumberOfRequestsPerAssociation { get; set; } = null;
 
+        /// <summary>
+        /// The maximum number of Association Request Attempts after AssociationRequestTimeoutInMs expires 
+        /// </summary>
+        public int MaximumNumberOfAssociationRequestAttempts { get; set; } = 3;
+
         public DicomClientOptions Clone() =>
             new DicomClientOptions
             {
