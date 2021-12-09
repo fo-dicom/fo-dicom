@@ -14,5 +14,10 @@ coverage:
   # Explicitly control coverage status checks
   # https://docs.codecov.com/docs/commit-status#disabling-a-status
   status:
-    project: on
+    project:
+      default:
+        # Use the coverage from the base commit (pull request base or parent commit) coverage to compare against
+        target: auto
+        # Allow the coverage to drop by X%
+        threshold: 0.1%    
     patch: off
