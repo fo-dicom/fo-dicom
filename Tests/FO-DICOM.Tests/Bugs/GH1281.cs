@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
         [Fact]
-        public async Task Test()
+        public async Task SendingDeflatedDicomFileViaCStore_ShouldWork()
         {
             using var server = DicomServerFactory.Create<AsyncDicomCStoreProvider>("127.0.0.1", Ports.GetNext());
 
