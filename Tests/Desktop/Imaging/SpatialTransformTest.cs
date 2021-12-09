@@ -26,7 +26,7 @@ namespace Dicom.Imaging
             Assert.False(transform.IsTransformed);
         }
 
-        [Fact]
+        [Fact(Skip = "Flaky test")]
         public void RotateAndFlipImage()
         {
             DicomFile myDicomFile = DicomFile.Open(@"Test Data\CR-MONO1-10-chest");
