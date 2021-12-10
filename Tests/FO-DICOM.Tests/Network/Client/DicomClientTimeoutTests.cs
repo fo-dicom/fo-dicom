@@ -605,6 +605,41 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(timeout3);
         }
 
+        [Fact]
+        public async Task AssociationRequestTimeOutExceptionShouldThrowAfterMaxRetry()
+        {
+            var port = Ports.GetNext();
+            const int maxRetryCount = 3;
+            const int assocReqTimeOutInMs = 5000;
+            int eventFired = 0;
+
+            using (CreateServer<SlowAssociationAcceptDicomServer>(port))
+            {
+                var client = CreateClient(port);
+                client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
+                client.ClientOptions.MaximumNumberOfAssociationRequestAttempts = maxRetryCount;
+                client.AssociationRequestTimedOut += (sender, args) =>
+                {
+                    eventFired++;
+                };
+                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+
+                Exception exception = null;
+                try
+                {
+                    await client.SendAsync().ConfigureAwait(false);
+                }
+                catch (DicomAssociationRequestTimedoutException e)
+                {
+                    exception = e;
+                }
+
+                // event will be fired total of inital association request + the maximimum retry count;
+                Assert.Equal(maxRetryCount+1, eventFired);
+                Assert.NotNull(exception);
+            }
+        }
+
         #endregion
 
         #region Support classes
@@ -1006,6 +1041,45 @@ namespace FellowOakDicom.Tests.Network.Client
 
         }
 
+        private class SlowAssociationAcceptDicomServer : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+        {
+            public SlowAssociationAcceptDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(
+                stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            {
+            }
+
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+                foreach (var presentationContext in association.PresentationContexts)
+                {
+                    foreach (var ts in presentationContext.GetTransferSyntaxes())
+                    {
+                        presentationContext.SetResult(DicomPresentationContextResult.Accept, ts);
+                        break;
+                    }
+                }
+
+                return SendAssociationAcceptAsync(association);
+            }
+
+            public Task OnReceiveAssociationReleaseRequestAsync()
+            {
+                return SendAssociationReleaseResponseAsync();
+            }
+
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+                => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
+        }
 
         #endregion
     }
