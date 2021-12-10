@@ -9,9 +9,9 @@ namespace FellowOakDicom.Network.Client.EventArguments
     {
 
         /// <summary>
-        /// Gets the timeout that was exceded
+        /// Gets the timeout in msec that was exceded
         /// </summary>
-        public int Timeout { get; }
+        public int TimeoutInMs { get; }
 
         /// <summary>
         /// Gets the number of times the Association Request has timed out
@@ -24,7 +24,7 @@ namespace FellowOakDicom.Network.Client.EventArguments
         /// <param name="timeout"></param>
         public AssociationRequestTimedOutEventArgs(int timeout, int failed)
         {
-            Timeout = timeout;
+            TimeoutInMs = timeout;
             FailedCount = failed;
         }
     }

@@ -5,8 +5,8 @@ namespace FellowOakDicom.Network
 {
     public class DicomAssociationRequestTimedoutException : DicomNetworkException
     {
-        public DicomAssociationRequestTimedoutException() 
-            : base("Association Request timed out waiting for response")
+        public DicomAssociationRequestTimedoutException(int timeout, int retryCount) 
+            : base($"The Association Request timed out {retryCount} times, waiting {timeout}ms for the Associaton Response")
         {
         }
     }

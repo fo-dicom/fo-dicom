@@ -208,7 +208,8 @@ namespace FellowOakDicom.Network.Client.States
                 _dicomClient.NotifyAssociationRequestTimedOut(new EventArguments.AssociationRequestTimedOutEventArgs(_dicomClient.ClientOptions.AssociationRequestTimeoutInMs, _dicomClient.AssociationRequestRetryCount));
                 if (_dicomClient.AssociationRequestRetryCount > _dicomClient.ClientOptions.MaximumNumberOfAssociationRequestAttempts)
                 {
-                    var exception = new DicomAssociationRequestTimedoutException();
+                    var exception = new DicomAssociationRequestTimedoutException(_dicomClient.ClientOptions.AssociationRequestTimeoutInMs, _dicomClient.AssociationRequestRetryCount);
+                    _dicomClient.AssociationRequestRetryCount = 0;
                     return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
                 }
                 else

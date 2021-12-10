@@ -28,7 +28,7 @@ namespace FellowOakDicom.Network.Client
         public int? MaximumNumberOfRequestsPerAssociation { get; set; } = null;
 
         /// <summary>
-        /// The maximum number of Association Request Attempts after AssociationRequestTimeoutInMs expires 
+        /// The maximum number of times an association request will be sent before giving up (in the event of a timeout, the request will be retried), use to configure the timeout 
         /// </summary>
         public int MaximumNumberOfAssociationRequestAttempts { get; set; } = 3;
 
