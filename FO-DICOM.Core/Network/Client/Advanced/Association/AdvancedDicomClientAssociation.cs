@@ -75,7 +75,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private const string _responseChannelIsGoneNote = "(Note: the response channel is gone. This can happen when the request is cancelled after it has been sent)";
         private const string _responseChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the response channel. This should never happen, because response channels should be created with unlimited capacity";
         private const string _associationChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the association channel. This should never happen, because the association channel should be created with unlimited capacity";
-        private const int _escapeHatchTimeoutInMs = 60_000;
         
         private readonly ILogger _logger;
         private readonly Task _eventCollector;
@@ -306,7 +305,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
                 await _connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
 
-                while (await WaitToReadAsync(requestChannel, cancellationToken).ConfigureAwait(false))
+                while (await requestChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -361,30 +360,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     throw new DicomNetworkException($"The response channel {dicomRequest} has already been cleaned up, this should never happen");
                 }
             }
-
-            async Task<bool> WaitToReadAsync(Channel<IAdvancedDicomClientEvent> channel, CancellationToken token)
-            {
-                /*
-                 * This method calls the WaitToReadAsync method on the request channel, which returns true asynchronously when a new event is ready
-                 * In the unlikely scenario that no event is produced ever again, we exit the WaitToReadAsync call and check for disconnection or disposal
-                 * In usual circumstances, a disconnection would be communicated via an event, but if for some reason this never happens, we have an escape hatch here
-                 */
-                while (true)
-                {
-                    using var escapeHatchCts = new CancellationTokenSource(_escapeHatchTimeoutInMs);
-                    using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(escapeHatchCts.Token, token);
-
-                    try
-                    {
-                        return await channel.Reader.WaitToReadAsync(combinedCts.Token).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        ThrowIfAlreadyDisconnected();
-                        ThrowIfAlreadyDisposed();
-                    }
-                }
-            }
+            
+            ThrowIfAlreadyDisposed();
         }
 
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.ReleaseAsync"/>
@@ -493,9 +470,22 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 return;
             }
+
+            // Try mark the association channel as completed
+            _associationChannel.Writer.TryComplete();
             
+            // Ensure the association event collector stops running
             _eventCollectorCts.Cancel();
             _eventCollectorCts.Dispose();
+
+            // If we have any pending requests, try to mark those response channels as completed too (this does not mark the request itself as completed!)
+            if (!_requestChannels.IsEmpty)
+            {
+                foreach (Channel<IAdvancedDicomClientEvent> requestChannel in _requestChannels.Values)
+                {
+                    requestChannel.Writer.TryComplete();
+                }
+            }
 
             if (!disposing)
             {

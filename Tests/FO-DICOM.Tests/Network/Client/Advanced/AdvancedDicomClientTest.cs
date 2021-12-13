@@ -471,6 +471,96 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         }
 
         [Fact]
+        public async Task Dispose_TryingToSendRequestsOnDisposedAssociation_ThrowsObjectDisposedException()
+        {
+            var port = Ports.GetNext();
+            var callingAE = "SCU";
+            var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
+
+            using var server = CreateServer<MockCEchoProvider>(port);
+
+            var client = CreateClient();
+
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
+            {
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                {
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
+
+            using var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+
+            var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = callingAE,
+                CalledAE = calledAE
+            };
+            var cEchoRequest = new DicomCEchoRequest();
+
+            openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
+
+            var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
+
+            association.Dispose();
+
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => association.SendCEchoRequestAsync(cEchoRequest, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task Dispose_PendingRequestOnDisposedAssociation_ThrowsObjectDisposedException()
+        {
+            var port = Ports.GetNext();
+            var callingAE = "SCU";
+            var calledAE = "ANY-SCP";
+            var cancellationToken = CancellationToken.None;
+
+            using var server = CreateServer<DicomClientTest.RecordingDicomCEchoProvider, DicomClientTest.RecordingDicomCEchoProviderServer>(port);
+
+            server.OnCEchoRequest(request => Task.Delay(TimeSpan.FromMinutes(10), cancellationToken));
+
+            var client = CreateClient();
+
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
+            {
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                {
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = _logger.IncludePrefix(nameof(AdvancedDicomClient)),
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
+
+            using var connection = await client.OpenConnectionAsync(connectionRequest, cancellationToken);
+
+            var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = callingAE,
+                CalledAE = calledAE
+            };
+            var cEchoRequest = new DicomCEchoRequest();
+
+            openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
+
+            var association = await client.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
+
+            var responseTask = association.SendCEchoRequestAsync(cEchoRequest, cancellationToken);
+
+            association.Dispose();
+
+            await Assert.ThrowsAsync<ObjectDisposedException>(() => responseTask);
+        }
+
+        [Fact]
         public async Task C_ECHO_ReturnsResponse()
         {
             var port = Ports.GetNext();
