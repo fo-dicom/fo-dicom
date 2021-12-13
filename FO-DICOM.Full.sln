@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FO-DICOM.NLog", "Logging\FO
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platform", "Platform", "{CFA78DF7-BD2F-449E-8666-2FFE4358A789}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FO-DICOM.Codec.Desktop", "Platform\FO-DICOM.Codec.Desktop\FO-DICOM.Codec.Desktop.csproj", "{D31231FA-69F7-4935-8D30-60267A95203B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FO-DICOM.Imaging.Desktop", "Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj", "{F0617C96-0CED-4215-99CA-BBF278D6F1AA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FO-DICOM.Imaging.ImageSharp", "Platform\FO-DICOM.Imaging.ImageSharp\FO-DICOM.Imaging.ImageSharp.csproj", "{2FCB0A49-9EDB-4BC7-8FD6-B0304AAD223C}"
@@ -32,9 +30,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\build.yml = .github\workflows\build.yml
 		ChangeLog.md = ChangeLog.md
 		ChangeLog5.md = ChangeLog5.md
-		Directory.Build.props = Directory.Build.props
-		coverlet.runsettings = coverlet.runsettings
 		codecov.yml = codecov.yml
+		Contributors.md = Contributors.md
+		coverlet.runsettings = coverlet.runsettings
+		Directory.Build.props = Directory.Build.props
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -111,18 +110,6 @@ Global
 		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Release|x64.Build.0 = Release|Any CPU
 		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Release|x86.ActiveCfg = Release|Any CPU
 		{C8E554D2-A63B-405E-A047-E792A7AC42AD}.Release|x86.Build.0 = Release|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Debug|x64.Build.0 = Debug|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Debug|x86.Build.0 = Debug|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Release|x64.ActiveCfg = Release|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Release|x64.Build.0 = Release|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Release|x86.ActiveCfg = Release|Any CPU
-		{D31231FA-69F7-4935-8D30-60267A95203B}.Release|x86.Build.0 = Release|Any CPU
 		{F0617C96-0CED-4215-99CA-BBF278D6F1AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0617C96-0CED-4215-99CA-BBF278D6F1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0617C96-0CED-4215-99CA-BBF278D6F1AA}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -215,7 +202,6 @@ Global
 		{FB7608E8-FA90-4445-A7F2-430E6A518798} = {43ED1185-9895-4B31-8889-7C0477591BF1}
 		{50FAD02E-6763-47A4-8592-A8BEC8658948} = {3CAE7F87-9013-49B0-96B7-8C96055B8380}
 		{C8E554D2-A63B-405E-A047-E792A7AC42AD} = {D0E1FAE5-EA1F-46EC-B1B0-7FE05C09BF98}
-		{D31231FA-69F7-4935-8D30-60267A95203B} = {CFA78DF7-BD2F-449E-8666-2FFE4358A789}
 		{F0617C96-0CED-4215-99CA-BBF278D6F1AA} = {CFA78DF7-BD2F-449E-8666-2FFE4358A789}
 		{2FCB0A49-9EDB-4BC7-8FD6-B0304AAD223C} = {CFA78DF7-BD2F-449E-8666-2FFE4358A789}
 		{3CC6B832-8DB9-43DA-846D-B8900AB2B096} = {43ED1185-9895-4B31-8889-7C0477591BF1}
