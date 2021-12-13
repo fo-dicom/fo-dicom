@@ -75,6 +75,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private const string _responseChannelIsGoneNote = "(Note: the response channel is gone. This can happen when the request is cancelled after it has been sent)";
         private const string _responseChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the response channel. This should never happen, because response channels should be created with unlimited capacity";
         private const string _associationChannelDoesNotHaveUnlimitedCapacity = "Failed to write to the association channel. This should never happen, because the association channel should be created with unlimited capacity";
+        private const int _escapeHatchTimeoutInMs = 60_000;
         
         private readonly ILogger _logger;
         private readonly Task _eventCollector;
@@ -370,8 +371,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                  */
                 while (true)
                 {
-                    using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-                    using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, token);
+                    using var escapeHatchCts = new CancellationTokenSource(_escapeHatchTimeoutInMs);
+                    using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(escapeHatchCts.Token, token);
 
                     try
                     {
