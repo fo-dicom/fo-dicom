@@ -117,10 +117,19 @@ namespace FellowOakDicom.Network
                     // add a presentation context for the original transfer syntax
                     if (cstore.TransferSyntax != null)
                     {
-                        Add(cstore.SOPClassUID, cstore.TransferSyntax);
+                        if (cstore.TransferSyntax != DicomTransferSyntax.DeflatedExplicitVRLittleEndian)
+                        {
+                            Add(cstore.SOPClassUID, cstore.TransferSyntax);
+                        }
+                        else
+                        {
+                            // If the syntax is deflated explicit VR little endian, automatically also propose explicit VR little endian
+                            // See https://dicom.nema.org/medical/dicom/current/output/html/part05.html#sect_A.5
+                            Add(cstore.SOPClassUID, DicomTransferSyntax.DeflatedExplicitVRLittleEndian, DicomTransferSyntax.ExplicitVRLittleEndian);
+                        }
                     }
 
-                    // then add another for additional transfersyntaxes, if provided by the user, 
+                    // then add another presentation context for the additional transfer syntaxes, if provided by the user, 
                     // and for the mandatory ImplicitVRLittleEndian, if the original file was not implicitLittleEndian
                     var tx = new List<DicomTransferSyntax>();
                     if (cstore.AdditionalTransferSyntaxes != null)

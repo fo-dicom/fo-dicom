@@ -3,6 +3,7 @@
 * Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 * Add method to convert an array of DicomDatasets into a json string (#1271)
 * Improved bilinear interpolation
+* Fix issue where sending a deflated DICOM file via C-STORE was sent inflated, causing errors (#1283) 
 
 #### 5.0.1 (2021-11-11)
 
