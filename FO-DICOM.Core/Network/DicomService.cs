@@ -10,6 +10,7 @@ using FellowOakDicom.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -765,9 +766,12 @@ namespace FellowOakDicom.Network
                                 catch (Exception e)
                                 {
                                     // failed to parse received DICOM file; send error response instead of aborting connection
-                                    await SendResponseAsync(new DicomCStoreResponse(request,
-                                            new DicomStatus(DicomStatus.ProcessingFailure, e.Message)))
-                                        .ConfigureAwait(false);
+                                    string errorComment = e.Message;
+                                    if (errorComment.Length > DicomVR.LO.MaximumLength)
+                                    {
+                                        errorComment = errorComment.Substring(0, (int) DicomVR.LO.MaximumLength - 2) + "..";
+                                    }
+                                    await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
                                     Logger.Error("Error parsing C-Store dataset: {@error}", e);
                                     await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
@@ -1215,27 +1219,41 @@ namespace FellowOakDicom.Network
 
                 Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
-                PDataTFStream stream = null;
+                // This specialized Stream will write byte contents as PDUs with nested PDVs
+                PDataTFStream pDataStream = null;
+                // When the accepted transfer syntax is deflated, we must deflate the DICOM data set (not the command!)
+                DeflateStream deflateStream = null;
                 try
                 {
-                    stream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength, msg);
+                    pDataStream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength, msg);
 
                     var writer = new DicomWriter(
                         DicomTransferSyntax.ImplicitVRLittleEndian,
                         DicomWriteOptions.Default,
-                        new StreamByteTarget(stream));
+                        new StreamByteTarget(pDataStream));
 
                     var commandWalker = new DicomDatasetWalker(msg.Command);
                     await commandWalker.WalkAsync(writer).ConfigureAwait(false);
 
                     if (msg.HasDataset)
                     {
-                        await stream.SetIsCommandAsync(false).ConfigureAwait(false);
+                        await pDataStream.SetIsCommandAsync(false).ConfigureAwait(false);
+
+                        Stream outputStream;
+                        if (pc.AcceptedTransferSyntax.IsDeflate)
+                        {
+                            deflateStream = new DeflateStream(pDataStream, CompressionMode.Compress, true);
+                            outputStream = deflateStream;
+                        }
+                        else
+                        {
+                            outputStream = pDataStream;
+                        }
 
                         writer = new DicomWriter(
                             pc.AcceptedTransferSyntax,
                             DicomWriteOptions.Default,
-                            new StreamByteTarget(stream));
+                            new StreamByteTarget(outputStream));
 
                         var datasetWalker = new DicomDatasetWalker(msg.Dataset);
                         await datasetWalker.WalkAsync(writer).ConfigureAwait(false);
@@ -1247,12 +1265,19 @@ namespace FellowOakDicom.Network
                 }
                 finally
                 {
-                    if (stream != null)
+                    if (deflateStream != null)
                     {
-                        await stream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
-                        stream.Dispose();
-                        msg.LastPDUSent = DateTime.Now;
+                        await deflateStream.FlushAsync(CancellationToken.None);
+                        
+                        deflateStream.Dispose();
                     }
+                    if (pDataStream != null)
+                    {
+                        await pDataStream.FlushAsync(CancellationToken.None);
+                        
+                        pDataStream.Dispose();
+                    }
+                    msg.LastPDUSent = DateTime.Now;
                 }
             }
         }
