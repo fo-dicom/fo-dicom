@@ -305,7 +305,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
                 await _connection.SendRequestAsync(dicomRequest).ConfigureAwait(false);
 
-                while (await requestChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+                while (await WaitToReadAsync(requestChannel, cancellationToken).ConfigureAwait(false))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -358,6 +358,30 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                 if(!_requestChannels.TryRemove(messageId, out _))
                 {
                     throw new DicomNetworkException($"The response channel {dicomRequest} has already been cleaned up, this should never happen");
+                }
+            }
+
+            async Task<bool> WaitToReadAsync(Channel<IAdvancedDicomClientEvent> channel, CancellationToken token)
+            {
+                /*
+                 * This method calls the WaitToReadAsync method on the request channel, which returns true asynchronously when a new event is ready
+                 * In the unlikely scenario that no event is produced ever again, we exit the WaitToReadAsync call and check for disconnection or disposal
+                 * In usual circumstances, a disconnection would be communicated via an event, but if for some reason this never happens, we have an escape hatch here
+                 */
+                while (true)
+                {
+                    using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+                    using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, token);
+
+                    try
+                    {
+                        return await channel.Reader.WaitToReadAsync(combinedCts.Token).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        ThrowIfAlreadyDisconnected();
+                        ThrowIfAlreadyDisposed();
+                    }
                 }
             }
         }
