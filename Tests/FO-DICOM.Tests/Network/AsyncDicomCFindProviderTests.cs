@@ -38,6 +38,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomCFindResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
@@ -65,6 +66,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 var responses = new ConcurrentQueue<DicomCFindResponse>();
                 DicomRequest.OnTimeoutEventArgs timeout = null;
