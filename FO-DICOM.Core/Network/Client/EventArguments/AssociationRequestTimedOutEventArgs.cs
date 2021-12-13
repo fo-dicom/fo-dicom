@@ -9,23 +9,29 @@ namespace FellowOakDicom.Network.Client.EventArguments
     {
 
         /// <summary>
-        /// Gets the timeout in msec that was exceded
+        /// Gets the timeout in ms that was exceeded
         /// </summary>
         public int TimeoutInMs { get; }
 
         /// <summary>
-        /// Gets the number of times the Association Request has timed out
+        /// Gets the number of times this association request has timed out so far
         /// </summary>
-        public int FailedCount { get; }
+        public int Attempt { get; }
+
+        /// <summary>
+        /// Gets the maximum number of times this association request is allowed to time out before giving up 
+        /// </summary>
+        public int MaximumNumberOfAttempts { get; }
 
         /// <summary>
         /// Initializes an instance of <see cref="AssociationRequestTimedOutEventArgs"/>
         /// </summary>
         /// <param name="timeout"></param>
-        public AssociationRequestTimedOutEventArgs(int timeout, int failed)
+        public AssociationRequestTimedOutEventArgs(int timeout, int attempt, int maximumNumberOfAttempts)
         {
             TimeoutInMs = timeout;
-            FailedCount = failed;
+            Attempt = attempt;
+            MaximumNumberOfAttempts = maximumNumberOfAttempts;
         }
     }
 }

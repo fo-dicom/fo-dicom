@@ -173,7 +173,7 @@ namespace FellowOakDicom.Network.Client
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
-        internal int AssociationRequestRetryCount { get; set; }
+        internal int NumberOfConsecutiveTimedOutAssociationRequests { get; set; }
 
         public string Host { get; }
         public int Port { get; }

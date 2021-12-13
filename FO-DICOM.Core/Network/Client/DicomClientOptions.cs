@@ -28,11 +28,11 @@ namespace FellowOakDicom.Network.Client
         public int? MaximumNumberOfRequestsPerAssociation { get; set; }
 
         /// <summary>
-        /// The maximum number of times an association request will be sent before giving up (in the event of a timeout, the request will be retried)
+        /// The maximum number of consecutive times an association request is allowed to time out before giving up
         /// <br/>
         /// Use <see cref="AssociationRequestTimeoutInMs"/> to configure the timeout 
         /// </summary>
-        public int MaximumNumberOfAssociationRequestAttempts { get; set; } = 3;
+        public int MaximumNumberOfConsecutiveTimedOutAssociationRequests { get; set; } = 3;
 
         public DicomClientOptions Clone() =>
             new DicomClientOptions
@@ -41,6 +41,7 @@ namespace FellowOakDicom.Network.Client
                 AssociationReleaseTimeoutInMs = AssociationReleaseTimeoutInMs,
                 AssociationLingerTimeoutInMs = AssociationLingerTimeoutInMs,
                 MaximumNumberOfRequestsPerAssociation = MaximumNumberOfRequestsPerAssociation,
+                MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests
             };
     }
 }

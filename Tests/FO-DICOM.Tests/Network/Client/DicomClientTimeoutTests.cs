@@ -617,7 +617,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient(port);
                 client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
-                client.ClientOptions.MaximumNumberOfAssociationRequestAttempts = maxRetryCount;
+                client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;
                 client.AssociationRequestTimedOut += (sender, args) =>
                 {
                     eventFired++;
@@ -629,7 +629,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     await client.SendAsync().ConfigureAwait(false);
                 }
-                catch (DicomAssociationRequestTimedoutException e)
+                catch (DicomAssociationRequestTimedOutException e)
                 {
                     exception = e;
                 }
