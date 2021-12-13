@@ -1709,7 +1709,7 @@ namespace FellowOakDicom.Network
         public bool IsLastFragment { get; set; } = false;
 
         /// <summary>Length of this PDV</summary>
-        public uint PDVLength => (uint)ValueLength + 6;
+        public uint PDVLength => (uint)ValueLength + RawPDU.CommonFieldsLength;
 
         public override string ToString() => $"PDV [PCID: {PCID}; Length: {Value.Length}; Command: {IsCommand}; Last: {IsLastFragment}]";
 
