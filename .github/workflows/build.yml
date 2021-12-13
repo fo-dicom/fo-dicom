@@ -9,54 +9,6 @@ on:
     - development
 
 jobs:
-  v4-net-framework:
-    runs-on: windows-2019
-    steps:
-      - name: Install Windows 8.1 SDK
-        shell: powershell
-        run: |
-          Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
-          Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
-      - uses: actions/checkout@v2
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
-      - name: Setup MSBuild
-        uses: microsoft/Setup-MSBuild@v1
-      - name: Restore nuget packages
-        run: nuget restore DICOM.Desktop.sln
-      - name: Build Desktop platform
-        run: msbuild DICOM.Desktop.sln -target:"Platform\DICOM_Desktop" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
-      - name: Build tests for Desktop platform
-        run: msbuild DICOM.Desktop.sln -target:"Unit Tests\DICOM_Tests_Desktop" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
-      - name: Run tests for Desktop platform
-        run: ./packages/xunit.runner.console.2.4.1/tools/net472/xunit.console.exe "Tests\Desktop\bin\Release\DICOM [Unit Tests].dll" -xml test-v4-net-framework.xml
-      - name: Upload test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-v4-net-framework.xml
-          path: test-v4-net-framework.xml
-
-  v4-net-core-21:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
-      - name: Setup MSBuild
-        uses: microsoft/Setup-MSBuild@v1
-      - name: Restore nuget packages using NuGet CLI
-        run: nuget restore DICOM.Full.sln
-      - name: Restore DICOM.NetCore nuget packages using dotnet CLI
-        run: dotnet restore ./Platform/NetCore/DICOM.NetCore.csproj
-      - name: Build Dicom.NetCore
-        run: msbuild DICOM.Full.sln -target:"Platform\DICOM_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
-      - name: Restore DICOM.Tests.NetCore nuget packages using dotnet CLI
-        run: dotnet restore ./Tests/NetCore/DICOM.Tests.NetCore.csproj
-      - name: Build Dicom.Tests.NetCore
-        run: msbuild DICOM.Full.sln -target:"Unit Tests\DICOM_Tests_NetCore" -p:Configuration=Release -p:Platform="Any CPU" -maxCpuCount
-      - name: Run Dicom.Tests.NetCore
-        run: dotnet test ./Tests/NetCore/DICOM.Tests.NetCore.csproj --configuration Release --framework netcoreapp2.0
- 
   v5-net-framework:
     runs-on: windows-2019
     steps:
