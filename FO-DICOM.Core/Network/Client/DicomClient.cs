@@ -374,7 +374,6 @@ namespace FellowOakDicom.Network.Client
 
                             SetState(DicomClientSendingRequestsState.Instance);
 
-
                             _logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
                             var sendTasks = new List<Task>(requests.Count);
                             

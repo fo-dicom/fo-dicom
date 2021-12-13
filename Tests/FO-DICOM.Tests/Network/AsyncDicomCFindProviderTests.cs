@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class AsyncDicomCFindProviderTests
     {
         private readonly XUnitDicomLogger _logger;
@@ -37,7 +37,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<ImmediateSuccessAsyncDicomCFindProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
 
                 DicomCFindResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
