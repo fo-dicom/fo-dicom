@@ -43,7 +43,7 @@ namespace FellowOakDicom.Tests.Network
         {
             // Arrange
             var presentationContexts = new DicomPresentationContextCollection();
-            var file = "Test Data/CR-ModalitySequenceLUT.dcm";
+            var file = "Test Data/CR-ModalitySequenceLUT.dcm"; // JPEG Lossless
             var dicomFile = DicomFile.Open(file);
             var cStoreRequest = new DicomCStoreRequest(dicomFile);
 
@@ -64,13 +64,13 @@ namespace FellowOakDicom.Tests.Network
         {
             // Arrange
             var presentationContexts = new DicomPresentationContextCollection();
-            var file = "Test Data/CR-ModalitySequenceLUT.dcm";
+            var file = "Test Data/CR-ModalitySequenceLUT.dcm"; // JPEG Lossless
             var dicomFile = DicomFile.Open(file);
             var cStoreRequest = new DicomCStoreRequest(dicomFile)
             {
                 AdditionalTransferSyntaxes = new []
                 {
-                    DicomTransferSyntax.JPEG2000Lossless,
+                    DicomTransferSyntax.ExplicitVRLittleEndian,
                     DicomTransferSyntax.JPEGProcess14SV1,
                 }
             };
@@ -83,7 +83,7 @@ namespace FellowOakDicom.Tests.Network
 
             Assert.NotNull(presentationContexts
                 .FirstOrDefault(pc => pc.AbstractSyntax == cStoreRequest.SOPClassUID
-                                      && pc.HasTransferSyntax(DicomTransferSyntax.JPEG2000Lossless)));
+                                      && pc.HasTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian)));
             Assert.NotNull(presentationContexts
                 .FirstOrDefault(pc => pc.AbstractSyntax == cStoreRequest.SOPClassUID
                                       && pc.HasTransferSyntax(DicomTransferSyntax.JPEGProcess14SV1)));
@@ -94,7 +94,7 @@ namespace FellowOakDicom.Tests.Network
         {
             // Arrange
             var presentationContexts = new DicomPresentationContextCollection();
-            var file = "Test Data/Issue1097_FailToOpenDeflatedFileWithSQ.dcm";
+            var file = "Test Data/Issue1097_FailToOpenDeflatedFileWithSQ.dcm"; // Deflated Explicit VR Little Endian
             var dicomFile = DicomFile.Open(file);
             var cStoreRequest = new DicomCStoreRequest(dicomFile);
 
