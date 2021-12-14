@@ -86,8 +86,8 @@ namespace FellowOakDicom.IO
 
             _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
             _buffer = new MemoryStream();
-            _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine);
-            _bufferWriter = EndianBinaryWriter.Create(_buffer, Endian.LocalMachine);
+            _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine, false);
+            _bufferWriter = EndianBinaryWriter.Create(_buffer, Endian.LocalMachine, false);
             _bufferState = BufferState.Unused;
             // we cannot use the milestones of the stream byte source, as these don't
             // account for the buffer
@@ -107,8 +107,8 @@ namespace FellowOakDicom.IO
                 if (_byteSource.Endian != value)
                 {
                     _byteSource.Endian = value;
-                    _bufferReader = EndianBinaryReader.Create(_buffer, value);
-                    _bufferWriter = EndianBinaryWriter.Create(_buffer, value);
+                    _bufferReader = EndianBinaryReader.Create(_buffer, value, false);
+                    _bufferWriter = EndianBinaryWriter.Create(_buffer, value, false);
                 }
             }
         }
