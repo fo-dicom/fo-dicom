@@ -403,7 +403,7 @@ namespace FellowOakDicom.Network
                 {
                     var stream = _network.AsStream();
 
-                    // Read common fields PDU header. The first 6 bytes contain the type and the length
+                    // Read common fields of the PDU header. The first 6 bytes contain the type and the length
                     _readLength = RawPDU.CommonFieldsLength;
 
                     var count = await stream.ReadAsync(buffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
