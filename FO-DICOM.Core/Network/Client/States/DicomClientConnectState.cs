@@ -68,19 +68,19 @@ namespace FellowOakDicom.Network.Client.States
 
             var winner = await Task.WhenAny(connect, cancel).ConfigureAwait(false);
 
+            IDicomClientConnection connection = null;
             if (winner == connect)
             {
-                IDicomClientConnection connection = null;
                 try
                 {
                     connection = await connect.ConfigureAwait(false);
-
-                    return await _dicomClient.TransitionToRequestAssociationState(connection, cancellation).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     return await _dicomClient.TransitionToCompletedWithErrorState(connection, e, cancellation).ConfigureAwait(false);
                 }
+                
+                return await _dicomClient.TransitionToRequestAssociationState(connection, cancellation).ConfigureAwait(false);
             }
 
             if (winner != cancel)
@@ -91,13 +91,13 @@ namespace FellowOakDicom.Network.Client.States
             // Cancellation or abort was triggered but wait for the connection anyway, because we need to dispose of it properly
             try
             {
-                var connection = await connect.ConfigureAwait(false);
-                return await _dicomClient.TransitionToCompletedState(connection, cancellation).ConfigureAwait(false);
+                connection = await connect.ConfigureAwait(false);
             }
             catch(Exception e)
             {
                 return await _dicomClient.TransitionToCompletedWithErrorState((IDicomClientConnection) null, e, cancellation).ConfigureAwait(false);
             }
+            return await _dicomClient.TransitionToCompletedState(connection, cancellation).ConfigureAwait(false);
         }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
