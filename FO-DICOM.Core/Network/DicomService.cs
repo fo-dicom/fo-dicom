@@ -397,16 +397,16 @@ namespace FellowOakDicom.Network
         {
             while (IsConnected)
             {
-                // This is the buffer we use move data from the incoming network stream to the PDU
+                // This is the buffer we use to move data from the incoming network stream to the PDU
                 var buffer = ArrayPool<byte>.Shared.Rent(_maxBytesToRead);
                 try
                 {
                     var stream = _network.AsStream();
 
-                    // Read PDU header
-                    _readLength = 6;
+                    // Read common fields PDU header. The first 6 bytes contain the type and the length
+                    _readLength = RawPDU.CommonFieldsLength;
 
-                    var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(buffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
 
                     do
                     {
@@ -421,7 +421,7 @@ namespace FellowOakDicom.Network
                         
                         if (_readLength > 0)
                         {
-                            count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength).ConfigureAwait(false);
+                            count = await stream.ReadAsync(buffer, RawPDU.CommonFieldsLength - _readLength, _readLength).ConfigureAwait(false);
                         }
                     }
                     while (_readLength > 0);
@@ -434,7 +434,7 @@ namespace FellowOakDicom.Network
                     // Read PDU
                     var ms = new MemoryStream(_readLength);
 
-                    ms.Write(buffer, 0, 6);
+                    ms.Write(buffer, 0, RawPDU.CommonFieldsLength);
 
                     while (_readLength > 0)
                     {
