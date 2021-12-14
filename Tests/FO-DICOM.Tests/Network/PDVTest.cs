@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Network;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -20,8 +21,8 @@ namespace FellowOakDicom.Tests.Network
             var expected = new byte[6];
             Array.Copy(bytes, expected, bytes.Length);
 
-            var pdv = new PDV(1, bytes, true, true);
-            var actual = pdv.Value;
+            using var pdv = new PDV(1, bytes, true, true);
+            var actual = pdv.Value.Take(pdv.ValueLength).ToArray();
 
             Assert.Equal(expected, actual);
         }
@@ -34,7 +35,7 @@ namespace FellowOakDicom.Tests.Network
             Array.Copy(bytes, expected, bytes.Length);
 
             var pdv = new PDV(1, bytes, true, true);
-            var actual = pdv.Value;
+            var actual = pdv.Value.Take(pdv.ValueLength).ToArray();
 
             Assert.Equal(expected, actual);
         }

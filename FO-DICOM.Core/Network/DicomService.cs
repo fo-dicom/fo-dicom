@@ -8,10 +8,12 @@ using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +40,8 @@ namespace FellowOakDicom.Network
         private bool _isInitialized;
 
         private readonly INetworkStream _network;
+        
+        private readonly Stream _writeStream;
 
         private readonly object _lock;
 
@@ -91,6 +95,7 @@ namespace FellowOakDicom.Network
             _isDisconnectedFlag = new AsyncManualResetEvent();
 
             _network = stream;
+            _writeStream = new BufferedStream(_network.AsStream());
             _lock = new object();
             _pduQueue = new Queue<PDU>();
             _pduQueueWatcher = new ManualResetEventSlim(true);
@@ -222,6 +227,7 @@ namespace FellowOakDicom.Network
             if (disposing)
             {
                 _dimseStream?.Dispose();
+                _writeStream?.Dispose();
                 _network?.Dispose();
                 _pduQueueWatcher?.Dispose();
             }
@@ -359,7 +365,9 @@ namespace FellowOakDicom.Network
 
                 try
                 {
-                    await pdu.Write().WritePDUAsync(_network.AsStream()).ConfigureAwait(false);
+                    await pdu.WriteAsync(_writeStream, CancellationToken.None).ConfigureAwait(false);
+
+                    await _writeStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {
@@ -389,15 +397,16 @@ namespace FellowOakDicom.Network
         {
             while (IsConnected)
             {
+                // This is the buffer we use to move data from the incoming network stream to the PDU
+                var buffer = ArrayPool<byte>.Shared.Rent(_maxBytesToRead);
                 try
                 {
                     var stream = _network.AsStream();
 
-                    // Read PDU header
-                    _readLength = 6;
+                    // Read common fields of the PDU header. The first 6 bytes contain the type and the length
+                    _readLength = RawPDU.CommonFieldsLength;
 
-                    var buffer = new byte[6];
-                    var count = await stream.ReadAsync(buffer, 0, 6).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(buffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
 
                     do
                     {
@@ -409,11 +418,13 @@ namespace FellowOakDicom.Network
                         }
 
                         _readLength -= count;
+                        
                         if (_readLength > 0)
                         {
-                            count = await stream.ReadAsync(buffer, 6 - _readLength, _readLength).ConfigureAwait(false);
+                            count = await stream.ReadAsync(buffer, RawPDU.CommonFieldsLength - _readLength, _readLength).ConfigureAwait(false);
                         }
-                    } while (_readLength > 0);
+                    }
+                    while (_readLength > 0);
 
                     var length = BitConverter.ToInt32(buffer, 2);
                     length = Endian.Swap(length);
@@ -421,14 +432,15 @@ namespace FellowOakDicom.Network
                     _readLength = length;
 
                     // Read PDU
-                    var ms = new MemoryStream();
+                    var ms = new MemoryStream(_readLength);
 
-                    ms.Write(buffer, 0, buffer.Length);
+                    ms.Write(buffer, 0, RawPDU.CommonFieldsLength);
+
                     while (_readLength > 0)
                     {
                         int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
-                        var tempBuffer = new byte[bytesToRead];
-                        count = await stream.ReadAsync(tempBuffer, 0, bytesToRead).ConfigureAwait(false);
+
+                        count = await stream.ReadAsync(buffer, 0, bytesToRead).ConfigureAwait(false);
 
                         if (count == 0)
                         {
@@ -437,12 +449,12 @@ namespace FellowOakDicom.Network
                             return;
                         }
 
-                        ms.Write(tempBuffer, 0, count);
+                        ms.Write(buffer, 0, count);
 
                         _readLength -= count;
                     }
 
-                    var raw = new RawPDU(ms);
+                    using var raw = new RawPDU(ms);
 
                     switch (raw.Type)
                     {
@@ -451,7 +463,7 @@ namespace FellowOakDicom.Network
                                 Association = new DicomAssociation
                                 {
                                     RemoteHost = _network.RemoteHost,
-                                    RemotePort = _network.RemotePort,
+                                    RemotePort = _network.RemotePort, 
                                     Options = Options
                                 };
 
@@ -525,7 +537,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x04:
                             {
-                                var pdu = new PDataTF();
+                                using var pdu = new PDataTF();
                                 pdu.Read(raw);
                                 if (Options.LogDataPDUs)
                                 {
@@ -618,6 +630,10 @@ namespace FellowOakDicom.Network
                     Logger.Error("Exception processing PDU: {@error}", e);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(buffer);
+                }
             }
         }
 
@@ -667,7 +683,7 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    await _dimseStream.WriteAsync(pdv.Value, 0, pdv.Value.Length).ConfigureAwait(false);
+                    await _dimseStream.WriteAsync(pdv.Value, 0, pdv.ValueLength).ConfigureAwait(false);
 
                     if (pdv.IsLastFragment)
                     {
@@ -1402,7 +1418,7 @@ namespace FellowOakDicom.Network
 
             if (exception != null)
             {
-                throw exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             return true;
@@ -1674,6 +1690,7 @@ namespace FellowOakDicom.Network
                 // Immediately stop sending PDUs if the message is no longer pending (e.g. because it timed out)
                 if (_dicomMessage is DicomRequest req && !_service.IsStillPending(req))
                 {
+                    _pdu.Dispose();
                     _pdu = new PDataTF();
                     return;
                 }
@@ -1694,6 +1711,7 @@ namespace FellowOakDicom.Network
 
                     _dicomMessage.LastPDUSent = DateTime.Now;
 
+                    _pdu.Dispose();
                     _pdu = new PDataTF();
                 }
             }

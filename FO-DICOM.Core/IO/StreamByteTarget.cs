@@ -29,7 +29,7 @@ namespace FellowOakDicom.IO
         {
             _stream = stream;
             _endian = Endian.LocalMachine;
-            _writer = EndianBinaryWriter.Create(_stream, _endian);
+            _writer = EndianBinaryWriter.Create(_stream, _endian, false);
             _lock = new object();
         }
 
@@ -46,7 +46,7 @@ namespace FellowOakDicom.IO
                     lock (_lock)
                     {
                         _endian = value;
-                        _writer = EndianBinaryWriter.Create(_stream, _endian);
+                        _writer = EndianBinaryWriter.Create(_stream, _endian, false);
                     }
                 }
             }

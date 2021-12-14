@@ -161,7 +161,7 @@ namespace FellowOakDicom.Imaging.Codec
                 _count = 0;
                 _offsets = new uint[15];
                 _stream = new MemoryStream();
-                _writer = EndianBinaryWriter.Create(_stream, Endian.Little);
+                _writer = EndianBinaryWriter.Create(_stream, Endian.Little, false);
                 _buffer = new byte[132];
 
                 // Write header
