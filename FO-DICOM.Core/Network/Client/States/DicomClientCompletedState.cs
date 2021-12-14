@@ -120,7 +120,8 @@ namespace FellowOakDicom.Network.Client.States
                         _dicomClient.Logger.Warn($"[{this}] An error occurred and no active connection was detected, so no cleanup will happen!");
                     }
 
-                    throw parameters.ExceptionToThrow;
+                    ExceptionDispatchInfo.Capture(parameters.ExceptionToThrow).Throw();
+                    throw parameters.ExceptionToThrow; // To please the compiler
                 }
 
                 default:
