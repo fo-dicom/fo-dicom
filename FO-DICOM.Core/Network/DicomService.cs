@@ -397,8 +397,11 @@ namespace FellowOakDicom.Network
         {
             while (IsConnected)
             {
-                // This is the buffer we use to move data from the incoming network stream to the PDU
+                // This is the buffer we use to shuttle data in chunks from the incoming network stream to the Raw PDU
                 var buffer = ArrayPool<byte>.Shared.Rent(_maxBytesToRead);
+                
+                // This is the buffer that will hold the entire Raw PDU at once
+                byte[] rawPduBuffer = null;
                 try
                 {
                     var stream = _network.AsStream();
@@ -432,9 +435,14 @@ namespace FellowOakDicom.Network
                     _readLength = length;
 
                     // Read PDU
-                    var ms = new MemoryStream(_readLength);
+                    var rawPduLength = length + RawPDU.CommonFieldsLength;
+                    // Note: the shared array pool will allocate a new byte array if the requested length exceeds 1MB
+                    // In other words, for raw PDUs < 1MB a rented byte array will be used. For raw PDUs > 1MB, a new byte array will be allocated
+                    // In the future, we could further optimize this by chaining rented byte arrays or using something akin to RecyclableMemoryStreams
+                    rawPduBuffer = ArrayPool<byte>.Shared.Rent(rawPduLength);
+                    var rawPduStream = new MemoryStream(rawPduBuffer, 0, rawPduLength);
 
-                    ms.Write(buffer, 0, RawPDU.CommonFieldsLength);
+                    rawPduStream.Write(buffer, 0, RawPDU.CommonFieldsLength);
 
                     while (_readLength > 0)
                     {
@@ -449,12 +457,12 @@ namespace FellowOakDicom.Network
                             return;
                         }
 
-                        ms.Write(buffer, 0, count);
+                        rawPduStream.Write(buffer, 0, count);
 
                         _readLength -= count;
                     }
 
-                    using var raw = new RawPDU(ms);
+                    using var raw = new RawPDU(rawPduStream);
 
                     switch (raw.Type)
                     {
@@ -633,6 +641,10 @@ namespace FellowOakDicom.Network
                 finally
                 {
                     ArrayPool<byte>.Shared.Return(buffer);
+                    if (rawPduBuffer != null)
+                    {
+                        ArrayPool<byte>.Shared.Return(rawPduBuffer);
+                    }
                 }
             }
         }
