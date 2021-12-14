@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,15 @@ namespace FellowOakDicom.Network
         private readonly DicomMessage _dicomMessage;
 
         private PDataTF _pdu;
+        
+        /// <summary>
+        /// Because we make use of rented byte arrays - which may be larger than what you request - we keep separate track of the length in this field
+        /// </summary>
+        private int _bytesLength;
 
+        /// <summary>
+        /// This will be a rented byte array to server as a buffer for the current PDV
+        /// </summary>
         private byte[] _bytes;
 
         private int _length;
@@ -45,7 +54,8 @@ namespace FellowOakDicom.Network
             _pdu = new PDataTF();
 
             // Max PDU Size - Current Size - Size of PDV header
-            _bytes = new byte[_max - CurrentPduSize() - 6];
+            _bytesLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
+            _bytes = RentNextByteArray(_bytesLength);
         }
 
         #endregion
@@ -75,38 +85,40 @@ namespace FellowOakDicom.Network
         private uint CurrentPduSize()
         {
             // PDU header + PDV header + PDV data
-            return 6 + _pdu.GetLengthOfPDVs();
+            return RawPDU.CommonFieldsLength + _pdu.GetLengthOfPDVs();
         }
 
         private async Task CreatePDVAsync(bool last)
         {
             try
             {
-                if (_bytes == null)
+                var bytes = _bytes;
+                // Immediately set _bytes to null so we cannot double return it to the pool
+                _bytes = null;
+                if (bytes == null)
                 {
-                    _bytes = new byte[0];
+                    throw new InvalidOperationException("Tried to write another PDV after the last PDV");
                 }
 
-                if (_length < _bytes.Length)
-                {
-                    Array.Resize(ref _bytes, _length);
-                }
-
-                var pdv = new PDV(_pcid, _bytes, _command, last);
+                var pdv = new PDV(_pcid, bytes, _length, true, _command, last);
                 _pdu.PDVs.Add(pdv);
-
+                
                 // reset length in case we recurse into WritePDU()
                 _length = 0;
                 // is the current PDU at its maximum size or do we have room for another PDV?
-                if (_service.Options.MaxPDVsPerPDU != 0 && _pdu.PDVs.Count >= _service.Options.MaxPDVsPerPDU
-                    || CurrentPduSize() + 6 >= _max || !_command && last)
+                if ((_service.Options.MaxPDVsPerPDU != 0 && _pdu.PDVs.Count >= _service.Options.MaxPDVsPerPDU)
+                    || CurrentPduSize() + RawPDU.CommonFieldsLength >= _max 
+                    || (!_command && last))
                 {
                     await WritePDUAsync(last).ConfigureAwait(false);
                 }
-
-                // Max PDU Size - Current Size - Size of PDV header
-                uint max = _max - CurrentPduSize() - 6;
-                _bytes = last ? null : new byte[max];
+                
+                if (!last)
+                {
+                    // Max PDU Size - Current Size - Size of PDV header
+                    _bytesLength = (int)(_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
+                    _bytes = RentNextByteArray(_bytesLength);
+                }
             }
             catch (Exception e)
             {
@@ -145,6 +157,19 @@ namespace FellowOakDicom.Network
                 _pdu = new PDataTF();
             }
         }
+        
+        private byte[] RentNextByteArray(int length)
+        {
+            // Since these byte arrays will be used to create PDVs
+            // and since PDVs must have an even number of bytes
+            // we ensure that the capacity is always at least an even amount 
+            if (length % 2 == 1)
+            {
+                length += 1;
+            }
+
+            return ArrayPool<byte>.Shared.Rent(length);
+        }
 
         #endregion
 
@@ -175,7 +200,7 @@ namespace FellowOakDicom.Network
         {
             try
             {
-                WriteAsync(buffer, offset, count, (CancellationToken)CancellationToken.None).Wait();
+                WriteAsync(buffer, offset, count, CancellationToken.None).Wait();
             }
             catch (AggregateException e)
             {
@@ -194,21 +219,20 @@ namespace FellowOakDicom.Network
             throw new NotSupportedException();
         }
 
-        public override async Task WriteAsync(byte[] buffer, int offset, int count,
-            CancellationToken cancellationToken)
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             try
             {
-                if (_bytes == null || _bytes.Length == 0)
+                if (_bytes == null)
                 {
                     // Max PDU Size - Current Size - Size of PDV header
-                    uint max = _max - CurrentPduSize() - 6;
-                    _bytes = new byte[max];
+                    _bytesLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
+                    _bytes = RentNextByteArray(_bytesLength);
                 }
 
-                while (count >= _bytes.Length - _length)
+                while (count >= _bytesLength - _length)
                 {
-                    var c = Math.Min(count, _bytes.Length - _length);
+                    var c = Math.Min(count, _bytesLength - _length);
 
                     Array.Copy(buffer, offset, _bytes, _length, c);
 
@@ -224,7 +248,7 @@ namespace FellowOakDicom.Network
                     Array.Copy(buffer, offset, _bytes, _length, count);
                     _length += count;
 
-                    if (_bytes.Length == _length)
+                    if (_bytesLength == _length)
                     {
                         await CreatePDVAsync(false).ConfigureAwait(false);
                     }
@@ -243,6 +267,24 @@ namespace FellowOakDicom.Network
             await WritePDUAsync(true).ConfigureAwait(false);
         }
 
+        #endregion
+        
+        #region Disposable Members
+        
+        protected override void Dispose(bool disposing)
+        {
+            var bytes = Interlocked.Exchange(ref _bytes, null);
+            if (bytes != null)
+            {
+                ArrayPool<byte>.Shared.Return(bytes);
+            }
+
+            var pdu = Interlocked.Exchange(ref _pdu, null);
+            pdu?.Dispose();
+
+            base.Dispose(disposing);
+        }
+        
         #endregion
     }
 }
