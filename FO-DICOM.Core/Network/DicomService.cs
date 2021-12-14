@@ -1572,11 +1572,6 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
-
-        #region INNER TYPES
-
-
-        #endregion
     }
 }
 
