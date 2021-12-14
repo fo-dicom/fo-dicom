@@ -205,14 +205,14 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == associationRequestTimesOut)
             {
-                _dicomClient.Logger.Warn($"[{this}] Association request timeout");
                 int numberOfConsecutiveTimedOutAssociationRequests = ++_dicomClient.NumberOfConsecutiveTimedOutAssociationRequests;
                 int maximumNumberOfConsecutiveTimedOutAssociationRequests = _dicomClient.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests;
+                _dicomClient.Logger.Warn($"[{this}] Association request timeout (Attempt {numberOfConsecutiveTimedOutAssociationRequests} / {maximumNumberOfConsecutiveTimedOutAssociationRequests})");
                 
                 _dicomClient.NotifyAssociationRequestTimedOut(new EventArguments.AssociationRequestTimedOutEventArgs(
                     associationRequestTimeoutInMs, numberOfConsecutiveTimedOutAssociationRequests, maximumNumberOfConsecutiveTimedOutAssociationRequests
                 ));
-                if (numberOfConsecutiveTimedOutAssociationRequests > maximumNumberOfConsecutiveTimedOutAssociationRequests)
+                if (numberOfConsecutiveTimedOutAssociationRequests >= maximumNumberOfConsecutiveTimedOutAssociationRequests)
                 {
                     _dicomClient.NumberOfConsecutiveTimedOutAssociationRequests = 0;
                     
