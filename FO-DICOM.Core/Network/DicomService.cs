@@ -1680,6 +1680,29 @@ namespace FellowOakDicom.Network
                         throw new InvalidOperationException("Tried to write another PDV after the last PDV");
                     }
 
+                    // Ensure PDV has even length
+                    if (_length % 2 == 1)
+                    {
+                        if (bytes.Length <= _length)
+                        {
+                            // Edge case: rented array fits the (odd) contents exactly. We must rent a bigger array to continue
+                            _bytesLength = _length + 1;
+                            _bytes = ArrayPool<byte>.Shared.Rent(_bytesLength);
+                            Array.Copy(bytes, 0, _bytes, 0, _length);
+                            ArrayPool<byte>.Shared.Return(bytes);
+                            _bytes[_length] = 0;
+                            _length++;
+                            bytes = _bytes;
+                        }
+                        else
+                        {
+                            // Rented array is large enough to fit another byte, so we don't have to do anything special
+                            bytes[_length] = 0;
+                            _bytesLength++;
+                            _length++;
+                        }
+                    }
+
                     var pdv = new PDV(_pcid, bytes, _length, true, _command, last);
                     _pdu.PDVs.Add(pdv);
                     
