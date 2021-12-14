@@ -618,13 +618,17 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task AssociationRequestTimeOutExceptionShouldThrowAfterMaxRetry()
         {
             var port = Ports.GetNext();
-            const int maxRetryCount = 3;
-            const int assocReqTimeOutInMs = 5000;
+            const int maxRetryCount = 2;
+            const int assocReqTimeOutInMs = 2000;
             int eventFired = 0;
 
             using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(port))
             {
-                server.OnAssociationRequest(association => Task.Delay(100_000));
+                server.OnAssociationRequest(async association =>
+                {
+                    await Task.Delay(100_000);
+                    return true;
+                });
                 var client = CreateClient(port);
                 client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
                 client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;
@@ -645,8 +649,146 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
 
                 // event will be fired total of initial association request + the maximimum retry count;
-                Assert.Equal(maxRetryCount+1, eventFired);
+                Assert.Equal(maxRetryCount, eventFired);
                 Assert.NotNull(exception);
+            }
+        }
+
+        [Fact]
+        public async Task AssociationRequestRetryCounterShouldResetWhenAssociationIsAccepted()
+        {
+            var port = Ports.GetNext();
+            const int maxRetryCount = 2;
+            const int assocReqTimeOutInMs = 2000;
+            int eventFired = 0;
+
+            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(port))
+            {
+                server.Logger = _logger.IncludePrefix("Server");
+                var associationRequest = 0;
+                server.OnAssociationRequest(async association =>
+                {
+                    var currentAssociationRequest = Interlocked.Increment(ref associationRequest);
+                    // Ensure that it times out once (2 failed attempts) + once more on the second SendAsync
+                    if (currentAssociationRequest <= maxRetryCount + 1)
+                    {
+                        await Task.Delay(5_000).ConfigureAwait(false);
+                    }
+
+                    return true;
+                });
+
+                var client = CreateClient(port);
+                client.Logger = _logger.IncludePrefix("Client");
+                client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
+                client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;
+                client.AssociationRequestTimedOut += (sender, args) =>
+                {
+                    eventFired++;
+                };
+
+                Exception exception1 = null;
+                try
+                {
+                    await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                    await client.SendAsync().ConfigureAwait(false);
+                }
+                catch (DicomAssociationRequestTimedOutException e)
+                {
+                    exception1 = e;
+                }
+
+                client.Logger.Info("Second request + SendAsync");
+
+                Exception exception2 = null;
+                try
+                {
+                    await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                    await client.SendAsync().ConfigureAwait(false);
+                }
+                catch (DicomAssociationRequestTimedOutException e)
+                {
+                    exception2 = e;
+                }
+
+                Assert.Equal(maxRetryCount + 1, eventFired);
+                Assert.NotNull(exception1);
+                Assert.Null(exception2);
+            }
+        }
+
+        [Fact]
+        public async Task AssociationRequestRetryCounterShouldResetWhenAssociationIsRejected()
+        {
+            var port = Ports.GetNext();
+            const int maxRetryCount = 2;
+            const int assocReqTimeOutInMs = 2000;
+            int eventFired = 0;
+
+            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(port))
+            {
+                server.Logger = _logger.IncludePrefix("Server");
+                var associationRequest = 0;
+                server.OnAssociationRequest(async association =>
+                {
+                    var currentAssociationRequest = Interlocked.Increment(ref associationRequest);
+                    // Ensure that it times out once (2 failed attempts) + once more on the second SendAsync
+                    if (currentAssociationRequest <= maxRetryCount + 1)
+                    {
+                        await Task.Delay(5_000).ConfigureAwait(false);
+                    }
+
+                    return false;
+                });
+
+                var client = CreateClient(port);
+                client.Logger = _logger.IncludePrefix("Client");
+                client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
+                client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;
+                client.AssociationRequestTimedOut += (sender, args) =>
+                {
+                    eventFired++;
+                };
+
+                Exception timeoutException1 = null;
+                Exception rejectException1 = null;
+                try
+                {
+                    await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                    await client.SendAsync().ConfigureAwait(false);
+                }
+                catch (DicomAssociationRejectedException e)
+                {
+                    rejectException1 = e;
+                }
+                catch (DicomAssociationRequestTimedOutException e)
+                {
+                    timeoutException1 = e;
+                }
+
+                client.Logger.Info("Second request + SendAsync");
+
+                Exception timeoutException2 = null;
+                Exception rejectException2 = null;
+                try
+                {
+                    await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                    await client.SendAsync().ConfigureAwait(false);
+                }
+                catch (DicomAssociationRejectedException e)
+                {
+                    rejectException2 = e;
+                }
+                catch (DicomAssociationRequestTimedOutException e)
+                {
+                    timeoutException2 = e;
+                }
+
+                Assert.Equal(maxRetryCount+1, eventFired);
+                Assert.Null(rejectException1);
+                Assert.NotNull(timeoutException1);
+                Assert.NotNull(rejectException2);
+                Assert.Null(timeoutException2);
             }
         }
 
@@ -1053,11 +1195,11 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public class ConfigurableDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            private readonly Func<DicomAssociation, Task> _onAssociationRequest;
+            private readonly Func<DicomAssociation, Task<bool>> _onAssociationRequest;
             private readonly Func<DicomCEchoRequest, Task> _onRequest;
 
             public ConfigurableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager, Func<DicomAssociation, Task> onAssociationRequest, Func<DicomCEchoRequest, Task> onRequest)
+                ITranscoderManager transcoderManager, Func<DicomAssociation, Task<bool>> onAssociationRequest, Func<DicomCEchoRequest, Task> onRequest)
                 : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
             {
                 _onAssociationRequest = onAssociationRequest ?? throw new ArgumentNullException(nameof(onAssociationRequest));
@@ -1067,14 +1209,21 @@ namespace FellowOakDicom.Tests.Network.Client
             /// <inheritdoc />
             public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
             {
-                await _onAssociationRequest(association);
+                var accept = await _onAssociationRequest(association);
 
                 foreach (var pc in association.PresentationContexts)
                 {
-                    pc.SetResult(DicomPresentationContextResult.Accept);
+                    pc.SetResult(accept ? DicomPresentationContextResult.Accept : DicomPresentationContextResult.RejectNoReason);
                 }
 
-                await SendAssociationAcceptAsync(association).ConfigureAwait(false);
+                if (accept)
+                {
+                    await SendAssociationAcceptAsync(association).ConfigureAwait(false);
+                }
+                else
+                {
+                    await SendAssociationRejectAsync(DicomRejectResult.Transient, DicomRejectSource.ServiceUser, DicomRejectReason.NoReasonGiven).ConfigureAwait(false);
+                }
             }
 
             /// <inheritdoc />
@@ -1105,7 +1254,7 @@ namespace FellowOakDicom.Tests.Network.Client
             private readonly INetworkManager _networkManager;
             private readonly ILogManager _logManager;
             private readonly ITranscoderManager _transcoderManager;
-            private Func<DicomAssociation, Task> _onAssociationRequest;
+            private Func<DicomAssociation, Task<bool>> _onAssociationRequest;
             private Func<DicomCEchoRequest, Task> _onRequest;
 
             public ConfigurableDicomCEchoProviderServer(INetworkManager networkManager, ILogManager logManager, ITranscoderManager transcoderManager) : base(networkManager, logManager)
@@ -1113,11 +1262,11 @@ namespace FellowOakDicom.Tests.Network.Client
                 _networkManager = networkManager;
                 _logManager = logManager;
                 _transcoderManager = transcoderManager;
-                _onAssociationRequest = _ => Task.FromResult(0);
+                _onAssociationRequest = _ => Task.FromResult(true);
                 _onRequest = _ => Task.FromResult(0);
             }
 
-            public void OnAssociationRequest(Func<DicomAssociation, Task> onAssociationRequest)
+            public void OnAssociationRequest(Func<DicomAssociation, Task<bool>> onAssociationRequest)
             {
                 _onAssociationRequest = onAssociationRequest;
             }
