@@ -161,7 +161,7 @@ namespace FellowOakDicom.Network.Client
                 return;
             }
 
-            Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
+            Listener = Task.Run(RunAsync);
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);
