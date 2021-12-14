@@ -11,7 +11,9 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Printing;
+using FellowOakDicom.Tests.Helpers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -19,13 +21,20 @@ namespace FellowOakDicom.Tests.Network
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomAcceptedPresentationContextTest
     {
+        private readonly XUnitDicomLogger _logger;
+
+        public DicomAcceptedPresentationContextTest(ITestOutputHelper output)
+        {
+            _logger = new XUnitDicomLogger(output).IncludeTimestamps().IncludeThreadId();
+        }
 
         [Fact]
         public async Task AcceptEchoButNotStoreContexts()
         {
             int port = Ports.GetNext();
-            using (DicomServerFactory.Create<AcceptOnlyEchoProvider>(port))
+            using (var server = DicomServerFactory.Create<AcceptOnlyEchoProvider>(port))
             {
+                server.Logger = _logger.IncludePrefix("Server");
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
                 echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
@@ -40,6 +49,7 @@ namespace FellowOakDicom.Tests.Network
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("Client");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
@@ -54,8 +64,9 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptPrintContexts()
         {
             int port = Ports.GetNext();
-            using (DicomServerFactory.Create<AcceptOnlyEchoPrintManagementProvider>(port))
+            using (var server = DicomServerFactory.Create<AcceptOnlyEchoPrintManagementProvider>(port))
             {
+                server.Logger = _logger.IncludePrefix("Server");
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
                 echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
@@ -70,6 +81,7 @@ namespace FellowOakDicom.Tests.Network
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("Client");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
@@ -84,8 +96,9 @@ namespace FellowOakDicom.Tests.Network
         public async Task AcceptStoreContexts()
         {
             int port = Ports.GetNext();
-            using (DicomServerFactory.Create<AcceptOnlyEchoStoreProvider>(port))
+            using (var server = DicomServerFactory.Create<AcceptOnlyEchoStoreProvider>(port))
             {
+                server.Logger = _logger.IncludePrefix("Server");
                 var echoReq = new DicomCEchoRequest();
                 DicomStatus echoStatus = DicomStatus.Pending;
                 echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
@@ -100,6 +113,7 @@ namespace FellowOakDicom.Tests.Network
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("Client");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
                 await client.SendAsync();
