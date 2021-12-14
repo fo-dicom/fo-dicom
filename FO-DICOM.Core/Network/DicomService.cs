@@ -1685,22 +1685,14 @@ namespace FellowOakDicom.Network
                     {
                         if (bytes.Length <= _length)
                         {
-                            // Edge case: rented array fits the (odd) contents exactly. We must rent a bigger array to continue
-                            _bytesLength = _length + 1;
-                            _bytes = ArrayPool<byte>.Shared.Rent(_bytesLength);
-                            Array.Copy(bytes, 0, _bytes, 0, _length);
-                            ArrayPool<byte>.Shared.Return(bytes);
-                            _bytes[_length] = 0;
-                            _length++;
-                            bytes = _bytes;
+                            // This scenario should be prevented by RentNextByteArray
+                            throw new InvalidOperationException("Rented array is not large enough to pad with one extra byte to make the PDV even");
                         }
-                        else
-                        {
-                            // Rented array is large enough to fit another byte, so we don't have to do anything special
-                            bytes[_length] = 0;
-                            _bytesLength++;
-                            _length++;
-                        }
+
+                        // Rented array is large enough to fit another byte, so we don't have to do anything special
+                        bytes[_length] = 0;
+                        _bytesLength++;
+                        _length++;
                     }
 
                     var pdv = new PDV(_pcid, bytes, _length, true, _command, last);
