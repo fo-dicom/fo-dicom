@@ -25,7 +25,7 @@ namespace FellowOakDicom.Imaging.LUT
         double MaximumOutputValue { get; }
 
         /// <summary>
-        /// Indexer to taransform input value into output value
+        /// Indexer to transform input value into output value
         /// </summary>
         /// <param name="input">Input value</param>
         /// <returns>Output value</returns>
