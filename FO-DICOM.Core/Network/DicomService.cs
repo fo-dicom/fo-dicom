@@ -57,7 +57,7 @@ namespace FellowOakDicom.Network
 
         private DicomMessage _dimse;
 
-        private int _readLength;
+        private int _bytesToRead;
 
         private readonly Encoding _fallbackEncoding;
 
@@ -398,7 +398,7 @@ namespace FellowOakDicom.Network
             while (IsConnected)
             {
                 // This is the buffer we use to shuttle data in chunks from the incoming network stream to the Raw PDU
-                var buffer = ArrayPool<byte>.Shared.Rent(_maxBytesToRead);
+                var rawPduCommonFieldsBuffer = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength);
                 
                 // This is the buffer that will hold the entire Raw PDU at once
                 byte[] rawPduBuffer = null;
@@ -407,9 +407,9 @@ namespace FellowOakDicom.Network
                     var stream = _network.AsStream();
 
                     // Read common fields of the PDU header. The first 6 bytes contain the type and the length
-                    _readLength = RawPDU.CommonFieldsLength;
+                    _bytesToRead = RawPDU.CommonFieldsLength;
 
-                    var count = await stream.ReadAsync(buffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(rawPduCommonFieldsBuffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
 
                     do
                     {
@@ -420,19 +420,19 @@ namespace FellowOakDicom.Network
                             return;
                         }
 
-                        _readLength -= count;
+                        _bytesToRead -= count;
                         
-                        if (_readLength > 0)
+                        if (_bytesToRead > 0)
                         {
-                            count = await stream.ReadAsync(buffer, RawPDU.CommonFieldsLength - _readLength, _readLength).ConfigureAwait(false);
+                            count = await stream.ReadAsync(rawPduCommonFieldsBuffer, RawPDU.CommonFieldsLength - _bytesToRead, _bytesToRead).ConfigureAwait(false);
                         }
                     }
-                    while (_readLength > 0);
+                    while (_bytesToRead > 0);
 
-                    var length = BitConverter.ToInt32(buffer, 2);
+                    var length = BitConverter.ToInt32(rawPduCommonFieldsBuffer, 2);
                     length = Endian.Swap(length);
 
-                    _readLength = length;
+                    _bytesToRead = length;
 
                     // Read PDU
                     var rawPduLength = length + RawPDU.CommonFieldsLength;
@@ -440,15 +440,14 @@ namespace FellowOakDicom.Network
                     // In other words, for raw PDUs < 1MB a rented byte array will be used. For raw PDUs > 1MB, a new byte array will be allocated
                     // In the future, we could further optimize this by chaining rented byte arrays or using something akin to RecyclableMemoryStreams
                     rawPduBuffer = ArrayPool<byte>.Shared.Rent(rawPduLength);
-                    var rawPduStream = new MemoryStream(rawPduBuffer, 0, rawPduLength);
-
-                    rawPduStream.Write(buffer, 0, RawPDU.CommonFieldsLength);
-
-                    while (_readLength > 0)
+                    
+                    Array.Copy(rawPduCommonFieldsBuffer, 0, rawPduBuffer, 0, RawPDU.CommonFieldsLength);
+                    int rawPduOffset = RawPDU.CommonFieldsLength;
+                    while (_bytesToRead > 0)
                     {
-                        int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
+                        int bytesToRead = Math.Min(_bytesToRead, _maxBytesToRead);
 
-                        count = await stream.ReadAsync(buffer, 0, bytesToRead).ConfigureAwait(false);
+                        count = await stream.ReadAsync(rawPduBuffer, rawPduOffset, bytesToRead).ConfigureAwait(false);
 
                         if (count == 0)
                         {
@@ -457,11 +456,11 @@ namespace FellowOakDicom.Network
                             return;
                         }
 
-                        rawPduStream.Write(buffer, 0, count);
-
-                        _readLength -= count;
+                        rawPduOffset += count;
+                        _bytesToRead -= count;
                     }
 
+                    using var rawPduStream = new MemoryStream(rawPduBuffer, 0, rawPduLength);
                     using var raw = new RawPDU(rawPduStream);
 
                     switch (raw.Type)
@@ -640,7 +639,7 @@ namespace FellowOakDicom.Network
                 }
                 finally
                 {
-                    ArrayPool<byte>.Shared.Return(buffer);
+                    ArrayPool<byte>.Shared.Return(rawPduCommonFieldsBuffer);
                     if (rawPduBuffer != null)
                     {
                         ArrayPool<byte>.Shared.Return(rawPduBuffer);
