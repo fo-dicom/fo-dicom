@@ -358,8 +358,9 @@ namespace FellowOakDicom.IO
         /// Initializes an instance of the <see cref="EndianBinaryReader"/> class.
         /// </summary>
         /// <param name="input">Stream from which to read.</param>
-        public EndianBinaryReader(Stream input)
-            : base(input)
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:EndianBinaryReaderr" /> object is disposed; otherwise, <see langword="false" />.</param>
+        public EndianBinaryReader(Stream input, bool leaveOpen)
+            : base(input, Encoding.UTF8, leaveOpen)
         {
         }
 
@@ -368,8 +369,9 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="input">Stream from which to read.</param>
         /// <param name="encoding">Encoding of the <paramref name="input"/>.</param>
-        public EndianBinaryReader(Stream input, Encoding encoding)
-            : base(input, encoding)
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:EndianBinaryReaderr" /> object is disposed; otherwise, <see langword="false" />.</param>
+        public EndianBinaryReader(Stream input, Encoding encoding, bool leaveOpen)
+            : base(input, encoding, leaveOpen)
         {
         }
 
@@ -378,8 +380,9 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="input">Stream from which to read.</param>
         /// <param name="endian">Endianness of the <paramref name="input"/>.</param>
-        public EndianBinaryReader(Stream input, Endian endian)
-            : base(input)
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:EndianBinaryReaderr" /> object is disposed; otherwise, <see langword="false" />.</param>
+        public EndianBinaryReader(Stream input, Endian endian, bool leaveOpen)
+            : base(input, Encoding.UTF8, leaveOpen)
         {
             Endian = endian;
         }
@@ -390,8 +393,9 @@ namespace FellowOakDicom.IO
         /// <param name="input">Stream from which to read.</param>
         /// <param name="encoding">Encoding of the <paramref name="input"/>.</param>
         /// <param name="endian">Endianness of the <paramref name="input"/>.</param>
-        public EndianBinaryReader(Stream input, Encoding encoding, Endian endian)
-            : base(input, encoding)
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:EndianBinaryReaderr" /> object is disposed; otherwise, <see langword="false" />.</param>
+        public EndianBinaryReader(Stream input, Encoding encoding, Endian endian, bool leaveOpen)
+            : base(input, encoding, leaveOpen)
         {
             Endian = endian;
         }
@@ -401,8 +405,9 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="input">Stream from which to read.</param>
         /// <param name="endian">Endianness of the <paramref name="input"/>.</param>
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:EndianBinaryReaderr" /> object is disposed; otherwise, <see langword="false" />.</param>
         /// <returns>Binary reader with requested <paramref name="endian">endianness</paramref>.</returns>
-        public static BinaryReader Create(Stream input, Endian endian)
+        public static BinaryReader Create(Stream input, Endian endian, bool leaveOpen)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
@@ -410,22 +415,22 @@ namespace FellowOakDicom.IO
             {
                 if (Endian.Little == endian)
                 {
-                    return new BinaryReader(input);
+                    return new BinaryReader(input, Encoding.UTF8, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryReader(input, endian);
+                    return new EndianBinaryReader(input, endian, leaveOpen);
                 }
             }
             else
             {
                 if (Endian.Big == endian)
                 {
-                    return new BinaryReader(input);
+                    return new BinaryReader(input, Encoding.UTF8, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryReader(input, endian);
+                    return new EndianBinaryReader(input, endian, leaveOpen);
                 }
             }
         }
@@ -436,32 +441,33 @@ namespace FellowOakDicom.IO
         /// <param name="input">Stream from which to read.</param>
         /// <param name="encoding">Encoding of the <paramref name="input"/>.</param>
         /// <param name="endian">Endianness of the <paramref name="input"/>.</param>
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:EndianBinaryReaderr" /> object is disposed; otherwise, <see langword="false" />.</param>
         /// <returns>Binary reader with requested <paramref name="endian">endianness</paramref>.</returns>
-        public static BinaryReader Create(Stream input, Encoding encoding, Endian endian)
+        public static BinaryReader Create(Stream input, Encoding encoding, Endian endian, bool leaveOpen)
         {
-            if (encoding == null) return Create(input, endian);
+            if (encoding == null) return Create(input, endian, leaveOpen);
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             if (BitConverter.IsLittleEndian)
             {
                 if (Endian.Little == endian)
                 {
-                    return new BinaryReader(input, encoding);
+                    return new BinaryReader(input, encoding, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryReader(input, encoding, endian);
+                    return new EndianBinaryReader(input, encoding, endian, leaveOpen);
                 }
             }
             else
             {
                 if (Endian.Big == endian)
                 {
-                    return new BinaryReader(input, encoding);
+                    return new BinaryReader(input, encoding, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryReader(input, encoding, endian);
+                    return new EndianBinaryReader(input, encoding, endian, leaveOpen);
                 }
             }
         }
@@ -648,9 +654,10 @@ namespace FellowOakDicom.IO
         /// Initializes an instance of the <see cref="EndianBinaryWriter"/> class.
         /// </summary>
         /// <param name="output">Stream to which output should be written.</param>
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:System.IO.BinaryWriter" /> object is disposed; otherwise, <see langword="false" />.</param>
         /// <remarks>Uses the endianness of the system.</remarks>
-        public EndianBinaryWriter(Stream output)
-            : base(output)
+        public EndianBinaryWriter(Stream output, bool leaveOpen)
+            : base(output, Encoding.UTF8, leaveOpen)
         {
         }
 
@@ -659,9 +666,10 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="output">Stream to which output should be written.</param>
         /// <param name="encoding">Output encoding.</param>
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:System.IO.BinaryWriter" /> object is disposed; otherwise, <see langword="false" />.</param>
         /// <remarks>Uses the endianness of the system.</remarks>
-        public EndianBinaryWriter(Stream output, Encoding encoding)
-            : base(output, encoding)
+        public EndianBinaryWriter(Stream output, Encoding encoding, bool leaveOpen)
+            : base(output, encoding, leaveOpen)
         {
         }
 
@@ -670,8 +678,9 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="output">Stream to which output should be written.</param>
         /// <param name="endian">Endianness of the output.</param>
-        public EndianBinaryWriter(Stream output, Endian endian)
-            : base(output)
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:System.IO.BinaryWriter" /> object is disposed; otherwise, <see langword="false" />.</param>
+        public EndianBinaryWriter(Stream output, Endian endian, bool leaveOpen)
+            : base(output, Encoding.UTF8, leaveOpen)
         {
             Endian = endian;
         }
@@ -682,8 +691,9 @@ namespace FellowOakDicom.IO
         /// <param name="output">Stream to which output should be written.</param>
         /// <param name="encoding">Output encoding.</param>
         /// <param name="endian">Endianness of the output.</param>
-        public EndianBinaryWriter(Stream output, Encoding encoding, Endian endian)
-            : base(output, encoding)
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:System.IO.BinaryWriter" /> object is disposed; otherwise, <see langword="false" />.</param>
+        public EndianBinaryWriter(Stream output, Encoding encoding, Endian endian, bool leaveOpen)
+            : base(output, encoding, leaveOpen)
         {
             Endian = endian;
         }
@@ -693,8 +703,9 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="output">Stream to which output should be written.</param>
         /// <param name="endian">Endianness of the output.</param>
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:System.IO.BinaryWriter" /> object is disposed; otherwise, <see langword="false" />.</param>
         /// <returns>Binary writer with desired <paramref name="endian">endianness</paramref>-</returns>
-        public static BinaryWriter Create(Stream output, Endian endian)
+        public static BinaryWriter Create(Stream output, Endian endian, bool leaveOpen)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -702,22 +713,22 @@ namespace FellowOakDicom.IO
             {
                 if (Endian.Little == endian)
                 {
-                    return new BinaryWriter(output);
+                    return new BinaryWriter(output, Encoding.UTF8, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryWriter(output, endian);
+                    return new EndianBinaryWriter(output, endian, leaveOpen);
                 }
             }
             else
             {
                 if (Endian.Big == endian)
                 {
-                    return new BinaryWriter(output);
+                    return new BinaryWriter(output, Encoding.UTF8, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryWriter(output, endian);
+                    return new EndianBinaryWriter(output, endian, leaveOpen);
                 }
             }
         }
@@ -728,32 +739,33 @@ namespace FellowOakDicom.IO
         /// <param name="output">Stream to which output should be written.</param>
         /// <param name="encoding">Output encoding.</param>
         /// <param name="endian">Endianness of the output.</param>
+        /// <param name="leaveOpen"><see langword="true" /> to leave the stream open after the <see cref="T:System.IO.BinaryWriter" /> object is disposed; otherwise, <see langword="false" />.</param>
         /// <returns>Binary writer with desired <paramref name="endian">endianness</paramref>-</returns>
-        public static BinaryWriter Create(Stream output, Encoding encoding, Endian endian)
+        public static BinaryWriter Create(Stream output, Encoding encoding, Endian endian, bool leaveOpen)
         {
-            if (encoding == null) return Create(output, endian);
+            if (encoding == null) return Create(output, endian, leaveOpen);
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             if (BitConverter.IsLittleEndian)
             {
                 if (Endian.Little == endian)
                 {
-                    return new BinaryWriter(output, encoding);
+                    return new BinaryWriter(output, encoding, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryWriter(output, encoding, endian);
+                    return new EndianBinaryWriter(output, encoding, endian, leaveOpen);
                 }
             }
             else
             {
                 if (Endian.Big == endian)
                 {
-                    return new BinaryWriter(output, encoding);
+                    return new BinaryWriter(output, encoding, leaveOpen);
                 }
                 else
                 {
-                    return new EndianBinaryWriter(output, encoding, endian);
+                    return new EndianBinaryWriter(output, encoding, endian, leaveOpen);
                 }
             }
         }

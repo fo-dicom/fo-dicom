@@ -29,24 +29,6 @@ namespace FellowOakDicom.Tests.Bugs
         #region Unit tests
 
         [Fact]
-        public async Task OldDicomClientSend_StoreNonPart10File_ShouldSucceed()
-        {
-            var port = Ports.GetNext();
-
-            using var server = DicomServerFactory.Create<CStoreScp>(port);
-            server.Logger = _logger.IncludePrefix("CStoreScp");
-
-            var file = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
-
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
-            client.Logger = _logger.IncludePrefix("DicomClient");
-            await client.AddRequestAsync(new DicomCStoreRequest(file));
-
-            var exception = await Record.ExceptionAsync(async () => await client.SendAsync());
-            Assert.Null(exception);
-        }
-
-        [Fact]
         public async Task DicomClientSend_StoreNonPart10File_ShouldSucceed()
         {
             var port = Ports.GetNext();
@@ -61,24 +43,6 @@ namespace FellowOakDicom.Tests.Bugs
             await client.AddRequestAsync(new DicomCStoreRequest(file)).ConfigureAwait(false);
 
             var exception = await Record.ExceptionAsync(async () => await client.SendAsync().ConfigureAwait(false));
-            Assert.Null(exception);
-        }
-
-        [Fact]
-        public async Task OldDicomClientSend_StorePart10File_ShouldSucceed()
-        {
-            var port = Ports.GetNext();
-
-            using var server = DicomServerFactory.Create<CStoreScp>(port);
-            server.Logger = _logger.IncludePrefix("CStoreScp");
-
-            var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
-
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
-            client.Logger = _logger.IncludePrefix("DicomClient");
-            await client.AddRequestAsync(new DicomCStoreRequest(file));
-
-            var exception = await Record.ExceptionAsync(() => client.SendAsync());
             Assert.Null(exception);
         }
 

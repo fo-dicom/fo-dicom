@@ -42,7 +42,7 @@ namespace FellowOakDicom.IO
         {
             _stream = stream;
             _endian = Endian.LocalMachine;
-            _reader = EndianBinaryReader.Create(_stream, _endian);
+            _reader = EndianBinaryReader.Create(_stream, _endian, false);
             _mark = 0;
             // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
             ReadOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
@@ -68,7 +68,7 @@ namespace FellowOakDicom.IO
                     lock (_lock)
                     {
                         _endian = value;
-                        _reader = EndianBinaryReader.Create(_stream, _endian);
+                        _reader = EndianBinaryReader.Create(_stream, _endian, false);
                     }
                 }
             }
