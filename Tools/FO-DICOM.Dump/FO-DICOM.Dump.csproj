@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Codecs" Version="5.0.0-beta6" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
