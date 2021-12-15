@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>FO_DICOM.Documentation.DocFx</RootNamespace>
     <DocfxConfigFile>$(MSBuildProjectDirectory)/v5/docfx.json</DocfxConfigFile>
   </PropertyGroup>
