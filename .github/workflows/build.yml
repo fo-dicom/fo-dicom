@@ -10,7 +10,7 @@ on:
 
 jobs:
   v5-net-462:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
@@ -24,7 +24,7 @@ jobs:
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
       
   v5-net-core-31:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
@@ -38,7 +38,7 @@ jobs:
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnetcore31.xml
       
   v5-net-60:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
     - name: Build FO-DICOM.Core
@@ -54,7 +54,7 @@ jobs:
       uses: codecov/codecov-action@v2
 
   benchmarks:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
     - name: Build FO-DICOM..Benchmark
