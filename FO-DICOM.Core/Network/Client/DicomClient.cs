@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;
 
@@ -101,6 +102,11 @@ namespace FellowOakDicom.Network.Client
         ITranscoderManager TranscoderManager { get; }
 
         /// <summary>
+        /// The memory provider that will be used to allocate memory when sending and receiving messages
+        /// </summary>
+        IMemoryProvider MemoryProvider { get; }
+        
+        /// <summary>
         /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
         /// </summary>
         bool IsSendRequired { get; }
@@ -167,6 +173,7 @@ namespace FellowOakDicom.Network.Client
 
     public class DicomClient : IDicomClient
     {
+        private readonly IMemoryProvider _memoryProvider;
         private readonly SemaphoreSlim _transitionLock = new SemaphoreSlim(1, 1);
         private IDicomClientState State { get; set; }
 
@@ -192,6 +199,7 @@ namespace FellowOakDicom.Network.Client
         public INetworkManager NetworkManager { get; }
         public ILogManager LogManager { get; }
         public ITranscoderManager TranscoderManager { get; }
+        public IMemoryProvider MemoryProvider { get; }
 
         public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
@@ -213,12 +221,14 @@ namespace FellowOakDicom.Network.Client
         /// <param name="networkManager">The network manager that will be used to connect to the DICOM server</param>
         /// <param name="logManager">The log manager that will be used to extract a default logger</param>
         /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate memory when sending and receiving messages</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             INetworkManager networkManager,
             ILogManager logManager,
-            ITranscoderManager transcoderManager)
+            ITranscoderManager transcoderManager,
+            IMemoryProvider memoryProvider)
         {
             Host = host;
             Port = port;
@@ -236,6 +246,7 @@ namespace FellowOakDicom.Network.Client
             NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
             LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            MemoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             Logger = logManager.GetLogger("FellowOakDicom.Network");
         }
 

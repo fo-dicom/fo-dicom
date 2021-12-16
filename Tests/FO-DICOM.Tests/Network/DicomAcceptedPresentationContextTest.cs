@@ -131,7 +131,7 @@ namespace FellowOakDicom.Tests.Network
     internal class AcceptOnlyEchoProvider : SimpleAssociationAcceptProvider
     {
         public AcceptOnlyEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
         {
             AcceptedSopClasses.Add(DicomUID.Verification);
         }
@@ -140,7 +140,7 @@ namespace FellowOakDicom.Tests.Network
     internal class AcceptOnlyEchoPrintManagementProvider : SimpleAssociationAcceptProvider
     {
         public AcceptOnlyEchoPrintManagementProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
         {
             AcceptedSopClasses.AddRange(new[] { DicomUID.Verification, DicomUID.BasicGrayscalePrintManagementMeta });
         }
@@ -149,7 +149,7 @@ namespace FellowOakDicom.Tests.Network
     internal class AcceptOnlyEchoStoreProvider : SimpleAssociationAcceptProvider
     {
         public AcceptOnlyEchoStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
         {
             AcceptedSopClasses.Add(DicomUID.Verification);
             AcceptedSopClasses.AddRange(DicomUID.Enumerate().Where(u => u.IsImageStorage));
@@ -169,8 +169,8 @@ namespace FellowOakDicom.Tests.Network
         protected List<DicomUID> AcceptedSopClasses { get; } = new List<DicomUID>();
 
         public SimpleAssociationAcceptProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-          : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies)
+          : base(stream, fallbackEncoding, log, dependencies)
         {
         }
 
