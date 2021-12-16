@@ -12,10 +12,8 @@ namespace FellowOakDicom.Benchmark
 {
     public class NopCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
-        public NopCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager,
-            ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-            logManager, networkManager, transcoderManager)
+        public NopCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+            : base(stream, fallbackEncoding, log, dependencies)
         {
         }
 

@@ -6,9 +6,9 @@ using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -41,6 +41,8 @@ namespace FellowOakDicom.Network
 
         private readonly INetworkStream _network;
         
+        private readonly IMemoryProvider _memoryProvider;
+
         private readonly Stream _writeStream;
 
         private readonly object _lock;
@@ -84,17 +86,17 @@ namespace FellowOakDicom.Network
         /// <param name="logManager">The log manager</param>
         /// <param name="networkManager">The network manager</param>
         /// <param name="transcoderManager">The transcoder manager</param>
+        /// <param name="memoryProvider">The memory provider</param>
         protected DicomService(
             INetworkStream stream,
             Encoding fallbackEncoding,
             ILogger logger,
-            ILogManager logManager,
-            INetworkManager networkManager,
-            ITranscoderManager transcoderManager)
+            DicomServiceDependencies dependencies)
         {
             _isDisconnectedFlag = new AsyncManualResetEvent();
 
             _network = stream;
+            _memoryProvider = dependencies.MemoryProvider;
             _writeStream = new BufferedStream(_network.AsStream());
             _lock = new object();
             _pduQueue = new Queue<PDU>();
@@ -106,9 +108,9 @@ namespace FellowOakDicom.Network
             MaximumPDUsInQueue = 16;
 
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
-            NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            LogManager = dependencies.LogManager ?? throw new ArgumentNullException(nameof(dependencies.LogManager));
+            NetworkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
+            TranscoderManager = dependencies.TranscoderManager ?? throw new ArgumentNullException(nameof(dependencies.TranscoderManager));
 
             Options = new DicomServiceOptions();
 
@@ -397,11 +399,6 @@ namespace FellowOakDicom.Network
         {
             while (IsConnected)
             {
-                // This is the buffer we use to shuttle data in chunks from the incoming network stream to the Raw PDU
-                var rawPduCommonFieldsBuffer = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength);
-                
-                // This is the buffer that will hold the entire Raw PDU at once
-                byte[] rawPduBuffer = null;
                 try
                 {
                     var stream = _network.AsStream();
@@ -409,7 +406,10 @@ namespace FellowOakDicom.Network
                     // Read common fields of the PDU header. The first 6 bytes contain the type and the length
                     _bytesToRead = RawPDU.CommonFieldsLength;
 
-                    var count = await stream.ReadAsync(rawPduCommonFieldsBuffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
+                    // This is the (extremely small) buffer we use to read the raw PDU header
+                    using var rawPduCommonFieldsBuffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength);
+                    
+                    var count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes, 0, rawPduCommonFieldsBuffer.Length).ConfigureAwait(false);
 
                     do
                     {
@@ -424,30 +424,29 @@ namespace FellowOakDicom.Network
                         
                         if (_bytesToRead > 0)
                         {
-                            count = await stream.ReadAsync(rawPduCommonFieldsBuffer, RawPDU.CommonFieldsLength - _bytesToRead, _bytesToRead).ConfigureAwait(false);
+                            count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes, rawPduCommonFieldsBuffer.Length - _bytesToRead, _bytesToRead).ConfigureAwait(false);
                         }
                     }
                     while (_bytesToRead > 0);
 
-                    var length = BitConverter.ToInt32(rawPduCommonFieldsBuffer, 2);
+                    var length = BitConverter.ToInt32(rawPduCommonFieldsBuffer.Bytes, 2);
                     length = Endian.Swap(length);
 
                     _bytesToRead = length;
 
                     // Read PDU
                     var rawPduLength = length + RawPDU.CommonFieldsLength;
-                    // Note: the shared array pool will allocate a new byte array if the requested length exceeds 1MB
-                    // In other words, for raw PDUs < 1MB a rented byte array will be used. For raw PDUs > 1MB, a new byte array will be allocated
-                    // In the future, we could further optimize this by chaining rented byte arrays or using something akin to RecyclableMemoryStreams
-                    rawPduBuffer = ArrayPool<byte>.Shared.Rent(rawPduLength);
                     
-                    Array.Copy(rawPduCommonFieldsBuffer, 0, rawPduBuffer, 0, RawPDU.CommonFieldsLength);
+                    // This is the buffer that will hold the entire Raw PDU at once
+                    using var rawPduBuffer = _memoryProvider.Provide(rawPduLength);
+                    
+                    Array.Copy(rawPduCommonFieldsBuffer.Bytes, 0, rawPduBuffer.Bytes, 0, RawPDU.CommonFieldsLength);
                     int rawPduOffset = RawPDU.CommonFieldsLength;
                     while (_bytesToRead > 0)
                     {
                         int bytesToRead = Math.Min(_bytesToRead, _maxBytesToRead);
 
-                        count = await stream.ReadAsync(rawPduBuffer, rawPduOffset, bytesToRead).ConfigureAwait(false);
+                        count = await stream.ReadAsync(rawPduBuffer.Bytes, rawPduOffset, bytesToRead).ConfigureAwait(false);
 
                         if (count == 0)
                         {
@@ -460,7 +459,7 @@ namespace FellowOakDicom.Network
                         _bytesToRead -= count;
                     }
 
-                    using var rawPduStream = new MemoryStream(rawPduBuffer, 0, rawPduLength);
+                    using var rawPduStream = new MemoryStream(rawPduBuffer.Bytes, 0, rawPduLength);
                     using var raw = new RawPDU(rawPduStream);
 
                     switch (raw.Type)
@@ -636,14 +635,6 @@ namespace FellowOakDicom.Network
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
-                }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(rawPduCommonFieldsBuffer);
-                    if (rawPduBuffer != null)
-                    {
-                        ArrayPool<byte>.Shared.Return(rawPduBuffer);
-                    }
                 }
             }
         }
@@ -1252,7 +1243,7 @@ namespace FellowOakDicom.Network
                 DeflateStream deflateStream = null;
                 try
                 {
-                    pDataStream = new PDataTFStream(this, pc.ID, Association.MaximumPDULength, msg);
+                    pDataStream = new PDataTFStream(this, _memoryProvider, pc.ID, Association.MaximumPDULength, msg);
 
                     var writer = new DicomWriter(
                         DicomTransferSyntax.ImplicitVRLittleEndian,
@@ -1601,18 +1592,14 @@ namespace FellowOakDicom.Network
             private readonly byte _pcid;
 
             private readonly DicomMessage _dicomMessage;
+            private readonly IMemoryProvider _memoryProvider;
 
             private PDataTF _pdu;
-            
-            /// <summary>
-            /// Because we make use of rented byte arrays - which may be larger than what you request - we keep separate track of the length in this field
-            /// </summary>
-            private int _bytesLength;
 
             /// <summary>
             /// This will be a rented byte array to server as a buffer for the current PDV
             /// </summary>
-            private byte[] _bytes;
+            private IMemory _memory;
 
             private int _length;
 
@@ -1620,9 +1607,10 @@ namespace FellowOakDicom.Network
 
             #region Public Constructors
 
-            public PDataTFStream(DicomService service, byte pcid, uint max, DicomMessage dicomMessage)
+            public PDataTFStream(DicomService service, IMemoryProvider memoryProvider, byte pcid, uint max, DicomMessage dicomMessage)
             {
-                _service = service;
+                _service = service ?? throw new ArgumentNullException(nameof(service));
+                _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
                 _command = true;
                 _pcid = pcid;
                 _dicomMessage = dicomMessage;
@@ -1634,8 +1622,7 @@ namespace FellowOakDicom.Network
                 _pdu = new PDataTF();
 
                 // Max PDU Size - Current Size - Size of PDV header
-                _bytesLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
-                _bytes = RentNextByteArray(_bytesLength);
+                _memory = ProvideEvenLengthMemory((int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength));
             }
 
             #endregion
@@ -1672,10 +1659,10 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    var bytes = _bytes;
-                    // Immediately set _bytes to null so we cannot double return it to the pool
-                    _bytes = null;
-                    if (bytes == null)
+                    var memory = _memory;
+                    // Immediately set to null so we cannot double dispose it
+                    _memory = null;
+                    if (memory == null)
                     {
                         throw new InvalidOperationException("Tried to write another PDV after the last PDV");
                     }
@@ -1683,19 +1670,18 @@ namespace FellowOakDicom.Network
                     // Ensure PDV has even length
                     if (_length % 2 == 1)
                     {
-                        if (bytes.Length <= _length)
+                        if (memory.Length <= _length)
                         {
-                            // This scenario should be prevented by RentNextByteArray
-                            throw new InvalidOperationException("Rented array is not large enough to pad with one extra byte to make the PDV even");
+                            // This scenario should be prevented by ProvideEvenLengthMemory
+                            throw new InvalidOperationException("Current memory is not large enough to pad with one extra byte to make the PDV even");
                         }
 
                         // Rented array is large enough to fit another byte, so we don't have to do anything special
-                        bytes[_length] = 0;
-                        _bytesLength++;
+                        memory.Bytes[_length] = 0;
                         _length++;
                     }
 
-                    var pdv = new PDV(_pcid, bytes, _length, true, _command, last);
+                    var pdv = new PDV(_pcid, memory.Bytes, _length, true, _command, last);
                     _pdu.PDVs.Add(pdv);
                     
                     // reset length in case we recurse into WritePDU()
@@ -1712,7 +1698,7 @@ namespace FellowOakDicom.Network
                     {
                         // Max PDU Size - Current Size - Size of PDV header
                         _bytesLength = (int)(_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
-                        _bytes = RentNextByteArray(_bytesLength);
+                        _memory = ProvideEvenLengthMemory(_bytesLength);
                     }
                 }
                 catch (Exception e)
@@ -1753,7 +1739,7 @@ namespace FellowOakDicom.Network
                 }
             }
             
-            private byte[] RentNextByteArray(int length)
+            private IMemory ProvideEvenLengthMemory(int length)
             {
                 // Since these byte arrays will be used to create PDVs
                 // and since PDVs must have an even number of bytes
@@ -1763,7 +1749,7 @@ namespace FellowOakDicom.Network
                     length += 1;
                 }
 
-                return ArrayPool<byte>.Shared.Rent(length);
+                return _memoryProvider.Provide(length);
             }
 
             #endregion
@@ -1818,18 +1804,18 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    if (_bytes == null)
+                    if (_memory == null)
                     {
                         // Max PDU Size - Current Size - Size of PDV header
                         _bytesLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
-                        _bytes = RentNextByteArray(_bytesLength);
+                        _memory = ProvideEvenLengthMemory(_bytesLength);
                     }
 
                     while (count >= _bytesLength - _length)
                     {
                         var c = Math.Min(count, _bytesLength - _length);
 
-                        Array.Copy(buffer, offset, _bytes, _length, c);
+                        Array.Copy(buffer, offset, _memory, _length, c);
 
                         _length += c;
                         offset += c;
@@ -1840,7 +1826,7 @@ namespace FellowOakDicom.Network
 
                     if (count > 0)
                     {
-                        Array.Copy(buffer, offset, _bytes, _length, count);
+                        Array.Copy(buffer, offset, _memory, _length, count);
                         _length += count;
 
                         if (_bytesLength == _length)
@@ -1868,7 +1854,7 @@ namespace FellowOakDicom.Network
             
             protected override void Dispose(bool disposing)
             {
-                var bytes = Interlocked.Exchange(ref _bytes, null);
+                var bytes = Interlocked.Exchange(ref _memory, null);
                 if (bytes != null)
                 {
                     ArrayPool<byte>.Shared.Return(bytes);

@@ -146,9 +146,13 @@ namespace FellowOakDicom.Network.Client
             : base(networkStream, 
                 dicomClient.FallbackEncoding,
                 dicomClient.Logger, 
-                dicomClient.LogManager,
-                dicomClient.NetworkManager,
-                dicomClient.TranscoderManager)
+                new DicomServiceDependencies(
+                    dicomClient.LogManager,
+                    dicomClient.NetworkManager,
+                    dicomClient.TranscoderManager,
+                    dicomClient.MemoryProvider
+                )
+            )
         {
             DicomClient = dicomClient;
             NetworkStream = networkStream;

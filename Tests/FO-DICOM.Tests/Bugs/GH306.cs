@@ -78,9 +78,8 @@ namespace FellowOakDicom.Tests.Bugs
                 DicomTransferSyntax.ImplicitVRLittleEndian
             };
 
-            public CStoreScp(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager,
-                INetworkManager networkManager, ITranscoderManager transcoderManager)
-                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            public CStoreScp(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+                : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 

@@ -61,9 +61,9 @@ namespace FellowOakDicom.Tests.Network
         private readonly ISomeInterface _someInterface;
 
         public EchoProviderWithDependency(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager,
+            DicomServiceDependencies dependencies,
             ISomeInterface someInterface)
-            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            : base(stream, fallbackEncoding, log, dependencies)
         {
             _someInterface = someInterface ?? throw new ArgumentNullException(nameof(someInterface));
         }

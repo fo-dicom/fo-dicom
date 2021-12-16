@@ -4,6 +4,7 @@
 using System;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -42,18 +43,22 @@ namespace FellowOakDicom.Network.Client
         private readonly ILogManager _logManager;
         private readonly INetworkManager _networkManager;
         private readonly ITranscoderManager _transcoderManager;
+        private readonly IMemoryProvider _memoryProvider;
         private readonly IOptions<DicomClientOptions> _defaultClientOptions;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
         public DefaultDicomClientFactory(
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager,
+            ILogManager logManager,
+            INetworkManager networkManager,
+            ITranscoderManager transcoderManager,
+            IMemoryProvider memoryProvider,
             IOptions<DicomClientOptions> defaultClientOptions,
-            IOptions<DicomServiceOptions> defaultServiceOptions
-            )
+            IOptions<DicomServiceOptions> defaultServiceOptions)
         {
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _defaultClientOptions = defaultClientOptions ?? throw new ArgumentNullException(nameof(defaultClientOptions));
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
         }
@@ -63,7 +68,7 @@ namespace FellowOakDicom.Network.Client
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
 
-            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _networkManager, _logManager, _transcoderManager);
+            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _networkManager, _logManager, _transcoderManager, _memoryProvider);
         }
     }
 }
