@@ -66,12 +66,12 @@ namespace FellowOakDicom.Tests.Network.Client
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
             var logManager = Setup.ServiceProvider.GetRequiredService<ILogManager>();
-            var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
+            var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
             var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             return new DefaultDicomClientFactory(
                 new AdvancedDicomClientFactory(
-                    new AdvancedDicomClientConnectionFactory(networkManager, logManager, transcoderManager, defaultServiceOptions),
+                    new AdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies),
                     logManager
                 ),
                 defaultClientOptions,
@@ -808,9 +808,7 @@ namespace FellowOakDicom.Tests.Network.Client
         private class InMemoryDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
             public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-                ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-                logManager, networkManager, transcoderManager)
+                DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 
@@ -856,9 +854,7 @@ namespace FellowOakDicom.Tests.Network.Client
             public IEnumerable<DicomRequest> Requests => _requests;
 
             public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding,
-                Logger log, ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-                logManager, networkManager, transcoderManager)
+                Logger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
                 _requests = new ConcurrentBag<DicomRequest>();
             }
@@ -907,9 +903,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-                logManager, networkManager, transcoderManager)
+            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 
@@ -970,8 +964,8 @@ namespace FellowOakDicom.Tests.Network.Client
         private class SlowPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
             public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(
-                stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+                DicomServiceDependencies dependencies) : base(
+                stream, fallbackEncoding, log, dependencies)
             {
             }
 

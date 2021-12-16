@@ -118,8 +118,8 @@ namespace FellowOakDicom.Tests.Network
                DicomTransferSyntax.JPEGProcess2_4,
         };
 
-        public AsyncDicomCStoreProviderPreferingUncompressedTS(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+        public AsyncDicomCStoreProviderPreferingUncompressedTS(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+            : base(stream, fallbackEncoding, log, dependencies)
         { }
 
         public override Task OnReceiveAssociationRequestAsync(DicomAssociation association)
@@ -145,8 +145,8 @@ namespace FellowOakDicom.Tests.Network
     public class AsyncDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
         public AsyncDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies)
+            : base(stream, fallbackEncoding, log, dependencies)
         {
         }
 

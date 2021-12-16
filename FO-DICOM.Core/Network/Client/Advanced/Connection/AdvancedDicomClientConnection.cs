@@ -53,9 +53,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 Encoding fallbackEncoding,
                 DicomServiceOptions dicomServiceOptions,
                 ILogger logger,
-                ILogManager logManager,
-                INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(networkStream, fallbackEncoding, logger, logManager, networkManager, transcoderManager)
+                DicomServiceDependencies dependencies) : base(networkStream, fallbackEncoding, logger, dependencies)
         {
             Options = dicomServiceOptions ?? throw new ArgumentNullException(nameof(dicomServiceOptions));
             Callbacks = callbacks ?? throw new ArgumentNullException(nameof(callbacks));
@@ -69,7 +67,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
+            Listener = Task.Run(RunAsync);
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);

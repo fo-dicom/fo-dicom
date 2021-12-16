@@ -64,8 +64,8 @@ namespace FellowOakDicom.Tests.Network
     public class AsyncDicomCMoveProvider : DicomService, IDicomServiceProvider, IDicomCMoveProvider
     {
         public AsyncDicomCMoveProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies)
+            : base(stream, fallbackEncoding, log, dependencies)
         {
         }
 

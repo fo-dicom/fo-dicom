@@ -6,9 +6,9 @@ using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -42,6 +42,8 @@ namespace FellowOakDicom.Network
 
         private readonly INetworkStream _network;
         
+        private readonly IMemoryProvider _memoryProvider;
+
         private readonly Stream _writeStream;
 
         private readonly object _lock;
@@ -85,17 +87,17 @@ namespace FellowOakDicom.Network
         /// <param name="logManager">The log manager</param>
         /// <param name="networkManager">The network manager</param>
         /// <param name="transcoderManager">The transcoder manager</param>
+        /// <param name="memoryProvider">The memory provider</param>
         protected DicomService(
             INetworkStream stream,
             Encoding fallbackEncoding,
             ILogger logger,
-            ILogManager logManager,
-            INetworkManager networkManager,
-            ITranscoderManager transcoderManager)
+            DicomServiceDependencies dependencies)
         {
             _isDisconnectedFlag = new AsyncManualResetEvent();
 
             _network = stream;
+            _memoryProvider = dependencies.MemoryProvider;
             _writeStream = new BufferedStream(_network.AsStream());
             _lock = new object();
             _pduQueue = new Queue<PDU>();
@@ -107,9 +109,9 @@ namespace FellowOakDicom.Network
             MaximumPDUsInQueue = 16;
 
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
-            NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
+            LogManager = dependencies.LogManager ?? throw new ArgumentNullException(nameof(dependencies.LogManager));
+            NetworkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
+            TranscoderManager = dependencies.TranscoderManager ?? throw new ArgumentNullException(nameof(dependencies.TranscoderManager));
 
             Options = new DicomServiceOptions();
 
@@ -430,7 +432,7 @@ namespace FellowOakDicom.Network
             while (IsConnected)
             {
                 // This is the buffer we use to move data from the incoming network stream to the PDU
-                var buffer = ArrayPool<byte>.Shared.Rent(_maxBytesToRead);
+                using var buffer = _memoryProvider.Provide(_maxBytesToRead);
                 try
                 {
                     var stream = _network.AsStream();
@@ -438,7 +440,7 @@ namespace FellowOakDicom.Network
                     // Read common fields of the PDU header. The first 6 bytes contain the type and the length
                     _readLength = RawPDU.CommonFieldsLength;
 
-                    var count = await stream.ReadAsync(buffer, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength).ConfigureAwait(false);
 
                     do
                     {
@@ -453,12 +455,12 @@ namespace FellowOakDicom.Network
                         
                         if (_readLength > 0)
                         {
-                            count = await stream.ReadAsync(buffer, RawPDU.CommonFieldsLength - _readLength, _readLength).ConfigureAwait(false);
+                            count = await stream.ReadAsync(buffer.Bytes, RawPDU.CommonFieldsLength - _readLength, _readLength).ConfigureAwait(false);
                         }
                     }
                     while (_readLength > 0);
 
-                    var length = BitConverter.ToInt32(buffer, 2);
+                    var length = BitConverter.ToInt32(buffer.Bytes, 2);
                     length = Endian.Swap(length);
 
                     _readLength = length;
@@ -466,13 +468,13 @@ namespace FellowOakDicom.Network
                     // Read PDU
                     var ms = new MemoryStream(_readLength);
 
-                    ms.Write(buffer, 0, RawPDU.CommonFieldsLength);
+                    ms.Write(buffer.Bytes, 0, RawPDU.CommonFieldsLength);
 
                     while (_readLength > 0)
                     {
                         int bytesToRead = Math.Min(_readLength, _maxBytesToRead);
 
-                        count = await stream.ReadAsync(buffer, 0, bytesToRead).ConfigureAwait(false);
+                        count = await stream.ReadAsync(buffer.Bytes, 0, bytesToRead).ConfigureAwait(false);
 
                         if (count == 0)
                         {
@@ -481,7 +483,7 @@ namespace FellowOakDicom.Network
                             return;
                         }
 
-                        ms.Write(buffer, 0, count);
+                        ms.Write(buffer.Bytes, 0, count);
 
                         _readLength -= count;
                     }
@@ -661,10 +663,6 @@ namespace FellowOakDicom.Network
                 {
                     Logger.Error("Exception processing PDU: {@error}", e);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
-                }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(buffer);
                 }
             }
         }

@@ -785,8 +785,8 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
             public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+                DicomServiceDependencies dependencies)
+                : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 

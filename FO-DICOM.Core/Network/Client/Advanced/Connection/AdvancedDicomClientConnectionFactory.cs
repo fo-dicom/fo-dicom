@@ -24,19 +24,19 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     {
         private readonly INetworkManager _networkManager;
         private readonly ILogManager _logManager;
-        private readonly ITranscoderManager _transcoderManager;
+        private readonly DicomServiceDependencies _dicomServiceDependencies;
         private readonly IOptions<DicomServiceOptions> _defaultDicomServiceOptions;
 
         public AdvancedDicomClientConnectionFactory(
             INetworkManager networkManager, 
             ILogManager logManager,
-            ITranscoderManager transcoderManager,
-            IOptions<DicomServiceOptions> defaultDicomServiceOptions)
+            IOptions<DicomServiceOptions> defaultDicomServiceOptions,
+            DicomServiceDependencies dicomServiceDependencies)
         {
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
-            _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
             _defaultDicomServiceOptions = defaultDicomServiceOptions;
+            _dicomServiceDependencies = dicomServiceDependencies ?? throw new ArgumentNullException(nameof(dicomServiceDependencies));
         }
         
         public async Task<IAdvancedDicomClientConnection> ConnectAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
@@ -68,7 +68,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
                 IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(callbacks, networkStream, 
                     request.FallbackEncoding, request.DicomServiceOptions,
-                    request.Logger, _logManager, _networkManager, _transcoderManager);
+                    request.Logger, _dicomServiceDependencies);
 
                 if (request.ConnectionInterceptor != null)
                 {

@@ -23,11 +23,11 @@ namespace FellowOakDicom.AspNetCore.Server
 
         private readonly DicomTransferSyntax[] _availableImageTransferSyntaxes;
 
-        public GeneralPurposeDicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-           : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+        public GeneralPurposeDicomService(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+           : base(stream, fallbackEncoding, log, dependencies)
         {
             _availableImageTransferSyntaxes = DicomTransferSyntax.KnownEntries
-                .Where(t => transcoderManager.CanTranscode(t, DicomTransferSyntax.ImplicitVRLittleEndian))
+                .Where(t => dependencies.TranscoderManager.CanTranscode(t, DicomTransferSyntax.ImplicitVRLittleEndian))
                 .Union(_uncompressedTransferSyntaxes)
                 .ToArray();
         }
