@@ -5,6 +5,7 @@
 * Improved bilinear interpolation
 * Fix issue where sending a deflated DICOM file via C-STORE was sent inflated, causing errors (#1283) 
 * Optimize performance and reduce memory allocations in network layer (#1267 and #1273)
+* Enhance Association Request Timeout (#1284)
 
 #### 5.0.1 (2021-11-11)
 
