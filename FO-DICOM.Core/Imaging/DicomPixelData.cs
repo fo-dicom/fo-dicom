@@ -616,7 +616,12 @@ namespace FellowOakDicom.Imaging
             {
                 NumberOfFrames++;
 
-                var pos = _element.Fragments.Sum(x => x.Size + 8);
+                long pos = 0;
+                if (_element.Fragments.Any())
+                {
+                    pos = _element.OffsetTable.Last() + _element.Fragments.Last().Size + 8;
+                }
+
                 if (pos < uint.MaxValue)
                 {
                     _element.OffsetTable.Add((uint)pos);
