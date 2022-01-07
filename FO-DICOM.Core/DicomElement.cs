@@ -103,26 +103,31 @@ namespace FellowOakDicom
 
         public Encoding[] TargetEncodings
         {
-            get => _targetEncodings;
+            get => ValueRepresentation.IsStringEncoded ? _targetEncodings : DicomEncoding.DefaultArray;
             set
             {
-                if (!(Buffer is LazyByteBuffer) && (Buffer != EmptyBuffer.Value) && !value.SequenceEqual(_bufferEncodings))
+                if (ValueRepresentation.IsStringEncoded)
                 {
-                    _value = StringValue;
-                    Buffer = new LazyByteBuffer(StringToBytes);
+                    if (!(Buffer is LazyByteBuffer) && (Buffer != EmptyBuffer.Value) &&
+                        !value.SequenceEqual(_bufferEncodings))
+                    {
+                        _value = StringValue;
+                        Buffer = new LazyByteBuffer(StringToBytes);
+                    }
+
+                    _targetEncodings = value;
                 }
-                _targetEncodings = value;
             }
         }
 
         public Encoding TargetEncoding
         {
             get => _targetEncodings?.FirstOrDefault() ?? DicomEncoding.Default;
-            set => _targetEncodings = new[] { value };
+            set => TargetEncodings = new[] { value };
         }
 
         /// <summary>Gets the number of values that the DICOM element contains.</summary>
-        /// <value>Number of value items</value>
+        /// <value>Number of value items.</value>
         public override int Count => 1;
 
         protected string StringValue
