@@ -12,7 +12,7 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 
 ### Features
 * Targets .NET Standard 2.0
-* DICOM dictionary version 2021b
+* DICOM dictionary version 2021e
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (via additional package)
 * Supports very large datasets with content loading on demand
