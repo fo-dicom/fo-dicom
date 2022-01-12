@@ -18,6 +18,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.Verification.UID, DicomUID.Verification);
             _uids.Add(DicomUID.ImplicitVRLittleEndian.UID, DicomUID.ImplicitVRLittleEndian);
             _uids.Add(DicomUID.ExplicitVRLittleEndian.UID, DicomUID.ExplicitVRLittleEndian);
+            _uids.Add(DicomUID.EncapsulatedUncompressedExplicitVRLittleEndian.UID, DicomUID.EncapsulatedUncompressedExplicitVRLittleEndian);
             _uids.Add(DicomUID.DeflatedExplicitVRLittleEndian.UID, DicomUID.DeflatedExplicitVRLittleEndian);
             _uids.Add(DicomUID.ExplicitVRBigEndianRETIRED.UID, DicomUID.ExplicitVRBigEndianRETIRED);
             _uids.Add(DicomUID.JPEGBaseline8Bit.UID, DicomUID.JPEGBaseline8Bit);
@@ -62,33 +63,6 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.SMPTEST211020UncompressedInterlacedActiveVideo.UID, DicomUID.SMPTEST211020UncompressedInterlacedActiveVideo);
             _uids.Add(DicomUID.SMPTEST211030PCMDigitalAudio.UID, DicomUID.SMPTEST211030PCMDigitalAudio);
             _uids.Add(DicomUID.MediaStorageDirectoryStorage.UID, DicomUID.MediaStorageDirectoryStorage);
-            _uids.Add(DicomUID.TalairachBrainAtlas.UID, DicomUID.TalairachBrainAtlas);
-            _uids.Add(DicomUID.SPM2T1.UID, DicomUID.SPM2T1);
-            _uids.Add(DicomUID.SPM2T2.UID, DicomUID.SPM2T2);
-            _uids.Add(DicomUID.SPM2PD.UID, DicomUID.SPM2PD);
-            _uids.Add(DicomUID.SPM2EPI.UID, DicomUID.SPM2EPI);
-            _uids.Add(DicomUID.SPM2FILT1.UID, DicomUID.SPM2FILT1);
-            _uids.Add(DicomUID.SPM2PET.UID, DicomUID.SPM2PET);
-            _uids.Add(DicomUID.SPM2TRANSM.UID, DicomUID.SPM2TRANSM);
-            _uids.Add(DicomUID.SPM2SPECT.UID, DicomUID.SPM2SPECT);
-            _uids.Add(DicomUID.SPM2GRAY.UID, DicomUID.SPM2GRAY);
-            _uids.Add(DicomUID.SPM2WHITE.UID, DicomUID.SPM2WHITE);
-            _uids.Add(DicomUID.SPM2CSF.UID, DicomUID.SPM2CSF);
-            _uids.Add(DicomUID.SPM2BRAINMASK.UID, DicomUID.SPM2BRAINMASK);
-            _uids.Add(DicomUID.SPM2AVG305T1.UID, DicomUID.SPM2AVG305T1);
-            _uids.Add(DicomUID.SPM2AVG152T1.UID, DicomUID.SPM2AVG152T1);
-            _uids.Add(DicomUID.SPM2AVG152T2.UID, DicomUID.SPM2AVG152T2);
-            _uids.Add(DicomUID.SPM2AVG152PD.UID, DicomUID.SPM2AVG152PD);
-            _uids.Add(DicomUID.SPM2SINGLESUBJT1.UID, DicomUID.SPM2SINGLESUBJT1);
-            _uids.Add(DicomUID.ICBM452T1.UID, DicomUID.ICBM452T1);
-            _uids.Add(DicomUID.ICBMSingleSubjectMRI.UID, DicomUID.ICBMSingleSubjectMRI);
-            _uids.Add(DicomUID.IEC61217FixedCoordinateSystem.UID, DicomUID.IEC61217FixedCoordinateSystem);
-            _uids.Add(DicomUID.StandardRoboticArmCoordinateSystem.UID, DicomUID.StandardRoboticArmCoordinateSystem);
-            _uids.Add(DicomUID.SRI24.UID, DicomUID.SRI24);
-            _uids.Add(DicomUID.Colin27.UID, DicomUID.Colin27);
-            _uids.Add(DicomUID.LPBA40AIR.UID, DicomUID.LPBA40AIR);
-            _uids.Add(DicomUID.LPBA40FLIRT.UID, DicomUID.LPBA40FLIRT);
-            _uids.Add(DicomUID.LPBA40SPM5.UID, DicomUID.LPBA40SPM5);
             _uids.Add(DicomUID.HotIronPalette.UID, DicomUID.HotIronPalette);
             _uids.Add(DicomUID.PETPalette.UID, DicomUID.PETPalette);
             _uids.Add(DicomUID.HotMetalBluePalette.UID, DicomUID.HotMetalBluePalette);
@@ -300,6 +274,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.PerformedImagingAgentAdministrationSRStorage.UID, DicomUID.PerformedImagingAgentAdministrationSRStorage);
             _uids.Add(DicomUID.EnhancedXRayRadiationDoseSRStorage.UID, DicomUID.EnhancedXRayRadiationDoseSRStorage);
             _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
+            _uids.Add(DicomUID.MicroscopyBulkSimpleAnnotationsStorage.UID, DicomUID.MicroscopyBulkSimpleAnnotationsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
             _uids.Add(DicomUID.EncapsulatedCDAStorage.UID, DicomUID.EncapsulatedCDAStorage);
             _uids.Add(DicomUID.EncapsulatedSTLStorage.UID, DicomUID.EncapsulatedSTLStorage);
@@ -338,6 +313,8 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.TomotherapeuticRadiationRecordStorage.UID, DicomUID.TomotherapeuticRadiationRecordStorage);
             _uids.Add(DicomUID.CArmPhotonElectronRadiationRecordStorage.UID, DicomUID.CArmPhotonElectronRadiationRecordStorage);
             _uids.Add(DicomUID.RoboticRadiationRecordStorage.UID, DicomUID.RoboticRadiationRecordStorage);
+            _uids.Add(DicomUID.RTRadiationSetDeliveryInstructionStorage.UID, DicomUID.RTRadiationSetDeliveryInstructionStorage);
+            _uids.Add(DicomUID.RTTreatmentPreparationStorage.UID, DicomUID.RTTreatmentPreparationStorage);
             _uids.Add(DicomUID.DICOSCTImageStorage.UID, DicomUID.DICOSCTImageStorage);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForPresentation.UID, DicomUID.DICOSDigitalXRayImageStorageForPresentation);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForProcessing.UID, DicomUID.DICOSDigitalXRayImageStorageForProcessing);
@@ -677,7 +654,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.Thrombus3714.UID, DicomUID.Thrombus3714);
             _uids.Add(DicomUID.LesionMargin3715.UID, DicomUID.LesionMargin3715);
             _uids.Add(DicomUID.Severity3716.UID, DicomUID.Severity3716);
-            _uids.Add(DicomUID.MyocardialWallSegments3717.UID, DicomUID.MyocardialWallSegments3717);
+            _uids.Add(DicomUID.LeftVentricleMyocardialWall17Segments3717.UID, DicomUID.LeftVentricleMyocardialWall17Segments3717);
             _uids.Add(DicomUID.MyocardialWallSegmentsInProjection3718.UID, DicomUID.MyocardialWallSegmentsInProjection3718);
             _uids.Add(DicomUID.CanadianClinicalClassification3719.UID, DicomUID.CanadianClinicalClassification3719);
             _uids.Add(DicomUID.CardiacHistoryDates3720RETIRED.UID, DicomUID.CardiacHistoryDates3720RETIRED);
@@ -1256,7 +1233,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.PhysicalForceAppliedDuringAcquisition94.UID, DicomUID.PhysicalForceAppliedDuringAcquisition94);
             _uids.Add(DicomUID.ECGControlVariablesNumeric3690.UID, DicomUID.ECGControlVariablesNumeric3690);
             _uids.Add(DicomUID.ECGControlVariablesText3691.UID, DicomUID.ECGControlVariablesText3691);
-            _uids.Add(DicomUID.WSIReferencedImagePurposesOfReference8120.UID, DicomUID.WSIReferencedImagePurposesOfReference8120);
+            _uids.Add(DicomUID.WholeSlideMicroscopyImageReferencedImagePurposesOfReference8120.UID, DicomUID.WholeSlideMicroscopyImageReferencedImagePurposesOfReference8120);
             _uids.Add(DicomUID.MicroscopyLensType8121.UID, DicomUID.MicroscopyLensType8121);
             _uids.Add(DicomUID.MicroscopyIlluminatorAndSensorColor8122.UID, DicomUID.MicroscopyIlluminatorAndSensorColor8122);
             _uids.Add(DicomUID.MicroscopyIlluminationMethod8123.UID, DicomUID.MicroscopyIlluminationMethod8123);
@@ -1718,6 +1695,73 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.ReportedValueTypes10072.UID, DicomUID.ReportedValueTypes10072);
             _uids.Add(DicomUID.ValueTimings10073.UID, DicomUID.ValueTimings10073);
             _uids.Add(DicomUID.RDSRFrameOfReferenceOrigins10074.UID, DicomUID.RDSRFrameOfReferenceOrigins10074);
+            _uids.Add(DicomUID.MicroscopyAnnotationPropertyTypes8135.UID, DicomUID.MicroscopyAnnotationPropertyTypes8135);
+            _uids.Add(DicomUID.MicroscopyMeasurementTypes8136.UID, DicomUID.MicroscopyMeasurementTypes8136);
+            _uids.Add(DicomUID.ProstateReportingSystems6310.UID, DicomUID.ProstateReportingSystems6310);
+            _uids.Add(DicomUID.MRSignalIntensity6311.UID, DicomUID.MRSignalIntensity6311);
+            _uids.Add(DicomUID.CrossSectionalScanPlaneOrientation6312.UID, DicomUID.CrossSectionalScanPlaneOrientation6312);
+            _uids.Add(DicomUID.HistoryOfProstateDisease6313.UID, DicomUID.HistoryOfProstateDisease6313);
+            _uids.Add(DicomUID.ProstateMRIStudyQualityFindings6314.UID, DicomUID.ProstateMRIStudyQualityFindings6314);
+            _uids.Add(DicomUID.ProstateMRISeriesQualityFindings6315.UID, DicomUID.ProstateMRISeriesQualityFindings6315);
+            _uids.Add(DicomUID.MRImagingArtifacts6316.UID, DicomUID.MRImagingArtifacts6316);
+            _uids.Add(DicomUID.ProstateDCEMRIQualityFindings6317.UID, DicomUID.ProstateDCEMRIQualityFindings6317);
+            _uids.Add(DicomUID.ProstateDWIMRIQualityFindings6318.UID, DicomUID.ProstateDWIMRIQualityFindings6318);
+            _uids.Add(DicomUID.AbdominalInterventionTypes6319.UID, DicomUID.AbdominalInterventionTypes6319);
+            _uids.Add(DicomUID.AbdominalInterventions6320.UID, DicomUID.AbdominalInterventions6320);
+            _uids.Add(DicomUID.ProstateCancerDiagnosticProcedures6321.UID, DicomUID.ProstateCancerDiagnosticProcedures6321);
+            _uids.Add(DicomUID.ProstateCancerFamilyHistory6322.UID, DicomUID.ProstateCancerFamilyHistory6322);
+            _uids.Add(DicomUID.ProstateCancerTherapy6323.UID, DicomUID.ProstateCancerTherapy6323);
+            _uids.Add(DicomUID.ProstateMRIAssessment6324.UID, DicomUID.ProstateMRIAssessment6324);
+            _uids.Add(DicomUID.OverallAssessmentFromPIRADS6325.UID, DicomUID.OverallAssessmentFromPIRADS6325);
+            _uids.Add(DicomUID.ImageQualityControlStandards6326.UID, DicomUID.ImageQualityControlStandards6326);
+            _uids.Add(DicomUID.ProstateImagingIndications6327.UID, DicomUID.ProstateImagingIndications6327);
+            _uids.Add(DicomUID.PIRADSV2LesionAssessmentCategory6328.UID, DicomUID.PIRADSV2LesionAssessmentCategory6328);
+            _uids.Add(DicomUID.PIRADSV2T2WIPZLesionAssessmentCategory6329.UID, DicomUID.PIRADSV2T2WIPZLesionAssessmentCategory6329);
+            _uids.Add(DicomUID.PIRADSV2T2WITZLesionAssessmentCategory6330.UID, DicomUID.PIRADSV2T2WITZLesionAssessmentCategory6330);
+            _uids.Add(DicomUID.PIRADSV2DWILesionAssessmentCategory6331.UID, DicomUID.PIRADSV2DWILesionAssessmentCategory6331);
+            _uids.Add(DicomUID.PIRADSV2DCELesionAssessmentCategory6332.UID, DicomUID.PIRADSV2DCELesionAssessmentCategory6332);
+            _uids.Add(DicomUID.mpMRIAssessmentTypes6333.UID, DicomUID.mpMRIAssessmentTypes6333);
+            _uids.Add(DicomUID.mpMRIAssessmentTypesFromPIRADS6334.UID, DicomUID.mpMRIAssessmentTypesFromPIRADS6334);
+            _uids.Add(DicomUID.mpMRIAssessmentValues6335.UID, DicomUID.mpMRIAssessmentValues6335);
+            _uids.Add(DicomUID.MRIAbnormalities6336.UID, DicomUID.MRIAbnormalities6336);
+            _uids.Add(DicomUID.mpMRIProstateAbnormalitiesFromPIRADS6337.UID, DicomUID.mpMRIProstateAbnormalitiesFromPIRADS6337);
+            _uids.Add(DicomUID.mpMRIBenignProstateAbnormalitiesFromPIRADS6338.UID, DicomUID.mpMRIBenignProstateAbnormalitiesFromPIRADS6338);
+            _uids.Add(DicomUID.MRIShapeCharacteristics6339.UID, DicomUID.MRIShapeCharacteristics6339);
+            _uids.Add(DicomUID.ProstateMRIShapeCharacteristicsFromPIRADS6340.UID, DicomUID.ProstateMRIShapeCharacteristicsFromPIRADS6340);
+            _uids.Add(DicomUID.MRIMarginCharacteristics6341.UID, DicomUID.MRIMarginCharacteristics6341);
+            _uids.Add(DicomUID.ProstateMRIMarginCharacteristicsFromPIRADS6342.UID, DicomUID.ProstateMRIMarginCharacteristicsFromPIRADS6342);
+            _uids.Add(DicomUID.MRISignalCharacteristics6343.UID, DicomUID.MRISignalCharacteristics6343);
+            _uids.Add(DicomUID.ProstateMRISignalCharacteristicsFromPIRADS6344.UID, DicomUID.ProstateMRISignalCharacteristicsFromPIRADS6344);
+            _uids.Add(DicomUID.MRIEnhancementPatterns6345.UID, DicomUID.MRIEnhancementPatterns6345);
+            _uids.Add(DicomUID.ProstateMRIEnhancementPatternsFromPIRADS6346.UID, DicomUID.ProstateMRIEnhancementPatternsFromPIRADS6346);
+            _uids.Add(DicomUID.ProstateMRIExtraProstaticFindings6347.UID, DicomUID.ProstateMRIExtraProstaticFindings6347);
+            _uids.Add(DicomUID.ProstateMRIAssessmentOfExtraProstaticAnatomicSites6348.UID, DicomUID.ProstateMRIAssessmentOfExtraProstaticAnatomicSites6348);
+            _uids.Add(DicomUID.MRCoilTypes6349.UID, DicomUID.MRCoilTypes6349);
+            _uids.Add(DicomUID.EndorectalCoilFillSubstances6350.UID, DicomUID.EndorectalCoilFillSubstances6350);
+            _uids.Add(DicomUID.ProstateRelationalMeasurements6351.UID, DicomUID.ProstateRelationalMeasurements6351);
+            _uids.Add(DicomUID.ProstateCancerDiagnosticBloodLabMeasurements6352.UID, DicomUID.ProstateCancerDiagnosticBloodLabMeasurements6352);
+            _uids.Add(DicomUID.ProstateImagingTypesOfQualityControlStandard6353.UID, DicomUID.ProstateImagingTypesOfQualityControlStandard6353);
+            _uids.Add(DicomUID.UltrasoundShearWaveMeasurements12308.UID, DicomUID.UltrasoundShearWaveMeasurements12308);
+            _uids.Add(DicomUID.LeftVentricleMyocardialWall16Segments3780.UID, DicomUID.LeftVentricleMyocardialWall16Segments3780);
+            _uids.Add(DicomUID.LeftVentricleMyocardialWall18Segments3781.UID, DicomUID.LeftVentricleMyocardialWall18Segments3781);
+            _uids.Add(DicomUID.LeftVentricleBasalWall6Segments3782.UID, DicomUID.LeftVentricleBasalWall6Segments3782);
+            _uids.Add(DicomUID.LeftVentricleMidlevelWall6Segments3783.UID, DicomUID.LeftVentricleMidlevelWall6Segments3783);
+            _uids.Add(DicomUID.LeftVentricleApicalWall4Segments3784.UID, DicomUID.LeftVentricleApicalWall4Segments3784);
+            _uids.Add(DicomUID.LeftVentricleApicalWall6Segments3785.UID, DicomUID.LeftVentricleApicalWall6Segments3785);
+            _uids.Add(DicomUID.PatientTreatmentPreparationMethods9571.UID, DicomUID.PatientTreatmentPreparationMethods9571);
+            _uids.Add(DicomUID.PatientShieldingDevices9572.UID, DicomUID.PatientShieldingDevices9572);
+            _uids.Add(DicomUID.PatientTreatmentPreparationDevices9573.UID, DicomUID.PatientTreatmentPreparationDevices9573);
+            _uids.Add(DicomUID.PatientPositionDisplacementReferencePoints9574.UID, DicomUID.PatientPositionDisplacementReferencePoints9574);
+            _uids.Add(DicomUID.PatientAlignmentDevices9575.UID, DicomUID.PatientAlignmentDevices9575);
+            _uids.Add(DicomUID.ReasonsForRTRadiationTreatmentOmission9576.UID, DicomUID.ReasonsForRTRadiationTreatmentOmission9576);
+            _uids.Add(DicomUID.PatientTreatmentPreparationMethods9577.UID, DicomUID.PatientTreatmentPreparationMethods9577);
+            _uids.Add(DicomUID.MotionManagementSetupDevices9578.UID, DicomUID.MotionManagementSetupDevices9578);
+            _uids.Add(DicomUID.CoreEchoStrainMeasurements12309.UID, DicomUID.CoreEchoStrainMeasurements12309);
+            _uids.Add(DicomUID.MyocardialStrainMethods12310.UID, DicomUID.MyocardialStrainMethods12310);
+            _uids.Add(DicomUID.EchoMeasuredStrainProperties12311.UID, DicomUID.EchoMeasuredStrainProperties12311);
+            _uids.Add(DicomUID.AssessmentFromCADRADS3020.UID, DicomUID.AssessmentFromCADRADS3020);
+            _uids.Add(DicomUID.CADRADSStenosisAssessmentModifier3021.UID, DicomUID.CADRADSStenosisAssessmentModifier3021);
+            _uids.Add(DicomUID.CADRADSAssessmentModifier3022.UID, DicomUID.CADRADSAssessmentModifier3022);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -1728,6 +1772,9 @@ namespace FellowOakDicom
 
         ///<summary>Transfer Syntax: Explicit VR Little Endian</summary>
         public static readonly DicomUID ExplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2.1", "Explicit VR Little Endian", DicomUidType.TransferSyntax, false);
+
+        ///<summary>Transfer Syntax: Encapsulated Uncompressed Explicit VR Little Endian</summary>
+        public static readonly DicomUID EncapsulatedUncompressedExplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2.1.98", "Encapsulated Uncompressed Explicit VR Little Endian", DicomUidType.TransferSyntax, false);
 
         ///<summary>Transfer Syntax: Deflated Explicit VR Little Endian</summary>
         public static readonly DicomUID DeflatedExplicitVRLittleEndian = new DicomUID("1.2.840.10008.1.2.1.99", "Deflated Explicit VR Little Endian", DicomUidType.TransferSyntax, false);
@@ -1860,87 +1907,6 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Media Storage Directory Storage</summary>
         public static readonly DicomUID MediaStorageDirectoryStorage = new DicomUID("1.2.840.10008.1.3.10", "Media Storage Directory Storage", DicomUidType.SOPClass, false);
-
-        ///<summary>Well-known frame of reference: Talairach Brain Atlas Frame of Reference</summary>
-        public static readonly DicomUID TalairachBrainAtlas = new DicomUID("1.2.840.10008.1.4.1.1", "Talairach Brain Atlas Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2T1 = new DicomUID("1.2.840.10008.1.4.1.2", "SPM2 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 T2 Frame of Reference</summary>
-        public static readonly DicomUID SPM2T2 = new DicomUID("1.2.840.10008.1.4.1.3", "SPM2 T2 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 PD Frame of Reference</summary>
-        public static readonly DicomUID SPM2PD = new DicomUID("1.2.840.10008.1.4.1.4", "SPM2 PD Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 EPI Frame of Reference</summary>
-        public static readonly DicomUID SPM2EPI = new DicomUID("1.2.840.10008.1.4.1.5", "SPM2 EPI Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 FIL T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2FILT1 = new DicomUID("1.2.840.10008.1.4.1.6", "SPM2 FIL T1 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 PET Frame of Reference</summary>
-        public static readonly DicomUID SPM2PET = new DicomUID("1.2.840.10008.1.4.1.7", "SPM2 PET Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 TRANSM Frame of Reference</summary>
-        public static readonly DicomUID SPM2TRANSM = new DicomUID("1.2.840.10008.1.4.1.8", "SPM2 TRANSM Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 SPECT Frame of Reference</summary>
-        public static readonly DicomUID SPM2SPECT = new DicomUID("1.2.840.10008.1.4.1.9", "SPM2 SPECT Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 GRAY Frame of Reference</summary>
-        public static readonly DicomUID SPM2GRAY = new DicomUID("1.2.840.10008.1.4.1.10", "SPM2 GRAY Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 WHITE Frame of Reference</summary>
-        public static readonly DicomUID SPM2WHITE = new DicomUID("1.2.840.10008.1.4.1.11", "SPM2 WHITE Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 CSF Frame of Reference</summary>
-        public static readonly DicomUID SPM2CSF = new DicomUID("1.2.840.10008.1.4.1.12", "SPM2 CSF Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 BRAINMASK Frame of Reference</summary>
-        public static readonly DicomUID SPM2BRAINMASK = new DicomUID("1.2.840.10008.1.4.1.13", "SPM2 BRAINMASK Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 AVG305T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG305T1 = new DicomUID("1.2.840.10008.1.4.1.14", "SPM2 AVG305T1 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 AVG152T1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG152T1 = new DicomUID("1.2.840.10008.1.4.1.15", "SPM2 AVG152T1 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 AVG152T2 Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG152T2 = new DicomUID("1.2.840.10008.1.4.1.16", "SPM2 AVG152T2 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 AVG152PD Frame of Reference</summary>
-        public static readonly DicomUID SPM2AVG152PD = new DicomUID("1.2.840.10008.1.4.1.17", "SPM2 AVG152PD Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SPM2 SINGLESUBJT1 Frame of Reference</summary>
-        public static readonly DicomUID SPM2SINGLESUBJT1 = new DicomUID("1.2.840.10008.1.4.1.18", "SPM2 SINGLESUBJT1 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: ICBM 452 T1 Frame of Reference</summary>
-        public static readonly DicomUID ICBM452T1 = new DicomUID("1.2.840.10008.1.4.2.1", "ICBM 452 T1 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: ICBM Single Subject MRI Frame of Reference</summary>
-        public static readonly DicomUID ICBMSingleSubjectMRI = new DicomUID("1.2.840.10008.1.4.2.2", "ICBM Single Subject MRI Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: IEC 61217 Fixed Coordinate System Frame of Reference</summary>
-        public static readonly DicomUID IEC61217FixedCoordinateSystem = new DicomUID("1.2.840.10008.1.4.3.1", "IEC 61217 Fixed Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: Standard Robotic-Arm Coordinate System Frame of Reference</summary>
-        public static readonly DicomUID StandardRoboticArmCoordinateSystem = new DicomUID("1.2.840.10008.1.4.3.2", "Standard Robotic-Arm Coordinate System Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: SRI24 Frame of Reference</summary>
-        public static readonly DicomUID SRI24 = new DicomUID("1.2.840.10008.1.4.4.1", "SRI24 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: Colin27 Frame of Reference</summary>
-        public static readonly DicomUID Colin27 = new DicomUID("1.2.840.10008.1.4.5.1", "Colin27 Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: LPBA40/AIR Frame of Reference</summary>
-        public static readonly DicomUID LPBA40AIR = new DicomUID("1.2.840.10008.1.4.6.1", "LPBA40/AIR Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: LPBA40/FLIRT Frame of Reference</summary>
-        public static readonly DicomUID LPBA40FLIRT = new DicomUID("1.2.840.10008.1.4.6.2", "LPBA40/FLIRT Frame of Reference", DicomUidType.FrameOfReference, false);
-
-        ///<summary>Well-known frame of reference: LPBA40/SPM5 Frame of Reference</summary>
-        public static readonly DicomUID LPBA40SPM5 = new DicomUID("1.2.840.10008.1.4.6.3", "LPBA40/SPM5 Frame of Reference", DicomUidType.FrameOfReference, false);
 
         ///<summary>Well-known SOP Instance: Hot Iron Color Palette SOP Instance</summary>
         public static readonly DicomUID HotIronPalette = new DicomUID("1.2.840.10008.1.5.1", "Hot Iron Color Palette SOP Instance", DicomUidType.SOPInstance, false);
@@ -2575,6 +2541,9 @@ namespace FellowOakDicom
         ///<summary>SOP Class: Content Assessment Results Storage</summary>
         public static readonly DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Microscopy Bulk Simple Annotations Storage</summary>
+        public static readonly DicomUID MicroscopyBulkSimpleAnnotationsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.91.1", "Microscopy Bulk Simple Annotations Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: Encapsulated PDF Storage</summary>
         public static readonly DicomUID EncapsulatedPDFStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.104.1", "Encapsulated PDF Storage", DicomUidType.SOPClass, false);
 
@@ -2688,6 +2657,12 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Robotic Radiation Record Storage</summary>
         public static readonly DicomUID RoboticRadiationRecordStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.20", "Robotic Radiation Record Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: RT Radiation Set Delivery Instruction Storage</summary>
+        public static readonly DicomUID RTRadiationSetDeliveryInstructionStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.21", "RT Radiation Set Delivery Instruction Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: RT Treatment Preparation Storage</summary>
+        public static readonly DicomUID RTTreatmentPreparationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.22", "RT Treatment Preparation Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: DICOS CT Image Storage</summary>
         public static readonly DicomUID DICOSCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.1", "DICOS CT Image Storage", DicomUidType.SOPClass, false);
@@ -3706,8 +3681,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Severity (3716)</summary>
         public static readonly DicomUID Severity3716 = new DicomUID("1.2.840.10008.6.1.217", "Severity (3716)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Myocardial Wall Segments (3717)</summary>
-        public static readonly DicomUID MyocardialWallSegments3717 = new DicomUID("1.2.840.10008.6.1.218", "Myocardial Wall Segments (3717)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Left Ventricle Myocardial Wall 17 Segments (3717)</summary>
+        public static readonly DicomUID LeftVentricleMyocardialWall17Segments3717 = new DicomUID("1.2.840.10008.6.1.218", "Left Ventricle Myocardial Wall 17 Segments (3717)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Myocardial Wall Segments in Projection (3718)</summary>
         public static readonly DicomUID MyocardialWallSegmentsInProjection3718 = new DicomUID("1.2.840.10008.6.1.219", "Myocardial Wall Segments in Projection (3718)", DicomUidType.ContextGroupName, false);
@@ -5443,8 +5418,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: ECG Control Variables Text (3691)</summary>
         public static readonly DicomUID ECGControlVariablesText3691 = new DicomUID("1.2.840.10008.6.1.896", "ECG Control Variables Text (3691)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: WSI Referenced Image Purposes of Reference (8120)</summary>
-        public static readonly DicomUID WSIReferencedImagePurposesOfReference8120 = new DicomUID("1.2.840.10008.6.1.897", "WSI Referenced Image Purposes of Reference (8120)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Whole Slide Microscopy Image Referenced Image Purposes of Reference (8120)</summary>
+        public static readonly DicomUID WholeSlideMicroscopyImageReferencedImagePurposesOfReference8120 = new DicomUID("1.2.840.10008.6.1.897", "Whole Slide Microscopy Image Referenced Image Purposes of Reference (8120)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Microscopy Lens Type (8121)</summary>
         public static readonly DicomUID MicroscopyLensType8121 = new DicomUID("1.2.840.10008.6.1.898", "Microscopy Lens Type (8121)", DicomUidType.ContextGroupName, false);
@@ -6223,8 +6198,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Estimate Method Types (10068)</summary>
         public static readonly DicomUID EstimateMethodTypes10068 = new DicomUID("1.2.840.10008.6.1.1162", "Estimate Method Types (10068)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Radiation Dose Estimation Parameter  (10069)</summary>
-        public static readonly DicomUID RadiationDoseEstimationParameter10069 = new DicomUID("1.2.840.10008.6.1.1163", "Radiation Dose Estimation Parameter  (10069)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Radiation Dose Estimation Parameter (10069)</summary>
+        public static readonly DicomUID RadiationDoseEstimationParameter10069 = new DicomUID("1.2.840.10008.6.1.1163", "Radiation Dose Estimation Parameter (10069)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Radiation Dose Types (10070)</summary>
         public static readonly DicomUID RadiationDoseTypes10070 = new DicomUID("1.2.840.10008.6.1.1164", "Radiation Dose Types (10070)", DicomUidType.ContextGroupName, false);
@@ -6742,8 +6717,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: EOG Annotations – Neurophysiological Enumerations (EOG) (3037)</summary>
         public static readonly DicomUID EOGAnnotationsNeurophysiologicalEnumerationsEOG3037 = new DicomUID("1.2.840.10008.6.1.1335", "EOG Annotations – Neurophysiological Enumerations (EOG) (3037)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Pattern Events  (3038)</summary>
-        public static readonly DicomUID PatternEvents3038 = new DicomUID("1.2.840.10008.6.1.1336", "Pattern Events  (3038)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Pattern Events (3038)</summary>
+        public static readonly DicomUID PatternEvents3038 = new DicomUID("1.2.840.10008.6.1.1336", "Pattern Events (3038)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Device-related and Environment-related Events (3039)</summary>
         public static readonly DicomUID DeviceRelatedAndEnvironmentRelatedEvents3039 = new DicomUID("1.2.840.10008.6.1.1337", "Device-related and Environment-related Events (3039)", DicomUidType.ContextGroupName, false);
@@ -6828,6 +6803,207 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: RDSR Frame of Reference Origins (10074)</summary>
         public static readonly DicomUID RDSRFrameOfReferenceOrigins10074 = new DicomUID("1.2.840.10008.6.1.1364", "RDSR Frame of Reference Origins (10074)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Microscopy Annotation Property Types (8135)</summary>
+        public static readonly DicomUID MicroscopyAnnotationPropertyTypes8135 = new DicomUID("1.2.840.10008.6.1.1365", "Microscopy Annotation Property Types (8135)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Microscopy Measurement Types (8136)</summary>
+        public static readonly DicomUID MicroscopyMeasurementTypes8136 = new DicomUID("1.2.840.10008.6.1.1366", "Microscopy Measurement Types (8136)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Reporting Systems (6310)</summary>
+        public static readonly DicomUID ProstateReportingSystems6310 = new DicomUID("1.2.840.10008.6.1.1367", "Prostate Reporting Systems (6310)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Signal Intensity (6311)</summary>
+        public static readonly DicomUID MRSignalIntensity6311 = new DicomUID("1.2.840.10008.6.1.1368", "MR Signal Intensity (6311)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Cross-sectional Scan Plane Orientation (6312)</summary>
+        public static readonly DicomUID CrossSectionalScanPlaneOrientation6312 = new DicomUID("1.2.840.10008.6.1.1369", "Cross-sectional Scan Plane Orientation (6312)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: History of Prostate Disease (6313)</summary>
+        public static readonly DicomUID HistoryOfProstateDisease6313 = new DicomUID("1.2.840.10008.6.1.1370", "History of Prostate Disease (6313)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Study Quality Findings (6314)</summary>
+        public static readonly DicomUID ProstateMRIStudyQualityFindings6314 = new DicomUID("1.2.840.10008.6.1.1371", "Prostate MRI Study Quality Findings (6314)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Series Quality Findings (6315)</summary>
+        public static readonly DicomUID ProstateMRISeriesQualityFindings6315 = new DicomUID("1.2.840.10008.6.1.1372", "Prostate MRI Series Quality Findings (6315)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Imaging Artifacts (6316)</summary>
+        public static readonly DicomUID MRImagingArtifacts6316 = new DicomUID("1.2.840.10008.6.1.1373", "MR Imaging Artifacts (6316)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate DCE MRI Quality Findings (6317)</summary>
+        public static readonly DicomUID ProstateDCEMRIQualityFindings6317 = new DicomUID("1.2.840.10008.6.1.1374", "Prostate DCE MRI Quality Findings (6317)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate DWI MRI Quality Findings (6318)</summary>
+        public static readonly DicomUID ProstateDWIMRIQualityFindings6318 = new DicomUID("1.2.840.10008.6.1.1375", "Prostate DWI MRI Quality Findings (6318)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Abdominal Intervention Types (6319)</summary>
+        public static readonly DicomUID AbdominalInterventionTypes6319 = new DicomUID("1.2.840.10008.6.1.1376", "Abdominal Intervention Types (6319)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Abdominal Interventions (6320)</summary>
+        public static readonly DicomUID AbdominalInterventions6320 = new DicomUID("1.2.840.10008.6.1.1377", "Abdominal Interventions (6320)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Cancer Diagnostic Procedures (6321)</summary>
+        public static readonly DicomUID ProstateCancerDiagnosticProcedures6321 = new DicomUID("1.2.840.10008.6.1.1378", "Prostate Cancer Diagnostic Procedures (6321)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Cancer Family History (6322)</summary>
+        public static readonly DicomUID ProstateCancerFamilyHistory6322 = new DicomUID("1.2.840.10008.6.1.1379", "Prostate Cancer Family History (6322)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Cancer Therapy (6323)</summary>
+        public static readonly DicomUID ProstateCancerTherapy6323 = new DicomUID("1.2.840.10008.6.1.1380", "Prostate Cancer Therapy (6323)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Assessment (6324)</summary>
+        public static readonly DicomUID ProstateMRIAssessment6324 = new DicomUID("1.2.840.10008.6.1.1381", "Prostate MRI Assessment (6324)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Overall Assessment from PI-RADS® (6325)</summary>
+        public static readonly DicomUID OverallAssessmentFromPIRADS6325 = new DicomUID("1.2.840.10008.6.1.1382", "Overall Assessment from PI-RADS® (6325)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Image Quality Control Standards (6326)</summary>
+        public static readonly DicomUID ImageQualityControlStandards6326 = new DicomUID("1.2.840.10008.6.1.1383", "Image Quality Control Standards (6326)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Imaging Indications (6327)</summary>
+        public static readonly DicomUID ProstateImagingIndications6327 = new DicomUID("1.2.840.10008.6.1.1384", "Prostate Imaging Indications (6327)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: PI-RADS® v2 Lesion Assessment Category (6328)</summary>
+        public static readonly DicomUID PIRADSV2LesionAssessmentCategory6328 = new DicomUID("1.2.840.10008.6.1.1385", "PI-RADS® v2 Lesion Assessment Category (6328)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: PI-RADS® v2 T2WI PZ Lesion Assessment Category (6329)</summary>
+        public static readonly DicomUID PIRADSV2T2WIPZLesionAssessmentCategory6329 = new DicomUID("1.2.840.10008.6.1.1386", "PI-RADS® v2 T2WI PZ Lesion Assessment Category (6329)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: PI-RADS® v2 T2WI TZ Lesion Assessment Category (6330)</summary>
+        public static readonly DicomUID PIRADSV2T2WITZLesionAssessmentCategory6330 = new DicomUID("1.2.840.10008.6.1.1387", "PI-RADS® v2 T2WI TZ Lesion Assessment Category (6330)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: PI-RADS® v2 DWI Lesion Assessment Category (6331)</summary>
+        public static readonly DicomUID PIRADSV2DWILesionAssessmentCategory6331 = new DicomUID("1.2.840.10008.6.1.1388", "PI-RADS® v2 DWI Lesion Assessment Category (6331)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: PI-RADS® v2 DCE Lesion Assessment Category (6332)</summary>
+        public static readonly DicomUID PIRADSV2DCELesionAssessmentCategory6332 = new DicomUID("1.2.840.10008.6.1.1389", "PI-RADS® v2 DCE Lesion Assessment Category (6332)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: mpMRI Assessment Types (6333)</summary>
+        public static readonly DicomUID mpMRIAssessmentTypes6333 = new DicomUID("1.2.840.10008.6.1.1390", "mpMRI Assessment Types (6333)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: mpMRI Assessment Types from PI-RADS® (6334)</summary>
+        public static readonly DicomUID mpMRIAssessmentTypesFromPIRADS6334 = new DicomUID("1.2.840.10008.6.1.1391", "mpMRI Assessment Types from PI-RADS® (6334)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: mpMRI Assessment Values (6335)</summary>
+        public static readonly DicomUID mpMRIAssessmentValues6335 = new DicomUID("1.2.840.10008.6.1.1392", "mpMRI Assessment Values (6335)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MRI Abnormalities (6336)</summary>
+        public static readonly DicomUID MRIAbnormalities6336 = new DicomUID("1.2.840.10008.6.1.1393", "MRI Abnormalities (6336)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: mpMRI Prostate Abnormalities from PI-RADS® (6337)</summary>
+        public static readonly DicomUID mpMRIProstateAbnormalitiesFromPIRADS6337 = new DicomUID("1.2.840.10008.6.1.1394", "mpMRI Prostate Abnormalities from PI-RADS® (6337)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: mpMRI Benign Prostate Abnormalities from PI-RADS® (6338)</summary>
+        public static readonly DicomUID mpMRIBenignProstateAbnormalitiesFromPIRADS6338 = new DicomUID("1.2.840.10008.6.1.1395", "mpMRI Benign Prostate Abnormalities from PI-RADS® (6338)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MRI Shape Characteristics (6339)</summary>
+        public static readonly DicomUID MRIShapeCharacteristics6339 = new DicomUID("1.2.840.10008.6.1.1396", "MRI Shape Characteristics (6339)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Shape Characteristics from PI-RADS® (6340)</summary>
+        public static readonly DicomUID ProstateMRIShapeCharacteristicsFromPIRADS6340 = new DicomUID("1.2.840.10008.6.1.1397", "Prostate MRI Shape Characteristics from PI-RADS® (6340)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MRI Margin Characteristics (6341)</summary>
+        public static readonly DicomUID MRIMarginCharacteristics6341 = new DicomUID("1.2.840.10008.6.1.1398", "MRI Margin Characteristics (6341)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Margin Characteristics from PI-RADS® (6342)</summary>
+        public static readonly DicomUID ProstateMRIMarginCharacteristicsFromPIRADS6342 = new DicomUID("1.2.840.10008.6.1.1399", "Prostate MRI Margin Characteristics from PI-RADS® (6342)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MRI Signal Characteristics (6343)</summary>
+        public static readonly DicomUID MRISignalCharacteristics6343 = new DicomUID("1.2.840.10008.6.1.1400", "MRI Signal Characteristics (6343)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Signal Characteristics from PI-RADS® (6344)</summary>
+        public static readonly DicomUID ProstateMRISignalCharacteristicsFromPIRADS6344 = new DicomUID("1.2.840.10008.6.1.1401", "Prostate MRI Signal Characteristics from PI-RADS® (6344)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MRI Enhancement Patterns (6345)</summary>
+        public static readonly DicomUID MRIEnhancementPatterns6345 = new DicomUID("1.2.840.10008.6.1.1402", "MRI Enhancement Patterns (6345)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Enhancement Patterns from PI-RADS® (6346)</summary>
+        public static readonly DicomUID ProstateMRIEnhancementPatternsFromPIRADS6346 = new DicomUID("1.2.840.10008.6.1.1403", "Prostate MRI Enhancement Patterns from PI-RADS® (6346)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Extra-prostatic Findings (6347)</summary>
+        public static readonly DicomUID ProstateMRIExtraProstaticFindings6347 = new DicomUID("1.2.840.10008.6.1.1404", "Prostate MRI Extra-prostatic Findings (6347)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate MRI Assessment of Extra-prostatic Anatomic Sites (6348)</summary>
+        public static readonly DicomUID ProstateMRIAssessmentOfExtraProstaticAnatomicSites6348 = new DicomUID("1.2.840.10008.6.1.1405", "Prostate MRI Assessment of Extra-prostatic Anatomic Sites (6348)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MR Coil Types (6349)</summary>
+        public static readonly DicomUID MRCoilTypes6349 = new DicomUID("1.2.840.10008.6.1.1406", "MR Coil Types (6349)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Endorectal Coil Fill Substances (6350)</summary>
+        public static readonly DicomUID EndorectalCoilFillSubstances6350 = new DicomUID("1.2.840.10008.6.1.1407", "Endorectal Coil Fill Substances (6350)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Relational Measurements (6351)</summary>
+        public static readonly DicomUID ProstateRelationalMeasurements6351 = new DicomUID("1.2.840.10008.6.1.1408", "Prostate Relational Measurements (6351)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Cancer Diagnostic Blood Lab Measurements (6352)</summary>
+        public static readonly DicomUID ProstateCancerDiagnosticBloodLabMeasurements6352 = new DicomUID("1.2.840.10008.6.1.1409", "Prostate Cancer Diagnostic Blood Lab Measurements (6352)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Prostate Imaging Types of Quality Control Standard (6353)</summary>
+        public static readonly DicomUID ProstateImagingTypesOfQualityControlStandard6353 = new DicomUID("1.2.840.10008.6.1.1410", "Prostate Imaging Types of Quality Control Standard (6353)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ultrasound Shear Wave Measurements (12308)</summary>
+        public static readonly DicomUID UltrasoundShearWaveMeasurements12308 = new DicomUID("1.2.840.10008.6.1.1411", "Ultrasound Shear Wave Measurements (12308)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Left Ventricle Myocardial Wall 16 Segments (3780)</summary>
+        public static readonly DicomUID LeftVentricleMyocardialWall16Segments3780 = new DicomUID("1.2.840.10008.6.1.1412", "Left Ventricle Myocardial Wall 16 Segments (3780)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Left Ventricle Myocardial Wall 18 Segments (3781)</summary>
+        public static readonly DicomUID LeftVentricleMyocardialWall18Segments3781 = new DicomUID("1.2.840.10008.6.1.1413", "Left Ventricle Myocardial Wall 18 Segments (3781)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Left Ventricle Basal Wall 6 Segments (3782)</summary>
+        public static readonly DicomUID LeftVentricleBasalWall6Segments3782 = new DicomUID("1.2.840.10008.6.1.1414", "Left Ventricle Basal Wall 6 Segments (3782)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Left Ventricle Midlevel Wall 6 Segments (3783)</summary>
+        public static readonly DicomUID LeftVentricleMidlevelWall6Segments3783 = new DicomUID("1.2.840.10008.6.1.1415", "Left Ventricle Midlevel Wall 6 Segments (3783)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Left Ventricle Apical Wall 4 Segments (3784)</summary>
+        public static readonly DicomUID LeftVentricleApicalWall4Segments3784 = new DicomUID("1.2.840.10008.6.1.1416", "Left Ventricle Apical Wall 4 Segments (3784)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Left Ventricle Apical Wall 6 Segments (3785)</summary>
+        public static readonly DicomUID LeftVentricleApicalWall6Segments3785 = new DicomUID("1.2.840.10008.6.1.1417", "Left Ventricle Apical Wall 6 Segments (3785)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Treatment Preparation Methods (9571)</summary>
+        public static readonly DicomUID PatientTreatmentPreparationMethods9571 = new DicomUID("1.2.840.10008.6.1.1418", "Patient Treatment Preparation Methods (9571)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Shielding Devices (9572)</summary>
+        public static readonly DicomUID PatientShieldingDevices9572 = new DicomUID("1.2.840.10008.6.1.1419", "Patient Shielding Devices (9572)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Treatment Preparation Devices (9573)</summary>
+        public static readonly DicomUID PatientTreatmentPreparationDevices9573 = new DicomUID("1.2.840.10008.6.1.1420", "Patient Treatment Preparation Devices (9573)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Position Displacement Reference Points (9574)</summary>
+        public static readonly DicomUID PatientPositionDisplacementReferencePoints9574 = new DicomUID("1.2.840.10008.6.1.1421", "Patient Position Displacement Reference Points (9574)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Alignment Devices (9575)</summary>
+        public static readonly DicomUID PatientAlignmentDevices9575 = new DicomUID("1.2.840.10008.6.1.1422", "Patient Alignment Devices (9575)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Reasons for RT Radiation Treatment Omission (9576)</summary>
+        public static readonly DicomUID ReasonsForRTRadiationTreatmentOmission9576 = new DicomUID("1.2.840.10008.6.1.1423", "Reasons for RT Radiation Treatment Omission (9576)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Treatment Preparation Methods (9577)</summary>
+        public static readonly DicomUID PatientTreatmentPreparationMethods9577 = new DicomUID("1.2.840.10008.6.1.1424", "Patient Treatment Preparation Methods (9577)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Motion Management Setup Devices (9578)</summary>
+        public static readonly DicomUID MotionManagementSetupDevices9578 = new DicomUID("1.2.840.10008.6.1.1425", "Motion Management Setup Devices (9578)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Core Echo Strain Measurements (12309)</summary>
+        public static readonly DicomUID CoreEchoStrainMeasurements12309 = new DicomUID("1.2.840.10008.6.1.1426", "Core Echo Strain Measurements (12309)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Myocardial Strain Methods (12310)</summary>
+        public static readonly DicomUID MyocardialStrainMethods12310 = new DicomUID("1.2.840.10008.6.1.1427", "Myocardial Strain Methods (12310)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Echo Measured Strain Properties (12311)</summary>
+        public static readonly DicomUID EchoMeasuredStrainProperties12311 = new DicomUID("1.2.840.10008.6.1.1428", "Echo Measured Strain Properties (12311)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Assessment from CAD-RADS™ (3020)</summary>
+        public static readonly DicomUID AssessmentFromCADRADS3020 = new DicomUID("1.2.840.10008.6.1.1429", "Assessment from CAD-RADS™ (3020)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: CAD-RADS™ Stenosis Assessment Modifier (3021)</summary>
+        public static readonly DicomUID CADRADSStenosisAssessmentModifier3021 = new DicomUID("1.2.840.10008.6.1.1430", "CAD-RADS™ Stenosis Assessment Modifier (3021)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: CAD-RADS™ Assessment Modifier (3022)</summary>
+        public static readonly DicomUID CADRADSAssessmentModifier3022 = new DicomUID("1.2.840.10008.6.1.1431", "CAD-RADS™ Assessment Modifier (3022)", DicomUidType.ContextGroupName, false);
 
     }
 }

@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2021 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2021b">
+<dictionary version="2021e">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -482,6 +482,8 @@
     <tag group="0014" element="3077" keyword="TimeOfGainCalibration" vr="TM" vm="1">Time of Gain Calibration</tag>
     <tag group="0014" element="3080" keyword="BadPixelImage" vr="OB" vm="1">Bad Pixel Image</tag>
     <tag group="0014" element="3099" keyword="CalibrationNotes" vr="LT" vm="1">Calibration Notes</tag>
+    <tag group="0014" element="3100" keyword="LinearityCorrectionTechnique" vr="LT" vm="1">Linearity Correction Technique</tag>
+    <tag group="0014" element="3101" keyword="BeamHardeningCorrectionTechnique" vr="LT" vm="1">Beam Hardening Correction Technique</tag>
     <tag group="0014" element="4002" keyword="PulserEquipmentSequence" vr="SQ" vm="1">Pulser Equipment Sequence</tag>
     <tag group="0014" element="4004" keyword="PulserType" vr="CS" vm="1">Pulser Type</tag>
     <tag group="0014" element="4006" keyword="PulserNotes" vr="LT" vm="1">Pulser Notes</tag>
@@ -562,9 +564,9 @@
     <tag group="0014" element="409C" keyword="TranslationRateX" vr="DS" vm="1">Translation Rate X</tag>
     <tag group="0014" element="409D" keyword="TranslationRateY" vr="DS" vm="1">Translation Rate Y</tag>
     <tag group="0014" element="409F" keyword="ChannelOverlap" vr="DS" vm="1">Channel Overlap</tag>
-    <tag group="0014" element="40A0" keyword="ImageQualityIndicatorType" vr="LO" vm="1">Image Quality Indicator Type</tag>
-    <tag group="0014" element="40A1" keyword="ImageQualityIndicatorMaterial" vr="LO" vm="1">Image Quality Indicator Material</tag>
-    <tag group="0014" element="40A2" keyword="ImageQualityIndicatorSize" vr="LO" vm="1">Image Quality Indicator Size</tag>
+    <tag group="0014" element="40A0" keyword="ImageQualityIndicatorType" vr="LO" vm="1-n">Image Quality Indicator Type</tag>
+    <tag group="0014" element="40A1" keyword="ImageQualityIndicatorMaterial" vr="LO" vm="1-n">Image Quality Indicator Material</tag>
+    <tag group="0014" element="40A2" keyword="ImageQualityIndicatorSize" vr="LO" vm="1-n">Image Quality Indicator Size</tag>
     <tag group="0014" element="5002" keyword="LINACEnergy" vr="IS" vm="1">LINAC Energy</tag>
     <tag group="0014" element="5004" keyword="LINACOutput" vr="IS" vm="1">LINAC Output</tag>
     <tag group="0014" element="5100" keyword="ActiveAperture" vr="US" vm="1">Active Aperture</tag>
@@ -1868,7 +1870,7 @@
     <tag group="0022" element="1628" keyword="OphthalmicEnFaceImageQualityRatingSequence" vr="SQ" vm="1">Ophthalmic En Face Image Quality Rating Sequence</tag>
     <tag group="0022" element="1630" keyword="QualityThreshold" vr="DS" vm="1">Quality Threshold</tag>
     <tag group="0022" element="1640" keyword="OCTBscanAnalysisAcquisitionParametersSequence" vr="SQ" vm="1">OCT B-scan Analysis Acquisition Parameters Sequence</tag>
-    <tag group="0022" element="1642" keyword="NumberofBscansPerFrame" vr="UL" vm="1">Number of B-scans Per Frame</tag>
+    <tag group="0022" element="1642" keyword="NumberOfBscansPerFrame" vr="UL" vm="1">Number of B-scans Per Frame</tag>
     <tag group="0022" element="1643" keyword="BscanSlabThickness" vr="FL" vm="1">B-scan Slab Thickness</tag>
     <tag group="0022" element="1644" keyword="DistanceBetweenBscanSlabs" vr="FL" vm="1">Distance Between B-scan Slabs</tag>
     <tag group="0022" element="1645" keyword="BscanCycleTime" vr="FL" vm="1">B-scan Cycle Time</tag>
@@ -2638,7 +2640,7 @@
     <tag group="0040" element="A744" keyword="LanguageCodeSequenceTrial" vr="SQ" vm="1" retired="true">Language Code Sequence (Trial)</tag>
     <tag group="0040" element="A801" keyword="TabulatedValuesSequence" vr="SQ" vm="1">Tabulated Values Sequence</tag>
     <tag group="0040" element="A802" keyword="NumberOfTableRows" vr="UL" vm="1">Number of Table Rows</tag>
-    <tag group="0040" element="A803" keyword="NumbeOfTableColumns" vr="UL" vm="1">Number of Table Columns</tag>
+    <tag group="0040" element="A803" keyword="NumberOfTableColumns" vr="UL" vm="1">Number of Table Columns</tag>
     <tag group="0040" element="A804" keyword="TableRowNumber" vr="UL" vm="1">Table Row Number</tag>
     <tag group="0040" element="A805" keyword="TableColumnNumber" vr="UL" vm="1">Table Column Number</tag>
     <tag group="0040" element="A806" keyword="TableRowDefinitionSequence" vr="SQ" vm="1">Table Row Definition Sequence</tag>
@@ -2810,9 +2812,9 @@
     <tag group="0048" element="0112" keyword="ObjectiveLensPower" vr="DS" vm="1">Objective Lens Power</tag>
     <tag group="0048" element="0113" keyword="ObjectiveLensNumericalAperture" vr="DS" vm="1">Objective Lens Numerical Aperture</tag>
     <tag group="0048" element="0120" keyword="PaletteColorLookupTableSequence" vr="SQ" vm="1">Palette Color Lookup Table Sequence</tag>
-    <tag group="0048" element="0200" keyword="ReferencedImageNavigationSequence" vr="SQ" vm="1">Referenced Image Navigation Sequence</tag>
-    <tag group="0048" element="0201" keyword="TopLeftHandCornerOfLocalizerArea" vr="US" vm="2">Top Left Hand Corner of Localizer Area</tag>
-    <tag group="0048" element="0202" keyword="BottomRightHandCornerOfLocalizerArea" vr="US" vm="2">Bottom Right Hand Corner of Localizer Area</tag>
+    <tag group="0048" element="0200" keyword="ReferencedImageNavigationSequence" vr="SQ" vm="1" retired="true">Referenced Image Navigation Sequence</tag>
+    <tag group="0048" element="0201" keyword="TopLeftHandCornerOfLocalizerArea" vr="US" vm="2" retired="true">Top Left Hand Corner of Localizer Area</tag>
+    <tag group="0048" element="0202" keyword="BottomRightHandCornerOfLocalizerArea" vr="US" vm="2" retired="true">Bottom Right Hand Corner of Localizer Area</tag>
     <tag group="0048" element="0207" keyword="OpticalPathIdentificationSequence" vr="SQ" vm="1">Optical Path Identification Sequence</tag>
     <tag group="0048" element="021A" keyword="PlanePositionSlideSequence" vr="SQ" vm="1">Plane Position (Slide) Sequence</tag>
     <tag group="0048" element="021E" keyword="ColumnPositionInTotalImagePixelMatrix" vr="SL" vm="1">Column Position In Total Image Pixel Matrix</tag>
@@ -2959,7 +2961,7 @@
     <tag group="0062" element="0006" keyword="SegmentDescription" vr="ST" vm="1">Segment Description</tag>
     <tag group="0062" element="0007" keyword="SegmentationAlgorithmIdentificationSequence" vr="SQ" vm="1">Segmentation Algorithm Identification Sequence</tag>
     <tag group="0062" element="0008" keyword="SegmentAlgorithmType" vr="CS" vm="1">Segment Algorithm Type</tag>
-    <tag group="0062" element="0009" keyword="SegmentAlgorithmName" vr="LO" vm="1">Segment Algorithm Name</tag>
+    <tag group="0062" element="0009" keyword="SegmentAlgorithmName" vr="LO" vm="1-n">Segment Algorithm Name</tag>
     <tag group="0062" element="000A" keyword="SegmentIdentificationSequence" vr="SQ" vm="1">Segment Identification Sequence</tag>
     <tag group="0062" element="000B" keyword="ReferencedSegmentNumber" vr="US" vm="1-n">Referenced Segment Number</tag>
     <tag group="0062" element="000C" keyword="RecommendedDisplayGrayscaleValue" vr="US" vm="1">Recommended Display Grayscale Value</tag>
@@ -3006,6 +3008,7 @@
     <tag group="0066" element="001F" keyword="VectorDimensionality" vr="US" vm="1">Vector Dimensionality</tag>
     <tag group="0066" element="0020" keyword="VectorAccuracy" vr="FL" vm="1-n">Vector Accuracy</tag>
     <tag group="0066" element="0021" keyword="VectorCoordinateData" vr="OF" vm="1">Vector Coordinate Data</tag>
+    <tag group="0066" element="0022" keyword="DoublePointCoordinatesData" vr="OD" vm="1">Double Point Coordinates Data</tag>
     <tag group="0066" element="0023" keyword="TrianglePointIndexList" vr="OW" vm="1" retired="true">Triangle Point Index List</tag>
     <tag group="0066" element="0024" keyword="EdgePointIndexList" vr="OW" vm="1" retired="true">Edge Point Index List</tag>
     <tag group="0066" element="0025" keyword="VertexPointIndexList" vr="OW" vm="1" retired="true">Vertex Point Index List</tag>
@@ -3122,6 +3125,22 @@
     <tag group="0068" element="7003" keyword="ModelUsageCodeSequence" vr="SQ" vm="1">Model Usage Code Sequence</tag>
     <tag group="0068" element="7004" keyword="ModelGroupUID" vr="UI" vm="1">Model Group UID</tag>
     <tag group="0068" element="7005" keyword="RelativeURIReferenceWithinEncapsulatedDocument" vr="UR" vm="1">Relative URI Reference Within Encapsulated Document</tag>
+    <tag group="006A" element="0001" keyword="AnnotationCoordinateType" vr="CS" vm="1">Annotation Coordinate Type</tag>
+    <tag group="006A" element="0002" keyword="AnnotationGroupSequence" vr="SQ" vm="1">Annotation Group Sequence</tag>
+    <tag group="006A" element="0003" keyword="AnnotationGroupUID" vr="UI" vm="1">Annotation Group UID</tag>
+    <tag group="006A" element="0005" keyword="AnnotationGroupLabel" vr="LO" vm="1">Annotation Group Label</tag>
+    <tag group="006A" element="0006" keyword="AnnotationGroupDescription" vr="UT" vm="1">Annotation Group Description</tag>
+    <tag group="006A" element="0007" keyword="AnnotationGroupGenerationType" vr="CS" vm="1">Annotation Group Generation Type</tag>
+    <tag group="006A" element="0008" keyword="AnnotationGroupAlgorithmIdentificationSequence" vr="SQ" vm="1">Annotation Group Algorithm Identification Sequence</tag>
+    <tag group="006A" element="0009" keyword="AnnotationPropertyCategoryCodeSequence" vr="SQ" vm="1">Annotation Property Category Code Sequence</tag>
+    <tag group="006A" element="000A" keyword="AnnotationPropertyTypeCodeSequence" vr="SQ" vm="1">Annotation Property Type Code Sequence</tag>
+    <tag group="006A" element="000B" keyword="AnnotationPropertyTypeModifierCodeSequence" vr="SQ" vm="1">Annotation Property Type Modifier Code Sequence</tag>
+    <tag group="006A" element="000C" keyword="NumberOfAnnotations" vr="UL" vm="1">Number of Annotations</tag>
+    <tag group="006A" element="000D" keyword="AnnotationAppliesToAllOpticalPaths" vr="CS" vm="1">Annotation Applies to All Optical Paths</tag>
+    <tag group="006A" element="000E" keyword="ReferencedOpticalPathIdentifier" vr="SH" vm="1-n">Referenced Optical Path Identifier</tag>
+    <tag group="006A" element="000F" keyword="AnnotationAppliesToAllZPlanes" vr="CS" vm="1">Annotation Applies to All Z Planes</tag>
+    <tag group="006A" element="0010" keyword="CommonZCoordinateValue" vr="FD" vm="1-n">Common Z Coordinate Value</tag>
+    <tag group="006A" element="0011" keyword="AnnotationIndexList" vr="OL" vm="1">Annotation Index List</tag>
     <tag group="0070" element="0001" keyword="GraphicAnnotationSequence" vr="SQ" vm="1">Graphic Annotation Sequence</tag>
     <tag group="0070" element="0002" keyword="GraphicLayer" vr="CS" vm="1">Graphic Layer</tag>
     <tag group="0070" element="0003" keyword="BoundingBoxAnnotationUnits" vr="CS" vm="1">Bounding Box Annotation Units</tag>
@@ -4221,6 +4240,7 @@
     <tag group="300A" element="029C" keyword="SourceApplicatorWallNominalThickness" vr="DS" vm="1">Source Applicator Wall Nominal Thickness</tag>
     <tag group="300A" element="029E" keyword="SourceApplicatorWallNominalTransmission" vr="DS" vm="1">Source Applicator Wall Nominal Transmission</tag>
     <tag group="300A" element="02A0" keyword="SourceApplicatorStepSize" vr="DS" vm="1">Source Applicator Step Size</tag>
+    <tag group="300A" element="02A1" keyword="ApplicatorShapeReferencedROINumber" vr="IS" vm="1">Applicator Shape Referenced ROI Number</tag>
     <tag group="300A" element="02A2" keyword="TransferTubeNumber" vr="IS" vm="1">Transfer Tube Number</tag>
     <tag group="300A" element="02A4" keyword="TransferTubeLength" vr="DS" vm="1">Transfer Tube Length</tag>
     <tag group="300A" element="02B0" keyword="ChannelShieldSequence" vr="SQ" vm="1">Channel Shield Sequence</tag>
@@ -4399,7 +4419,7 @@
     <tag group="300A" element="062F" keyword="CArmPhotonElectronControlPointSequence" vr="SQ" vm="1">C-Arm Photon-Electron Control Point Sequence</tag>
     <tag group="300A" element="0630" keyword="ReferencedRTRadiationSequence" vr="SQ" vm="1">Referenced RT Radiation Sequence</tag>
     <tag group="300A" element="0631" keyword="ReferencedRTInstanceSequence" vr="SQ" vm="1">Referenced RT Instance Sequence</tag>
-    <tag group="300A" element="0632" keyword="ReferencedRTPatientSetupSequence" vr="SQ" vm="1">Referenced RT Patient Setup Sequence</tag>
+    <tag group="300A" element="0632" keyword="ReferencedRTPatientSetupSequence" vr="SQ" vm="1" retired="true">Referenced RT Patient Setup Sequence</tag>
     <tag group="300A" element="0634" keyword="SourceToPatientSurfaceDistance" vr="FD" vm="1">Source to Patient Surface Distance</tag>
     <tag group="300A" element="0635" keyword="TreatmentMachineSpecialModeCodeSequence" vr="SQ" vm="1">Treatment Machine Special Mode Code Sequence</tag>
     <tag group="300A" element="0636" keyword="IntendedNumberOfFractions" vr="US" vm="1">Intended Number of Fractions</tag>
@@ -4428,7 +4448,7 @@
     <tag group="300A" element="064D" keyword="RTBeamLimitingDeviceDefinitionSequence" vr="SQ" vm="1">RT Beam Limiting Device Definition Sequence</tag>
     <tag group="300A" element="064E" keyword="ParallelRTBeamDelimiterOpeningMode" vr="CS" vm="1">Parallel RT Beam Delimiter Opening Mode</tag>
     <tag group="300A" element="064F" keyword="ParallelRTBeamDelimiterLeafMountingSide" vr="CS" vm="1-n">Parallel RT Beam Delimiter Leaf Mounting Side</tag>
-    <tag group="300A" element="0650" keyword="PatientSetupUID" vr="UI" vm="1">Patient Setup UID</tag>
+    <tag group="300A" element="0650" keyword="PatientSetupUID" vr="UI" vm="1" retired="true">Patient Setup UID</tag>
     <tag group="300A" element="0651" keyword="WedgeDefinitionSequence" vr="SQ" vm="1">Wedge Definition Sequence</tag>
     <tag group="300A" element="0652" keyword="RadiationBeamWedgeAngle" vr="FD" vm="1">Radiation Beam Wedge Angle</tag>
     <tag group="300A" element="0653" keyword="RadiationBeamWedgeThinEdgeDistance" vr="FD" vm="1">Radiation Beam Wedge Thin Edge Distance</tag>
@@ -4528,6 +4548,33 @@
     <tag group="300A" element="0774" keyword="DoseMeasurementDeviceCodeSequence" vr="SQ" vm="1">Dose Measurement Device Code Sequence</tag>
     <tag group="300A" element="0780" keyword="AdditionalParameterRecordingInstanceSequence" vr="SQ" vm="1">Additional Parameter Recording Instance Sequence</tag>
     <tag group="300A" element="0783" keyword="InterlockOriginDescription" vr="ST" vm="1">Interlock Origin Description</tag>
+    <tag group="300A" element="0784" keyword="RTPatientPositionScopeSequence" vr="SQ" vm="1">RT Patient Position Scope Sequence</tag>
+    <tag group="300A" element="0785" keyword="ReferencedTreatmentPositionGroupUID" vr="UI" vm="1">Referenced Treatment Position Group UID</tag>
+    <tag group="300A" element="0786" keyword="RadiationOrderIndex" vr="US" vm="1">Radiation Order Index</tag>
+    <tag group="300A" element="0787" keyword="OmittedRadiationSequence" vr="SQ" vm="1">Omitted Radiation Sequence</tag>
+    <tag group="300A" element="0788" keyword="ReasonForOmissionCodeSequence" vr="SQ" vm="1">Reason for Omission Code Sequence</tag>
+    <tag group="300A" element="0789" keyword="RTDeliveryStartPatientPositionSequence" vr="SQ" vm="1">RT Delivery Start Patient Position Sequence</tag>
+    <tag group="300A" element="078A" keyword="RTTreatmentPreparationPatientPositionSequence" vr="SQ" vm="1">RT Treatment Preparation Patient Position Sequence</tag>
+    <tag group="300A" element="078B" keyword="ReferencedRTTreatmentPreparationSequence" vr="SQ" vm="1">Referenced RT Treatment Preparation Sequence</tag>
+    <tag group="300A" element="078C" keyword="ReferencedPatientSetupPhotoSequence" vr="SQ" vm="1">Referenced Patient Setup Photo Sequence</tag>
+    <tag group="300A" element="078D" keyword="PatientTreatmentPreparationMethodCodeSequence" vr="SQ" vm="1">Patient Treatment Preparation Method Code Sequence</tag>
+    <tag group="300A" element="078E" keyword="PatientTreatmentPreparationProcedureParameterDescription" vr="LT" vm="1">Patient Treatment Preparation Procedure Parameter Description</tag>
+    <tag group="300A" element="078F" keyword="PatientTreatmentPreparationDeviceSequence" vr="SQ" vm="1">Patient Treatment Preparation Device Sequence</tag>
+    <tag group="300A" element="0790" keyword="PatientTreatmentPreparationProcedureSequence" vr="SQ" vm="1">Patient Treatment Preparation Procedure Sequence </tag>
+    <tag group="300A" element="0791" keyword="PatientTreatmentPreparationProcedureCodeSequence" vr="SQ" vm="1">Patient Treatment Preparation Procedure Code Sequence</tag>
+    <tag group="300A" element="0792" keyword="PatientTreatmentPreparationMethodDescription" vr="LT" vm="1">Patient Treatment Preparation Method Description</tag>
+    <tag group="300A" element="0793" keyword="PatientTreatmentPreparationProcedureParameterSequence" vr="SQ" vm="1">Patient Treatment Preparation Procedure Parameter Sequence</tag>
+    <tag group="300A" element="0794" keyword="PatientSetupPhotoDescription" vr="LT" vm="1">Patient Setup Photo Description</tag>
+    <tag group="300A" element="0795" keyword="PatientTreatmentPreparationProcedureIndex" vr="US" vm="1">Patient Treatment Preparation Procedure Index</tag>
+    <tag group="300A" element="0796" keyword="ReferencedPatientSetupProcedureIndex" vr="US" vm="1">Referenced Patient Setup Procedure Index</tag>
+    <tag group="300A" element="0797" keyword="RTRadiationTaskSequence" vr="SQ" vm="1">RT Radiation Task Sequence</tag>
+    <tag group="300A" element="0798" keyword="RTPatientPositionDisplacementSequence" vr="SQ" vm="1">RT Patient Position Displacement Sequence</tag>
+    <tag group="300A" element="0799" keyword="RTPatientPositionSequence" vr="SQ" vm="1">RT Patient Position Sequence</tag>
+    <tag group="300A" element="079A" keyword="DisplacementReferenceLabel" vr="LO" vm="1">Displacement Reference Label</tag>
+    <tag group="300A" element="079B" keyword="DisplacementMatrix" vr="FD" vm="16">Displacement Matrix</tag>
+    <tag group="300A" element="079C" keyword="PatientSupportDisplacementSequence" vr="SQ" vm="1">Patient Support Displacement Sequence</tag>
+    <tag group="300A" element="079D" keyword="DisplacementReferenceLocationCodeSequence" vr="SQ" vm="1">Displacement Reference Location Code Sequence</tag>
+    <tag group="300A" element="079E" keyword="RTRadiationSetDeliveryUsage" vr="CS" vm="1">RT Radiation Set Delivery Usage</tag>
     <tag group="300C" element="0002" keyword="ReferencedRTPlanSequence" vr="SQ" vm="1">Referenced RT Plan Sequence</tag>
     <tag group="300C" element="0004" keyword="ReferencedBeamSequence" vr="SQ" vm="1">Referenced Beam Sequence</tag>
     <tag group="300C" element="0006" keyword="ReferencedBeamNumber" vr="IS" vm="1">Referenced Beam Number</tag>
@@ -4930,6 +4977,7 @@
     <uid uid="1.2.840.10008.1.1" keyword="Verification" type="SOP Class">Verification SOP Class</uid>
     <uid uid="1.2.840.10008.1.2" keyword="ImplicitVRLittleEndian" type="Transfer Syntax">Implicit VR Little Endian: Default Transfer Syntax for DICOM</uid>
     <uid uid="1.2.840.10008.1.2.1" keyword="ExplicitVRLittleEndian" type="Transfer Syntax">Explicit VR Little Endian</uid>
+    <uid uid="1.2.840.10008.1.2.1.98" keyword="EncapsulatedUncompressedExplicitVRLittleEndian" type="Transfer Syntax">Encapsulated Uncompressed Explicit VR Little Endian</uid>
     <uid uid="1.2.840.10008.1.2.1.99" keyword="DeflatedExplicitVRLittleEndian" type="Transfer Syntax">Deflated Explicit VR Little Endian</uid>
     <uid uid="1.2.840.10008.1.2.2" keyword="ExplicitVRBigEndian" type="Transfer Syntax" retired="true">Explicit VR Big Endian (Retired)</uid>
     <uid uid="1.2.840.10008.1.2.4.50" keyword="JPEGBaseline8Bit" type="Transfer Syntax">JPEG Baseline (Process 1): Default Transfer Syntax for Lossy JPEG 8 Bit Image Compression</uid>
@@ -4974,33 +5022,6 @@
     <uid uid="1.2.840.10008.1.2.7.2" keyword="SMPTEST211020UncompressedInterlacedActiveVideo" type="Transfer Syntax">SMPTE ST 2110-20 Uncompressed Interlaced Active Video</uid>
     <uid uid="1.2.840.10008.1.2.7.3" keyword="SMPTEST211030PCMDigitalAudio" type="Transfer Syntax">SMPTE ST 2110-30 PCM Digital Audio</uid>
     <uid uid="1.2.840.10008.1.3.10" keyword="MediaStorageDirectoryStorage" type="SOP Class">Media Storage Directory Storage</uid>
-    <uid uid="1.2.840.10008.1.4.1.1" keyword="TalairachBrainAtlas" type="Well-known frame of reference">Talairach Brain Atlas Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.2" keyword="SPM2T1" type="Well-known frame of reference">SPM2 T1 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.3" keyword="SPM2T2" type="Well-known frame of reference">SPM2 T2 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.4" keyword="SPM2PD" type="Well-known frame of reference">SPM2 PD Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.5" keyword="SPM2EPI" type="Well-known frame of reference">SPM2 EPI Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.6" keyword="SPM2FILT1" type="Well-known frame of reference">SPM2 FIL T1 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.7" keyword="SPM2PET" type="Well-known frame of reference">SPM2 PET Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.8" keyword="SPM2TRANSM" type="Well-known frame of reference">SPM2 TRANSM Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.9" keyword="SPM2SPECT" type="Well-known frame of reference">SPM2 SPECT Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.10" keyword="SPM2GRAY" type="Well-known frame of reference">SPM2 GRAY Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.11" keyword="SPM2WHITE" type="Well-known frame of reference">SPM2 WHITE Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.12" keyword="SPM2CSF" type="Well-known frame of reference">SPM2 CSF Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.13" keyword="SPM2BRAINMASK" type="Well-known frame of reference">SPM2 BRAINMASK Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.14" keyword="SPM2AVG305T1" type="Well-known frame of reference">SPM2 AVG305T1 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.15" keyword="SPM2AVG152T1" type="Well-known frame of reference">SPM2 AVG152T1 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.16" keyword="SPM2AVG152T2" type="Well-known frame of reference">SPM2 AVG152T2 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.17" keyword="SPM2AVG152PD" type="Well-known frame of reference">SPM2 AVG152PD Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.1.18" keyword="SPM2SINGLESUBJT1" type="Well-known frame of reference">SPM2 SINGLESUBJT1 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.2.1" keyword="ICBM452T1" type="Well-known frame of reference">ICBM 452 T1 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.2.2" keyword="ICBMSingleSubjectMRI" type="Well-known frame of reference">ICBM Single Subject MRI Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.3.1" keyword="IEC61217FixedCoordinateSystem" type="Well-known frame of reference">IEC 61217 Fixed Coordinate System Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.3.2" keyword="StandardRoboticArmCoordinateSystem" type="Well-known frame of reference">Standard Robotic-Arm Coordinate System Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.4.1" keyword="SRI24" type="Well-known frame of reference">SRI24 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.5.1" keyword="Colin27" type="Well-known frame of reference">Colin27 Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.6.1" keyword="LPBA40AIR" type="Well-known frame of reference">LPBA40/AIR Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.6.2" keyword="LPBA40FLIRT" type="Well-known frame of reference">LPBA40/FLIRT Frame of Reference</uid>
-    <uid uid="1.2.840.10008.1.4.6.3" keyword="LPBA40SPM5" type="Well-known frame of reference">LPBA40/SPM5 Frame of Reference</uid>
     <uid uid="1.2.840.10008.1.5.1" keyword="HotIronPalette" type="Well-known SOP Instance">Hot Iron Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.2" keyword="PETPalette" type="Well-known SOP Instance">PET Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.3" keyword="HotMetalBluePalette" type="Well-known SOP Instance">Hot Metal Blue Color Palette SOP Instance</uid>
@@ -5212,6 +5233,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.75" keyword="PerformedImagingAgentAdministrationSRStorage" type="SOP Class">Performed Imaging Agent Administration SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.76" keyword="EnhancedXRayRadiationDoseSRStorage" type="SOP Class">Enhanced X-Ray Radiation Dose SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.91.1" keyword="MicroscopyBulkSimpleAnnotationsStorage" type="SOP Class">Microscopy Bulk Simple Annotations Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.2" keyword="EncapsulatedCDAStorage" type="SOP Class">Encapsulated CDA Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.3" keyword="EncapsulatedSTLStorage" type="SOP Class">Encapsulated STL Storage</uid>
@@ -5250,6 +5272,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.481.18" keyword="TomotherapeuticRadiationRecordStorage" type="SOP Class">Tomotherapeutic Radiation Record Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.19" keyword="CArmPhotonElectronRadiationRecordStorage" type="SOP Class">C-Arm Photon-Electron Radiation Record Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.20" keyword="RoboticRadiationRecordStorage" type="SOP Class">Robotic Radiation Record Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.21" keyword="RTRadiationSetDeliveryInstructionStorage" type="SOP Class">RT Radiation Set Delivery Instruction Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.22" keyword="RTTreatmentPreparationStorage" type="SOP Class">RT Treatment Preparation Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.1" keyword="DICOSCTImageStorage" type="SOP Class">DICOS CT Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.2.1" keyword="DICOSDigitalXRayImageStorageForPresentation" type="SOP Class">DICOS Digital X-Ray Image Storage - For Presentation</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.2.2" keyword="DICOSDigitalXRayImageStorageForProcessing" type="SOP Class">DICOS Digital X-Ray Image Storage - For Processing</uid>
@@ -5589,7 +5613,7 @@
     <uid uid="1.2.840.10008.6.1.215" keyword="Thrombus3714" type="Context Group Name">Thrombus (3714)</uid>
     <uid uid="1.2.840.10008.6.1.216" keyword="LesionMargin3715" type="Context Group Name">Lesion Margin (3715)</uid>
     <uid uid="1.2.840.10008.6.1.217" keyword="Severity3716" type="Context Group Name">Severity (3716)</uid>
-    <uid uid="1.2.840.10008.6.1.218" keyword="MyocardialWallSegments3717" type="Context Group Name">Myocardial Wall Segments (3717)</uid>
+    <uid uid="1.2.840.10008.6.1.218" keyword="LeftVentricleMyocardialWall17Segments3717" type="Context Group Name">Left Ventricle Myocardial Wall 17 Segments (3717)</uid>
     <uid uid="1.2.840.10008.6.1.219" keyword="MyocardialWallSegmentsInProjection3718" type="Context Group Name">Myocardial Wall Segments in Projection (3718)</uid>
     <uid uid="1.2.840.10008.6.1.220" keyword="CanadianClinicalClassification3719" type="Context Group Name">Canadian Clinical Classification (3719)</uid>
     <uid uid="1.2.840.10008.6.1.221" keyword="CardiacHistoryDates3720" type="Context Group Name" retired="true">Cardiac History Dates (Retired) (3720)</uid>
@@ -6168,7 +6192,7 @@
     <uid uid="1.2.840.10008.6.1.894" keyword="PhysicalForceAppliedDuringAcquisition94" type="Context Group Name">Physical Force Applied During Acquisition (94)</uid>
     <uid uid="1.2.840.10008.6.1.895" keyword="ECGControlVariablesNumeric3690" type="Context Group Name">ECG Control Variables Numeric (3690)</uid>
     <uid uid="1.2.840.10008.6.1.896" keyword="ECGControlVariablesText3691" type="Context Group Name">ECG Control Variables Text (3691)</uid>
-    <uid uid="1.2.840.10008.6.1.897" keyword="WSIReferencedImagePurposesOfReference8120" type="Context Group Name">WSI Referenced Image Purposes of Reference (8120)</uid>
+    <uid uid="1.2.840.10008.6.1.897" keyword="WholeSlideMicroscopyImageReferencedImagePurposesOfReference8120" type="Context Group Name">Whole Slide Microscopy Image Referenced Image Purposes of Reference (8120)</uid>
     <uid uid="1.2.840.10008.6.1.898" keyword="MicroscopyLensType8121" type="Context Group Name">Microscopy Lens Type (8121)</uid>
     <uid uid="1.2.840.10008.6.1.899" keyword="MicroscopyIlluminatorAndSensorColor8122" type="Context Group Name">Microscopy Illuminator and Sensor Color (8122)</uid>
     <uid uid="1.2.840.10008.6.1.900" keyword="MicroscopyIlluminationMethod8123" type="Context Group Name">Microscopy Illumination Method (8123)</uid>
@@ -6428,7 +6452,7 @@
     <uid uid="1.2.840.10008.6.1.1160" keyword="AttenuatorCategory10066" type="Context Group Name">Attenuator Category (10066)</uid>
     <uid uid="1.2.840.10008.6.1.1161" keyword="RadiationAttenuatorMaterials10067" type="Context Group Name">Radiation Attenuator Materials (10067)</uid>
     <uid uid="1.2.840.10008.6.1.1162" keyword="EstimateMethodTypes10068" type="Context Group Name">Estimate Method Types (10068)</uid>
-    <uid uid="1.2.840.10008.6.1.1163" keyword="RadiationDoseEstimationParameter10069" type="Context Group Name">Radiation Dose Estimation Parameter  (10069)</uid>
+    <uid uid="1.2.840.10008.6.1.1163" keyword="RadiationDoseEstimationParameter10069" type="Context Group Name">Radiation Dose Estimation Parameter (10069)</uid>
     <uid uid="1.2.840.10008.6.1.1164" keyword="RadiationDoseTypes10070" type="Context Group Name">Radiation Dose Types (10070)</uid>
     <uid uid="1.2.840.10008.6.1.1165" keyword="MRDiffusionComponentSemantics7270" type="Context Group Name">MR Diffusion Component Semantics (7270)</uid>
     <uid uid="1.2.840.10008.6.1.1166" keyword="MRDiffusionAnisotropyIndices7271" type="Context Group Name">MR Diffusion Anisotropy Indices (7271)</uid>
@@ -6601,7 +6625,7 @@
     <uid uid="1.2.840.10008.6.1.1333" keyword="EEGAnnotationsNeurophysiologicEnumerationsEEG3035" type="Context Group Name">EEG Annotations – Neurophysiologic Enumerations (EEG) (3035)</uid>
     <uid uid="1.2.840.10008.6.1.1334" keyword="EMGAnnotationsNeurophysiologicalEnumerationsEMG3036" type="Context Group Name">EMG Annotations – Neurophysiological Enumerations (EMG) (3036)</uid>
     <uid uid="1.2.840.10008.6.1.1335" keyword="EOGAnnotationsNeurophysiologicalEnumerationsEOG3037" type="Context Group Name">EOG Annotations – Neurophysiological Enumerations (EOG) (3037)</uid>
-    <uid uid="1.2.840.10008.6.1.1336" keyword="PatternEvents3038" type="Context Group Name">Pattern Events  (3038)</uid>
+    <uid uid="1.2.840.10008.6.1.1336" keyword="PatternEvents3038" type="Context Group Name">Pattern Events (3038)</uid>
     <uid uid="1.2.840.10008.6.1.1337" keyword="DeviceRelatedAndEnvironmentRelatedEvents3039" type="Context Group Name">Device-related and Environment-related Events (3039)</uid>
     <uid uid="1.2.840.10008.6.1.1338" keyword="EEGAnnotationsNeurologicalMonitoringMeasurements3040" type="Context Group Name">EEG Annotations - Neurological Monitoring Measurements (3040)</uid>
     <uid uid="1.2.840.10008.6.1.1339" keyword="OBGYNUltrasoundReportDocumentTitles12024" type="Context Group Name">OB-GYN Ultrasound Report Document Titles (12024)</uid>
@@ -6630,4 +6654,71 @@
     <uid uid="1.2.840.10008.6.1.1362" keyword="ReportedValueTypes10072" type="Context Group Name">Reported Value Types (10072)</uid>
     <uid uid="1.2.840.10008.6.1.1363" keyword="ValueTimings10073" type="Context Group Name">Value Timings (10073)</uid>
     <uid uid="1.2.840.10008.6.1.1364" keyword="RDSRFrameOfReferenceOrigins10074" type="Context Group Name">RDSR Frame of Reference Origins (10074)</uid>
+    <uid uid="1.2.840.10008.6.1.1365" keyword="MicroscopyAnnotationPropertyTypes8135" type="Context Group Name">Microscopy Annotation Property Types (8135)</uid>
+    <uid uid="1.2.840.10008.6.1.1366" keyword="MicroscopyMeasurementTypes8136" type="Context Group Name">Microscopy Measurement Types (8136)</uid>
+    <uid uid="1.2.840.10008.6.1.1367" keyword="ProstateReportingSystems6310" type="Context Group Name">Prostate Reporting Systems (6310)</uid>
+    <uid uid="1.2.840.10008.6.1.1368" keyword="MRSignalIntensity6311" type="Context Group Name">MR Signal Intensity (6311)</uid>
+    <uid uid="1.2.840.10008.6.1.1369" keyword="CrossSectionalScanPlaneOrientation6312" type="Context Group Name">Cross-sectional Scan Plane Orientation (6312)</uid>
+    <uid uid="1.2.840.10008.6.1.1370" keyword="HistoryOfProstateDisease6313" type="Context Group Name">History of Prostate Disease (6313)</uid>
+    <uid uid="1.2.840.10008.6.1.1371" keyword="ProstateMRIStudyQualityFindings6314" type="Context Group Name">Prostate MRI Study Quality Findings (6314)</uid>
+    <uid uid="1.2.840.10008.6.1.1372" keyword="ProstateMRISeriesQualityFindings6315" type="Context Group Name">Prostate MRI Series Quality Findings (6315)</uid>
+    <uid uid="1.2.840.10008.6.1.1373" keyword="MRImagingArtifacts6316" type="Context Group Name">MR Imaging Artifacts (6316)</uid>
+    <uid uid="1.2.840.10008.6.1.1374" keyword="ProstateDCEMRIQualityFindings6317" type="Context Group Name">Prostate DCE MRI Quality Findings (6317)</uid>
+    <uid uid="1.2.840.10008.6.1.1375" keyword="ProstateDWIMRIQualityFindings6318" type="Context Group Name">Prostate DWI MRI Quality Findings (6318)</uid>
+    <uid uid="1.2.840.10008.6.1.1376" keyword="AbdominalInterventionTypes6319" type="Context Group Name">Abdominal Intervention Types (6319)</uid>
+    <uid uid="1.2.840.10008.6.1.1377" keyword="AbdominalInterventions6320" type="Context Group Name">Abdominal Interventions (6320)</uid>
+    <uid uid="1.2.840.10008.6.1.1378" keyword="ProstateCancerDiagnosticProcedures6321" type="Context Group Name">Prostate Cancer Diagnostic Procedures (6321)</uid>
+    <uid uid="1.2.840.10008.6.1.1379" keyword="ProstateCancerFamilyHistory6322" type="Context Group Name">Prostate Cancer Family History (6322)</uid>
+    <uid uid="1.2.840.10008.6.1.1380" keyword="ProstateCancerTherapy6323" type="Context Group Name">Prostate Cancer Therapy (6323)</uid>
+    <uid uid="1.2.840.10008.6.1.1381" keyword="ProstateMRIAssessment6324" type="Context Group Name">Prostate MRI Assessment (6324)</uid>
+    <uid uid="1.2.840.10008.6.1.1382" keyword="OverallAssessmentFromPIRADS6325" type="Context Group Name">Overall Assessment from PI-RADS® (6325)</uid>
+    <uid uid="1.2.840.10008.6.1.1383" keyword="ImageQualityControlStandards6326" type="Context Group Name">Image Quality Control Standards (6326)</uid>
+    <uid uid="1.2.840.10008.6.1.1384" keyword="ProstateImagingIndications6327" type="Context Group Name">Prostate Imaging Indications (6327)</uid>
+    <uid uid="1.2.840.10008.6.1.1385" keyword="PIRADSV2LesionAssessmentCategory6328" type="Context Group Name">PI-RADS® v2 Lesion Assessment Category (6328)</uid>
+    <uid uid="1.2.840.10008.6.1.1386" keyword="PIRADSV2T2WIPZLesionAssessmentCategory6329" type="Context Group Name">PI-RADS® v2 T2WI PZ Lesion Assessment Category (6329)</uid>
+    <uid uid="1.2.840.10008.6.1.1387" keyword="PIRADSV2T2WITZLesionAssessmentCategory6330" type="Context Group Name">PI-RADS® v2 T2WI TZ Lesion Assessment Category (6330)</uid>
+    <uid uid="1.2.840.10008.6.1.1388" keyword="PIRADSV2DWILesionAssessmentCategory6331" type="Context Group Name">PI-RADS® v2 DWI Lesion Assessment Category (6331)</uid>
+    <uid uid="1.2.840.10008.6.1.1389" keyword="PIRADSV2DCELesionAssessmentCategory6332" type="Context Group Name">PI-RADS® v2 DCE Lesion Assessment Category (6332)</uid>
+    <uid uid="1.2.840.10008.6.1.1390" keyword="mpMRIAssessmentTypes6333" type="Context Group Name">mpMRI Assessment Types (6333)</uid>
+    <uid uid="1.2.840.10008.6.1.1391" keyword="mpMRIAssessmentTypesFromPIRADS6334" type="Context Group Name">mpMRI Assessment Types from PI-RADS® (6334)</uid>
+    <uid uid="1.2.840.10008.6.1.1392" keyword="mpMRIAssessmentValues6335" type="Context Group Name">mpMRI Assessment Values (6335)</uid>
+    <uid uid="1.2.840.10008.6.1.1393" keyword="MRIAbnormalities6336" type="Context Group Name">MRI Abnormalities (6336)</uid>
+    <uid uid="1.2.840.10008.6.1.1394" keyword="mpMRIProstateAbnormalitiesFromPIRADS6337" type="Context Group Name">mpMRI Prostate Abnormalities from PI-RADS® (6337)</uid>
+    <uid uid="1.2.840.10008.6.1.1395" keyword="mpMRIBenignProstateAbnormalitiesFromPIRADS6338" type="Context Group Name">mpMRI Benign Prostate Abnormalities from PI-RADS® (6338)</uid>
+    <uid uid="1.2.840.10008.6.1.1396" keyword="MRIShapeCharacteristics6339" type="Context Group Name">MRI Shape Characteristics (6339)</uid>
+    <uid uid="1.2.840.10008.6.1.1397" keyword="ProstateMRIShapeCharacteristicsFromPIRADS6340" type="Context Group Name">Prostate MRI Shape Characteristics from PI-RADS® (6340)</uid>
+    <uid uid="1.2.840.10008.6.1.1398" keyword="MRIMarginCharacteristics6341" type="Context Group Name">MRI Margin Characteristics (6341)</uid>
+    <uid uid="1.2.840.10008.6.1.1399" keyword="ProstateMRIMarginCharacteristicsFromPIRADS6342" type="Context Group Name">Prostate MRI Margin Characteristics from PI-RADS® (6342)</uid>
+    <uid uid="1.2.840.10008.6.1.1400" keyword="MRISignalCharacteristics6343" type="Context Group Name">MRI Signal Characteristics (6343)</uid>
+    <uid uid="1.2.840.10008.6.1.1401" keyword="ProstateMRISignalCharacteristicsFromPIRADS6344" type="Context Group Name">Prostate MRI Signal Characteristics from PI-RADS® (6344)</uid>
+    <uid uid="1.2.840.10008.6.1.1402" keyword="MRIEnhancementPatterns6345" type="Context Group Name">MRI Enhancement Patterns (6345)</uid>
+    <uid uid="1.2.840.10008.6.1.1403" keyword="ProstateMRIEnhancementPatternsFromPIRADS6346" type="Context Group Name">Prostate MRI Enhancement Patterns from PI-RADS® (6346)</uid>
+    <uid uid="1.2.840.10008.6.1.1404" keyword="ProstateMRIExtraProstaticFindings6347" type="Context Group Name">Prostate MRI Extra-prostatic Findings (6347)</uid>
+    <uid uid="1.2.840.10008.6.1.1405" keyword="ProstateMRIAssessmentOfExtraProstaticAnatomicSites6348" type="Context Group Name">Prostate MRI Assessment of Extra-prostatic Anatomic Sites (6348)</uid>
+    <uid uid="1.2.840.10008.6.1.1406" keyword="MRCoilTypes6349" type="Context Group Name">MR Coil Types (6349)</uid>
+    <uid uid="1.2.840.10008.6.1.1407" keyword="EndorectalCoilFillSubstances6350" type="Context Group Name">Endorectal Coil Fill Substances (6350)</uid>
+    <uid uid="1.2.840.10008.6.1.1408" keyword="ProstateRelationalMeasurements6351" type="Context Group Name">Prostate Relational Measurements (6351)</uid>
+    <uid uid="1.2.840.10008.6.1.1409" keyword="ProstateCancerDiagnosticBloodLabMeasurements6352" type="Context Group Name">Prostate Cancer Diagnostic Blood Lab Measurements (6352)</uid>
+    <uid uid="1.2.840.10008.6.1.1410" keyword="ProstateImagingTypesOfQualityControlStandard6353" type="Context Group Name">Prostate Imaging Types of Quality Control Standard (6353)</uid>
+    <uid uid="1.2.840.10008.6.1.1411" keyword="UltrasoundShearWaveMeasurements12308" type="Context Group Name">Ultrasound Shear Wave Measurements (12308)</uid>
+    <uid uid="1.2.840.10008.6.1.1412" keyword="LeftVentricleMyocardialWall16Segments3780" type="Context Group Name">Left Ventricle Myocardial Wall 16 Segments (3780)</uid>
+    <uid uid="1.2.840.10008.6.1.1413" keyword="LeftVentricleMyocardialWall18Segments3781" type="Context Group Name">Left Ventricle Myocardial Wall 18 Segments (3781)</uid>
+    <uid uid="1.2.840.10008.6.1.1414" keyword="LeftVentricleBasalWall6Segments3782" type="Context Group Name">Left Ventricle Basal Wall 6 Segments (3782)</uid>
+    <uid uid="1.2.840.10008.6.1.1415" keyword="LeftVentricleMidlevelWall6Segments3783" type="Context Group Name">Left Ventricle Midlevel Wall 6 Segments (3783)</uid>
+    <uid uid="1.2.840.10008.6.1.1416" keyword="LeftVentricleApicalWall4Segments3784" type="Context Group Name">Left Ventricle Apical Wall 4 Segments (3784)</uid>
+    <uid uid="1.2.840.10008.6.1.1417" keyword="LeftVentricleApicalWall6Segments3785" type="Context Group Name">Left Ventricle Apical Wall 6 Segments (3785)</uid>
+    <uid uid="1.2.840.10008.6.1.1418" keyword="PatientTreatmentPreparationMethods9571" type="Context Group Name">Patient Treatment Preparation Methods (9571)</uid>
+    <uid uid="1.2.840.10008.6.1.1419" keyword="PatientShieldingDevices9572" type="Context Group Name">Patient Shielding Devices (9572)</uid>
+    <uid uid="1.2.840.10008.6.1.1420" keyword="PatientTreatmentPreparationDevices9573" type="Context Group Name">Patient Treatment Preparation Devices (9573)</uid>
+    <uid uid="1.2.840.10008.6.1.1421" keyword="PatientPositionDisplacementReferencePoints9574" type="Context Group Name">Patient Position Displacement Reference Points (9574)</uid>
+    <uid uid="1.2.840.10008.6.1.1422" keyword="PatientAlignmentDevices9575" type="Context Group Name">Patient Alignment Devices (9575)</uid>
+    <uid uid="1.2.840.10008.6.1.1423" keyword="ReasonsForRTRadiationTreatmentOmission9576" type="Context Group Name">Reasons for RT Radiation Treatment Omission (9576)</uid>
+    <uid uid="1.2.840.10008.6.1.1424" keyword="PatientTreatmentPreparationMethods9577" type="Context Group Name">Patient Treatment Preparation Methods (9577)</uid>
+    <uid uid="1.2.840.10008.6.1.1425" keyword="MotionManagementSetupDevices9578" type="Context Group Name">Motion Management Setup Devices (9578)</uid>
+    <uid uid="1.2.840.10008.6.1.1426" keyword="CoreEchoStrainMeasurements12309" type="Context Group Name">Core Echo Strain Measurements (12309)</uid>
+    <uid uid="1.2.840.10008.6.1.1427" keyword="MyocardialStrainMethods12310" type="Context Group Name">Myocardial Strain Methods (12310)</uid>
+    <uid uid="1.2.840.10008.6.1.1428" keyword="EchoMeasuredStrainProperties12311" type="Context Group Name">Echo Measured Strain Properties (12311)</uid>
+    <uid uid="1.2.840.10008.6.1.1429" keyword="AssessmentFromCADRADS3020" type="Context Group Name">Assessment from CAD-RADS™ (3020)</uid>
+    <uid uid="1.2.840.10008.6.1.1430" keyword="CADRADSStenosisAssessmentModifier3021" type="Context Group Name">CAD-RADS™ Stenosis Assessment Modifier (3021)</uid>
+    <uid uid="1.2.840.10008.6.1.1431" keyword="CADRADSAssessmentModifier3022" type="Context Group Name">CAD-RADS™ Assessment Modifier (3022)</uid>
 </dictionary>
