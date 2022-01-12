@@ -1,4 +1,8 @@
-#### 5.0.2 (TBD)
+#### 5.0.3 (TBD)
+
+
+#### 5.0.2 (2022-01-11)
+* Update to DICOM Standard 2021e
 * Fix issue where opening a DICOM file from a stream writes too much data when saving it again (#1264)
 * Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 * Add method to convert an array of DicomDatasets into a json string (#1271)
