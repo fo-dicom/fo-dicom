@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.IO;
+using FellowOakDicom.Memory;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -1534,13 +1535,15 @@ namespace FellowOakDicom.Network
     /// <summary>P-DATA-TF</summary>
     public class PDataTF : PDU, IDisposable
     {
+        private readonly IMemoryProvider _memoryProvider;
         private List<PDV> _pdVs;
 
         /// <summary>
         /// Initializes new P-DATA-TF
         /// </summary>
-        public PDataTF()
+        public PDataTF(IMemoryProvider memoryProvider)
         {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _pdVs = new List<PDV>();
         }
 
@@ -1622,7 +1625,7 @@ namespace FellowOakDicom.Network
             uint read = 0;
             while (read < len)
             {
-                var pdv = new PDV();
+                var pdv = new PDV(_memoryProvider);
                 read += pdv.Read(raw);
                 _pdVs.Add(pdv);
             }
@@ -1653,6 +1656,8 @@ namespace FellowOakDicom.Network
     /// <summary>PDV</summary>
     public class PDV: IDisposable
     {
+        private readonly IMemoryProvider _memoryProvider;
+
         /// <summary>
         /// Flag to avoid double disposal
         /// </summary>
@@ -1663,25 +1668,22 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="pcid">Presentation context ID</param>
         /// <param name="value">PDV data</param>
-        /// <param name="valueLength">The length of the PDV data (how many bytes in value that are actual data)</param>
-        /// <param name="isValueRented">Whether or not the value is rented and should be returned to the shared array pool when disposed</param>
+        /// <param name="valueLength">Length of the PDV data</param>
         /// <param name="command">Is command</param>
         /// <param name="last">Is last fragment of command or data</param>
-        public PDV(byte pcid, byte[] value, int valueLength, bool isValueRented, bool command, bool last)
+        public PDV(byte pcid, IMemory value, int valueLength, bool command, bool last)
         {
             if (valueLength > value.Length)
             {
-                throw new ArgumentException($"Invalid value passed to PDV constructor: valueLength = {valueLength} but actual value is only {value.Length} bytes long");
+                throw new ArgumentException($"Value length ({valueLength} bytes) cannot be higher than value memory length ({value.Length} bytes)");
             }
             if (valueLength % 2 == 1)
             {
-                throw new ArgumentException("Cannot create a PDV with odd number of bytes");
+                throw new ArgumentException($"Cannot create a PDV with odd number of bytes (provided length was {valueLength} bytes)");
             }
-            
             PCID = pcid;
             Value = value;
             ValueLength = valueLength;
-            IsValueRented = isValueRented;
             IsCommand = command;
             IsLastFragment = last;
         }
@@ -1689,8 +1691,9 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Initializes new PDV
         /// </summary>
-        public PDV()
+        public PDV(IMemoryProvider memoryProvider)
         {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
         }
 
         /// <summary>
@@ -1702,11 +1705,10 @@ namespace FellowOakDicom.Network
         public byte PCID { get; set; }
 
         /// <summary>PDV data</summary>
-        public byte[] Value { get; private set; } = Array.Empty<byte>();
+        public IMemory Value { get; private set; }
 
-        public int ValueLength { get; private set; }
-        
-        public bool IsValueRented { get; private set; }
+        /// <summary>Length of the PDV data</summary>
+        public int ValueLength { get; set; }
 
         /// <summary>PDV is command</summary>
         public bool IsCommand { get; set; } = false;
@@ -1717,7 +1719,7 @@ namespace FellowOakDicom.Network
         /// <summary>Length of this PDV</summary>
         public uint PDVLength => (uint)ValueLength + RawPDU.CommonFieldsLength;
 
-        public override string ToString() => $"PDV [PCID: {PCID}; Length: {Value.Length}; Command: {IsCommand}; Last: {IsLastFragment}]";
+        public override string ToString() => $"PDV [PCID: {PCID}; Length: {ValueLength}; Command: {IsCommand}; Last: {IsLastFragment}]";
 
         #region Write
 
@@ -1731,7 +1733,7 @@ namespace FellowOakDicom.Network
             pdu.Write("PDV-Length", 2 + (uint) ValueLength);
             pdu.Write("Presentation Context ID", PCID);
             pdu.Write("Message Control Header", mch);
-            pdu.Write("PDV Value", Value, 0, ValueLength);
+            pdu.Write("PDV Value", Value.Bytes, 0, ValueLength);
         }
 
         #endregion
@@ -1745,14 +1747,12 @@ namespace FellowOakDicom.Network
         public uint Read(RawPDU raw)
         {
             var len = raw.ReadUInt32("PDV-Length");
-            var valueLength = (int)len - 2;
-            var value = ArrayPool<byte>.Shared.Rent(valueLength);
+            ValueLength = (int)len - 2;
+            var value = _memoryProvider.Provide(ValueLength);
             PCID = raw.ReadByte("Presentation Context ID");
             var mch = raw.ReadByte("Message Control Header");
-            raw.ReadBytes("PDV Value", value, 0, valueLength);
+            raw.ReadBytes("PDV Value", value.Bytes, 0, ValueLength);
             Value = value;
-            ValueLength = valueLength;
-            IsValueRented = true;
             IsCommand = (mch & 0x01) != 0;
             IsLastFragment = (mch & 0x02) != 0;
             return len + 4;
@@ -1770,10 +1770,7 @@ namespace FellowOakDicom.Network
                 return;
             }
 
-            if (IsValueRented)
-            {
-                ArrayPool<byte>.Shared.Return(Value);
-            }
+            Value?.Dispose();
         }
     }
 
