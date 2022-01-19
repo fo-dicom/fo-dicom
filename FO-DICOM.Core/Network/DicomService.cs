@@ -543,7 +543,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x04:
                             {
-                                using var pdu = new PDataTF();
+                                using var pdu = new PDataTF(_memoryProvider);
                                 pdu.Read(raw);
                                 if (Options.LogDataPDUs)
                                 {
@@ -685,7 +685,7 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    await _dimseStream.WriteAsync(pdv.Value, 0, pdv.ValueLength).ConfigureAwait(false);
+                    await _dimseStream.WriteAsync(pdv.Value.Bytes, 0, pdv.Value.Length).ConfigureAwait(false);
 
                     if (pdv.IsLastFragment)
                     {
@@ -1619,7 +1619,7 @@ namespace FellowOakDicom.Network
                     ? _service.Options.MaxCommandBuffer
                     : Math.Min(_pduMax, _service.Options.MaxCommandBuffer);
 
-                _pdu = new PDataTF();
+                _pdu = new PDataTF(_memoryProvider);
 
                 // Max PDU Size - Current Size - Size of PDV header
                 _memory = ProvideEvenLengthMemory((int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength));
@@ -1681,7 +1681,7 @@ namespace FellowOakDicom.Network
                         _length++;
                     }
 
-                    var pdv = new PDV(_pcid, memory.Bytes, _length, true, _command, last);
+                    var pdv = new PDV(_pcid, memory, _length, _command, last);
                     _pdu.PDVs.Add(pdv);
                     
                     // reset length in case we recurse into WritePDU()
@@ -1714,7 +1714,7 @@ namespace FellowOakDicom.Network
                 if (_dicomMessage is DicomRequest req && !_service.IsStillPending(req))
                 {
                     _pdu.Dispose();
-                    _pdu = new PDataTF();
+                    _pdu = new PDataTF(_memoryProvider);
                     return;
                 }
 
@@ -1735,7 +1735,7 @@ namespace FellowOakDicom.Network
                     _dicomMessage.LastPDUSent = DateTime.Now;
 
                     _pdu.Dispose();
-                    _pdu = new PDataTF();
+                    _pdu = new PDataTF(_memoryProvider);
                 }
             }
             
@@ -1815,7 +1815,7 @@ namespace FellowOakDicom.Network
                     {
                         var c = Math.Min(count, _memory.Length - _length);
 
-                        buffer.AsSpan(offset).CopyTo(_memory.Span.Slice(_length, c));
+                        buffer.AsSpan(offset, c).CopyTo(_memory.Span.Slice(_length, c));
                         
                         _length += c;
                         offset += c;
@@ -1826,7 +1826,7 @@ namespace FellowOakDicom.Network
 
                     if (count > 0)
                     {
-                        buffer.AsSpan(offset).CopyTo(_memory.Span.Slice(_length, count));
+                        buffer.AsSpan(offset, count).CopyTo(_memory.Span.Slice(_length, count));
                         _length += count;
 
                         if (_memory.Length == _length)

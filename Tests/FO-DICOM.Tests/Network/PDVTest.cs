@@ -4,6 +4,7 @@
 using FellowOakDicom.Network;
 using System;
 using System.Linq;
+using FellowOakDicom.Memory;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -12,29 +13,36 @@ namespace FellowOakDicom.Tests.Network
     [Collection("Network")]
     public class PDVTest
     {
+        private readonly IMemoryProvider _memoryProvider;
+
         #region Unit tests
+
+        public PDVTest()
+        {
+            _memoryProvider = new ArrayPoolMemoryProvider();
+        }
 
         [Fact]
         public void Constructor_EvenLengthValue_Unmodified()
         {
-            var bytes = new byte[] { 1, 2, 3, 4, 5, 6 };
-            var expected = new byte[6];
-            Array.Copy(bytes, expected, bytes.Length);
+            var value = _memoryProvider.Provide(6);
+            var contents = new byte[] { 1, 2, 3, 4, 5, 6 };
+            contents.CopyTo(value.Span);
 
-            using var pdv = new PDV(1, bytes, bytes.Length, false, true, true);
-            var actual = pdv.Value.Take(pdv.ValueLength).ToArray();
+            using var pdv = new PDV(1, value, 6, true, true);
+            var actual = pdv.Value.Span.ToArray();
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(contents, actual);
         }
 
         [Fact]
         public void Constructor_OddLengthValue_ThrowsArgumentException()
         {
-            var bytes = new byte[] { 1, 2, 3, 4, 5 };
-            var expected = new byte[6];
-            Array.Copy(bytes, expected, bytes.Length);
+            var value = _memoryProvider.Provide(5);
+            var contents = new byte[] { 1, 2, 3, 4, 5 };
+            contents.CopyTo(value.Span);
 
-            Assert.Throws<ArgumentException>(() => new PDV(1, bytes, bytes.Length, false, true, true));
+            Assert.Throws<ArgumentException>(() => new PDV(1, value, 5, true, true));
         }
 
         #endregion
