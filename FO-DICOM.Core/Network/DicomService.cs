@@ -460,7 +460,7 @@ namespace FellowOakDicom.Network
                     }
 
                     using var rawPduStream = new MemoryStream(rawPduBuffer.Bytes, 0, rawPduLength);
-                    using var raw = new RawPDU(rawPduStream);
+                    using var raw = new RawPDU(rawPduStream, _memoryProvider);
 
                     switch (raw.Type)
                     {
@@ -473,7 +473,7 @@ namespace FellowOakDicom.Network
                                     Options = Options
                                 };
 
-                                var pdu = new AAssociateRQ(Association);
+                                var pdu = new AAssociateRQ(Association, _memoryProvider);
                                 if (DoHandlePDUBytes != null)
                                 {
                                     pdu.HandlePDUBytes += DoHandlePDUBytes;
@@ -504,7 +504,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x02:
                             {
-                                var pdu = new AAssociateAC(Association);
+                                var pdu = new AAssociateAC(Association, _memoryProvider);
                                 pdu.Read(raw);
                                 LogID = Association.CalledAE;
                                 Logger.Info(
@@ -520,7 +520,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x03:
                             {
-                                var pdu = new AAssociateRJ();
+                                var pdu = new AAssociateRJ(_memoryProvider);
                                 pdu.Read(raw);
                                 Logger.Info(
                                     "{logId} <- Association reject [result: {pduResult}; source: {pduSource}; reason: {pduReason}]",
@@ -555,7 +555,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x05:
                             {
-                                var pdu = new AReleaseRQ();
+                                var pdu = new AReleaseRQ(_memoryProvider);
                                 pdu.Read(raw);
                                 Logger.Info("{logId} <- Association release request", LogID);
                                 if (this is IDicomServiceProvider provider)
@@ -567,7 +567,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x06:
                             {
-                                var pdu = new AReleaseRP();
+                                var pdu = new AReleaseRP(_memoryProvider);
                                 pdu.Read(raw);
                                 Logger.Info("{logId} <- Association release response", LogID);
                                 if (this is IDicomClientConnection connection)
@@ -584,7 +584,7 @@ namespace FellowOakDicom.Network
                             }
                         case 0x07:
                             {
-                                var pdu = new AAbort();
+                                var pdu = new AAbort(_memoryProvider);
                                 pdu.Read(raw);
                                 Logger.Info(
                                     "{logId} <- Abort: {pduSource} - {pduReason}",
@@ -1453,7 +1453,7 @@ namespace FellowOakDicom.Network
             Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
 
             Association = association;
-            return SendPDUAsync(new AAssociateRQ(Association));
+            return SendPDUAsync(new AAssociateRQ(Association, _memoryProvider));
         }
 
         /// <summary>
@@ -1475,7 +1475,7 @@ namespace FellowOakDicom.Network
 
             Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
 
-            return SendPDUAsync(new AAssociateAC(Association));
+            return SendPDUAsync(new AAssociateAC(Association, _memoryProvider));
         }
 
         /// <summary>
@@ -1488,7 +1488,7 @@ namespace FellowOakDicom.Network
         {
             Logger.Info("{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]", LogID,
                 result, source, reason);
-            return SendPDUAsync(new AAssociateRJ(result, source, reason));
+            return SendPDUAsync(new AAssociateRJ(result, source, reason, _memoryProvider));
         }
 
         /// <summary>
@@ -1497,7 +1497,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationReleaseRequestAsync()
         {
             Logger.Info("{logId} -> Association release request", LogID);
-            return SendPDUAsync(new AReleaseRQ());
+            return SendPDUAsync(new AReleaseRQ(_memoryProvider));
         }
 
         /// <summary>
@@ -1506,7 +1506,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationReleaseResponseAsync()
         {
             Logger.Info("{logId} -> Association release response", LogID);
-            return SendPDUAsync(new AReleaseRP());
+            return SendPDUAsync(new AReleaseRP(_memoryProvider));
         }
 
         /// <summary>
@@ -1517,7 +1517,7 @@ namespace FellowOakDicom.Network
         protected Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
-            return SendPDUAsync(new AAbort(source, reason));
+            return SendPDUAsync(new AAbort(source, reason, _memoryProvider));
         }
 
         #endregion

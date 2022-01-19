@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.IO;
 using FellowOakDicom.Memory;
+using Microsoft.Toolkit.HighPerformance;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -33,6 +34,8 @@ namespace FellowOakDicom.Network
         private readonly BinaryWriter _bw;
 
         private readonly Stack<long> _m16;
+        
+        private readonly IMemoryProvider _memoryProvider;
 
         #endregion
         
@@ -48,10 +51,12 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU for writing
         /// </summary>
         /// <param name="type">Type of PDU</param>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for encoding text</param>
-        public RawPDU(byte type, Encoding encoding = null)
+        public RawPDU(byte type, IMemoryProvider memoryProvider, Encoding encoding = null)
         {
             Type = type;
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _encoding = encoding ?? DicomEncoding.Default;
             _stream = new MemoryStream();
             _leaveOpen = true;
@@ -64,13 +69,15 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU for writing to a stream
         /// </summary>
         /// <param name="type">Type of PDU</param>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for encoding text</param>
         /// <param name="stream">The stream to write to</param>
         /// <param name="leaveOpen">Whether the stream should be disposed or not when this RawPDU is disposed</param>
-        public RawPDU(byte type, Encoding encoding, Stream stream, bool leaveOpen)
+        public RawPDU(byte type, IMemoryProvider memoryProvider, Encoding encoding, Stream stream, bool leaveOpen)
         {
             Type = type;
             _encoding = encoding ?? DicomEncoding.Default;
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _stream = stream;
             _leaveOpen = leaveOpen;
             _bw = EndianBinaryWriter.Create(_stream, _encoding, Endian.Big, _leaveOpen);
@@ -81,10 +88,12 @@ namespace FellowOakDicom.Network
         /// Initializes new PDU reader from buffer
         /// </summary>
         /// <param name="buffer">Buffer</param>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for decoding text</param>
-        public RawPDU(byte[] buffer, Encoding encoding = null)
+        public RawPDU(byte[] buffer, IMemoryProvider memoryProvider, Encoding encoding = null)
         {
             _stream = new MemoryStream(buffer);
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _leaveOpen = true;
             _encoding = encoding ?? DicomEncoding.Default;
             _br = EndianBinaryReader.Create(_stream, _encoding, Endian.Big, _leaveOpen);
@@ -97,11 +106,13 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <remarks>The created object takes ownership of the stream</remarks>
         /// <param name="stream">Stream</param>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for decoding text</param>
-        public RawPDU(MemoryStream stream, Encoding encoding = null)
+        public RawPDU(MemoryStream stream, IMemoryProvider memoryProvider, Encoding encoding = null)
         {
             _encoding = encoding ?? DicomEncoding.Default;
             _stream = stream;
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _leaveOpen = true;
             _stream.Seek(0, SeekOrigin.Begin);
             _br = EndianBinaryReader.Create(_stream, Endian.Big, _leaveOpen);
@@ -129,40 +140,27 @@ namespace FellowOakDicom.Network
         /// <param name="s">Output stream</param>
         public void WritePDU(Stream s)
         {
-            byte[] preamble = ArrayPool<byte>.Shared.Rent(CommonFieldsLength);
-            try
-            {
-                GetCommonFields(preamble);
-                s.Write(preamble, 0, CommonFieldsLength);
-                _stream.Seek(0, SeekOrigin.Begin);
-                _stream.CopyTo(s);
-                s.Flush();
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(preamble);
-            }
+            using var preamble = _memoryProvider.Provide(CommonFieldsLength);
+            GetCommonFields(preamble);
+            s.Write(preamble.Span);
+            _stream.Seek(0, SeekOrigin.Begin);
+            _stream.CopyTo(s);
+            s.Flush();
         }
 
         /// <summary>
         /// Writes PDU to stream
         /// </summary>
         /// <param name="s">Output stream</param>
+        /// <param name="cancellationToken">The token that cancels the asynchronous write operation</param>
         public async Task WritePDUAsync(Stream s, CancellationToken cancellationToken)
         {
-            byte[] preamble = ArrayPool<byte>.Shared.Rent(CommonFieldsLength);
-            try
-            {
-                GetCommonFields(preamble);
-                await s.WriteAsync(preamble, 0, CommonFieldsLength, cancellationToken).ConfigureAwait(false);
-                _stream.Seek(0, SeekOrigin.Begin);
-                await _stream.CopyToAsync(s, 81920, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(preamble);
-            }
-        }
+            using var preamble = _memoryProvider.Provide(CommonFieldsLength);
+            GetCommonFields(preamble);
+            await s.WriteAsync(preamble.Memory, cancellationToken).ConfigureAwait(false);
+            _stream.Seek(0, SeekOrigin.Begin);
+            await _stream.CopyToAsync(s, 81920, cancellationToken).ConfigureAwait(false);
+       }
 
         /// <summary>
         /// Saves PDU to file
@@ -266,6 +264,7 @@ namespace FellowOakDicom.Network
         }
 
         private readonly char[] _trimChars = { ' ', '\0' };
+        
 
         /// <summary>
         /// Reads string from PDU
@@ -452,21 +451,23 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
         /// </summary>
-        internal void GetCommonFields(byte[] buffer) => GetCommonFields(buffer, (uint)_stream.Length);
+        internal void GetCommonFields(IMemory buffer) => GetCommonFields(buffer, (uint)_stream.Length);
 
         /// <summary>
         /// Gets the first fields common to all PDUs (Type, Reserved, PDU-length)
         /// </summary>
-        internal void GetCommonFields(byte[] buffer, uint length)
+        internal void GetCommonFields(IMemory buffer, uint length)
         {
+            var span = buffer.Span;
+            
             unchecked
             {
-                buffer[0] = Type;
-                buffer[1] = 0;
-                buffer[2] = (byte)((length & 0xff000000U) >> 24);
-                buffer[3] = (byte)((length & 0x00ff0000U) >> 16);
-                buffer[4] = (byte)((length & 0x0000ff00U) >> 8);
-                buffer[5] = (byte)(length & 0x000000ffU);
+                span[0] = Type;
+                span[1] = 0;
+                span[2] = (byte)((length & 0xff000000U) >> 24);
+                span[3] = (byte)((length & 0x00ff0000U) >> 16);
+                span[4] = (byte)((length & 0x0000ff00U) >> 8);
+                span[5] = (byte)(length & 0x000000ffU);
             }
         }
     }
@@ -500,14 +501,17 @@ namespace FellowOakDicom.Network
     public class AAssociateRQ : PDU
     {
         private readonly DicomAssociation _assoc;
+        private readonly IMemoryProvider _memoryProvider;
 
         /// <summary>
         /// Initializes new A-ASSOCIATE-RQ
         /// </summary>
         /// <param name="assoc">Association parameters</param>
-        public AAssociateRQ(DicomAssociation assoc)
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AAssociateRQ(DicomAssociation assoc, IMemoryProvider memoryProvider)
         {
             _assoc = assoc;
+            _memoryProvider = memoryProvider;
         }
 
         public override string ToString() => "A-ASSOCIATE-RQ";
@@ -532,25 +536,13 @@ namespace FellowOakDicom.Network
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-RQ Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(ushort.MaxValue);
-            try
-            {
-                using var ms = new MemoryStream(buffer, RawPDU.CommonFieldsLength, ushort.MaxValue - RawPDU.CommonFieldsLength);
-
-                await using var rawPdu = new RawPDU(0x01, DicomEncoding.Default, ms, true);
-
-                Write(rawPdu);
-                
-                var length = (ushort) ms.Position;
-
-                rawPdu.GetCommonFields(buffer, length);
-                
-                await stream.WriteAsync(buffer, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using IMemory buffer = _memoryProvider.Provide(ushort.MaxValue);
+            using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, ushort.MaxValue - RawPDU.CommonFieldsLength);
+            await using var rawPdu = new RawPDU(0x01, _memoryProvider, DicomEncoding.Default, ms, true);
+            Write(rawPdu);
+            var length = (ushort) ms.Position;
+            rawPdu.GetCommonFields(buffer, length);
+            await stream.WriteAsync(buffer.Memory.Slice(0, RawPDU.CommonFieldsLength + length), cancellationToken).ConfigureAwait(false);
         }
 
         private void Write(RawPDU pdu)
@@ -850,14 +842,17 @@ namespace FellowOakDicom.Network
     public class AAssociateAC : PDU
     {
         private readonly DicomAssociation _assoc;
+        private readonly IMemoryProvider _memoryProvider;
 
         /// <summary>
         /// Initializes new A-ASSOCIATE-AC
         /// </summary>
         /// <param name="assoc">Association parameters</param>
-        public AAssociateAC(DicomAssociation assoc)
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AAssociateAC(DicomAssociation assoc, IMemoryProvider memoryProvider)
         {
             _assoc = assoc;
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
         }
 
         public override string ToString() => "A-ASSOCIATE-AC";
@@ -873,25 +868,13 @@ namespace FellowOakDicom.Network
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-AC Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(ushort.MaxValue);
-            try
-            {
-                using var ms = new MemoryStream(buffer, RawPDU.CommonFieldsLength, ushort.MaxValue - RawPDU.CommonFieldsLength);
-
-                await using var rawPdu = new RawPDU(0x02, DicomEncoding.Default, ms, true);
-
-                Write(rawPdu);
-                
-                var length = (ushort) ms.Position;
-
-                rawPdu.GetCommonFields(buffer, length);
-
-                await stream.WriteAsync(buffer, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using IMemory buffer = _memoryProvider.Provide(ushort.MaxValue);
+            using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, ushort.MaxValue - RawPDU.CommonFieldsLength);
+            await using var rawPdu = new RawPDU(0x02, _memoryProvider, DicomEncoding.Default, ms, true);
+            Write(rawPdu);
+            var length = (ushort) ms.Position;
+            rawPdu.GetCommonFields(buffer, length);
+            await stream.WriteAsync(buffer.Memory.Slice(0, RawPDU.CommonFieldsLength + length), cancellationToken).ConfigureAwait(false);
         }
 
         private void Write(RawPDU pdu)
@@ -1199,12 +1182,15 @@ namespace FellowOakDicom.Network
     /// <summary>A-ASSOCIATE-RJ</summary>
     public class AAssociateRJ : PDU
     {
+        private readonly IMemoryProvider _memoryProvider;
 
         /// <summary>
         /// Initializes new A-ASSOCIATE-RJ
         /// </summary>
-        public AAssociateRJ()
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AAssociateRJ(IMemoryProvider memoryProvider)
         {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
         }
 
         /// <summary>
@@ -1213,11 +1199,13 @@ namespace FellowOakDicom.Network
         /// <param name="rt">Rejection result</param>
         /// <param name="so">Rejection source</param>
         /// <param name="rn">Rejection reason</param>
-        public AAssociateRJ(DicomRejectResult rt, DicomRejectSource so, DicomRejectReason rn)
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AAssociateRJ(DicomRejectResult rt, DicomRejectSource so, DicomRejectReason rn, IMemoryProvider memoryProvider)
         {
             Result = rt;
             Source = so;
             Reason = rn;
+            _memoryProvider = memoryProvider;
         }
 
         /// <summary>Rejection result</summary>
@@ -1244,23 +1232,12 @@ namespace FellowOakDicom.Network
         {
             // A-ASSOCIATE-RJ is always 4 bytes
             const int length = 4;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength + length);
-            try
-            {
-                using var ms = new MemoryStream(buffer, RawPDU.CommonFieldsLength, length);
-
-                await using var rawPdu = new RawPDU(0x03, DicomEncoding.Default, ms, true);
-
-                Write(rawPdu);
-                
-                rawPdu.GetCommonFields(buffer, length);
-
-                await stream.WriteAsync(buffer, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
+            using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
+            await using var rawPdu = new RawPDU(0x03, _memoryProvider, DicomEncoding.Default, ms, true);
+            Write(rawPdu);
+            rawPdu.GetCommonFields(buffer, length);
+            await stream.WriteAsync(buffer.Memory.Slice(0, RawPDU.CommonFieldsLength + length), cancellationToken).ConfigureAwait(false);
         }
 
         private void Write(RawPDU pdu)
@@ -1294,6 +1271,17 @@ namespace FellowOakDicom.Network
     /// <summary>A-RELEASE-RQ</summary>
     public class AReleaseRQ : PDU
     {
+        private readonly IMemoryProvider _memoryProvider;
+
+        /// <summary>
+        /// Initializes a new A-RELEASE-RQ
+        /// </summary>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AReleaseRQ(IMemoryProvider memoryProvider) 
+        {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
+        }
+
         public override string ToString()
         {
             return "A-RELEASE-RQ";
@@ -1309,23 +1297,12 @@ namespace FellowOakDicom.Network
         {
             // A-RELEASE-RQ is always one uint (reserved)
             const int length = sizeof(uint);
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength + length);
-            try
-            {
-                using var ms = new MemoryStream(buffer, RawPDU.CommonFieldsLength, length);
-
-                await using var rawPdu = new RawPDU(0x05, DicomEncoding.Default, ms, true);
-
-                Write(rawPdu);
-                
-                rawPdu.GetCommonFields(buffer, length);
-
-                await stream.WriteAsync(buffer, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
+            using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
+            await using var rawPdu = new RawPDU(0x05, _memoryProvider, DicomEncoding.Default, ms, true);
+            Write(rawPdu);
+            rawPdu.GetCommonFields(buffer, length);
+            await stream.WriteAsync(buffer.Memory.Slice(0, RawPDU.CommonFieldsLength + length), cancellationToken).ConfigureAwait(false);
         }
 
         private void Write(RawPDU pdu)
@@ -1350,6 +1327,17 @@ namespace FellowOakDicom.Network
     /// <summary>A-RELEASE-RP</summary>
     public class AReleaseRP : PDU
     {
+        private readonly IMemoryProvider _memoryProvider;
+        
+        /// <summary>
+        /// Initializes a new A-RELEASE-RP
+        /// </summary>
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AReleaseRP(IMemoryProvider memoryProvider) 
+        {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
+        }
+
         public override string ToString()
         {
             return "A-RELEASE-RP";
@@ -1365,23 +1353,12 @@ namespace FellowOakDicom.Network
         {
             // A-RELEASE-RP is always one uint (reserved)
             const int length = 4;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength + length);
-            try
-            {
-                using var ms = new MemoryStream(buffer, RawPDU.CommonFieldsLength, length);
-
-                await using var rawPdu = new RawPDU(0x06, DicomEncoding.Default, ms, true);
-
-                Write(rawPdu);
-                
-                rawPdu.GetCommonFields(buffer, length);
-
-                await stream.WriteAsync(buffer, 0,  RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
+            using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
+            await using var rawPdu = new RawPDU(0x06, _memoryProvider, DicomEncoding.Default, ms, true);
+            Write(rawPdu);
+            rawPdu.GetCommonFields(buffer, length);
+            await stream.WriteAsync(buffer.Memory.Slice(0,  RawPDU.CommonFieldsLength + length), cancellationToken).ConfigureAwait(false);
         }
 
         private void Write(RawPDU pdu)
@@ -1441,6 +1418,7 @@ namespace FellowOakDicom.Network
     /// <summary>A-ABORT</summary>
     public class AAbort : PDU
     {
+        private readonly IMemoryProvider _memoryProvider;
 
         /// <summary>Abort source</summary>
         public DicomAbortSource Source { get; private set; }
@@ -1451,8 +1429,10 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Initializes new A-ABORT
         /// </summary>
-        public AAbort()
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AAbort(IMemoryProvider memoryProvider)
         {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             Source = DicomAbortSource.ServiceUser;
             Reason = DicomAbortReason.NotSpecified;
         }
@@ -1462,10 +1442,12 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="source">Abort source</param>
         /// <param name="reason">Abort reason</param>
-        public AAbort(DicomAbortSource source, DicomAbortReason reason)
+        /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
+        public AAbort(DicomAbortSource source, DicomAbortReason reason, IMemoryProvider memoryProvider)
         {
             Source = source;
             Reason = reason;
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
         }
 
         public override string ToString() => "A-ABORT";
@@ -1482,23 +1464,12 @@ namespace FellowOakDicom.Network
         {
             // A-ABORT is always 4 bytes
             const int length = 4;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength + length);
-            try
-            {
-                using var ms = new MemoryStream(buffer, RawPDU.CommonFieldsLength, length);
-
-                await using var rawPdu = new RawPDU(0x07, DicomEncoding.Default, ms, true);
-
-                Write(rawPdu);
-                
-                rawPdu.GetCommonFields(buffer, length);
-
-                await stream.WriteAsync(buffer, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
+            using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
+            await using var rawPdu = new RawPDU(0x07, _memoryProvider, DicomEncoding.Default, ms, true);
+            Write(rawPdu);
+            rawPdu.GetCommonFields(buffer, length);
+            await stream.WriteAsync(buffer.Memory.Slice( 0, RawPDU.CommonFieldsLength + length), cancellationToken).ConfigureAwait(false);
         }
         
         private void Write(RawPDU pdu)
@@ -1584,22 +1555,13 @@ namespace FellowOakDicom.Network
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // Instead of using rented byte arrays, P-DATA-TF PDVs are written directly to the underlying stream
-            await using var pdu = new RawPDU(0x04, DicomEncoding.Default, stream, true);
+            await using var pdu = new RawPDU(0x04, _memoryProvider, DicomEncoding.Default, stream, true);
             
             // For P-DATA-TF, we manually compose the preamble because we cannot use the length of the memory stream (because there is no memory stream) 
-            byte[] preamble = ArrayPool<byte>.Shared.Rent(RawPDU.CommonFieldsLength);
+            using var preamble = _memoryProvider.Provide(RawPDU.CommonFieldsLength);
             var length = GetLengthOfPDVs();
-            try
-            {
-                pdu.GetCommonFields(preamble, length);
-
-                await stream.WriteAsync(preamble, 0, RawPDU.CommonFieldsLength, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(preamble);
-            }
-            
+            pdu.GetCommonFields(preamble, length);
+            await stream.WriteAsync(preamble.Memory.Slice( 0, RawPDU.CommonFieldsLength), cancellationToken).ConfigureAwait(false);
             Write(pdu);
         }
 
