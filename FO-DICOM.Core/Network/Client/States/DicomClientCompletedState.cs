@@ -122,7 +122,7 @@ namespace FellowOakDicom.Network.Client.States
                     }
 
                     ExceptionDispatchInfo.Capture(parameters.ExceptionToThrow).Throw();
-                    return null; // We will never get here
+                    throw parameters.ExceptionToThrow; // To please the compiler
                 }
 
                 default:

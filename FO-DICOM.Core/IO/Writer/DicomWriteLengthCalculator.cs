@@ -63,7 +63,7 @@ namespace FellowOakDicom.IO.Writer
                 // fragment item (offset table)
                 length += 4; // tag
                 length += 4; // length
-                length += (uint)(sq.OffsetTable.Count / 4);
+                length += (uint)(sq.OffsetTable.Count * 4);
 
                 foreach (IByteBuffer fragment in sq)
                 {

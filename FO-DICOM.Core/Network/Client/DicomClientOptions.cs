@@ -25,7 +25,14 @@ namespace FellowOakDicom.Network.Client
         /// When this limit is reached, the DICOM client will wait for pending requests to complete, and then open a new association
         /// to send the remaining requests, if any.
         /// </summary>
-        public int? MaximumNumberOfRequestsPerAssociation { get; set; } = null;
+        public int? MaximumNumberOfRequestsPerAssociation { get; set; }
+
+        /// <summary>
+        /// The maximum number of consecutive times an association request is allowed to time out before giving up
+        /// <br/>
+        /// Use <see cref="AssociationRequestTimeoutInMs"/> to configure the timeout 
+        /// </summary>
+        public int MaximumNumberOfConsecutiveTimedOutAssociationRequests { get; set; } = 3;
 
         public DicomClientOptions Clone() =>
             new DicomClientOptions
@@ -34,6 +41,7 @@ namespace FellowOakDicom.Network.Client
                 AssociationReleaseTimeoutInMs = AssociationReleaseTimeoutInMs,
                 AssociationLingerTimeoutInMs = AssociationLingerTimeoutInMs,
                 MaximumNumberOfRequestsPerAssociation = MaximumNumberOfRequestsPerAssociation,
+                MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests
             };
     }
 }

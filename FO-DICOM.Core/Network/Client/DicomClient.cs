@@ -127,6 +127,11 @@ namespace FellowOakDicom.Network.Client
         event EventHandler AssociationReleased;
 
         /// <summary>
+        /// Representation of the DICOM association request timed out event.
+        /// </summary>
+        event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
+
+        /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
         /// </summary>
         event EventHandler<StateChangedEventArgs> StateChanged;
@@ -175,6 +180,7 @@ namespace FellowOakDicom.Network.Client
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
+        internal int NumberOfConsecutiveTimedOutAssociationRequests { get; set; }
 
         public string Host { get; }
         public int Port { get; }
@@ -197,6 +203,7 @@ namespace FellowOakDicom.Network.Client
 
         public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
+        public event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
         public event EventHandler AssociationReleased;
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
@@ -283,6 +290,9 @@ namespace FellowOakDicom.Network.Client
 
         internal void NotifyAssociationRejected(AssociationRejectedEventArgs eventArgs)
             => AssociationRejected?.Invoke(this, eventArgs);
+
+        internal void NotifyAssociationRequestTimedOut(AssociationRequestTimedOutEventArgs eventArgs)
+            => AssociationRequestTimedOut?.Invoke(this, eventArgs);
 
         internal void NotifyAssociationReleased()
             => AssociationReleased?.Invoke(this, EventArgs.Empty);

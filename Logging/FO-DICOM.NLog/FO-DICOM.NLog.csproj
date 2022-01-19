@@ -7,11 +7,11 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.0.1</Version>
+    <Version>5.0.2</Version>
     <Authors>fo-dicom contributors</Authors>
     <Product>Fellow Oak DICOM</Product>
     <Description>A NetStandard logging library for fo-dicom to integrate NLog.</Description>
-    <Copyright>Copyright © fo-dicom contributors 2012-2021</Copyright>
+    <Copyright>Copyright © fo-dicom contributors 2012-2022</Copyright>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>

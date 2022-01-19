@@ -1,10 +1,16 @@
-#### 5.0.2 (TBD)
+#### 5.0.3 (TBD)
+
+
+#### 5.0.2 (2022-01-11)
+* Update to DICOM Standard 2021e
 * Fix issue where opening a DICOM file from a stream writes too much data when saving it again (#1264)
 * Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 * Add method to convert an array of DicomDatasets into a json string (#1271)
 * Improved bilinear interpolation
 * Fix issue where sending a deflated DICOM file via C-STORE was sent inflated, causing errors (#1283) 
 * Optimize performance and reduce memory allocations in network layer (#1267 and #1273)
+* Enhance Association Request Timeout (#1284)
+* Do not change target encoding for strings that are not encoded (#1301)
 
 #### 5.0.1 (2021-11-11)
 
