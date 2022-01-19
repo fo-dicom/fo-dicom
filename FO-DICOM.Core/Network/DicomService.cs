@@ -1697,8 +1697,8 @@ namespace FellowOakDicom.Network
                     if (!last)
                     {
                         // Max PDU Size - Current Size - Size of PDV header
-                        _bytesLength = (int)(_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
-                        _memory = ProvideEvenLengthMemory(_bytesLength);
+                        var memoryLength = (int)(_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
+                        _memory = ProvideEvenLengthMemory(memoryLength);
                     }
                 }
                 catch (Exception e)
@@ -1807,16 +1807,16 @@ namespace FellowOakDicom.Network
                     if (_memory == null)
                     {
                         // Max PDU Size - Current Size - Size of PDV header
-                        _bytesLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
-                        _memory = ProvideEvenLengthMemory(_bytesLength);
+                        var memoryLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
+                        _memory = ProvideEvenLengthMemory(memoryLength);
                     }
 
-                    while (count >= _bytesLength - _length)
+                    while (count >= _memory.Length - _length)
                     {
-                        var c = Math.Min(count, _bytesLength - _length);
+                        var c = Math.Min(count, _memory.Length - _length);
 
-                        Array.Copy(buffer, offset, _memory, _length, c);
-
+                        buffer.AsSpan(offset).CopyTo(_memory.Span.Slice(_length, c));
+                        
                         _length += c;
                         offset += c;
                         count -= c;
@@ -1826,10 +1826,10 @@ namespace FellowOakDicom.Network
 
                     if (count > 0)
                     {
-                        Array.Copy(buffer, offset, _memory, _length, count);
+                        buffer.AsSpan(offset).CopyTo(_memory.Span.Slice(_length, count));
                         _length += count;
 
-                        if (_bytesLength == _length)
+                        if (_memory.Length == _length)
                         {
                             await CreatePDVAsync(false).ConfigureAwait(false);
                         }
@@ -1857,7 +1857,7 @@ namespace FellowOakDicom.Network
                 var bytes = Interlocked.Exchange(ref _memory, null);
                 if (bytes != null)
                 {
-                    ArrayPool<byte>.Shared.Return(bytes);
+                    _memory.Dispose();
                 }
 
                 var pdu = Interlocked.Exchange(ref _pdu, null);
