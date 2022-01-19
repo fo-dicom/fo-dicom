@@ -3,7 +3,6 @@
 
 using FellowOakDicom.Network;
 using System;
-using System.Linq;
 using FellowOakDicom.Memory;
 using Xunit;
 
