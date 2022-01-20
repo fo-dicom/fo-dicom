@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +12,15 @@ namespace FellowOakDicom.IO.Buffer
 {
     public class SwapByteBuffer : IByteBuffer
     {
-        public SwapByteBuffer(IByteBuffer buffer, int unitSize)
+        private readonly IMemoryProvider _memoryProvider;
+
+        public SwapByteBuffer(IByteBuffer buffer, int unitSize): this(buffer, unitSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>())
         {
+        }
+
+        public SwapByteBuffer(IByteBuffer buffer, int unitSize, IMemoryProvider memoryProvider)
+        {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             Internal = buffer;
             UnitSize = unitSize;
         }
@@ -74,25 +82,18 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            using IMemory buffer = _memoryProvider.Provide(bufferSize);
             long remaining = Size;
             long offset = 0;
-            try
+            while (offset < remaining)
             {
-                while (offset < remaining)
-                {
-                    var count = (int)Math.Min(remaining - offset, bufferSize);
+                var count = (int)Math.Min(remaining - offset, bufferSize);
 
-                    GetByteRange(offset, count, buffer);
+                GetByteRange(offset, count, buffer.Bytes);
 
-                    stream.Write(buffer, 0, count);
+                stream.Write(buffer.Bytes, 0, count);
 
-                    offset += count;
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                offset += count;
             }
         }
 
@@ -109,25 +110,18 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            using IMemory buffer = _memoryProvider.Provide(bufferSize);
             long size = Size;
             long offset = 0;
-            try
+            while (offset < size)
             {
-                while (offset < size)
-                {
-                    var count = (int)Math.Min(size - offset, bufferSize);
+                var count = (int)Math.Min(size - offset, bufferSize);
 
-                    GetByteRange(offset, count, buffer);
+                GetByteRange(offset, count, buffer.Bytes);
 
-                    await stream.WriteAsync(buffer, 0, count, cancellationToken);
+                await stream.WriteAsync(buffer.Bytes, 0, count, cancellationToken);
 
-                    offset += count;
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                offset += count;
             }
         }
     }
