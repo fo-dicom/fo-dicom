@@ -273,17 +273,9 @@ namespace FellowOakDicom.Network
         /// <returns>Field value</returns>
         public string ReadString(string name, int numberOfBytes)
         {
-            var buffer = ArrayPool<byte>.Shared.Rent(numberOfBytes);
-            try
-            {
-                ReadBytes(name, buffer, 0, numberOfBytes);
-                
-                return _encoding.GetString(buffer, 0, numberOfBytes).Trim(_trimChars);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using var buffer = _memoryProvider.Provide(numberOfBytes);
+            ReadBytes(name, buffer.Bytes, 0, numberOfBytes);
+            return _encoding.GetString(buffer.Bytes, 0, numberOfBytes).Trim(_trimChars);
         }
 
         /// <summary>
@@ -375,16 +367,9 @@ namespace FellowOakDicom.Network
         public void Write(string name, string value)
         {
             int numberOfBytes = _encoding.GetMaxByteCount(value.Length);
-            var buffer = ArrayPool<byte>.Shared.Rent(numberOfBytes);
-            try
-            {
-                numberOfBytes = _encoding.GetBytes(value, 0, value.Length, buffer, 0);
-                _bw.Write(buffer, 0, numberOfBytes);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            using var buffer = _memoryProvider.Provide(numberOfBytes);
+            numberOfBytes = _encoding.GetBytes(value, 0, value.Length, buffer.Bytes, 0);
+            _bw.Write(buffer.Bytes, 0, numberOfBytes);
         }
 
         /// <summary>
