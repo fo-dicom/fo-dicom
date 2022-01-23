@@ -1,6 +1,7 @@
 #### 5.0.3 (TBD)
 * Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)
 * Fixed bug where anonymization threw an exception if a DicomTag of VR UI contained no value (#1308)
+* Catch exception in logmessage, to avoid making the application crash because of logging (#1288)
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
