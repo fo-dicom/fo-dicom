@@ -1,5 +1,5 @@
 #### 5.0.3 (TBD)
-
+* Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
