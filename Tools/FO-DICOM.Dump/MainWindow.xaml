@@ -9,19 +9,19 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="menuItemOpenClick"/>
-                <MenuItem Header="_Save" Name="menuItemSave"/>
+                <MenuItem Header="_Open" Click="HandleMenuItemOpenClick"/>
+                <MenuItem Header="_Save" Name="MenuItemSave"/>
                 <Separator/>
-                <MenuItem Header="E_xit" Click="menuItemExitClick"/>
+                <MenuItem Header="E_xit" Click="HandleMenuItemExitClick"/>
             </MenuItem>
 
             <MenuItem Header="_Tools">
-                <MenuItem Header="_View" Name="menuItemView"/>
-                <MenuItem Header="_Change Syntax" Name="menuItemSyntax">
+                <MenuItem Header="_View" Name="MenuItemView"/>
+                <MenuItem Header="_Change Syntax" Name="MenuItemSyntax">
                     <MenuItem Header="Implicit Little Endian"/>
                     <MenuItem Header="Explicit Little Endian"/>
                 </MenuItem>
-                <MenuItem Header="_Anonymize" Name="menuItemAnonymize"/>
+                <MenuItem Header="_Anonymize" Name="MenuItemAnonymize"/>
             </MenuItem>
 
         </Menu>
@@ -33,20 +33,20 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <ListView Grid.Row="0" Name="lvDicom">
+            <ListView Grid.Row="0" Name="LvDicom">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Tag" Width="230" x:Name="columnHeaderTag" DisplayMemberBinding="{Binding tag}" />
-                        <GridViewColumn Header="VR" Width="40" x:Name="columnHeaderVR" DisplayMemberBinding="{Binding vr}"/>
-                        <GridViewColumn Header="Length" Width="60" x:Name="columnHeaderLength" DisplayMemberBinding="{Binding length}"/>
-                        <GridViewColumn Header="Value" Width="440" x:Name="columnHeaderValue" DisplayMemberBinding="{Binding value}"/>
+                        <GridViewColumn Header="Tag" Width="230" x:Name="ColumnHeaderTag" DisplayMemberBinding="{Binding tag}" />
+                        <GridViewColumn Header="VR" Width="40" x:Name="ColumnHeaderVR" DisplayMemberBinding="{Binding vr}"/>
+                        <GridViewColumn Header="Length" Width="60" x:Name="ColumnHeaderLength" DisplayMemberBinding="{Binding length}"/>
+                        <GridViewColumn Header="Value" Width="440" x:Name="ColumnHeaderValue" DisplayMemberBinding="{Binding value}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
 
             <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
-            <Image Grid.Row="2" Name="imageView"  >
+            <Image Grid.Row="2" Name="ImageView"  >
             </Image>
 
         </Grid>

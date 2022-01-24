@@ -4,26 +4,15 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
-using FellowOakDicom.IO.Buffer;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FellowOakDicom.Dump
 {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -79,7 +68,7 @@ namespace FellowOakDicom.Dump
         {
             try
             {
-                lvDicom.BeginInit();
+                LvDicom.BeginInit();
 
                 Reset();
 
@@ -90,11 +79,11 @@ namespace FellowOakDicom.Dump
 
                 if (_file.Dataset.Contains(DicomTag.PixelData) || IsStructuredReport)
                 {
-                    menuItemView.IsEnabled = true;
-                    menuItemAnonymize.IsEnabled = true;
+                    MenuItemView.IsEnabled = true;
+                    MenuItemAnonymize.IsEnabled = true;
                 }
-                menuItemSyntax.IsEnabled = true;
-                menuItemSave.IsEnabled = true;
+                MenuItemSyntax.IsEnabled = true;
+                MenuItemSave.IsEnabled = true;
 
                 DisplayImage();
             }
@@ -109,21 +98,24 @@ namespace FellowOakDicom.Dump
             }
             finally
             {
-                lvDicom.EndInit();
+                LvDicom.EndInit();
             }
         }
 
+
         private void Reset()
         {
-            lvDicom.Items.Clear();
-            menuItemView.IsEnabled = false;
-            menuItemAnonymize.IsEnabled = false;
+            LvDicom.Items.Clear();
+            MenuItemView.IsEnabled = false;
+            MenuItemAnonymize.IsEnabled = false;
         }
+
 
         private void AddItem(string tag, string vr, string length, string value)
         {
-            lvDicom.Items.Add(new { tag, vr, length, value });
+            LvDicom.Items.Add(new { tag, vr, length, value });
         }
+
 
         private void Window_DragEnter(object sender, DragEventArgs e)
         {
@@ -135,153 +127,23 @@ namespace FellowOakDicom.Dump
             {
                 e.Effects = DragDropEffects.None;
             }
-
         }
+
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (files.Length > 0) OpenFile(files[0]);
+                if (files.Length > 0)
+                {
+                    OpenFile(files[0]);
+                }
             }
-
         }
 
 
-        private class DumpWalker : IDicomDatasetWalker
-        {
-            private int _level = 0;
-
-            private Action<string, string, string, string> _addAction;
-
-            public DumpWalker(Action<string, string, string, string> addAction)
-            {
-                _addAction = addAction;
-                Level = 0;
-            }
-
-            public int Level
-            {
-                get => _level;
-                set
-                {
-                    _level = value;
-                    Indent = string.Empty.PadLeft(4 * _level);
-                }
-            }
-
-            private string Indent { get; set; }
-
-            public void OnBeginWalk()
-            {
-            }
-
-            public bool OnElement(DicomElement element)
-            {
-                var tag = string.Format(
-                    "{0}{1}  {2}",
-                    Indent,
-                    element.Tag.ToString().ToUpperInvariant(),
-                    element.Tag.DictionaryEntry.Name);
-
-                string value = "<large value not displayed>";
-                if (element.Length <= 2048) value = string.Join("\\", element.Get<string[]>());
-
-                if (element.ValueRepresentation == DicomVR.UI && element.Count > 0)
-                {
-                    var uid = element.Get<DicomUID>(0);
-                    var name = uid.Name;
-                    if (name != "Unknown") value = $"{value} ({name})";
-                }
-
-                _addAction(tag, element.ValueRepresentation.Code, element.Length.ToString(), value);
-                return true;
-            }
-
-            public Task<bool> OnElementAsync(DicomElement element)
-            {
-                return Task.FromResult(OnElement(element));
-            }
-
-            public bool OnBeginSequence(DicomSequence sequence)
-            {
-                var tag = string.Format(
-                    "{0}{1}  {2}",
-                    Indent,
-                    sequence.Tag.ToString().ToUpperInvariant(),
-                    sequence.Tag.DictionaryEntry.Name);
-
-                _addAction(tag, "SQ", string.Empty, string.Empty);
-
-                Level++;
-                return true;
-            }
-
-            public bool OnBeginSequenceItem(DicomDataset dataset)
-            {
-                var tag = $"{Indent}Sequence Item:";
-
-                _addAction(tag, string.Empty, string.Empty, string.Empty);
-
-                Level++;
-                return true;
-            }
-
-            public bool OnEndSequenceItem()
-            {
-                Level--;
-                return true;
-            }
-
-            public bool OnEndSequence()
-            {
-                Level--;
-                return true;
-            }
-
-            public bool OnBeginFragment(DicomFragmentSequence fragment)
-            {
-                var tag = string.Format(
-                    "{0}{1}  {2}",
-                    Indent,
-                    fragment.Tag.ToString().ToUpperInvariant(),
-                    fragment.Tag.DictionaryEntry.Name);
-
-                _addAction(tag, fragment.ValueRepresentation.Code, string.Empty, string.Empty);
-
-                Level++;
-                return true;
-            }
-
-            public bool OnFragmentItem(IByteBuffer item)
-            {
-                if (item != null)
-                {
-                    var tag = $"{Indent}Fragment";
-
-                    _addAction(tag, string.Empty, item.Size.ToString(), string.Empty);
-                }
-                return true;
-            }
-
-            public Task<bool> OnFragmentItemAsync(IByteBuffer item)
-            {
-                return Task.FromResult(OnFragmentItem(item));
-            }
-
-            public bool OnEndFragment()
-            {
-                Level--;
-                return true;
-            }
-
-            public void OnEndWalk()
-            {
-            }
-        }
-
-        private void menuItemOpenClick(object sender, RoutedEventArgs e)
+        private void HandleMenuItemOpenClick(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog { Filter = "DICOM Files (*.dcm;*.dic)|*.dcm;*.dic|All Files (*.*)|*.*" };
             if (ofd.ShowDialog() == true)
@@ -290,16 +152,16 @@ namespace FellowOakDicom.Dump
             }
         }
 
-        private void menuItemExitClick(object sender, RoutedEventArgs e)
+
+        private void HandleMenuItemExitClick(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
 
-
         private void DisplayImage()
         {
-            imageView.Source = null;
+            ImageView.Source = null;
             if (_file.Dataset.Contains(DicomTag.PixelData))
             {
                 var dicomImage = new DicomImage(_file.Dataset);
@@ -310,8 +172,7 @@ namespace FellowOakDicom.Dump
                 sharpImage.Save(ms, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
                 ms.Position = 0;
 
-                imageView.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-
+                ImageView.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
             }
         }
 
