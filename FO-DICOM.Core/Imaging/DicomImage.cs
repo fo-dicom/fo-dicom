@@ -312,15 +312,14 @@ namespace FellowOakDicom.Imaging
                 create = _pipeline == null;
             }
 
-            var tuple = create ? CreatePipelineData(_dataset, _pixelData) : null;
+            (IPipeline pipeline, GrayscaleRenderOptions renderOptions) = create ? CreatePipelineData(_dataset, _pixelData) : (null, null);
 
             lock (_lock)
             {
                 if (_pipeline == null)
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    _pipeline = tuple.Pipeline;
-                    _renderOptions = tuple.RenderOptions;
+                    _pipeline = pipeline;
+                    _renderOptions = renderOptions;
                 }
             }
         }
@@ -413,7 +412,7 @@ namespace FellowOakDicom.Imaging
         /// Create image rendering pipeline according to the <see cref="DicomPixelData.PhotometricInterpretation">photometric interpretation</see>
         /// of the pixel data.
         /// </summary>
-        private static PipelineData CreatePipelineData(DicomDataset dataset, DicomPixelData pixelData)
+        private static (IPipeline pipeline, GrayscaleRenderOptions renderOptions) CreatePipelineData(DicomDataset dataset, DicomPixelData pixelData)
         {
             var pi = pixelData.PhotometricInterpretation;
             var samples = dataset.GetSingleValueOrDefault(DicomTag.SamplesPerPixel, (ushort)0);
@@ -451,19 +450,19 @@ namespace FellowOakDicom.Imaging
             GrayscaleRenderOptions renderOptions = null;
             if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2)
             {
-                //Monochrome1 or Monochrome2 for grayscale image
+                // Monochrome1 or Monochrome2 for grayscale image
                 renderOptions = GrayscaleRenderOptions.FromDataset(dataset);
                 pipeline = new GenericGrayscalePipeline(renderOptions);
             }
             else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
                 || pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422)
             {
-                //RGB for color image
+                // RGB for color image
                 pipeline = new RgbColorPipeline();
             }
             else if (pi == PhotometricInterpretation.PaletteColor)
             {
-                //PALETTE COLOR for Palette image
+                // PALETTE COLOR for Palette image
                 pipeline = new PaletteColorPipeline(pixelData);
             }
             else
@@ -471,7 +470,7 @@ namespace FellowOakDicom.Imaging
                 throw new DicomImagingException($"Unsupported pipeline photometric interpretation: {pi}");
             }
 
-            return new PipelineData { Pipeline = pipeline, RenderOptions = renderOptions };
+            return (pipeline, renderOptions);
         }
 
         private void RecreatePipeline(GrayscaleRenderOptions renderoptions)
@@ -484,19 +483,5 @@ namespace FellowOakDicom.Imaging
 
         #endregion
 
-        #region INNER TYPES
-
-        private class PipelineData
-        {
-            #region PROPERTIES
-
-            internal IPipeline Pipeline { get; set; }
-
-            internal GrayscaleRenderOptions RenderOptions { get; set; }
-
-            #endregion
-        }
-
-        #endregion
     }
 }
