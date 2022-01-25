@@ -11,6 +11,50 @@ namespace FellowOakDicom.Tests.IO.Buffer
     [Collection("General")]
     public class StreamByteBufferTest
     {
+        /// <summary>
+        /// A fake Stream with an internal buffer.
+        /// </summary>
+        private class FakeBufferedStream : MemoryStream
+        {
+            private int _virtualBufferPosition;
+
+            private int _virtualBufferLength;
+
+            public FakeBufferedStream(byte[] bytes, int bufferSize = 512 * 1024) : base(bytes, 0, bytes.Length, false, true)
+            {
+                _virtualBufferLength = bufferSize;
+                _virtualBufferPosition = 0;
+            }
+
+            /// <summary>
+            /// Returns the lesser of buffer length or requested bytes. A simplified version of the corresponding
+            /// method in Azure.Storage.LazyLoadingReadOnlyStream:
+            /// https://github.com/Azure/azure-sdk-for-net/blob/59dbd87c84d9ebf09f9075ad30ee440a0c0a5917/sdk/storage/Azure.Storage.Common/src/Shared/LazyLoadingReadOnlyStream.cs#L167
+            /// </summary>
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                if (Position == Length) return 0;
+
+                if (_virtualBufferPosition == _virtualBufferLength)
+                {
+                    _virtualBufferPosition = 0; // We've reached the end of the buffer, simulating retrieving new bytes
+                }
+
+                long remainingBytes = Math.Min(
+                    _virtualBufferLength - _virtualBufferPosition,
+                    Length - Position);
+                int targetCapacity = Math.Min(buffer.Length, count);
+
+                int bytesToWrite = (int)Math.Min(remainingBytes, targetCapacity);
+
+                Array.Copy(GetBuffer(), Position, buffer, offset, bytesToWrite);
+
+                Position += bytesToWrite;
+                _virtualBufferPosition += bytesToWrite;
+
+                return bytesToWrite;
+            }
+        }
         #region Unit tests
 
         [Theory]
@@ -22,8 +66,8 @@ namespace FellowOakDicom.Tests.IO.Buffer
             // Arrange
             var bytes = Enumerable.Range(0, 255).Select(i => (byte)i).ToArray();
             var expected = new ArraySegment<byte>(bytes, offset, count);
-            using var ms = new MemoryStream(bytes);
-            var buffer = new StreamByteBuffer(ms, offset, count);
+            using var fbs = new FakeBufferedStream(bytes, 32);
+            var buffer = new StreamByteBuffer(fbs, offset, count);
 
             // Act
             var actual = buffer.Data;
@@ -46,8 +90,8 @@ namespace FellowOakDicom.Tests.IO.Buffer
         {
             // Arrange
             var bytes = Enumerable.Range(0, 255).Select(i => (byte)i).ToArray();
-            using var ms = new MemoryStream(bytes);
-            var buffer = new StreamByteBuffer(ms, ctorOffset, ctorCount);
+            using var fbs = new FakeBufferedStream(bytes, 32);
+            var buffer = new StreamByteBuffer(fbs, ctorOffset, ctorCount);
             var expected = new ArraySegment<byte>(bytes, ctorOffset + byteRangeOffset, Math.Min(ctorCount, byteRangeCount));
 
             // Act
@@ -64,8 +108,8 @@ namespace FellowOakDicom.Tests.IO.Buffer
         {
             // Arrange
             var bytes = Enumerable.Range(0, 255).Select(i => (byte)i).ToArray();
-            using var ms = new MemoryStream(bytes);
-            var streamByteBuffer = new StreamByteBuffer(ms, 0, 255);
+            using var fbs = new FakeBufferedStream(bytes);
+            var streamByteBuffer = new StreamByteBuffer(fbs, 0, 255);
 
             // Act + Assert
             var buffer = new byte[10];
@@ -85,9 +129,9 @@ namespace FellowOakDicom.Tests.IO.Buffer
         {
             // Arrange
             var bytes = Enumerable.Range(0, total).Select(i => (byte)i).ToArray();
-            using var inputMs = new MemoryStream(bytes);
+            using var inputFbs = new FakeBufferedStream(bytes);
             using var outputMs = new MemoryStream(bytes.Length);
-            var buffer = new StreamByteBuffer(inputMs, offset, count);
+            var buffer = new StreamByteBuffer(inputFbs, offset, count);
             var expected = new ArraySegment<byte>(bytes, offset, count);
 
             // Act
@@ -112,9 +156,9 @@ namespace FellowOakDicom.Tests.IO.Buffer
         {
             // Arrange
             var bytes = Enumerable.Range(0, total).Select(i => (byte)i).ToArray();
-            using var inputMs = new MemoryStream(bytes);
+            using var inputFbs = new FakeBufferedStream(bytes);
             using var outputMs = new MemoryStream(bytes.Length);
-            var buffer = new StreamByteBuffer(inputMs, offset, count);
+            var buffer = new StreamByteBuffer(inputFbs, offset, count);
             var expected = new ArraySegment<byte>(bytes, offset, count);
 
             // Act
