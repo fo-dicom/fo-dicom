@@ -77,4 +77,4 @@
 * [Will Sugarman](https://github.com/wsugarman)
 * [Don Ch](https://github.com/lydonchandra)
 * [Björn Lundmark](https://github.com/bjorn-malmo)
- 
+* [Josiah Vinson](https://github.com/jovinson-ms)
