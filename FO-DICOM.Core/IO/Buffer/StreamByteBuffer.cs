@@ -36,8 +36,8 @@ namespace FellowOakDicom.IO.Buffer
                 }
 
                 byte[] data = new byte[Size];
-                Stream.Position = Position;
-                Stream.Read(data, 0, (int)Size);
+                ReadStream(data, 0, Size);
+                
                 return data;
             }
         }
@@ -58,8 +58,7 @@ namespace FellowOakDicom.IO.Buffer
                 throw new DicomIoException("cannot read from stream - maybe closed");
             }
             
-            Stream.Position = Position + offset;
-            Stream.Read(output, 0, count);
+            ReadStream(output, offset, count);
         }
 
         public void CopyToStream(Stream stream)
@@ -88,7 +87,7 @@ namespace FellowOakDicom.IO.Buffer
                 long totalNumberOfBytesRead = 0L;
                 int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 int numberOfBytesRead;
-                while(numberOfBytesToRead > 0 
+                while(numberOfBytesToRead > 0
                       && (numberOfBytesRead = Stream.Read(buffer, 0, numberOfBytesToRead)) > 0)
                 {
                     stream.Write(buffer, 0, numberOfBytesRead);
@@ -99,7 +98,7 @@ namespace FellowOakDicom.IO.Buffer
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
-            }   
+            }
         }
 
         public async Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken)
@@ -139,7 +138,22 @@ namespace FellowOakDicom.IO.Buffer
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
-            }      
+            }
+        }
+
+        private void ReadStream(byte[] buffer, long offset, long count)
+        {
+            Stream.Position = Position + offset;
+
+            long totalBytesRead = 0L;
+            int bytesRemaining = (int)Math.Min(Size, count);
+            int bytesReadNow;
+            while (bytesRemaining > 0
+                    && (bytesReadNow = Stream.Read(buffer, (int)totalBytesRead, bytesRemaining)) > 0)
+            {
+                totalBytesRead += bytesReadNow;
+                bytesRemaining = (int)Math.Min(Size - totalBytesRead, count - totalBytesRead);
+            }
         }
     }
 }
