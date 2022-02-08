@@ -14,8 +14,8 @@ namespace FO_DICOM.AspNetCoreTest.Services
     public class MyDicomService : DicomService, IDicomServiceProvider
     {
 
-        public MyDicomService(INetworkStream stream, Encoding fallbackEncoding, ILogger logger, ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-            : base(stream, fallbackEncoding, logger, logManager, networkManager, transcoderManager)
+        public MyDicomService(INetworkStream stream, Encoding fallbackEncoding, ILogger logger, DicomServiceDependencies dependencies)
+            : base(stream, fallbackEncoding, logger, dependencies)
         {
         }
 

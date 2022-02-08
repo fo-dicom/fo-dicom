@@ -25,8 +25,8 @@ namespace FellowOakDicom.Network
         /// <param name="networkManager">The network manager</param>
         /// <param name="transcoderManager">The transcoder manager</param>
         public DicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
-            ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager)
-            : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            DicomServiceDependencies dependencies)
+            : base(stream, fallbackEncoding, log, dependencies)
         {
         }
 

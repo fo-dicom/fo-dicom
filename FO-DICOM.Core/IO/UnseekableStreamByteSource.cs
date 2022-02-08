@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Buffers;
@@ -19,6 +20,8 @@ namespace FellowOakDicom.IO
     /// </summary>
     public class UnseekableStreamByteSource : IByteSource
     {
+        private readonly IMemoryProvider _memoryProvider;
+
         enum BufferState
         {
             /// <summary>
@@ -74,8 +77,9 @@ namespace FellowOakDicom.IO
         /// <param name="stream">Stream to read from.</param>
         /// <param name="readOption">Defines the handling of large tags.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not.
-        /// If 0 is passed, then the default of 64k is used.</param>
-        public UnseekableStreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
+        ///     If 0 is passed, then the default of 64k is used.</param>
+        /// <param name="memoryProvider"></param>
+        public UnseekableStreamByteSource(Stream stream, FileReadOption readOption, int largeObjectSize, IMemoryProvider memoryProvider)
         {
             if (readOption == FileReadOption.Default || readOption == FileReadOption.ReadLargeOnDemand)
             {
@@ -85,6 +89,7 @@ namespace FellowOakDicom.IO
             }
 
             _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _buffer = new MemoryStream();
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine, false);
             _bufferWriter = EndianBinaryWriter.Create(_buffer, Endian.LocalMachine, false);
@@ -271,21 +276,14 @@ namespace FellowOakDicom.IO
             else
             {
                 var bufferSize = Math.Min((int)count, _tempBufferSize);
-                var temp = ArrayPool<byte>.Shared.Rent(bufferSize);
-                try
+                using var temp = _memoryProvider.Provide(bufferSize);
+                while (count > _tempBufferSize)
                 {
-                    while (count > _tempBufferSize)
-                    {
-                        _byteSource.ReadBytes(temp, 0, _tempBufferSize);
-                        count -= _tempBufferSize;
-                    }
+                    _byteSource.ReadBytes(temp.Bytes, 0, _tempBufferSize);
+                    count -= _tempBufferSize;
+                }
 
-                    _byteSource.ReadBytes(temp, 0, (int)count);
-                }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(temp);
-                }
+                _byteSource.ReadBytes(temp.Bytes, 0, (int)count);
             }
         }
 

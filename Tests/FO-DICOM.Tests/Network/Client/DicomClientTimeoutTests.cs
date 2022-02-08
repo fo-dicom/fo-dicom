@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.EventArguments;
@@ -72,12 +73,18 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
+            var logManager = Setup.ServiceProvider.GetRequiredService<ILogManager>();
+            var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
+            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
+            var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
+            var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             return new DefaultDicomClientFactory(
-                Setup.ServiceProvider.GetRequiredService<ILogManager>(),
+                logManager,
                 networkManager,
-                Setup.ServiceProvider.GetRequiredService<ITranscoderManager>(),
-                Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>(),
-                Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>());
+                transcoderManager,
+                memoryProvider,
+                defaultClientOptions,
+                defaultServiceOptions);
         }
 
         [Fact]
@@ -981,9 +988,7 @@ namespace FellowOakDicom.Tests.Network.Client
         private class InMemoryDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
             public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-                ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-                logManager, networkManager, transcoderManager)
+                DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 
@@ -1029,9 +1034,7 @@ namespace FellowOakDicom.Tests.Network.Client
             public IEnumerable<DicomRequest> Requests => _requests;
 
             public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding,
-                Logger log, ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-                logManager, networkManager, transcoderManager)
+                Logger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
                 _requests = new ConcurrentBag<DicomRequest>();
             }
@@ -1080,9 +1083,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log, ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager) : base(stream, fallbackEncoding, log,
-                logManager, networkManager, transcoderManager)
+            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 
@@ -1143,8 +1144,8 @@ namespace FellowOakDicom.Tests.Network.Client
         private class SlowPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
             public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log,
-                ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager) : base(
-                stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+                DicomServiceDependencies dependencies) : base(
+                stream, fallbackEncoding, log, dependencies)
             {
             }
 
@@ -1198,9 +1199,8 @@ namespace FellowOakDicom.Tests.Network.Client
             private readonly Func<DicomAssociation, Task<bool>> _onAssociationRequest;
             private readonly Func<DicomCEchoRequest, Task> _onRequest;
 
-            public ConfigurableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, ILogManager logManager, INetworkManager networkManager,
-                ITranscoderManager transcoderManager, Func<DicomAssociation, Task<bool>> onAssociationRequest, Func<DicomCEchoRequest, Task> onRequest)
-                : base(stream, fallbackEncoding, log, logManager, networkManager, transcoderManager)
+            public ConfigurableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dicomServiceDependencies, Func<DicomAssociation, Task<bool>> onAssociationRequest, Func<DicomCEchoRequest, Task> onRequest)
+                : base(stream, fallbackEncoding, log, dicomServiceDependencies)
             {
                 _onAssociationRequest = onAssociationRequest ?? throw new ArgumentNullException(nameof(onAssociationRequest));
                 _onRequest = onRequest ?? throw new ArgumentNullException(nameof(onRequest));
@@ -1251,17 +1251,14 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public class ConfigurableDicomCEchoProviderServer : DicomServer<ConfigurableDicomCEchoProvider>
         {
-            private readonly INetworkManager _networkManager;
-            private readonly ILogManager _logManager;
-            private readonly ITranscoderManager _transcoderManager;
+            private readonly DicomServiceDependencies _dicomServiceDependencies;
             private Func<DicomAssociation, Task<bool>> _onAssociationRequest;
             private Func<DicomCEchoRequest, Task> _onRequest;
 
-            public ConfigurableDicomCEchoProviderServer(INetworkManager networkManager, ILogManager logManager, ITranscoderManager transcoderManager) : base(networkManager, logManager)
+            public ConfigurableDicomCEchoProviderServer(DicomServerDependencies dicomServerDependencies,
+                DicomServiceDependencies dicomServiceDependencies) : base(dicomServerDependencies)
             {
-                _networkManager = networkManager;
-                _logManager = logManager;
-                _transcoderManager = transcoderManager;
+                _dicomServiceDependencies = dicomServiceDependencies ?? throw new ArgumentNullException(nameof(dicomServiceDependencies));
                 _onAssociationRequest = _ => Task.FromResult(true);
                 _onRequest = _ => Task.FromResult(0);
             }
@@ -1278,8 +1275,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
             protected sealed override ConfigurableDicomCEchoProvider CreateScp(INetworkStream stream)
             {
-                var provider = new ConfigurableDicomCEchoProvider(stream, Encoding.UTF8, Logger, _logManager, _networkManager,
-                    _transcoderManager, _onAssociationRequest, _onRequest);
+                var provider = new ConfigurableDicomCEchoProvider(stream, Encoding.UTF8, Logger, _dicomServiceDependencies, _onAssociationRequest, _onRequest);
                 return provider;
             }
         }
@@ -1287,3 +1283,4 @@ namespace FellowOakDicom.Tests.Network.Client
         #endregion
     }
 }
+
