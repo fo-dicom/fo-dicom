@@ -3,6 +3,8 @@
 
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
@@ -100,16 +102,10 @@ namespace FellowOakDicom.IO
             }
             else
             {
-                byte[] temp = ArrayPool<byte>.Shared.Rent(size);
-                try
-                {
-                    buffer.GetByteRange(size * n, size, temp);
-                    System.Buffer.BlockCopy(temp, 0, values, 0, size);
-                }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(temp);
-                }
+                var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
+                using var temp = memoryProvider.Provide(size);
+                buffer.GetByteRange(size * n, size, temp.Bytes);
+                System.Buffer.BlockCopy(temp.Bytes, 0, values, 0, size);
             }
             return values[0];
         }
