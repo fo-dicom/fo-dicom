@@ -44,6 +44,42 @@ namespace FellowOakDicom
         }
 
         /// <summary>
+        /// Get a composite <see cref="DateTimeOffset"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
+        /// This will take any time zone information specified in the dataset into account
+        /// </summary>
+        /// <param name="dataset">Dataset from which data should be retrieved.</param>
+        /// <param name="date">Tag associated with date value.</param>
+        /// <param name="time">Tag associated with time value.</param>
+        /// <returns>Composite <see cref="DateTimeOffset"/>.</returns>
+        public static DateTimeOffset GetDateTimeOffset(this DicomDataset dataset, DicomTag date, DicomTag time)
+        {
+            var dd = dataset.GetDicomItem<DicomDate>(date);
+            var dt = dataset.GetDicomItem<DicomTime>(time);
+            var tz = dataset.GetDicomItem<DicomShortString>(DicomTag.TimezoneOffsetFromUTC);
+
+            var da = dd != null && dd.Count > 0 ? dd.Get<DateTime>(0) : DateTime.MinValue;
+            var tm = dt != null && dt.Count > 0 ? dt.Get<DateTime>(0) : DateTime.MinValue;
+
+            TimeSpan offset;
+            if (tz != null && tz.Count > 0)
+            {
+                // Explicit timezone information present in dataset
+                string s = tz.Get<string>();
+                int hh = int.Parse(s.Substring(0, 3));
+                int mm = int.Parse(s.Substring(3, 2));
+
+                offset = new TimeSpan(hh, mm, 00);
+            }
+            else
+            {
+                // Use local timezone when no explicit timezone info in dataset
+                offset = DateTimeOffset.Now.Offset;
+            }
+
+            return new DateTimeOffset(da.Year, da.Month, da.Day, tm.Hour, tm.Minute, tm.Second, offset);
+        }
+
+        /// <summary>
         /// Enumerates DICOM items matching mask.
         /// </summary>
         /// <param name="dataset">Dataset from which masked items should be retrieved.</param>

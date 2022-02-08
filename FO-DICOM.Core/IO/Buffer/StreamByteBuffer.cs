@@ -44,8 +44,8 @@ namespace FellowOakDicom.IO.Buffer
                 }
 
                 byte[] data = new byte[Size];
-                Stream.Position = Position;
-                Stream.Read(data, 0, (int)Size);
+                ReadStream(data, 0, Size);
+                
                 return data;
             }
         }
@@ -66,8 +66,7 @@ namespace FellowOakDicom.IO.Buffer
                 throw new DicomIoException("cannot read from stream - maybe closed");
             }
             
-            Stream.Position = Position + offset;
-            Stream.Read(output, 0, count);
+            ReadStream(output, offset, count);
         }
 
         public void CopyToStream(Stream stream)
@@ -135,6 +134,21 @@ namespace FellowOakDicom.IO.Buffer
                 await stream.WriteAsync(buffer.Bytes, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
                 totalNumberOfBytesRead += numberOfBytesRead;
                 numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
+            }
+        }
+
+        private void ReadStream(byte[] buffer, long offset, long count)
+        {
+            Stream.Position = Position + offset;
+
+            long totalBytesRead = 0L;
+            int bytesRemaining = (int)Math.Min(Size, count);
+            int bytesReadNow;
+            while (bytesRemaining > 0
+                    && (bytesReadNow = Stream.Read(buffer, (int)totalBytesRead, bytesRemaining)) > 0)
+            {
+                totalBytesRead += bytesReadNow;
+                bytesRemaining = (int)Math.Min(Size - totalBytesRead, count - totalBytesRead);
             }
         }
     }
