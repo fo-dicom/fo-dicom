@@ -16,11 +16,6 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
-using FellowOakDicom.Memory;
-using FellowOakDicom.Network.Client.EventArguments;
-using FellowOakDicom.Network.Client.States;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -171,7 +166,6 @@ namespace FellowOakDicom.Network.Client
         
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
-        internal int NumberOfConsecutiveTimedOutAssociationRequests { get; set; }
 
         public string Host { get; }
         public int Port { get; }
@@ -200,7 +194,6 @@ namespace FellowOakDicom.Network.Client
         public event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
         public event EventHandler AssociationReleased;
         
-
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
@@ -296,9 +289,12 @@ namespace FellowOakDicom.Network.Client
                 var advancedDicomClient = _advancedDicomClientFactory.Create(new AdvancedDicomClientCreationRequest {Logger = Logger});
                 var exception = (Exception)null;
                 var maximumNumberOfRequestsPerAssociation = ClientOptions.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
+                var maximumNumberOfConsecutiveTimedOutAssociationRequests = ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests;
+                var numberOfConsecutiveTimedOutAssociationRequests = 0;
+                var requestsToRetry = new List<DicomRequest>();
 
                 while (!cancellationToken.IsCancellationRequested
-                       && !QueuedRequests.IsEmpty
+                       && !(QueuedRequests.IsEmpty && requestsToRetry.Count == 0)
                        && exception == null)
                 {
                     IAdvancedDicomClientConnection connection = null;
@@ -333,7 +329,9 @@ namespace FellowOakDicom.Network.Client
                         SetState(DicomClientRequestAssociationState.Instance);
 
                         var requests = new List<DicomRequest>();
-                        var numberOfRequests = 0;
+                        requests.AddRange(requestsToRetry);
+                        requestsToRetry.Clear();
+                        var numberOfRequests = requests.Count;
 
                         while (numberOfRequests < maximumNumberOfRequestsPerAssociation
                                && QueuedRequests.TryDequeue(out var request))
@@ -376,7 +374,48 @@ namespace FellowOakDicom.Network.Client
                                 extendedNegotiation.RelatedGeneralSopClasses.ToArray());
                         }
 
-                        association = await advancedDicomClient.OpenAssociationAsync(connection, associationRequest, cancellationToken).ConfigureAwait(false);
+                        using (var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)))
+                        using (var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken))
+                        {
+                            try
+                            {
+                                association = await advancedDicomClient.OpenAssociationAsync(connection, associationRequest, combinedCts.Token).ConfigureAwait(false);
+                                numberOfConsecutiveTimedOutAssociationRequests = 0;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                // If the original cancellation token triggered, stop sending ASAP
+                                if (cancellationToken.IsCancellationRequested)
+                                {
+                                    throw;
+                                }
+
+                                // If the original cancellation token did not trigger, it must have been a timeout that lead us here
+                                // we keep track of how many consecutive times this happens
+                                numberOfConsecutiveTimedOutAssociationRequests++;
+                                
+                                AssociationRequestTimedOut.Invoke(this, new AssociationRequestTimedOutEventArgs(
+                                    ClientOptions.AssociationRequestTimeoutInMs,
+                                    numberOfConsecutiveTimedOutAssociationRequests,
+                                    maximumNumberOfConsecutiveTimedOutAssociationRequests
+                                ));
+
+                                if (numberOfConsecutiveTimedOutAssociationRequests >= maximumNumberOfConsecutiveTimedOutAssociationRequests)
+                                {
+                                    // stop sending when we reach the limit
+                                    throw new DicomAssociationRequestTimedOutException(
+                                        ClientOptions.AssociationRequestTimeoutInMs,
+                                numberOfConsecutiveTimedOutAssociationRequests
+                                    );
+                                }
+
+                                // Save the requests to retry, otherwise they are lost because we already extracted them from QueuedRequests
+                                requestsToRetry.AddRange(requests);
+
+                                // try again
+                                continue;
+                            }
+                        }
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
 
@@ -446,6 +485,8 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (DicomAssociationRejectedException e)
                     {
+                        numberOfConsecutiveTimedOutAssociationRequests = 0;
+                        
                         AssociationRejected?.Invoke(this, new AssociationRejectedEventArgs(e.RejectResult, e.RejectSource, e.RejectReason));
 
                         exception = e;

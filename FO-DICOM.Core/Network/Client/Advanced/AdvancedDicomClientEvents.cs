@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Runtime.ExceptionServices;
 
 namespace FellowOakDicom.Network.Client.Advanced
 {
