@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 fo-dicom contributors.
+// Copyright (c) 2012-2022 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -293,6 +293,12 @@ namespace FellowOakDicom
             string rep;
             DicomUID uid;
             var old = ((DicomElement)item).Get<string>();
+
+            if (string.IsNullOrEmpty(old))
+            {
+                // no need to replace empty values
+                return;
+            }
 
             if (ReplacedUIDs.ContainsKey(old))
             {

@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,14 +15,18 @@ namespace FellowOakDicom.IO.Buffer
     /// </summary>
     public class EndianByteBuffer : IByteBuffer
     {
+        private readonly IMemoryProvider _memoryProvider;
+
         /// <summary>
         /// Initializes an instance of the <see cref="EndianByteBuffer"/> class.
         /// </summary>
         /// <param name="buffer">Original byte buffer.</param>
         /// <param name="endian">Endianness of the <paramref name="buffer"/>.</param>
         /// <param name="unitSize">Unit size of the components in the byte buffer.</param>
-        private EndianByteBuffer(IByteBuffer buffer, Endian endian, int unitSize)
+        /// <param name="memoryProvider"></param>
+        private EndianByteBuffer(IByteBuffer buffer, Endian endian, int unitSize, IMemoryProvider memoryProvider)
         {
+            _memoryProvider = memoryProvider;
             Internal = buffer;
             Endian = endian;
             UnitSize = unitSize;
@@ -106,25 +111,18 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            using IMemory buffer = _memoryProvider.Provide(bufferSize);
             long remaining = Size;
             long offset = 0;
-            try
+            while (offset < remaining)
             {
-                while (offset < remaining)
-                {
-                    var count = (int)Math.Min(remaining - offset, bufferSize);
+                var count = (int)Math.Min(remaining - offset, bufferSize);
 
-                    GetByteRange(offset, count, buffer);
+                GetByteRange(offset, count, buffer.Bytes);
 
-                    stream.Write(buffer, 0, count);
+                stream.Write(buffer.Bytes, 0, count);
 
-                    offset += count;
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                offset += count;
             }
         }
 
@@ -141,25 +139,18 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            using IMemory buffer = _memoryProvider.Provide(bufferSize);
             long size = Size;
             long offset = 0;
-            try
+            while (offset < size)
             {
-                while (offset < size)
-                {
-                    var count = (int)Math.Min(size - offset, bufferSize);
+                var count = (int)Math.Min(size - offset, bufferSize);
 
-                    GetByteRange(offset, count, buffer);
+                GetByteRange(offset, count, buffer.Bytes);
 
-                    await stream.WriteAsync(buffer, 0, count, cancellationToken);
+                await stream.WriteAsync(buffer.Bytes, 0, count, cancellationToken);
 
-                    offset += count;
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                offset += count;
             }
         }
 
@@ -175,6 +166,6 @@ namespace FellowOakDicom.IO.Buffer
         public static IByteBuffer Create(IByteBuffer buffer, Endian endian, int unitSize)
             => endian == Endian.LocalMachine || unitSize == 1
                 ? buffer
-                : new EndianByteBuffer(buffer, endian, unitSize);
+                : new EndianByteBuffer(buffer, endian, unitSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
     }
 }

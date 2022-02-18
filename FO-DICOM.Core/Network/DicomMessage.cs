@@ -174,10 +174,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <returns>Formatted output string of the DICOM message.</returns>
         public override string ToString()
-        {
-            return
-                $"{ToString(Type)} [{(IsRequest(Type) ? Command.GetSingleValue<ushort>(DicomTag.MessageID) : Command.GetSingleValue<ushort>(DicomTag.MessageIDBeingRespondedTo))}]";
-        }
+            => $"{ToString(Type)} [{(IsRequest(Type) ? Command.GetSingleValue<ushort>(DicomTag.MessageID) : Command.GetSingleValue<ushort>(DicomTag.MessageIDBeingRespondedTo))}]";
+
 
         /// <summary>
         /// Formatted output of the DICOM message.
@@ -186,30 +184,37 @@ namespace FellowOakDicom.Network
         /// <returns>Formatted output string of the DICOM message.</returns>
         public string ToString(bool printDatasets)
         {
-            var output = new StringBuilder(ToString());
-
-            if (!printDatasets)
+            try
             {
+                var output = new StringBuilder(ToString());
+
+                if (!printDatasets)
+                {
+                    return output.ToString();
+                }
+
+                output.AppendLine();
+                output.AppendLine("--------------------------------------------------------------------------------");
+                output.AppendLine(" DIMSE Command:");
+                output.AppendLine("--------------------------------------------------------------------------------");
+                output.AppendLine(Command.WriteToString());
+
+                if (HasDataset)
+                {
+                    output.AppendLine("--------------------------------------------------------------------------------");
+                    output.AppendLine(" DIMSE Dataset:");
+                    output.AppendLine("--------------------------------------------------------------------------------");
+                    output.AppendLine(Dataset.WriteToString());
+                }
+
+                output.AppendLine("--------------------------------------------------------------------------------");
+
                 return output.ToString();
             }
-
-            output.AppendLine();
-            output.AppendLine("--------------------------------------------------------------------------------");
-            output.AppendLine(" DIMSE Command:");
-            output.AppendLine("--------------------------------------------------------------------------------");
-            output.AppendLine(Command.WriteToString());
-
-            if (HasDataset)
+            catch (Exception e)
             {
-                output.AppendLine("--------------------------------------------------------------------------------");
-                output.AppendLine(" DIMSE Dataset:");
-                output.AppendLine("--------------------------------------------------------------------------------");
-                output.AppendLine(Dataset.WriteToString());
+                return e.Message;
             }
-
-            output.AppendLine("--------------------------------------------------------------------------------");
-
-            return output.ToString();
         }
 
         /// <summary>
@@ -218,44 +223,41 @@ namespace FellowOakDicom.Network
         /// <param name="type">DICOM command field type.</param>
         /// <returns>Formatted output string of the DICOM message.</returns>
         public static string ToString(DicomCommandField type)
+            => type switch
         {
-            return type switch
-            {
-                DicomCommandField.CCancelRequest => "C-Cancel request",
-                DicomCommandField.CEchoRequest => "C-Echo request",
-                DicomCommandField.CEchoResponse => "C-Echo response",
-                DicomCommandField.CFindRequest => "C-Find request",
-                DicomCommandField.CFindResponse => "C-Find response",
-                DicomCommandField.CGetRequest => "C-Get request",
-                DicomCommandField.CGetResponse => "C-Get response",
-                DicomCommandField.CMoveRequest => "C-Move request",
-                DicomCommandField.CMoveResponse => "C-Move response",
-                DicomCommandField.CStoreRequest => "C-Store request",
-                DicomCommandField.CStoreResponse => "C-Store response",
-                DicomCommandField.NActionRequest => "N-Action request",
-                DicomCommandField.NActionResponse => "N-Action response",
-                DicomCommandField.NCreateRequest => "N-Create request",
-                DicomCommandField.NCreateResponse => "N-Create response",
-                DicomCommandField.NDeleteRequest => "N-Delete request",
-                DicomCommandField.NDeleteResponse => "N-Delete response",
-                DicomCommandField.NEventReportRequest => "N-EventReport request",
-                DicomCommandField.NEventReportResponse => "N-EventReport response",
-                DicomCommandField.NGetRequest => "N-Get request",
-                DicomCommandField.NGetResponse => "N-Get response",
-                DicomCommandField.NSetRequest => "N-Set request",
-                DicomCommandField.NSetResponse => "N-Set response",
-                _ => "DIMSE",
-            };
-        }
+            DicomCommandField.CCancelRequest => "C-Cancel request",
+            DicomCommandField.CEchoRequest => "C-Echo request",
+            DicomCommandField.CEchoResponse => "C-Echo response",
+            DicomCommandField.CFindRequest => "C-Find request",
+            DicomCommandField.CFindResponse => "C-Find response",
+            DicomCommandField.CGetRequest => "C-Get request",
+            DicomCommandField.CGetResponse => "C-Get response",
+            DicomCommandField.CMoveRequest => "C-Move request",
+            DicomCommandField.CMoveResponse => "C-Move response",
+            DicomCommandField.CStoreRequest => "C-Store request",
+            DicomCommandField.CStoreResponse => "C-Store response",
+            DicomCommandField.NActionRequest => "N-Action request",
+            DicomCommandField.NActionResponse => "N-Action response",
+            DicomCommandField.NCreateRequest => "N-Create request",
+            DicomCommandField.NCreateResponse => "N-Create response",
+            DicomCommandField.NDeleteRequest => "N-Delete request",
+            DicomCommandField.NDeleteResponse => "N-Delete response",
+            DicomCommandField.NEventReportRequest => "N-EventReport request",
+            DicomCommandField.NEventReportResponse => "N-EventReport response",
+            DicomCommandField.NGetRequest => "N-Get request",
+            DicomCommandField.NGetResponse => "N-Get response",
+            DicomCommandField.NSetRequest => "N-Set request",
+            DicomCommandField.NSetResponse => "N-Set response",
+            _ => "DIMSE",
+        };
+
 
         /// <summary>
         /// Evaluates whether a DICOM message is a request or a response.
         /// </summary>
         /// <param name="type">DICOM command field type.</param>
         /// <returns>True if message is a request, false otherwise.</returns>
-        public static bool IsRequest(DicomCommandField type)
-        {
-            return ((int) type & 0x8000) == 0;
-        }
+        public static bool IsRequest(DicomCommandField type) => ((int)type & 0x8000) == 0;
+
     }
 }

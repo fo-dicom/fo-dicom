@@ -5,11 +5,13 @@ using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Linq;
 
@@ -82,54 +84,58 @@ namespace FellowOakDicom
                 .AddDicomServer();
 
         private static IServiceCollection AddInternals(this IServiceCollection services)
-            => services
-                .AddSingleton<IFileReferenceFactory, FileReferenceFactory>();
-        
-        public static IServiceCollection AddDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
-            => services   
-                .AddSingleton<IDicomClientFactory, DefaultDicomClientFactory>()
-                .Configure(options ?? (o => {}));
-        
+        {
+            services.TryAddSingleton<IFileReferenceFactory, FileReferenceFactory>();
+            services.TryAddSingleton<IMemoryProvider, ArrayPoolMemoryProvider>();
+            return services;
+        }
+
+        public static IServiceCollection AddDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null)
+        {
+            services.TryAddSingleton<DicomServiceDependencies>();
+            services.TryAddSingleton<IDicomClientFactory, DefaultDicomClientFactory>();
+            services.Configure(options ?? (o => { }));
+            return services;
+        }
+
         public static IServiceCollection AddAdvancedDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
             => services   
                 .AddSingleton<IAdvancedDicomClientFactory, AdvancedDicomClientFactory>()
                 .AddSingleton<IAdvancedDicomClientConnectionFactory, AdvancedDicomClientConnectionFactory>()
                 .Configure(options ?? (o => {}));
         
-        public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServiceOptions> options = null) 
-            => services   
-                .AddSingleton<IDicomServerRegistry, DefaultDicomServerRegistry>()
-                .AddSingleton<IDicomServerFactory, DefaultDicomServerFactory>()
-                .Configure(options ?? (o => {}));
-
-        public static IServiceCollection AddTranscoderManager<TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
-            => services.Replace<ITranscoderManager, TTranscoderManager>(ServiceLifetime.Singleton);
-
-        public static IServiceCollection AddImageManager<TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
-            => services.Replace<IImageManager, TImageManager>(ServiceLifetime.Singleton);
-
-        public static IServiceCollection AddLogManager<TLogManager>(this IServiceCollection services) where TLogManager : class, ILogManager
-            => services.Replace<ILogManager, TLogManager>(ServiceLifetime.Singleton);
-
-        public static IServiceCollection AddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
-            => services.Replace<INetworkManager, TNetworkManager>(ServiceLifetime.Singleton);
-
-        // Helper methods
-
-        public static IServiceCollection Replace<TService, TImplementation>(
-            this IServiceCollection services,
-            ServiceLifetime lifetime) where TService : class where TImplementation : class, TService
+        public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServiceOptions> options = null)
         {
-            var descriptorToRemove = services.FirstOrDefault(d => d.ServiceType == typeof(TService));
-
-            services.Remove(descriptorToRemove);
-
-            var descriptorToAdd = new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime);
-
-            services.Add(descriptorToAdd);
-
+            services.TryAddSingleton<DicomServiceDependencies>();
+            services.TryAddSingleton<DicomServerDependencies>();
+            services.TryAddSingleton<IDicomServerRegistry, DefaultDicomServerRegistry>();
+            services.TryAddSingleton<IDicomServerFactory, DefaultDicomServerFactory>();
+            services.Configure(options ?? (o => { }));
             return services;
         }
 
+        public static IServiceCollection AddTranscoderManager<TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
+        {
+            services.Replace(ServiceDescriptor.Singleton<ITranscoderManager, TTranscoderManager>());
+            return services;
+        }
+
+        public static IServiceCollection AddImageManager<TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
+        {
+            services.Replace(ServiceDescriptor.Singleton<IImageManager, TImageManager>());
+            return services;
+        }
+
+        public static IServiceCollection AddLogManager<TLogManager>(this IServiceCollection services) where TLogManager : class, ILogManager
+        {
+            services.Replace(ServiceDescriptor.Singleton<ILogManager, TLogManager>());
+            return services;
+        }
+
+        public static IServiceCollection AddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
+        {
+            services.Replace(ServiceDescriptor.Singleton<INetworkManager, TNetworkManager>());
+            return services;
+        }
     }
 }

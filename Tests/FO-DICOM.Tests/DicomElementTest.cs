@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Xunit;
 
@@ -265,6 +266,16 @@ namespace FellowOakDicom.Tests
             var element = new DicomCodeString(DicomTag.AITDeviceType, "One ");
             var actual = element.Get<Mock>();
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DicomCodeString_TargetEncoding_IsIgnored()
+        {
+            var element = new DicomCodeString(DicomTag.PatientSex)
+            {
+                TargetEncoding = Encoding.Unicode
+            };
+            Assert.Equal(Encoding.ASCII, element.TargetEncoding);
         }
 
         [Fact]

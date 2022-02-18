@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client.Advanced;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -40,18 +41,21 @@ namespace FellowOakDicom.Network.Client
     public class DefaultDicomClientFactory : IDicomClientFactory
     {
         private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
+        private readonly IMemoryProvider _memoryProvider;
         private readonly IOptions<DicomClientOptions> _defaultClientOptions;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
         private readonly ILogManager _logManager;
 
         public DefaultDicomClientFactory(
             IAdvancedDicomClientFactory advancedDicomClientFactory,
+            IMemoryProvider memoryProvider,
             IOptions<DicomClientOptions> defaultClientOptions,
             IOptions<DicomServiceOptions> defaultServiceOptions,
             ILogManager logManager
         )
         {
             _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _defaultClientOptions = defaultClientOptions ?? throw new ArgumentNullException(nameof(defaultClientOptions));
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));

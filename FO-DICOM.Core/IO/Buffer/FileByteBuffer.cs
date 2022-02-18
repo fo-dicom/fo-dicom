@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +12,15 @@ namespace FellowOakDicom.IO.Buffer
 {
     public sealed class FileByteBuffer : IByteBuffer
     {
-        public FileByteBuffer(IFileReference file, long position, long length)
+        private readonly IMemoryProvider _memoryProvider;
+
+        public FileByteBuffer(IFileReference file, long position, long length): this(file, position, length, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>())
         {
+        }
+
+        public FileByteBuffer(IFileReference file, long position, long length, IMemoryProvider memoryProvider)
+        {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             File = file;
             Position = position;
             Size = length;
@@ -55,27 +63,20 @@ namespace FellowOakDicom.IO.Buffer
             {
                 throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
+            
+            using IMemory buffer = _memoryProvider.Provide(1024 * 1024);
+            using var fileStream = File.OpenRead();
+            fileStream.Position = Position;
 
-            var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
-            try
+            long totalNumberOfBytesRead = 0L;
+            int numberOfBytesRead;
+            int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
+            while (numberOfBytesToRead > 0
+                   && (numberOfBytesRead = fileStream.Read(buffer.Bytes, 0, numberOfBytesToRead)) > 0)
             {
-                using var fileStream = File.OpenRead();
-                fileStream.Position = Position;
-
-                long totalNumberOfBytesRead = 0L;
-                int numberOfBytesRead;
-                int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
-                while (numberOfBytesToRead > 0
-                       && (numberOfBytesRead = fileStream.Read(buffer, 0, numberOfBytesToRead)) > 0)
-                {
-                    stream.Write(buffer, 0, numberOfBytesRead);
-                    totalNumberOfBytesRead += numberOfBytesRead;
-                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                stream.Write(buffer.Bytes, 0, numberOfBytesRead);
+                totalNumberOfBytesRead += numberOfBytesRead;
+                numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
             }
         }
 
@@ -91,27 +92,20 @@ namespace FellowOakDicom.IO.Buffer
                 throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
-            var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
-            try
-            {
-                using var fileStream = File.OpenRead();
-                fileStream.Position = Position;
+            using IMemory buffer = _memoryProvider.Provide(1024 * 1024);
+            using var fileStream = File.OpenRead();
+            fileStream.Position = Position;
 
-                long totalNumberOfBytesRead = 0L;
-                int numberOfBytesRead;
-                int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
-                while (numberOfBytesToRead > 0
-                       && (numberOfBytesRead = await fileStream.ReadAsync(buffer, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
-                {
-                    await stream.WriteAsync(buffer, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
-
-                    totalNumberOfBytesRead += numberOfBytesRead;
-                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
-                }
-            }
-            finally
+            long totalNumberOfBytesRead = 0L;
+            int numberOfBytesRead;
+            int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
+            while (numberOfBytesToRead > 0
+                   && (numberOfBytesRead = await fileStream.ReadAsync(buffer.Bytes, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
             {
-                ArrayPool<byte>.Shared.Return(buffer);
+                await stream.WriteAsync(buffer.Bytes, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
+
+                totalNumberOfBytesRead += numberOfBytesRead;
+                numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
             }
         }
     }

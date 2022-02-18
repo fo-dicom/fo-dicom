@@ -3,6 +3,7 @@
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Buffers;
@@ -261,7 +262,7 @@ namespace FellowOakDicom
 
             var decodedString = new StringBuilder();
             var delimiters = isPN ? _pnDelimiters : _textDelimiters;
-
+            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
             for (int i = 0; i < escapeIndexes.Count; i++)
             {
                 var start = i == 0 ? 0 : escapeIndexes[i - 1];
@@ -269,33 +270,19 @@ namespace FellowOakDicom
                 if (end > start)
                 {
                     var length = end - start;
-                    var fragment = ArrayPool<byte>.Shared.Rent(length);
-                    try
-                    {
-                        buffer.GetByteRange(start, length, fragment);
-                        var decodedFragment = DecodeFragment(fragment, length, encodings, delimiters);
-                        decodedString.Append(decodedFragment);
-                    }
-                    finally
-                    {
-                        ArrayPool<byte>.Shared.Return(fragment);
-                    }
+                    using var fragment = memoryProvider.Provide(length);
+                    buffer.GetByteRange(start, length, fragment.Bytes);
+                    var decodedFragment = DecodeFragment(fragment.Bytes, length, encodings, delimiters);
+                    decodedString.Append(decodedFragment);
                 }
             }
 
             var lastIndex = escapeIndexes.Last();
             var lastFragmentLength = (int)buffer.Size - lastIndex;
-            var lastFragment = ArrayPool<byte>.Shared.Rent(lastFragmentLength);
-            try
-            {
-                buffer.GetByteRange(lastIndex, lastFragmentLength, lastFragment);
-                var lastDecodedFragment = DecodeFragment(lastFragment, lastFragmentLength, encodings, delimiters);
-                decodedString.Append(lastDecodedFragment);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(lastFragment);
-            }
+            using var lastFragment = memoryProvider.Provide(lastFragmentLength);
+            buffer.GetByteRange(lastIndex, lastFragmentLength, lastFragment.Bytes);
+            var lastDecodedFragment = DecodeFragment(lastFragment.Bytes, lastFragmentLength, encodings, delimiters);
+            decodedString.Append(lastDecodedFragment);
 
             return decodedString.ToString();
         }

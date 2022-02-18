@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -26,7 +28,9 @@ namespace FellowOakDicom.IO
                 return new StreamByteSource(stream, readOption, largeObjectSize);
             }
 
-            return new UnseekableStreamByteSource(stream, readOption, largeObjectSize);
+            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
+            
+            return new UnseekableStreamByteSource(stream, readOption, largeObjectSize, memoryProvider);
         }
     }
 }

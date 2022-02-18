@@ -1,10 +1,19 @@
-#### 5.0.2 (TBD)
+#### 5.0.3 (TBD)
+* Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)
+* Fixed bug where anonymization threw an exception if a DicomTag of VR UI contained no value (#1308)
+* Catch exception in logmessage, to avoid making the application crash because of logging (#1288)
+* Fixed StreamByteBuffer to read an internally buffered stream completely (#1313)
+
+#### 5.0.2 (2022-01-11)
+* Update to DICOM Standard 2021e
 * Fix issue where opening a DICOM file from a stream writes too much data when saving it again (#1264)
 * Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 * Add method to convert an array of DicomDatasets into a json string (#1271)
 * Improved bilinear interpolation
 * Fix issue where sending a deflated DICOM file via C-STORE was sent inflated, causing errors (#1283) 
 * Optimize performance and reduce memory allocations in network layer (#1267 and #1273)
+* Enhance Association Request Timeout (#1284)
+* Do not change target encoding for strings that are not encoded (#1301)
 
 #### 5.0.1 (2021-11-11)
 

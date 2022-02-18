@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +12,15 @@ namespace FellowOakDicom.IO.Buffer
 {
     public sealed class StreamByteBuffer : IByteBuffer
     {
-        public StreamByteBuffer(Stream stream, long position, long length)
+        private readonly IMemoryProvider _memoryProvider;
+
+        public StreamByteBuffer(Stream stream, long position, long length) : this(stream, position, length, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>())
         {
+        }
+        
+        public StreamByteBuffer(Stream stream, long position, long length, IMemoryProvider memoryProvider)
+        {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             Stream = stream;
             Position = position;
             Size = length;
@@ -36,8 +44,8 @@ namespace FellowOakDicom.IO.Buffer
                 }
 
                 byte[] data = new byte[Size];
-                Stream.Position = Position;
-                Stream.Read(data, 0, (int)Size);
+                ReadStream(data, 0, Size);
+                
                 return data;
             }
         }
@@ -58,8 +66,7 @@ namespace FellowOakDicom.IO.Buffer
                 throw new DicomIoException("cannot read from stream - maybe closed");
             }
             
-            Stream.Position = Position + offset;
-            Stream.Read(output, 0, count);
+            ReadStream(output, offset, count);
         }
 
         public void CopyToStream(Stream stream)
@@ -80,26 +87,20 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
-            try
+            using IMemory buffer = _memoryProvider.Provide(bufferSize);
+            
+            Stream.Position = Position;
+            
+            long totalNumberOfBytesRead = 0L;
+            int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
+            int numberOfBytesRead;
+            while(numberOfBytesToRead > 0
+                  && (numberOfBytesRead = Stream.Read(buffer.Bytes, 0, numberOfBytesToRead)) > 0)
             {
-                Stream.Position = Position;
-
-                long totalNumberOfBytesRead = 0L;
-                int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
-                int numberOfBytesRead;
-                while(numberOfBytesToRead > 0 
-                      && (numberOfBytesRead = Stream.Read(buffer, 0, numberOfBytesToRead)) > 0)
-                {
-                    stream.Write(buffer, 0, numberOfBytesRead);
-                    totalNumberOfBytesRead += numberOfBytesRead;
-                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
-                }
+                stream.Write(buffer.Bytes, 0, numberOfBytesRead);
+                totalNumberOfBytesRead += numberOfBytesRead;
+                numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
             }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }   
         }
 
         public async Task CopyToStreamAsync(Stream stream, CancellationToken cancellationToken)
@@ -120,26 +121,35 @@ namespace FellowOakDicom.IO.Buffer
             }
 
             int bufferSize = 1024 * 1024;
-            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
-            try
+            using IMemory buffer = _memoryProvider.Provide(bufferSize);
+
+            Stream.Position = Position;
+            
+            long totalNumberOfBytesRead = 0L;
+            int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
+            int numberOfBytesRead;
+            while(numberOfBytesToRead > 0 
+                && (numberOfBytesRead = await Stream.ReadAsync(buffer.Bytes, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
             {
-                Stream.Position = Position;
-                
-                long totalNumberOfBytesRead = 0L;
-                int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
-                int numberOfBytesRead;
-                while(numberOfBytesToRead > 0 
-                    && (numberOfBytesRead = await Stream.ReadAsync(buffer, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
-                {
-                    await stream.WriteAsync(buffer, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
-                    totalNumberOfBytesRead += numberOfBytesRead;
-                    numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
-                }
+                await stream.WriteAsync(buffer.Bytes, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
+                totalNumberOfBytesRead += numberOfBytesRead;
+                numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
             }
-            finally
+        }
+
+        private void ReadStream(byte[] buffer, long offset, long count)
+        {
+            Stream.Position = Position + offset;
+
+            long totalBytesRead = 0L;
+            int bytesRemaining = (int)Math.Min(Size, count);
+            int bytesReadNow;
+            while (bytesRemaining > 0
+                    && (bytesReadNow = Stream.Read(buffer, (int)totalBytesRead, bytesRemaining)) > 0)
             {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }      
+                totalBytesRead += bytesReadNow;
+                bytesRemaining = (int)Math.Min(Size - totalBytesRead, count - totalBytesRead);
+            }
         }
     }
 }

@@ -16,6 +16,11 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.Log;
+using FellowOakDicom.Memory;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Network.Client.States;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -107,6 +112,11 @@ namespace FellowOakDicom.Network.Client
         event EventHandler AssociationReleased;
 
         /// <summary>
+        /// Representation of the DICOM association request timed out event.
+        /// </summary>
+        event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
+
+        /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
         /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClient"/>
         /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
@@ -161,6 +171,7 @@ namespace FellowOakDicom.Network.Client
         
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
+        internal int NumberOfConsecutiveTimedOutAssociationRequests { get; set; }
 
         public string Host { get; }
         public int Port { get; }
@@ -186,6 +197,7 @@ namespace FellowOakDicom.Network.Client
 
         public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
+        public event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
         public event EventHandler AssociationReleased;
         
 
@@ -202,7 +214,7 @@ namespace FellowOakDicom.Network.Client
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
-        /// <param name="logger">The l</param>
+        /// <param name="logger">The logger</param>
         /// <param name="advancedDicomClientFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
