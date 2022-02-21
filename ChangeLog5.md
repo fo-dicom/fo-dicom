@@ -10,6 +10,7 @@
 * Fixed bug where disposal of DicomService could throw an exception if the buffered write stream still had content (#1319)
 * Improve handling of dropped connections (#1332)
 * Ignore empty VOI LUT and Modality LUT Sequence (#1369)
+* Validate calling AE and called AE length when creating a DicomClient (#1323)
 * Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
 
 #### 5.0.2 (2022-01-11)
