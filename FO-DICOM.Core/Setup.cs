@@ -93,7 +93,7 @@ namespace FellowOakDicom
         {
             services.TryAddSingleton<DicomServiceDependencies>();
             services.TryAddSingleton<IDicomClientFactory, DefaultDicomClientFactory>();
-            services.TryAddSingleton<IAdvancedDicomClientConnectionFactory, AdvancedDicomClientConnectionFactory>();
+            services.TryAddSingleton<IAdvancedDicomClientConnectionFactory, DefaultAdvancedDicomClientConnectionFactory>();
             services.Configure(options ?? (o => { }));
             return services;
         }

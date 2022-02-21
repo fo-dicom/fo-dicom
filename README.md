@@ -192,11 +192,11 @@ private static Task<DicomNEventReportResponse> OnNEventReportRequest(DicomNEvent
 }
 ```
 
-#### C-ECHO with advanced DICOM client: manual control over TCP connection and DICOM association
+#### C-ECHO with advanced DICOM client connection: manual control over TCP connection and DICOM association
 ```csharp
 var cancellationToken = CancellationToken.None;
-using var server = DicomServerFactory.Create<DicomCEchoProvider>(12345);
-var advancedClient = AdvancedDicomClientFactory.Create(new AdvancedDicomClientCreationRequest());
+// Alternatively, inject IDicomServerFactory via dependency injection instead of using this static method
+using var server = DicomServerFactory.Create<DicomCEchoProvider>(12345); 
 
 var connectionRequest = new AdvancedDicomClientConnectionRequest
 {
@@ -207,9 +207,10 @@ var connectionRequest = new AdvancedDicomClientConnectionRequest
     }
 };
 
-using var connection = await advancedClient.OpenConnectionAsync(connectionRequest, cancellationToken);
+// Alternatively, inject IAdvancedDicomClientConnectionFactory via dependency injection instead of using this static method
+using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
-var openAssociationRequest = new AdvancedDicomClientAssociationRequest
+var associationRequest = new AdvancedDicomClientAssociationRequest
 {
     CallingAE = "EchoSCU",
     CalledAE = "EchoSCP"
@@ -217,7 +218,7 @@ var openAssociationRequest = new AdvancedDicomClientAssociationRequest
 
 var cEchoRequest = new DicomCEchoRequest();
 
-using var association = await advancedClient.OpenAssociationAsync(connection, openAssociationRequest, cancellationToken);
+using var association = await connection.OpenAssociationAsync(associationRequest, cancellationToken);
 try
 {
     DicomCEchoResponse cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, cancellationToken).ConfigureAwait(false);

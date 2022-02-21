@@ -76,11 +76,12 @@ namespace FellowOakDicom.Tests.Network.Client
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
             var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
+            var advancedDicomClientConnectionFactory = new DefaultAdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies);
             return new DefaultDicomClientFactory(
                 defaultClientOptions,
                 defaultServiceOptions,
                 logManager,
-                new AdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies));
+                advancedDicomClientConnectionFactory);
         }
 
         [Fact]

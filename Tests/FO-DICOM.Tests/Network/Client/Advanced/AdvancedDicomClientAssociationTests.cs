@@ -61,11 +61,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             return server as TServer;
         }
 
-        private IAdvancedDicomClientConnectionFactory CreateClientConnectionFactory()
-        {
-            return Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>();
-        }
-
         #endregion
 
         [Fact]
@@ -77,8 +72,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var cancellationToken = CancellationToken.None;
 
             using var server = CreateServer<MockCEchoProvider>(port);
-
-            var connectionFactory = CreateClientConnectionFactory();
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -92,7 +85,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            using var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -137,8 +130,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<MockCEchoProvider>(port);
 
-            var connectionFactory = CreateClientConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -151,7 +142,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             connection.Dispose();
 
@@ -180,8 +171,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<MockCEchoProvider>(port);
 
-            var connectionFactory = CreateClientConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -194,7 +183,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            using var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -227,8 +216,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<MockCEchoProvider>(port);
 
-            var connectionFactory = CreateClientConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -241,7 +228,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            using var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -275,8 +262,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<MockCEchoProvider>(port);
 
-            var connectionFactory = CreateClientConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -289,7 +274,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            using var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -320,8 +305,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             server.OnCEchoRequest(request => Task.Delay(TimeSpan.FromMinutes(10), cancellationToken));
 
-            var connectionFactory = CreateClientConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -334,7 +317,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            using var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -365,8 +348,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<AsyncDicomCEchoProvider>(port);
 
-            var connectionFactory = CreateClientConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -379,7 +360,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            using var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -392,7 +373,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
             openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
-            DicomCEchoResponse cEchoResponse = null;
+            DicomCEchoResponse cEchoResponse;
 
             using var association = await connection.OpenAssociationAsync(openAssociationRequest, cancellationToken);
             try
@@ -417,7 +398,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var cancellationToken = CancellationToken.None;
 
             var server = CreateServer<PendingAsyncDicomCFindProvider>(port);
-            var connectionFactory = CreateClientConnectionFactory();
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -431,7 +411,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -475,7 +455,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var cancellationToken = CancellationToken.None;
 
             var server = CreateServer<AsyncDicomCStoreProvider>(port);
-            var connectionFactory = CreateClientConnectionFactory();
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -489,7 +468,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
@@ -502,7 +481,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             openAssociationRequest.PresentationContexts.AddFromRequest(cStoreRequest);
             openAssociationRequest.ExtendedNegotiations.AddFromRequest(cStoreRequest);
 
-            DicomCStoreResponse response = null;
+            DicomCStoreResponse response;
 
             var association = await connection.OpenAssociationAsync(openAssociationRequest, cancellationToken);
 
@@ -528,7 +507,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var cancellationToken = CancellationToken.None;
 
             var server = CreateServer<AsyncDicomCMoveProvider>(port);
-            var connectionFactory = CreateClientConnectionFactory();
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -542,7 +520,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            var connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+            var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {

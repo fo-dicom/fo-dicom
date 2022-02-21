@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
@@ -36,15 +37,22 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
     }
     
+    public static class AdvancedDicomClientConnectionFactory
+    {
+        /// <inheritdoc cref="IAdvancedDicomClientConnectionFactory.OpenConnectionAsync"/>
+        public static Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
+            => Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>().OpenConnectionAsync(request, cancellationToken);
+    }
+    
     /// <inheritdoc cref="IAdvancedDicomClientConnectionFactory"/>
-    public class AdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
+    public class DefaultAdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
     {
         private readonly INetworkManager _networkManager;
         private readonly ILogManager _logManager;
         private readonly DicomServiceDependencies _dicomServiceDependencies;
         private readonly IOptions<DicomServiceOptions> _defaultDicomServiceOptions;
 
-        public AdvancedDicomClientConnectionFactory(
+        public DefaultAdvancedDicomClientConnectionFactory(
             INetworkManager networkManager, 
             ILogManager logManager,
             IOptions<DicomServiceOptions> defaultDicomServiceOptions,

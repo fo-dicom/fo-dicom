@@ -8,7 +8,6 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -44,11 +43,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             return server;
         }
 
-        private IAdvancedDicomClientConnectionFactory CreateConnectionFactory()
-        {
-            return Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>();
-        }
-
         #endregion
 
         [Fact]
@@ -58,8 +52,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var cancellationToken = CancellationToken.None;
 
             using var server = CreateServer<AsyncDicomCEchoProvider>(port);
-
-            var connectionFactory = CreateConnectionFactory();
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -77,7 +69,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             Exception exception = null;
             try
             {
-                connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
             }
             catch (Exception e)
             {
@@ -99,8 +91,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<AsyncDicomCEchoProvider>(port);
 
-            var connectionFactory = CreateConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -117,7 +107,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             Exception exception = null;
             try
             {
-                connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
             }
             catch (Exception e)
             {
@@ -139,8 +129,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<AsyncDicomCEchoProvider>(port);
 
-            var connectionFactory = CreateConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -157,7 +145,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             Exception exception = null;
             try
             {
-                connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
             }
             catch (Exception e)
             {
@@ -179,8 +167,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<AsyncDicomCEchoProvider>(port);
 
-            var connectionFactory = CreateConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = null,
@@ -193,7 +179,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             Exception exception = null;
             try
             {
-                connection = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
             }
             catch (Exception e)
             {
@@ -215,8 +201,6 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
             using var server = CreateServer<AsyncDicomCEchoProvider>(port);
 
-            var connectionFactory = CreateConnectionFactory();
-
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -235,9 +219,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             Exception exception = null;
             try
             {
-                connection1 = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
-                connection2 = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
-                connection3 = await connectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+                connection3 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
             }
             catch (Exception e)
             {
