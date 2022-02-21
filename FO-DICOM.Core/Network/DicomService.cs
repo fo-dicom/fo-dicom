@@ -448,6 +448,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
+                            Logger.Debug("Read 0 bytes from network stream while reading PDU header, connection will be marked as closed");
                             await TryCloseConnectionAsync().ConfigureAwait(false);
                             return;
                         }
@@ -483,6 +484,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
+                            Logger.Debug("Read 0 bytes from network stream while reading PDU, connection will be marked as closed");
                             await TryCloseConnectionAsync().ConfigureAwait(false);
                             return;
                         }
@@ -647,14 +649,18 @@ namespace FellowOakDicom.Network
                             throw new DicomNetworkException("Unknown PDU type");
                     }
                 }
-                catch (ObjectDisposedException)
+                catch (ObjectDisposedException e)
                 {
                     // silently ignore
+                    Logger.Debug("An 'object disposed' exception occurred while listening to the network stream. " +
+                                 "This can happen when the connection is being closed. {Exception}", e);
                     await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
-                catch (NullReferenceException)
+                catch (NullReferenceException e)
                 {
                     // connection already closed; silently ignore
+                    Logger.Debug("A 'null reference' exception occurred while listening to the network stream. " +
+                                 "This can happen when the connection is already closed. {Exception}", e);
                     await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (IOException e)
