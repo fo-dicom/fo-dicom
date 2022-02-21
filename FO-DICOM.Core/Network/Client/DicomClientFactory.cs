@@ -73,13 +73,13 @@ namespace FellowOakDicom.Network.Client
             if (callingAe != null && callingAe.Length > DicomVR.AE.MaximumLength)
             {
                 throw new ArgumentException($"Calling AE '{callingAe}' is {callingAe.Length} characters long, " +
-                                            $"which is longer than maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
+                                            $"which is longer than the maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
             }
 
             if (calledAe != null && calledAe.Length > DicomVR.AE.MaximumLength)
             {
                 throw new ArgumentException($"Called AE '{calledAe}' is {calledAe.Length} characters long, " +
-                                            $"which is longer than maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
+                                            $"which is longer than the maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
             }
 
             var clientOptions = _defaultClientOptions.Value.Clone();
