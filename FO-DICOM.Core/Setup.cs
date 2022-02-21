@@ -80,7 +80,6 @@ namespace FellowOakDicom
                 .AddLogManager<ConsoleLogManager>()
                 .AddNetworkManager<DesktopNetworkManager>()
                 .AddDicomClient()
-                .AddAdvancedDicomClient()
                 .AddDicomServer();
 
         private static IServiceCollection AddInternals(this IServiceCollection services)
@@ -94,16 +93,11 @@ namespace FellowOakDicom
         {
             services.TryAddSingleton<DicomServiceDependencies>();
             services.TryAddSingleton<IDicomClientFactory, DefaultDicomClientFactory>();
+            services.TryAddSingleton<IAdvancedDicomClientConnectionFactory, AdvancedDicomClientConnectionFactory>();
             services.Configure(options ?? (o => { }));
             return services;
         }
 
-        public static IServiceCollection AddAdvancedDicomClient(this IServiceCollection services, Action<DicomClientOptions> options = null) 
-            => services   
-                .AddSingleton<IAdvancedDicomClientFactory, AdvancedDicomClientFactory>()
-                .AddSingleton<IAdvancedDicomClientConnectionFactory, AdvancedDicomClientConnectionFactory>()
-                .Configure(options ?? (o => {}));
-        
         public static IServiceCollection AddDicomServer(this IServiceCollection services, Action<DicomServiceOptions> options = null)
         {
             services.TryAddSingleton<DicomServiceDependencies>();

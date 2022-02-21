@@ -3,12 +3,12 @@
 
 using System;
 
-namespace FellowOakDicom.Network.Client.Advanced
+namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
     /// <summary>
     /// This is an empty marker interface so it is possible to create collections of the various events that occur in our DICOM network communication
     /// </summary>
-    public interface IAdvancedDicomClientEvent
+    public interface IAdvancedDicomClientConnectionEvent
     {
         
     }
@@ -16,31 +16,31 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When the TCP connection with the SCP is closed
     /// </summary>
-    public class ConnectionClosedEvent : IAdvancedDicomClientEvent
+    public class ConnectionClosedConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// When the connection closed without an error
         /// </summary>
-        public static readonly ConnectionClosedEvent WithoutException = new ConnectionClosedEvent();
+        public static readonly ConnectionClosedConnectionEvent WithoutException = new ConnectionClosedConnectionEvent();
         
         /// <summary>
         /// When the connection closed with an error
         /// </summary>
         /// <param name="exception">The error that occured while trying to read from or write to the connection</param>
         /// <returns></returns>
-        public static ConnectionClosedEvent WithException(Exception exception) => new ConnectionClosedEvent(exception);
+        public static ConnectionClosedConnectionEvent WithException(Exception exception) => new ConnectionClosedConnectionEvent(exception);
         
         /// <summary>
         /// (Optional) the exception that occured while trying to read from or write to the connection
         /// </summary>
         public Exception Exception { get; }
 
-        private ConnectionClosedEvent()
+        private ConnectionClosedConnectionEvent()
         {
             
         }
 
-        private ConnectionClosedEvent(Exception exception)
+        private ConnectionClosedConnectionEvent(Exception exception)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When the DICOM association is suddenly aborted
     /// </summary>
-    public class DicomAbortedEvent : IAdvancedDicomClientEvent
+    public class DicomAbortedConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// Who initiated the ABORT
@@ -74,7 +74,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <summary>
         /// Initializes a new DicomAbortedEvent 
         /// </summary>
-        public DicomAbortedEvent(DicomAbortSource source, DicomAbortReason reason)
+        public DicomAbortedConnectionEvent(DicomAbortSource source, DicomAbortReason reason)
         {
             Source = source;
             Reason = reason;
@@ -84,14 +84,14 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When the DICOM association is accepted
     /// </summary>
-    public class DicomAssociationAcceptedEvent : IAdvancedDicomClientEvent
+    public class DicomAssociationAcceptedConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         public DicomAssociation Association { get; }
 
         /// <summary>
         /// Initializes a new DicomAssociationAcceptedEvent
         /// </summary>
-        public DicomAssociationAcceptedEvent(DicomAssociation association)
+        public DicomAssociationAcceptedConnectionEvent(DicomAssociation association)
         {
             Association = association ?? throw new ArgumentNullException(nameof(association));
         }
@@ -100,7 +100,7 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When the DICOM association is rejected
     /// </summary>
-    public class DicomAssociationRejectedEvent : IAdvancedDicomClientEvent
+    public class DicomAssociationRejectedConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// Whether the rejection is permanent or only temporary
@@ -120,7 +120,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <summary>
         /// Initializes a new DicomAssociationRejectedEvent
         /// </summary>
-        public DicomAssociationRejectedEvent(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
+        public DicomAssociationRejectedConnectionEvent(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             Result = result;
             Source = source;
@@ -131,14 +131,14 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When the association is released
     /// </summary>
-    public class DicomAssociationReleasedEvent : IAdvancedDicomClientEvent
+    public class DicomAssociationReleasedConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// An instance of DicomAssociationReleasedEvent, which is a singleton since this event does not have any parameters
         /// </summary>
-        public static readonly DicomAssociationReleasedEvent Instance = new DicomAssociationReleasedEvent();
+        public static readonly DicomAssociationReleasedConnectionEvent Instance = new DicomAssociationReleasedConnectionEvent();
 
-        private DicomAssociationReleasedEvent()
+        private DicomAssociationReleasedConnectionEvent()
         {
             
         }
@@ -147,7 +147,7 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When a DICOM request is completed and no further responses are expected
     /// </summary>
-    public class RequestCompletedEvent : IAdvancedDicomClientEvent
+    public class RequestCompletedConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// The original request
@@ -162,7 +162,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <summary>
         /// Initializes a new RequestCompletedEvent
         /// </summary>
-        public RequestCompletedEvent(DicomRequest request, DicomResponse response)
+        public RequestCompletedConnectionEvent(DicomRequest request, DicomResponse response)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
             Response = response ?? throw new ArgumentNullException(nameof(response));
@@ -172,7 +172,7 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When a DICOM request has been sent to the SCP and is now pending one or more responses 
     /// </summary>
-    public class RequestPendingEvent : IAdvancedDicomClientEvent
+    public class RequestPendingConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// The original request
@@ -187,7 +187,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <summary>
         /// Initializes a new RequestPendingEvent 
         /// </summary>
-        public RequestPendingEvent(DicomRequest request, DicomResponse response)
+        public RequestPendingConnectionEvent(DicomRequest request, DicomResponse response)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
             Response = response ?? throw new ArgumentNullException(nameof(response));
@@ -197,7 +197,7 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When a DICOM request times out
     /// </summary>
-    public class RequestTimedOutEvent : IAdvancedDicomClientEvent
+    public class RequestTimedOutConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// The original request
@@ -212,7 +212,7 @@ namespace FellowOakDicom.Network.Client.Advanced
         /// <summary>
         /// Initializes a new RequestTimedOutEvent 
         /// </summary>
-        public RequestTimedOutEvent(DicomRequest request, TimeSpan timeout)
+        public RequestTimedOutConnectionEvent(DicomRequest request, TimeSpan timeout)
         {
             Request = request ?? throw new ArgumentNullException(nameof(request));
             Timeout = timeout;
@@ -222,13 +222,13 @@ namespace FellowOakDicom.Network.Client.Advanced
     /// <summary>
     /// When the internal DicomService queue is empty, and a call to SendNextMessage will be required to send more requests
     /// </summary>
-    public class SendQueueEmptyEvent : IAdvancedDicomClientEvent
+    public class SendQueueEmptyConnectionEvent : IAdvancedDicomClientConnectionEvent
     {
         /// <summary>
         /// An instance of SendQueueEmptyEvent, which is a singleton since this event does not have any parameters
         /// </summary>
-        public static readonly SendQueueEmptyEvent Instance = new SendQueueEmptyEvent();
+        public static readonly SendQueueEmptyConnectionEvent Instance = new SendQueueEmptyConnectionEvent();
 
-        private SendQueueEmptyEvent() {}
+        private SendQueueEmptyConnectionEvent() {}
     }
 }

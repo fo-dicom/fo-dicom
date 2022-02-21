@@ -2,7 +2,9 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced.Association;
 using System;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,45 +19,48 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     public interface IAdvancedDicomClientConnection : IDicomClientConnection
     {
         /// <summary>
-        /// Gets the DICOM service options. These configure low level details that change the behavior of the DICOM listener
+        /// Gets a wrapper around the DICOM events that occur on this connection  
         /// </summary>
-        DicomServiceOptions Options { get; }
-        
-        /// <summary>
-        /// Gets the callbacks that can be used to listen to incoming DICOM events
-        /// </summary>
-        IAdvancedDicomClientConnectionCallbacks Callbacks { get; }
+        internal IAdvancedDicomClientConnectionEvents Events { get; }
 
         /// <summary>
-        /// Tries to claim this connection to open a new association
-        /// This will only work once.
+        /// Opens a new DICOM association over an existing TCP connection
         /// </summary>
-        internal bool TryClaimForAssociation();
+        /// <param name="request">The request that specifies how the association should be opened</param>
+        /// <param name="cancellationToken">
+        /// The token that will cancel the opening of the association.
+        /// Depending on the timing, this may leave the connection unusable, it is safest to always reopen a new connection if cancellation occurred.
+        /// </param>
+        /// <returns>The opened association if the other AE accepted the association request</returns>
+        /// <exception cref="DicomAssociationRejectedException">When the association is rejected</exception>
+        /// <exception cref="DicomAssociationAbortedException">When the association is aborted prematurely</exception>
+        /// <exception cref="DicomNetworkException">When the connection is lost without an underlying IO exception</exception>
+        /// <exception cref="System.IO.IOException">When the connection is lost</exception>
+        Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken);
     }
 
     /// <inheritdoc cref="IAdvancedDicomClientConnection" />
-    public class AdvancedDicomClientConnection : DicomService, IAdvancedDicomClientConnection
+    internal class AdvancedDicomClientConnection : DicomService, IAdvancedDicomClientConnection
     {
-        private int _claimed;
-        
-        public IAdvancedDicomClientConnectionCallbacks Callbacks { get; }
-        
+        private readonly ILogger _logger;
+        private readonly IAdvancedDicomClientConnectionEvents _events;
+        private int _isAssociationOpened;
         public INetworkStream NetworkStream { get; }
-        
         public Task Listener { get; private set; }
-        
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
+        IAdvancedDicomClientConnectionEvents IAdvancedDicomClientConnection.Events => _events;
 
         public AdvancedDicomClientConnection(
-                IAdvancedDicomClientConnectionCallbacks callbacks,
-                INetworkStream networkStream,
-                Encoding fallbackEncoding,
-                DicomServiceOptions dicomServiceOptions,
-                ILogger logger,
-                DicomServiceDependencies dependencies) : base(networkStream, fallbackEncoding, logger, dependencies)
+            IAdvancedDicomClientConnectionEvents events,
+            INetworkStream networkStream,
+            Encoding fallbackEncoding,
+            DicomServiceOptions dicomServiceOptions,
+            ILogger logger,
+            DicomServiceDependencies dependencies) : base(networkStream, fallbackEncoding, logger, dependencies)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Options = dicomServiceOptions ?? throw new ArgumentNullException(nameof(dicomServiceOptions));
-            Callbacks = callbacks ?? throw new ArgumentNullException(nameof(callbacks));
+            _events = events ?? throw new ArgumentNullException(nameof(events));
             NetworkStream = networkStream ?? throw new ArgumentNullException(nameof(networkStream));
         }
 
@@ -70,38 +75,115 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);
-
         public new Task SendAssociationReleaseRequestAsync() => base.SendAssociationReleaseRequestAsync();
-
         public new Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason) => base.SendAbortAsync(source, reason);
-
         public new Task SendRequestAsync(DicomRequest request) => base.SendRequestAsync(request);
-
         public new Task SendNextMessageAsync() => base.SendNextMessageAsync();
 
-        protected override Task OnSendQueueEmptyAsync() => Callbacks.OnSendQueueEmptyAsync();
+        protected override Task OnSendQueueEmptyAsync() => _events.OnSendQueueEmptyAsync();
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => _events.OnReceiveAssociationAcceptAsync(association);
 
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => Callbacks.OnReceiveAssociationAcceptAsync(association);
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) =>
+            _events.OnReceiveAssociationRejectAsync(result, source, reason);
 
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => Callbacks.OnReceiveAssociationRejectAsync(result, source, reason);
+        public Task OnReceiveAssociationReleaseResponseAsync() => _events.OnReceiveAssociationReleaseResponseAsync();
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _events.OnReceiveAbortAsync(source, reason);
+        public Task OnConnectionClosedAsync(Exception exception) => _events.OnConnectionClosedAsync(exception);
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _events.OnRequestCompletedAsync(request, response);
+        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _events.OnRequestPendingAsync(request, response);
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _events.OnRequestTimedOutAsync(request, timeout);
+        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => _events.OnCStoreRequestAsync(request);
+        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => _events.OnNEventReportRequestAsync(request);
 
-        public Task OnReceiveAssociationReleaseResponseAsync() => Callbacks.OnReceiveAssociationReleaseResponseAsync();
+        public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken)
+        {
+            if (Interlocked.CompareExchange(ref _isAssociationOpened, 1, 0) != 0)
+            {
+                throw new DicomNetworkException("A connection can only be used once for one association. Create a new connection to open another association");
+            }
 
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => Callbacks.OnReceiveAbortAsync(source, reason);
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
 
-        public Task OnConnectionClosedAsync(Exception exception) => Callbacks.OnConnectionClosedAsync(exception);
+            cancellationToken.ThrowIfCancellationRequested();
 
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => Callbacks.OnRequestCompletedAsync(request, response);
-        
-        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => Callbacks.OnRequestPendingAsync(request, response);
+            _logger.Debug("Sending association request from {CallingAE} to {CalledAE}", request.CallingAE, request.CalledAE);
 
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => Callbacks.OnRequestTimedOutAsync(request, timeout);
+            await SendAssociationRequestAsync(ToDicomAssociation(request)).ConfigureAwait(false);
 
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => Callbacks.OnCStoreRequestAsync(request);
+            await foreach (var @event in _events.GetEvents(cancellationToken).ConfigureAwait(false))
+            {
+                switch (@event)
+                {
+                    case DicomAssociationAcceptedConnectionEvent dicomAssociationAcceptedEvent:
+                        {
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
 
-        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => Callbacks.OnNEventReportRequestAsync(request);
+                            return new AdvancedDicomClientAssociation(this, dicomAssociationAcceptedEvent.Association, _logger);
+                        }
+                    case DicomAssociationRejectedConnectionEvent dicomAssociationRejectedEvent:
+                        {
+                            var result = dicomAssociationRejectedEvent.Result;
+                            var source = dicomAssociationRejectedEvent.Source;
+                            var reason = dicomAssociationRejectedEvent.Reason;
 
-        bool IAdvancedDicomClientConnection.TryClaimForAssociation() => Interlocked.CompareExchange(ref _claimed, 1, 0) == 0;
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it: {Result} {Source} {Reason}",
+                                request.CallingAE, request.CalledAE, request.CalledAE, result, source, reason);
+
+                            throw new DicomAssociationRejectedException(result, source, reason);
+                        }
+                    case DicomAbortedConnectionEvent dicomAbortedEvent:
+                        {
+                            var source = dicomAbortedEvent.Source;
+                            var reason = dicomAbortedEvent.Reason;
+
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it: {Source} {Reason}",
+                                request.CallingAE, request.CalledAE, request.CalledAE, source, reason);
+
+                            throw new DicomAssociationAbortedException(source, reason);
+                        }
+                    case ConnectionClosedConnectionEvent connectionClosedEvent:
+                        {
+                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
+
+                            if (connectionClosedEvent.Exception != null)
+                            {
+                                ExceptionDispatchInfo.Capture(connectionClosedEvent.Exception).Throw();
+                            }
+                            else
+                            {
+                                throw new DicomNetworkException("Connection was lost before an association could be established");
+                            }
+
+                            break;
+                        }
+                }
+            }
+
+            throw new DicomNetworkException("Failed to open a DICOM association because the connection is already closed");
+        }
+
+        private DicomAssociation ToDicomAssociation(AdvancedDicomClientAssociationRequest request)
+        {
+            var dicomAssociation = new DicomAssociation(request.CallingAE, request.CalledAE)
+            {
+                Options = Options, MaxAsyncOpsInvoked = request.MaxAsyncOpsInvoked, MaxAsyncOpsPerformed = request.MaxAsyncOpsPerformed, MaximumPDULength = Options.MaxPDULength,
+            };
+
+            foreach (var presentationContext in request.PresentationContexts)
+            {
+                dicomAssociation.PresentationContexts.Add(presentationContext);
+            }
+
+            foreach (var extendedNegotiation in request.ExtendedNegotiations)
+            {
+                dicomAssociation.ExtendedNegotiations.Add(extendedNegotiation);
+            }
+
+            return dicomAssociation;
+        }
     }
 
     public class InterceptingAdvancedDicomClientConnection : IAdvancedDicomClientConnection
@@ -118,68 +200,45 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             _interceptor = interceptor ?? throw new ArgumentNullException(nameof(interceptor));
         }
 
+        /// <summary>
+        /// The finalizer will be called when this instance is not disposed properly.
+        /// </summary>
+        /// <remarks>Failing to dispose indicates wrong usage</remarks>
+        ~InterceptingAdvancedDicomClientConnection() => Dispose();
+
         public INetworkStream NetworkStream => _inner.NetworkStream;
-
         public Task Listener => _inner.Listener;
-
         public bool IsSendNextMessageRequired => _inner.IsSendNextMessageRequired;
-
         public bool IsSendQueueEmpty => _inner.IsSendQueueEmpty;
+        IAdvancedDicomClientConnectionEvents IAdvancedDicomClientConnection.Events => _inner.Events;
 
-        public DicomServiceOptions Options => _inner.Options;
-        
-        public IAdvancedDicomClientConnectionCallbacks Callbacks => _inner.Callbacks;
-        
-        public void StartListener()
-            => _inner.StartListener();
+        public void StartListener() => _inner.StartListener();
+        public Task SendAssociationRequestAsync(DicomAssociation association) => _interceptor.SendAssociationRequestAsync(_inner, association);
+        public Task SendAssociationReleaseRequestAsync() => _interceptor.SendAssociationReleaseRequestAsync(_inner);
+        public Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _interceptor.SendAbortAsync(_inner, source, reason);
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => _interceptor.OnReceiveAssociationAcceptAsync(_inner, association);
 
-        public Task SendAssociationRequestAsync(DicomAssociation association)
-            => _interceptor.SendAssociationRequestAsync(_inner, association);
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) =>
+            _interceptor.OnReceiveAssociationRejectAsync(_inner, result, source, reason);
 
-        public Task SendAssociationReleaseRequestAsync()
-            => _interceptor.SendAssociationReleaseRequestAsync(_inner);
+        public Task OnReceiveAssociationReleaseResponseAsync() => _interceptor.OnReceiveAssociationReleaseResponseAsync(_inner);
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _interceptor.OnReceiveAbortAsync(_inner, source, reason);
+        public Task OnConnectionClosedAsync(Exception exception) => _interceptor.OnConnectionClosedAsync(_inner, exception);
+        public Task SendRequestAsync(DicomRequest request) => _interceptor.SendRequestAsync(_inner, request);
+        public Task SendNextMessageAsync() => _inner.SendNextMessageAsync();
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _interceptor.OnRequestCompletedAsync(_inner, request, response);
+        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _interceptor.OnRequestPendingAsync(_inner, request, response);
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _interceptor.OnRequestTimedOutAsync(_inner, request, timeout);
+        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => _inner.OnCStoreRequestAsync(request);
+        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => _inner.OnNEventReportRequestAsync(request);
 
-        public Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-            => _interceptor.SendAbortAsync(_inner, source, reason);
+        public Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken) =>
+            _inner.OpenAssociationAsync(request, cancellationToken);
 
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-            => _interceptor.OnReceiveAssociationAcceptAsync(_inner, association);
-
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-            => _interceptor.OnReceiveAssociationRejectAsync(_inner, result, source, reason);
-
-        public Task OnReceiveAssociationReleaseResponseAsync()
-            => _interceptor.OnReceiveAssociationReleaseResponseAsync(_inner);
-
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-            => _interceptor.OnReceiveAbortAsync(_inner, source, reason);
-
-        public Task OnConnectionClosedAsync(Exception exception)
-            => _interceptor.OnConnectionClosedAsync(_inner, exception);
-
-        public Task SendRequestAsync(DicomRequest request)
-            => _interceptor.SendRequestAsync(_inner, request);
-
-        public Task SendNextMessageAsync()
-            => _inner.SendNextMessageAsync();
-
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-            => _interceptor.OnRequestCompletedAsync(_inner, request, response);
-
-        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response)
-            => _interceptor.OnRequestPendingAsync(_inner, request, response);
-
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-            => _interceptor.OnRequestTimedOutAsync(_inner, request, timeout);
-
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
-            => _inner.OnCStoreRequestAsync(request);
-
-        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
-            => _inner.OnNEventReportRequestAsync(request);
-        
-        bool IAdvancedDicomClientConnection.TryClaimForAssociation() => _inner.TryClaimForAssociation();
-        
-        public void Dispose() => _inner.Dispose();
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            _inner.Dispose();
+        }
     }
 }

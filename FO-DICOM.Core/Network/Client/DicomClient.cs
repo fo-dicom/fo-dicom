@@ -113,7 +113,7 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
-        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClient"/>
+        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClientConnection"/>
         /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
         [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
@@ -156,7 +156,7 @@ namespace FellowOakDicom.Network.Client
 
     public class DicomClient : IDicomClient
     {
-        private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
+        private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
         private ILogger _logger;
         private DicomClientState _state;
         private long _isSending;
@@ -208,13 +208,12 @@ namespace FellowOakDicom.Network.Client
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="logger">The logger</param>
-        /// <param name="advancedDicomClientFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
+        /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             ILogger logger,
-            IAdvancedDicomClientFactory advancedDicomClientFactory
-        )
+            IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory)
         {
             Host = host;
             Port = port;
@@ -230,7 +229,7 @@ namespace FellowOakDicom.Network.Client
             AsyncPerformed = 1;
             
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
+            _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
             _state = DicomClientIdleState.Instance;
             _isSending = 0;
             _hasMoreRequests = new Tasks.AsyncManualResetEvent();
@@ -286,7 +285,6 @@ namespace FellowOakDicom.Network.Client
             
             try
             {
-                var advancedDicomClient = _advancedDicomClientFactory.Create(new AdvancedDicomClientCreationRequest {Logger = Logger});
                 var exception = (Exception)null;
                 var maximumNumberOfRequestsPerAssociation = ClientOptions.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
                 var maximumNumberOfConsecutiveTimedOutAssociationRequests = ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests;
@@ -324,7 +322,7 @@ namespace FellowOakDicom.Network.Client
 
                         SetState(DicomClientConnectState.Instance);
 
-                        connection = await advancedDicomClient.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
+                        connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
 
                         SetState(DicomClientRequestAssociationState.Instance);
 
@@ -379,7 +377,7 @@ namespace FellowOakDicom.Network.Client
                         {
                             try
                             {
-                                association = await advancedDicomClient.OpenAssociationAsync(connection, associationRequest, combinedCts.Token).ConfigureAwait(false);
+                                association = await connection.OpenAssociationAsync(associationRequest, combinedCts.Token).ConfigureAwait(false);
                                 numberOfConsecutiveTimedOutAssociationRequests = 0;
                             }
                             catch (OperationCanceledException)

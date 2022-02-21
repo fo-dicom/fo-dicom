@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -39,22 +40,21 @@ namespace FellowOakDicom.Network.Client
 
     public class DefaultDicomClientFactory : IDicomClientFactory
     {
-        private readonly IAdvancedDicomClientFactory _advancedDicomClientFactory;
         private readonly IOptions<DicomClientOptions> _defaultClientOptions;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
         private readonly ILogManager _logManager;
+        private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
 
         public DefaultDicomClientFactory(
-            IAdvancedDicomClientFactory advancedDicomClientFactory,
             IOptions<DicomClientOptions> defaultClientOptions,
             IOptions<DicomServiceOptions> defaultServiceOptions,
-            ILogManager logManager
-        )
+            ILogManager logManager,
+            IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory)
         {
-            _advancedDicomClientFactory = advancedDicomClientFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientFactory));
             _defaultClientOptions = defaultClientOptions ?? throw new ArgumentNullException(nameof(defaultClientOptions));
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
             _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
         }
 
         public virtual IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
@@ -63,7 +63,7 @@ namespace FellowOakDicom.Network.Client
             var serviceOptions = _defaultServiceOptions.Value.Clone();
             var logger = _logManager.GetLogger("Dicom.Network");
 
-            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, logger, _advancedDicomClientFactory);
+            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, logger, _advancedDicomClientConnectionFactory);
         }
     }
 }

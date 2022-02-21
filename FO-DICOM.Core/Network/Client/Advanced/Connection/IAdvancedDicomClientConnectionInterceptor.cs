@@ -55,7 +55,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// <summary>
         /// Callback on response from an association release.
         /// </summary>
-        /// 
         Task OnReceiveAssociationReleaseResponseAsync(IAdvancedDicomClientConnection connection);
 
         /// <summary>

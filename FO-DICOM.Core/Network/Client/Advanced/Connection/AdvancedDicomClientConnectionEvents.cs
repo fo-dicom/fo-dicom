@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
-     public interface IAdvancedDicomClientConnectionCallbacks
+    internal interface IAdvancedDicomClientConnectionEvents
     {
         /// <summary>
         /// Callback when there are no new requests to send and no existing requests in process (waiting for reply)
         /// </summary>
         /// <returns>Awaitable task</returns>
         Task OnSendQueueEmptyAsync();
-        
+
         /// <summary>
         /// Callback for handling association accept scenarios.
         /// </summary>
@@ -49,7 +49,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// </summary>
         /// <param name="exception">Exception, if any, that forced connection to close.</param>
         Task OnConnectionClosedAsync(Exception exception);
-        
+
         /// <summary>
         /// Callback when a request has been completed (a final response was received, causing it to be removed from the pending queue)
         /// One request can only receive one completed response
@@ -99,43 +99,41 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// Gets an IAsyncEnumerable of all the DICOM events that are provided to this callback instance
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that stops enumerating the events</param>
-        IAsyncEnumerable<IAdvancedDicomClientEvent> GetEvents(CancellationToken cancellationToken);
+        IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> GetEvents(CancellationToken cancellationToken);
     }
-    
-    public class AdvancedDicomClientConnectionCallbacks : IAdvancedDicomClientConnectionCallbacks
+
+    internal class AdvancedDicomClientConnectionEvents : IAdvancedDicomClientConnectionEvents
     {
         private readonly AdvancedDicomClientConnectionRequestHandlers _requestHandlers;
-        private readonly Channel<IAdvancedDicomClientEvent> _events;
+        private readonly Channel<IAdvancedDicomClientConnectionEvent> _events;
         private long _isConnectionClosed;
 
-        public AdvancedDicomClientConnectionCallbacks(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
+        public AdvancedDicomClientConnectionEvents(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
         {
             _requestHandlers = requestHandlers;
-            _events = Channel.CreateUnbounded<IAdvancedDicomClientEvent>(new UnboundedChannelOptions
+            _events = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
-                SingleReader = true,
-                SingleWriter = false,
-                AllowSynchronousContinuations = false
+                SingleReader = true, SingleWriter = false, AllowSynchronousContinuations = false
             });
         }
 
         private bool IsConnectionClosed => Interlocked.Read(ref _isConnectionClosed) == 1;
-        
-        public async IAsyncEnumerable<IAdvancedDicomClientEvent> GetEvents([EnumeratorCancellation] CancellationToken cancellationToken)
+
+        public async IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> GetEvents([EnumeratorCancellation] CancellationToken cancellationToken)
         {
             while (await _events.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                
-                while (_events.Reader.TryRead(out IAdvancedDicomClientEvent @event))
+
+                while (_events.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    
+
                     yield return @event;
                 }
-            }   
+            }
         }
-        
+
         public async Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
             if (IsConnectionClosed)
@@ -143,7 +141,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new DicomAssociationAcceptedEvent(association)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new DicomAssociationAcceptedConnectionEvent(association)).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
@@ -152,8 +150,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(new DicomAssociationRejectedEvent(result, source, reason)).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(new DicomAssociationRejectedConnectionEvent(result, source, reason)).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAssociationReleaseResponseAsync()
@@ -162,8 +160,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(DicomAssociationReleasedEvent.Instance).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(DicomAssociationReleasedConnectionEvent.Instance).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
@@ -172,8 +170,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(new DicomAbortedEvent(source, reason)).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(new DicomAbortedConnectionEvent(source, reason)).ConfigureAwait(false);
         }
 
         public async Task OnConnectionClosedAsync(Exception exception)
@@ -183,13 +181,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 // Already closed
                 return;
             }
-            
+
             var @event = exception == null
-                ? ConnectionClosedEvent.WithoutException
-                : ConnectionClosedEvent.WithException(exception);
-            
+                ? ConnectionClosedConnectionEvent.WithoutException
+                : ConnectionClosedConnectionEvent.WithException(exception);
+
             await _events.Writer.WriteAsync(@event).ConfigureAwait(false);
-            
+
             _events.Writer.Complete();
         }
 
@@ -199,8 +197,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(SendQueueEmptyEvent.Instance).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(SendQueueEmptyConnectionEvent.Instance).ConfigureAwait(false);
         }
 
         public async Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
@@ -209,8 +207,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(new RequestCompletedEvent(request, response)).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(new RequestCompletedConnectionEvent(request, response)).ConfigureAwait(false);
         }
 
         public async Task OnRequestPendingAsync(DicomRequest request, DicomResponse response)
@@ -219,8 +217,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(new RequestPendingEvent(request, response)).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(new RequestPendingConnectionEvent(request, response)).ConfigureAwait(false);
         }
 
         public async Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
@@ -229,8 +227,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 return;
             }
-            
-            await _events.Writer.WriteAsync(new RequestTimedOutEvent(request, timeout)).ConfigureAwait(false);
+
+            await _events.Writer.WriteAsync(new RequestTimedOutConnectionEvent(request, timeout)).ConfigureAwait(false);
         }
 
         public async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)

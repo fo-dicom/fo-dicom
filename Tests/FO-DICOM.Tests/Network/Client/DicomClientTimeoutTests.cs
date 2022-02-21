@@ -10,12 +10,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
-using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.Advanced;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Tests.Helpers;
@@ -80,13 +77,10 @@ namespace FellowOakDicom.Tests.Network.Client
             var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             return new DefaultDicomClientFactory(
-                new AdvancedDicomClientFactory(
-                    new AdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies),
-                    logManager
-                ),
                 defaultClientOptions,
                 defaultServiceOptions,
-                logManager);
+                logManager,
+                new AdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies));
         }
 
         [Fact]
