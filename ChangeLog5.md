@@ -3,6 +3,8 @@
 * Fixed bug where anonymization threw an exception if a DicomTag of VR UI contained no value (#1308)
 * Catch exception in logmessage, to avoid making the application crash because of logging (#1288)
 * Fixed StreamByteBuffer to read an internally buffered stream completely (#1313)
+* Add "AdvancedDicomClient". This "expert" API gives full control over the connection, association and requests when sending DICOM requests (#1144)
+* Rewrite "DicomClient" based on the new AdvancedDicomClient. The state based implementation is gone. The public API has remained the same. (#1144)
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
@@ -18,8 +20,6 @@
 #### 5.0.1 (2021-11-11)
 
 * Add generated API documentation for versions 4 and 5
-* Add "AdvancedDicomClient". (#1144) This "expert" API gives full control over the connection, association and requests when sending DICOM requests
-* Rewrite "DicomClient" based on the new AdvancedDicomClient. The state based implementation is gone. The public API has remained the same.
 * Fix IO Exception with >2GB images (#1148)
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 * Bug fix: Correct Person Name VR Json model (#1235)
