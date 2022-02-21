@@ -1,35 +1,19 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using FellowOakDicom.Log;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Tests
 {
     /// <summary>
     /// Console Logger that additionally collects the log messages for use in unit tests.
     /// </summary>
-    class CollectingConsoleLogger : ConsoleLogger
+    public class CollectingLogger : ILogger
     {
-        /// <summary>
-        /// Singleton instance of the <see cref="CollectingConsoleLogger"/>.
-        /// </summary>
-        public new static readonly Logger Instance = new CollectingConsoleLogger();
-
         private readonly IList<(LogLevel, string)> _logEntries = new List<(LogLevel, string)>();
-
-        /// <summary>
-        /// Save an issued log message.
-        /// </summary>
-        /// <param name="level">Log level.</param>
-        /// <param name="msg">Log message (format string).</param>
-        /// <param name="args">Log message arguments.</param>
-        public override void Log(LogLevel level, string msg, params object[] args)
-        {
-            _logEntries.Add((level, string.Format(NameFormatToPositionalFormat(msg), args)));
-            base.Log(level, msg, args);
-        }
 
         /// <summary>
         /// Clear the collected log entries.
@@ -62,21 +46,20 @@ namespace FellowOakDicom.Tests
         /// <param name="index">The index of the message in all warning messages.</param>
         /// </summary>
         public string WarningAt(int index) => LogMessageAt(index, LogLevel.Warning);
-    }
 
-    /// <summary>
-    /// Manager for collecting log messages.
-    /// </summary>
-    public class CollectingConsoleLogManager : LogManager
-    {
-        /// <summary>
-        /// Get log collector instance.
-        /// </summary>
-        /// <param name="name">Classifier name, typically namespace or type name.</param>
-        /// <returns>The log collector singleton instance.</returns>
-        protected override Logger GetLoggerImpl(string name)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            return CollectingConsoleLogger.Instance;
+            _logEntries.Add((logLevel, formatter(state, exception)));
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return default!;
         }
     }
 }

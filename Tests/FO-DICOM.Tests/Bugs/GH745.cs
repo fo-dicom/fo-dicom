@@ -9,6 +9,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -57,16 +58,16 @@ namespace FellowOakDicom.Tests.Bugs
                     {
                         OnResponseReceived = (req, res) =>
                         {
-                            testLogger.Info("Response #{0} / expected #{1}", actual, req.UserState);
+                            testLogger.LogInformation("Response #{0} / expected #{1}", actual, req.UserState);
                             Interlocked.Increment(ref actual);
-                            testLogger.Info("         #{0} / expected #{1}", actual - 1, req.UserState);
+                            testLogger.LogInformation("         #{0} / expected #{1}", actual - 1, req.UserState);
                         },
                         UserState = i
                     }
                 ).ConfigureAwait(false);
-                testLogger.Info("Sending #{0}", i);
+                testLogger.LogInformation("Sending #{0}", i);
                 await client.SendAsync().ConfigureAwait(false);
-                testLogger.Info("Sent (or timed out) #{0}", i);
+                testLogger.LogInformation("Sent (or timed out) #{0}", i);
             }
 
             Assert.Equal(expected, actual);
@@ -103,15 +104,15 @@ namespace FellowOakDicom.Tests.Bugs
                         {
                             OnResponseReceived = (req, res) =>
                             {
-                                testLogger.Info("Response #{0}", requestIndex);
+                                testLogger.LogInformation("Response #{0}", requestIndex);
                                 Interlocked.Increment(ref actual);
                             }
                         }
                     ).ConfigureAwait(false);
 
-                    testLogger.Info("Sending #{0}", requestIndex);
+                    testLogger.LogInformation("Sending #{0}", requestIndex);
                     await client.SendAsync().ConfigureAwait(false);
-                    testLogger.Info("Sent (or timed out) #{0}", requestIndex);
+                    testLogger.LogInformation("Sent (or timed out) #{0}", requestIndex);
                 }
             ).ToArray();
 

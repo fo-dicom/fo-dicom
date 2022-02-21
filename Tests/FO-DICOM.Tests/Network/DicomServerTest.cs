@@ -462,7 +462,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             protected override DicomCEchoProvider CreateScp(INetworkStream stream)
-                => new DicomCEchoProvider(stream, null, _dicomServiceDependencies.LogManager.GetLogger("DicomEchoProvider"), _dicomServiceDependencies);
+                => new DicomCEchoProvider(stream, null, _dicomServiceDependencies.LoggerFactory.CreateLogger("DicomEchoProvider"), _dicomServiceDependencies);
         }
 
         #endregion

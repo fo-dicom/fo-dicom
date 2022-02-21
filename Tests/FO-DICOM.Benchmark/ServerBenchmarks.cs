@@ -9,6 +9,8 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FellowOakDicom.Benchmark
 {
@@ -33,7 +35,6 @@ namespace FellowOakDicom.Benchmark
             var services = new ServiceCollection();
 
             services.AddFellowOakDicom()
-                .AddLogManager<NullLoggerManager>()
                 .Configure<DicomClientOptions>(o =>
                 {
                     o.AssociationLingerTimeoutInMs = 0;
@@ -43,7 +44,8 @@ namespace FellowOakDicom.Benchmark
                     o.LogDataPDUs = false;
                     o.LogDimseDatasets = false;
                     o.MaxPDULength = 512 * 1024 * 1024;
-                });
+                })
+                .AddSingleton<ILoggerFactory, NullLoggerFactory>();
 
             var serviceProvider = services.BuildServiceProvider();
 

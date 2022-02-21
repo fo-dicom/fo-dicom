@@ -1,6 +1,7 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -28,17 +29,17 @@ namespace FellowOakDicom.Network.Client.States
                 && _dicomClient.QueuedRequests.TryPeek(out StrongBox<DicomRequest> _)
                 && Interlocked.CompareExchange(ref _sendCalled, 1, 0) == 0)
             {
-                _dicomClient.Logger.Debug($"[{this}] More requests to send (and no cancellation requested yet), automatically opening new association");
+                _dicomClient.Logger.LogDebug($"[{this}] More requests to send (and no cancellation requested yet), automatically opening new association");
                 return await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);
             }
 
             if (cancellation.Token.IsCancellationRequested)
             {
-                _dicomClient.Logger.Debug($"[{this}] Cancellation requested, staying idle");
+                _dicomClient.Logger.LogDebug($"[{this}] Cancellation requested, staying idle");
                 return this;
             }
 
-            _dicomClient.Logger.Debug($"[{this}] No requests to send, staying idle");
+            _dicomClient.Logger.LogDebug($"[{this}] No requests to send, staying idle");
             return this;
         }
 
@@ -52,7 +53,7 @@ namespace FellowOakDicom.Network.Client.States
         {
             if (Interlocked.CompareExchange(ref _sendCalled, 1, 0) != 0)
             {
-                _dicomClient.Logger.Warn($"[{this}] Called SendAsync more than once, ignoring subsequent calls");
+                _dicomClient.Logger.LogWarning($"[{this}] Called SendAsync more than once, ignoring subsequent calls");
                 return;
             }
             await _dicomClient.TransitionToConnectState(cancellation).ConfigureAwait(false);

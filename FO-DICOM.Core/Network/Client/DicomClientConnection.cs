@@ -147,7 +147,7 @@ namespace FellowOakDicom.Network.Client
                 dicomClient.FallbackEncoding,
                 dicomClient.Logger, 
                 new DicomServiceDependencies(
-                    dicomClient.LogManager,
+                    dicomClient.LoggerFactory,
                     dicomClient.NetworkManager,
                     dicomClient.TranscoderManager,
                     dicomClient.MemoryProvider

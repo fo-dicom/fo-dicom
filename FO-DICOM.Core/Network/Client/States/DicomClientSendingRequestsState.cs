@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.Events;
 using FellowOakDicom.Network.Client.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -83,19 +84,19 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association accept but we already have an active association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association accept but we already have an active association!");
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association reject but we already have an active association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association reject but we already have an active association!");
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association release response but we did not expect this!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association release response but we did not expect this!");
             return Task.CompletedTask;
         }
 
@@ -233,12 +234,12 @@ namespace FellowOakDicom.Network.Client.States
                             {
                                 if (_numberOfSentRequests >= _maximumNumberOfRequestsPerAssociation)
                                 {
-                                    _dicomClient.Logger.Debug(
+                                    _dicomClient.Logger.LogDebug(
                                         $"[{this}] DICOM client has reached the maximum number of requests for this association and is still waiting for the sent requests to complete");
                                 }
                                 else
                                 {
-                                    _dicomClient.Logger.Debug($"[{this}] DICOM client has more queued requests, sending those now...");
+                                    _dicomClient.Logger.LogDebug($"[{this}] DICOM client has more queued requests, sending those now...");
 
                                     await SendRequests().ConfigureAwait(false);
                                 }
@@ -246,7 +247,7 @@ namespace FellowOakDicom.Network.Client.States
 
                             if (Connection.IsSendNextMessageRequired)
                             {
-                                _dicomClient.Logger.Debug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
+                                _dicomClient.Logger.LogDebug($"[{this}] DICOM client connection still has unsent requests, sending those now...");
 
                                 await Connection.SendNextMessageAsync().ConfigureAwait(false);
                             }
@@ -271,10 +272,10 @@ namespace FellowOakDicom.Network.Client.States
                 switch (cancellation.Mode)
                 {
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
+                        _dicomClient.Logger.LogWarning($"[{this}] Cancellation is requested before requests could be sent, releasing association ...");
                         return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     case DicomClientCancellationMode.ImmediatelyAbortAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] Cancellation is requested before requests could be sent, aborting association ...");
+                        _dicomClient.Logger.LogWarning($"[{this}] Cancellation is requested before requests could be sent, aborting association ...");
                         return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(cancellation.Mode), cancellation.Mode, "Unknown cancellation mode");
@@ -284,7 +285,7 @@ namespace FellowOakDicom.Network.Client.States
             _disposables.Add(cancellation.Token.Register(() => _sendRequestsCancellationTokenSource.Cancel()));
             _disposables.Add(cancellation.Token.Register(() => _onCancellationTaskCompletionSource.TrySetResult(true)));
 
-            _dicomClient.Logger.Debug($"[{this}] Sending DICOM requests");
+            _dicomClient.Logger.LogDebug($"[{this}] Sending DICOM requests");
 
             await SendInitialRequests().ConfigureAwait(false);
 
@@ -305,11 +306,11 @@ namespace FellowOakDicom.Network.Client.States
             {
                 if (_numberOfSentRequests < _maximumNumberOfRequestsPerAssociation)
                 {
-                    _dicomClient.Logger.Debug($"[{this}] All requests are done, going to linger association now...");
+                    _dicomClient.Logger.LogDebug($"[{this}] All requests are done, going to linger association now...");
                     return await _dicomClient.TransitionToLingerState(_initialisationParameters, cancellation).ConfigureAwait(false);
                 }
 
-                _dicomClient.Logger.Debug($"[{this}] The maximum number of requests per association ({_maximumNumberOfRequestsPerAssociation}) have been sent, immediately releasing association now...");
+                _dicomClient.Logger.LogDebug($"[{this}] The maximum number of requests per association ({_maximumNumberOfRequestsPerAssociation}) have been sent, immediately releasing association now...");
                 return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
@@ -318,10 +319,10 @@ namespace FellowOakDicom.Network.Client.States
                 switch (cancellation.Mode)
                 {
                     case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] Cancellation requested, releasing association...");
+                        _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested, releasing association...");
                         return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     case DicomClientCancellationMode.ImmediatelyAbortAssociation:
-                        _dicomClient.Logger.Warn($"[{this}] Cancellation requested, aborting association...");
+                        _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested, aborting association...");
                         return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(cancellation.Mode), cancellation.Mode, "Unknown cancellation mode");
@@ -330,7 +331,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Warn($"[{this}] Association is aborted while sending requests, cleaning up...");
+                _dicomClient.Logger.LogWarning($"[{this}] Association is aborted while sending requests, cleaning up...");
                 var abortReceivedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
                 return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
@@ -338,7 +339,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Debug($"[{this}] Disconnected while sending requests, cleaning up...");
+                _dicomClient.Logger.LogDebug($"[{this}] Disconnected while sending requests, cleaning up...");
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {

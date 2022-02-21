@@ -9,6 +9,7 @@ using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Printing
 {
@@ -21,7 +22,7 @@ namespace FellowOakDicom.Printing
         #region Properties and Attributes
 
         private static ILogger _logger;
-        private static ILogger Logger => _logger ?? (_logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.Printing"));
+        private static ILogger Logger => _logger ?? (_logger = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("FellowOakDicom.Printing"));
 
         private readonly FilmSession _filmSession = null;
 
@@ -480,11 +481,11 @@ namespace FellowOakDicom.Printing
             {
                 if (string.IsNullOrEmpty(ImageDisplayFormat))
                 {
-                    Logger.Error("No display format present in N-CREATE Basic Film Box dataset");
+                    Logger.LogError("No display format present in N-CREATE Basic Film Box dataset");
                     return false;
                 }
 
-                Logger.Info($"Applying display format {ImageDisplayFormat} for film box {SOPInstanceUID}");
+                Logger.LogInformation($"Applying display format {ImageDisplayFormat} for film box {SOPInstanceUID}");
 
                 var parts = ImageDisplayFormat.Split('\\');
 
@@ -525,7 +526,7 @@ namespace FellowOakDicom.Printing
             }
             catch (Exception ex)
             {
-                Logger.Error("FilmBox.Initialize, exception message: {0}", ex.Message);
+                Logger.LogError("FilmBox.Initialize, exception message: {0}", ex.Message);
             }
 
             return false;

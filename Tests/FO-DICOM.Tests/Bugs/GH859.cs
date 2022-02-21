@@ -7,6 +7,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -66,7 +67,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             request.OnResponseReceived += (e, args) =>
             {
-                _output.Info("Response received. Cancelling in 500ms.");
+                _output.LogInformation("Response received. Cancelling in 500ms.");
                 source.CancelAfter(100);
             };
 

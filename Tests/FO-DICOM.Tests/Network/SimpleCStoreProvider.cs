@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -45,7 +46,7 @@ namespace FellowOakDicom.Tests.Network
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 
-        public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public SimpleCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {
@@ -78,7 +79,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
-            Logger.Info(tempName);
+            Logger.LogInformation(tempName);
 
             // as the incoming file could be not-valid
             request.File.Dataset.ValidateItems = false;

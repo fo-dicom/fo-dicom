@@ -8,6 +8,7 @@ using System.Text;
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -311,10 +312,9 @@ namespace FellowOakDicom.Tests
                 new byte[] { 0x1b, 0x2d, 0x54, 0xb9, 0xd2, 0xc1, 0xca, 0xa1, 0xd8, 0xc5 } }
         };
 
-        private CollectingConsoleLogger NewLogCollector()
+        private CollectingLogger NewLogCollector()
         {
-            var logger = (CollectingConsoleLogger) Setup.ServiceProvider.GetRequiredService<ILogManager>()
-                .GetLogger("FellowOakDicom.DicomEncoding");
+            var logger = CollectingLoggerProvider.Instance.CollectingLogger;
             logger.Reset();
             return logger;
         }

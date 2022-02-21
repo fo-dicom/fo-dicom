@@ -1,17 +1,16 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Helpers
 {
 
-    public class XUnitDicomLogger : Logger
+    public class XUnitDicomLogger : ILogger
     {
         private delegate string PrefixEnricher(string prefix);
 
@@ -45,27 +44,12 @@ namespace FellowOakDicom.Tests.Helpers
 
         public XUnitDicomLogger WithMinimumLevel(LogLevel minimumLevel) => new XUnitDicomLogger(_testOutputHelper, minimumLevel, _prefixEnrichers);
 
-        public override void Log(LogLevel level, string msg, params object[] args)
+        public void Log<TState>(LogLevel level, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (level < _minimumLevel)
-                return;
-
-            if (args != null)
-            {
-                for (int i = 0; i < args.Length; i++)
-                {
-                    var arg = args[i];
-                    if (arg is Exception e)
-                    {
-                        args[i] = e.Demystify();
-                    }
-                }
-            }
-
             var prefix = _prefixEnrichers.Aggregate(
                 $"{nameof(XUnitDicomLogger), 20} {level.ToString().ToUpper(), 7}",
                 (intermediatePrefix, enrichPrefix) => enrichPrefix(intermediatePrefix));
-            var message = string.Format(NameFormatToPositionalFormat(msg), args);
+            var message = formatter(state, exception);
             var line = $"{prefix} : {message}";
             try
             {
@@ -75,6 +59,16 @@ namespace FellowOakDicom.Tests.Helpers
             {
                 // Ignored, trying to log before or after tests cannot be handled properly
             }
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return _minimumLevel >= logLevel;
+        }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            throw new NotImplementedException();
         }
     }
 }

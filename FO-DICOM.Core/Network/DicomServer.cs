@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace FellowOakDicom.Network
         
         private readonly INetworkManager _networkManager;
         
-        private readonly ILogManager _logManager;
+        private readonly ILoggerFactory _loggerFactory;
 
         private readonly List<RunningDicomService> _services;
 
@@ -65,7 +65,7 @@ namespace FellowOakDicom.Network
         public DicomServer(DicomServerDependencies dependencies)
         {
             _networkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
-            _logManager = dependencies.LogManager ?? throw new ArgumentNullException(nameof(dependencies.LogManager));
+            _loggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;
@@ -131,7 +131,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public ILogger Logger
         {
-            get => _logger ?? (_logger = _logManager.GetLogger("FellowOakDicom.Network"));
+            get => _logger ?? (_logger = _loggerFactory.CreateLogger("FellowOakDicom.Network"));
             set => _logger  = value;
         }
 
@@ -243,7 +243,7 @@ namespace FellowOakDicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            var creator = ActivatorUtilities.CreateFactory(typeof(T), new[] { typeof(INetworkStream), typeof(Encoding), typeof(Logger) });
+            var creator = ActivatorUtilities.CreateFactory(typeof(T), new[] { typeof(INetworkStream), typeof(Encoding), typeof(ILogger) });
             var instance = (T)creator(ServiceScope.ServiceProvider, new object[] { stream, _fallbackEncoding, Logger });
             
             // Please do not use property injection. See https://stackoverflow.com/a/39853478/563070
@@ -310,11 +310,11 @@ namespace FellowOakDicom.Network
             }
             catch (OperationCanceledException e)
             {
-                Logger.Warn("DICOM server was canceled, {@error}", e);
+                Logger.LogWarning("DICOM server was canceled, {@error}", e);
             }
             catch (Exception e)
             {
-                Logger.Error("Exception listening for DICOM services, {@error}", e);
+                Logger.LogError("Exception listening for DICOM services, {@error}", e);
 
                 Stop();
                 Exception = e;
@@ -370,12 +370,12 @@ namespace FellowOakDicom.Network
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.Info("Disconnected client cleanup manually terminated.");
+                    Logger.LogInformation("Disconnected client cleanup manually terminated.");
                     ClearServices();
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn("Exception removing disconnected clients, {@error}", e);
+                    Logger.LogWarning("Exception removing disconnected clients, {@error}", e);
                 }
             }
         }

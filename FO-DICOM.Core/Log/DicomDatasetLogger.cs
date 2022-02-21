@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace FellowOakDicom.Log
     /// </summary>
     public class DicomDatasetLogger : IDicomDatasetWalker
     {
-        private readonly Logger _log;
+        private readonly ILogger _log;
 
         private readonly LogLevel _level;
 
@@ -33,7 +34,7 @@ namespace FellowOakDicom.Log
         /// <param name="level">Log level.</param>
         /// <param name="width">Maximum write width.</param>
         /// <param name="valueLength">Maximum value length.</param>
-        public DicomDatasetLogger(Logger logger, LogLevel level, int width = 128, int valueLength = 64)
+        public DicomDatasetLogger(ILogger logger, LogLevel level, int width = 128, int valueLength = 64)
         {
             _log = logger;
             _level = level;

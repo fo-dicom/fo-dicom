@@ -18,6 +18,7 @@ using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 using Xunit.Abstractions;
@@ -73,13 +74,13 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
-            var logManager = Setup.ServiceProvider.GetRequiredService<ILogManager>();
+            var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
             var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
             var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             return new DefaultDicomClientFactory(
-                logManager,
+                loggerFactory,
                 networkManager,
                 transcoderManager,
                 memoryProvider,
@@ -436,7 +437,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
 
                 var testLogger = _logger.IncludePrefix("Test");
-                testLogger.Info($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
+                testLogger.LogInformation($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
 
                 var requests = new List<DicomRequest>();
                 for (var i = 1; i <= options.Requests; i++)
@@ -448,9 +449,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
                     if (i < options.Requests)
                     {
-                        testLogger.Info($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
+                        testLogger.LogInformation($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
                         await Task.Delay(options.TimeBetweenRequests);
-                        testLogger.Info($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
+                        testLogger.LogInformation($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
                     }
                 }
 
@@ -705,7 +706,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     exception1 = e;
                 }
 
-                client.Logger.Info("Second request + SendAsync");
+                client.Logger.LogInformation("Second request + SendAsync");
 
                 Exception exception2 = null;
                 try
@@ -773,7 +774,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     timeoutException1 = e;
                 }
 
-                client.Logger.Info("Second request + SendAsync");
+                client.Logger.LogInformation("Second request + SendAsync");
 
                 Exception timeoutException2 = null;
                 Exception rejectException2 = null;
@@ -987,7 +988,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class InMemoryDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
         {
-            public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            public InMemoryDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
             }
@@ -1034,7 +1035,7 @@ namespace FellowOakDicom.Tests.Network.Client
             public IEnumerable<DicomRequest> Requests => _requests;
 
             public NeverRespondingDicomServer(INetworkStream stream, Encoding fallbackEncoding,
-                Logger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
+                ILogger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
                 _requests = new ConcurrentBag<DicomRequest>();
             }
@@ -1083,7 +1084,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class FastPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
+            public FastPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
             {
             }
 
@@ -1143,7 +1144,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         private class SlowPendingResponsesDicomServer : DicomService, IDicomServiceProvider, IDicomCFindProvider, IDicomCMoveProvider
         {
-            public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            public SlowPendingResponsesDicomServer(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dependencies) : base(
                 stream, fallbackEncoding, log, dependencies)
             {

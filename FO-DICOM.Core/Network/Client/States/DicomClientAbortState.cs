@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Network.Client.Events;
 using FellowOakDicom.Network.Client.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -78,18 +79,18 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == sendAbort)
             {
-                _dicomClient.Logger.Debug($"[{this}] Abort notification sent to server. Disconnecting...");
+                _dicomClient.Logger.LogDebug($"[{this}] Abort notification sent to server. Disconnecting...");
                 return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
             if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Debug($"[{this}] Received abort while aborting. Neat.");
+                _dicomClient.Logger.LogDebug($"[{this}] Received abort while aborting. Neat.");
                 return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Debug($"[{this}] Disconnected while aborting. Perfect.");
+                _dicomClient.Logger.LogDebug($"[{this}] Disconnected while aborting. Perfect.");
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {
@@ -103,7 +104,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onTimeout)
             {
-                _dicomClient.Logger.Debug($"[{this}] Abort notification timed out. Disconnecting...");
+                _dicomClient.Logger.LogDebug($"[{this}] Abort notification timed out. Disconnecting...");
                 return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 

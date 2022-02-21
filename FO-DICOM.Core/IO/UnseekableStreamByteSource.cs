@@ -5,6 +5,7 @@ using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -83,8 +84,8 @@ namespace FellowOakDicom.IO
         {
             if (readOption == FileReadOption.Default || readOption == FileReadOption.ReadLargeOnDemand)
             {
-                var logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.IO");
-                logger.Warn("Reading large files on demand is not possible with unseekable streams, reading all tags immediately instead.");
+                var logger = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("FellowOakDicom.IO");
+                logger.LogWarning("Reading large files on demand is not possible with unseekable streams, reading all tags immediately instead.");
                 readOption = FileReadOption.ReadAll;
             }
 

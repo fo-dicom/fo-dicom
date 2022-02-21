@@ -6,6 +6,7 @@ using System;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Reader;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Log
 {
@@ -13,7 +14,7 @@ namespace FellowOakDicom.Log
     public class DicomParserLogger : IDicomReaderObserver
     {
 
-        private Logger _log;
+        private ILogger _log;
 
         private LogLevel _level;
 
@@ -21,7 +22,7 @@ namespace FellowOakDicom.Log
 
         private string _pad;
 
-        public DicomParserLogger(Logger log, LogLevel level)
+        public DicomParserLogger(ILogger log, LogLevel level)
         {
             _log = log;
             _level = level;

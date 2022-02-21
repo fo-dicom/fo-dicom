@@ -1,6 +1,7 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
@@ -71,7 +72,7 @@ namespace FellowOakDicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.Warn($"[{this}] The listener for incoming DICOM communication could not be disposed properly: " + e);
+                _dicomClient.Logger.LogWarning($"[{this}] The listener for incoming DICOM communication could not be disposed properly: " + e);
             }
 
             try
@@ -80,7 +81,7 @@ namespace FellowOakDicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.Warn($"[{this}] The connection network stream could not be disposed properly: " + e);
+                _dicomClient.Logger.LogWarning($"[{this}] The connection network stream could not be disposed properly: " + e);
             }
 
             // wait until listener task realizes connection is gone
@@ -96,11 +97,11 @@ namespace FellowOakDicom.Network.Client.States
             {
                 case DicomClientCompletedWithoutErrorInitialisationParameters parameters:
                 {
-                    _dicomClient.Logger.Debug($"[{this}] DICOM client completed without errors");
+                    _dicomClient.Logger.LogDebug($"[{this}] DICOM client completed without errors");
 
                     if (parameters.Connection != null)
                     {
-                        _dicomClient.Logger.Debug($"[{this}] Cleaning up");
+                        _dicomClient.Logger.LogDebug($"[{this}] Cleaning up");
                         await Cleanup(parameters.Connection).ConfigureAwait(false);
                     }
 
@@ -109,16 +110,16 @@ namespace FellowOakDicom.Network.Client.States
 
                 case DicomClientCompletedWithErrorInitialisationParameters parameters:
                 {
-                    _dicomClient.Logger.Debug($"[{this}] DICOM client completed with an error");
+                    _dicomClient.Logger.LogDebug($"[{this}] DICOM client completed with an error");
 
                     if (parameters.Connection != null)
                     {
-                        _dicomClient.Logger.Debug($"[{this}] An error occurred while we had an active connection, cleaning that up first");
+                        _dicomClient.Logger.LogDebug($"[{this}] An error occurred while we had an active connection, cleaning that up first");
                         await Cleanup(parameters.Connection).ConfigureAwait(false);
                     }
                     else
                     {
-                        _dicomClient.Logger.Warn($"[{this}] An error occurred and no active connection was detected, so no cleanup will happen!");
+                        _dicomClient.Logger.LogWarning($"[{this}] An error occurred and no active connection was detected, so no cleanup will happen!");
                     }
 
                     ExceptionDispatchInfo.Capture(parameters.ExceptionToThrow).Throw();
@@ -140,14 +141,14 @@ namespace FellowOakDicom.Network.Client.States
         {
             if (!(_initialisationParameters is DicomClientCompletedWithErrorInitialisationParameters))
             {
-                _dicomClient.Logger.Warn($"[{this}] Called SendAsync during COMPLETED (without errors) state but this is unnecessary, the DicomClient will automatically" +
+                _dicomClient.Logger.LogWarning($"[{this}] Called SendAsync during COMPLETED (without errors) state but this is unnecessary, the DicomClient will automatically" +
                     "transition back to IDLE in a moment");
                 return;
             }
 
             if (Interlocked.CompareExchange(ref _sendCalled, 1, 0) != 0)
             {
-                _dicomClient.Logger.Warn($"[{this}] Called SendAsync more than once, ignoring subsequent calls");
+                _dicomClient.Logger.LogWarning($"[{this}] Called SendAsync more than once, ignoring subsequent calls");
                 return;
             }
 

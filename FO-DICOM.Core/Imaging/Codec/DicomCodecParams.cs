@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Imaging.Codec
 {
@@ -17,7 +18,7 @@ namespace FellowOakDicom.Imaging.Codec
         /// </summary>
         protected DicomCodecParams()
         {
-            this.Logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("FellowOakDicom.Imaging.Codec");
+            this.Logger = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("FellowOakDicom.Imaging.Codec");
         }
 
         /// <summary>

@@ -1,20 +1,21 @@
 ﻿using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace FellowOakDicom.Network
 {
     public class DicomServiceDependencies
     {
-        public ILogManager LogManager { get; }
+        public ILoggerFactory LoggerFactory { get; }
         public INetworkManager NetworkManager { get; }
         public ITranscoderManager TranscoderManager { get; }
         public IMemoryProvider MemoryProvider { get; }
 
-        public DicomServiceDependencies(ILogManager logManager, INetworkManager networkManager, ITranscoderManager transcoderManager, IMemoryProvider memoryProvider)
+        public DicomServiceDependencies(ILoggerFactory loggerFactory, INetworkManager networkManager, ITranscoderManager transcoderManager, IMemoryProvider memoryProvider)
         {
-            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
             MemoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));

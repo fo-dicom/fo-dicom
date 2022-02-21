@@ -1,4 +1,5 @@
 ﻿using FellowOakDicom.Log;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace FellowOakDicom.Network
@@ -6,12 +7,12 @@ namespace FellowOakDicom.Network
     public class DicomServerDependencies
     {
         public INetworkManager NetworkManager { get; }
-        public ILogManager LogManager { get; }
+        public ILoggerFactory LoggerFactory { get; }
 
-        public DicomServerDependencies(INetworkManager networkManager, ILogManager logManager)
+        public DicomServerDependencies(INetworkManager networkManager, ILoggerFactory loggerFactory)
         {
             NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
     }
 }

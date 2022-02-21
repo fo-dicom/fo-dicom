@@ -5,6 +5,7 @@ using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -68,7 +69,7 @@ namespace FellowOakDicom
                 return encoding;
             }
 
-            Logger.Warn($"'{charset}' is not a valid DICOM encoding - using ASCII encoding instead.");
+            Logger.LogWarning($"'{charset}' is not a valid DICOM encoding - using ASCII encoding instead.");
 
             return Default;
         }
@@ -305,13 +306,13 @@ namespace FellowOakDicom
                 encoding = GetCodeForEncoding(fragment[1], fragment[2], seqLength == 4 ? fragment[3] : (byte)0);
                 if (encoding == null)
                 {
-                    Logger.Warn("Unknown escape sequence found in string, using ASCII encoding.");
+                    Logger.LogWarning("Unknown escape sequence found in string, using ASCII encoding.");
                     encoding = Default;
                 }
                 else if (encoding.CodePage != Default.CodePage && !encodings.Contains(encoding))
                 {
                     // maybe be shall try to use the encoding anyway? 
-                    Logger.Warn("Found escape sequence for '{encodingName}', which is " +
+                    Logger.LogWarning("Found escape sequence for '{encodingName}', which is " +
                                 "not defined in Specific Character Set, using ASCII encoding instead.",
                         encoding.WebName);
                     encoding = Default;
@@ -353,14 +354,14 @@ namespace FellowOakDicom
             catch (DecoderFallbackException)
             {
                 var decoded = encoding.GetString(fragment, index, count);
-                Logger.Warn("Could not decode string '{decoded}' with given encoding, using replacement characters.",
+                Logger.LogWarning("Could not decode string '{decoded}' with given encoding, using replacement characters.",
                     decoded);
                 return decoded;
             }
         }
 
         private static ILogger Logger =>
-            Setup.ServiceProvider.GetRequiredService<ILogManager>()
-                .GetLogger("FellowOakDicom.DicomEncoding");
+            Setup.ServiceProvider.GetRequiredService<ILoggerFactory>()
+                .CreateLogger("FellowOakDicom.DicomEncoding");
     }
 }

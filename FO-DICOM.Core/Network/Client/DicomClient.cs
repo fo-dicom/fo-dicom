@@ -14,6 +14,7 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client
 {
@@ -92,11 +93,6 @@ namespace FellowOakDicom.Network.Client
         INetworkManager NetworkManager { get; }
 
         /// <summary>
-        /// Gets the log manager that will be used to log information to.
-        /// </summary>
-        ILogManager LogManager { get; }
-
-        /// <summary>
         /// Gets the transcoder manager that will be used to transcode incoming or outgoing DICOM files.
         /// </summary>
         ITranscoderManager TranscoderManager { get; }
@@ -110,6 +106,11 @@ namespace FellowOakDicom.Network.Client
         /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
         /// </summary>
         bool IsSendRequired { get; }
+
+        /// <summary>
+        /// The factory that is responsible for creating loggers
+        /// </summary>
+        ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
         /// Triggers when an association is accepted
@@ -197,7 +198,7 @@ namespace FellowOakDicom.Network.Client
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
         public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
         public INetworkManager NetworkManager { get; }
-        public ILogManager LogManager { get; }
+        public ILoggerFactory LoggerFactory { get; }
         public ITranscoderManager TranscoderManager { get; }
         public IMemoryProvider MemoryProvider { get; }
 
@@ -219,14 +220,14 @@ namespace FellowOakDicom.Network.Client
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="networkManager">The network manager that will be used to connect to the DICOM server</param>
-        /// <param name="logManager">The log manager that will be used to extract a default logger</param>
+        /// <param name="loggerFactory">The log manager that will be used to extract a default logger</param>
         /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
         /// <param name="memoryProvider">The memory provider that will be used to allocate memory when sending and receiving messages</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             INetworkManager networkManager,
-            ILogManager logManager,
+            ILoggerFactory loggerFactory,
             ITranscoderManager transcoderManager,
             IMemoryProvider memoryProvider)
         {
@@ -244,10 +245,10 @@ namespace FellowOakDicom.Network.Client
             AsyncPerformed = 1;
             State = new DicomClientIdleState(this);
             NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
+            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
-            LogManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
             MemoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
-            Logger = logManager.GetLogger("FellowOakDicom.Network");
+            Logger = loggerFactory.CreateLogger("FellowOakDicom.Network");
         }
 
         private async Task ExecuteWithinTransitionLock(Func<Task> task)
@@ -269,7 +270,7 @@ namespace FellowOakDicom.Network.Client
             {
                 var oldState = State;
 
-                Logger.Debug($"[{oldState}] --> [{newState}]");
+                Logger.LogDebug($"[{oldState}] --> [{newState}]");
 
                 oldState.Dispose();
 

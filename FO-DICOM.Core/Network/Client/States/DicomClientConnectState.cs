@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FellowOakDicom.Network.Client.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -57,7 +58,7 @@ namespace FellowOakDicom.Network.Client.States
         {
             if (cancellation.Token.IsCancellationRequested)
             {
-                _dicomClient.Logger.Warn($"[{this}] Cancellation requested, won't connect");
+                _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested, won't connect");
                 return await _dicomClient.TransitionToIdleState(cancellation).ConfigureAwait(false);
             }
 

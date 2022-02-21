@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Network.Client.Events;
 using FellowOakDicom.Network.Client.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -57,19 +58,19 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association accept but we already have an active association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association accept but we already have an active association!");
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association reject but we already have an active association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association reject but we already have an active association!");
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association release but we did not expect this!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association release but we did not expect this!");
             return Task.CompletedTask;
         }
 
@@ -98,11 +99,11 @@ namespace FellowOakDicom.Network.Client.States
             switch (cancellation.Mode)
             {
                 case DicomClientCancellationMode.ImmediatelyAbortAssociation:
-                    _dicomClient.Logger.Warn($"[{this}] Cancellation requested, immediately aborting association");
+                    _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested, immediately aborting association");
                     return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
                 case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                 default:
-                    _dicomClient.Logger.Warn($"[{this}] Cancellation requested, immediately releasing association");
+                    _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested, immediately releasing association");
                     return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
         }
@@ -116,7 +117,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (_dicomClient.QueuedRequests.Any())
             {
-                _dicomClient.Logger.Debug($"[{this}] DICOM client already has requests again, immediately moving back to sending requests");
+                _dicomClient.Logger.LogDebug($"[{this}] DICOM client already has requests again, immediately moving back to sending requests");
                 return await _dicomClient.TransitionToSendingRequestsState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
@@ -140,19 +141,19 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onRequestIsAdded)
             {
-                _dicomClient.Logger.Debug($"[{this}] A new request was added before linger timeout of {_dicomClient.ClientOptions.AssociationLingerTimeoutInMs}ms, reusing association");
+                _dicomClient.Logger.LogDebug($"[{this}] A new request was added before linger timeout of {_dicomClient.ClientOptions.AssociationLingerTimeoutInMs}ms, reusing association");
                 return await _dicomClient.TransitionToSendingRequestsState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onLingerTimeout)
             {
-                _dicomClient.Logger.Debug($"[{this}] Linger timed out after {_dicomClient.ClientOptions.AssociationLingerTimeoutInMs}ms, releasing association");
+                _dicomClient.Logger.LogDebug($"[{this}] Linger timed out after {_dicomClient.ClientOptions.AssociationLingerTimeoutInMs}ms, releasing association");
                 return await _dicomClient.TransitionToReleaseAssociationState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Warn($"[{this}] Association was aborted while lingering the association");
+                _dicomClient.Logger.LogWarning($"[{this}] Association was aborted while lingering the association");
                 var abortReceivedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
                 return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
@@ -160,7 +161,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Warn($"[{this}] Disconnected while lingering the association");
+                _dicomClient.Logger.LogWarning($"[{this}] Disconnected while lingering the association");
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {

@@ -16,6 +16,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -390,7 +391,7 @@ namespace FellowOakDicom.Tests.Network.Client
             catch (Exception ex)
             {
                 result = false;
-                client.Logger.Error("Send failed, exception: {0}", ex);
+                client.Logger.LogError("Send failed, exception: {0}", ex);
                 awaiter.Set();
             }
 
@@ -958,7 +959,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var logger = _logger.IncludePrefix("Responses");
             foreach (var r in responses)
             {
-                logger.Info($"{r.Type} [{r.RequestMessageID}]: " +
+                logger.LogInformation($"{r.Type} [{r.RequestMessageID}]: " +
                             $"Status = {r.Status.State}, " +
                             $"Code = {r.Status.Code}, " +
                             $"ErrorComment = {r.Status.ErrorComment}, " +
@@ -981,7 +982,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
+            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
             var sendTasks = new List<Task>();
@@ -1000,7 +1001,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     sendTasks.Add(client.SendAsync());
                 }
 
-                logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
                 await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
             }
 
@@ -1031,7 +1032,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
+            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
 
@@ -1051,7 +1052,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     sendTasks.Add(client.SendAsync());
                 }
 
-                logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
                 await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
             }
             await Task.WhenAll(sendTasks).ConfigureAwait(false);
@@ -1083,7 +1084,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.Info($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
+            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
 
@@ -1103,7 +1104,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     sendTasks.Add(client.SendAsync());
                 }
 
-                logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
                 await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest)).ConfigureAwait(false);
             }
             await Task.WhenAll(sendTasks).ConfigureAwait(false);
@@ -1136,7 +1137,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.Info($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
+            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
 
@@ -1157,7 +1158,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
 
                 var secondsToWait = secondsBetweenEachRequest[i];
-                logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
                 await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
             }
             await Task.WhenAll(sendTasks).ConfigureAwait(false);
@@ -1189,7 +1190,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 client.OnCStoreRequest = async request =>
                 {
-                    logger.Info("Handling C-Store request");
+                    logger.LogInformation("Handling C-Store request");
                     capturedCStoreRequest = request;
                     await Task.Delay(50).ConfigureAwait(false);
                     return new DicomCStoreResponse(request, DicomStatus.Success);
@@ -1199,7 +1200,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 var seriesInstanceUID = "999.999.94827453";
                 var sopInstanceUID = "999.999.133.1996.1.1800.1.6.21";
 
-                logger.Info("Sending C-Get request");
+                logger.LogInformation("Sending C-Get request");
                 await client.AddRequestAsync(new DicomCGetRequest(studyInstanceUID, seriesInstanceUID, sopInstanceUID)).ConfigureAwait(false);
 
                 var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
@@ -1232,7 +1233,7 @@ namespace FellowOakDicom.Tests.Network.Client
             client.ClientOptions.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
             client.NegotiateAsyncOps(10, 10);
 
-            logger.Info($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
+            logger.LogInformation($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
             for (var i = 1; i <= numberOfRequests; i++)
@@ -1242,7 +1243,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (request, response) =>
                     {
-                        logger.Debug($"Request completed: {iLocal}");
+                        logger.LogDebug($"Request completed: {iLocal}");
                         responses.Add(response);
                     }
                 };
@@ -1281,7 +1282,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
             catch (Exception exception)
             {
-                _logger.Error("Error occurred during send {e}", exception);
+                _logger.LogError("Error occurred during send {e}", exception);
                 capturedException = exception;
             }
             Assert.NotNull(capturedException);
@@ -1307,18 +1308,18 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (request, response) =>
                     {
-                        logger.Info("Received echo response 1, disposing server");
+                        logger.LogInformation("Received echo response 1, disposing server");
                         echoResponse1 = response;
                         // ReSharper disable once AccessToDisposedClosure This is an edge case we are trying to test
                         server?.Dispose();
-                        logger.Info("Server is disposed");
+                        logger.LogInformation("Server is disposed");
                     }
                 };
                 var echoRequest2 = new DicomCEchoRequest
                 {
                     OnResponseReceived = (request, response) =>
                     {
-                        logger.Info("Received echo response 2");
+                        logger.LogInformation("Received echo response 2");
                         echoResponse2 = response;
                     }
                 };
@@ -1326,7 +1327,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (request, response) =>
                     {
-                        logger.Info("Received echo response 3");
+                        logger.LogInformation("Received echo response 3");
                         echoResponse3 = response;
                     }
                 };
@@ -1359,7 +1360,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dependencies)
                 : base(stream, fallbackEncoding, log, dependencies)
             {
@@ -1415,7 +1416,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 DicomTransferSyntax.ExplicitVRLittleEndian
             };
 
-            public ExplicitLECStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            public ExplicitLECStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dependencies)
                 : base(stream, fallbackEncoding, log, dependencies)
             {
@@ -1615,7 +1616,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Could not send file via C-Store request: {error}", e);
+                    Logger.LogError("Could not send file via C-Store request: {error}", e);
                     result = new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
                 }
 

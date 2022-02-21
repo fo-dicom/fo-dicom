@@ -6,6 +6,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network
 {

@@ -6,6 +6,7 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace FellowOakDicom.Network.Client
@@ -40,7 +41,7 @@ namespace FellowOakDicom.Network.Client
 
     public class DefaultDicomClientFactory : IDicomClientFactory
     {
-        private readonly ILogManager _logManager;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly INetworkManager _networkManager;
         private readonly ITranscoderManager _transcoderManager;
         private readonly IMemoryProvider _memoryProvider;
@@ -48,14 +49,14 @@ namespace FellowOakDicom.Network.Client
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
 
         public DefaultDicomClientFactory(
-            ILogManager logManager,
+            ILoggerFactory loggerFactory,
             INetworkManager networkManager,
             ITranscoderManager transcoderManager,
             IMemoryProvider memoryProvider,
             IOptions<DicomClientOptions> defaultClientOptions,
             IOptions<DicomServiceOptions> defaultServiceOptions)
         {
-            _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             _transcoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
@@ -68,7 +69,7 @@ namespace FellowOakDicom.Network.Client
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
 
-            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _networkManager, _logManager, _transcoderManager, _memoryProvider);
+            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, _networkManager, _loggerFactory, _transcoderManager, _memoryProvider);
         }
     }
 }

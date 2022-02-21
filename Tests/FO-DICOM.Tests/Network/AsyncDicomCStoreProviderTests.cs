@@ -10,6 +10,7 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -118,7 +119,7 @@ namespace FellowOakDicom.Tests.Network
                DicomTransferSyntax.JPEGProcess2_4,
         };
 
-        public AsyncDicomCStoreProviderPreferingUncompressedTS(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+        public AsyncDicomCStoreProviderPreferingUncompressedTS(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         { }
 
@@ -144,7 +145,7 @@ namespace FellowOakDicom.Tests.Network
 
     public class AsyncDicomCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
-        public AsyncDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public AsyncDicomCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {

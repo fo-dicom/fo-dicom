@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Network.Client.Events;
 using FellowOakDicom.Network.Client.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -67,7 +68,7 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAssociationReleaseResponseAsync()
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association release response but we're still making a new association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association release response but we're still making a new association!");
             return Task.CompletedTask;
         }
 
@@ -134,7 +135,7 @@ namespace FellowOakDicom.Network.Client.States
         {
             if (cancellation.Token.IsCancellationRequested)
             {
-                _dicomClient.Logger.Warn($"[{this}] Cancellation requested before association request was made, going to disconnect now");
+                _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested before association request was made, going to disconnect now");
                 return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
@@ -162,7 +163,7 @@ namespace FellowOakDicom.Network.Client.States
             if (winner == associationIsAccepted)
             {
                 _dicomClient.NumberOfConsecutiveTimedOutAssociationRequests = 0;
-                _dicomClient.Logger.Debug($"[{this}] Association is accepted");
+                _dicomClient.Logger.LogDebug($"[{this}] Association is accepted");
                 var association = associationIsAccepted.Result.Association;
                 _dicomClient.NotifyAssociationAccepted(new EventArguments.AssociationAcceptedEventArgs(association));
                 return await _dicomClient.TransitionToSendingRequestsState(_initialisationParameters, association, cancellation).ConfigureAwait(false);
@@ -171,7 +172,7 @@ namespace FellowOakDicom.Network.Client.States
             if (winner == associationIsRejected)
             {
                 _dicomClient.NumberOfConsecutiveTimedOutAssociationRequests = 0;
-                _dicomClient.Logger.Warn($"[{this}] Association is rejected");
+                _dicomClient.Logger.LogWarning($"[{this}] Association is rejected");
                 
                 var associationRejectedResult = associationIsRejected.Result;
                 var result = associationRejectedResult.Result;
@@ -185,7 +186,7 @@ namespace FellowOakDicom.Network.Client.States
             if (winner == abortReceived)
             {
                 _dicomClient.NumberOfConsecutiveTimedOutAssociationRequests = 0;
-                _dicomClient.Logger.Warn($"[{this}] Association is aborted");
+                _dicomClient.Logger.LogWarning($"[{this}] Association is aborted");
                 var abortReceivedResult = abortReceived.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
                 return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
@@ -193,7 +194,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Warn($"[{this}] Disconnected");
+                _dicomClient.Logger.LogWarning($"[{this}] Disconnected");
                 var connectionClosedEvent = await onDisconnect.ConfigureAwait(false);
                 if (connectionClosedEvent.Exception == null)
                 {
@@ -207,7 +208,7 @@ namespace FellowOakDicom.Network.Client.States
             {
                 int numberOfConsecutiveTimedOutAssociationRequests = ++_dicomClient.NumberOfConsecutiveTimedOutAssociationRequests;
                 int maximumNumberOfConsecutiveTimedOutAssociationRequests = _dicomClient.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests;
-                _dicomClient.Logger.Warn($"[{this}] Association request timeout (Attempt {numberOfConsecutiveTimedOutAssociationRequests} / {maximumNumberOfConsecutiveTimedOutAssociationRequests})");
+                _dicomClient.Logger.LogWarning($"[{this}] Association request timeout (Attempt {numberOfConsecutiveTimedOutAssociationRequests} / {maximumNumberOfConsecutiveTimedOutAssociationRequests})");
                 
                 _dicomClient.NotifyAssociationRequestTimedOut(new EventArguments.AssociationRequestTimedOutEventArgs(
                     associationRequestTimeoutInMs, numberOfConsecutiveTimedOutAssociationRequests, maximumNumberOfConsecutiveTimedOutAssociationRequests
@@ -226,7 +227,7 @@ namespace FellowOakDicom.Network.Client.States
             if (winner == onCancellationRequested)
             {
                 _dicomClient.NumberOfConsecutiveTimedOutAssociationRequests = 0;
-                _dicomClient.Logger.Warn($"[{this}] Cancellation requested while requesting association, aborting now...");
+                _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested while requesting association, aborting now...");
                 return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Log;
 using FellowOakDicom.Imaging.Codec;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Tests.Network
 {

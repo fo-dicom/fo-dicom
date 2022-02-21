@@ -9,6 +9,7 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -60,7 +61,7 @@ namespace FellowOakDicom.Tests.Network
     {
         private readonly ISomeInterface _someInterface;
 
-        public EchoProviderWithDependency(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public EchoProviderWithDependency(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies,
             ISomeInterface someInterface)
             : base(stream, fallbackEncoding, log, dependencies)

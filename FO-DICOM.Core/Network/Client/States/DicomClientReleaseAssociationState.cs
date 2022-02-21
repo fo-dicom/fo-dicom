@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Network.Client.Events;
 using FellowOakDicom.Network.Client.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client.States
 {
@@ -52,13 +53,13 @@ namespace FellowOakDicom.Network.Client.States
 
         public override Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association accept but we were just in the processing of releasing the association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association accept but we were just in the processing of releasing the association!");
             return Task.CompletedTask;
         }
 
         public override Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
-            _dicomClient.Logger.Warn($"[{this}] Received association reject but we were just in the processing of releasing the association!");
+            _dicomClient.Logger.LogWarning($"[{this}] Received association reject but we were just in the processing of releasing the association!");
             return Task.CompletedTask;
         }
 
@@ -122,19 +123,19 @@ namespace FellowOakDicom.Network.Client.States
             {
                 _dicomClient.NotifyAssociationReleased();
 
-                _dicomClient.Logger.Debug($"[{this}] Association release response received, disconnecting...");
+                _dicomClient.Logger.LogDebug($"[{this}] Association release response received, disconnecting...");
                 return await _dicomClient.TransitionToCompletedState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onAssociationReleaseTimeout)
             {
-                _dicomClient.Logger.Debug($"[{this}] Association release timed out, aborting...");
+                _dicomClient.Logger.LogDebug($"[{this}] Association release timed out, aborting...");
                 return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
             if (winner == onReceiveAbort)
             {
-                _dicomClient.Logger.Debug($"[{this}] Association aborted, disconnecting...");
+                _dicomClient.Logger.LogDebug($"[{this}] Association aborted, disconnecting...");
                 var abortReceivedResult = onReceiveAbort.Result;
                 var exception = new DicomAssociationAbortedException(abortReceivedResult.Source, abortReceivedResult.Reason);
                 return await _dicomClient.TransitionToCompletedWithErrorState(_initialisationParameters, exception, cancellation).ConfigureAwait(false);
@@ -142,7 +143,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onDisconnect)
             {
-                _dicomClient.Logger.Debug($"[{this}] Disconnected during association release, cleaning up...");
+                _dicomClient.Logger.LogDebug($"[{this}] Disconnected during association release, cleaning up...");
 
                 /*
                  * Sometimes, the server is very swift at closing the connection, before we get a chance to process the Association Release response
@@ -162,7 +163,7 @@ namespace FellowOakDicom.Network.Client.States
 
             if (winner == onAbort)
             {
-                _dicomClient.Logger.Warn($"[{this}] Cancellation requested during association release, immediately aborting association");
+                _dicomClient.Logger.LogWarning($"[{this}] Cancellation requested during association release, immediately aborting association");
                 return await _dicomClient.TransitionToAbortState(_initialisationParameters, cancellation).ConfigureAwait(false);
             }
 
