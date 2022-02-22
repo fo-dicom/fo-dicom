@@ -15,7 +15,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 {
     /// <summary>
     /// Represents an open DICOM association.
-    /// Disposing it is equivalent to calling <see cref="ReleaseAsync"/>
     /// </summary>
     public interface IAdvancedDicomClientAssociation: IDisposable
     {
