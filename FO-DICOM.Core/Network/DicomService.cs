@@ -1350,10 +1350,11 @@ namespace FellowOakDicom.Network
                         {
                             await deflateStream.FlushAsync(CancellationToken.None);
                         }                    
-                        await pDataStream.FlushAsync(CancellationToken.None);
-                        
-                        msg.LastPDUSent = DateTime.Now;
                     }
+                    
+                    await pDataStream.FlushAsync(CancellationToken.None);
+                    
+                    msg.LastPDUSent = DateTime.Now;
                 }
                 catch (Exception e)
                 {
@@ -1937,10 +1938,7 @@ namespace FellowOakDicom.Network
             protected override void Dispose(bool disposing)
             {
                 var bytes = Interlocked.Exchange(ref _memory, null);
-                if (bytes != null)
-                {
-                    _memory.Dispose();
-                }
+                bytes?.Dispose();
 
                 var pdu = Interlocked.Exchange(ref _pdu, null);
                 pdu?.Dispose();
