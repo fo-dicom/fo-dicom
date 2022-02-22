@@ -430,7 +430,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
 
@@ -465,7 +465,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
 
