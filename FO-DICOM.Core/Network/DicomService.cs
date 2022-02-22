@@ -344,13 +344,27 @@ namespace FellowOakDicom.Network
         /// <returns>Awaitable task.</returns>
         protected Task SendPDUAsync(PDU pdu)
         {
+            if (!IsConnected)
+            {
+                return Task.CompletedTask;
+            }
+
             try
             {
-                _pduQueueWatcher.Wait();
+                while (IsConnected && !_pduQueueWatcher.Wait(60 * 1000))
+                {
+                    // Every minute, we check whether it still makes sense to wait for the PDU queue watcher flag 
+                    // by verifying we still have a connection
+                }
             }
             catch (ObjectDisposedException)
             {
                 // ignore ObjectDisposedException, that may happen, when closing a connection.
+                return Task.CompletedTask;
+            }
+
+            if (!IsConnected)
+            {
                 return Task.CompletedTask;
             }
 
@@ -1460,6 +1474,9 @@ namespace FellowOakDicom.Network
             lock (_lock)
             {
                 _isDisconnectedFlag.Set();
+                
+                // Unblock other threads waiting to write another PDU that don't realize the connection is being closed
+                _pduQueueWatcher.Set();
             }
 
             Logger.Info("Connection closed");
