@@ -6,6 +6,7 @@
 * Catch exception in logmessage, to avoid making the application crash because of logging (#1288)
 * Fixed StreamByteBuffer to read an internally buffered stream completely (#1313)
 * Optimize performance and reduce memory allocations in network layer (#1291)
+* Improve handling of dropped connections (#1332)
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
