@@ -14,6 +14,7 @@ namespace FellowOakDicom.Tests
     public class CollectingLogger : ILogger
     {
         private readonly IList<(LogLevel, string)> _logEntries = new List<(LogLevel, string)>();
+        private bool _collecting;
 
         /// <summary>
         /// Clear the collected log entries.
@@ -49,17 +50,30 @@ namespace FellowOakDicom.Tests
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            _logEntries.Add((logLevel, formatter(state, exception)));
+            if (_collecting)
+            {
+                _logEntries.Add((logLevel, formatter(state, exception)));
+            }
         }
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            return _collecting;
         }
 
         public IDisposable BeginScope<TState>(TState state)
         {
             return default!;
+        }
+
+        public void StartCollecting()
+        {
+            _collecting = true;
+        }
+
+        public void StopCollecting()
+        {
+            _collecting = false;
         }
     }
 }

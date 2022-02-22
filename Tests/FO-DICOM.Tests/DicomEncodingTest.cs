@@ -28,7 +28,7 @@ namespace FellowOakDicom.Tests
         public void GetEncoding_NonMatchingCharset_ReturnsUSASCII()
         {
             var expected = Encoding.ASCII.CodePage;
-            var logCollector = NewLogCollector();
+            using var logCollector = NewLogCollector();
             var actual = DicomEncoding.GetEncoding("Invalid").CodePage;
             Assert.Equal(expected, actual);
             Assert.Equal(1, logCollector.NumberOfWarnings);
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests
 
             filestream.Flush();
 
-            var logCollector = NewLogCollector();
+            using var logCollector = NewLogCollector();
             filestream.Position = 0;
             var secondFile = DicomFile.Open(filestream);
 
@@ -204,7 +204,7 @@ namespace FellowOakDicom.Tests
             {
                 new DicomCodeString(DicomTag.SpecificCharacterSet, "ISO IR 192"),
             };
-            var logCollector = NewLogCollector();
+            using var logCollector = NewLogCollector();
             // not a valid UTF-8 encoding
             var badName = new byte[] { 0xc4, 0xe9, 0xef, 0xed, 0xf5, 0xf3, 0xe9, 0xef, 0xf2 };
             IByteBuffer buffer = new MemoryByteBuffer(badName);
@@ -224,7 +224,7 @@ namespace FellowOakDicom.Tests
             {
                 new DicomCodeString(DicomTag.SpecificCharacterSet, @"\ISO 2022 IR 100")
             };
-            var logCollector = NewLogCollector();
+            using var logCollector = NewLogCollector();
 
             // Buc^Jérôme encoded, but with the escape sequence  for the second component
             // pointing to shift_jis instead of Latin-1
@@ -250,7 +250,7 @@ namespace FellowOakDicom.Tests
             {
                 new DicomCodeString(DicomTag.SpecificCharacterSet, @"\ISO 2022 IR 100")
             };
-            var logCollector = NewLogCollector();
+            using var logCollector = NewLogCollector();
 
             // Buc^Jérôme encoded, but with an invalid escape sequence instead of Latin-1 for the second component
             var name = new byte[]
@@ -312,11 +312,11 @@ namespace FellowOakDicom.Tests
                 new byte[] { 0x1b, 0x2d, 0x54, 0xb9, 0xd2, 0xc1, 0xca, 0xa1, 0xd8, 0xc5 } }
         };
 
-        private CollectingLogger NewLogCollector()
+        private CollectingLoggerSession NewLogCollector()
         {
             var logger = CollectingLoggerProvider.Instance.CollectingLogger;
-            logger.Reset();
-            return logger;
+            return new CollectingLoggerSession(logger);
         }
+
     }
 }
