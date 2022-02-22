@@ -359,7 +359,8 @@ namespace FellowOakDicom.Network
             }
             catch (ObjectDisposedException)
             {
-                // ignore ObjectDisposedException, that may happen, when closing a connection.
+                // The _pduQueueWatcher field is disposed when the entire service is disposed
+                // This means the connection is gone entirely, so sending of any further PDUs is not an option anymore
                 return Task.CompletedTask;
             }
 
@@ -464,7 +465,7 @@ namespace FellowOakDicom.Network
                         {
                             // disconnected
                             Logger.Debug("Read 0 bytes from network stream while reading PDU header, connection will be marked as closed");
-                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            await TryCloseConnectionAsync(exception: null, force: true).ConfigureAwait(false);
                             return;
                         }
 
@@ -500,7 +501,7 @@ namespace FellowOakDicom.Network
                         {
                             // disconnected
                             Logger.Debug("Read 0 bytes from network stream while reading PDU, connection will be marked as closed");
-                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            await TryCloseConnectionAsync(exception: null, force: true).ConfigureAwait(false);
                             return;
                         }
 
@@ -1448,7 +1449,7 @@ namespace FellowOakDicom.Network
                     if (_pduQueue.Count > 0 || _msgQueue.Count > 0 || _pending.Count > 0)
                     {
                         Logger.Info(
-                            "Queue(s) not empty, PDUs: {pduCount}, messages: {msgCount}, pending requests: {pendingCount}",
+                            "Tried to close connection but queues are not empty, PDUs: {pduCount}, messages: {msgCount}, pending requests: {pendingCount}",
                             _pduQueue.Count,
                             _msgQueue.Count,
                             _pending.Count);
