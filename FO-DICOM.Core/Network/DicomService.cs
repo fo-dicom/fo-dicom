@@ -1303,6 +1303,9 @@ namespace FellowOakDicom.Network
                         if (deflateStream != null)
                         {
                             await deflateStream.FlushAsync(CancellationToken.None);
+                            
+                            // Deflate stream in .NET Framework only fully flushes when disposed...
+                            deflateStream.Dispose();
                         }                    
                     }
                     
