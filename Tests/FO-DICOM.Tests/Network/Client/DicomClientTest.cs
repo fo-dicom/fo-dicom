@@ -1341,7 +1341,10 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
                 }
-                catch(Exception) { /* Ignore */ }
+                catch (Exception)
+                {
+                    /* Ignore */
+                }
 
                 Assert.False(cancellation.IsCancellationRequested);
             }
