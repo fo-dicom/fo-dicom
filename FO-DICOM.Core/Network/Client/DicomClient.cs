@@ -392,7 +392,7 @@ namespace FellowOakDicom.Network.Client
                                 // we keep track of how many consecutive times this happens
                                 numberOfConsecutiveTimedOutAssociationRequests++;
                                 
-                                AssociationRequestTimedOut.Invoke(this, new AssociationRequestTimedOutEventArgs(
+                                AssociationRequestTimedOut?.Invoke(this, new AssociationRequestTimedOutEventArgs(
                                     ClientOptions.AssociationRequestTimeoutInMs,
                                     numberOfConsecutiveTimedOutAssociationRequests,
                                     maximumNumberOfConsecutiveTimedOutAssociationRequests
