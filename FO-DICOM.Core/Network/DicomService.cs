@@ -806,7 +806,7 @@ namespace FellowOakDicom.Network
             }
             catch (Exception e)
             {
-                Logger.LogError("Exception processing P-Data-TF PDU: {@error}", e);
+                Logger.LogError(e, "Exception processing P-Data-TF PDU: {Error}", e);
                 throw;
             }
             finally
@@ -817,8 +817,17 @@ namespace FellowOakDicom.Network
 
         private async Task PerformDimseAsync(DicomMessage dimse)
         {
-            // TODO Alex figure out how to postpone the ToString call here
-            Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                if (Options.LogDimseDatasets)
+                {
+                    Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
+                }
+                else
+                {
+                    Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse);
+                }
+            }
 
             if (!DicomMessage.IsRequest(dimse.Type) && dimse is DicomResponse rsp)
             {
@@ -1054,11 +1063,11 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Failed to send DICOM message due to {{@error}}", e);
+                    Logger.LogError(e, "Failed to send DICOM message due to {Error}", e);
 
                     if (msg is DicomRequest dicomRequest)
                     {
-                        Logger.LogDebug($"Removing request [{dicomRequest.MessageID}] from pending queue because an error occurred while sending it");
+                        Logger.LogDebug("Removing request [{MessageID}] from pending queue because an error occurred while sending it", dicomRequest.MessageID);
 
                         lock (_lock)
                         {
