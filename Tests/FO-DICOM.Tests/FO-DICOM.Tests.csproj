@@ -59,7 +59,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
-    <ProjectReference Include="..\..\Logging\FO-DICOM.NLog\FO-DICOM.NLog.csproj" />
     <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.ImageSharp\FO-DICOM.Imaging.ImageSharp.csproj" />
     <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj" />
   </ItemGroup>
@@ -263,10 +262,6 @@
     <None Update="Test Data\test_SR.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Log" />
   </ItemGroup>
 
 </Project>
