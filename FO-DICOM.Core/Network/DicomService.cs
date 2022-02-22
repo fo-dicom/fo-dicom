@@ -1304,10 +1304,11 @@ namespace FellowOakDicom.Network
                         {
                             await deflateStream.FlushAsync(CancellationToken.None);
                         }                    
-                        await pDataStream.FlushAsync(CancellationToken.None);
-                        
-                        msg.LastPDUSent = DateTime.Now;
                     }
+                    
+                    await pDataStream.FlushAsync(CancellationToken.None);
+                    
+                    msg.LastPDUSent = DateTime.Now;
                 }
                 catch (Exception e)
                 {
