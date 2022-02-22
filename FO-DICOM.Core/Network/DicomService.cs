@@ -311,14 +311,28 @@ namespace FellowOakDicom.Network
         /// <returns>Awaitable task.</returns>
         protected Task SendPDUAsync(PDU pdu)
         {
+            if (!IsConnected)
+            {
+                throw new DicomNetworkException("Cannot send PDU because the connection is gone");
+            }
+            
             try
             {
-                _pduQueueWatcher.Wait();
+                while (IsConnected && !_pduQueueWatcher.Wait(60 * 1000))
+                {
+                    // Every minute, we check whether it still makes sense to wait for the PDU queue watcher flag 
+                    // by verifying we still have a connection
+                }
             }
             catch (ObjectDisposedException)
             {
-                // ignore ObjectDisposedException, that may happen, when closing a connection.
-                return Task.CompletedTask;
+                // When the DICOM service is disposed, the _pduQueueWatcher is also disposed
+                throw new DicomNetworkException("Cannot send PDU because the association has already been disposed");
+            }
+            
+            if (!IsConnected)
+            {
+                throw new DicomNetworkException("Cannot send PDU because the connection is gone");
             }
 
             lock (_lock)
@@ -1414,6 +1428,8 @@ namespace FellowOakDicom.Network
             lock (_lock)
             {
                 _isDisconnectedFlag.Set();
+                // Unblock other threads waiting to write another PDU that don't realize the connection is being closed
+                _pduQueueWatcher.Set();
             }
 
             Logger.Info("Connection closed");
