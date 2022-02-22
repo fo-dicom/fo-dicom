@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Helpers
 {
-
     public class XUnitDicomLogger : ILogger
     {
         private delegate string PrefixEnricher(string prefix);
@@ -68,7 +67,7 @@ namespace FellowOakDicom.Tests.Helpers
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            throw new NotImplementedException();
+            return default!;
         }
     }
 }
