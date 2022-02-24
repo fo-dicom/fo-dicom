@@ -2,8 +2,11 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
@@ -27,6 +30,8 @@ namespace FellowOakDicom.IO
         private readonly Stack<long> _milestones;
 
         private readonly object _lock;
+
+        private int _isDisposed;
 
         #endregion
 
@@ -54,7 +59,7 @@ namespace FellowOakDicom.IO
         }
 
         #endregion
-
+        
         #region PROPERTIES
 
         /// <inheritdoc />
@@ -104,43 +109,88 @@ namespace FellowOakDicom.IO
         #region METHODS
 
         /// <inheritdoc />
-        public byte GetUInt8() => _reader.ReadByte();
+        public byte GetUInt8()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadByte();
+        }
 
         /// <inheritdoc />
-        public short GetInt16() => _reader.ReadInt16();
+        public short GetInt16()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadInt16();
+        }
 
         /// <inheritdoc />
-        public ushort GetUInt16() => _reader.ReadUInt16();
+        public ushort GetUInt16()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadUInt16();
+        }
 
         /// <inheritdoc />
-        public int GetInt32() => _reader.ReadInt32();
+        public int GetInt32()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadInt32();
+        }
 
         /// <inheritdoc />
-        public uint GetUInt32() => _reader.ReadUInt32();
+        public uint GetUInt32()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadUInt32();
+        }
 
         /// <inheritdoc />
-        public long GetInt64() => _reader.ReadInt64();
+        public long GetInt64()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadInt64();
+        }
 
         /// <inheritdoc />
-        public ulong GetUInt64() => _reader.ReadUInt64();
+        public ulong GetUInt64()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadUInt64();
+        }
 
         /// <inheritdoc />
-        public float GetSingle() => _reader.ReadSingle();
+        public float GetSingle()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadSingle();
+        }
 
         /// <inheritdoc />
-        public double GetDouble() => _reader.ReadDouble();
+        public double GetDouble()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadDouble();
+        }
 
         /// <inheritdoc />
-        public byte[] GetBytes(int count) => _reader.ReadBytes(count);
+        public byte[] GetBytes(int count)
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadBytes(count);
+        }
         
         /// <summary>
         /// Reads the specified number of bytes from the stream, starting from a specified point
         /// in the byte array. <see cref="BinaryReader.Read()"/> for more information. </summary>
-        public void ReadBytes(byte[] buffer, int index, int count) => _reader.Read(buffer, index, count);
+        public void ReadBytes(byte[] buffer, int index, int count)
+        {
+            ThrowIfAlreadyDisposed();
+            _reader.Read(buffer, index, count);
+        }
 
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
+            ThrowIfAlreadyDisposed();
             IByteBuffer buffer;
             if (count == 0)
             {
@@ -164,10 +214,18 @@ namespace FellowOakDicom.IO
         }
 
         /// <inheritdoc />
-        public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
+        public Task<IByteBuffer> GetBufferAsync(uint count)
+        {
+            ThrowIfAlreadyDisposed();
+            return Task.FromResult(GetBuffer(count));
+        }
 
         /// <inheritdoc />
-        public void Skip(uint count) => _stream.Seek(count, SeekOrigin.Current);
+        public void Skip(uint count)
+        {
+            ThrowIfAlreadyDisposed();
+            _stream.Seek(count, SeekOrigin.Current);
+        }
 
         /// <inheritdoc />
         public void Mark() => _mark = _stream.Position;
@@ -217,9 +275,69 @@ namespace FellowOakDicom.IO
 
         public Stream GetStream()
         {
+            ThrowIfAlreadyDisposed();
             return _stream;
         }
 
+        #endregion
+        
+        #region Disposal 
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This stream byte source is already disposed and can no longer be used");
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Perform disposal.
+        /// </summary>
+        /// <param name="disposing">true if disposal request originates from Dispose call, false if request originates from finalizer.</param>
+        private void Dispose(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            try
+            {
+                if (disposing)
+                {
+                    // Free unmanaged resources.
+                }
+
+                _reader.Dispose();
+
+                // closing binary reader should close this
+                _stream.Dispose();
+            }
+            catch
+            { /* ignore exception */ }
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+            return default;
+        }
+        
         #endregion
     }
 }

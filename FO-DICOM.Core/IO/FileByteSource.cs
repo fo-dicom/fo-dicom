@@ -5,33 +5,28 @@ using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
 {
-
     /// <summary>
     /// File byte source for reading.
     /// </summary>
-    public class FileByteSource : IByteSource, IDisposable
+    public sealed class FileByteSource : IByteSource
     {
-
         #region FIELDS
 
         private readonly IFileReference _file;
-
         private readonly Stream _stream;
+        private readonly Stack<long> _milestones;
+        private readonly object _lock;
+        private readonly FileReadOption _readOption;
 
         private Endian _endian;
-
         private BinaryReader _reader;
-        private readonly Stack<long> _milestones;
-
-        private readonly object _lock;
-
-        private bool _disposed;
-
-        private readonly FileReadOption _readOption;
+        private int _isDisposed;
 
         #endregion
 
@@ -57,7 +52,6 @@ namespace FellowOakDicom.IO
 
             _milestones = new Stack<long>();
             _lock = new object();
-            _disposed = false;
         }
 
         #endregion
@@ -106,38 +100,79 @@ namespace FellowOakDicom.IO
         #region METHODS
 
         /// <inheritdoc />
-        public byte GetUInt8() => _reader.ReadByte();
+        public byte GetUInt8()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadByte();
+        }
 
         /// <inheritdoc />
-        public short GetInt16() => _reader.ReadInt16();
+        public short GetInt16()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadInt16();
+        }
 
         /// <inheritdoc />
-        public ushort GetUInt16() => _reader.ReadUInt16();
+        public ushort GetUInt16()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadUInt16();
+        }
 
         /// <inheritdoc />
-        public int GetInt32() => _reader.ReadInt32();
+        public int GetInt32()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadInt32();
+        }
 
         /// <inheritdoc />
-        public uint GetUInt32() => _reader.ReadUInt32();
+        public uint GetUInt32()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadUInt32();
+        }
 
         /// <inheritdoc />
-        public long GetInt64() => _reader.ReadInt64();
+        public long GetInt64()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadInt64();
+        }
 
         /// <inheritdoc />
-        public ulong GetUInt64() => _reader.ReadUInt64();
+        public ulong GetUInt64()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadUInt64();
+        }
 
         /// <inheritdoc />
-        public float GetSingle() => _reader.ReadSingle();
+        public float GetSingle()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadSingle();
+        }
 
         /// <inheritdoc />
-        public double GetDouble() => _reader.ReadDouble();
+        public double GetDouble()
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadDouble();
+        }
 
         /// <inheritdoc />
-        public byte[] GetBytes(int count) => _reader.ReadBytes(count);
+        public byte[] GetBytes(int count)
+        {
+            ThrowIfAlreadyDisposed();
+            return _reader.ReadBytes(count);
+        }
 
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
+            ThrowIfAlreadyDisposed();
             IByteBuffer buffer;
             if (count == 0)
             {
@@ -157,15 +192,24 @@ namespace FellowOakDicom.IO
             {
                 buffer = new MemoryByteBuffer(GetBytes((int)count));
             }
+
             return buffer;
         }
 
         /// <inheritdoc />
-        public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
+        public Task<IByteBuffer> GetBufferAsync(uint count)
+        {
+            ThrowIfAlreadyDisposed();
+            return Task.FromResult(GetBuffer(count));
+        }
 
         /// <inheritdoc />
         /// <param name="count">Number of bytes to skip.</param>
-        public void Skip(uint count) => _stream.Seek(count, SeekOrigin.Current);
+        public void Skip(uint count)
+        {
+            ThrowIfAlreadyDisposed();
+            _stream.Seek(count, SeekOrigin.Current);
+        }
 
         /// <inheritdoc />
         public void Mark() => Marker = _stream.Position;
@@ -212,6 +256,31 @@ namespace FellowOakDicom.IO
             }
         }
 
+
+        public Stream GetStream()
+        {
+            ThrowIfAlreadyDisposed();
+            return _stream;
+        }
+
+        #endregion
+
+        #region Disposal
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This file byte source for file {_file.Name} is already disposed and can no longer be used");
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -222,36 +291,26 @@ namespace FellowOakDicom.IO
         /// <summary>
         /// Perform disposal.
         /// </summary>
-        /// <param name="disposing">true if disposal request originates from Dispose call, false if request originates from sestructor.</param>
-        protected virtual void Dispose(bool disposing)
+        /// <param name="disposing">true if disposal request originates from Dispose call, false if request originates from finalizer.</param>
+        private void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
             {
                 return;
             }
 
-            try
+            if (disposing)
             {
-                if (disposing)
-                {
-                    // Free unmanaged resources.
-                }
-
                 _reader.Dispose();
-
-                // closing binary reader should close this
                 _stream.Dispose();
             }
-            catch
-            { /* ignore exception */ }
-
-            _disposed = true;
         }
 
-
-        public Stream GetStream()
+        public ValueTask DisposeAsync()
         {
-            return _stream;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+            return default;
         }
 
         #endregion

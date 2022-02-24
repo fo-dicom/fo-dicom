@@ -116,5 +116,11 @@ namespace FellowOakDicom.IO.Buffer
         public virtual long Size
             => _buffer?.Length
                ?? throw new InvalidOperationException("BulkDataUriByteBuffer cannot provide Size until the Data property has been set.");
+
+        public void Dispose()
+        {
+        }
+
+        public ValueTask DisposeAsync() => default;
     }
 }

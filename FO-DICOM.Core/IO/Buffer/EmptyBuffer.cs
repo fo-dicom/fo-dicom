@@ -61,5 +61,17 @@ namespace FellowOakDicom.IO.Buffer
 
             return Task.CompletedTask;
         }
+        
+        
+        
+        #region Disposal 
+
+        public void Dispose()
+        {
+        }
+
+        public ValueTask DisposeAsync() => default;
+
+        #endregion
     }
 }

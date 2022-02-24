@@ -74,5 +74,15 @@ namespace FellowOakDicom.IO.Buffer
 
             await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
         }
+        
+        #region Disposal 
+
+        public void Dispose()
+        {
+        }
+
+        public ValueTask DisposeAsync() => default;
+
+        #endregion
     }
 }

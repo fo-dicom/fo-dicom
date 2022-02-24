@@ -2,13 +2,18 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Log;
 using FellowOakDicom.StructuredReport;
 using FellowOakDicom.Tools;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom
 {
@@ -16,11 +21,12 @@ namespace FellowOakDicom
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
     /// </summary>
-    public partial class DicomDataset : IEnumerable<DicomItem>
+    public partial class DicomDataset : IEnumerable<DicomItem>, IDisposable, IAsyncDisposable
     {
         #region FIELDS
 
         private readonly IDictionary<DicomTag, DicomItem> _items;
+        private int _isDisposed;
 
         private DicomTransferSyntax _syntax;
         private Encoding[] _fallbackEncodings = DicomEncoding.DefaultArray;
@@ -104,6 +110,84 @@ namespace FellowOakDicom
         }
 
         #endregion
+        
+        #region FINALIZERS
+
+        ~DicomDataset() => Dispose(false);
+        
+        #endregion
+        
+        #region DISPOSAL
+
+        protected bool IsDisposed => Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 1; 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This DICOM dataset is already disposed and can no longer be used");
+
+        private void LogImproperDisposalWarning()
+        {
+            var logger = Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("Dicom");
+            if (!TryGetSingleValue(DicomTag.SOPInstanceUID, out string id))
+            {
+                id = "Unknown";
+            }
+            logger.Warn("Failed to properly dispose of DICOM dataset with SOP Instance UID {SOPInstanceUID}", id);
+        }
+        
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var item in this)
+                {
+                    item.Dispose();
+                }
+            }
+            else
+            {
+                LogImproperDisposalWarning();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsync(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var item in this)
+                {
+                    await item.DisposeAsync();
+                }
+            }
+            else
+            {
+                LogImproperDisposalWarning();
+            }
+        }
+
+        #endregion
 
         #region PROPERTIES
 
@@ -113,6 +197,8 @@ namespace FellowOakDicom
             get => _syntax;
             internal set
             {
+                ThrowIfAlreadyDisposed();
+                
                 _syntax = value;
 
                 // update transfer syntax for sequence items
@@ -179,6 +265,7 @@ namespace FellowOakDicom
         /// <returns>Item corresponding to <paramref name="tag"/> or <code>null</code> if the <paramref name="tag"/> is not contained in the instance.</returns>
         public T GetDicomItem<T>(DicomTag tag) where T:DicomItem
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             return _items.TryGetValue(tag, out DicomItem dummyItem) ? dummyItem as T : null;
         }
@@ -192,6 +279,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/> or this is not a sequence.</exception>
         public DicomSequence GetSequence(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             if (_items.TryGetValue(tag, out DicomItem item))
             {
@@ -213,6 +301,7 @@ namespace FellowOakDicom
 
         public DicomCodeItem GetCodeItem(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             if (_items.TryGetValue(tag, out DicomItem item))
             {
@@ -234,6 +323,7 @@ namespace FellowOakDicom
 
         public DicomMeasuredValue GetMeasuredValue(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             if (_items.TryGetValue(tag, out DicomItem item))
             {
@@ -255,6 +345,7 @@ namespace FellowOakDicom
 
         public DicomReferencedSOP GetReferencedSOP(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             if (_items.TryGetValue(tag, out DicomItem item))
             {
@@ -282,6 +373,7 @@ namespace FellowOakDicom
         /// <returns>Returns <code>true</code> if the <paramref name="tag"/> could be returned as sequence, <code>false</code> otherwise.</returns>
         public bool TryGetSequence(DicomTag tag, out DicomSequence sequence)
         {
+            ThrowIfAlreadyDisposed();
             if (!TryValidatePrivate(ref tag))
             {
                 sequence = null;
@@ -307,6 +399,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public int GetValueCount(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
 
@@ -337,6 +430,7 @@ namespace FellowOakDicom
         /// <paramref name="index">item index</paramref> is out-of-range.</exception>
         public T GetValue<T>(DicomTag tag, int index)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             if (index < 0) { throw new ArgumentOutOfRangeException(nameof(index), "index must be a non-negative value"); }
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
@@ -373,6 +467,7 @@ namespace FellowOakDicom
         /// <returns>Returns <code>true</code> if the element value could be exctracted, otherwise <code>false</code>.</returns>
         public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)
         {
+            ThrowIfAlreadyDisposed();
             if (index < 0 || typeof(T).GetTypeInfo().IsArray)
             {
                 elementValue = default(T);
@@ -420,6 +515,7 @@ namespace FellowOakDicom
         /// <param name="defaultValue">Value that is returned if the requested element value does not exist.</param>
         public T GetValueOrDefault<T>(DicomTag tag, int index, T defaultValue)
         {
+            ThrowIfAlreadyDisposed();
             return TryGetValue<T>(tag, index, out T dummy) ? dummy : defaultValue;
         }
 
@@ -433,6 +529,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public T[] GetValues<T>(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type."); }
 
             tag = ValidatePrivate(tag);
@@ -460,6 +557,7 @@ namespace FellowOakDicom
         /// <returns>Returns <code>true</code> if the element values could be extracted, otherwise <code>false</code>.</returns>
         public bool TryGetValues<T>(DicomTag tag, out T[] values)
         {
+            ThrowIfAlreadyDisposed();
             if (typeof(T).GetTypeInfo().IsArray) {
                 values = null;
                 return false;
@@ -506,6 +604,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>, is empty or is multi-valued.</exception>
         public T GetSingleValue<T>(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
 
             tag = ValidatePrivate(tag);
@@ -535,6 +634,7 @@ namespace FellowOakDicom
         /// <returns>Returns <code>true</code> if the element values could be exctracted, otherwise <code>false</code>.</returns>
         public bool TryGetSingleValue<T>(DicomTag tag, out T value)
         {
+            ThrowIfAlreadyDisposed();
             if (typeof(T).GetTypeInfo().IsArray)
             {
                 value = default(T);
@@ -581,6 +681,7 @@ namespace FellowOakDicom
         /// <param name="defaultValue">Value that is returned if the requested element value does not exist.</param>
         public T GetSingleValueOrDefault<T>(DicomTag tag, T defaultValue)
         {
+            ThrowIfAlreadyDisposed();
             return TryGetSingleValue<T>(tag, out T dummy) ? dummy : defaultValue;
         }
 
@@ -593,6 +694,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public string GetString(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
 
@@ -615,6 +717,7 @@ namespace FellowOakDicom
         /// <returns>Returns <code>false</code> if the dataset does not contain the tag.</returns>
         public bool TryGetString(DicomTag tag, out string stringValue)
         {
+            ThrowIfAlreadyDisposed();
             if (!TryValidatePrivate(ref tag))
             {
                 stringValue = null;
@@ -699,6 +802,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
         public void Validate()
         {
+            ThrowIfAlreadyDisposed();
             foreach(var item in this)
             {
                 item.Validate();
@@ -712,6 +816,7 @@ namespace FellowOakDicom
         /// <returns>Private DICOM tag, or null if all groups are already used.</returns>
         public DicomTag GetPrivateTag(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             return GetPrivateTag(tag, true);
         }
 
@@ -763,6 +868,7 @@ namespace FellowOakDicom
         /// <exception cref="ArgumentException">If tag of added item already exists in dataset.</exception>
         public DicomDataset Add(params DicomItem[] items)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(items, false);
         }
 
@@ -774,6 +880,7 @@ namespace FellowOakDicom
         /// <exception cref="ArgumentException">If tag of added item already exists in dataset.</exception>
         public DicomDataset Add(IEnumerable<DicomItem> items)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(items, false);
         }
 
@@ -787,6 +894,7 @@ namespace FellowOakDicom
         /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomTag tag, params T[] values)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(tag, values, false);
         }
 
@@ -804,6 +912,7 @@ namespace FellowOakDicom
         /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(vr, tag, values, false);
         }
 
@@ -814,6 +923,7 @@ namespace FellowOakDicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate(params DicomItem[] items)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(items, true);
         }
 
@@ -824,6 +934,7 @@ namespace FellowOakDicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate(IEnumerable<DicomItem> items)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(items, true);
         }
 
@@ -836,6 +947,7 @@ namespace FellowOakDicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate<T>(DicomTag tag, params T[] values)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(tag, values, true);
         }
 
@@ -852,6 +964,7 @@ namespace FellowOakDicom
         /// <returns>The dataset instance.</returns>
         public DicomDataset AddOrUpdate<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
+            ThrowIfAlreadyDisposed();
             return DoAdd(vr, tag, values, true);
         }
 
@@ -862,6 +975,7 @@ namespace FellowOakDicom
         /// <returns><c>True</c> if a DICOM item with the specified tag already exists.</returns>
         public bool Contains(DicomTag tag)
         {
+            ThrowIfAlreadyDisposed();
             if (tag.IsPrivate)
             {
                 var privateTag = GetPrivateTag(tag, false);
@@ -877,6 +991,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset Remove(params DicomTag[] tags)
         {
+            ThrowIfAlreadyDisposed();
             foreach (DicomTag tag in tags)
             {
                 if (tag.IsPrivate)
@@ -904,6 +1019,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset Remove(Func<DicomItem, bool> selector)
         {
+            ThrowIfAlreadyDisposed();
             _items.Values.Where(selector).ToList().Each(item => _items.Remove(item.Tag));
             return this;
         }
@@ -925,6 +1041,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination)
         {
+            ThrowIfAlreadyDisposed();
             destination?.AddOrUpdate(this);
             return this;
         }
@@ -937,6 +1054,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination, params DicomTag[] tags)
         {
+            ThrowIfAlreadyDisposed();
             if (destination != null)
             {
                 foreach (var tag in tags)
@@ -955,6 +1073,7 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset CopyTo(DicomDataset destination, DicomMaskedTag mask)
         {
+            ThrowIfAlreadyDisposed();
             destination?.AddOrUpdate(_items.Values.Where(x => mask.IsMatch(x.Tag)));
             return this;
         }
@@ -965,6 +1084,7 @@ namespace FellowOakDicom
         /// <returns>Enumeration of DICOM items</returns>
         public IEnumerator<DicomItem> GetEnumerator()
         {
+            ThrowIfAlreadyDisposed();
             return _items.Values.GetEnumerator();
         }
 
@@ -974,6 +1094,7 @@ namespace FellowOakDicom
         /// <returns>Enumeration of DICOM items</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
+            ThrowIfAlreadyDisposed();
             return _items.Values.GetEnumerator();
         }
 

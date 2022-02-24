@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Network
 
                 DicomCEchoResponse response = null;
                 DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomCEchoRequest
+                await using var request = new DicomCEchoRequest
                 {
                     OnResponseReceived = (req, res) => response = res,
                     OnTimeout = (sender, args) => timeout = args

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace FellowOakDicom.IO.Buffer
 {
@@ -45,6 +47,8 @@ namespace FellowOakDicom.IO.Buffer
         private readonly object _lock;
 
         private Endian _endian;
+
+        private int _isDisposed;
 
         #endregion
 
@@ -136,35 +140,51 @@ namespace FellowOakDicom.IO.Buffer
 
         /// <inheritdoc />
         public byte GetUInt8()
-            => NextByte();
+        {
+            ThrowIfAlreadyDisposed();
+            return NextByte();
+        }
 
         /// <inheritdoc />
         public short GetInt16()
-            => Endian == Endian.LocalMachine
+        {
+            ThrowIfAlreadyDisposed();
+            return Endian == Endian.LocalMachine
                 ? (short)((NextByte() << 0) | (NextByte() << 8))
                 : (short)((NextByte() << 8) | (NextByte() << 0));
+        }
 
         /// <inheritdoc />
         public ushort GetUInt16()
-            => Endian == Endian.LocalMachine
+        {
+            ThrowIfAlreadyDisposed();
+            return Endian == Endian.LocalMachine
                 ? (ushort)((NextByte() << 0) | (NextByte() << 8))
                 : (ushort)((NextByte() << 8) | (NextByte() << 0));
+        }
 
         /// <inheritdoc />
         public int GetInt32()
-            => Endian == Endian.LocalMachine
+        {
+            ThrowIfAlreadyDisposed();
+            return Endian == Endian.LocalMachine
                 ? (NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24)
                 : (NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0);
+        }
 
         /// <inheritdoc />
         public uint GetUInt32()
-            => Endian == Endian.LocalMachine
+        {
+            ThrowIfAlreadyDisposed();
+            return Endian == Endian.LocalMachine
                 ? (uint)((NextByte() << 0) | (NextByte() << 8) | (NextByte() << 16) | (NextByte() << 24))
                 : (uint)((NextByte() << 24) | (NextByte() << 16) | (NextByte() << 8) | (NextByte() << 0));
+        }
 
         /// <inheritdoc />
         public long GetInt64()
         {
+            ThrowIfAlreadyDisposed();
             byte[] b = GetBytes(8);
             if (Endian != Endian.LocalMachine)
             {
@@ -177,6 +197,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public ulong GetUInt64()
         {
+            ThrowIfAlreadyDisposed();
             byte[] b = GetBytes(8);
             if (Endian != Endian.LocalMachine)
             {
@@ -189,6 +210,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public float GetSingle()
         {
+            ThrowIfAlreadyDisposed();
             byte[] b = GetBytes(4);
             if (Endian != Endian.LocalMachine)
             {
@@ -201,6 +223,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public double GetDouble()
         {
+            ThrowIfAlreadyDisposed();
             byte[] b = GetBytes(8);
             if (Endian != Endian.LocalMachine)
             {
@@ -213,6 +236,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public byte[] GetBytes(int count)
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 int p = 0;
@@ -242,18 +266,21 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
+            ThrowIfAlreadyDisposed();
             return new MemoryByteBuffer(GetBytes((int)count));
         }
 
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count)
         {
+            ThrowIfAlreadyDisposed();
             return Task.FromResult(GetBuffer(count));
         }
 
         /// <inheritdoc />
         public void Skip(uint count)
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 _position += count;
@@ -265,6 +292,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public void Mark()
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 _marker = _position;
@@ -280,6 +308,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public void Rewind()
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 _position = _marker;
@@ -312,12 +341,14 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public bool Require(uint count)
         {
+            ThrowIfAlreadyDisposed();
             return Require(count, null, null);
         }
 
         /// <inheritdoc />
         public bool Require(uint count, ByteSourceCallback callback, object state)
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 if ((_position + count) <= _length)
@@ -345,6 +376,7 @@ namespace FellowOakDicom.IO.Buffer
         /// <param name="last">true if added buffer is the last to add, false otherwise.</param>
         public void Add(IByteBuffer buffer, bool last)
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 if (_fixed) throw new DicomIoException("Tried to extend fixed length byte source.");
@@ -433,6 +465,7 @@ namespace FellowOakDicom.IO.Buffer
 
         public Stream GetStream()
         {
+            ThrowIfAlreadyDisposed();
             lock (_lock)
             {
                 Stream stream = new MemoryStream();
@@ -445,6 +478,68 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
+
+        #endregion
+
+        #region Disposal
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This byte buffer byte source is already disposed and can no longer be used");
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                foreach (var buffer in _buffers)
+                {
+                    buffer.Dispose();
+                }
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsync(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        private async ValueTask DisposeAsync(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                foreach (var buffer in _buffers)
+                {
+                    await buffer.DisposeAsync();
+                }
+            }
+        }
 
         #endregion
     }

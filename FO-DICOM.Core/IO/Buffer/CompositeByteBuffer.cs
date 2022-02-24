@@ -189,5 +189,25 @@ namespace FellowOakDicom.IO.Buffer
         }
 
         #endregion
+        
+        #region Disposal 
+
+        public void Dispose()
+        {
+            foreach (var buffer in Buffers)
+            {
+                buffer.Dispose();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var buffer in Buffers)
+            {
+                await buffer.DisposeAsync();
+            }
+        }
+        
+        #endregion
     }
 }

@@ -2,15 +2,19 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom
 {
-
     /// <summary>
     /// Abstract base class for representing one DICOM item.
     /// </summary>
-    public abstract class DicomItem : IComparable<DicomItem>, IComparable
+    public abstract class DicomItem : IComparable<DicomItem>, IComparable, IDisposable, IAsyncDisposable
     {
+        private int _isDisposed;
+
         /// <summary>
         /// Initializes an instance of the <see cref="DicomItem"/> class.
         /// </summary>
@@ -19,7 +23,7 @@ namespace FellowOakDicom
         {
             Tag = tag;
         }
-
+        
         /// <summary>
         /// Gets the DICOM tag associated with the item.
         /// </summary>
@@ -82,5 +86,43 @@ namespace FellowOakDicom
         public virtual void Validate()
         { }
 
+        #region Disposal
+
+        protected bool IsDisposed => Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 1; 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This DICOM item with tag {Tag} is already disposed and can no longer be used");
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsync(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        protected virtual ValueTask DisposeAsync(bool disposing) => default;
+
+        #endregion
     }
 }

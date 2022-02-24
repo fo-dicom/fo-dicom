@@ -4,6 +4,9 @@
 using System;
 using System.Text;
 using FellowOakDicom.Log;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -11,11 +14,12 @@ namespace FellowOakDicom.Network
     /// <summary>
     /// Base class for DIMSE-C and DIMSE-N message items.
     /// </summary>
-    public class DicomMessage
+    public class DicomMessage : IDisposable, IAsyncDisposable
     {
         #region FIELDS
 
         private DicomDataset _dataset;
+        private int _isDisposed;
 
         #endregion
 
@@ -44,8 +48,16 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomCommandField Type
         {
-            get => Command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
-            protected set => Command.AddOrUpdate(DicomTag.CommandField, (ushort) value);
+            get
+            {
+                ThrowIfAlreadyDisposed();
+                return Command.GetSingleValue<DicomCommandField>(DicomTag.CommandField);
+            }
+            protected set
+            {
+                ThrowIfAlreadyDisposed();
+                Command.AddOrUpdate(DicomTag.CommandField, (ushort)value);
+            }
         }
 
         /// <summary>
@@ -55,6 +67,7 @@ namespace FellowOakDicom.Network
         {
             get
             {
+                ThrowIfAlreadyDisposed();
                 switch (Type)
                 {
                     case DicomCommandField.NGetRequest:
@@ -76,6 +89,7 @@ namespace FellowOakDicom.Network
             }
             protected set
             {
+                ThrowIfAlreadyDisposed();
                 switch (Type)
                 {
                     case DicomCommandField.NGetRequest:
@@ -94,7 +108,14 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets a value indicating whether the message contains a dataset.
         /// </summary>
-        public bool HasDataset => Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort) 0x0101) != 0x0101;
+        public bool HasDataset
+        {
+            get
+            {
+                ThrowIfAlreadyDisposed();
+                return Command.GetSingleValueOrDefault(DicomTag.CommandDataSetType, (ushort)0x0101) != 0x0101;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the presentation Context.
@@ -116,9 +137,14 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomDataset Dataset
         {
-            get => _dataset;
+            get
+            {
+                ThrowIfAlreadyDisposed();
+                return _dataset;
+            }
             set
             {
+                ThrowIfAlreadyDisposed();
                 _dataset = value;
                 Command.AddOrUpdate(DicomTag.CommandDataSetType, _dataset != null ? (ushort) 0x0202 : (ushort) 0x0101);
             }
@@ -151,6 +177,8 @@ namespace FellowOakDicom.Network
         /// <returns>Whether this DICOM message is considered timed out or not.</returns>
         public bool IsTimedOut(TimeSpan timeout)
         {
+            ThrowIfAlreadyDisposed();
+            
             if (LastPendingResponseReceived != null)
             {
                 return LastPendingResponseReceived.Value.Add(timeout) < DateTime.Now;
@@ -186,6 +214,8 @@ namespace FellowOakDicom.Network
         {
             try
             {
+                ThrowIfAlreadyDisposed();
+                
                 var output = new StringBuilder(ToString());
 
                 if (!printDatasets)
@@ -216,6 +246,71 @@ namespace FellowOakDicom.Network
                 return e.Message;
             }
         }
+        
+        #region Disposal
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This DICOM message is already disposed and can no longer be used");
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                Command?.Dispose();
+                Dataset?.Dispose();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsync(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        private async ValueTask DisposeAsync(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                if (Command != null)
+                {
+                    await Command.DisposeAsync();
+                }
+
+                if (Dataset != null)
+                {
+                    await Dataset.DisposeAsync();
+                }
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Formatted output of the DICOM message.

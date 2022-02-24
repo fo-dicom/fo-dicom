@@ -11,6 +11,7 @@ using System.Text;
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom
 {
@@ -60,6 +61,46 @@ namespace FellowOakDicom
 
         protected virtual void ValidateString() { }
 
+
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            try
+            {
+                if (disposing)
+                {
+                    Buffer.Dispose();
+                }
+            }
+            finally
+            {
+                base.Dispose(disposing);
+            }
+        }
+        
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            try
+            {
+                if (disposing)
+                {
+                    await Buffer.DisposeAsync();
+                }
+            }
+            finally
+            {
+                await base.DisposeAsync(disposing);
+            }
+        }
     }
 
     /// <summary>

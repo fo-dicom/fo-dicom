@@ -108,5 +108,11 @@ namespace FellowOakDicom.IO.Buffer
                 numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
             }
         }
+
+        public void Dispose()
+        {
+        }
+
+        public ValueTask DisposeAsync() => default;
     }
 }

@@ -167,5 +167,15 @@ namespace FellowOakDicom.IO.Buffer
             => endian == Endian.LocalMachine || unitSize == 1
                 ? buffer
                 : new EndianByteBuffer(buffer, endian, unitSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
+
+
+        
+        #region Disposal 
+
+        public void Dispose() => Internal.Dispose();
+
+        public ValueTask DisposeAsync() => Internal.DisposeAsync();
+
+        #endregion
     }
 }

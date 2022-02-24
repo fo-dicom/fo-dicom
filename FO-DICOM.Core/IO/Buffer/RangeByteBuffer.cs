@@ -105,5 +105,9 @@ namespace FellowOakDicom.IO.Buffer
                 offset += count;
             }
         }
+
+        public void Dispose() => Internal.Dispose();
+
+        public ValueTask DisposeAsync() => Internal.DisposeAsync();
     }
 }

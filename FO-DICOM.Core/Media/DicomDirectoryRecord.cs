@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Media
 {
@@ -46,7 +47,45 @@ namespace FellowOakDicom.Media
         {
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    NextDirectoryRecord?.Dispose();
+                    LowerLevelDirectoryRecord?.Dispose();
+                }
+            }
+            finally
+            {
+                base.Dispose(disposing);
+            }
+        }
 
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    if (NextDirectoryRecord != null)
+                    {
+                        await NextDirectoryRecord.DisposeAsync();
+                    }
+
+                    if (LowerLevelDirectoryRecord != null)
+                    {
+                        await LowerLevelDirectoryRecord.DisposeAsync();
+                    }
+                }
+            }
+            finally
+            {
+                await base.DisposeAsync(disposing);
+            }
+        }
+        
         public override string ToString()
         {
             return $"Directory Record Type: {DirectoryRecordType}, Lower level items: {LowerLevelDirectoryRecordCollection.Count()}";

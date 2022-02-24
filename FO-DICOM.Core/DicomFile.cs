@@ -61,9 +61,8 @@ namespace FellowOakDicom
     /// <summary>
     /// Representation of one DICOM file.
     /// </summary>
-    public class DicomFile
+    public class DicomFile : IDisposable, IAsyncDisposable
     {
-
         #region CONSTRUCTORS
 
         public DicomFile()
@@ -520,6 +519,47 @@ namespace FellowOakDicom
             FileMetaInfo = Format == DicomFileFormat.DICOM3NoFileMetaInfo
                                     ? new DicomFileMetaInformation(Dataset)
                                     : new DicomFileMetaInformation(FileMetaInfo);
+        }
+
+        #endregion
+        
+        #region DISPOSAL
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                FileMetaInfo?.Dispose();
+                Dataset?.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        protected virtual async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                if (FileMetaInfo != null)
+                {
+                    await FileMetaInfo.DisposeAsync();
+                }
+
+                if (Dataset != null)
+                {
+                    await Dataset.DisposeAsync();
+                }
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsync(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

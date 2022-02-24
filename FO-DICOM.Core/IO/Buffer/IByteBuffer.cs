@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace FellowOakDicom.IO.Buffer
     /// <summary>
     /// Common interface for byte buffers.
     /// </summary>
-    public interface IByteBuffer
+    public interface IByteBuffer : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Gets whether data is buffered in memory or not.

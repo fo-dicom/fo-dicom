@@ -9,7 +9,9 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
@@ -20,7 +22,6 @@ namespace FellowOakDicom.IO
     /// </summary>
     public class UnseekableStreamByteSource : IByteSource
     {
-        private readonly IMemoryProvider _memoryProvider;
 
         enum BufferState
         {
@@ -48,6 +49,8 @@ namespace FellowOakDicom.IO
         }
 
         #region FIELDS
+        
+        private readonly IMemoryProvider _memoryProvider;
 
         /// <summary> The actual stream source. </summary>
         private readonly StreamByteSource _byteSource;
@@ -66,6 +69,8 @@ namespace FellowOakDicom.IO
         private readonly Stack<long> _milestones;
 
         private const int _tempBufferSize = 4096;
+        
+        private int _isDisposed;
 
         #endregion
 
@@ -153,35 +158,72 @@ namespace FellowOakDicom.IO
         #region METHODS
 
         /// <inheritdoc />
-        public byte GetUInt8() => GetNumber(_byteSource.GetUInt8, _bufferReader.ReadByte, _bufferWriter.Write);
+        public byte GetUInt8() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetUInt8, _bufferReader.ReadByte, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public short GetInt16() => GetNumber(_byteSource.GetInt16, _bufferReader.ReadInt16, _bufferWriter.Write);
+        public short GetInt16() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetInt16, _bufferReader.ReadInt16, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public ushort GetUInt16() => GetNumber(_byteSource.GetUInt16, _bufferReader.ReadUInt16, _bufferWriter.Write);
+        public ushort GetUInt16() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetUInt16, _bufferReader.ReadUInt16, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public int GetInt32() => GetNumber(_byteSource.GetInt32, _bufferReader.ReadInt32, _bufferWriter.Write);
+        public int GetInt32() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetInt32, _bufferReader.ReadInt32, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public uint GetUInt32() => GetNumber(_byteSource.GetUInt32, _bufferReader.ReadUInt32, _bufferWriter.Write);
+        public uint GetUInt32() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetUInt32, _bufferReader.ReadUInt32, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public long GetInt64() => GetNumber(_byteSource.GetInt64, _bufferReader.ReadInt64, _bufferWriter.Write);
+        public long GetInt64() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetInt64, _bufferReader.ReadInt64, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public ulong GetUInt64() => GetNumber(_byteSource.GetUInt64, _bufferReader.ReadUInt64, _bufferWriter.Write);
+        public ulong GetUInt64() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetUInt64, _bufferReader.ReadUInt64, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public float GetSingle() => GetNumber(_byteSource.GetSingle, _bufferReader.ReadSingle, _bufferWriter.Write);
+        public float GetSingle() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetSingle, _bufferReader.ReadSingle, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
-        public double GetDouble() => GetNumber(_byteSource.GetDouble, _bufferReader.ReadDouble, _bufferWriter.Write);
+        public double GetDouble() 
+        {
+            ThrowIfAlreadyDisposed();
+            return GetNumber(_byteSource.GetDouble, _bufferReader.ReadDouble, _bufferWriter.Write);
+        }
 
         /// <inheritdoc />
         public byte[] GetBytes(int count)
         {
+            ThrowIfAlreadyDisposed();
             if (IsReadingBuffer)
             {
                 var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
@@ -227,6 +269,7 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
+            ThrowIfAlreadyDisposed();
             IByteBuffer buffer;
             if (count == 0)
             {
@@ -246,11 +289,16 @@ namespace FellowOakDicom.IO
         }
 
         /// <inheritdoc />
-        public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
+        public Task<IByteBuffer> GetBufferAsync(uint count)
+        {
+            ThrowIfAlreadyDisposed();
+            return Task.FromResult(GetBuffer(count));
+        }
 
         /// <inheritdoc />
         public void Skip(uint count)
         {
+            ThrowIfAlreadyDisposed();
             if (IsReadingBuffer)
             {
                 var bufferByteCount = (uint)(_buffer.Length - _buffer.Position);
@@ -338,10 +386,10 @@ namespace FellowOakDicom.IO
         public bool Require(uint count, ByteSourceCallback callback, object state) =>
             _byteSource.Require(count, callback, state);
 
-
         /// <inheritdoc />
         public Stream GetStream()
         {
+            ThrowIfAlreadyDisposed();
             // load the rest of the file into the buffer and return the buffer
             // this is inefficient, but difficult to change without changing decompression
             // where this is needed (for deflated transfer syntax)
@@ -435,6 +483,58 @@ namespace FellowOakDicom.IO
             }
 
             return data;
+        }
+
+        #endregion
+        
+        #region DISPOSAL
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException($"This unseekable stream byte source is already disposed and can no longer be used");
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Perform disposal.
+        /// </summary>
+        /// <param name="disposing">true if disposal request originates from Dispose call, false if request originates from finalizer.</param>
+        private void Dispose(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _byteSource.Dispose();
+                _bufferReader.Dispose();
+                _bufferWriter.Dispose();
+                _buffer.Dispose();
+            }
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+            return default;
         }
 
         #endregion

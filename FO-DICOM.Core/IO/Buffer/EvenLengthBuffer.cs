@@ -98,5 +98,9 @@ namespace FellowOakDicom.IO.Buffer
             => (buffer.Size & 1) == 1
             ? new EvenLengthBuffer(buffer)
             : buffer;
+
+        public void Dispose() => Buffer.Dispose();
+
+        public ValueTask DisposeAsync() => Buffer.DisposeAsync();
     }
 }

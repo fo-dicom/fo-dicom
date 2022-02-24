@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom
 {
@@ -48,5 +49,46 @@ namespace FellowOakDicom
             Items?.Each(ds => ds?.Validate());
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    if (Items != null)
+                    {
+                        foreach (DicomDataset item in Items)
+                        {
+                            item.Dispose();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                base.Dispose(disposing);
+            }
+        }
+
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    if (Items != null)
+                    {
+                        foreach (DicomDataset item in Items)
+                        {
+                            await item.DisposeAsync();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                await base.DisposeAsync(disposing);
+            }
+        }
     }
 }

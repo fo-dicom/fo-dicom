@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace FellowOakDicom.IO.Buffer
         #region FIELDS
 
         private readonly IFileReference _file;
+        private int _isDisposed;
 
         #endregion
 
@@ -33,7 +35,7 @@ namespace FellowOakDicom.IO.Buffer
             using var stream = _file.OpenWrite();
             stream.Write(data, 0, (int)Size);
         }
-
+        
         #endregion
 
         #region PROPERTIES
@@ -55,6 +57,8 @@ namespace FellowOakDicom.IO.Buffer
         {
             get
             {
+                ThrowIfAlreadyDisposed();
+                
                 var size = (int)Size;
                 var data = new byte[size];
                 GetByteRange(0, size, data);
@@ -78,6 +82,8 @@ namespace FellowOakDicom.IO.Buffer
                 throw new ArgumentException($"Output array with {output.Length} bytes cannot fit {count} bytes of data");
             }   
             
+            ThrowIfAlreadyDisposed();
+            
             using var fs = _file.OpenRead();
             
             fs.Seek(offset, SeekOrigin.Begin);
@@ -95,6 +101,8 @@ namespace FellowOakDicom.IO.Buffer
             {
                 throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
+            
+            ThrowIfAlreadyDisposed();
 
             using var fs = _file.OpenRead();
 
@@ -113,11 +121,57 @@ namespace FellowOakDicom.IO.Buffer
                 throw new InvalidOperationException("Cannot copy to non-writable stream");
             }
 
+            ThrowIfAlreadyDisposed();
+
             using var fs = _file.OpenRead();
 
             await fs.CopyToAsync(stream);
         }
 
+        #endregion
+        
+        #region Disposal
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ThrowIfAlreadyDisposed()
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 0, 0) == 0)
+            {
+                return;
+            }
+
+            ThrowDisposedException();
+        }
+        
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowDisposedException() => throw new ObjectDisposedException("This temp file is already disposed and can no longer be used");
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _file.Delete();
+            }
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+            return default;
+        }
+        
         #endregion
     }
 }

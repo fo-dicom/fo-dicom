@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using System;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -18,7 +19,7 @@ namespace FellowOakDicom.IO
     /// <summary>
     /// Byte source interface for reading operations.
     /// </summary>
-    public interface IByteSource
+    public interface IByteSource: IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Gets or sets the endianness.
