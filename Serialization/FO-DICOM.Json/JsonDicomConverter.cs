@@ -410,58 +410,65 @@ namespace FellowOakDicom.Serialization
             writer.WriteStartObject();
             writer.WritePropertyName("vr");
             writer.WriteValue(item.ValueRepresentation.Code);
-
-            switch (item.ValueRepresentation.Code)
+            if (!_autoValidate && (item.ValueRepresentation.Code == DicomVRCode.IS || item.ValueRepresentation.Code == DicomVRCode.DS))
             {
-                case "PN":
-                    WriteJsonPersonName(writer, (DicomPersonName)item);
-                    break;
-                case "SQ":
-                    WriteJsonSequence(writer, (DicomSequence)item);
-                    break;
-                case "OB":
-                case "OD":
-                case "OF":
-                case "OL":
-                case "OV":
-                case "OW":
-                case "UN":
-                    WriteJsonOther(writer, (DicomElement)item);
-                    break;
-                case "FL":
-                    WriteJsonElement<float>(writer, (DicomElement)item);
-                    break;
-                case "FD":
-                    WriteJsonElement<double>(writer, (DicomElement)item);
-                    break;
-                case "IS":
-                case "SL":
-                    WriteJsonElement<int>(writer, (DicomElement)item);
-                    break;
-                case "SS":
-                    WriteJsonElement<short>(writer, (DicomElement)item);
-                    break;
-                case "SV":
-                    WriteJsonElement<long>(writer, (DicomElement)item);
-                    break;
-                case "UL":
-                    WriteJsonElement<uint>(writer, (DicomElement)item);
-                    break;
-                case "US":
-                    WriteJsonElement<ushort>(writer, (DicomElement)item);
-                    break;
-                case "UV":
-                    WriteJsonElement<ulong>(writer, (DicomElement)item);
-                    break;
-                case "DS":
-                    WriteJsonDecimalString(writer, (DicomElement)item);
-                    break;
-                case "AT":
-                    WriteJsonAttributeTag(writer, (DicomElement)item);
-                    break;
-                default:
-                    WriteJsonElement<string>(writer, (DicomElement)item);
-                    break;
+                // Always serialize DS, IS as string for best compatibility while autoValidate is False.
+                WriteJsonElement<string>(writer, (DicomElement)item);
+            }
+            else
+            {
+                switch (item.ValueRepresentation.Code)
+                {
+                    case "PN":
+                        WriteJsonPersonName(writer, (DicomPersonName)item);
+                        break;
+                    case "SQ":
+                        WriteJsonSequence(writer, (DicomSequence)item);
+                        break;
+                    case "OB":
+                    case "OD":
+                    case "OF":
+                    case "OL":
+                    case "OV":
+                    case "OW":
+                    case "UN":
+                        WriteJsonOther(writer, (DicomElement)item);
+                        break;
+                    case "FL":
+                        WriteJsonElement<float>(writer, (DicomElement)item);
+                        break;
+                    case "FD":
+                        WriteJsonElement<double>(writer, (DicomElement)item);
+                        break;
+                    case "IS":
+                    case "SL":
+                        WriteJsonElement<int>(writer, (DicomElement)item);
+                        break;
+                    case "SS":
+                        WriteJsonElement<short>(writer, (DicomElement)item);
+                        break;
+                    case "SV":
+                        WriteJsonElement<long>(writer, (DicomElement)item);
+                        break;
+                    case "UL":
+                        WriteJsonElement<uint>(writer, (DicomElement)item);
+                        break;
+                    case "US":
+                        WriteJsonElement<ushort>(writer, (DicomElement)item);
+                        break;
+                    case "UV":
+                        WriteJsonElement<ulong>(writer, (DicomElement)item);
+                        break;
+                    case "DS":
+                        WriteJsonDecimalString(writer, (DicomElement)item);
+                        break;
+                    case "AT":
+                        WriteJsonAttributeTag(writer, (DicomElement)item);
+                        break;
+                    default:
+                        WriteJsonElement<string>(writer, (DicomElement)item);
+                        break;
+                }
             }
             writer.WriteEndObject();
         }
@@ -655,7 +662,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
-                        var componentGroupValues = val.Split(_personNameComponentGroupDelimiter); 
+                        var componentGroupValues = val.Split(_personNameComponentGroupDelimiter);
                         int i = 0;
 
                         writer.WriteStartObject();
@@ -872,10 +879,10 @@ namespace FellowOakDicom.Serialization
                         {
                             var val = componentGroupValues[i];
 
-                            if(!string.IsNullOrWhiteSpace(val))
+                            if (!string.IsNullOrWhiteSpace(val))
                             {
                                 stringBuilder.Append(val);
-                                
+
                             }
                             stringBuilder.Append(_personNameComponentGroupDelimiter);
                         }
