@@ -1100,8 +1100,6 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
 
-
-
         [Fact]
         public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
         {
@@ -1135,6 +1133,18 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.True(ds.Contains(DicomTag.PatientAge));
         }
 
+
+        [Fact]
+        public static void GivenInvalidValue_WhenAutoValidateIsFalse_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            string invalidDS = "InvalidDS";
+            string invalidIS = "InvalidIS";            
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidDS))));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidIS))));            
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(autoValidate: false));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]}}", json);
+        }
 
         #region Sample Data
 

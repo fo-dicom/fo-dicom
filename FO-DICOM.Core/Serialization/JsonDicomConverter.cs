@@ -95,7 +95,6 @@ namespace FellowOakDicom.Serialization
         private readonly static char _personNameComponentGroupDelimiter = '=';
         private readonly static string[] _personNameComponentGroupNames = { "Alphabetic", "Ideographic", "Phonetic" };
 
-
         private delegate T GetValue<out T>(Utf8JsonReader reader);
         private delegate bool TryParse<T>(string value, out T parsed);
         private delegate void WriteValue<in T>(Utf8JsonWriter writer, T value);
@@ -105,7 +104,7 @@ namespace FellowOakDicom.Serialization
         /// Initialize the JsonDicomConverter.
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
-        /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset. </param>
+        /// <param name="autoValidate">Whether the content of DicomItems shall be validated when serializing or deserializing. </param>
         public DicomJsonConverter(bool writeTagsAsKeywords = false, bool autoValidate = true)
         {
             _writeTagsAsKeywords = writeTagsAsKeywords;
@@ -327,57 +326,66 @@ namespace FellowOakDicom.Serialization
             writer.WriteStartObject();
             writer.WriteString("vr", item.ValueRepresentation.Code);
 
-            switch (item.ValueRepresentation.Code)
+            if (!_autoValidate && (item.ValueRepresentation.Code == DicomVRCode.IS || item.ValueRepresentation.Code == DicomVRCode.DS))
             {
-                case "PN":
-                    WriteJsonPersonName(writer, (DicomPersonName)item);
-                    break;
-                case "SQ":
-                    WriteJsonSequence(writer, (DicomSequence)item, options);
-                    break;
-                case "OB":
-                case "OD":
-                case "OF":
-                case "OL":
-                case "OV":
-                case "OW":
-                case "UN":
-                    WriteJsonOther(writer, (DicomElement)item);
-                    break;
-                case "FL":
-                    WriteJsonElement<float>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "FD":
-                    WriteJsonElement<double>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "IS":
-                case "SL":
-                    WriteJsonElement<int>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "SS":
-                    WriteJsonElement<short>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "SV":
-                    WriteJsonElement<long>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "UL":
-                    WriteJsonElement<uint>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "US":
-                    WriteJsonElement<ushort>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "UV":
-                    WriteJsonElement<ulong>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
-                    break;
-                case "DS":
-                    WriteJsonDecimalString(writer, (DicomElement)item);
-                    break;
-                case "AT":
-                    WriteJsonAttributeTag(writer, (DicomElement)item);
-                    break;
-                default:
-                    WriteJsonElement<string>(writer, (DicomElement)item, (w, v) => writer.WriteStringValue(v));
-                    break;
+                // Always serialize DS, IS as string for best compatibility while autoValidate is False.
+                WriteJsonElement<string>(writer, (DicomElement)item, (w, v) => writer.WriteStringValue(v));
+            }
+            else
+            {
+
+                switch (item.ValueRepresentation.Code)
+                {
+                    case "PN":
+                        WriteJsonPersonName(writer, (DicomPersonName)item);
+                        break;
+                    case "SQ":
+                        WriteJsonSequence(writer, (DicomSequence)item, options);
+                        break;
+                    case "OB":
+                    case "OD":
+                    case "OF":
+                    case "OL":
+                    case "OV":
+                    case "OW":
+                    case "UN":
+                        WriteJsonOther(writer, (DicomElement)item);
+                        break;
+                    case "FL":
+                        WriteJsonElement<float>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "FD":
+                        WriteJsonElement<double>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "IS":
+                    case "SL":
+                        WriteJsonElement<int>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "SS":
+                        WriteJsonElement<short>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "SV":
+                        WriteJsonElement<long>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "UL":
+                        WriteJsonElement<uint>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "US":
+                        WriteJsonElement<ushort>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "UV":
+                        WriteJsonElement<ulong>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                        break;
+                    case "DS":
+                        WriteJsonDecimalString(writer, (DicomElement)item);
+                        break;
+                    case "AT":
+                        WriteJsonAttributeTag(writer, (DicomElement)item);
+                        break;
+                    default:
+                        WriteJsonElement<string>(writer, (DicomElement)item, (w, v) => writer.WriteStringValue(v));
+                        break;
+                }
             }
             writer.WriteEndObject();
         }
