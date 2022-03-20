@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.core</AssemblyName>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2021</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2022</Copyright>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
     <Product>Fellow Oak DICOM</Product>
     <Authors>fo-dicom contributors</Authors>
@@ -14,7 +14,7 @@
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <Description>A NetStandard DICOM library.
 Version 5 has some breaking changes to version 4. Read here for more information how to migrate: https://github.com/fo-dicom/fo-dicom/wiki/Upgrade-from-version-4-to-version-5</Description>
-    <Version>5.0.1</Version>
+    <Version>5.0.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>fo-dicom</PackageId>
     <LangVersion>8.0</LangVersion>
@@ -76,6 +76,7 @@ Version 5 has some breaking changes to version 4. Read here for more information
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.1.2" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />

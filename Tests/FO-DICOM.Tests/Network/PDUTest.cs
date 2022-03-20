@@ -9,23 +9,31 @@ using System.Threading;
 using FellowOakDicom.IO;
 using Xunit;
 using System.Threading.Tasks;
+using FellowOakDicom.Memory;
 
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network")]
     public class PDUTest
     {
+        private readonly ArrayPoolMemoryProvider _memoryProvider;
+
+        public PDUTest()
+        {
+            _memoryProvider = new ArrayPoolMemoryProvider();
+        }
+
         #region Unit tests
 
         [Fact]
         public async Task Write_AeWithNonAsciiCharacters_ShouldBeAsciified()
         {
             var notExpected = "GÖTEBORG";
-            var request = new AAssociateRQ(new DicomAssociation("MALMÖ", notExpected));
+            var request = new AAssociateRQ(new DicomAssociation("MALMÖ", notExpected), _memoryProvider);
 
             using var ms = new MemoryStream();
             await request.WriteAsync(ms, CancellationToken.None);
-            var readPdu = new RawPDU(ms);
+            var readPdu = new RawPDU(ms, _memoryProvider);
 
             readPdu.Reset();
             readPdu.SkipBytes("Unknown", 10);
@@ -41,7 +49,7 @@ namespace FellowOakDicom.Tests.Network
             var name = Path.Combine(path, "assoc.pdu");
             if (Directory.Exists(path)) Directory.Delete(path, true);
 
-            var pdu = new RawPDU(0x01);
+            var pdu = new RawPDU(0x01, _memoryProvider);
             pdu.Save(new FileReference(name));
 
             Assert.True(File.Exists(name));
@@ -54,13 +62,13 @@ namespace FellowOakDicom.Tests.Network
             var association = new DicomAssociation("testCalling", "testCalled");
             association.ExtendedNegotiations.Add(sopClassUid, applicationInfo, commonServiceClass, relatedSopClasses);
 
-            var rq = new AAssociateRQ(association);
+            var rq = new AAssociateRQ(association, _memoryProvider);
             using var ms = new MemoryStream();
             await rq.WriteAsync(ms, CancellationToken.None);
-            var readPdu = new RawPDU(ms);
+            var readPdu = new RawPDU(ms, _memoryProvider);
 
             var testAssociation = new DicomAssociation();
-            var rq2 = new AAssociateRQ(testAssociation);
+            var rq2 = new AAssociateRQ(testAssociation, _memoryProvider);
             rq2.Read(readPdu);
 
             Assert.Single(testAssociation.ExtendedNegotiations);
@@ -83,15 +91,15 @@ namespace FellowOakDicom.Tests.Network
             acceptedApplicationInfo.AddOrUpdate(1, 10);
             inAssociation.ExtendedNegotiations.AcceptApplicationInfo(sopClassUid, acceptedApplicationInfo);
 
-            var ac = new AAssociateAC(inAssociation);
+            var ac = new AAssociateAC(inAssociation, _memoryProvider);
             using var ms = new MemoryStream();
             await ac.WriteAsync(ms, CancellationToken.None);
 
-            var readPdu = new RawPDU(ms);
+            var readPdu = new RawPDU(ms, _memoryProvider);
 
             var outAssociation = new DicomAssociation();
             outAssociation.ExtendedNegotiations.Add(sopClassUid, applicationInfo);
-            var ac2 = new AAssociateAC(outAssociation);
+            var ac2 = new AAssociateAC(outAssociation, _memoryProvider);
             ac2.Read(readPdu);
 
             Assert.Single(outAssociation.ExtendedNegotiations);
@@ -107,8 +115,8 @@ namespace FellowOakDicom.Tests.Network
         [MemberData(nameof(RawPDUTestData))]
         public void AssociateRJ_Read_ReasonGivenByContext(byte[] buffer, AAssociateRJ _, string expected)
         {
-            using var raw = new RawPDU(buffer);
-            var reject = new AAssociateRJ();
+            using var raw = new RawPDU(buffer, _memoryProvider);
+            var reject = new AAssociateRJ(_memoryProvider);
             reject.Read(raw);
             var actual = reject.Reason.ToString();
 
@@ -135,8 +143,8 @@ namespace FellowOakDicom.Tests.Network
             association.PresentationContexts.Add(
                 new DicomPresentationContext(contextId, DicomUID.Verification));
 
-            using var raw = new RawPDU(buffer);
-            var accept = new AAssociateAC(association);
+            using var raw = new RawPDU(buffer, _memoryProvider);
+            var accept = new AAssociateAC(association, _memoryProvider);
             accept.Read(raw);
 
             var actual = association.PresentationContexts[contextId];
@@ -185,56 +193,56 @@ namespace FellowOakDicom.Tests.Network
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x01},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
-                    DicomRejectReason.NoReasonGiven),
+                    DicomRejectReason.NoReasonGiven, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.NoReasonGiven)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x02},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
-                    DicomRejectReason.ApplicationContextNotSupported),
+                    DicomRejectReason.ApplicationContextNotSupported, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.ApplicationContextNotSupported)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x03},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
-                    DicomRejectReason.CallingAENotRecognized),
+                    DicomRejectReason.CallingAENotRecognized, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.CallingAENotRecognized)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x01, 0x07},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
-                    DicomRejectReason.CalledAENotRecognized),
+                    DicomRejectReason.CalledAENotRecognized, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.CalledAENotRecognized)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x01},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE,
-                    DicomRejectReason.NoReasonGiven_),
+                    DicomRejectReason.NoReasonGiven_, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.NoReasonGiven_)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x02},
                 new AAssociateRJ(DicomRejectResult.Permanent, DicomRejectSource.ServiceProviderACSE,
-                    DicomRejectReason.ProtocolVersionNotSupported),
+                    DicomRejectReason.ProtocolVersionNotSupported, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.ProtocolVersionNotSupported)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x02, 0x03, 0x01},
                 new AAssociateRJ(DicomRejectResult.Transient, DicomRejectSource.ServiceProviderPresentation,
-                    DicomRejectReason.TemporaryCongestion),
+                    DicomRejectReason.TemporaryCongestion, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.TemporaryCongestion)
             },
             new object[]
             {
                 new byte[] {0x03, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x02, 0x03, 0x02},
                 new AAssociateRJ(DicomRejectResult.Transient, DicomRejectSource.ServiceProviderPresentation,
-                    DicomRejectReason.LocalLimitExceeded),
+                    DicomRejectReason.LocalLimitExceeded, new ArrayPoolMemoryProvider()),
                 nameof(DicomRejectReason.LocalLimitExceeded)
             }
         };
@@ -268,6 +276,8 @@ namespace FellowOakDicom.Tests.Network
             }
         };
 
+
+
         #endregion
 
         #region Helper functions
@@ -281,7 +291,7 @@ namespace FellowOakDicom.Tests.Network
             byte[] buffer = new byte[length];
             stream.Seek(0, SeekOrigin.Begin);
             stream.Read(buffer, 0, length);
-            return new RawPDU(buffer);
+            return new RawPDU(buffer, _memoryProvider);
         }
 
         #endregion

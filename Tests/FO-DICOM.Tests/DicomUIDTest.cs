@@ -167,7 +167,7 @@ namespace FellowOakDicom.Tests
                 yield return new object[] { DicomUID.AbnormalLinesFindingOrFeature6103, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.AbstractMultiDimensionalImageModel, DicomUidType.ApplicationHostingModel, false };
                 yield return new object[] { DicomUID.NuclearMedicineImageStorageRetiredRETIRED, DicomUidType.SOPClass, true };
-                yield return new object[] { DicomUID.SPM2GRAY, DicomUidType.FrameOfReference, false };
+                yield return new object[] { DicomUID.UTC, DicomUidType.FrameOfReference, false };
                 yield return new object[] { DicomUID.GeneralPurposeWorklistInformationModelFindRETIRED, DicomUidType.SOPClass, true };
                 yield return new object[] { DicomUID.TransducerOrientation6, DicomUidType.ContextGroupName, false };
                 yield return new object[] { DicomUID.UltrasoundTransducerGeometry12033, DicomUidType.ContextGroupName, false };

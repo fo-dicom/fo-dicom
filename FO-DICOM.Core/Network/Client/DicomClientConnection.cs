@@ -146,9 +146,13 @@ namespace FellowOakDicom.Network.Client
             : base(networkStream, 
                 dicomClient.FallbackEncoding,
                 dicomClient.Logger, 
-                dicomClient.LogManager,
-                dicomClient.NetworkManager,
-                dicomClient.TranscoderManager)
+                new DicomServiceDependencies(
+                    dicomClient.LogManager,
+                    dicomClient.NetworkManager,
+                    dicomClient.TranscoderManager,
+                    dicomClient.MemoryProvider
+                )
+            )
         {
             DicomClient = dicomClient;
             NetworkStream = networkStream;
@@ -161,7 +165,7 @@ namespace FellowOakDicom.Network.Client
                 return;
             }
 
-            Listener = Task.Factory.StartNew(RunAsync, TaskCreationOptions.LongRunning);
+            Listener = Task.Run(RunAsync);
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);

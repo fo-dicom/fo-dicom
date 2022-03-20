@@ -62,12 +62,10 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Initializes an instance of the <see cref="DicomServer{T}"/> class.
         /// </summary>
-        public DicomServer(
-            INetworkManager networkManager,
-            ILogManager logManager)
+        public DicomServer(DicomServerDependencies dependencies)
         {
-            _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            _networkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
+            _logManager = dependencies.LogManager ?? throw new ArgumentNullException(nameof(dependencies.LogManager));
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;

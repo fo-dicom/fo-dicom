@@ -1,3 +1,4 @@
+using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using Xunit;
 
@@ -6,14 +7,21 @@ namespace FellowOakDicom.Tests.Bugs
     [Collection("General")]
     public class GH1103
     {
+        private readonly IMemoryProvider _memoryProvider;
+
+        public GH1103()
+        {
+            _memoryProvider = new ArrayPoolMemoryProvider();
+        }
+
         [Fact]
         public void ReadingOsirixAssociationRequest1_ShouldNotThrow()
         {
-            using var pdu = new RawPDU(OsirixAssociationRequest1);
+            using var pdu = new RawPDU(OsirixAssociationRequest1, _memoryProvider);
 
             var association = new DicomAssociation { };
 
-            var associateRq = new AAssociateRQ(association);
+            var associateRq = new AAssociateRQ(association, _memoryProvider);
 
             var exception = Record.Exception(() => associateRq.Read(pdu));
 
@@ -23,11 +31,11 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public void ReadingOsirixAssociationRequest2_ShouldNotThrow()
         {
-            using var pdu = new RawPDU(OsirixAssociationRequest2);
+            using var pdu = new RawPDU(OsirixAssociationRequest2, _memoryProvider);
 
             var association = new DicomAssociation { };
 
-            var associateRq = new AAssociateRQ(association);
+            var associateRq = new AAssociateRQ(association, _memoryProvider);
 
             var exception = Record.Exception(() => associateRq.Read(pdu));
 
