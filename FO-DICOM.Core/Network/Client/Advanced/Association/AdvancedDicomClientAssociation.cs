@@ -448,7 +448,10 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private void ThrowIfAlreadyDisposed()
         {
             if (!IsDisposed)
+            {
                 return;
+            }
+
             ThrowDisposedException();
         }
 
