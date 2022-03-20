@@ -73,15 +73,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (request.Logger == null)
-            {
-                request.Logger = _logManager.GetLogger("Dicom.Network");
-            }
+            request.Logger ??= _logManager.GetLogger("Dicom.Network");
 
-            if (request.DicomServiceOptions == null)
-            {
-                request.DicomServiceOptions = _defaultDicomServiceOptions.Value;
-            }
+            request.DicomServiceOptions ??= _defaultDicomServiceOptions.Value;
 
             if (request.NetworkStreamCreationOptions == null)
             {
