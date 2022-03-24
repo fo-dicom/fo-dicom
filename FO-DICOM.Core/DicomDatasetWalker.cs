@@ -358,20 +358,10 @@ namespace FellowOakDicom
                         walker.OnEndSequence();
                     }
                 }
-
-                walker.OnEndWalk();
             }
-            catch (Exception e)
+            finally
             {
-                try
-                {
-                    walker.OnEndWalk();
-                    throw;
-                }
-                catch
-                {
-                    throw e;
-                }
+                walker.OnEndWalk();
             }
         }
 

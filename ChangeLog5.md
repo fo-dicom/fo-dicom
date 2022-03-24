@@ -8,6 +8,7 @@
 * Fixed StreamByteBuffer to read an internally buffered stream completely (#1313)
 * Optimize performance and reduce memory allocations in network layer (#1291)
 * Fixed bug where disposal of DicomService could throw an exception if the buffered write stream still had content (#1319)
+* Improve handling of dropped connections (#1332)
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
