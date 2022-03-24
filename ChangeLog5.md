@@ -1,4 +1,5 @@
 #### 5.0.3 (TBD)
+* JsonDicomConverter allows serializing DS/IS dicom item with invalid values when autoValidate is False. (#1354)
 * Breaking change: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
 * Breaking change: subclasses of DicomServer will have to pass an instance of DicomServerDependencies along to the DicomServer base constructor. This replaces the old NetworkManager / LogManager dependencies. (Implemented in the context of #1291)
 * Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)

@@ -435,6 +435,8 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<double>(writer, (DicomElement)item);
                     break;
                 case "IS":
+                    WriteJsonIntegerString(writer, (DicomElement)item);
+                    break;
                 case "SL":
                     WriteJsonElement<int>(writer, (DicomElement)item);
                     break;
@@ -463,11 +465,31 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<string>(writer, (DicomElement)item);
                     break;
             }
+
             writer.WriteEndObject();
         }
 
-        private static void WriteJsonDecimalString(JsonWriter writer, DicomElement elem)
+        private void WriteJsonIntegerString(JsonWriter writer, DicomElement elem)
         {
+            if (!_autoValidate)
+            {
+                // Always serialize IS as string for best compatibility while autoValidate is False.
+                WriteJsonElement<string>(writer, elem);
+            }
+            else
+            {
+                WriteJsonElement<int>(writer, elem);
+            }
+        }
+
+        private void WriteJsonDecimalString(JsonWriter writer, DicomElement elem)
+        {
+            if (!_autoValidate)
+            {
+                // Always serialize IS as string for best compatibility while autoValidate is False.
+                WriteJsonElement<string>(writer, elem);
+                return;
+            }
             if (elem.Count != 0)
             {
                 writer.WritePropertyName("Value");
@@ -655,7 +677,7 @@ namespace FellowOakDicom.Serialization
                     }
                     else
                     {
-                        var componentGroupValues = val.Split(_personNameComponentGroupDelimiter); 
+                        var componentGroupValues = val.Split(_personNameComponentGroupDelimiter);
                         int i = 0;
 
                         writer.WriteStartObject();
@@ -872,10 +894,10 @@ namespace FellowOakDicom.Serialization
                         {
                             var val = componentGroupValues[i];
 
-                            if(!string.IsNullOrWhiteSpace(val))
+                            if (!string.IsNullOrWhiteSpace(val))
                             {
                                 stringBuilder.Append(val);
-                                
+
                             }
                             stringBuilder.Append(_personNameComponentGroupDelimiter);
                         }
