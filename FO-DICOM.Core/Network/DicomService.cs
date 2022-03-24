@@ -229,7 +229,15 @@ namespace FellowOakDicom.Network
             if (disposing)
             {
                 _dimseStream?.Dispose();
-                _writeStream?.Dispose();
+                try
+                {
+                    _writeStream?.Dispose();
+                }
+                catch(IOException)
+                {
+                    // The buffered stream will try to flush its contents upon disposal, which might fail if the underlying network stream is already closed
+                    // This can be ignored here
+                }
                 _network?.Dispose();
                 _pduQueueWatcher?.Dispose();
             }
