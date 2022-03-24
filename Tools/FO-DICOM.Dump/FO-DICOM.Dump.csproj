@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <RootNamespace>FellowOakDicom.Dump</RootNamespace>
     <UseWPF>true</UseWPF>
     <AssemblyName>fo-dicom.Dump</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Codecs" Version="5.0.0-beta6" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>
