@@ -10,7 +10,7 @@ namespace FellowOakDicom.Benchmark
         static void Main()
         {
             // Run all benchmarks in assembly
-            BenchmarkRunner.Run(typeof(Program));
+            BenchmarkRunner.Run(typeof(Program).Assembly);
         }
     }
 }
