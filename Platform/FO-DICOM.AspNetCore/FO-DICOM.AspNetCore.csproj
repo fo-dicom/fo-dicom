@@ -4,6 +4,7 @@
     <TargetFrameworks>netcoreapp3.1;netcoreapp2.2</TargetFrameworks>
     <RootNamespace>FellowOakDicom.AspNetCore</RootNamespace>
     <AssemblyName>fo-dicom.AspNetCore</AssemblyName>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">

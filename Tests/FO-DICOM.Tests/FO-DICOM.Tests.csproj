@@ -9,6 +9,7 @@
     <AssemblyName>fo-dicom.Tests</AssemblyName>
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
