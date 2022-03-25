@@ -7,6 +7,7 @@
 * Catch exception in logmessage, to avoid making the application crash because of logging (#1288)
 * Fixed StreamByteBuffer to read an internally buffered stream completely (#1313)
 * Optimize performance and reduce memory allocations in network layer (#1291)
+* Fixed bug where disposal of DicomService could throw an exception if the buffered write stream still had content (#1319)
 * Improve handling of dropped connections (#1332)
 * Add new API for expert DICOM client connections/associations. This new API gives full control over the connection, association and requests when sending DICOM requests (#1144)
 * Rewrite "DicomClient" based on the new advanced API. The state based implementation is gone. The public API has remained the same. (#1144)
