@@ -53,7 +53,7 @@ namespace FellowOakDicom.Tests.Serialization
             stopWatch.Stop();
 
             var totalElapsedMilliseconds = stopWatch.ElapsedMilliseconds;
-            var millisecondsPerCall = totalElapsedMilliseconds / (double) numCalls;
+            var millisecondsPerCall = totalElapsedMilliseconds / (double)numCalls;
 
             return millisecondsPerCall;
         }
@@ -294,7 +294,7 @@ namespace FellowOakDicom.Tests.Serialization
         {
             var ds = new DicomDataset { ValidateItems = false };
             // have to turn off validation, since we want to add invalid DS values
-            ds.Add( new DicomDecimalString(DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" } ));
+            ds.Add(new DicomDecimalString(DicomTag.ImagePositionPatient, new[] { "   001 ", " +13 ", "+000000.0000E+00", "-000000.0000E+00" }));
             var json = DicomJson.ConvertDicomToJson(ds);
             var obj = JsonDocument.Parse(json);
             var arr = obj.RootElement.GetProperty("00200032").GetProperty("Value").EnumerateArray().ToArray();
@@ -316,7 +316,7 @@ namespace FellowOakDicom.Tests.Serialization
             var ds = new DicomDataset { ValidateItems = false };
             // have to turn off validation, since DicomTag.PatientAge has Value Multiplicity 1, so
             // this dataset cannot be constructed without validation exception
-            ds.Add( new DicomAgeString( DicomTag.PatientAge, new[] { "1Y", "", "3Y" }));
+            ds.Add(new DicomAgeString(DicomTag.PatientAge, new[] { "1Y", "", "3Y" }));
             var json = DicomJson.ConvertDicomToJson(ds);
             var obj = JsonDocument.Parse(json);
             var arr = obj.RootElement.GetProperty("00101010").GetProperty("Value").EnumerateArray().ToArray();
@@ -671,7 +671,7 @@ namespace FellowOakDicom.Tests.Serialization
             var originalDataset = new DicomDataset {
                 { DicomTag.PatientName, value }
             };
-           
+
             var json = DicomJson.ConvertDicomToJson(originalDataset);
 
             Assert.Equal(expectedJson, json);
@@ -1216,6 +1216,17 @@ namespace FellowOakDicom.Tests.Serialization
             VerifyJsonTripleTrip(ds);
         }
 
+        [Fact]
+        public static void GivenInvalidValue_WhenAutoValidateIsFalse_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            string invalidDS = "InvalidDS";
+            string invalidIS = "InvalidIS";
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidDS))));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidIS))));
+            var json = DicomJson.ConvertDicomToJson(dataset, autoValidate: false);
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]}}", json);
+        }
 
         #region Sample Data
 

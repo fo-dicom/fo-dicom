@@ -6,7 +6,7 @@ using System;
 
 namespace FellowOakDicom.Network.Client.EventArguments
 {
-    [Obsolete(nameof(StateChangedEventArgs) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(StateChangedEventArgs) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class StateChangedEventArgs : EventArgs
     {
         /// <summary>

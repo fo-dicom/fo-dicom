@@ -95,7 +95,6 @@ namespace FellowOakDicom.Serialization
         private readonly static char _personNameComponentGroupDelimiter = '=';
         private readonly static string[] _personNameComponentGroupNames = { "Alphabetic", "Ideographic", "Phonetic" };
 
-
         private delegate T GetValue<out T>(Utf8JsonReader reader);
         private delegate bool TryParse<T>(string value, out T parsed);
         private delegate void WriteValue<in T>(Utf8JsonWriter writer, T value);
@@ -105,7 +104,7 @@ namespace FellowOakDicom.Serialization
         /// Initialize the JsonDicomConverter.
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
-        /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset. </param>
+        /// <param name="autoValidate">Whether the content of DicomItems shall be validated when serializing or deserializing. </param>
         public DicomJsonConverter(bool writeTagsAsKeywords = false, bool autoValidate = true)
         {
             _writeTagsAsKeywords = writeTagsAsKeywords;
@@ -351,6 +350,8 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<double>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
                     break;
                 case "IS":
+                    WriteJsonIntegerString(writer, (DicomElement)item);
+                    break;
                 case "SL":
                     WriteJsonElement<int>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
                     break;
@@ -379,11 +380,32 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<string>(writer, (DicomElement)item, (w, v) => writer.WriteStringValue(v));
                     break;
             }
+
             writer.WriteEndObject();
         }
 
-        private static void WriteJsonDecimalString(Utf8JsonWriter writer, DicomElement elem)
+        private void WriteJsonIntegerString(Utf8JsonWriter writer, DicomElement elem)
         {
+            if (!_autoValidate)
+            {
+                // Always serialize IS as string for best compatibility while autoValidate is False.
+                WriteJsonElement<string>(writer, elem, (w, v) => writer.WriteStringValue(v));
+            }
+            else
+            {
+                WriteJsonElement<int>(writer, elem, (w, v) => writer.WriteNumberValue(v));
+            }
+        }
+
+        private void WriteJsonDecimalString(Utf8JsonWriter writer, DicomElement elem)
+        {
+            if (!_autoValidate)
+            {
+                // Always serialize DS as string for best compatibility while autoValidate is False.
+                WriteJsonElement<string>(writer, elem, (w, v) => writer.WriteStringValue(v));
+                return;
+            }
+
             if (elem.Count != 0)
             {
                 writer.WritePropertyName("Value");

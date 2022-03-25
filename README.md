@@ -48,7 +48,7 @@ Documentation, including API documentation, is available via GitHub pages:
 ### Usage Notes
 
 #### Image rendering configuration
-Out-of-the-box, *fo-dicom* for defaults to a internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget package you desire and then call:
+Out-of-the-box, *fo-dicom* defaults to an internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget package you desire and then call:
 
     new DicomSetupBuilder()
         .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<WinFormsImageManager>())

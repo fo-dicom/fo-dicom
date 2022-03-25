@@ -5,16 +5,16 @@ using System;
 
 namespace FellowOakDicom.Network.Client.States
 {
-    [Obsolete(nameof(DicomClientState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public abstract class DicomClientState { }
 
-    [Obsolete(nameof(DicomClientWithConnectionState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientWithConnectionState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public abstract class DicomClientWithConnectionState : DicomClientState { }
 
-    [Obsolete(nameof(DicomClientWithAssociationState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientWithAssociationState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public abstract class DicomClientWithAssociationState : DicomClientWithConnectionState { }
 
-    [Obsolete(nameof(DicomClientIdleState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientIdleState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientIdleState : DicomClientState
     {
         public static readonly DicomClientIdleState Instance = new DicomClientIdleState();
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => "IDLE";
     }
 
-    [Obsolete(nameof(DicomClientConnectState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientConnectState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientConnectState : DicomClientState
     {
         public static readonly DicomClientConnectState Instance = new DicomClientConnectState();
@@ -30,7 +30,7 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => "CONNECTING";
     }
 
-    [Obsolete(nameof(DicomClientRequestAssociationState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientRequestAssociationState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientRequestAssociationState : DicomClientWithConnectionState
     {
         public static readonly DicomClientRequestAssociationState Instance = new DicomClientRequestAssociationState();
@@ -38,7 +38,7 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => "REQUESTING ASSOCIATION";
     }
 
-    [Obsolete(nameof(DicomClientSendingRequestsState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientSendingRequestsState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientSendingRequestsState : DicomClientWithAssociationState
     {
         public static readonly DicomClientSendingRequestsState Instance = new DicomClientSendingRequestsState();
@@ -46,7 +46,7 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => "SENDING REQUESTS";
     }
 
-    [Obsolete(nameof(DicomClientLingeringState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientLingeringState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientLingeringState : DicomClientWithAssociationState
     {
         public static readonly DicomClientLingeringState Instance = new DicomClientLingeringState();
@@ -54,7 +54,7 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => "LINGERING ASSOCIATION";
     }
 
-    [Obsolete(nameof(DicomClientReleaseAssociationState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientReleaseAssociationState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientReleaseAssociationState : DicomClientWithAssociationState
     {
         public static readonly DicomClientReleaseAssociationState Instance = new DicomClientReleaseAssociationState();
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Network.Client.States
         public override string ToString() => "RELEASING ASSOCIATION";
     }
 
-    [Obsolete(nameof(DicomClientAbortState) + " is an artifact of an older state-based implementation of the DicomClient and may be deleted in the future. It only exists today for backwards compatibility purposes")]
+    [Obsolete(nameof(DicomClientAbortState) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
     public class DicomClientAbortState : DicomClientWithAssociationState
     {
         public static readonly DicomClientAbortState Instance = new DicomClientAbortState();
