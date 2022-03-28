@@ -48,7 +48,7 @@
 * [gustavosaita](https://github.com/gustavosaita)
 * [MikaelBertze](https://github.com/mikaelbertze)
 * [PalminX](https://github.com/PalminX)
-* [Pieter-Jan Van Robays](https://github.com/PieterJanVR)
+* [Pieter-Jan Van Robays](https://github.com/pvrobays)
 * [Alexander Moerman](https://github.com/amoerie)
 * [Harald Köstinger](https://github.com/hkoestin)
 * [Dave Stelpstra](https://github.com/davidsybren)
