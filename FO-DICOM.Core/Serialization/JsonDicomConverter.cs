@@ -90,7 +90,7 @@ namespace FellowOakDicom.Serialization
     {
         /// <summary>
         /// Always serialize DICOM numbers (tags with VR: IS, DS, SV and UV) as JSON numbers.
-        /// ⚠️ This will throw errors when a number can't be parsed!
+        /// ⚠️ This will throw FormatException when a number can't be parsed!
         /// i.e.: "00081160":{"vr":"IS","Value":[76]}
         /// </summary>
         AsNumber,
