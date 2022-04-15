@@ -10,6 +10,7 @@
 * Fixed bug where disposal of DicomService could throw an exception if the buffered write stream still had content (#1319)
 * Improve handling of dropped connections (#1332)
 * Ignore empty VOI LUT and Modality LUT Sequence (#1369)
+* Change: DicomAnonymizer private fields and methods changed to protected so they can be used in subclasses, made instance methods virtual so the can be overridden in subclasses
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
