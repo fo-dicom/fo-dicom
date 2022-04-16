@@ -274,7 +274,8 @@ namespace FellowOakDicom.Tests
             new object[] { "GH195.dcm" }, // JPEGExtended Process 2+4
             new object[] { "ETIAM_video_002.dcm" }, // MPEG2 Main Profile
             new object[] { "GH177_D_CLUNIE_CT1_IVRLE_BigEndian_undefined_length.dcm" }, // Big Endian
-            new object[] { "GH133.dcm" } // regression test for milestone handling
+            new object[] { "GH133.dcm" }, // regression test for milestone handling
+            new object[] { "multiframe.dcm" } // file with multiple frames and frameoffsettable
         };
 
         [Fact]
