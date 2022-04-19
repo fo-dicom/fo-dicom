@@ -59,6 +59,23 @@ namespace FellowOakDicom.Network.Client
 
         public virtual IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
         {
+            if (host == null)
+            {
+                throw new ArgumentNullException(nameof(host));
+            }
+
+            if (callingAe != null && callingAe.Length > DicomVR.AE.MaximumLength)
+            {
+                throw new ArgumentException($"Calling AE '{callingAe}' is {callingAe.Length} characters long, " +
+                                            $"which is longer than the maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
+            }
+
+            if (calledAe != null && calledAe.Length > DicomVR.AE.MaximumLength)
+            {
+                throw new ArgumentException($"Called AE '{calledAe}' is {calledAe.Length} characters long, " +
+                                            $"which is longer than the maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
+            }
+
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
             var logger = _logManager.GetLogger("Dicom.Network");

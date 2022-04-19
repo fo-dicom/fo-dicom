@@ -6,6 +6,7 @@
     <RootNamespace>FellowOakDicom.Benchmark</RootNamespace>
     <AssemblyName>FO-DICOM.Benchmark</AssemblyName>
     <LangVersion>Latest</LangVersion>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

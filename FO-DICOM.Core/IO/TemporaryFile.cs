@@ -63,7 +63,8 @@ namespace FellowOakDicom.IO
             else
             {
                 // allow OS to create file in system temp path
-                file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(Path.GetTempFileName());
+                file = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
+                file.Create().Dispose();
             }
             file.IsTempFile = true;
 
