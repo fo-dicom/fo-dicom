@@ -300,6 +300,25 @@ namespace FellowOakDicom
         }
 
  
+        /// <summary>
+        /// Gets the sequence of the specified <paramref name="tag"/> if it exists and is not empty.
+        /// </summary>
+        /// <param name="tag">Requested DICOM tag.</param>
+        /// <param name="sequence">Sequence of datasets corresponding to <paramref name="tag"/>.</param>
+        /// <returns>Returns <code>true</code> if the <paramref name="tag"/> exists and is not empty, <code>false</code> otherwise.</returns>
+        public bool TryGetNonEmptySequence(DicomTag tag, out DicomSequence sequence)
+        {
+            if (TryGetSequence(tag, out DicomSequence dicomSequence) && dicomSequence.Items.Count > 0)
+            {
+                sequence = dicomSequence;
+                return true;
+            }
+
+            sequence = null;
+            return false;
+        }
+
+ 
         /// <summary>        
         /// Returns the number of values in the specified <paramref name="tag"/>.
         /// </summary>

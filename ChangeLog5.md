@@ -1,5 +1,5 @@
 #### 5.0.3 (TBD)
-* JsonDicomConverter allows serializing DS/IS dicom item with invalid values when autoValidate is False. (#1354)
+* Added option `numberSerializationMode` to `JsonDicomConverter` that allows different modes for serializing DS/IS/UV/SV DICOM items, including handling of invalid values (#1354 & #1362)
 * Breaking change: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
 * Breaking change: subclasses of DicomServer will have to pass an instance of DicomServerDependencies along to the DicomServer base constructor. This replaces the old NetworkManager / LogManager dependencies. (Implemented in the context of #1291)
 * Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)
@@ -11,6 +11,9 @@
 * Improve handling of dropped connections (#1332)
 * Add new API for expert DICOM client connections/associations. This new API gives full control over the connection, association and requests when sending DICOM requests (#1144)
 * Rewrite "DicomClient" based on the new advanced API. The state based implementation is gone. The public API has remained the same. (#1144)
+* Ignore empty VOI LUT and Modality LUT Sequence (#1369)
+* Validate calling AE and called AE length when creating a DicomClient (#1323)
+* Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e

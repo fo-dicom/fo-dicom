@@ -136,7 +136,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         {
                             _logger.Debug("Request [{MessageID}]: {Status}", requestPendingEvent.Request.MessageID, requestPendingEvent.Response.Status.State);
 
-                            if (!requestChannel.Writer.TryWrite(requestPendingEvent))
+                            if (!requestChannel.Writer.TryWrite(requestPendingEvent) && !IsDisposed)
                             {
                                 throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
                             }
@@ -153,7 +153,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         {
                             _logger.Debug("Request [{MessageID}]: {Status}", requestCompletedEvent.Request.MessageID, requestCompletedEvent.Response.Status.State);
 
-                            if (!requestChannel.Writer.TryWrite(requestCompletedEvent))
+                            if (!requestChannel.Writer.TryWrite(requestCompletedEvent) && !IsDisposed)
                             {
                                 throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
                             }
@@ -177,7 +177,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         {
                             _logger.Debug("Request [{MessageID}]: Time-Out after {Timeout}", requestTimedOutEvent.Request.MessageID, requestTimedOutEvent.Timeout);
 
-                            if (!requestChannel.Writer.TryWrite(requestTimedOutEvent))
+                            if (!requestChannel.Writer.TryWrite(requestTimedOutEvent) && !IsDisposed)
                             {
                                 throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
                             }
@@ -197,7 +197,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     }
                     case DicomAbortedConnectionEvent dicomAbortedEvent:
                     {
-                        if (!_associationChannel.Writer.TryWrite(dicomAbortedEvent))
+                        if (!_associationChannel.Writer.TryWrite(dicomAbortedEvent) && !IsDisposed)
                         {
                             throw new DicomNetworkException(_associationChannelDoesNotHaveUnlimitedCapacity);
                         }
@@ -208,7 +208,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             {
                                 _logger.Debug("Request [{MessageID}]: Aborted", messageId);
 
-                                if (!requestChannel.Writer.TryWrite(dicomAbortedEvent))
+                                if (!requestChannel.Writer.TryWrite(dicomAbortedEvent) && !IsDisposed)
                                 {
                                     throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
                                 }
@@ -227,7 +227,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                     {
                         _logger.Debug("Association {Association} released", AssociationToString(Association));
 
-                        if (!_associationChannel.Writer.TryWrite(dicomAssociationReleasedEvent))
+                        if (!_associationChannel.Writer.TryWrite(dicomAssociationReleasedEvent) && !IsDisposed)
                         {
                             throw new DicomNetworkException(_associationChannelDoesNotHaveUnlimitedCapacity);
                         }
@@ -244,7 +244,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         
                         _logger.Debug("Connection closed");
 
-                        if (!_associationChannel.Writer.TryWrite(connectionClosedEvent))
+                        if (!_associationChannel.Writer.TryWrite(connectionClosedEvent) && !IsDisposed)
                         {
                             throw new DicomNetworkException(_associationChannelDoesNotHaveUnlimitedCapacity);
                         }
@@ -255,7 +255,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             {
                                 _logger.Debug("Request [{MessageID}]: Connection closed", messageId);
                                 
-                                if (!requestChannel.Writer.TryWrite(connectionClosedEvent))
+                                if (!requestChannel.Writer.TryWrite(connectionClosedEvent) && !IsDisposed)
                                 {
                                     throw new DicomNetworkException(_responseChannelDoesNotHaveUnlimitedCapacity);
                                 }
@@ -472,13 +472,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 return;
             }
-
-            // Try mark the association channel as completed
-            _associationChannel.Writer.TryComplete();
             
             // Ensure the association event collector stops running
             _eventCollectorCts.Cancel();
             _eventCollectorCts.Dispose();
+
+            // Try mark the association channel as completed
+            _associationChannel.Writer.TryComplete();
 
             // If we have any pending requests, try to mark those response channels as completed too (this does not mark the request itself as completed!)
             if (!_requestChannels.IsEmpty)

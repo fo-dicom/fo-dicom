@@ -381,7 +381,7 @@ namespace FellowOakDicom.Network
         /// <param name="pad">Padding character</param>
         public void Write(string name, string value, int count, char pad)
         {
-            Write(name, value.PadRight(count, pad));
+            Write(name, value.Substring(0, Math.Min(value.Length, count)).PadRight(count, pad));
         }
 
         /// <summary>
