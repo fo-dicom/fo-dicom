@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -141,7 +142,6 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-
         [Fact]
         public async Task AutomaticallyFixTooLongAETitles()
         {
@@ -154,7 +154,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 // DicomClientFactory cares about the length of AETitles,
                 // but in case some developer registeres a custom Factory or creates DicomClient directly for some other reason.
                 var client = new DicomClient("localhost", port, false, "STORAGECOMMITTEST", "DE__257a276f6d47",
-                    new DicomClientOptions { }, new DicomServiceOptions { }, Setup.ServiceProvider.GetRequiredService<INetworkManager>(), Setup.ServiceProvider.GetRequiredService<ILogManager>(), Setup.ServiceProvider.GetRequiredService<ITranscoderManager>(), Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
+                    new DicomClientOptions { }, new DicomServiceOptions { },
+                    Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("DicomClient"),
+                    Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 var task = client.SendAsync();
