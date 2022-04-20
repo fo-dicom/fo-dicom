@@ -131,7 +131,10 @@ namespace FellowOakDicom.Imaging
         /// <param name="disposing">Dispose mode?</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed) return;
+            if (disposed)
+            {
+                return;
+            }
 
             image = null;
 
@@ -144,14 +147,7 @@ namespace FellowOakDicom.Imaging
             disposed = true;
         }
 
-        protected static byte[] ToBytes(
-            ref int width,
-            ref int height,
-            int components,
-            bool flipX,
-            bool flipY,
-            int rotation,
-            int[] data)
+        protected static byte[] ToBytes(ref int width, ref int height, int components, bool flipX, bool flipY, int rotation, int[] data)
         {
             var processed = Rotate(ref width, ref height, rotation, data);
             processed = Flip(width, height, flipX, flipY, processed);
@@ -189,9 +185,7 @@ namespace FellowOakDicom.Imaging
                         result[i] = data[y * width + x];
                     }
                 }
-                var tmp = width;
-                width = height;
-                height = tmp;
+                (height, width) = (width, height);
             }
             else if (angle > 90 && angle <= 180)
             {
@@ -214,9 +208,7 @@ namespace FellowOakDicom.Imaging
                         result[i] = data[y * width + x];
                     }
                 }
-                var tmp = width;
-                width = height;
-                height = tmp;
+                (height, width) = (width, height);
             }
             else
             {

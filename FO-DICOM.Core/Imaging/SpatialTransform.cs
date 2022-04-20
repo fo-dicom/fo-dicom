@@ -12,20 +12,15 @@ namespace FellowOakDicom.Imaging
     /// </summary>
     public class SpatialTransform
     {
-        #region Private Members
-
-        private Point2 _pan;
-
-        #endregion
 
         #region Public Constructors
-        
+
         /// <summary>
         /// Initializes an instance of <see cref="SpatialTransform"/>.
         /// </summary>
         public SpatialTransform()
         {
-            _pan = new Point2(0, 0);
+            Pan = new Point2(0, 0);
             Reset();
         }
 
@@ -56,17 +51,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets or sets the pan of the transform.
         /// </summary>
-        public Point2 Pan
-        {
-            get
-            {
-                return _pan;
-            }
-            set
-            {
-                _pan = value;
-            }
-        }
+        public Point2 Pan { get; set; }
 
         /// <summary>
         /// Gets whether the transform is set or reset.
@@ -101,8 +86,8 @@ namespace FellowOakDicom.Imaging
             this.Rotation = 0;
             this.FlipX = false;
             this.FlipY = false;
-            _pan.X = 0;
-            _pan.Y = 0;
+            Pan.X = 0;
+            Pan.Y = 0;
         }
 
         #endregion

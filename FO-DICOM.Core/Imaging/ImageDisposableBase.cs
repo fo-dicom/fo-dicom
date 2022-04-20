@@ -14,6 +14,7 @@ namespace FellowOakDicom.Imaging
     /// <typeparam name="TImage">Disposable image implementation type.</typeparam>
     public abstract class ImageDisposableBase<TImage> : ImageBase<TImage> where TImage : class, IDisposable
     {
+
         #region CONSTRUCTORS
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace FellowOakDicom.Imaging
 		/// </summary>
 		~ImageDisposableBase()
 		{
-			this.Dispose(false);
+			Dispose(false);
 		}
 
         #endregion
@@ -46,21 +47,24 @@ namespace FellowOakDicom.Imaging
         /// <param name="disposing">Dispose mode?</param>
         protected override void Dispose(bool disposing)
         {
-            if (this.disposed) return;
-
-            if (this.image != null)
+            if (disposed)
             {
-                this.image.Dispose();
-                this.image = null;
+                return;
             }
 
-            if (this.pixels != null)
+            if (image != null)
             {
-                this.pixels.Dispose();
-                this.pixels = null;
+                image.Dispose();
+                image = null;
             }
 
-            this.disposed = true;
+            if (pixels != null)
+            {
+                pixels.Dispose();
+                pixels = null;
+            }
+
+            disposed = true;
         }
 
         #endregion

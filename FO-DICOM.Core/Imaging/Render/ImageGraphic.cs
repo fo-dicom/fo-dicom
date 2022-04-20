@@ -101,14 +101,8 @@ namespace FellowOakDicom.Imaging.Render
         /// <inheritdoc />
         public int ZOrder
         {
-            get
-            {
-                return _zorder;
-            }
-            set
-            {
-                _zorder = value;
-            }
+            get => _zorder;
+            set => _zorder = value;
         }
 
         #endregion
@@ -196,11 +190,7 @@ namespace FellowOakDicom.Imaging.Render
                 else if (angle >= -180) _rotation -= 180;
                 else if (angle >= -270) _rotation -= 270;
             }
-            if (angle != 0)
-            {
-                if (_rotation >= 360) _rotation -= 360;
-                else if (_rotation < 0) _rotation += 360;
-            }
+            _rotation = _rotation % 360;
         }
 
         /// <inheritdoc />
