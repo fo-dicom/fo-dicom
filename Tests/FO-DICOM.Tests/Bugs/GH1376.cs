@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(DicomTransferSyntax.JPEGProcess14SV1, transferSyntaxInFileMetaInfo);
             Assert.Equal(DicomTransferSyntax.ExplicitVRLittleEndian, transferSyntaxInDataset);
             Assert.Equal("OFFIS_DCMTK_366", implementationVersionNameInFileMetaInfo);
-            Assert.Equal("DCF 3.3.12c", implementationVersionNameInFileMetaInfo);
+            Assert.Equal("DCF 3.3.12c", implementationVersionNameInDataSet);
         }
 
         [Fact]
