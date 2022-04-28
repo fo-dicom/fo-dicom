@@ -22,12 +22,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public DicomServiceOptions DicomServiceOptions { get; set; }
 
         /// <summary>
-        /// (Optional) an interceptor that will be given access to every request and callback
-        /// Use at your own risk 
-        /// </summary>
-        public IAdvancedDicomClientConnectionInterceptor ConnectionInterceptor { get; set; }
-
-        /// <summary>
         /// The logger that will be used by the DICOM listener
         /// </summary>
         public ILogger Logger { get; set; }

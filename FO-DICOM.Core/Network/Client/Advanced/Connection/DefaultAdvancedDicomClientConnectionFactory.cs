@@ -96,11 +96,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                     request.FallbackEncoding, request.DicomServiceOptions,
                     request.Logger, _dicomServiceDependencies);
 
-                if (request.ConnectionInterceptor != null)
-                {
-                    connection = new InterceptingAdvancedDicomClientConnection(connection, request.ConnectionInterceptor);
-                }
-
                 cancellationToken.ThrowIfCancellationRequested();
                 
                 connection.StartListener();
