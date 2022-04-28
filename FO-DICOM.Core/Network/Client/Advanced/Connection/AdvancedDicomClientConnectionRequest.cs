@@ -35,7 +35,6 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// The request handlers that will handle reverse requests.
         /// For example, issuing a C-GET request will cause the other AE to send a C-STORE request back over the same association.
         /// The C-STORE request handler configured here will be responsible for producing a C-STORE response 
-        /// Somewhat confusingly, C-GET temporarily swaps the roles of "DicomClient" and "DicomServer". Consider using C-MOVE requests instead.
         /// </summary>
         public AdvancedDicomClientConnectionRequestHandlers RequestHandlers { get; set; }
     }
