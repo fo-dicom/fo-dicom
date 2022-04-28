@@ -83,7 +83,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly IAdvancedDicomClientConnection _connection;
         
         private long _isDisposed;
-        private ConnectionClosedConnectionEvent _connectionClosedConnectionEvent;
+        private ConnectionClosedEvent _connectionClosedEvent;
         
         public bool IsDisposed => Interlocked.Read(ref _isDisposed) > 0;
         
@@ -122,7 +122,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 switch (@event)
                 {
-                    case SendQueueEmptyConnectionEvent _:
+                    case SendQueueEmptyEvent _:
                     {
                         if (_connection.IsSendNextMessageRequired)
                         {
@@ -130,7 +130,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         }
                         break;
                     }
-                    case RequestPendingConnectionEvent requestPendingEvent:
+                    case RequestPendingEvent requestPendingEvent:
                     {
                         if (_requestChannels.TryGetValue(requestPendingEvent.Request.MessageID, out var requestChannel))
                         {
@@ -147,7 +147,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         }
                         break;
                     }
-                    case RequestCompletedConnectionEvent requestCompletedEvent:
+                    case RequestCompletedEvent requestCompletedEvent:
                     {
                         if (_requestChannels.TryGetValue(requestCompletedEvent.Request.MessageID, out var requestChannel))
                         {
@@ -171,7 +171,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         }
                         break;
                     }
-                    case RequestTimedOutConnectionEvent requestTimedOutEvent:
+                    case RequestTimedOutEvent requestTimedOutEvent:
                     {
                         if (_requestChannels.TryGetValue(requestTimedOutEvent.Request.MessageID, out var requestChannel))
                         {
@@ -195,7 +195,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         }
                         break;
                     }
-                    case DicomAbortedConnectionEvent dicomAbortedEvent:
+                    case DicomAbortedEvent dicomAbortedEvent:
                     {
                         if (!_associationChannel.Writer.TryWrite(dicomAbortedEvent) && !IsDisposed)
                         {
@@ -223,7 +223,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
                         break;
                     }
-                    case DicomAssociationReleasedConnectionEvent dicomAssociationReleasedEvent:
+                    case DicomAssociationReleasedEvent dicomAssociationReleasedEvent:
                     {
                         _logger.Debug("Association {Association} released", AssociationToString(Association));
 
@@ -234,9 +234,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
                         break;
                     }
-                    case ConnectionClosedConnectionEvent connectionClosedEvent:
+                    case ConnectionClosedEvent connectionClosedEvent:
                     {
-                        if (Interlocked.CompareExchange(ref _connectionClosedConnectionEvent, connectionClosedEvent, null) != null)
+                        if (Interlocked.CompareExchange(ref _connectionClosedEvent, connectionClosedEvent, null) != null)
                         {
                             // Already disconnected
                             return;
@@ -314,33 +314,33 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
                         switch (@event)
                         {
-                            case RequestPendingConnectionEvent requestPendingEvent:
+                            case RequestPendingEvent requestPendingEvent:
                             {
                                 _logger.Debug("{Request}: {Response}", dicomRequest.ToString(), requestPendingEvent.Response.ToString());
 
                                 yield return requestPendingEvent.Response;
                                 break;
                             }
-                            case RequestCompletedConnectionEvent requestCompletedEvent:
+                            case RequestCompletedEvent requestCompletedEvent:
                             {
                                 _logger.Debug("{Request}: {Response}", dicomRequest.ToString(), requestCompletedEvent.Response.ToString());
 
                                 yield return requestCompletedEvent.Response;
                                 yield break;
                             }
-                            case RequestTimedOutConnectionEvent requestTimedOutEvent:
+                            case RequestTimedOutEvent requestTimedOutEvent:
                             {
                                 _logger.Debug("{Request}: Time-Out after {Timeout}", dicomRequest.ToString(), requestTimedOutEvent.Timeout);
 
                                 throw new DicomRequestTimedOutException(requestTimedOutEvent.Request, requestTimedOutEvent.Timeout);
                             }
-                            case DicomAbortedConnectionEvent dicomAbortedEvent:
+                            case DicomAbortedEvent dicomAbortedEvent:
                             {
                                 _logger.Debug("{Request}: Association was aborted", dicomRequest.ToString());
 
                                 throw new DicomAssociationAbortedException(dicomAbortedEvent.Source, dicomAbortedEvent.Reason);
                             }
-                            case ConnectionClosedConnectionEvent connectionClosedEvent:
+                            case ConnectionClosedEvent connectionClosedEvent:
                             {
                                 _logger.Debug("{Request}: Connection was closed", dicomRequest.ToString());
 
@@ -421,13 +421,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
                     switch (@event)
                     {
-                        case DicomAssociationReleasedConnectionEvent _:
+                        case DicomAssociationReleasedEvent _:
                             _logger.Debug("Association {Association} has been released", AssociationToString(Association));
                             return;
-                        case DicomAbortedConnectionEvent _:
+                        case DicomAbortedEvent _:
                             _logger.Debug("Association {Association} has been aborted", AssociationToString(Association));
                             return;
-                        case ConnectionClosedConnectionEvent _:
+                        case ConnectionClosedEvent _:
                             _logger.Debug("Connection has closed");
                             return;
                     }
@@ -435,12 +435,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }
         }
 
-        private bool IsDisconnected => Interlocked.CompareExchange(ref _connectionClosedConnectionEvent, null, null) != null;
+        private bool IsDisconnected => Interlocked.CompareExchange(ref _connectionClosedEvent, null, null) != null;
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfAlreadyDisconnected()
         {
-            var connectionClosedEvent = Interlocked.CompareExchange(ref _connectionClosedConnectionEvent, null, null);
+            var connectionClosedEvent = Interlocked.CompareExchange(ref _connectionClosedEvent, null, null);
             connectionClosedEvent?.ThrowException();
         }
 

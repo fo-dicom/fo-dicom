@@ -117,13 +117,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 switch (@event)
                 {
-                    case DicomAssociationAcceptedConnectionEvent dicomAssociationAcceptedEvent:
+                    case DicomAssociationAcceptedEvent dicomAssociationAcceptedEvent:
                         {
                             _logger.Debug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
 
                             return new AdvancedDicomClientAssociation(this, dicomAssociationAcceptedEvent.Association, _logger);
                         }
-                    case DicomAssociationRejectedConnectionEvent dicomAssociationRejectedEvent:
+                    case DicomAssociationRejectedEvent dicomAssociationRejectedEvent:
                         {
                             var result = dicomAssociationRejectedEvent.Result;
                             var source = dicomAssociationRejectedEvent.Source;
@@ -134,7 +134,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
                             throw new DicomAssociationRejectedException(result, source, reason);
                         }
-                    case DicomAbortedConnectionEvent dicomAbortedEvent:
+                    case DicomAbortedEvent dicomAbortedEvent:
                         {
                             var source = dicomAbortedEvent.Source;
                             var reason = dicomAbortedEvent.Reason;
@@ -144,7 +144,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
                             throw new DicomAssociationAbortedException(source, reason);
                         }
-                    case ConnectionClosedConnectionEvent connectionClosedEvent:
+                    case ConnectionClosedEvent connectionClosedEvent:
                         {
                             _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
 

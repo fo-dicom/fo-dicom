@@ -141,7 +141,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new DicomAssociationAcceptedConnectionEvent(association)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new DicomAssociationAcceptedEvent(association)).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
@@ -151,7 +151,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new DicomAssociationRejectedConnectionEvent(result, source, reason)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new DicomAssociationRejectedEvent(result, source, reason)).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAssociationReleaseResponseAsync()
@@ -161,7 +161,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(DicomAssociationReleasedConnectionEvent.Instance).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(DicomAssociationReleasedEvent.Instance).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
@@ -171,7 +171,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new DicomAbortedConnectionEvent(source, reason)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new DicomAbortedEvent(source, reason)).ConfigureAwait(false);
         }
 
         public async Task OnConnectionClosedAsync(Exception exception)
@@ -183,8 +183,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             }
 
             var @event = exception == null
-                ? ConnectionClosedConnectionEvent.WithoutException
-                : ConnectionClosedConnectionEvent.WithException(exception);
+                ? ConnectionClosedEvent.WithoutException
+                : ConnectionClosedEvent.WithException(exception);
 
             await _events.Writer.WriteAsync(@event).ConfigureAwait(false);
 
@@ -198,7 +198,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(SendQueueEmptyConnectionEvent.Instance).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(SendQueueEmptyEvent.Instance).ConfigureAwait(false);
         }
 
         public async Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
@@ -208,7 +208,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new RequestCompletedConnectionEvent(request, response)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new RequestCompletedEvent(request, response)).ConfigureAwait(false);
         }
 
         public async Task OnRequestPendingAsync(DicomRequest request, DicomResponse response)
@@ -218,7 +218,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new RequestPendingConnectionEvent(request, response)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new RequestPendingEvent(request, response)).ConfigureAwait(false);
         }
 
         public async Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
@@ -228,7 +228,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(new RequestTimedOutConnectionEvent(request, timeout)).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(new RequestTimedOutEvent(request, timeout)).ConfigureAwait(false);
         }
 
         public async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
