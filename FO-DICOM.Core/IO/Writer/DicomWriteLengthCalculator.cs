@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using FellowOakDicom.IO.Buffer;
+using System.Linq;
 
 namespace FellowOakDicom.IO.Writer
 {
@@ -10,9 +11,9 @@ namespace FellowOakDicom.IO.Writer
     public class DicomWriteLengthCalculator
     {
 
-        private DicomTransferSyntax _syntax;
+        private readonly DicomTransferSyntax _syntax;
 
-        private DicomWriteOptions _options;
+        private readonly DicomWriteOptions _options;
 
         public DicomWriteLengthCalculator(DicomTransferSyntax syntax, DicomWriteOptions options)
         {
@@ -22,15 +23,16 @@ namespace FellowOakDicom.IO.Writer
 
         public uint Calculate(IEnumerable<DicomItem> items)
         {
-            uint length = 0;
-            foreach (DicomItem item in items) length += Calculate(item);
-            return length;
+            return (uint)items.Sum(Calculate);
         }
 
-        public uint Calculate(DicomItem item)
+        public long Calculate(DicomItem item)
         {
             // skip group lengths if not writing to file
-            if (!_options.KeepGroupLengths && item.Tag.Element == 0x0000) return 0;
+            if (!_options.KeepGroupLengths && item.Tag.Element == 0x0000)
+            {
+                return 0;
+            }
 
             uint length = 0;
             length += 4; // tag
@@ -53,19 +55,18 @@ namespace FellowOakDicom.IO.Writer
                 length += 4; // length
             }
 
-            if (item is DicomElement)
+            if (item is DicomElement element)
             {
-                length += (uint)(item as DicomElement).Buffer.Size;
+                length += (uint)element.Buffer.Size;
             }
-            else if (item is DicomFragmentSequence)
+            else if (item is DicomFragmentSequence fragmentSq)
             {
-                var sq = item as DicomFragmentSequence;
                 // fragment item (offset table)
                 length += 4; // tag
                 length += 4; // length
-                length += (uint)(sq.OffsetTable.Count * 4);
+                length += (uint)(fragmentSq.OffsetTable.Count * 4);
 
-                foreach (IByteBuffer fragment in sq)
+                foreach (IByteBuffer fragment in fragmentSq)
                 {
                     // fragment item
                     length += 4; // tag
@@ -77,9 +78,8 @@ namespace FellowOakDicom.IO.Writer
                 length += 4; // tag
                 length += 4; // length
             }
-            else if (item is DicomSequence)
+            else if (item is DicomSequence sq)
             {
-                var sq = item as DicomSequence;
                 length += Calculate(sq);
             }
 

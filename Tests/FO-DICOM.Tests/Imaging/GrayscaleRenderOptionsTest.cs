@@ -1,12 +1,13 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2022 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+using System.Collections.Generic;
 using FellowOakDicom.Imaging;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
 {
-
     [Collection("WithTranscoder")]
     public class GrayscaleRenderOptionsTest
     {
@@ -194,6 +195,85 @@ namespace FellowOakDicom.Tests.Imaging
                 new DicomCodeString(DicomTag.VOILUTFunction, "LINEAR"));
 
             Assert.Throws<DicomImagingException>(() => GrayscaleRenderOptions.FromImagePixelValueTags(dataset));
+        }
+
+        [Fact]
+        public void OptionsHaveNoSequence_IfNoSequenceIsInDataset()
+        {
+            var dataset = ValidDataset();
+
+            foreach (var optionFactory in OptionsFactories())
+            {
+                var options = optionFactory(dataset);
+                Assert.Null(options.VOILUTSequence);
+                Assert.Null(options.ModalityLUTSequence);
+            }
+        }
+
+        [Fact]
+        public void OptionsHaveNoSequence_IfEmptySequenceIsInDataset()
+        {
+            var dataset = ValidDataset();
+            dataset.Add(new DicomSequence(DicomTag.VOILUTSequence));
+            dataset.Add(new DicomSequence(DicomTag.ModalityLUTSequence));
+
+            foreach (var optionFactory in OptionsFactories())
+            {
+                var options = optionFactory(dataset);
+                Assert.Null(options.VOILUTSequence);
+                Assert.Null(options.ModalityLUTSequence);
+            }
+        }
+
+        [Fact]
+        public void OptionsHaveSequence_IfNonEmptySequenceIsInDataset()
+        {
+            var dataset = ValidDataset();
+            var voiLutSequence = new DicomSequence(DicomTag.VOILUTSequence);
+            voiLutSequence.Items.Add(new DicomDataset());
+            dataset.Add(voiLutSequence);
+            var modalityLutSequence = new DicomSequence(DicomTag.ModalityLUTSequence);
+            modalityLutSequence.Items.Add(new DicomDataset());
+            dataset.Add(modalityLutSequence);
+
+            foreach (var optionFactory in OptionsFactories())
+            {
+                var options = optionFactory(dataset);
+                Assert.Equal(voiLutSequence, options.VOILUTSequence);
+                Assert.Equal(modalityLutSequence, options.ModalityLUTSequence);
+            }
+        }
+
+        private DicomDataset ValidDataset()
+        {
+            var testValues = new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
+            return new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
+                new DicomUnsignedShort(DicomTag.BitsAllocated, 8),
+                new DicomUnsignedShort(DicomTag.BitsStored, 8),
+                new DicomUnsignedShort(DicomTag.HighBit, 7),
+                new DicomUnsignedShort(DicomTag.PixelRepresentation, 0),
+                new DicomUnsignedShort(DicomTag.Rows, 2),
+                new DicomUnsignedShort(DicomTag.Columns, 4),
+                new DicomDecimalString(DicomTag.WindowWidth, 100),
+                new DicomDecimalString(DicomTag.WindowCenter, 50),
+                new DicomUnsignedShort(DicomTag.SmallestImagePixelValue, 0),
+                new DicomUnsignedShort(DicomTag.LargestImagePixelValue, 128),
+                new DicomOtherByte(DicomTag.PixelData, testValues)
+            );
+        }
+
+        private List<Func<DicomDataset, GrayscaleRenderOptions>> OptionsFactories()
+        {
+            return new List<Func<DicomDataset, GrayscaleRenderOptions>>
+            {
+                GrayscaleRenderOptions.FromDataset,
+                GrayscaleRenderOptions.FromBitRange,
+                GrayscaleRenderOptions.FromMinMax,
+                GrayscaleRenderOptions.FromWindowLevel,
+                GrayscaleRenderOptions.FromImagePixelValueTags,
+                dataset => GrayscaleRenderOptions.FromHistogram(dataset),
+            };
         }
 
         #endregion

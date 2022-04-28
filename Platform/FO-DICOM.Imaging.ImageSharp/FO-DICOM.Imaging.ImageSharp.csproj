@@ -13,6 +13,7 @@
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
