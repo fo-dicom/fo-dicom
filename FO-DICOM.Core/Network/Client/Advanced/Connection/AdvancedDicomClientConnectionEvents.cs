@@ -161,7 +161,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(DicomAssociationReleasedEvent.Instance).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(DicomAssociationReleasedEvent._instance).ConfigureAwait(false);
         }
 
         public async Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
@@ -183,8 +183,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             }
 
             var @event = exception == null
-                ? ConnectionClosedEvent.WithoutException
-                : ConnectionClosedEvent.WithException(exception);
+                ? new ConnectionClosedEvent()
+                : new ConnectionClosedEvent(exception);
 
             await _events.Writer.WriteAsync(@event).ConfigureAwait(false);
 
@@ -198,7 +198,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 return;
             }
 
-            await _events.Writer.WriteAsync(SendQueueEmptyEvent.Instance).ConfigureAwait(false);
+            await _events.Writer.WriteAsync(SendQueueEmptyEvent._instance).ConfigureAwait(false);
         }
 
         public async Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
