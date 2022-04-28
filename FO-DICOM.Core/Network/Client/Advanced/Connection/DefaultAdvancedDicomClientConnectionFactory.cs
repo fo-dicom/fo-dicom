@@ -90,9 +90,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 networkStream = await Task.Run(() => _networkManager.CreateNetworkStream(request.NetworkStreamCreationOptions), cancellationToken).ConfigureAwait(false);
 
-                var callbacks = new AdvancedDicomClientConnectionEvents(request.RequestHandlers);
+                var eventCollector = new AdvancedDicomClientConnectionEventCollector(request.RequestHandlers);
 
-                IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(callbacks, networkStream, 
+                IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(eventCollector, networkStream, 
                     request.FallbackEncoding, request.DicomServiceOptions,
                     request.Logger, _dicomServiceDependencies);
 

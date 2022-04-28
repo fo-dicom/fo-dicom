@@ -10,7 +10,11 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client.Advanced.Connection
 {
-    internal interface IAdvancedDicomClientConnectionEvents
+    /// <summary>
+    /// This interface is responsible for collecting all events via the callback based API that is used by DicomService
+    /// and exposing those events as an asynchronous enumerable of event instances 
+    /// </summary>
+    internal interface IAdvancedDicomClientConnectionEventCollector
     {
         /// <summary>
         /// Callback when there are no new requests to send and no existing requests in process (waiting for reply)
@@ -102,13 +106,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         IAsyncEnumerable<IAdvancedDicomClientConnectionEvent> GetEvents(CancellationToken cancellationToken);
     }
 
-    internal class AdvancedDicomClientConnectionEvents : IAdvancedDicomClientConnectionEvents
+    internal class AdvancedDicomClientConnectionEventCollector : IAdvancedDicomClientConnectionEventCollector
     {
         private readonly AdvancedDicomClientConnectionRequestHandlers _requestHandlers;
         private readonly Channel<IAdvancedDicomClientConnectionEvent> _events;
         private long _isConnectionClosed;
 
-        public AdvancedDicomClientConnectionEvents(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
+        public AdvancedDicomClientConnectionEventCollector(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
         {
             _requestHandlers = requestHandlers;
             _events = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions

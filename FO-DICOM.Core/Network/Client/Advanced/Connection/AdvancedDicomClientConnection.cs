@@ -19,9 +19,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     public interface IAdvancedDicomClientConnection : IDicomClientConnection
     {
         /// <summary>
-        /// Gets a wrapper around the DICOM events that occur on this connection  
+        /// Gets an event collector for the DICOM events that occur on this connection  
         /// </summary>
-        internal IAdvancedDicomClientConnectionEvents Events { get; }
+        internal IAdvancedDicomClientConnectionEventCollector EventCollector { get; }
 
         /// <summary>
         /// Opens a new DICOM association over an existing TCP connection
@@ -43,15 +43,15 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     internal class AdvancedDicomClientConnection : DicomService, IAdvancedDicomClientConnection
     {
         private readonly ILogger _logger;
-        private readonly IAdvancedDicomClientConnectionEvents _events;
+        private readonly IAdvancedDicomClientConnectionEventCollector _eventCollector;
         private int _isAssociationOpened;
         public INetworkStream NetworkStream { get; }
         public Task Listener { get; private set; }
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
-        IAdvancedDicomClientConnectionEvents IAdvancedDicomClientConnection.Events => _events;
+        IAdvancedDicomClientConnectionEventCollector IAdvancedDicomClientConnection.EventCollector => _eventCollector;
 
         public AdvancedDicomClientConnection(
-            IAdvancedDicomClientConnectionEvents events,
+            IAdvancedDicomClientConnectionEventCollector eventCollector,
             INetworkStream networkStream,
             Encoding fallbackEncoding,
             DicomServiceOptions dicomServiceOptions,
@@ -60,7 +60,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Options = dicomServiceOptions ?? throw new ArgumentNullException(nameof(dicomServiceOptions));
-            _events = events ?? throw new ArgumentNullException(nameof(events));
+            _eventCollector = eventCollector ?? throw new ArgumentNullException(nameof(eventCollector));
             NetworkStream = networkStream ?? throw new ArgumentNullException(nameof(networkStream));
         }
 
@@ -80,20 +80,20 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         public new Task SendRequestAsync(DicomRequest request) => base.SendRequestAsync(request);
         public new Task SendNextMessageAsync() => base.SendNextMessageAsync();
 
-        protected override Task OnSendQueueEmptyAsync() => _events.OnSendQueueEmptyAsync();
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => _events.OnReceiveAssociationAcceptAsync(association);
+        protected override Task OnSendQueueEmptyAsync() => _eventCollector.OnSendQueueEmptyAsync();
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => _eventCollector.OnReceiveAssociationAcceptAsync(association);
 
         public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) =>
-            _events.OnReceiveAssociationRejectAsync(result, source, reason);
+            _eventCollector.OnReceiveAssociationRejectAsync(result, source, reason);
 
-        public Task OnReceiveAssociationReleaseResponseAsync() => _events.OnReceiveAssociationReleaseResponseAsync();
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _events.OnReceiveAbortAsync(source, reason);
-        public Task OnConnectionClosedAsync(Exception exception) => _events.OnConnectionClosedAsync(exception);
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _events.OnRequestCompletedAsync(request, response);
-        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _events.OnRequestPendingAsync(request, response);
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _events.OnRequestTimedOutAsync(request, timeout);
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => _events.OnCStoreRequestAsync(request);
-        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => _events.OnNEventReportRequestAsync(request);
+        public Task OnReceiveAssociationReleaseResponseAsync() => _eventCollector.OnReceiveAssociationReleaseResponseAsync();
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _eventCollector.OnReceiveAbortAsync(source, reason);
+        public Task OnConnectionClosedAsync(Exception exception) => _eventCollector.OnConnectionClosedAsync(exception);
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestCompletedAsync(request, response);
+        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestPendingAsync(request, response);
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _eventCollector.OnRequestTimedOutAsync(request, timeout);
+        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => _eventCollector.OnCStoreRequestAsync(request);
+        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => _eventCollector.OnNEventReportRequestAsync(request);
 
         public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken)
         {
@@ -113,7 +113,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             await SendAssociationRequestAsync(ToDicomAssociation(request)).ConfigureAwait(false);
 
-            await foreach (var @event in _events.GetEvents(cancellationToken).ConfigureAwait(false))
+            await foreach (var @event in _eventCollector.GetEvents(cancellationToken).ConfigureAwait(false))
             {
                 switch (@event)
                 {

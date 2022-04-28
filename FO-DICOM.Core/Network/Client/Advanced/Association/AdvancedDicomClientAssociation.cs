@@ -118,7 +118,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
         private async Task CollectEventsAsync(CancellationToken cancellationToken)
         {
-            await foreach (var @event in _connection.Events.GetEvents(cancellationToken).ConfigureAwait(false))
+            await foreach (var @event in _connection.EventCollector.GetEvents(cancellationToken).ConfigureAwait(false))
             {
                 switch (@event)
                 {
