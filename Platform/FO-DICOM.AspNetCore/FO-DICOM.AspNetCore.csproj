@@ -5,6 +5,7 @@
     <RootNamespace>FellowOakDicom.AspNetCore</RootNamespace>
     <AssemblyName>fo-dicom.AspNetCore</AssemblyName>
     <OutputType>Library</OutputType>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

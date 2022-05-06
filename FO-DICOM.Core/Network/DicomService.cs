@@ -230,7 +230,15 @@ namespace FellowOakDicom.Network
             if (disposing)
             {
                 _dimseStream?.Dispose();
-                _writeStream?.Dispose();
+                try
+                {
+                    _writeStream?.Dispose();
+                }
+                catch(IOException)
+                {
+                    // The buffered stream will try to flush its contents upon disposal, which might fail if the underlying network stream is already closed
+                    // This can be ignored here
+                }
                 _network?.Dispose();
                 _pduQueueWatcher?.Dispose();
             }
@@ -312,14 +320,28 @@ namespace FellowOakDicom.Network
         /// <returns>Awaitable task.</returns>
         protected Task SendPDUAsync(PDU pdu)
         {
+            if (!IsConnected)
+            {
+                throw new DicomNetworkException("Cannot send PDU because the connection to the DICOM server is lost");
+            }
+            
             try
             {
-                _pduQueueWatcher.Wait();
+                while (IsConnected && !_pduQueueWatcher.Wait(60 * 1000))
+                {
+                    // Every minute, we check whether it still makes sense to wait for the PDU queue watcher flag 
+                    // by verifying we still have a connection
+                }
             }
             catch (ObjectDisposedException)
             {
-                // ignore ObjectDisposedException, that may happen, when closing a connection.
-                return Task.CompletedTask;
+                // When the DICOM service is disposed, the _pduQueueWatcher is also disposed
+                throw new DicomNetworkException("Cannot send PDU because the association has already been disposed");
+            }
+            
+            if (!IsConnected)
+            {
+                throw new DicomNetworkException("Cannot send PDU because the connection to the DICOM server is lost");
             }
 
             lock (_lock)
@@ -369,29 +391,33 @@ namespace FellowOakDicom.Network
                 try
                 {
                     await pdu.WriteAsync(_writeStream, CancellationToken.None).ConfigureAwait(false);
-
                     await _writeStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (IOException e)
                 {
                     LogIOException(e, Logger, false);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
+                    throw new DicomNetworkException("An IO exception occurred while sending a PDU", e);
                 }
                 catch (ObjectDisposedException e)
                 {
                     // This may happen when closing a connection.
                     Logger.LogError("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
                                  "This can happen when the connection is being closed", e);
+                    throw new DicomNetworkException("This DICOM service was disposed while sending a PDU", e);
                 }
                 catch (Exception e)
                 {
                     Logger.LogError("Exception sending PDU: {@error}", e);
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
+                    throw new DicomNetworkException("An exception occurred while sending a PDU", e);
                 }
-
-                lock (_lock)
+                finally
                 {
-                    _writing = false;
+                    lock (_lock)
+                    {
+                        _writing = false;
+                    }
                 }
             }
         }
@@ -417,7 +443,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
 
@@ -452,7 +478,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            await TryCloseConnectionAsync().ConfigureAwait(false);
+                            await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
 
@@ -1247,6 +1273,11 @@ namespace FellowOakDicom.Network
                     }
                 }
 
+                if (!IsConnected)
+                {
+                    throw new DicomNetworkException($"Failed to send {msg} because the connection to the DICOM server was lost");
+                }
+
                 Logger.LogInformation("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
                 // This specialized Stream will write byte contents as PDUs with nested PDVs
@@ -1286,28 +1317,31 @@ namespace FellowOakDicom.Network
                             new StreamByteTarget(outputStream));
 
                         var datasetWalker = new DicomDatasetWalker(msg.Dataset);
+                        
                         await datasetWalker.WalkAsync(writer).ConfigureAwait(false);
+                        
+                        if (deflateStream != null)
+                        {
+                            await deflateStream.FlushAsync(CancellationToken.None);
+                            
+                            // Deflate stream in .NET Framework only fully flushes when disposed...
+                            deflateStream.Dispose();
+                        }                    
                     }
+                    
+                    await pDataStream.FlushAsync(CancellationToken.None);
+                    
+                    msg.LastPDUSent = DateTime.Now;
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("Exception sending DIMSE: {@error}", e);
+                    Logger.LogError(e, "Exception sending DIMSE: {@error}", e);
+                    throw new DicomNetworkException($"Failed to send DICOM message {msg}", e);
                 }
                 finally
                 {
-                    if (deflateStream != null)
-                    {
-                        await deflateStream.FlushAsync(CancellationToken.None);
-                        
-                        deflateStream.Dispose();
-                    }
-                    if (pDataStream != null)
-                    {
-                        await pDataStream.FlushAsync(CancellationToken.None);
-                        
-                        pDataStream.Dispose();
-                    }
-                    msg.LastPDUSent = DateTime.Now;
+                    deflateStream?.Dispose();
+                    pDataStream?.Dispose();
                 }
             }
         }
@@ -1426,6 +1460,8 @@ namespace FellowOakDicom.Network
             lock (_lock)
             {
                 _isDisconnectedFlag.Set();
+                // Unblock other threads waiting to write another PDU that don't realize the connection is being closed
+                _pduQueueWatcher.Set();
             }
 
             Logger.LogInformation("Connection closed");
@@ -1742,12 +1778,16 @@ namespace FellowOakDicom.Network
                         _pdu.PDVs[_pdu.PDVs.Count - 1].IsLastFragment = true;
                     }
 
-                    await _service.SendPDUAsync(_pdu).ConfigureAwait(false);
-
-                    _dicomMessage.LastPDUSent = DateTime.Now;
-
-                    _pdu.Dispose();
-                    _pdu = new PDataTF(_memoryProvider);
+                    try
+                    {
+                        await _service.SendPDUAsync(_pdu).ConfigureAwait(false);
+                        _dicomMessage.LastPDUSent = DateTime.Now;
+                    }
+                    finally
+                    {
+                        _pdu.Dispose();
+                        _pdu = new PDataTF(_memoryProvider);
+                    }
                 }
             }
             
@@ -1867,10 +1907,7 @@ namespace FellowOakDicom.Network
             protected override void Dispose(bool disposing)
             {
                 var bytes = Interlocked.Exchange(ref _memory, null);
-                if (bytes != null)
-                {
-                    _memory.Dispose();
-                }
+                bytes?.Dispose();
 
                 var pdu = Interlocked.Exchange(ref _pdu, null);
                 pdu?.Dispose();

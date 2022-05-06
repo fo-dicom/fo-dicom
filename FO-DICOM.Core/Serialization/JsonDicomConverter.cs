@@ -84,6 +84,33 @@ namespace FellowOakDicom.Serialization
     }
 
     /// <summary>
+    /// Defines the way DICOM numbers (tags with VR: IS, DS, SV and UV) should be serialized
+    /// </summary>
+    public enum NumberSerializationMode
+    {
+        /// <summary>
+        /// Always serialize DICOM numbers (tags with VR: IS, DS, SV and UV) as JSON numbers.
+        /// ⚠️ This will throw FormatException when a number can't be parsed!
+        /// i.e.: "00081160":{"vr":"IS","Value":[76]}
+        /// </summary>
+        AsNumber,
+
+        /// <summary>
+        /// Always serialize DICOM numbers (tags with VR: IS, DS, SV and UV) as JSON strings.
+        /// i.e.: "00081160":{"vr":"IS","Value":["76"]}
+        /// </summary>
+        AsString,
+
+        /// <summary>
+        /// Try to serialize DICOM numbers (tags with VR: IS, DS, SV and UV) as JSON numbers. If not parsable as a number, defaults back to a JSON string.
+        /// This won't throw an error in case a number can't be parsed. It just returns the value as a JSON string.
+        /// i.e.: "00081160":{"vr":"IS","Value":[76]}
+        /// or "00081160":{"vr":"IS","Value":["A non parsable value"]}
+        /// </summary>
+        PreferablyAsNumber
+    }
+
+    /// <summary>
     /// Converts a DicomDataset object to and from JSON using the NewtonSoft Json.NET library
     /// </summary>
     public class DicomJsonConverter : JsonConverter<DicomDataset>
@@ -91,10 +118,10 @@ namespace FellowOakDicom.Serialization
 
         private readonly bool _writeTagsAsKeywords;
         private readonly bool _autoValidate;
+        private readonly NumberSerializationMode _numberSerializationMode;
         private readonly static Encoding[] _jsonTextEncodings = { Encoding.UTF8 };
         private readonly static char _personNameComponentGroupDelimiter = '=';
         private readonly static string[] _personNameComponentGroupNames = { "Alphabetic", "Ideographic", "Phonetic" };
-
 
         private delegate T GetValue<out T>(Utf8JsonReader reader);
         private delegate bool TryParse<T>(string value, out T parsed);
@@ -105,11 +132,13 @@ namespace FellowOakDicom.Serialization
         /// Initialize the JsonDicomConverter.
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
-        /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset. </param>
-        public DicomJsonConverter(bool writeTagsAsKeywords = false, bool autoValidate = true)
+        /// <param name="autoValidate">Whether the content of DicomItems shall be validated when deserializing.</param>
+        /// <param name="numberSerializationMode">Defines how numbers should be serialized. Default 'AsNumber', will throw errors when a number is not parsable.</param>
+        public DicomJsonConverter(bool writeTagsAsKeywords = false, bool autoValidate = true, NumberSerializationMode numberSerializationMode = NumberSerializationMode.AsNumber)
         {
             _writeTagsAsKeywords = writeTagsAsKeywords;
             _autoValidate = autoValidate;
+            _numberSerializationMode = numberSerializationMode;
         }
 
         #region JsonConverter overrides
@@ -351,6 +380,9 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<double>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
                     break;
                 case "IS":
+                    WriteJsonAsNumberOrString<int>(writer, (DicomElement)item,
+                        (w, v) => writer.WriteNumberValue(v));
+                    break;
                 case "SL":
                     WriteJsonElement<int>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
                     break;
@@ -358,7 +390,8 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<short>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
                     break;
                 case "SV":
-                    WriteJsonElement<long>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                    WriteJsonAsNumberOrString<long>(writer, (DicomElement)item,
+                        (w, v) => writer.WriteNumberValue(v));
                     break;
                 case "UL":
                     WriteJsonElement<uint>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
@@ -367,10 +400,12 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<ushort>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
                     break;
                 case "UV":
-                    WriteJsonElement<ulong>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
+                    WriteJsonAsNumberOrString<ulong>(writer, (DicomElement)item,
+                        (w, v) => writer.WriteNumberValue(v));
                     break;
                 case "DS":
-                    WriteJsonDecimalString(writer, (DicomElement)item);
+                    WriteJsonAsNumberOrString(writer, (DicomElement)item,
+                        () => WriteJsonDecimalString(writer, (DicomElement)item));
                     break;
                 case "AT":
                     WriteJsonAttributeTag(writer, (DicomElement)item);
@@ -379,47 +414,86 @@ namespace FellowOakDicom.Serialization
                     WriteJsonElement<string>(writer, (DicomElement)item, (w, v) => writer.WriteStringValue(v));
                     break;
             }
+
             writer.WriteEndObject();
         }
 
-        private static void WriteJsonDecimalString(Utf8JsonWriter writer, DicomElement elem)
+        private void WriteJsonAsNumberOrString<T>(Utf8JsonWriter writer, DicomElement elem, WriteValue<T> numberValueWriter)
+            => WriteJsonAsNumberOrString(writer, elem, () => WriteJsonElement(writer, elem, numberValueWriter));
+
+        private void WriteJsonAsNumberOrString(Utf8JsonWriter writer, DicomElement elem, Action numberWriterAction)
         {
-            if (elem.Count != 0)
+            if (_numberSerializationMode == NumberSerializationMode.AsString)
             {
-                writer.WritePropertyName("Value");
-                writer.WriteStartArray();
-                foreach (var val in elem.Get<string[]>())
+                WriteJsonElement<string>(writer, elem, (w, v) => writer.WriteStringValue(v));
+            }
+            else
+            {
+                try
                 {
-                    if (string.IsNullOrEmpty(val))
+                    numberWriterAction();
+                }
+                catch (FormatException)
+                {
+                    if (_numberSerializationMode == NumberSerializationMode.PreferablyAsNumber)
                     {
-                        writer.WriteNullValue();
+                        WriteJsonElement<string>(writer, elem, (w, v) => writer.WriteStringValue(v));
                     }
                     else
                     {
-                        var fix = FixDecimalString(val);
-                        if (TryParseULong(fix, out ulong xulong))
-                        {
-                            writer.WriteNumberValue(xulong);
-                        }
-                        else if (TryParseLong(fix, out long xlong))
-                        {
-                            writer.WriteNumberValue(xlong);
-                        }
-                        else if (TryParseDecimal(fix, out decimal xdecimal))
-                        {
-                            writer.WriteNumberValue(xdecimal);
-                        }
-                        else if (TryParseDouble(fix, out double xdouble))
-                        {
-                            writer.WriteNumberValue(xdouble);
-                        }
-                        else
-                        {
-                            throw new FormatException($"Cannot write dicom number {val} to json");
-                        }
+                        throw;
                     }
                 }
-                writer.WriteEndArray();
+            }
+        }
+
+
+        private static void WriteJsonDecimalString(Utf8JsonWriter writer, DicomElement elem)
+        {
+            if (elem.Count == 0) return;
+
+            var writerActions = new List<Action>
+            {
+                () => writer.WritePropertyName("Value"),
+                writer.WriteStartArray
+            };
+
+            foreach (var val in elem.Get<string[]>())
+            {
+                if (string.IsNullOrEmpty(val))
+                {
+                    writerActions.Add(writer.WriteNullValue);
+                }
+                else
+                {
+                    var fix = FixDecimalString(val);
+                    if (TryParseULong(fix, out ulong xulong))
+                    {
+                        writerActions.Add(() => writer.WriteNumberValue(xulong));
+                    }
+                    else if (TryParseLong(fix, out long xlong))
+                    {
+                        writerActions.Add(() => writer.WriteNumberValue(xlong));
+                    }
+                    else if (TryParseDecimal(fix, out decimal xdecimal))
+                    {
+                        writerActions.Add(() => writer.WriteNumberValue(xdecimal));
+                    }
+                    else if (TryParseDouble(fix, out double xdouble))
+                    {
+                        writerActions.Add(() => writer.WriteNumberValue(xdouble));
+                    }
+                    else
+                    {
+                        throw new FormatException($"Cannot write dicom number {val} to json");
+                    }
+                }
+            }
+            writerActions.Add(writer.WriteEndArray);
+
+            foreach (var action in writerActions)
+            {
+                action();
             }
         }
 
@@ -490,16 +564,17 @@ namespace FellowOakDicom.Serialization
                 return val;
             }
 
-            throw new ArgumentException("Failed converting DS value to json");
+            throw new FormatException("Failed converting DS value to json");
         }
 
         private static void WriteJsonElement<T>(Utf8JsonWriter writer, DicomElement elem, WriteValue<T> writeValue)
         {
             if (elem.Count != 0)
             {
+                T[] values = elem.Get<T[]>();
                 writer.WritePropertyName("Value");
                 writer.WriteStartArray();
-                foreach (var val in elem.Get<T[]>())
+                foreach (var val in values)
                 {
                     if (val == null || (typeof(T) == typeof(string) && val.Equals("")))
                     {

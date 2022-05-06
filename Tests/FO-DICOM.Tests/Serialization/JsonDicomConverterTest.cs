@@ -1100,8 +1100,6 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
 
-
-
         [Fact]
         public static void GivenJsonIsInvalid_WhenDeserialization_ThenThrowsDicomValidationException()
         {
@@ -1135,11 +1133,121 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.True(ds.Contains(DicomTag.PatientAge));
         }
 
+        [Fact]
+        public static void GivenInvalidValue_WhenNumberSerializationModeAsString_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string invalidDS = "InvalidDS";
+            const string invalidIS = "InvalidIS";
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidDS))));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidIS))));
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsString));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]}}", json);
+        }
+
+        [Fact]
+        public static void GivenInvalidValue_WhenNumberSerializationModePreferablyAsNumber_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string invalidDS = "InvalidDS";
+            const string invalidIS = "InvalidIS";
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidDS))));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidIS))));
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.PreferablyAsNumber));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]}}", json);
+        }
+
+        [Fact]
+        public static void GivenInvalidValueForDS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string invalidNumber = "InvalidNumber";
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidNumber))));
+            Assert.Throws<FormatException>(() => JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber)));
+        }
+
+        [Fact]
+        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string invalidNumber = "InvalidNumber";
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidNumber))));
+            Assert.Throws<FormatException>(() => JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber)));
+        }
+
+        [Fact]
+        public static void GivenValidValue_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset();
+            const decimal validDS = 3.1415926535m;
+            const int validIS = 299792458;
+            const long validSV = 9223372036854775800;
+            const ulong validUV = 18446744073709551600;
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
+            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[299792458]},\"00101020\":{\"vr\":\"DS\",\"Value\":[3.1415926535]},\"00720082\":{\"vr\":\"SV\",\"Value\":[9223372036854775800]},\"00720083\":{\"vr\":\"UV\",\"Value\":[18446744073709551600]}}", json);
+        }
+
+        [Fact]
+        public static void GivenValidValue_WhenNumberSerializationModePreferablyAsNumber_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset();
+            const decimal validDS = 3.1415926535m;
+            const int validIS = 299792458;
+            const long validSV = 9223372036854775800;
+            const ulong validUV = 18446744073709551600;
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
+            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.PreferablyAsNumber));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[299792458]},\"00101020\":{\"vr\":\"DS\",\"Value\":[3.1415926535]},\"00720082\":{\"vr\":\"SV\",\"Value\":[9223372036854775800]},\"00720083\":{\"vr\":\"UV\",\"Value\":[18446744073709551600]}}", json);
+        }
+
+        [Fact]
+        public static void GivenValidValue_WhenNumberSerializationModeAsString_ThenDeserializationShouldSucceed()
+        {
+            var dataset = new DicomDataset();
+            const decimal validDS = 3.1415926535m;
+            const int validIS = 299792458;
+            const long validSV = 9223372036854775800;
+            const ulong validUV = 18446744073709551600;
+            dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
+            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsString));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"299792458\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"3.1415926535\"]},\"00720082\":{\"vr\":\"SV\",\"Value\":[\"9223372036854775800\"]},\"00720083\":{\"vr\":\"UV\",\"Value\":[\"18446744073709551600\"]}}", json);
+        }
+
+        [Fact]
+        public static void GivenArrayWithValidAndInvalidValuesForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string validNumber = "299792458";
+            const string invalidNumber = "InvalidNumber";
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validNumber, invalidNumber));
+            Assert.Throws<FormatException>(() => JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber)));
+        }
+
+        [Fact]
+        public static void GivenArrayWithValidAndInvalidValuesForIS_WhenNumberSerializationModePreferablyAsNumber_ThenDeserializationShouldSucceedAndAllValuesShouldBeStrings()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string validNumber = "299792458";
+            const string invalidNumber = "InvalidNumber";
+            dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validNumber, invalidNumber));
+            var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.PreferablyAsNumber));
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"299792458\",\"InvalidNumber\"]}}", json);
+        }
 
         #region Sample Data
 
         private string _jsonExampleFromDicomNemaOrg = @"
-// The following example is a QIDO-RS SearchForStudies response consisting 
+// The following example is a QIDO-RS SearchForStudies response consisting
 // of two matching studies, corresponding to the example QIDO-RS request:
 // GET http://qido.nema.org/studies?PatientID=12345&includefield=all&limit=2
 [
@@ -1290,7 +1398,7 @@ namespace FellowOakDicom.Tests.Serialization
             ""vr"": ""PN"",
             ""Value"": [
               {
-                ""Alphabetic"": ""^Bob^^Dr."" 
+                ""Alphabetic"": ""^Bob^^Dr.""
               }
             ]
         },
@@ -1311,7 +1419,7 @@ namespace FellowOakDicom.Tests.Serialization
             ""Value"": [
               {
                 ""Alphabetic"": ""Wang^XiaoDong"",
-                ""Ideographic"": ""王^小東"" 
+                ""Ideographic"": ""王^小東""
               }
             ]
         },

@@ -341,8 +341,12 @@ namespace FellowOakDicom.Network
                     {
                         runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
                     }
-                    await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
-                    
+
+                    if (runningDicomServiceTasks.Count > 0)
+                    {
+                        await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
+                    }
+
                     lock (_services)
                     {
                         for (int i = _services.Count - 1; i >= 0; i--)

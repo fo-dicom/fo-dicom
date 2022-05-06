@@ -351,7 +351,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Other Byte (OB) implementation of <seealso cref="DicomPixelData"/>
         /// </summary>
-        private class OtherBytePixelData : DicomPixelData
+        private sealed class OtherBytePixelData : DicomPixelData
         {
             #region FIELDS
 
@@ -417,7 +417,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Other Word (OW) implementation of <seealso cref="DicomPixelData"/>
         /// </summary>
-        private class OtherWordPixelData : DicomPixelData
+        private sealed class OtherWordPixelData : DicomPixelData
         {
             #region FIELDS
 
@@ -493,7 +493,7 @@ namespace FellowOakDicom.Imaging
         /// Other Byte/Word Fragment implementation of <seealso cref="DicomPixelData"/>, used for handling encapsulated (compressed)
         /// pixel data
         /// </summary>
-        private class EncapsulatedPixelData : DicomPixelData
+        private sealed class EncapsulatedPixelData : DicomPixelData
         {
             #region FIELDS
 
@@ -616,7 +616,12 @@ namespace FellowOakDicom.Imaging
             {
                 NumberOfFrames++;
 
-                var pos = _element.Fragments.Sum(x => x.Size + 8);
+                long pos = 0;
+                if (_element.Fragments.Any())
+                {
+                    pos = _element.OffsetTable.Last() + _element.Fragments.Last().Size + 8;
+                }
+
                 if (pos < uint.MaxValue)
                 {
                     _element.OffsetTable.Add((uint)pos);
