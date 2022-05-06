@@ -4,14 +4,12 @@
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
-using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using System.Linq;
 
 namespace FellowOakDicom
 {

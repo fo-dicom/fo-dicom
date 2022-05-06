@@ -6,9 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FellowOakDicom.IO.Buffer;
-using FellowOakDicom.Log;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace FellowOakDicom.Tests

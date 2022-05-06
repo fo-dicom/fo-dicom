@@ -1,5 +1,4 @@
-﻿using FellowOakDicom.Log;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 
 namespace FellowOakDicom.Network

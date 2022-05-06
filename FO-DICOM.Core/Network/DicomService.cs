@@ -5,7 +5,6 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
-using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.Logging;

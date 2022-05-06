@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;

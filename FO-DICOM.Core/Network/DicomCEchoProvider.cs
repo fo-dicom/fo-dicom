@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
 using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network

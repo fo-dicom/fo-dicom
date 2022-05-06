@@ -1,5 +1,4 @@
 ﻿using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.Logging;
 using System;

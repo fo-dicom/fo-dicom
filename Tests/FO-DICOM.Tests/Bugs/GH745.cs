@@ -4,7 +4,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;

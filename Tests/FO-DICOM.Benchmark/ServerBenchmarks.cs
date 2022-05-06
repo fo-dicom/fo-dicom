@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;

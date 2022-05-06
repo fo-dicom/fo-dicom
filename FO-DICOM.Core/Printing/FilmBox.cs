@@ -10,6 +10,8 @@ using FellowOakDicom.IO;
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
 namespace FellowOakDicom.Printing
 {
