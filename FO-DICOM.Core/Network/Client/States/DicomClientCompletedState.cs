@@ -72,7 +72,7 @@ namespace FellowOakDicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.LogWarning($"[{this}] The listener for incoming DICOM communication could not be disposed properly: " + e);
+                _dicomClient.Logger.LogWarning(e, $"[{this}] The listener for incoming DICOM communication could not be disposed properly");
             }
 
             try
@@ -81,7 +81,7 @@ namespace FellowOakDicom.Network.Client.States
             }
             catch (Exception e)
             {
-                _dicomClient.Logger.LogWarning($"[{this}] The connection network stream could not be disposed properly: " + e);
+                _dicomClient.Logger.LogWarning(e, $"[{this}] The connection network stream could not be disposed properly");
             }
 
             // wait until listener task realizes connection is gone

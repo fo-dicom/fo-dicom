@@ -310,11 +310,11 @@ namespace FellowOakDicom.Network
             }
             catch (OperationCanceledException e)
             {
-                Logger.LogWarning("DICOM server was canceled, {@error}", e);
+                Logger.LogWarning(e, "DICOM server was canceled");
             }
             catch (Exception e)
             {
-                Logger.LogError("Exception listening for DICOM services, {@error}", e);
+                Logger.LogError(e, "Exception listening for DICOM services");
 
                 Stop();
                 Exception = e;
@@ -379,7 +379,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogWarning("Exception removing disconnected clients, {@error}", e);
+                    Logger.LogWarning(e, "Exception removing disconnected clients");
                 }
             }
         }

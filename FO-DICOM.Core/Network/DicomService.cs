@@ -401,13 +401,13 @@ namespace FellowOakDicom.Network
                 catch (ObjectDisposedException e)
                 {
                     // This may happen when closing a connection.
-                    Logger.LogError("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
-                                 "This can happen when the connection is being closed", e);
+                    Logger.LogError(e, "An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
+                                 "This can happen when the connection is being closed");
                     throw new DicomNetworkException("This DICOM service was disposed while sending a PDU", e);
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("Exception sending PDU: {@error}", e);
+                    Logger.LogError(e, "Exception sending PDU");
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                     throw new DicomNetworkException("An exception occurred while sending a PDU", e);
                 }
@@ -659,7 +659,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("Exception processing PDU: {@error}", e);
+                    Logger.LogError(e, "Exception processing PDU");
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
             }
@@ -817,7 +817,7 @@ namespace FellowOakDicom.Network
                                     }
                                     await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
-                                    Logger.LogError("Error parsing C-Store dataset: {@error}", e);
+                                    Logger.LogError(e, "Error parsing C-Store dataset");
                                     await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
                                     return;
                                 }
@@ -831,7 +831,7 @@ namespace FellowOakDicom.Network
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Exception processing P-Data-TF PDU: {Error}", e);
+                Logger.LogError(e, "Exception processing P-Data-TF PDU");
                 throw;
             }
             finally
@@ -1088,7 +1088,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "Failed to send DICOM message due to {Error}", e);
+                    Logger.LogError(e, "Failed to send DICOM message");
 
                     if (msg is DicomRequest dicomRequest)
                     {
@@ -1222,10 +1222,10 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("Exception in DoSendMessageAsync: {error}", e);
+                    Logger.LogError(e, "An error occurred while sending a DICOM message");
                 }
 
-                Logger.LogError("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
+                Logger.LogError("No accepted presentation context found for abstract syntax: {SopClassUid}", msg.SOPClassUID);
             }
             else
             {
@@ -1334,7 +1334,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "Exception sending DIMSE: {@error}", e);
+                    Logger.LogError(e, "An error occurred while sending a DICOM message");
                     throw new DicomNetworkException($"Failed to send DICOM message {msg}", e);
                 }
                 finally
@@ -1403,7 +1403,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("An error occurred in the Fellow Oak DICOM timeout detection loop: {Error}", e);
+                    Logger.LogError(e, "An error occurred in the Fellow Oak DICOM timeout detection loop");
                 }
                 finally
                 {
@@ -1452,7 +1452,7 @@ namespace FellowOakDicom.Network
             }
             catch (Exception e)
             {
-                Logger.LogError("Error during close attempt: {@error}", e);
+                Logger.LogError(e, "Error during close attempt");
                 throw;
             }
 
@@ -1610,11 +1610,11 @@ namespace FellowOakDicom.Network
 
             if (e.InnerException is ObjectDisposedException)
             {
-                logger.LogInformation($"Object disposed while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
+                logger.LogInformation($"Object disposed while {(reading ? "reading" : "writing")} PDU");
             }
             else
             {
-                logger.LogError($"I/O exception while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
+                logger.LogError(e, $"I/O exception while {(reading ? "reading" : "writing")} PDU");
             }
 
             return false;
@@ -1750,7 +1750,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _service.Logger.LogError("Exception creating PDV: {@error}", e);
+                    _service.Logger.LogError(e, "Exception creating PDV");
                     throw;
                 }
             }
@@ -1888,7 +1888,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _service.Logger.LogError("Exception writing data to PDV: {@error}", e);
+                    _service.Logger.LogError(e, "Exception writing data to PDV");
                     throw;
                 }
             }
