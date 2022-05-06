@@ -6,7 +6,7 @@ using System;
 namespace FellowOakDicom.Log
 {
 
-    [Obsolete("Fellow Oak DICOM now directly supports Microsoft.Extensions.Logging")]
+    [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     public enum LogLevel
     {
         Debug,
