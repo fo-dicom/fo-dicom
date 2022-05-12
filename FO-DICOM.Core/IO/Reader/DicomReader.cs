@@ -517,8 +517,7 @@ namespace FellowOakDicom.IO.Reader
                                 return false;
                             }
 
-
-                            //source.Skip(2);  Instead check for old files made with incorrect Data Element
+                            //Check for old files made with incorrect Data Element
                             // Fo-dicom mistakenly use 2 bytes as a length of SV and UV (Is16bitLength = true)
                             if (_vr == DicomVR.UV || _vr == DicomVR.SV)
                             {
@@ -542,7 +541,6 @@ namespace FellowOakDicom.IO.Reader
                                     _vr = DicomVR.SQ;
                                 }
                             }
-
                         }
                     }
                     else
