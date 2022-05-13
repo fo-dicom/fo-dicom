@@ -518,7 +518,7 @@ namespace FellowOakDicom.IO.Reader
                             }
 
                             //Check for old files made with incorrect Data Element
-                            // Fo-dicom mistakenly use 2 bytes as a length of SV and UV (Is16bitLength = true)
+                            //Prior versions of fo-dicom may have mistakenly used 2 bytes as a length of SV and UV (Is16bitLength = true)
                             if (_vr == DicomVR.UV || _vr == DicomVR.SV)
                             {
                                 _length = source.GetUInt16();
