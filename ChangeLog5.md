@@ -1,7 +1,11 @@
-#### 5.0.3 (TBD)
+#### 5.0.4 (TBD)
+
+
+#### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
 * **Breaking change**: subclasses of DicomServer will have to pass an instance of DicomServerDependencies along to the DicomServer base constructor. This replaces the old NetworkManager / LogManager dependencies. (Implemented in the context of #1291)
 * **Breaking change**: DicomClient no longer has a NetworkManager, LogManager or TranscoderManager, these are to be configured via dependency injection. (Implemented in the context of #1144)
+* Update to DICOM Standard 2022b
 * Added option `numberSerializationMode` to `JsonDicomConverter` that allows different modes for serializing DS/IS/UV/SV DICOM items, including handling of invalid values (#1354 & #1362)
 * Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)
 * Fixed bug where anonymization threw an exception if a DicomTag of VR UI contained no value (#1308)
