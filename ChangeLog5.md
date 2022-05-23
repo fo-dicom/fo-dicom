@@ -16,6 +16,7 @@
 * Ignore empty VOI LUT and Modality LUT Sequence (#1369)
 * Validate calling AE and called AE length when creating a DicomClient (#1323)
 * Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
+* Change: DicomAnonymizer private fields and methods changed to protected so they can be used in subclasses, made instance methods virtual so they can be overridden in subclasses
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
