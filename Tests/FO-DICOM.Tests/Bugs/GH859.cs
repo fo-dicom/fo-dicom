@@ -12,8 +12,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Bugs
 {
-
-    [Collection("General")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class GH859
     {
         private readonly XUnitDicomLogger _output;

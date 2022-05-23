@@ -10,11 +10,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
-using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,17 +73,15 @@ namespace FellowOakDicom.Tests.Network.Client
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
             var logManager = Setup.ServiceProvider.GetRequiredService<ILogManager>();
-            var transcoderManager = Setup.ServiceProvider.GetRequiredService<ITranscoderManager>();
-            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
+            var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
             var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
+            var advancedDicomClientConnectionFactory = new DefaultAdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies);
             return new DefaultDicomClientFactory(
-                logManager,
-                networkManager,
-                transcoderManager,
-                memoryProvider,
                 defaultClientOptions,
-                defaultServiceOptions);
+                defaultServiceOptions,
+                logManager,
+                advancedDicomClientConnectionFactory);
         }
 
         [Fact]
@@ -454,8 +451,8 @@ namespace FellowOakDicom.Tests.Network.Client
                     }
                 }
 
-                var timedOutRequests = new List<DicomRequest>();
-                client.RequestTimedOut += (sender, args) => { timedOutRequests.Add(args.Request); };
+                var timedOutRequests = new ConcurrentStack<DicomRequest>();
+                client.RequestTimedOut += (sender, args) => { timedOutRequests.Push(args.Request); };
 
                 var sendTask = client.SendAsync();
                 var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
@@ -500,8 +497,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 // Ensure requests are handled sequentially
                 client.NegotiateAsyncOps(1, 1);
 
-                // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
-                // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
                 var request1 = new DicomCStoreRequest(@"./Test Data/10200904.dcm")
                 {
                     OnResponseReceived = (req, res) =>
@@ -818,6 +813,14 @@ namespace FellowOakDicom.Tests.Network.Client
                 return new ConfigurableDesktopNetworkStreamDecorator(
                     _onStreamWrite,
                     new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
+                );
+            }
+
+            protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
+            {
+                return new ConfigurableDesktopNetworkStreamDecorator(
+                    _onStreamWrite,
+                    new DesktopNetworkStream(options)
                 );
             }
         }

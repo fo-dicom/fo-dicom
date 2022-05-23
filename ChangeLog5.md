@@ -1,7 +1,9 @@
 #### 5.0.3 (TBD)
+
+* **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
+* **Breaking change**: subclasses of DicomServer will have to pass an instance of DicomServerDependencies along to the DicomServer base constructor. This replaces the old NetworkManager / LogManager dependencies. (Implemented in the context of #1291)
+* **Breaking change**: DicomClient no longer has a NetworkManager, LogManager or TranscoderManager, these are to be configured via dependency injection. (Implemented in the context of #1144)
 * Added option `numberSerializationMode` to `JsonDicomConverter` that allows different modes for serializing DS/IS/UV/SV DICOM items, including handling of invalid values (#1354 & #1362)
-* Breaking change: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
-* Breaking change: subclasses of DicomServer will have to pass an instance of DicomServerDependencies along to the DicomServer base constructor. This replaces the old NetworkManager / LogManager dependencies. (Implemented in the context of #1291)
 * Added an extension to get a DateTimeOffset respecting the timezone info in the dataset (#1310)
 * Fixed bug where anonymization threw an exception if a DicomTag of VR UI contained no value (#1308)
 * Catch exception in logmessage, to avoid making the application crash because of logging (#1288)
@@ -9,6 +11,8 @@
 * Optimize performance and reduce memory allocations in network layer (#1291)
 * Fixed bug where disposal of DicomService could throw an exception if the buffered write stream still had content (#1319)
 * Improve handling of dropped connections (#1332)
+* Add new API for expert DICOM client connections/associations. This new API gives full control over the connection, association and requests when sending DICOM requests (#1144)
+* Rewrite "DicomClient" based on the new advanced API. The state based implementation is gone. The public API has remained the same. (#1144)
 * Ignore empty VOI LUT and Modality LUT Sequence (#1369)
 * Validate calling AE and called AE length when creating a DicomClient (#1323)
 * Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
