@@ -517,16 +517,29 @@ namespace FellowOakDicom.IO.Reader
                                 return false;
                             }
 
-                            source.Skip(2);
-                            _length = source.GetUInt32();
-
-                            // CP-246 (#177) handling
-                            // assume that Undefined Length in explicit datasets with VR UN are sequences 
-                            // According to CP-246 the sequence shall be handled as ILE, but this will be handled later...
-                            // in the current code this needs to be restricted to privates 
-                            if (_length == _undefinedLength && _vr == DicomVR.UN && _tag.IsPrivate)
+                            //Check for old files made with incorrect Data Element
+                            //Prior versions of fo-dicom may have mistakenly used 2 bytes as a length of SV and UV (Is16bitLength = true)
+                            if (_vr == DicomVR.UV || _vr == DicomVR.SV)
                             {
-                                _vr = DicomVR.SQ;
+                                _length = source.GetUInt16();
+                            }
+                            else
+                            {
+                                source.Skip(2);
+                            }
+
+                            if (_length == 0)
+                            {
+                                _length = source.GetUInt32();
+
+                                // CP-246 (#177) handling
+                                // assume that Undefined Length in explicit datasets with VR UN are sequences 
+                                // According to CP-246 the sequence shall be handled as ILE, but this will be handled later...
+                                // in the current code this needs to be restricted to privates 
+                                if (_length == _undefinedLength && _vr == DicomVR.UN && _tag.IsPrivate)
+                                {
+                                    _vr = DicomVR.SQ;
+                                }
                             }
                         }
                     }

@@ -1,5 +1,4 @@
 #### 5.0.3 (TBD)
-
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
 * **Breaking change**: subclasses of DicomServer will have to pass an instance of DicomServerDependencies along to the DicomServer base constructor. This replaces the old NetworkManager / LogManager dependencies. (Implemented in the context of #1291)
 * **Breaking change**: DicomClient no longer has a NetworkManager, LogManager or TranscoderManager, these are to be configured via dependency injection. (Implemented in the context of #1144)
@@ -17,6 +16,7 @@
 * Validate calling AE and called AE length when creating a DicomClient (#1323)
 * Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
 * Change: DicomAnonymizer private fields and methods changed to protected so they can be used in subclasses, made instance methods virtual so they can be overridden in subclasses
+* Fix VR's SV and UV VR Length field (#1386)
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
