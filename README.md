@@ -48,7 +48,7 @@ Documentation, including API documentation, is available via GitHub pages:
 ### Usage Notes
 
 #### Image rendering configuration
-Out-of-the-box, *fo-dicom* for defaults to a internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget packe you desire and then call:
+Out-of-the-box, *fo-dicom* defaults to an internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget package you desire and then call:
 
     new DicomSetupBuilder()
         .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<WinFormsImageManager>())
@@ -189,6 +189,45 @@ private static Task<DicomNEventReportResponse> OnNEventReportRequest(DicomNEvent
         Console.WriteLine("SOP Instance UID: {0}", item.GetString(DicomTag.ReferencedSOPInstanceUID));
     }
     return Task.FromResult(new DicomNEventReportResponse(request, DicomStatus.Success));
+}
+```
+
+#### C-ECHO with advanced DICOM client connection: manual control over TCP connection and DICOM association
+```csharp
+var cancellationToken = CancellationToken.None;
+// Alternatively, inject IDicomServerFactory via dependency injection instead of using this static method
+using var server = DicomServerFactory.Create<DicomCEchoProvider>(12345); 
+
+var connectionRequest = new AdvancedDicomClientConnectionRequest
+{
+    NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+    {
+        Host = "127.0.0.1",
+        Port = server.Port,
+    }
+};
+
+// Alternatively, inject IAdvancedDicomClientConnectionFactory via dependency injection instead of using this static method
+using var connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
+
+var associationRequest = new AdvancedDicomClientAssociationRequest
+{
+    CallingAE = "EchoSCU",
+    CalledAE = "EchoSCP"
+};
+
+var cEchoRequest = new DicomCEchoRequest();
+
+using var association = await connection.OpenAssociationAsync(associationRequest, cancellationToken);
+try
+{
+    DicomCEchoResponse cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, cancellationToken).ConfigureAwait(false);
+    
+    Console.WriteLine(cEchoResponse.Status);
+}
+finally
+{
+    await association.ReleaseAsync(cancellationToken);
 }
 ```
 

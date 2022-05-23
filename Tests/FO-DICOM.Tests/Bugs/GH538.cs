@@ -11,7 +11,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Bugs
 {
 
-    [Collection("General")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class GH538
     {
 

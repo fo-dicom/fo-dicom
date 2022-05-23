@@ -19,7 +19,7 @@ namespace FellowOakDicom
     {
         #region Fields
 
-        private static readonly int _optionsCount = Enum.GetValues(typeof(SecurityProfileOptions)).Length;
+        protected static readonly int _optionsCount = Enum.GetValues(typeof(SecurityProfileOptions)).Length;
 
         #endregion
 
@@ -167,10 +167,10 @@ namespace FellowOakDicom
 
         /// <summary>Context/Output. Contains all the replaced UIDs.</summary>
         /// <remarks>Useful for consistency across a file set (multiple calls to anonymization methods)</remarks>
-        public Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
+        public virtual Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
 
         /// <summary>The security profile for this anonymizer instance</summary>
-        public SecurityProfile Profile { get; }
+        public virtual SecurityProfile Profile { get; }
 
         #endregion
 
@@ -178,7 +178,7 @@ namespace FellowOakDicom
 
         /// <summary>Anonymizes a dataset witout cloning</summary>
         /// <param name="dataset">The dataset to be altered</param>
-        public void AnonymizeInPlace(DicomDataset dataset)
+        public virtual void AnonymizeInPlace(DicomDataset dataset)
         {
             var toRemove = new List<DicomItem>();
             var itemList = dataset.ToArray();
@@ -247,7 +247,7 @@ namespace FellowOakDicom
 
         /// <summary>Anonymizes the dataset of an existing Dicom file</summary>
         /// <param name="file">The file containing the dataset to be altered</param>
-        public void AnonymizeInPlace(DicomFile file)
+        public virtual void AnonymizeInPlace(DicomFile file)
         {
             AnonymizeInPlace(file.Dataset);
             if (file.FileMetaInfo != null)
@@ -259,7 +259,7 @@ namespace FellowOakDicom
         /// <summary>Clones and anonymizes a dataset</summary>
         /// <param name="dataset">The dataset to be cloned and anonymized</param>
         /// <returns>Anonymized dataset.</returns>
-        public DicomDataset Anonymize(DicomDataset dataset)
+        public virtual DicomDataset Anonymize(DicomDataset dataset)
         {
             var clone = dataset.Clone();
             AnonymizeInPlace(clone);
@@ -269,7 +269,7 @@ namespace FellowOakDicom
         /// <summary>Creates a new Dicom file with an anonymized dataset</summary>
         /// <param name="file">The file containing the original dataset</param>
         /// <returns>Anonymized dataset.</returns>
-        public DicomFile Anonymize(DicomFile file)
+        public virtual DicomFile Anonymize(DicomFile file)
         {
             var clone = file.Clone();
             AnonymizeInPlace(clone);
@@ -278,12 +278,12 @@ namespace FellowOakDicom
 
         #endregion
 
-        #region Private methods
+        #region Protected methods
 
         /// <string>Replaces the content of a UID with a random one</string>
         /// <param name="dataset">Reference to the dataset</param>
         /// <param name="item"></param>
-        private void ReplaceUID(DicomDataset dataset, DicomItem item)
+        protected virtual void ReplaceUID(DicomDataset dataset, DicomItem item)
         {
             if (!(item is DicomElement))
             {
@@ -320,7 +320,7 @@ namespace FellowOakDicom
         /// <param name="dataset">Reference to the dataset</param>
         /// <param name="item">DICOM item subject to blanking.</param>
         /// <param name="nonZeroLength">Require that new value is non-zero length (dummy) value?</param>
-        private static void BlankItem(DicomDataset dataset, DicomItem item, bool nonZeroLength)
+        protected static void BlankItem(DicomDataset dataset, DicomItem item, bool nonZeroLength)
         {
             var tag = item.Tag;
 
@@ -379,7 +379,7 @@ namespace FellowOakDicom
         /// <summary>Evaluates whether a DICOM item is of type Other*</summary>
         /// <param name="item"></param>
         /// <returns>A boolean flag indicating whether the item is of the expected type, otherwise false</returns>
-        private static bool IsOtherElement(DicomItem item)
+        protected static bool IsOtherElement(DicomItem item)
         {
             var t = item.GetType();
             return t == typeof(DicomOtherByte) || t == typeof(DicomOtherDouble) || t == typeof(DicomOtherFloat)
@@ -389,7 +389,7 @@ namespace FellowOakDicom
         /// <summary>Evaluates whether an element has a generic valueType</summary>
         /// <param name="item"></param>
         /// <returns>The data type if found, otherwise null</returns>
-        private static Type ElementValueType(DicomItem item)
+        protected static Type ElementValueType(DicomItem item)
         {
             var t = item.GetType();
             if (t.IsConstructedGenericType && t.GetGenericTypeDefinition() == typeof(DicomValueElement<>))
@@ -404,7 +404,7 @@ namespace FellowOakDicom
         /// <param name="dataset">Reference to the dataset</param>
         /// <param name="item">DICOM item for which the string value should be replaced.</param>
         /// <param name="newString">The replacement string.</param>
-        private static void ReplaceString(DicomDataset dataset, DicomItem item, string newString)
+        protected static void ReplaceString(DicomDataset dataset, DicomItem item, string newString)
         {
             dataset.AddOrUpdate(item.ValueRepresentation, item.Tag, newString);
         }
@@ -415,7 +415,7 @@ namespace FellowOakDicom
         /// <param name="item">DICOM item for which to get constructor.</param>
         /// <param name="parameterTypes">Expected parameter types in the requested constructor.</param>
         /// <returns>Constructor info corresponding to <paramref name="item"/> and <paramref name="parameterTypes"/>.</returns>
-        private static ConstructorInfo GetConstructor(DicomItem item, params Type[] parameterTypes)
+        protected static ConstructorInfo GetConstructor(DicomItem item, params Type[] parameterTypes)
         {
             return item.GetType().GetTypeInfo().DeclaredConstructors.Single(
                 ci =>
