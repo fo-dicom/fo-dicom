@@ -267,7 +267,7 @@ namespace FellowOakDicom.Network
             }
             else
             {
-                Logger?.LogWarning("DICOM service {DicomServiceType} was not disposed correctly, but was garbage collected instead", GetType().FullName);
+                Logger.LogWarning("DICOM service {DicomServiceType} was not disposed correctly, but was garbage collected instead", GetType().FullName);
             }
         }
 
@@ -880,14 +880,7 @@ namespace FellowOakDicom.Network
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
-                if (Options.LogDimseDatasets)
-                {
-                    Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
-                }
-                else
-                {
-                    Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse);
-                }
+                Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
             }
 
             if (!DicomMessage.IsRequest(dimse.Type) && dimse is DicomResponse rsp)
