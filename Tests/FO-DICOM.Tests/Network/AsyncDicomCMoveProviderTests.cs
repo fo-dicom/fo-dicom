@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
@@ -15,11 +17,11 @@ using Xunit.Abstractions;
 namespace FellowOakDicom.Tests.Network
 {
     [Collection("Network"), Trait("Category", "Network")]
-    public class AsyncDicomCEchoProviderTests
+    public class AsyncDicomCMoveProviderTests
     {
         private readonly XUnitDicomLogger _logger;
 
-        public AsyncDicomCEchoProviderTests(ITestOutputHelper testOutputHelper)
+        public AsyncDicomCMoveProviderTests(ITestOutputHelper testOutputHelper)
         {
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
@@ -28,29 +30,30 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public async Task OnCEchoRequestAsync_ShouldRespond()
+        public async Task OnCMoveRequestAsync_ShouldRespond()
         {
             var port = Ports.GetNext();
 
-            using (DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (DicomServerFactory.Create<AsyncDicomCMoveProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomCEchoResponse response = null;
+                var responses = new List<DicomCMoveResponse>();
                 DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomCEchoRequest
+                var request = new DicomCMoveRequest("OTHER-SCP", "123")
                 {
-                    OnResponseReceived = (req, res) => response = res,
+                    OnResponseReceived = (req, res) => responses.Add(res),
                     OnTimeout = (sender, args) => timeout = args
                 };
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);
                 await client.SendAsync().ConfigureAwait(false);
 
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
+                Assert.NotEmpty(responses);
+                Assert.Equal(DicomState.Pending, responses[0].Status.State);
+                Assert.Equal(DicomState.Pending, responses[1].Status.State);
+                Assert.Equal(DicomState.Success, responses[2].Status.State);
                 Assert.Null(timeout);
             }
         }
@@ -58,16 +61,16 @@ namespace FellowOakDicom.Tests.Network
 
     #region helper classes
 
-    public class AsyncDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+    public class AsyncDicomCMoveProvider : DicomService, IDicomServiceProvider, IDicomCMoveProvider
     {
-        public AsyncDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public AsyncDicomCMoveProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public virtual async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -84,7 +87,7 @@ namespace FellowOakDicom.Tests.Network
         /// <inheritdoc />
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
-            // do nothing, ignore
+            // do nothing here
         }
 
         /// <inheritdoc />
@@ -93,9 +96,14 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+        public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
         {
-            return new DicomCEchoResponse(request, DicomStatus.Success);
+            await Task.Yield();
+            yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+            await Task.Yield();
+            yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+            await Task.Yield();
+            yield return new DicomCMoveResponse(request, DicomStatus.Success);
         }
     }
 

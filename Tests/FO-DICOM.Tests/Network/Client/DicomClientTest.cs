@@ -4,16 +4,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Log;
-using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +20,6 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network.Client
 {
-
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomClientTest
     {
@@ -76,7 +73,9 @@ namespace FellowOakDicom.Tests.Network.Client
         private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
         {
             var client = DicomClientFactory.Create(host, port, useTls, callingAe, calledAe);
-            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ServiceOptions.LogDimseDatasets = false;
+            client.ServiceOptions.LogDataPDUs = false;
             return client;
         }
 
@@ -143,7 +142,6 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-
         [Fact]
         public async Task AutomaticallyFixTooLongAETitles()
         {
@@ -156,7 +154,9 @@ namespace FellowOakDicom.Tests.Network.Client
                 // DicomClientFactory cares about the length of AETitles,
                 // but in case some developer registeres a custom Factory or creates DicomClient directly for some other reason.
                 var client = new DicomClient("localhost", port, false, "STORAGECOMMITTEST", "DE__257a276f6d47",
-                    new DicomClientOptions { }, new DicomServiceOptions { }, Setup.ServiceProvider.GetRequiredService<INetworkManager>(), Setup.ServiceProvider.GetRequiredService<ILogManager>(), Setup.ServiceProvider.GetRequiredService<ITranscoderManager>(), Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
+                    new DicomClientOptions { }, new DicomServiceOptions { },
+                    Setup.ServiceProvider.GetRequiredService<ILogManager>().GetLogger("DicomClient"),
+                    Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 var task = client.SendAsync();
@@ -228,6 +228,7 @@ namespace FellowOakDicom.Tests.Network.Client
                             }
                         }
                     }).ConfigureAwait(false);
+
                 await client.SendAsync().ConfigureAwait(false);
             }
 
@@ -1162,6 +1163,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
             using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
 
+            server.SetResponseTimeout(TimeSpan.FromTicks(0));
+
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
@@ -1177,16 +1180,17 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (req, res) => responses.Add(res)
                 };
+                logger.Info($"Adding request {i}");
                 await client.AddRequestAsync(request).ConfigureAwait(false);
 
                 if (client.IsSendRequired)
                 {
                     // Do not await here, because this task will only complete after the client has completely processed the request
-                    sendTasks.Add(client.SendAsync());
+                    sendTasks.Add(Task.Run(() => client.SendAsync()));
                 }
 
                 var secondsToWait = secondsBetweenEachRequest[i];
-                logger.Info($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.Info($"Waiting {secondsToWait} seconds between requests");
                 await Task.Delay(TimeSpan.FromSeconds(secondsToWait)).ConfigureAwait(false);
             }
             await Task.WhenAll(sendTasks).ConfigureAwait(false);
@@ -1362,19 +1366,15 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 await client.AddRequestsAsync(new[] { echoRequest1, echoRequest2, echoRequest3 }).ConfigureAwait(false);
 
-                using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+                using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
                 try
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation).ConfigureAwait(false);
                 }
-                catch (DicomNetworkException)
+                catch (Exception)
                 {
                     /* Ignore */
-                }
-                catch (IOException)
-                {
-                     /* Ignore */
                 }
 
                 Assert.False(cancellation.IsCancellationRequested);

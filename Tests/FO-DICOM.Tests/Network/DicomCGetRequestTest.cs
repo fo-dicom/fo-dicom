@@ -11,7 +11,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Network
 {
 
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class DicomCGetRequestTest : IClassFixture<GlobalFixture>
     {
 
