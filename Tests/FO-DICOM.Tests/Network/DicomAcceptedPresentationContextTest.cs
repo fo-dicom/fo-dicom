@@ -16,7 +16,6 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-
     [Collection("Network"), Trait("Category", "Network")]
     public class DicomAcceptedPresentationContextTest
     {

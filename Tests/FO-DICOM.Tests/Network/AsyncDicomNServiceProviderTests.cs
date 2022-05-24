@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class AsyncDicomNServiceProviderTests
     {
         private readonly XUnitDicomLogger _logger;
@@ -34,7 +34,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomNActionResponse response = null;
@@ -65,7 +65,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomNCreateResponse response = null;
@@ -95,7 +95,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomNDeleteResponse response = null;
@@ -125,7 +125,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomNEventReportResponse response = null;

@@ -7,6 +7,10 @@
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />

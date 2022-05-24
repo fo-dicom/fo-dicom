@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class AsyncDicomCGetProviderTests
     {
         private readonly XUnitDicomLogger _logger;
@@ -36,7 +36,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<ImmediateSuccessAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomCGetResponse response = null;
@@ -65,7 +65,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<PendingAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 var responses = new ConcurrentQueue<DicomCGetResponse>();

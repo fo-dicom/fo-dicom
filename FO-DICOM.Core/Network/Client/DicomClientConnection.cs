@@ -98,10 +98,19 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Callback when a request has been completed (a final response was received, causing it to be removed from the pending queue)
+        /// One request can only receive one completed response
         /// </summary>
         /// <param name="request">The original request that was sent, which has now been fulfilled</param>
         /// <param name="response">The final response from the DICOM server</param>
         Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
+
+        /// <summary>
+        /// Callback when a request has received a pending response (this is not the final response, the request is still in the pending queue)
+        /// One request can receive multiple pending responses
+        /// </summary>
+        /// <param name="request">The original request that was sent</param>
+        /// <param name="response">A pending response from the DICOM server</param>
+        Task OnRequestPendingAsync(DicomRequest request, DicomResponse response);
 
         /// <summary>
         /// Callback when a request has timed out (no final response was received, but the timeout was exceeded and the request has been removed from the pending queue)
@@ -121,7 +130,6 @@ namespace FellowOakDicom.Network.Client
         /// </returns>
         Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
 
-
         /// <summary>
         /// Callback for handling a client related N-EVENT-REPORT-RQ request, typically emanating from the client's N-ACTION request.
         /// </summary>
@@ -132,71 +140,5 @@ namespace FellowOakDicom.Network.Client
         /// The <see cref="DicomNEventReportResponse"/> related to the N-EVENT-REPORT-RQ <paramref name="request"/>.
         /// </returns>
         Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request);
-    }
-
-    public class DicomClientConnection : DicomService, IDicomClientConnection
-    {
-        private DicomClient DicomClient { get; }
-
-        public INetworkStream NetworkStream { get; }
-        public Task Listener { get; private set; }
-        public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
-
-        public DicomClientConnection(DicomClient dicomClient, INetworkStream networkStream)
-            : base(networkStream, 
-                dicomClient.FallbackEncoding,
-                dicomClient.Logger, 
-                new DicomServiceDependencies(
-                    dicomClient.LoggerFactory,
-                    dicomClient.NetworkManager,
-                    dicomClient.TranscoderManager,
-                    dicomClient.MemoryProvider
-                )
-            )
-        {
-            DicomClient = dicomClient;
-            NetworkStream = networkStream;
-        }
-
-        public void StartListener()
-        {
-            if (Listener != null)
-            {
-                return;
-            }
-
-            Listener = Task.Run(RunAsync);
-        }
-
-        public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);
-
-        public new Task SendAssociationReleaseRequestAsync() => base.SendAssociationReleaseRequestAsync();
-
-        public new Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason) => base.SendAbortAsync(source, reason);
-
-        public new Task SendRequestAsync(DicomRequest request) => base.SendRequestAsync(request);
-
-        public new Task SendNextMessageAsync() => base.SendNextMessageAsync();
-
-        protected override Task OnSendQueueEmptyAsync() => DicomClient.OnSendQueueEmptyAsync();
-
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => DicomClient.OnReceiveAssociationAcceptAsync(association);
-
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) => DicomClient.OnReceiveAssociationRejectAsync(result, source, reason);
-
-        public Task OnReceiveAssociationReleaseResponseAsync() => DicomClient.OnReceiveAssociationReleaseResponseAsync();
-
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => DicomClient.OnReceiveAbortAsync(source, reason);
-
-        public Task OnConnectionClosedAsync(Exception exception) => DicomClient.OnConnectionClosedAsync(exception);
-
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => DicomClient.OnRequestCompletedAsync(request, response);
-
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => DicomClient.OnRequestTimedOutAsync(request, timeout);
-
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => DicomClient.OnCStoreRequestAsync(request);
-
-        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => DicomClient.OnNEventReportRequestAsync(request);
-
     }
 }

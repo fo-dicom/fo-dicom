@@ -1,26 +1,26 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Advanced.Association;
+using FellowOakDicom.Network.Client.Advanced.Connection;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Network.Client.States;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Memory;
-using FellowOakDicom.Network.Client.EventArguments;
-using FellowOakDicom.Network.Client.States;
 using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Network.Client
 {
-
     public interface IDicomClient
     {
-
         /// <summary>
         /// DICOM host.
         /// </summary>
@@ -87,21 +87,6 @@ namespace FellowOakDicom.Network.Client
         DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
 
         /// <summary>
-        /// Gets the network manager that will be used to open connections.
-        /// </summary>
-        INetworkManager NetworkManager { get; }
-
-        /// <summary>
-        /// Gets the transcoder manager that will be used to transcode incoming or outgoing DICOM files.
-        /// </summary>
-        ITranscoderManager TranscoderManager { get; }
-
-        /// <summary>
-        /// The memory provider that will be used to allocate memory when sending and receiving messages
-        /// </summary>
-        IMemoryProvider MemoryProvider { get; }
-        
-        /// <summary>
         /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
         /// </summary>
         bool IsSendRequired { get; }
@@ -133,7 +118,10 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
+        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClientConnection"/>
+        /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
+        [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
         event EventHandler<StateChangedEventArgs> StateChanged;
 
         /// <summary>
@@ -169,26 +157,35 @@ namespace FellowOakDicom.Network.Client
         /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation);
-    }
+    }      
 
     public class DicomClient : IDicomClient
     {
-        private readonly IMemoryProvider _memoryProvider;
-        private readonly SemaphoreSlim _transitionLock = new SemaphoreSlim(1, 1);
-        private IDicomClientState State { get; set; }
+        private readonly IAdvancedDicomClientConnectionFactory _advancedDicomClientConnectionFactory;
+        private ILogger _logger;
+        private DicomClientState _state;
+        private long _isSending;
+        private readonly Tasks.AsyncManualResetEvent _hasMoreRequests;
 
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
+        
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
-        internal int NumberOfConsecutiveTimedOutAssociationRequests { get; set; }
 
         public string Host { get; }
         public int Port { get; }
         public bool UseTls { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
-        public bool IsSendRequired => State is DicomClientIdleState && QueuedRequests.Any();
-        public ILogger Logger { get; set; }
+        
+        public bool IsSendRequired => _isSending == 0 && QueuedRequests.Any();
+
+        public ILogger Logger
+        {
+            get => _logger;
+            set => _logger = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
         public DicomClientOptions ClientOptions { get; set; }
         public DicomServiceOptions ServiceOptions { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
@@ -196,15 +193,12 @@ namespace FellowOakDicom.Network.Client
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
         public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
-        public INetworkManager NetworkManager { get; }
-        public ILoggerFactory LoggerFactory { get; }
-        public ITranscoderManager TranscoderManager { get; }
-        public IMemoryProvider MemoryProvider { get; }
 
         public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
         public event EventHandler AssociationReleased;
+        
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
@@ -218,17 +212,13 @@ namespace FellowOakDicom.Network.Client
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
-        /// <param name="networkManager">The network manager that will be used to connect to the DICOM server</param>
         /// <param name="loggerFactory">The log manager that will be used to extract a default logger</param>
-        /// <param name="transcoderManager">The transcoder manager that will be used to transcode incoming or outgoing DICOM files</param>
-        /// <param name="memoryProvider">The memory provider that will be used to allocate memory when sending and receiving messages</param>
+        /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
-            INetworkManager networkManager,
             ILoggerFactory loggerFactory,
-            ITranscoderManager transcoderManager,
-            IMemoryProvider memoryProvider)
+            IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory)
         {
             Host = host;
             Port = port;
@@ -242,106 +232,12 @@ namespace FellowOakDicom.Network.Client
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            State = new DicomClientIdleState(this);
-            NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
-            MemoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
-            Logger = loggerFactory.CreateLogger("FellowOakDicom.Network");
-        }
-
-        private async Task ExecuteWithinTransitionLock(Func<Task> task)
-        {
-            await _transitionLock.WaitAsync().ConfigureAwait(false);
-            try
-            {
-                await task().ConfigureAwait(false);
-            }
-            finally
-            {
-                _transitionLock.Release();
-            }
-        }
-
-        internal async Task<IDicomClientState> Transition(IDicomClientState newState, DicomClientCancellation cancellation)
-        {
-            Task InternalTransition()
-            {
-                var oldState = State;
-
-                Logger.LogDebug($"[{oldState}] --> [{newState}]");
-
-                oldState.Dispose();
-
-                State = newState ?? throw new ArgumentNullException(nameof(newState));
-
-                StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
-
-                return Task.CompletedTask;
-            }
-
-            await ExecuteWithinTransitionLock(InternalTransition).ConfigureAwait(false);
-
-            return await newState.GetNextStateAsync(cancellation).ConfigureAwait(false);
-        }
-
-        internal void NotifyAssociationAccepted(AssociationAcceptedEventArgs eventArgs)
-            => AssociationAccepted?.Invoke(this, eventArgs);
-
-        internal void NotifyAssociationRejected(AssociationRejectedEventArgs eventArgs)
-            => AssociationRejected?.Invoke(this, eventArgs);
-
-        internal void NotifyAssociationRequestTimedOut(AssociationRequestTimedOutEventArgs eventArgs)
-            => AssociationRequestTimedOut?.Invoke(this, eventArgs);
-
-        internal void NotifyAssociationReleased()
-            => AssociationReleased?.Invoke(this, EventArgs.Empty);
-
-        internal void NotifyRequestTimedOut(RequestTimedOutEventArgs eventArgs)
-            => RequestTimedOut?.Invoke(this, eventArgs);
-
-        internal Task OnSendQueueEmptyAsync()
-            => State.OnSendQueueEmptyAsync();
-
-        internal Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response)
-            => State.OnRequestCompletedAsync(request, response);
-
-        internal Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout)
-            => State.OnRequestTimedOutAsync(request, timeout);
-
-        internal Task OnReceiveAssociationAcceptAsync(DicomAssociation association)
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationAcceptAsync(association));
-
-        internal Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationRejectAsync(result, source, reason));
-
-        internal Task OnReceiveAssociationReleaseResponseAsync()
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAssociationReleaseResponseAsync());
-
-        internal Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason)
-            => ExecuteWithinTransitionLock(() => State.OnReceiveAbortAsync(source, reason));
-
-        internal Task OnConnectionClosedAsync(Exception exception)
-            => ExecuteWithinTransitionLock(() => State.OnConnectionClosedAsync(exception));
-
-        internal async Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
-        {
-            if (OnCStoreRequest == null)
-            {
-                return new DicomCStoreResponse(request, DicomStatus.StorageStorageOutOfResources);
-            }
-
-            return await OnCStoreRequest(request).ConfigureAwait(false);
-        }
-
-        internal async Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
-        {
-            if (OnNEventReportRequest == null)
-            {
-                return new DicomNEventReportResponse(request, DicomStatus.AttributeListError);
-            }
-
-            return await OnNEventReportRequest(request).ConfigureAwait(false);
+            
+            _logger = loggerFactory.CreateLogger("FellowOakDicom.Network");
+            _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
+            _state = DicomClientIdleState.Instance;
+            _isSending = 0;
+            _hasMoreRequests = new Tasks.AsyncManualResetEvent();
         }
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
@@ -351,51 +247,418 @@ namespace FellowOakDicom.Network.Client
         }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
-            => State.AddRequestAsync(dicomRequest);
+        {
+            QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
+            
+            _hasMoreRequests.Set();
+            
+            return Task.CompletedTask;
+        }
 
-        public async Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
+        public Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
         {
             if (dicomRequests == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            var requests = dicomRequests.ToList();
-
-            if (!requests.Any())
+            foreach (DicomRequest dicomRequest in dicomRequests)
             {
-                return;
-            }
+                if (dicomRequest == null)
+                {
+                    continue;
+                }
 
-            foreach (var request in requests)
-            {
-                await State.AddRequestAsync(request).ConfigureAwait(false);
+                QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
             }
+            
+            _hasMoreRequests.Set();
+
+            return Task.CompletedTask;
         }
 
-        public async Task AddRequestsAsync(params DicomRequest[] requests)
-        {
-            if (requests == null)
-            {
-                return;
-            }
 
-            if (!requests.Any())
-            {
-                return;
-            }
 
-            foreach (var request in requests)
-            {
-                await State.AddRequestAsync(request).ConfigureAwait(false);
-            }
-        }
-
-        public async Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
+        public async Task SendAsync(CancellationToken cancellationToken = default,
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)
         {
-            var cancellation = new DicomClientCancellation(cancellationToken, cancellationMode);
-            await State.SendAsync(cancellation).ConfigureAwait(false);
+            if (Interlocked.CompareExchange(ref _isSending, 1, 0) != 0)
+            {
+                // Already sending
+                return;
+            }
+            
+            try
+            {
+                var exception = (Exception)null;
+                var maximumNumberOfRequestsPerAssociation = ClientOptions.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
+                var maximumNumberOfConsecutiveTimedOutAssociationRequests = ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests;
+                var numberOfConsecutiveTimedOutAssociationRequests = 0;
+                var requestsToRetry = new List<DicomRequest>();
+
+                while (!cancellationToken.IsCancellationRequested
+                       && !(QueuedRequests.IsEmpty && requestsToRetry.Count == 0)
+                       && exception == null)
+                {
+                    IAdvancedDicomClientConnection connection = null;
+                    IAdvancedDicomClientAssociation association = null;
+                    try
+                    {
+                        var connectionRequest = new AdvancedDicomClientConnectionRequest
+                        {
+                            Logger = Logger,
+                            FallbackEncoding = FallbackEncoding,
+                            DicomServiceOptions = ServiceOptions,
+                            NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                            {
+                                Host = Host,
+                                Port = Port,
+                                UseTls = UseTls,
+                                NoDelay = ServiceOptions.TcpNoDelay,
+                                IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
+                                Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
+                            },
+                            RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers
+                            {
+                                OnCStoreRequest = OnCStoreRequest,
+                                OnNEventReportRequest = OnNEventReportRequest
+                            }
+                        };
+
+                        SetState(DicomClientConnectState.Instance);
+
+                        connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
+
+                        SetState(DicomClientRequestAssociationState.Instance);
+
+                        var requests = new List<DicomRequest>();
+                        requests.AddRange(requestsToRetry);
+                        requestsToRetry.Clear();
+                        var numberOfRequests = requests.Count;
+
+                        while (numberOfRequests < maximumNumberOfRequestsPerAssociation
+                               && QueuedRequests.TryDequeue(out var request))
+                        {
+                            requests.Add(request.Value);
+                            numberOfRequests++;
+                        }
+                        
+                        _hasMoreRequests.Reset();
+
+                        var associationRequest = new AdvancedDicomClientAssociationRequest
+                        {
+                            CallingAE = CallingAe,
+                            CalledAE = CalledAe,
+                            MaxAsyncOpsInvoked = AsyncInvoked,
+                            MaxAsyncOpsPerformed = AsyncPerformed,
+                        };
+
+                        foreach (var request in requests)
+                        {
+                            associationRequest.PresentationContexts.AddFromRequest(request);
+                            associationRequest.ExtendedNegotiations.AddFromRequest(request);
+                        }
+
+                        foreach (var context in AdditionalPresentationContexts)
+                        {
+                            associationRequest.PresentationContexts.Add(
+                                context.AbstractSyntax,
+                                context.UserRole,
+                                context.ProviderRole,
+                                context.GetTransferSyntaxes().ToArray());
+                        }
+
+                        foreach (var extendedNegotiation in AdditionalExtendedNegotiations)
+                        {
+                            associationRequest.ExtendedNegotiations.AddOrUpdate(
+                                extendedNegotiation.SopClassUid,
+                                extendedNegotiation.RequestedApplicationInfo,
+                                extendedNegotiation.ServiceClassUid,
+                                extendedNegotiation.RelatedGeneralSopClasses.ToArray());
+                        }
+
+                        using (var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)))
+                        using (var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken))
+                        {
+                            try
+                            {
+                                association = await connection.OpenAssociationAsync(associationRequest, combinedCts.Token).ConfigureAwait(false);
+                                numberOfConsecutiveTimedOutAssociationRequests = 0;
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                // If the original cancellation token triggered, stop sending ASAP
+                                if (cancellationToken.IsCancellationRequested)
+                                {
+                                    throw;
+                                }
+
+                                // If the original cancellation token did not trigger, it must have been a timeout that lead us here
+                                // we keep track of how many consecutive times this happens
+                                numberOfConsecutiveTimedOutAssociationRequests++;
+                                
+                                AssociationRequestTimedOut?.Invoke(this, new AssociationRequestTimedOutEventArgs(
+                                    ClientOptions.AssociationRequestTimeoutInMs,
+                                    numberOfConsecutiveTimedOutAssociationRequests,
+                                    maximumNumberOfConsecutiveTimedOutAssociationRequests
+                                ));
+
+                                if (numberOfConsecutiveTimedOutAssociationRequests >= maximumNumberOfConsecutiveTimedOutAssociationRequests)
+                                {
+                                    // stop sending when we reach the limit
+                                    throw new DicomAssociationRequestTimedOutException(
+                                        ClientOptions.AssociationRequestTimeoutInMs,
+                                numberOfConsecutiveTimedOutAssociationRequests
+                                    );
+                                }
+
+                                // Save the requests to retry, otherwise they are lost because we already extracted them from QueuedRequests
+                                requestsToRetry.AddRange(requests);
+
+                                // try again
+                                continue;
+                            }
+                        }
+
+                        AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
+
+                        while (requests.Count > 0 && exception == null)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            SetState(DicomClientSendingRequestsState.Instance);
+
+                            _logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
+                            var sendTasks = new List<Task>(requests.Count);
+                            
+                            // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
+                            foreach(var request in requests)
+                            {
+                                sendTasks.Add(SendRequestAsync(association, request, cancellationToken));
+                            }
+
+                            // Now wait for the requests to complete
+                            await Task.WhenAll(sendTasks).ConfigureAwait(false);
+                            
+                            requests.Clear();
+
+                            // If more requests were queued since we started, try to send those too over the same association
+                            while (numberOfRequests < maximumNumberOfRequestsPerAssociation
+                                   && QueuedRequests.TryDequeue(out var request))
+                            {
+                                cancellationToken.ThrowIfCancellationRequested();
+
+                                requests.Add(request.Value);
+
+                                numberOfRequests++;
+                            }
+
+                            _hasMoreRequests.Reset();
+                            
+                            // Linger behavior: if the queue is empty, wait for a bit before closing the association
+                            if (requests.Count == 0
+                                && numberOfRequests < maximumNumberOfRequestsPerAssociation
+                                && ClientOptions.AssociationLingerTimeoutInMs > 0)
+                            {
+                                _logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
+
+                                SetState(DicomClientLingeringState.Instance);
+                                
+                                await Task.WhenAny(
+                                    _hasMoreRequests.WaitAsync(),
+                                    Task.Delay(ClientOptions.AssociationLingerTimeoutInMs, cancellationToken)
+                                ).ConfigureAwait(false);
+                                
+                                // Add requests that were added after lingering
+                                while (numberOfRequests < maximumNumberOfRequestsPerAssociation
+                                       && QueuedRequests.TryDequeue(out var request))
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+
+                                    requests.Add(request.Value);
+
+                                    numberOfRequests++;
+                                }
+                                
+                                _hasMoreRequests.Reset();
+                            }
+                        }
+
+                        await ReleaseAssociationAsync(association).ConfigureAwait(false);
+                    }
+                    catch (DicomAssociationRejectedException e)
+                    {
+                        numberOfConsecutiveTimedOutAssociationRequests = 0;
+                        
+                        AssociationRejected?.Invoke(this, new AssociationRejectedEventArgs(e.RejectResult, e.RejectSource, e.RejectReason));
+
+                        exception = e;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        _logger.Warn("DICOM request sending was cancelled");
+
+                        if (association != null && association.IsDisposed == false)
+                        {
+                            switch (cancellationMode)
+                            {
+                                case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
+                                    await ReleaseAssociationAsync(association).ConfigureAwait(false);
+                                    
+                                    break;
+                                case DicomClientCancellationMode.ImmediatelyAbortAssociation:
+                                    await AbortAssociationAsync(association).ConfigureAwait(false);
+
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(cancellationMode), cancellationMode, null);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error("An error occurred while sending DICOM requests: {Error}", e);
+
+                        exception = e;
+
+                        if (association != null && association.IsDisposed == false)
+                        {
+                            await AbortAssociationAsync(association).ConfigureAwait(false);
+                        }
+                    }
+                    finally
+                    {
+                        association?.Dispose();
+                        connection?.Dispose();
+                    }
+                }
+
+                if (exception != null)
+                {
+                    ExceptionDispatchInfo.Capture(exception).Throw();
+                }
+            }
+            finally
+            {
+                SetState(DicomClientIdleState.Instance);
+
+                _isSending = 0;
+            }
+        }
+
+        /// <summary>
+        /// Helper method that sends a DICOM request over an advanced DICOM association
+        /// Timeout exceptions are caught and emitted as an event for backwards compatibility
+        /// </summary>
+        /// <param name="association">The association over which to send the request</param>
+        /// <param name="request">The request to send</param>
+        /// <param name="cancellationToken">The cancellation token that stops the entire process</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="DicomResponse"/></returns>
+        /// <exception cref="ArgumentNullException">When <paramref name="association"/> or <paramref name="request"/> are null</exception>
+        private async Task SendRequestAsync(IAdvancedDicomClientAssociation association, DicomRequest request, CancellationToken cancellationToken)
+        {
+            if (association == null)
+            {
+                throw new ArgumentNullException(nameof(association));
+            }
+
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            
+            _logger.Debug("{Request} is being enqueued for sending", request.ToString());
+
+            try
+            {
+                await using var enumerator = association.SendRequestAsync(request, cancellationToken).GetAsyncEnumerator(cancellationToken);
+
+                while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                _logger.Debug("{Request} has completed", request.ToString());
+            }
+            catch (DicomRequestTimedOutException e)
+            {
+                RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
+
+                _logger.Debug("{Request} has timed out", request.ToString());
+            }
+        }
+        
+        /// <summary>
+        /// Helper method that 'sets' the state of the DicomClient<br/>
+        /// This exists for backwards compatibility reasons. In the past, DicomClient was implemented using a state pattern.<br/>
+        /// While most of this was hidden away for consumers, DicomClient did expose a <see cref="StateChanged"/> event for expert scenarios.
+        /// In order to not break the existing consumers of this event, we still expose this event and properly emit the correct "states", even though the states itself are now empty
+        /// </summary>
+        /// <param name="state">The new state that should be set</param>
+        [Obsolete]
+        private void SetState(DicomClientState state)
+        {
+            DicomClientState oldState;
+            DicomClientState newState = state;
+            
+            oldState = _state;
+
+            if (oldState == newState)
+            {
+                return;
+            }
+
+            _state = state;
+            
+            _logger.Debug($"[{oldState}] --> [{newState}]");
+
+            StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
+        }
+
+        private async Task ReleaseAssociationAsync(IAdvancedDicomClientAssociation association)
+        {
+            SetState(DicomClientReleaseAssociationState.Instance);
+
+            using (var cts = new CancellationTokenSource(ClientOptions.AssociationReleaseTimeoutInMs))
+            {
+                try
+                {
+                    await association.ReleaseAsync(cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Ignored
+                }
+                finally
+                {
+                    association.Dispose();
+                }
+            }
+
+            AssociationReleased?.Invoke(this, EventArgs.Empty);
+        }
+        
+        private async Task AbortAssociationAsync(IAdvancedDicomClientAssociation association)
+        {
+            SetState(DicomClientAbortState.Instance);
+
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(100)))
+            {
+                try
+                {
+                    await association.AbortAsync(cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Ignored
+                }
+                finally
+                {
+                    association.Dispose();
+                }
+            }
+            
+            AssociationReleased?.Invoke(this, EventArgs.Empty);
         }
     }
 }
