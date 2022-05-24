@@ -14,7 +14,7 @@ To use NLog, Serilog or other logging libraries, simply configure them as you wo
 
 ## Backwards compatibility configuration
 In the past, *fo-dicom* used custom abstractions for logging called `FellowOakDicom.Log.ILogManager` and `FellowOakDicom.Log.ILogger`
-Using these historical abstractions is still supported, but they are marked obsolete.
+Using these historical abstractions is still supported, but they have moved to the `FellowOakDicom.Log.Obsolete` namespace and are marked obsolete.
 
 It is possible to change the log manager with the following code:
 ```
