@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -131,7 +132,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public ILogger Logger
         {
-            get => _logger ?? (_logger = _loggerFactory.CreateLogger("FellowOakDicom.Network"));
+            get => _logger ??= _loggerFactory.CreateLogger(LogCategories.Network);
             set => _logger  = value;
         }
 

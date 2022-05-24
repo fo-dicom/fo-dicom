@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -360,6 +361,6 @@ namespace FellowOakDicom
 
         private static ILogger Logger =>
             Setup.ServiceProvider.GetRequiredService<ILoggerFactory>()
-                .CreateLogger("FellowOakDicom.DicomEncoding");
+                .CreateLogger(LogCategories.Encoding);
     }
 }

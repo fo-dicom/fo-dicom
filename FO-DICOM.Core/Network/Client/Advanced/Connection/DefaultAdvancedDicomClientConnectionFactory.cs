@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -73,7 +74,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             
             cancellationToken.ThrowIfCancellationRequested();
 
-            request.Logger ??= _loggerFactory.CreateLogger("Dicom.Network");
+            request.Logger ??= _loggerFactory.CreateLogger(LogCategories.Network);
 
             request.DicomServiceOptions ??= _defaultDicomServiceOptions.Value;
 

@@ -10,8 +10,6 @@ using FellowOakDicom.IO;
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
 namespace FellowOakDicom.Printing
 {
@@ -24,7 +22,7 @@ namespace FellowOakDicom.Printing
         #region Properties and Attributes
 
         private static ILogger _logger;
-        private static ILogger Logger => _logger ?? (_logger = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("FellowOakDicom.Printing"));
+        private static ILogger Logger => _logger ??= Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(LogCategories.Printing);
 
         private readonly FilmSession _filmSession = null;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace FellowOakDicom.Log
+namespace FellowOakDicom.Log.Obsolete
 {
     [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     internal class FellowOakDicomLoggerProvider: ILoggerProvider

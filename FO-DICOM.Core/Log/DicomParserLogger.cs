@@ -10,17 +10,15 @@ using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Log
 {
-
     public class DicomParserLogger : IDicomReaderObserver
     {
+        private readonly ILogger _log;
 
-        private ILogger _log;
-
-        private LogLevel _level;
+        private readonly LogLevel _level;
 
         private int _depth;
 
-        private string _pad;
+        private readonly string _pad;
 
         public DicomParserLogger(ILogger log, LogLevel level)
         {

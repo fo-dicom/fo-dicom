@@ -4,9 +4,9 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using ILogger = FellowOakDicom.Log.ILogger;
-using ILogManager = FellowOakDicom.Log.ILogManager;
-using LogLevel = FellowOakDicom.Log.LogLevel;
+using ILogger = FellowOakDicom.Log.Obsolete.ILogger;
+using ILogManager = FellowOakDicom.Log.Obsolete.ILogManager;
+using LogLevel = FellowOakDicom.Log.Obsolete.LogLevel;
 
 namespace FellowOakDicom.Tests.Log
 {
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Tests.Log
             Assert.Equal(LogLevel.Info, logEntry.LogLevel);
         }
 
-        public class TestLoggerManager: ILogManager
+        public class TestLoggerManager: FellowOakDicom.Log.Obsolete.ILogManager
         {
             public readonly List<TestLogEntry> LogEntries;
 
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Tests.Log
             }
         }
 
-        public class TestLogger : ILogger
+        public class TestLogger : FellowOakDicom.Log.Obsolete.ILogger
         {
             private readonly string _name;
             private readonly List<TestLogEntry> _entries;
