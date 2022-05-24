@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using ILogger = FellowOakDicom.Log.ILogger;
 using ILogManager = FellowOakDicom.Log.ILogManager;
@@ -11,6 +10,7 @@ using LogLevel = FellowOakDicom.Log.LogLevel;
 
 namespace FellowOakDicom.Tests.Log
 {
+    [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     public class LogManagerTest
     {
         [Fact]
@@ -121,10 +121,10 @@ namespace FellowOakDicom.Tests.Log
 
         public class TestLogEntry
         {
-            public string Name { get; set; }
-            public LogLevel LogLevel { get; set; }
-            public string Msg { get; set; }
-            public object[] Args { get; set; }
+            public string Name { get; }
+            public LogLevel LogLevel { get; }
+            public string Msg { get; }
+            public object[] Args { get; }
 
             public TestLogEntry(string name, LogLevel logLevel, string msg, object[] args)
             {

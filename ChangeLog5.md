@@ -1,5 +1,5 @@
 #### 5.0.4 (TBD)
-
+* Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger, ILogManager and friends are still supported but are now marked as obsolete
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
