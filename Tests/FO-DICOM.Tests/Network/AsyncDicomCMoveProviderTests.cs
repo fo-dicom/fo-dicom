@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -63,7 +61,7 @@ namespace FellowOakDicom.Tests.Network
 
     public class AsyncDicomCMoveProvider : DicomService, IDicomServiceProvider, IDicomCMoveProvider
     {
-        public AsyncDicomCMoveProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public AsyncDicomCMoveProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {

@@ -84,10 +84,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">Network stream.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger</param>
-        /// <param name="logManager">The log manager</param>
-        /// <param name="networkManager">The network manager</param>
-        /// <param name="transcoderManager">The transcoder manager</param>
-        /// <param name="memoryProvider">The memory provider</param>
+        /// <param name="dependencies">The dependencies of this DicomService</param>
         protected DicomService(
             INetworkStream stream,
             Encoding fallbackEncoding,
@@ -270,7 +267,7 @@ namespace FellowOakDicom.Network
             }
             else
             {
-                Logger?.Warn($"DICOM service {GetType().FullName} was not disposed correctly, but was garbage collected instead");
+                Logger?.LogWarning("DICOM service {DicomServiceType} was not disposed correctly, but was garbage collected instead", GetType().FullName);
             }
         }
 
@@ -475,7 +472,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            Logger.Debug("Read 0 bytes from network stream while reading PDU header, connection will be marked as closed");
+                            Logger.LogDebug("Read 0 bytes from network stream while reading PDU header, connection will be marked as closed");
                             await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
@@ -511,7 +508,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            Logger.Debug("Read 0 bytes from network stream while reading PDU, connection will be marked as closed");
+                            Logger.LogDebug("Read 0 bytes from network stream while reading PDU, connection will be marked as closed");
                             await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
@@ -679,15 +676,15 @@ namespace FellowOakDicom.Network
                 catch (ObjectDisposedException e)
                 {
                     // silently ignore
-                    Logger.Debug("An 'object disposed' exception occurred while listening to the network stream. " +
-                                 "This can happen when the connection is being closed. {Exception}", e);
+                    Logger.LogDebug(e, "An 'object disposed' exception occurred while listening to the network stream. " +
+                                 "This can happen when the connection is being closed. ");
                     await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (NullReferenceException e)
                 {
                     // connection already closed; silently ignore
-                    Logger.Debug("A 'null reference' exception occurred while listening to the network stream. " +
-                                 "This can happen when the connection is already closed. {Exception}", e);
+                    Logger.LogDebug(e, "A 'null reference' exception occurred while listening to the network stream. " +
+                                 "This can happen when the connection is already closed. ");
                     await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (IOException e)

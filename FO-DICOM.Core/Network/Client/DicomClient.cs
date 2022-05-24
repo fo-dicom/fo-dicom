@@ -1,7 +1,6 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
@@ -90,11 +89,6 @@ namespace FellowOakDicom.Network.Client
         /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
         /// </summary>
         bool IsSendRequired { get; }
-
-        /// <summary>
-        /// The factory that is responsible for creating loggers
-        /// </summary>
-        ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
         /// Triggers when an association is accepted
@@ -428,7 +422,7 @@ namespace FellowOakDicom.Network.Client
 
                             SetState(DicomClientSendingRequestsState.Instance);
 
-                            _logger.Debug("Queueing {NumberOfRequests} requests", requests.Count);
+                            _logger.LogDebug("Queueing {NumberOfRequests} requests", requests.Count);
                             var sendTasks = new List<Task>(requests.Count);
                             
                             // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
@@ -460,7 +454,7 @@ namespace FellowOakDicom.Network.Client
                                 && numberOfRequests < maximumNumberOfRequestsPerAssociation
                                 && ClientOptions.AssociationLingerTimeoutInMs > 0)
                             {
-                                _logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
+                                _logger.LogDebug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
 
                                 SetState(DicomClientLingeringState.Instance);
                                 
@@ -496,7 +490,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (OperationCanceledException)
                     {
-                        _logger.Warn("DICOM request sending was cancelled");
+                        _logger.LogWarning("DICOM request sending was cancelled");
 
                         if (association != null && association.IsDisposed == false)
                         {
@@ -517,7 +511,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (Exception e)
                     {
-                        _logger.Error("An error occurred while sending DICOM requests: {Error}", e);
+                        _logger.LogError(e, "An error occurred while sending DICOM requests");
 
                         exception = e;
 
@@ -567,7 +561,7 @@ namespace FellowOakDicom.Network.Client
                 throw new ArgumentNullException(nameof(request));
             }
             
-            _logger.Debug("{Request} is being enqueued for sending", request.ToString());
+            _logger.LogDebug("{Request} is being enqueued for sending", request.ToString());
 
             try
             {
@@ -578,13 +572,13 @@ namespace FellowOakDicom.Network.Client
                     cancellationToken.ThrowIfCancellationRequested();
                 }
 
-                _logger.Debug("{Request} has completed", request.ToString());
+                _logger.LogDebug("{Request} has completed", request.ToString());
             }
             catch (DicomRequestTimedOutException e)
             {
                 RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
 
-                _logger.Debug("{Request} has timed out", request.ToString());
+                _logger.LogDebug("{Request} has timed out", request.ToString());
             }
         }
         
@@ -610,7 +604,7 @@ namespace FellowOakDicom.Network.Client
 
             _state = state;
             
-            _logger.Debug($"[{oldState}] --> [{newState}]");
+            _logger.LogDebug("[{OldState}] --> [{NewState}]", oldState, newState);
 
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
         }

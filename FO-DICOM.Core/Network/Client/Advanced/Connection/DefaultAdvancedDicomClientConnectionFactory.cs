@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
@@ -48,18 +48,18 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
     public class DefaultAdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
     {
         private readonly INetworkManager _networkManager;
-        private readonly ILogManager _logManager;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly DicomServiceDependencies _dicomServiceDependencies;
         private readonly IOptions<DicomServiceOptions> _defaultDicomServiceOptions;
 
         public DefaultAdvancedDicomClientConnectionFactory(
             INetworkManager networkManager, 
-            ILogManager logManager,
+            ILoggerFactory loggerFactory,
             IOptions<DicomServiceOptions> defaultDicomServiceOptions,
             DicomServiceDependencies dicomServiceDependencies)
         {
             _networkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
-            _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _defaultDicomServiceOptions = defaultDicomServiceOptions;
             _dicomServiceDependencies = dicomServiceDependencies ?? throw new ArgumentNullException(nameof(dicomServiceDependencies));
         }
@@ -73,7 +73,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             
             cancellationToken.ThrowIfCancellationRequested();
 
-            request.Logger ??= _logManager.GetLogger("Dicom.Network");
+            request.Logger ??= _loggerFactory.CreateLogger("Dicom.Network");
 
             request.DicomServiceOptions ??= _defaultDicomServiceOptions.Value;
 
