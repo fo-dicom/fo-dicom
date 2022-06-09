@@ -448,16 +448,10 @@ namespace FellowOakDicom.Network.Client
                                    && connection.CanStillProcessPDataTF)
                             {
                                 var nextRequest = requestsToSend.Dequeue();
-                                parallelRequests.Add(SendRequestAsync(association, nextRequest, cancellationToken));
-                                // Wait until the request is fully sent
-                                try
-                                {
-                                    await nextRequest.AllPDUsSent.ConfigureAwait(false);
-                                }
-                                catch (Exception)
-                                {
-                                    // Ignored
-                                }
+                                var sendTask = SendRequestAsync(association, nextRequest, cancellationToken);
+                                parallelRequests.Add(sendTask);
+                                // Wait until the request is fully sent or until the request completes with an error or cancellation
+                                await Task.WhenAny(nextRequest.AllPDUsSent, sendTask).ConfigureAwait(false);
                             }
                             
                             while (parallelRequests.Count > 0)
@@ -481,16 +475,10 @@ namespace FellowOakDicom.Network.Client
                                 if (requestsToSend.Count > 0 && connection.CanStillProcessPDataTF)
                                 {
                                     var nextRequest = requestsToSend.Dequeue();
-                                    parallelRequests.Add(SendRequestAsync(association, nextRequest, cancellationToken));
-                                    // Wait until the request is fully sent
-                                    try
-                                    {
-                                        await nextRequest.AllPDUsSent.ConfigureAwait(false);
-                                    }
-                                    catch (Exception)
-                                    {
-                                        // Ignored
-                                    }
+                                    var sendTask = SendRequestAsync(association, nextRequest, cancellationToken);
+                                    parallelRequests.Add(sendTask);
+                                    // Wait until the request is fully sent or until the request completes with an error or cancellation
+                                    await Task.WhenAny(nextRequest.AllPDUsSent, sendTask).ConfigureAwait(false);
                                 }
                             }
                             

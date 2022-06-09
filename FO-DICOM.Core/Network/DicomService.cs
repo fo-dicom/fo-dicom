@@ -1278,6 +1278,8 @@ namespace FellowOakDicom.Network
                 }
 
                 Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
+
+                msg.NotAllPDUsWereSentSuccessfully();
             }
             else
             {
@@ -1392,15 +1394,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    if (e is OperationCanceledException operationCanceledException)
-                    {
-                        msg.NotAllPDUsWereSentBecauseTheyWereCancelled(operationCanceledException.CancellationToken);
-                    }
-                    else
-                    {
-                        msg.NotAllPDUsWereSentSuccessfully(e);
-                    }
-
+                    msg.NotAllPDUsWereSentSuccessfully();
                     Logger.Error("Exception sending DIMSE: {@error}", e);
                     throw new DicomNetworkException($"Failed to send DICOM message {msg}", e);
                 }
@@ -1456,12 +1450,11 @@ namespace FellowOakDicom.Network
                                 lock (_lock)
                                 {
                                     _pending.Remove(timedOutPendingRequest);
-
-                                    timedOutPendingRequest.NotAllPDUsWereSentSuccessfully(new DicomRequestTimedOutException(timedOutPendingRequest, requestTimeout));
                                     
                                     if (timedOutPendingRequest.AllPDUsSent.Status != TaskStatus.RanToCompletion)
                                     {
                                         _canStillProcessPDataTF = false;
+                                        timedOutPendingRequest.NotAllPDUsWereSentSuccessfully();
                                     }
                                 }
 
@@ -1501,6 +1494,10 @@ namespace FellowOakDicom.Network
                     {
                         _pduQueue.Clear();
                         _msgQueue.Clear();
+                        foreach (var req in _pending)
+                        {
+                            req.NotAllPDUsWereSentSuccessfully();
+                        }
                         _pending.Clear();
                     }
 

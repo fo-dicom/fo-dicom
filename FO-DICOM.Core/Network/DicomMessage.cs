@@ -141,12 +141,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the timestamp of when the last PDU was sent
         /// </summary>
-        public DateTime? LastPDUSent { get; set; }
+        internal DateTime? LastPDUSent { get; set; }
 
         /// <summary>
         /// Gets or sets a task that will complete when all the PDUs of this DICOM message have been sent
         /// </summary>
-        public Task AllPDUsSent => _allPDUsSentTCS.Task;
+        internal Task AllPDUsSent => _allPDUsSentTCS.Task;
 
         /// <summary>
         /// Gets or sets the timestamp of when the last response with status 'Pending' was received
@@ -179,8 +179,7 @@ namespace FellowOakDicom.Network
         }
 
         internal void AllPDUsWereSentSuccessfully() => _allPDUsSentTCS.TrySetResult(true);
-        internal void NotAllPDUsWereSentSuccessfully(Exception exception) => _allPDUsSentTCS.TrySetException(exception);
-        internal void NotAllPDUsWereSentBecauseTheyWereCancelled(CancellationToken cancellationToken) => _allPDUsSentTCS.TrySetCanceled(cancellationToken);
+        internal void NotAllPDUsWereSentSuccessfully() => _allPDUsSentTCS.TrySetResult(false);
 
         /// <summary>
         /// Formatted output of the DICOM message.
