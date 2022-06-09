@@ -13,17 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Bugs\GH553.cs" />
-    <Compile Remove="Network\TestDicomServices\PendingAsyncDicomCGetProvider.cs" />
-    <Compile Remove="Network\TestDicomServices\PendingAsyncDicomCFindProvider.cs" />
-    <Compile Remove="Network\TestDicomServices\ImmediateSuccessAsyncDicomCGetProvider.cs" />
-    <Compile Remove="Network\TestDicomServices\ImmediateSuccessAsyncDicomCFindProvider.cs" />
-    <Compile Remove="Network\TestDicomServices\AsyncDicomCStoreProviderPreferingUncompressedTS.cs" />
-    <Compile Remove="Network\TestDicomServices\AsyncDicomCStoreProvider.cs" />
-    <Compile Remove="Network\TestDicomServices\AsyncDicomCMoveProvider.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
     <PackageReference Include="coverlet.collector" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
@@ -112,10 +101,6 @@
     <None Update="Test Data\minimumdict.xml.gz">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Network\TestDicomServices" />
   </ItemGroup>
 
 </Project>
