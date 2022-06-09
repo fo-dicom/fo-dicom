@@ -1366,6 +1366,11 @@ namespace FellowOakDicom.Network
                     await pDataStream.FlushAsync(CancellationToken.None);
                     
                     msg.LastPDUSent = DateTime.Now;
+                    
+                    if (msg is DicomRequest request)
+                    {
+                        request.OnRequestSent?.Invoke(request, new DicomRequest.OnRequestSentEventArgs());
+                    }
                 }
                 catch (Exception e)
                 {
