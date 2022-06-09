@@ -1,9 +1,12 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Tasks;
 using System;
 using System.Text;
-using FellowOakDicom.Log;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -16,6 +19,7 @@ namespace FellowOakDicom.Network
         #region FIELDS
 
         private DicomDataset _dataset;
+        private readonly TaskCompletionSource<bool> _allPDUsSentTCS = TaskCompletionSourceFactory.Create<bool>();
 
         #endregion
 
@@ -34,7 +38,7 @@ namespace FellowOakDicom.Network
         /// <param name="command">
         /// The DICOM dataset representing the message command.
         /// </param>
-        public DicomMessage(DicomDataset command)
+        public DicomMessage(DicomDataset command): this()
         {
             Command = command;
         }
@@ -140,6 +144,11 @@ namespace FellowOakDicom.Network
         public DateTime? LastPDUSent { get; set; }
 
         /// <summary>
+        /// Gets or sets a task that will complete when all the PDUs of this DICOM message have been sent
+        /// </summary>
+        public Task AllPDUsSent => _allPDUsSentTCS.Task;
+
+        /// <summary>
         /// Gets or sets the timestamp of when the last response with status 'Pending' was received
         /// </summary>
         public DateTime? LastPendingResponseReceived { get; set; }
@@ -168,6 +177,10 @@ namespace FellowOakDicom.Network
 
             return false;
         }
+
+        internal void AllPDUsWereSentSuccessfully() => _allPDUsSentTCS.TrySetResult(true);
+        internal void NotAllPDUsWereSentSuccessfully(Exception exception) => _allPDUsSentTCS.TrySetException(exception);
+        internal void NotAllPDUsWereSentBecauseTheyWereCancelled(CancellationToken cancellationToken) => _allPDUsSentTCS.TrySetCanceled(cancellationToken);
 
         /// <summary>
         /// Formatted output of the DICOM message.

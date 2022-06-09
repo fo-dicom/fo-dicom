@@ -73,6 +73,8 @@ namespace FellowOakDicom.Network
         protected IFileReference _dimseStreamFile;
 
         private int _isCheckingForTimeouts = 0;
+        
+        private bool _canStillProcessPDataTF;
 
         #endregion
 
@@ -84,10 +86,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">Network stream.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger</param>
-        /// <param name="logManager">The log manager</param>
-        /// <param name="networkManager">The network manager</param>
-        /// <param name="transcoderManager">The transcoder manager</param>
-        /// <param name="memoryProvider">The memory provider</param>
+        /// <param name="dependencies">The dependencies of this DICOM service</param>
         protected DicomService(
             INetworkStream stream,
             Encoding fallbackEncoding,
@@ -95,7 +94,8 @@ namespace FellowOakDicom.Network
             DicomServiceDependencies dependencies)
         {
             _isDisconnectedFlag = new AsyncManualResetEvent();
-
+            _canStillProcessPDataTF = true;
+            _isInitialized = false;
             _network = stream;
             _memoryProvider = dependencies.MemoryProvider;
             _writeStream = new BufferedStream(_network.AsStream());
@@ -114,8 +114,6 @@ namespace FellowOakDicom.Network
             TranscoderManager = dependencies.TranscoderManager ?? throw new ArgumentNullException(nameof(dependencies.TranscoderManager));
 
             Options = new DicomServiceOptions();
-
-            _isInitialized = false;
         }
         
         #endregion
@@ -191,6 +189,11 @@ namespace FellowOakDicom.Network
                 }
             }
         }
+        
+        /// <summary>
+        /// Gets whether or not the connection can still process P-DATA-TF
+        /// </summary>
+        public bool CanStillProcessPDataTF => _canStillProcessPDataTF;
 
         /// <summary>
         /// Gets or sets the maximum number of PDUs in queue.
@@ -378,6 +381,13 @@ namespace FellowOakDicom.Network
 
             lock (_lock)
             {
+                if (pdu is PDataTF && !_canStillProcessPDataTF)
+                {
+                    throw new DicomNetworkException(
+                        "Cannot write P-DATA-TF over current DICOM association because a previous P-DATA-TF timed out before it was sent completely"
+                    );
+                }
+                
                 _pduQueue.Enqueue(pdu);
                 if (_pduQueue.Count >= MaximumPDUsInQueue)
                 {
@@ -413,6 +423,13 @@ namespace FellowOakDicom.Network
                     {
                         _pduQueueWatcher.Set();
                     }
+                }
+                
+                if (pdu is PDataTF && !_canStillProcessPDataTF)
+                {
+                    throw new DicomNetworkException(
+                        "Cannot write P-DATA-TF over current DICOM association because a previous P-DATA-TF timed out before it was sent completely"
+                    );
                 }
 
                 if (Options.LogDataPDUs && pdu is PDataTF)
@@ -1366,7 +1383,8 @@ namespace FellowOakDicom.Network
                     await pDataStream.FlushAsync(CancellationToken.None);
                     
                     msg.LastPDUSent = DateTime.Now;
-                    
+                    msg.AllPDUsWereSentSuccessfully();
+
                     if (msg is DicomRequest request)
                     {
                         request.OnRequestSent?.Invoke(request, new DicomRequest.OnRequestSentEventArgs());
@@ -1374,6 +1392,15 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
+                    if (e is OperationCanceledException operationCanceledException)
+                    {
+                        msg.NotAllPDUsWereSentBecauseTheyWereCancelled(operationCanceledException.CancellationToken);
+                    }
+                    else
+                    {
+                        msg.NotAllPDUsWereSentSuccessfully(e);
+                    }
+
                     Logger.Error("Exception sending DIMSE: {@error}", e);
                     throw new DicomNetworkException($"Failed to send DICOM message {msg}", e);
                 }
@@ -1429,6 +1456,13 @@ namespace FellowOakDicom.Network
                                 lock (_lock)
                                 {
                                     _pending.Remove(timedOutPendingRequest);
+
+                                    timedOutPendingRequest.NotAllPDUsWereSentSuccessfully(new DicomRequestTimedOutException(timedOutPendingRequest, requestTimeout));
+                                    
+                                    if (timedOutPendingRequest.AllPDUsSent.Status != TaskStatus.RanToCompletion)
+                                    {
+                                        _canStillProcessPDataTF = false;
+                                    }
                                 }
 
                                 if (this is IDicomClientConnection connection)

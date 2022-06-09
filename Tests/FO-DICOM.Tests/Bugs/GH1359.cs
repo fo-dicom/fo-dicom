@@ -84,6 +84,10 @@ namespace FellowOakDicom.Tests.Bugs
 
                     responses.Enqueue(response);
                 };
+                requests[i].OnTimeout += (sender, args) =>
+                {
+                    requestsThatFailed.Enqueue(sender as DicomCStoreRequest);
+                };
             }
 
             firstRequest.OnRequestSent += (sender, args) =>
@@ -114,17 +118,26 @@ namespace FellowOakDicom.Tests.Bugs
                 }
             ));
             var client = clientFactory.Create("127.0.0.1", port, false, "AnySCU", "AnySCP");
-
+            client.ClientOptions.AssociationLingerTimeoutInMs = 0;
             client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
             client.ServiceOptions.MaxPDULength = server.Options.MaxPDULength;
             client.Logger = _logger.IncludePrefix("Client");
             client.NegotiateAsyncOps(asyncInvoked, 1);
+            Exception exception = null;
 
             // Act
             await client.AddRequestsAsync(requests).ConfigureAwait(false);
-            await client.SendAsync(CancellationToken.None).ConfigureAwait(false);
+            try
+            {
+                await client.SendAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
 
             // Assert
+            Assert.Null(exception);
             var messageIdsThatTimedOut = new HashSet<ushort>(requestsThatFailed.Select(r => r.MessageID));
             var numberOfRequestsThatSucceeded = responses.Count(r => r.Status.State == DicomState.Success);
             var numberOfRequestsThatFailed = requests.Count - numberOfRequestsThatSucceeded;
