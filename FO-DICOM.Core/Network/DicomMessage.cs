@@ -38,7 +38,7 @@ namespace FellowOakDicom.Network
         /// <param name="command">
         /// The DICOM dataset representing the message command.
         /// </param>
-        public DicomMessage(DicomDataset command): this()
+        public DicomMessage(DicomDataset command)
         {
             Command = command;
         }

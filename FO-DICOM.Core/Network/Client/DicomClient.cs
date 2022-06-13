@@ -325,11 +325,7 @@ namespace FellowOakDicom.Network.Client
 
                         SetState(DicomClientRequestAssociationState.Instance);
 
-                        var requestsToSend = new Queue<DicomRequest>();
-                        foreach (var request in requestsToRetry)
-                        {
-                            requestsToSend.Enqueue(request);
-                        }
+                        var requestsToSend = new Queue<DicomRequest>(requestsToRetry);
                         requestsToRetry.Clear();
                         var numberOfRequests = requestsToSend.Count;
 
