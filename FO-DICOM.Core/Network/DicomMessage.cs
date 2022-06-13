@@ -5,7 +5,6 @@ using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Tasks;
 using System;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
@@ -144,7 +143,8 @@ namespace FellowOakDicom.Network
         internal DateTime? LastPDUSent { get; set; }
 
         /// <summary>
-        /// Gets or sets a task that will complete when all the PDUs of this DICOM message have been sent
+        /// Gets a task that will complete when all the PDUs of this DICOM message have been sent
+        /// Important caveat: if this DICOM message is never picked up to be sent (e.g. because of connection issues) then this task never completes
         /// </summary>
         internal Task AllPDUsSent => _allPDUsSentTCS.Task;
 
