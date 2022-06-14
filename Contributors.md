@@ -79,3 +79,4 @@
 * [Björn Lundmark](https://github.com/bjorn-malmo)
 * [Josiah Vinson](https://github.com/jovinson-ms)
 * [James A Sutherland](https://github.com/jas88)
+* [Chris Conway](https://github.com/CeeJayCee)
