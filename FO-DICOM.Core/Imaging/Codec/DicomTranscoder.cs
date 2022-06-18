@@ -124,9 +124,15 @@ namespace FellowOakDicom.Imaging.Codec
                 var oldPixelData = DicomPixelData.Create(dataset, false);
                 var newPixelData = DicomPixelData.Create(newDataset, true);
 
-                for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
+                var numberOfFrames = oldPixelData.NumberOfFrames;
+                for (int i = 0; i < numberOfFrames; i++)
                 {
                     var frame = oldPixelData.GetFrame(i);
+                    if (i == numberOfFrames - 1 && frame.Size % 2 == 1 )
+                    {
+                        // add padding byte - we can assume that we always have an OB buffer if we get here
+                        frame = new RangeByteBuffer(frame, 0, (int)frame.Size + 1);
+                    }
                     newPixelData.AddFrame(frame);
                 }
 
