@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -128,9 +129,11 @@ namespace FellowOakDicom.Imaging.Codec
                 for (int i = 0; i < numberOfFrames; i++)
                 {
                     var frame = oldPixelData.GetFrame(i);
-                    if (i == numberOfFrames - 1 && frame.Size % 2 == 1 )
+                    if (i == numberOfFrames - 1 && frame.Size.IsOdd() )
                     {
-                        // add padding byte - we can assume that we always have an OB buffer if we get here
+                        // add padding byte
+                        // we don't have to care about byte swapping, as the pixel data would be 
+                        // of type OB if Big Endian would be set here
                         frame = new RangeByteBuffer(frame, 0, (int)frame.Size + 1);
                     }
                     newPixelData.AddFrame(frame);

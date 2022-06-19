@@ -19,6 +19,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static bool IsOdd(this uint v) => (v & 1) == 1;
 
+        public static bool IsOdd(this long v) => (v & 1) == 1;
+
+        public static bool IsOdd(this ulong v) => (v & 1) == 1;
+
 
         public static bool IsEven(this byte v) => (v & 1) == 0;
 
@@ -29,6 +33,10 @@ namespace FellowOakDicom.Imaging.Mathematics
         public static bool IsEven(this int v) => (v & 1) == 0;
 
         public static bool IsEven(this uint v) => (v & 1) == 0;
+
+        public static bool IsEven(this long v) => (v & 1) == 0;
+
+        public static bool IsEven(this ulong v) => (v & 1) == 0;
 
 
         public static bool IsNearlyZero(this double v) => Math.Abs(v) < Constants.Epsilon;
