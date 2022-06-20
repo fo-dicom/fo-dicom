@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2022 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System.Collections.Generic;
 using FellowOakDicom.Imaging.Codec;
 using Xunit;
 
@@ -9,43 +10,63 @@ namespace FellowOakDicom.Tests.Bugs
     [Collection("General")]
     public class GH1403
     {
+        // The test file is an RGB Dataset with 3 Rows and 3 Columns, encoded in Implicit Little Endian,
+        // so the pixel data size without padding is 3 * 3 * 3 = 27
+        private const int PixelDataSize = 27;
+
         [Theory]
-        [InlineData("GH1403.dcm")]
-        public void Transforming_FromToUncompressed_AddsPadding_IfDataSizeIsOdd(string fileName)
+        [MemberData(nameof(TransferSyntaxes))]
+        public void Transforming_FromToUncompressed_AddsPadding_IfDataSizeIsOdd(
+            DicomTransferSyntax sourceSyntax, DicomTransferSyntax destinationSyntax)
         {
-            // RGB Dataset has 3 Rows and 3 Columns, and is encoded in Implicit Little Endian
-            var file = DicomFile.Open(TestData.Resolve(fileName));
-            // pixel data is OW because of the Implicit Little Endian Transfer Syntax
-            var pixelData = file.Dataset.GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
-            // Length should be 3x3x3=27 bytes plus a padding byte
-            Assert.Equal(28u, pixelData.Length);
+            var file = DicomFile.Open(TestData.Resolve("GH1403.dcm"));
+            var dataset = file.Dataset;
 
-            var transcoder = new DicomTranscoder(file.Dataset.InternalTransferSyntax,
-                DicomTransferSyntax.ExplicitVRLittleEndian);
-            var dataset = transcoder.Transcode(file.Dataset);
-            // pixel data is OB because of Bits Allocated = 8
-            var newPixelData = dataset.GetDicomItem<DicomOtherByte>(DicomTag.PixelData);
+            // if the source syntax is not the same as in the file, first transform the dataset to it
+            if (sourceSyntax != dataset.InternalTransferSyntax)
+            {
+                dataset = TransformedDataset(dataset, sourceSyntax);
+            }
+
+            // for Implicit Little Endian, pixel data is of type OW, otherwise OB
+            if (destinationSyntax == DicomTransferSyntax.ImplicitVRLittleEndian)
+            {
+                CheckPaddingByteAfterTranscoding<DicomOtherWord>(dataset, destinationSyntax);
+            }
+            else
+            {
+                CheckPaddingByteAfterTranscoding<DicomOtherByte>(dataset, destinationSyntax);
+            }
+        }
+
+
+        // defines source and destination transfer syntaxes
+        public static readonly IEnumerable<object[]> TransferSyntaxes = new[]
+        {
+            new object[] { DicomTransferSyntax.ImplicitVRLittleEndian, DicomTransferSyntax.ExplicitVRLittleEndian },
+            new object[] { DicomTransferSyntax.ExplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian },
+            new object[]
+                { DicomTransferSyntax.ImplicitVRLittleEndian, DicomTransferSyntax.GEPrivateImplicitVRBigEndian },
+            new object[] { DicomTransferSyntax.ImplicitVRLittleEndian, DicomTransferSyntax.ExplicitVRBigEndian },
+            new object[] { DicomTransferSyntax.ExplicitVRBigEndian, DicomTransferSyntax.ImplicitVRLittleEndian }
+        };
+
+        private static void CheckPaddingByteAfterTranscoding<T>(DicomDataset dataset,
+            DicomTransferSyntax newTransferSyntax) where T : DicomElement
+        {
+            dataset = TransformedDataset(dataset, newTransferSyntax);
+            var pixelData = dataset.GetDicomItem<T>(DicomTag.PixelData);
+
             // padding byte shall still be present after the transcoding
-            Assert.Equal(28u, newPixelData.Length);
-            Assert.Equal(pixelData.Buffer.Data, newPixelData.Buffer.Data);
+            Assert.Equal(PixelDataSize + 1u, pixelData.Length);
+            Assert.Equal(0, pixelData.Buffer.Data[PixelDataSize]);
+        }
 
-            // test converting in the other direction
-            transcoder = new DicomTranscoder(dataset.InternalTransferSyntax,
-                DicomTransferSyntax.ImplicitVRLittleEndian);
-            dataset = transcoder.Transcode(file.Dataset);
-            pixelData = dataset.GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
-            Assert.Equal(28u, pixelData.Length);
-            Assert.Equal(pixelData.Buffer.Data, newPixelData.Buffer.Data);
-
-            // test converting to GEPrivateImplicitVRBigEndian
-            transcoder = new DicomTranscoder(dataset.InternalTransferSyntax,
-                DicomTransferSyntax.GEPrivateImplicitVRBigEndian);
-            dataset = transcoder.Transcode(file.Dataset);
-            // pixel data is always OB here for odd data size (otherwise it wouldn't be odd),
-            // so no byte swapping is needed
-            newPixelData = dataset.GetDicomItem<DicomOtherByte>(DicomTag.PixelData);
-            Assert.Equal(28u, newPixelData.Length);
-            Assert.Equal(pixelData.Buffer.Data, newPixelData.Buffer.Data);
+        private static DicomDataset TransformedDataset(DicomDataset dataset, DicomTransferSyntax newTransferSyntax)
+        {
+            var transcoder = new DicomTranscoder(dataset.InternalTransferSyntax,
+                newTransferSyntax);
+            return transcoder.Transcode(dataset);
         }
     }
 }
