@@ -144,6 +144,8 @@ namespace FellowOakDicom.IO.Reader
             private int _fragmentItem;
 
             private readonly object _locker;
+            
+            private DicomTag _previousTag;
 
             #endregion
 
@@ -353,12 +355,14 @@ namespace FellowOakDicom.IO.Reader
                         _tag = _entry.Tag; // Use dictionary tag
                     }
 
-                    if (_stop != null
-                        && _stop(new ParseState { Tag = _tag, SequenceDepth = _sequenceDepth }))
+                    if (_stop != null 
+                        && _stop(new ParseState { PreviousTag = _previousTag, Tag = _tag, SequenceDepth = _sequenceDepth }))
                     {
                         _result = DicomReaderResult.Stopped;
                         return false;
                     }
+                    
+                    _previousTag = _tag;
 
                     _parseStage = ParseStage.VR;
                 }

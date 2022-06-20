@@ -19,6 +19,11 @@ namespace FellowOakDicom
     public sealed class ParseState
     {
         #region PROPERTIES
+        
+        /// <summary>
+        /// Gets or sets the previous DICOM tag associated with the parse state.
+        /// </summary>
+        public DicomTag PreviousTag { get; set; }
 
         /// <summary>
         /// Gets or sets the DICOM tag associated with the parse state.
