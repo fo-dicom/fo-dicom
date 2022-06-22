@@ -1,5 +1,6 @@
 #### 5.0.4 (TBD)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
+* Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)
 * Fix overwriting of Lossy Compression ratio tag (#1400)
 
 #### 5.0.3 (2022-05-23)
