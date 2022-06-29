@@ -129,7 +129,7 @@ namespace FellowOakDicom.Imaging.Codec
                 for (int i = 0; i < numberOfFrames; i++)
                 {
                     var frame = oldPixelData.GetFrame(i);
-                    if (i == numberOfFrames - 1 && frame.Size.IsOdd() )
+                    if (i == numberOfFrames - 1 && (frame.Size * numberOfFrames).IsOdd() )
                     {
                         // add padding byte
                         // we don't have to care about byte swapping, as the pixel data would be 
