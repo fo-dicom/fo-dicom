@@ -359,6 +359,7 @@ namespace FellowOakDicom.Imaging
             /// The pixel data other byte (OB) element
             /// </summary>
             private readonly DicomOtherByte _element;
+            private readonly IByteBuffer _padingByteBuffer = new MemoryByteBuffer(new byte[1] { DicomVR.OB.PaddingValue });
 
             #endregion
 
@@ -403,10 +404,17 @@ namespace FellowOakDicom.Imaging
             /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
+
+
                 var buffer = _element.Buffer as CompositeByteBuffer ??
                     throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
 
+                buffer.Buffers.Remove(this._padingByteBuffer);
                 buffer.Buffers.Add(data);
+                if (buffer.Buffers.Count % 2 == 1)
+                {
+                    buffer.Buffers.Add(this._padingByteBuffer);
+                }
 
                 NumberOfFrames++;
             }
