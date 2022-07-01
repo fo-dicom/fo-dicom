@@ -308,11 +308,40 @@ namespace FellowOakDicom.Network
         /// <returns>The stream to write the SopInstance to.</returns>
         protected virtual void CreateCStoreReceiveStream(DicomFile file)
         {
-            _dimseStreamFile = TemporaryFile.Create();
+            if (Options.MaxCStoreMemoryStreamSize > 0)
+            {
+                _dimseStream = new MemoryStream();
+                _dimseStreamFile = null;
+            }
+            else
+            {
+                _dimseStreamFile = TemporaryFile.Create();
+                _dimseStream = _dimseStreamFile.Open();
+            }
 
-            _dimseStream = _dimseStreamFile.Open();
             file.Save(_dimseStream);
             _dimseStream.Seek(0, SeekOrigin.End);
+        }
+        
+        private void ReplaceMemoryStreamWithFileStreamWhenTooBig(int bytesToBeWritten)
+        {
+            if (_dimseStreamFile != null)
+            {
+                return;
+            }
+            if ((_dimseStream.Length + bytesToBeWritten) <= Options.MaxCStoreMemoryStreamSize)
+            {
+                return;
+            }
+
+            var tmpMsStream = _dimseStream;
+
+            _dimseStreamFile = TemporaryFile.Create();
+            _dimseStream = _dimseStreamFile.Open();
+
+            tmpMsStream.Seek(0, SeekOrigin.Begin);
+            tmpMsStream.CopyTo(_dimseStream);
+            tmpMsStream.Dispose();
         }
 
         /// <summary>
@@ -741,11 +770,20 @@ namespace FellowOakDicom.Network
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
                                 CreateCStoreReceiveStream(file);
+
+                                ReplaceMemoryStreamWithFileStreamWhenTooBig(pdv.Value.Length);
                             }
                             else
                             {
                                 _dimseStream = new MemoryStream();
                                 _dimseStreamFile = null;
+                            }
+                        }
+                        else
+                        {
+                            if (_dimse.Type == DicomCommandField.CStoreRequest)
+                            {
+                                ReplaceMemoryStreamWithFileStreamWhenTooBig(pdv.Value.Length);
                             }
                         }
                     }

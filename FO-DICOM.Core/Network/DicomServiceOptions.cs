@@ -60,6 +60,11 @@ namespace FellowOakDicom.Network
         /// Gets the maximum PDU length, increasing this may speed up the sending of C-Store requests, but beware too high values in spotty networks.
         /// </summary>
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
+        
+        /// <summary>
+        /// Gets or sets maximum size a C-Store memory stream can have before using a temp file
+        /// </summary>
+        public int MaxCStoreMemoryStreamSize { get; set; } = 1024 * 1024; //1MB
 
         public DicomServiceOptions Clone() =>
             new DicomServiceOptions
@@ -75,7 +80,8 @@ namespace FellowOakDicom.Network
                 MaxClientsAllowed = MaxClientsAllowed,
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
-                MaxPDVsPerPDU = MaxPDVsPerPDU
+                MaxPDVsPerPDU = MaxPDVsPerPDU,
+                MaxCStoreMemoryStreamSize = MaxCStoreMemoryStreamSize
             };
     }
 }
