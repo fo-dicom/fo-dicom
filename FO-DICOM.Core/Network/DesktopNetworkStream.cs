@@ -71,7 +71,7 @@ namespace FellowOakDicom.Network
             {
                 var ssl = new SslStream(stream, false);
 
-                var sslHandshake = Task.Run(() => ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false), cancellationToken);
+                var sslHandshake = Task.Run(() => ssl.AuthenticateAsServerAsync(certificate, true, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false), cancellationToken);
                 var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
