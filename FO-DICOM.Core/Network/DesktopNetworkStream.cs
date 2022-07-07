@@ -109,15 +109,21 @@ namespace FellowOakDicom.Network
             Stream stream = tcpClient.GetStream();
             if (options.UseTls)
             {
+                var userCertificateValidationCallback = options.ClientCertificateValidationCallback
+                    ?? ((sender, certificate, chain, errors) => errors == SslPolicyErrors.None || options.IgnoreSslPolicyErrors);
                 var ssl = new SslStream(
                     stream,
                     false,
-
-                    (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || options.IgnoreSslPolicyErrors);
+                    userCertificateValidationCallback);
                 ssl.ReadTimeout = (int) options.Timeout.TotalMilliseconds;
                 ssl.WriteTimeout = (int) options.Timeout.TotalMilliseconds;
 
-                var sslHandshake = Task.Run( () => ssl.AuthenticateAsClientAsync(options.Host), cancellationToken);
+                var sslProtocols = options.ClientSslProtocols ?? (SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12);
+                var checkClientCertificateRevocation = options.CheckClientCertificateRevocation ?? false;
+                var sslHandshake = options.ClientCertificates != null && options.ClientCertificates.Count > 0
+                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host, options.ClientCertificates, sslProtocols, checkClientCertificateRevocation), cancellationToken)
+                    : Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host), cancellationToken);
+                
                 var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
                 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)

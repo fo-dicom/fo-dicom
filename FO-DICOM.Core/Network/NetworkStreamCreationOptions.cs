@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FellowOakDicom.Network
 {
@@ -39,5 +42,25 @@ namespace FellowOakDicom.Network
         /// <seealso cref="System.Net.Security.SslStream.ReadTimeout"/>
         /// <seealso cref="System.Net.Security.SslStream.WriteTimeout"/>
         public TimeSpan Timeout { get; set; }
+
+        /// <summary>
+        /// The certificates to use for SSL client authentication
+        /// </summary>
+        public X509CertificateCollection ClientCertificates { get; set; }
+
+        /// <summary>
+        /// The SSL protocols that should be used
+        /// </summary>
+        public SslProtocols? ClientSslProtocols { get; set; }
+
+        /// <summary>
+        /// The SSL protocols that should be used
+        /// </summary>
+        public bool? CheckClientCertificateRevocation { get; set; } = false;
+
+        /// <summary>
+        /// The callback function that will be invoked the client certificate validation results
+        /// </summary>
+        public RemoteCertificateValidationCallback ClientCertificateValidationCallback { get; set; }
     }
 }
