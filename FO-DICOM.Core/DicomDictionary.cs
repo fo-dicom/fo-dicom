@@ -76,7 +76,7 @@ namespace FellowOakDicom
         private readonly ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
         private readonly ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
         private readonly ConcurrentDictionary<string, DicomTag> _keywords;
-        private readonly ConcurrentBag<DicomDictionaryEntry> _masked;
+        private readonly ConcurrentStack<DicomDictionaryEntry> _masked;
 
         #endregion
 
@@ -88,7 +88,7 @@ namespace FellowOakDicom
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
-            _masked = new ConcurrentBag<DicomDictionaryEntry>();
+            _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
 
         private DicomDictionary(DicomPrivateCreator creator)
@@ -96,7 +96,7 @@ namespace FellowOakDicom
             PrivateCreator = creator;
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
-            _masked = new ConcurrentBag<DicomDictionaryEntry>();
+            _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
 
         #endregion
@@ -307,7 +307,7 @@ namespace FellowOakDicom
             }
             else
             {
-                _masked.Add(entry);
+                _masked.Push(entry);
                 _keywords[entry.Keyword] = entry.Tag;
             }
         }
