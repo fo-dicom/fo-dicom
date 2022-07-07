@@ -1396,13 +1396,14 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("Test");
-            var certificate = new X509Certificate("./Test Data/FellowOakDicom.pfx", "FellowOakDicom");
+            var certificate = new X509Certificate2("./Test Data/FellowOakDicom.pfx", "FellowOakDicom");
 
             using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, certificate: certificate);
 
             var client = CreateClient("127.0.0.1", port, true, "SCU", "ANY-SCP");
             client.NetworkStreamCreationOptions.UseTls = true;
             client.NetworkStreamCreationOptions.ClientCertificates = new X509CertificateCollection { certificate };
+            client.NetworkStreamCreationOptions.CheckClientCertificateRevocation = false;
             client.NetworkStreamCreationOptions.ClientCertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
             {
                 if (errors != SslPolicyErrors.None)
@@ -1424,6 +1425,10 @@ namespace FellowOakDicom.Tests.Network.Client
                     {
                         var chainStatus = chain.ChainStatus[index];
                         logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+
+                        // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                        if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
+                            return true;
                     }
 
                     return false;
