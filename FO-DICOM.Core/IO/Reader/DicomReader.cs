@@ -347,7 +347,9 @@ namespace FellowOakDicom.IO.Reader
                         }
                     }
 
-                    _tag = new DicomTag(@group, element, creator);
+                    _tag = creator == null 
+                        ? (DicomTagsIndex.Lookup(group, element) ?? new DicomTag(@group, element)) 
+                        : new DicomTag(@group, element, creator);
                     _entry = _dictionary[_tag];
 
                     if (!_tag.IsPrivate && _entry != null && _entry.MaskTag == null)
@@ -931,7 +933,7 @@ namespace FellowOakDicom.IO.Reader
                     var group = source.GetUInt16();
                     var element = source.GetUInt16();
 
-                    _tag = new DicomTag(@group, element);
+                    _tag = DicomTagsIndex.Lookup(group, element) ?? new DicomTag(@group, element);
 
                     if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem)
                     {

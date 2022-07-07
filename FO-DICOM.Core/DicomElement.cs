@@ -655,7 +655,7 @@ namespace FellowOakDicom
                     {
                         var group = parts[i + 0];
                         var element = parts[i + 1];
-                        values.Add(new DicomTag(group, element));
+                        values.Add(DicomTagsIndex.Lookup(group, element) ?? new DicomTag(group, element));
                     }
                     _values = values.ToArray();
                 }
