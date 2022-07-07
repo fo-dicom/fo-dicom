@@ -8,7 +8,6 @@ namespace FellowOakDicom
     public static class DicomTagsIndex
     {
         private static Lazy<Dictionary<ushort, Dictionary<ushort, DicomTag>>> Index = new Lazy<Dictionary<ushort, Dictionary<ushort, DicomTag>>>(BuildIndex);
-
         private static Dictionary<ushort, Dictionary<ushort, DicomTag>> BuildIndex()
         {
             var dicomTagsPerGroup = typeof(DicomTag)
@@ -35,7 +34,6 @@ namespace FellowOakDicom
 
                 index[group.Key] = groupIndex;
             }
-
             return index;
         }
 
