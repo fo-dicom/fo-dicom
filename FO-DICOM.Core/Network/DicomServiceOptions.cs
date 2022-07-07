@@ -62,7 +62,7 @@ namespace FellowOakDicom.Network
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
         
         /// <summary>
-        /// Gets or sets maximum size a C-Store memory stream can have before using a temp file
+        /// Gets or sets maximum size a C-Store memory stream can have before automatically switching to a temp file
         /// </summary>
         public int MaxCStoreMemoryStreamSize { get; set; } = 1024 * 1024; //1MB
 
