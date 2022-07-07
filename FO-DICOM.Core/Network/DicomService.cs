@@ -326,17 +326,17 @@ namespace FellowOakDicom.Network
             _dimseStream.Seek(0, SeekOrigin.End);
         }
         
-        private void ReplaceMemoryStreamWithFileStreamWhenTooBig(int bytesToBeWritten)
+        protected virtual void PrepareCStoreReceiveStreamForNextBytes(int bytesToBeWritten)
         {
-            if (_dimseStreamFile != null)
+            // Check if the memory stream would grow beyond the MaxCStoreMemoryStreamSize and switch to a temporary file if necessary
+            if (_dimseStreamFile != null
+                || !(_dimseStream is MemoryStream)
+                || Options.MaxCStoreMemoryStreamSize == 0
+                || (_dimseStream.Length + bytesToBeWritten) <= Options.MaxCStoreMemoryStreamSize)
             {
                 return;
             }
-            if ((_dimseStream.Length + bytesToBeWritten) <= Options.MaxCStoreMemoryStreamSize)
-            {
-                return;
-            }
-
+            
             var tmpMsStream = _dimseStream;
 
             _dimseStreamFile = TemporaryFile.Create();
@@ -788,7 +788,7 @@ namespace FellowOakDicom.Network
 
                                 CreateCStoreReceiveStream(file);
 
-                                ReplaceMemoryStreamWithFileStreamWhenTooBig(pdv.Value.Length);
+                                PrepareCStoreReceiveStreamForNextBytes(pdv.Value.Length);
                             }
                             else
                             {
@@ -800,7 +800,7 @@ namespace FellowOakDicom.Network
                         {
                             if (_dimse.Type == DicomCommandField.CStoreRequest)
                             {
-                                ReplaceMemoryStreamWithFileStreamWhenTooBig(pdv.Value.Length);
+                                PrepareCStoreReceiveStreamForNextBytes(pdv.Value.Length);
                             }
                         }
                     }
