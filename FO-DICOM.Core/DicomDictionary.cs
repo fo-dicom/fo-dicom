@@ -314,7 +314,20 @@ namespace FellowOakDicom
 
         public DicomPrivateCreator GetPrivateCreator(string creator)
         {
-            return _creators.GetOrAdd(creator, _ => new DicomPrivateCreator(creator));
+            while (true)
+            {
+                if (_creators.TryGetValue(creator, out var privateCreator))
+                {
+                    return privateCreator;
+                }
+
+                privateCreator = new DicomPrivateCreator(creator);
+                
+                if (_creators.TryAdd(creator, privateCreator))
+                {
+                    return privateCreator;
+                }
+            }
         }
 
         /// <summary>
