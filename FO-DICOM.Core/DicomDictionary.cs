@@ -74,7 +74,7 @@ namespace FellowOakDicom
 
         private readonly ConcurrentDictionary<string, DicomPrivateCreator> _creators;
         private readonly ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
-        private readonly ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
+        private readonly ConcurrentDictionary<ushort, ConcurrentDictionary<DicomTag, DicomDictionaryEntry>> _entries;
         private readonly ConcurrentDictionary<string, DicomTag> _keywords;
         private readonly ConcurrentStack<DicomDictionaryEntry> _masked;
 
@@ -86,7 +86,7 @@ namespace FellowOakDicom
         {
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
             _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
-            _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+            _entries = new ConcurrentDictionary<ushort, ConcurrentDictionary<DicomTag, DicomDictionaryEntry>>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
@@ -94,7 +94,7 @@ namespace FellowOakDicom
         private DicomDictionary(DicomPrivateCreator creator)
         {
             PrivateCreator = creator;
-            _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+            _entries = new ConcurrentDictionary<ushort, ConcurrentDictionary<DicomTag, DicomDictionaryEntry>>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
@@ -234,7 +234,8 @@ namespace FellowOakDicom
                     return PrivateCreatorTag;
                 }
 
-                if (_entries.TryGetValue(tag, out DicomDictionaryEntry entry))
+                if (_entries.TryGetValue(tag.Group, out ConcurrentDictionary<DicomTag, DicomDictionaryEntry> groupEntries)
+                    && groupEntries.TryGetValue(tag, out DicomDictionaryEntry entry))
                 {
                     return entry;
                 }
@@ -302,7 +303,22 @@ namespace FellowOakDicom
             if (entry.MaskTag == null)
             {
                 // allow overwriting of existing entries
-                _entries[entry.Tag] = entry;
+                ConcurrentDictionary<DicomTag, DicomDictionaryEntry> groupEntries;
+                while (true)
+                {
+                    if (_entries.TryGetValue(entry.Tag.Group, out groupEntries))
+                    {
+                        break;
+                    }
+
+                    groupEntries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
+
+                    if (_entries.TryAdd(entry.Tag.Group, groupEntries))
+                    {
+                        break;
+                    }
+                }
+                groupEntries[entry.Tag] = entry;
                 _keywords[entry.Keyword] = entry.Tag;
             }
             else
@@ -337,7 +353,6 @@ namespace FellowOakDicom
         /// <param name="format">File format.</param>
         public void Load(string file, DicomDictionaryFormat format)
         {
-
             var fileRef = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(file);
             using var fs = fileRef.OpenRead();
             var s = fs;
@@ -353,7 +368,7 @@ namespace FellowOakDicom
 
         #region IEnumerable Members
 
-        public IEnumerator<DicomDictionaryEntry> GetEnumerator() => _entries.Values.Concat(_masked).GetEnumerator();
+        public IEnumerator<DicomDictionaryEntry> GetEnumerator() => _entries.Values.SelectMany(v => v.Values).Concat(_masked).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
