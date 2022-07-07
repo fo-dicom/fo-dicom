@@ -79,8 +79,17 @@ namespace FellowOakDicom.Network.Client
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
             var logger = _logManager.GetLogger("Dicom.Network");
+            var networkStreamCreationOptions = new NetworkStreamCreationOptions
+            {
+                Host = host,
+                Port = port,
+                UseTls = useTls,
+                Timeout = TimeSpan.FromMilliseconds(clientOptions.AssociationRequestTimeoutInMs),
+                NoDelay = serviceOptions.TcpNoDelay,
+                IgnoreSslPolicyErrors = serviceOptions.IgnoreSslPolicyErrors
+            };
 
-            return new DicomClient(host, port, useTls, callingAe, calledAe, clientOptions, serviceOptions, logger, _advancedDicomClientConnectionFactory);
+            return new DicomClient(networkStreamCreationOptions, callingAe, calledAe, clientOptions, serviceOptions, logger, _advancedDicomClientConnectionFactory);
         }
     }
 }

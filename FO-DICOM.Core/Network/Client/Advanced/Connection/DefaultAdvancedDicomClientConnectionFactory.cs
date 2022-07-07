@@ -36,14 +36,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// <returns>A new instance of <see cref="IAdvancedDicomClientConnection"/></returns>
         Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken);
     }
-    
+
     public static class AdvancedDicomClientConnectionFactory
     {
         /// <inheritdoc cref="IAdvancedDicomClientConnectionFactory.OpenConnectionAsync"/>
         public static Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
             => Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>().OpenConnectionAsync(request, cancellationToken);
     }
-    
+
     /// <inheritdoc cref="IAdvancedDicomClientConnectionFactory"/>
     public class DefaultAdvancedDicomClientConnectionFactory : IAdvancedDicomClientConnectionFactory
     {
@@ -53,7 +53,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         private readonly IOptions<DicomServiceOptions> _defaultDicomServiceOptions;
 
         public DefaultAdvancedDicomClientConnectionFactory(
-            INetworkManager networkManager, 
+            INetworkManager networkManager,
             ILogManager logManager,
             IOptions<DicomServiceOptions> defaultDicomServiceOptions,
             DicomServiceDependencies dicomServiceDependencies)
@@ -63,14 +63,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             _defaultDicomServiceOptions = defaultDicomServiceOptions;
             _dicomServiceDependencies = dicomServiceDependencies ?? throw new ArgumentNullException(nameof(dicomServiceDependencies));
         }
-        
+
         public async Task<IAdvancedDicomClientConnection> OpenConnectionAsync(AdvancedDicomClientConnectionRequest request, CancellationToken cancellationToken)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
 
             request.Logger ??= _logManager.GetLogger("Dicom.Network");
@@ -83,26 +83,26 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             INetworkStream networkStream = null;
 
             try
             {
-                networkStream = await Task.Run(() => _networkManager.CreateNetworkStream(request.NetworkStreamCreationOptions), cancellationToken).ConfigureAwait(false);
+                networkStream = await _networkManager.CreateNetworkStreamAsync(request.NetworkStreamCreationOptions, cancellationToken).ConfigureAwait(false);
 
                 var eventCollector = new AdvancedDicomClientConnectionEventCollector(request.RequestHandlers);
 
-                IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(eventCollector, networkStream, 
+                IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(eventCollector, networkStream,
                     request.FallbackEncoding, request.DicomServiceOptions,
                     request.Logger, _dicomServiceDependencies);
 
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 connection.StartListener();
 
                 return connection;
             }
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 networkStream?.Dispose();
                 throw;

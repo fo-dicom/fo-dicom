@@ -34,6 +34,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Whether or not to ignore any certificate validation errors that occur when authenticating as a client over SSL
         /// </summary>
+        [Obsolete("Please use " + nameof(ClientCertificateValidationCallback) + " instead. Simply return true from the callback to ignore all SSL policy errors.")]
         public bool IgnoreSslPolicyErrors { get; set; }
         
         /// <summary>

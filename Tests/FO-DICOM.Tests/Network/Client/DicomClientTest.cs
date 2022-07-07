@@ -5,6 +5,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,13 +60,13 @@ namespace FellowOakDicom.Tests.Network.Client
             return server;
         }
 
-        private TServer CreateServer<TProvider, TServer>(int port)
+        private TServer CreateServer<TProvider, TServer>(int port, X509Certificate certificate = null)
             where TProvider : DicomService, IDicomServiceProvider
             where TServer : class, IDicomServer<TProvider>
         {
             var logger = _logger.IncludePrefix(nameof(IDicomServer));
             var ipAddress = NetworkManager.IPv4Any;
-            var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger);
+            var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, certificate: certificate);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
             return server as TServer;
@@ -1389,6 +1391,64 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(echoResponse3);
         }
 
+        [Fact]
+        public async Task SendAsync_WithClientCertificate_ShouldAuthenticate()
+        {
+            var port = Ports.GetNext();
+            var logger = _logger.IncludePrefix("Test");
+            var certificate = new X509Certificate("./Test Data/FellowOakDicom.pfx", "FellowOakDicom");
+
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, certificate: certificate);
+
+            var client = CreateClient("127.0.0.1", port, true, "SCU", "ANY-SCP");
+            client.NetworkStreamCreationOptions.UseTls = true;
+            client.NetworkStreamCreationOptions.ClientCertificates = new X509CertificateCollection { certificate };
+            client.NetworkStreamCreationOptions.ClientCertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+            {
+                if (errors != SslPolicyErrors.None)
+                {
+                    switch (errors)
+                    {
+                        case SslPolicyErrors.RemoteCertificateNotAvailable:
+                            logger.Debug("SSL policy errors: remote certificate is missing");
+                            break;
+                        case SslPolicyErrors.RemoteCertificateNameMismatch:
+                            logger.Debug("SSL policy errors: remote certificate name mismatch");
+                            break;
+                        case SslPolicyErrors.RemoteCertificateChainErrors:
+                            logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
+                            break;
+                    }
+
+                    for (var index = 0; index < chain.ChainStatus.Length; index++)
+                    {
+                        var chainStatus = chain.ChainStatus[index];
+                        logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                    }
+
+                    return false;
+                }
+
+                return true;
+            };
+
+            DicomCEchoResponse actualResponse = null;
+            var dicomCEchoRequest = new DicomCEchoRequest
+            {
+                OnResponseReceived = (request, response) =>
+                {
+                    actualResponse = response;
+                }
+            };
+            await client.AddRequestAsync(dicomCEchoRequest).ConfigureAwait(false);
+
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+            {
+                await client.SendAsync(cts.Token).ConfigureAwait(false);
+            }
+
+            AllResponsesShouldHaveSucceeded(new [] { actualResponse });
+        }
 
         #region Support classes
 

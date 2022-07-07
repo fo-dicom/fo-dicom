@@ -61,6 +61,11 @@ namespace FellowOakDicom.Network.Client
         DicomClientOptions ClientOptions { get; }
 
         /// <summary>
+        /// Gets the options of the network connection that will be created.
+        /// </summary>
+        NetworkStreamCreationOptions NetworkStreamCreationOptions { get; }
+
+        /// <summary>
         /// Gets or sets additional presentation contexts to negotiate with association.
         /// </summary>
         List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
@@ -166,9 +171,10 @@ namespace FellowOakDicom.Network.Client
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
 
-        public string Host { get; }
-        public int Port { get; }
-        public bool UseTls { get; }
+        public NetworkStreamCreationOptions NetworkStreamCreationOptions { get; }
+        public string Host => NetworkStreamCreationOptions.Host;
+        public int Port => NetworkStreamCreationOptions.Port;
+        public bool UseTls => NetworkStreamCreationOptions.UseTls;
         public string CallingAe { get; }
         public string CalledAe { get; }
         
@@ -208,15 +214,36 @@ namespace FellowOakDicom.Network.Client
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="logger">The logger</param>
         /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
+        [Obsolete("Please use the DicomClientFactory to create instances of DicomClient, or if you must, use the constructor overload that takes an instance of " +
+                  nameof(NetworkStreamCreationOptions))]
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             ILogger logger,
             IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory)
+            : this(new NetworkStreamCreationOptions { Host = host, Port = port, UseTls = useTls }, callingAe, calledAe, clientOptions, serviceOptions, logger,
+                advancedDicomClientConnectionFactory)
         {
-            Host = host;
-            Port = port;
-            UseTls = useTls;
+            
+        }
+
+        /// <summary>
+        /// Initializes an instance of <see cref="DicomClient"/>.
+        /// </summary>
+        /// <param name="networkStreamCreationOptions">The options that specify how the connection will be opened</param>
+        /// <param name="callingAe">Calling Application Entity Title.</param>
+        /// <param name="calledAe">Called Application Entity Title.</param>
+        /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
+        /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
+        /// <param name="logger">The logger</param>
+        /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
+        public DicomClient(NetworkStreamCreationOptions networkStreamCreationOptions, string callingAe, string calledAe,
+            DicomClientOptions clientOptions,
+            DicomServiceOptions serviceOptions,
+            ILogger logger,
+            IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory)
+        {
+            NetworkStreamCreationOptions = networkStreamCreationOptions;
             CallingAe = callingAe;
             CalledAe = calledAe;
             ClientOptions = clientOptions;
@@ -303,15 +330,7 @@ namespace FellowOakDicom.Network.Client
                             Logger = Logger,
                             FallbackEncoding = FallbackEncoding,
                             DicomServiceOptions = ServiceOptions,
-                            NetworkStreamCreationOptions = new NetworkStreamCreationOptions
-                            {
-                                Host = Host,
-                                Port = Port,
-                                UseTls = UseTls,
-                                NoDelay = ServiceOptions.TcpNoDelay,
-                                IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
-                                Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
-                            },
+                            NetworkStreamCreationOptions = NetworkStreamCreationOptions,
                             RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers
                             {
                                 OnCStoreRequest = OnCStoreRequest,
