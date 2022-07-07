@@ -798,7 +798,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Support classes
 
-        private class ConfigurableNetworkManager : DesktopNetworkManager
+        internal class ConfigurableNetworkManager : DesktopNetworkManager
         {
             private readonly Action _onStreamWrite;
 

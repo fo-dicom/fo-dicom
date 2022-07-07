@@ -1,5 +1,7 @@
 #### 5.0.4 (TBD)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
+* Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
+* Improve throughput of DicomClient when more requests are added mid-flight (#1396)
 * Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)
 * Fix overwriting of Lossy Compression ratio tag (#1400)
 
