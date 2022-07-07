@@ -79,8 +79,8 @@ namespace FellowOakDicom.Network
                         _certificate = GetX509Certificate(certificateName);
                     }
 
-                    //  let DesktopNetworkStream to dispose tcpClient
-                    return new DesktopNetworkStream(tcpClient, _certificate, true);
+                    //  let DesktopNetworkStream dispose the TCP Client when it is disposed
+                    return await DesktopNetworkStream.CreateAsServerAsync(tcpClient, _certificate, true, token);
                 }
 
                 Stop();

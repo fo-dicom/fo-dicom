@@ -5,6 +5,8 @@ using System;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -20,7 +22,7 @@ namespace FellowOakDicom.Network
         /// Singleton instance of <see cref="DesktopNetworkManager"/>.
         /// </summary>
         public static readonly NetworkManager Instance;
-
+        
         #endregion
 
         #region CONSTRUCTORS
@@ -59,13 +61,23 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
         {
-            return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
+            var options = new NetworkStreamCreationOptions
+            {
+                Host = host,
+                Port = port,
+                UseTls = useTls,
+                NoDelay = noDelay,
+                IgnoreSslPolicyErrors = ignoreSslPolicyErrors,
+                Timeout = TimeSpan.FromMilliseconds(millisecondsTimeout)
+            };
+            return CreateNetworkStreamImpl(options);
         }
 
-        protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
-        {
-            return new DesktopNetworkStream(options);
-        }
+        protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options) => 
+            CreateNetworkStreamImplAsync(options, CancellationToken.None).GetAwaiter().GetResult();
+
+        protected override async Task<INetworkStream> CreateNetworkStreamImplAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
+            => await DesktopNetworkStream.CreateAsClientAsync(options, cancellationToken).ConfigureAwait(false);
 
         /// <inheritdoc />
         protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)

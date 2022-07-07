@@ -812,7 +812,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 return new ConfigurableDesktopNetworkStreamDecorator(
                     _onStreamWrite,
-                    new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
+                    base.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
                 );
             }
 
@@ -820,7 +820,15 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 return new ConfigurableDesktopNetworkStreamDecorator(
                     _onStreamWrite,
-                    new DesktopNetworkStream(options)
+                    base.CreateNetworkStreamImpl(options)
+                );
+            }
+
+            protected override async Task<INetworkStream> CreateNetworkStreamImplAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
+            {
+                return new ConfigurableDesktopNetworkStreamDecorator(
+                    _onStreamWrite,
+                    await base.CreateNetworkStreamImplAsync(options, cancellationToken).ConfigureAwait(false)
                 );
             }
         }
@@ -828,9 +836,9 @@ namespace FellowOakDicom.Tests.Network.Client
         private class ConfigurableDesktopNetworkStreamDecorator : INetworkStream
         {
             private readonly Action _onStreamWrite;
-            private readonly DesktopNetworkStream _desktopNetworkStream;
+            private readonly INetworkStream _desktopNetworkStream;
 
-            public ConfigurableDesktopNetworkStreamDecorator(Action onStreamWrite, DesktopNetworkStream desktopNetworkStream)
+            public ConfigurableDesktopNetworkStreamDecorator(Action onStreamWrite, INetworkStream desktopNetworkStream)
             {
                 _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
                 _desktopNetworkStream = desktopNetworkStream;

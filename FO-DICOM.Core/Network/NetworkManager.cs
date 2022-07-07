@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -14,7 +16,7 @@ namespace FellowOakDicom.Network
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
         INetworkListener CreateNetworkListener(string ipAddress, int port);
-
+        
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
         /// </summary>
@@ -25,6 +27,7 @@ namespace FellowOakDicom.Network
         /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
         /// <returns>Network stream implementation.</returns>
+        [Obsolete("Please use " + nameof(CreateNetworkStreamAsync) + " instead")]
         INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
 
         /// <summary>
@@ -32,7 +35,16 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="options">The various options that specify how the network stream must be created</param>
         /// <returns>Network stream implementation.</returns>
+        [Obsolete("Please use " + nameof(CreateNetworkStreamAsync) + " instead")]
         INetworkStream CreateNetworkStream(NetworkStreamCreationOptions options);
+
+        /// <summary>
+        /// Platform-specific implementation to create a network stream object.
+        /// </summary>
+        /// <param name="options">The various options that specify how the network stream must be created</param>
+        /// <param name="cancellationToken">The cancellation token that cancels the connection</param>
+        /// <returns>Network stream implementation.</returns>
+        Task<INetworkStream> CreateNetworkStreamAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken);
 
         /// <summary>
         /// Platform-specific implementation to check whether specified <paramref name="exception"/> represents a socket exception.
@@ -148,6 +160,9 @@ namespace FellowOakDicom.Network
         INetworkStream INetworkManager.CreateNetworkStream(NetworkStreamCreationOptions options)
             => CreateNetworkStreamImpl(options);
 
+        Task<INetworkStream> INetworkManager.CreateNetworkStreamAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
+            => CreateNetworkStreamImplAsync(options, cancellationToken);
+
         bool INetworkManager.IsSocketException(Exception exception, out int errorCode, out string errorDescriptor)
             => IsSocketExceptionImpl(exception, out errorCode, out errorDescriptor);
 
@@ -155,6 +170,9 @@ namespace FellowOakDicom.Network
             => TryGetNetworkIdentifierImpl(out identifier);
 
         string INetworkManager.MachineName => MachineNameImpl;
+        
+        protected virtual Task<INetworkStream> CreateNetworkStreamImplAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken) 
+            => Task.FromResult(CreateNetworkStreamImpl(options));
 
         #endregion
     }
