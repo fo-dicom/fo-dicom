@@ -7,7 +7,7 @@ namespace FellowOakDicom
     /// <summary>
     /// Prebuilt index for high-performance lookup of known DICOM tags
     /// </summary>
-    public static class DicomTagsIndex
+    internal static class DicomTagsIndex
     {
         private static readonly Lazy<DicomTag[][]> _index = new Lazy<DicomTag[][]>(BuildIndex);
         
