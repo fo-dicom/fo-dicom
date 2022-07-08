@@ -29,7 +29,7 @@ namespace FellowOakDicom
             var index = new Dictionary<uint, DicomTag>();
             foreach (var tag in allDicomTags)
             {
-                var key = ((uint)tag.Group << 8) | tag.Element;
+                var key = ((uint)tag.Group << 16) | tag.Element;
                 if (!index.ContainsKey(key))
                 {
                     index[key] = tag;
@@ -47,7 +47,7 @@ namespace FellowOakDicom
         /// <param name="element">The element of the DICOM tag</param>
         /// <returns>A tag from the known DICOM tag index or a newly created instance of <see cref="DicomTag"/> otherwise</returns>
         public static DicomTag LookupOrCreate(ushort group, ushort element) => 
-            _index.Value.TryGetValue(((uint)group << 8) | element, out var tag)
+            _index.Value.TryGetValue(((uint)group << 16) | element, out var tag)
                 ? tag
                 : new DicomTag(group, element);
     }
