@@ -393,20 +393,20 @@ namespace FellowOakDicom.IO.Reader
 
                         source.Mark();
                         var bytes = source.GetBytes(2);
-                        var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 
-                        if (string.IsNullOrEmpty(vr.Trim()))
+                        if (!DicomVR.TryParse(bytes, out _vr))
                         {
-                            if (_entry != null)
+                            // If the VR is an empty string, try to use the first known VR of the tag
+                            if(_entry != null && string.IsNullOrEmpty(Encoding.UTF8.GetString(bytes).Trim()))
                             {
-                                _vr = _entry.ValueRepresentations.FirstOrDefault();
+                                _vr = _entry.ValueRepresentations.FirstOrDefault();    
                             }
-                        }
-                        else if (!DicomVR.TryParse(vr, out _vr))
-                        {
-                            // unable to parse VR; rewind VR bytes for continued attempt to interpret the data.
-                            _vr = DicomVR.Implicit;
-                            source.Rewind();
+                            else
+                            {
+                                // unable to parse VR; rewind VR bytes for continued attempt to interpret the data.
+                                _vr = DicomVR.Implicit;
+                                source.Rewind();
+                            }
                         }
                     }
                     else
@@ -1265,8 +1265,7 @@ namespace FellowOakDicom.IO.Reader
                     source.GetUInt16(); // element
 
                     var bytes = source.GetBytes(2);
-                    var vr = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                    if (DicomVR.TryParse(vr, out DicomVR dummy))
+                    if (DicomVR.TryParse(bytes, out DicomVR dummy))
                     {
                         return !isExplicitVR;
                     }
