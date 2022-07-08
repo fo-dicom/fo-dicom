@@ -1,14 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace FellowOakDicom
 {
+    /// <summary>
+    /// Prebuilt index for high-performance lookup of known DICOM tags
+    /// </summary>
     public static class DicomTagsIndex
     {
-        private static Lazy<Dictionary<ushort, Dictionary<ushort, DicomTag>>> Index = new Lazy<Dictionary<ushort, Dictionary<ushort, DicomTag>>>(BuildIndex);
-        private static Dictionary<ushort, Dictionary<ushort, DicomTag>> BuildIndex()
+        private static readonly Lazy<DicomTag[][]> _index = new Lazy<DicomTag[][]>(BuildIndex);
+        
+        /// <summary>
+        /// This builds a (rather sparse) 2D array of known DICOM tags
+        /// Benchmarking showed that this consumes about 6MB of memory.
+        /// The best alternative is using a dictionary based approach, which only consumes 0.4MB, but is 6x slower for lookups.
+        /// </summary>
+        private static DicomTag[][] BuildIndex()
         {
             var dicomTagsPerGroup = typeof(DicomTag)
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
@@ -18,17 +26,19 @@ namespace FellowOakDicom
                 .GroupBy(tag => tag.Group)
                 .ToList();
 
-            var index = new Dictionary<ushort, Dictionary<ushort, DicomTag>>(dicomTagsPerGroup.Count);
+            var highestGroup = dicomTagsPerGroup.Max(g => g.Key);
+            var index = new DicomTag[highestGroup+1][];
+
             foreach (var group in dicomTagsPerGroup)
             {
-                var tagsInGroup = group.ToList();
-                var groupIndex = new Dictionary<ushort, DicomTag>(tagsInGroup.Count);
+                var highestElement = group.Max(g => g.Element);
+                var groupIndex = new DicomTag[highestElement+1];
 
                 foreach (var tag in group)
                 {
-                    if (!groupIndex.ContainsKey(tag.Element))
+                    if (groupIndex[tag.Element] == null)
                     {
-                        groupIndex.Add(tag.Element, tag);
+                        groupIndex[tag.Element] = tag;
                     }
                 }
 
@@ -36,11 +46,7 @@ namespace FellowOakDicom
             }
             return index;
         }
-
-        internal static DicomTag Lookup(ushort group, ushort element) =>
-            Index.Value.TryGetValue(group, out var tagsInGroup)
-            && tagsInGroup.TryGetValue(element, out var tag)
-                ? tag
-                : null;
+        
+        public static DicomTag Lookup(ushort group, ushort element) => _index.Value[group]?[element];
     }
 }
