@@ -348,7 +348,7 @@ namespace FellowOakDicom.IO.Reader
                     }
 
                     _tag = creator == null 
-                        ? (DicomTagsIndex.Lookup(group, element) ?? new DicomTag(@group, element)) 
+                        ? DicomTagsIndex.LookupOrCreate(group, element)
                         : new DicomTag(@group, element, creator);
                     _entry = _dictionary[_tag];
 
@@ -933,7 +933,7 @@ namespace FellowOakDicom.IO.Reader
                     var group = source.GetUInt16();
                     var element = source.GetUInt16();
 
-                    _tag = DicomTagsIndex.Lookup(group, element) ?? new DicomTag(@group, element);
+                    _tag = DicomTagsIndex.LookupOrCreate(group, element);
 
                     if (_tag != DicomTag.Item && _tag != DicomTag.SequenceDelimitationItem)
                     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -9,44 +10,45 @@ namespace FellowOakDicom
     /// </summary>
     internal static class DicomTagsIndex
     {
-        private static readonly Lazy<DicomTag[][]> _index = new Lazy<DicomTag[][]>(BuildIndex);
+        private static readonly Lazy<Dictionary<uint, DicomTag>> _index = new Lazy<Dictionary<uint, DicomTag>>(BuildIndex);
         
         /// <summary>
-        /// This builds a (rather sparse) 2D array of known DICOM tags
-        /// Benchmarking showed that this consumes about 6MB of memory.
-        /// The best alternative is using a dictionary based approach, which only consumes 0.4MB, but is 6x slower for lookups.
+        /// This builds a dictionary of known DICOM tags
+        /// Benchmarking showed that this consumes about 0.8MB of memory.
+        /// See https://github.com/fo-dicom/fo-dicom/pull/1417#discussion_r916766088 for benchmarks
         /// </summary>
-        private static DicomTag[][] BuildIndex()
+        private static Dictionary<uint, DicomTag> BuildIndex()
         {
-            var dicomTagsPerGroup = typeof(DicomTag)
+            var allDicomTags = typeof(DicomTag)
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
                 .Where(field => field.FieldType == typeof(DicomTag))
                 .Select(field => field.GetValue(null) as DicomTag)
                 .Where(tag => tag != null)
-                .GroupBy(tag => tag.Group)
                 .ToList();
 
-            var highestGroup = dicomTagsPerGroup.Max(g => g.Key);
-            var index = new DicomTag[highestGroup+1][];
-
-            foreach (var group in dicomTagsPerGroup)
+            var index = new Dictionary<uint, DicomTag>();
+            foreach (var tag in allDicomTags)
             {
-                var highestElement = group.Max(g => g.Element);
-                var groupIndex = new DicomTag[highestElement+1];
-
-                foreach (var tag in group)
+                var key = ((uint)tag.Group << 8) | tag.Element;
+                if (!index.ContainsKey(key))
                 {
-                    if (groupIndex[tag.Element] == null)
-                    {
-                        groupIndex[tag.Element] = tag;
-                    }
+                    index[key] = tag;
                 }
-
-                index[group.Key] = groupIndex;
             }
+
+
             return index;
         }
         
-        public static DicomTag Lookup(ushort group, ushort element) => _index.Value[group]?[element];
+        /// <summary>
+        /// Looks up or creates a DICOM tag based on its group and element
+        /// </summary>
+        /// <param name="group">The group of the DICOM tag</param>
+        /// <param name="element">The element of the DICOM tag</param>
+        /// <returns>A tag from the known DICOM tag index or a newly created instance of <see cref="DicomTag"/> otherwise</returns>
+        public static DicomTag LookupOrCreate(ushort group, ushort element) => 
+            _index.Value.TryGetValue(((uint)group << 8) | element, out var tag)
+                ? tag
+                : new DicomTag(group, element);
     }
 }
