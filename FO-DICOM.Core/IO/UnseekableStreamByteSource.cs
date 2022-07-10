@@ -182,46 +182,14 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public byte[] GetBytes(int count)
         {
-            if (IsReadingBuffer)
+            var buffer = new byte[count];
+            var bytesRead = GetBytes(buffer, 0, count);
+            if (bytesRead != count)
             {
-                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
-                if (bufferByteCount <= count)
-                {
-                    UpdateBufferState();
-                    if (bufferByteCount == count)
-                    {
-                        var read = _bufferReader.ReadBytes(count);
-                        ClearBuffer();
-                        return read;
-                    }
-
-                    ClearBuffer();
-
-                    if (bufferByteCount == 0)
-                    {
-                        return _byteSource.GetBytes(count);
-                    }
-
-                    var nrBytesInBuffer = (int)(_buffer.Length - _buffer.Position);
-                    var bytesInBuffer = _bufferReader.ReadBytes(nrBytesInBuffer);
-                    var bytesInSource = GetBytes(count - nrBytesInBuffer);
-                    var bytes = new byte[bytesInBuffer.Length + bytesInSource.Length];
-                    bytesInBuffer.CopyTo(bytes, 0);
-                    bytesInSource.CopyTo(bytes, bytesInBuffer.Length);
-                    return bytes;
-                }
-
-                return _bufferReader.ReadBytes(count);
+                throw new DicomIoException($"Failed to get {count} bytes");
             }
 
-            var data = _byteSource.GetBytes(count);
-            if (_bufferState == BufferState.Write)
-            {
-                ResizeBuffer(count);
-                _bufferWriter.Write(data);
-            }
-
-            return data;
+            return buffer;
         }
 
         public int GetBytes(byte[] buffer, int index, int count)

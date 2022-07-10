@@ -213,30 +213,14 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public byte[] GetBytes(int count)
         {
-            lock (_lock)
+            var buffer = new byte[count];
+            var bytesRead = GetBytes(buffer, 0, count);
+            if (bytesRead != count)
             {
-                int p = 0;
-                byte[] bytes = new byte[count];
-                while (count > 0)
-                {
-                    if (_current == -1 || _currentPos >= _currentData.Length)
-                    {
-                        if (!SwapBuffers())
-                        {
-                            throw new DicomIoException($"Tried to retrieve {count} bytes past end of source.");
-                        }
-                    }
-
-                    int n = (int)Math.Min(_currentData.Length - _currentPos, count);
-                    Array.Copy(_currentData, _currentPos, bytes, p, n);
-
-                    count -= n;
-                    p += n;
-                    _position += n;
-                    _currentPos += n;
-                }
-                return bytes;
+                throw new DicomIoException($"Failed to get {count} bytes");
             }
+
+            return buffer;
         }
 
         public int GetBytes(byte[] buffer, int index, int count)
