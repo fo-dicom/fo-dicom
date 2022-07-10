@@ -226,8 +226,43 @@ namespace FellowOakDicom.IO
 
         public int GetBytes(byte[] buffer, int index, int count)
         {
-            // TODO amoerie figure this out
-            throw new NotImplementedException();
+            int read;
+            if (IsReadingBuffer)
+            {
+                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
+                if (bufferByteCount <= count)
+                {
+                    UpdateBufferState();
+                    if (bufferByteCount == count)
+                    {
+                        read = _bufferReader.Read(buffer, index, count);
+                        ClearBuffer();
+                        return read;
+                    }
+
+                    ClearBuffer();
+
+                    if (bufferByteCount == 0)
+                    {
+                        return _byteSource.GetBytes(buffer, index, count);
+                    }
+
+                    var nrBytesInBuffer = (int)(_buffer.Length - _buffer.Position);
+                    var nrBytesInBufferRead = _bufferReader.Read(buffer, index, nrBytesInBuffer);
+                    return nrBytesInBuffer + GetBytes(buffer, index + nrBytesInBufferRead, count - nrBytesInBufferRead);
+                }
+
+                return _bufferReader.Read(buffer, index, count);
+            }
+
+            read = _byteSource.GetBytes(buffer, index, count);
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer(read);
+                _bufferWriter.Write(buffer, index, read);
+            }
+
+            return read;
         }
 
         /// <inheritdoc />
