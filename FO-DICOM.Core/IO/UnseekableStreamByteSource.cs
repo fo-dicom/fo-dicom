@@ -224,6 +224,47 @@ namespace FellowOakDicom.IO
             return data;
         }
 
+        public int GetBytes(byte[] buffer, int index, int count)
+        {
+            int read;
+            if (IsReadingBuffer)
+            {
+                var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
+                if (bufferByteCount <= count)
+                {
+                    UpdateBufferState();
+                    if (bufferByteCount == count)
+                    {
+                        read = _bufferReader.Read(buffer, index, count);
+                        ClearBuffer();
+                        return read;
+                    }
+
+                    ClearBuffer();
+
+                    if (bufferByteCount == 0)
+                    {
+                        return _byteSource.GetBytes(buffer, index, count);
+                    }
+
+                    var nrBytesInBuffer = (int)(_buffer.Length - _buffer.Position);
+                    var nrBytesInBufferRead = _bufferReader.Read(buffer, index, nrBytesInBuffer);
+                    return nrBytesInBuffer + GetBytes(buffer, index + nrBytesInBufferRead, count - nrBytesInBufferRead);
+                }
+
+                return _bufferReader.Read(buffer, index, count);
+            }
+
+            read = _byteSource.GetBytes(buffer, index, count);
+            if (_bufferState == BufferState.Write)
+            {
+                ResizeBuffer(read);
+                _bufferWriter.Write(buffer, index, read);
+            }
+
+            return read;
+        }
+
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
@@ -270,7 +311,7 @@ namespace FellowOakDicom.IO
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer((int)count);
-                _byteSource.ReadBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
+                _byteSource.GetBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
                 _buffer.Position += count;
             }
             else
@@ -279,11 +320,11 @@ namespace FellowOakDicom.IO
                 using var temp = _memoryProvider.Provide(bufferSize);
                 while (count > _tempBufferSize)
                 {
-                    _byteSource.ReadBytes(temp.Bytes, 0, _tempBufferSize);
+                    _byteSource.GetBytes(temp.Bytes, 0, _tempBufferSize);
                     count -= _tempBufferSize;
                 }
 
-                _byteSource.ReadBytes(temp.Bytes, 0, (int)count);
+                _byteSource.GetBytes(temp.Bytes, 0, (int)count);
             }
         }
 
