@@ -224,6 +224,12 @@ namespace FellowOakDicom.IO
             return data;
         }
 
+        public int GetBytes(byte[] buffer, int index, int count)
+        {
+            // TODO amoerie figure this out
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
