@@ -67,6 +67,12 @@ namespace FellowOakDicom.Network
         /// </summary>
         public EventHandler<OnTimeoutEventArgs> OnTimeout;
 
+        /// <summary>
+        /// Event handler for when DICOM requests are sent
+        /// This will be triggered when the request is fully sent over the wire to the SCP
+        /// </summary>
+        public EventHandler<OnRequestSentEventArgs> OnRequestSent;
+
         #endregion
 
         #region EVENTARGS
@@ -82,6 +88,10 @@ namespace FellowOakDicom.Network
             {
                 Timeout = timeout;
             }
+        }
+
+        public class OnRequestSentEventArgs
+        {
         }
 
         #endregion
