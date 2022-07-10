@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Memory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,8 @@ namespace FellowOakDicom.IO.Reader
     /// </summary>
     internal class DicomReader : IDicomReader
     {
+        private readonly IMemoryProvider _memoryProvider;
+
         #region FIELDS
 
         private readonly Dictionary<uint, string> _private;
@@ -30,8 +33,9 @@ namespace FellowOakDicom.IO.Reader
         /// <summary>
         /// Initializes an instance of <see cref="DicomReader"/>.
         /// </summary>
-        public DicomReader()
+        public DicomReader(IMemoryProvider memoryProvider)
         {
+            _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _private = new Dictionary<uint, string>();
             Dictionary = DicomDictionary.Default;
         }
@@ -65,7 +69,7 @@ namespace FellowOakDicom.IO.Reader
         /// <returns>Reader resulting status.</returns>
         public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private);
+            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
             return worker.DoWork(source);
         }
 
@@ -78,7 +82,7 @@ namespace FellowOakDicom.IO.Reader
         /// <returns>Awaitable reader resulting status.</returns>
         public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private);
+            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
             return worker.DoWorkAsync(source);
         }
 
@@ -116,6 +120,7 @@ namespace FellowOakDicom.IO.Reader
             private readonly DicomDictionary _dictionary;
 
             private readonly Dictionary<uint, string> _private;
+            private readonly IMemoryProvider _memoryProvider;
 
             private bool _isExplicitVR;
 
@@ -160,7 +165,8 @@ namespace FellowOakDicom.IO.Reader
                 DicomDictionary dictionary,
                 bool isExplicitVR,
                 bool isDeflated,
-                Dictionary<uint, string> @private)
+                Dictionary<uint, string> @private,
+                IMemoryProvider memoryProvider)
             {
                 _observer = observer;
                 _stop = stop;
@@ -168,6 +174,7 @@ namespace FellowOakDicom.IO.Reader
                 _isExplicitVR = isExplicitVR;
                 _isDeflated = isDeflated;
                 _private = @private;
+                _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
                 _locker = new object();
             }
 
@@ -222,13 +229,14 @@ namespace FellowOakDicom.IO.Reader
             {
                 _result = DicomReaderResult.Processing;
 
+                using var vrMemory = _memoryProvider.Provide(2);
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
                 {
                     if (!ParseTag(source))
                     {
                         return;
                     }
-                    if (!ParseVR(source))
+                    if (!ParseVR(source, vrMemory))
                     {
                         return;
                     }
@@ -236,7 +244,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
-                    if (!ParseValue(source))
+                    if (!ParseValue(source, vrMemory))
                     {
                         return;
                     }
@@ -262,13 +270,14 @@ namespace FellowOakDicom.IO.Reader
             {
                 _result = DicomReaderResult.Processing;
 
+                using var vrMemory = _memoryProvider.Provide(2);
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
                 {
                     if (!ParseTag(source))
                     {
                         return;
                     }
-                    if (!ParseVR(source))
+                    if (!ParseVR(source, vrMemory))
                     {
                         return;
                     }
@@ -276,7 +285,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
-                    if (!await ParseValueAsync(source).ConfigureAwait(false))
+                    if (!await ParseValueAsync(source, vrMemory).ConfigureAwait(false))
                     {
                         return;
                     }
@@ -371,7 +380,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseVR(IByteSource source)
+            private bool ParseVR(IByteSource source, IMemory vrMemory)
             {
                 while (_parseStage == ParseStage.VR)
                 {
@@ -392,12 +401,12 @@ namespace FellowOakDicom.IO.Reader
                         }
 
                         source.Mark();
-                        var bytes = source.GetBytes(2);
 
-                        if (!DicomVR.TryParse(bytes, out _vr))
+                        if (source.GetBytes(vrMemory.Bytes, 0, 2) != 2 || !DicomVR.TryParse(vrMemory.Bytes, out _vr))
                         {
                             // If the VR is an empty string, try to use the first known VR of the tag
-                            if(_entry != null && string.IsNullOrEmpty(Encoding.UTF8.GetString(bytes).Trim()))
+                            string vr = Encoding.UTF8.GetString(vrMemory.Bytes, 0, 2).Trim();
+                            if(_entry != null && string.IsNullOrEmpty(vr))
                             {
                                 _vr = _entry.ValueRepresentations.FirstOrDefault();    
                             }
@@ -571,7 +580,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseValue(IByteSource source)
+            private bool ParseValue(IByteSource source, IMemory vrMemory)
             {
                 if (_parseStage == ParseStage.Value)
                 {
@@ -609,7 +618,7 @@ namespace FellowOakDicom.IO.Reader
                             break;
                         }
 
-                        if (IsPrivateSequenceBad(source, _length, _isExplicitVR))
+                        if (IsPrivateSequenceBad(source, _length, _isExplicitVR, vrMemory))
                         {
                             _badPrivateSequence = true;
                             // store the depth of the bad sequence, we only want to switch back once we've processed
@@ -727,7 +736,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private async Task<bool> ParseValueAsync(IByteSource source)
+            private async Task<bool> ParseValueAsync(IByteSource source, IMemory vrMemory)
             {
                 if (_parseStage == ParseStage.Value)
                 {
@@ -765,7 +774,7 @@ namespace FellowOakDicom.IO.Reader
                             break;
                         }
 
-                        if (IsPrivateSequenceBad(source, _length, _isExplicitVR))
+                        if (IsPrivateSequenceBad(source, _length, _isExplicitVR, vrMemory))
                         {
                             _badPrivateSequence = true;
                             // store the depth of the bad sequence, we only want to switch back once we've processed
@@ -1234,7 +1243,7 @@ namespace FellowOakDicom.IO.Reader
                 return false;
             }
 
-            private static bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR)
+            private bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR, IMemory vrMemory)
             {
                 source.Mark();
 
@@ -1264,8 +1273,7 @@ namespace FellowOakDicom.IO.Reader
                     source.GetUInt16(); // group
                     source.GetUInt16(); // element
 
-                    var bytes = source.GetBytes(2);
-                    if (DicomVR.TryParse(bytes, out DicomVR dummy))
+                    if (source.GetBytes(vrMemory.Bytes, 0, 2) == 2 && DicomVR.TryParse(vrMemory.Bytes, out DicomVR dummy))
                     {
                         return !isExplicitVR;
                     }

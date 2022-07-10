@@ -239,6 +239,39 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
+        public int GetBytes(byte[] buffer, int index, int count)
+        {
+            if (buffer.Length < count)
+            {
+                throw new ArgumentException($"Buffer is not large enough to hold {count} bytes");
+            }
+
+            lock (_lock)
+            {
+                int p = index;
+                int bytesToRead = count;
+                while (bytesToRead > 0)
+                {
+                    if (_current == -1 || _currentPos >= _currentData.Length)
+                    {
+                        if (!SwapBuffers())
+                        {
+                            throw new DicomIoException($"Tried to retrieve {count} bytes past end of source.");
+                        }
+                    }
+
+                    int n = (int)Math.Min(_currentData.Length - _currentPos, count);
+                    Array.Copy(_currentData, _currentPos, buffer, p, n);
+
+                    bytesToRead -= n;
+                    p += n;
+                    _position += n;
+                    _currentPos += n;
+                }
+                return count;
+            }
+        }
+
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
