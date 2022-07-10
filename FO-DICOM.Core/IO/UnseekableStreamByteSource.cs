@@ -276,7 +276,7 @@ namespace FellowOakDicom.IO
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer((int)count);
-                _byteSource.ReadBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
+                _byteSource.GetBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
                 _buffer.Position += count;
             }
             else
@@ -285,11 +285,11 @@ namespace FellowOakDicom.IO
                 using var temp = _memoryProvider.Provide(bufferSize);
                 while (count > _tempBufferSize)
                 {
-                    _byteSource.ReadBytes(temp.Bytes, 0, _tempBufferSize);
+                    _byteSource.GetBytes(temp.Bytes, 0, _tempBufferSize);
                     count -= _tempBufferSize;
                 }
 
-                _byteSource.ReadBytes(temp.Bytes, 0, (int)count);
+                _byteSource.GetBytes(temp.Bytes, 0, (int)count);
             }
         }
 

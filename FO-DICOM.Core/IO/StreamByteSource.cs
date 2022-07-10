@@ -135,11 +135,6 @@ namespace FellowOakDicom.IO
 
         public int GetBytes(byte[] buffer, int index, int count) => _reader.Read(buffer, index, count);
 
-        /// <summary>
-        /// Reads the specified number of bytes from the stream, starting from a specified point
-        /// in the byte array. <see cref="BinaryReader.Read()"/> for more information. </summary>
-        public void ReadBytes(byte[] buffer, int index, int count) => _reader.Read(buffer, index, count);
-
         /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {

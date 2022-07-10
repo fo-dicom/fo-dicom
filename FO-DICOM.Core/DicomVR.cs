@@ -189,7 +189,7 @@ namespace FellowOakDicom
 
         private static DicomVR TryParse(byte[] vr, out bool valid)
         {
-            if (vr == null || vr.Length != 2)
+            if (vr == null || vr.Length < 2)
             {
                 valid = false;
                 return null;
