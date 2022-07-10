@@ -1273,7 +1273,7 @@ namespace FellowOakDicom.IO.Reader
                     source.GetUInt16(); // group
                     source.GetUInt16(); // element
 
-                    if (source.GetBytes(vrMemory.Bytes, 0, 2) != 2 && DicomVR.TryParse(vrMemory.Bytes, out DicomVR dummy))
+                    if (source.GetBytes(vrMemory.Bytes, 0, 2) == 2 && DicomVR.TryParse(vrMemory.Bytes, out DicomVR dummy))
                     {
                         return !isExplicitVR;
                     }
