@@ -113,7 +113,7 @@ namespace FellowOakDicom.Tests.Bugs
                     if (shouldTimeoutNextRequest)
                     {
                         shouldTimeoutNextRequest = false;
-                        Thread.Sleep(2000);
+                        Thread.Sleep(10_000);
                     }
                 },
                 Setup.ServiceProvider.GetRequiredService<IDesktopNetworkStreamFactory>()
