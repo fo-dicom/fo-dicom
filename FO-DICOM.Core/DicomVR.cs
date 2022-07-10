@@ -189,6 +189,12 @@ namespace FellowOakDicom
 
         private static DicomVR TryParse(byte[] vr, out bool valid)
         {
+            if (vr == null || vr.Length != 2)
+            {
+                valid = false;
+                return null;
+            }
+            
             valid = true;
             // This is a precompiled switch table
             switch (vr[0])
@@ -284,8 +290,6 @@ namespace FellowOakDicom
                     break;
             }
             
-            // Fallback: 
-
             valid = false;
             return null;
         }
