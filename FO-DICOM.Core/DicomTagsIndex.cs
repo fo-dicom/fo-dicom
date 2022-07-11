@@ -26,7 +26,7 @@ namespace FellowOakDicom
                 .Where(tag => tag != null)
                 .ToList();
 
-            var index = new Dictionary<uint, DicomTag>();
+            var index = new Dictionary<uint, DicomTag>(allDicomTags.Count);
             foreach (var tag in allDicomTags)
             {
                 var key = ((uint)tag.Group << 16) | tag.Element;
