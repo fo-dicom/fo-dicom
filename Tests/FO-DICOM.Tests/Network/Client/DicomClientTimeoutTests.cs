@@ -329,7 +329,9 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var streamWriteTimeout = TimeSpan.FromMilliseconds(10);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(
+                    () => Thread.Sleep(streamWriteTimeout),
+                    Setup.ServiceProvider.GetRequiredService<IDesktopNetworkStreamFactory>()));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
@@ -369,7 +371,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout), Setup.ServiceProvider.GetRequiredService<IDesktopNetworkStreamFactory>()));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
@@ -490,7 +492,7 @@ namespace FellowOakDicom.Tests.Network.Client
                         throw new IOException("Request 1 has arrived, we can no longer write to this stream!",
                             new SocketException());
                     }
-                }));
+                }, Setup.ServiceProvider.GetRequiredService<IDesktopNetworkStreamFactory>()));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
 
@@ -561,7 +563,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     {
                         throw new Exception("Request 1 has arrived, we can no longer write to this stream!");
                     }
-                }));
+                }, Setup.ServiceProvider.GetRequiredService<IDesktopNetworkStreamFactory>()));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
 
@@ -802,7 +804,9 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             private readonly Action _onStreamWrite;
 
-            public ConfigurableNetworkManager(Action onStreamWrite)
+            public ConfigurableNetworkManager(
+                Action onStreamWrite,
+                IDesktopNetworkStreamFactory desktopNetworkStreamFactory): base(desktopNetworkStreamFactory)
             {
                 _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
             }

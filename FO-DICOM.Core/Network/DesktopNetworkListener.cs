@@ -15,6 +15,7 @@ namespace FellowOakDicom.Network
     /// </summary>
     public class DesktopNetworkListener : INetworkListener
     {
+        private readonly IDesktopNetworkStreamFactory _desktopNetworkStreamFactory;
         private readonly NetworkListenerCreationOptions _options;
 
         #region FIELDS
@@ -28,9 +29,13 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Initializes a new instance of the <see cref="DesktopNetworkListener"/> class. 
         /// </summary>
+        /// <param name="desktopNetworkStreamFactory">The factory that can create server desktop network streams</param>
         /// <param name="options">The options that specify how the listener must be initialized</param>
-        internal DesktopNetworkListener(NetworkListenerCreationOptions options)
+        internal DesktopNetworkListener(
+            IDesktopNetworkStreamFactory desktopNetworkStreamFactory,
+            NetworkListenerCreationOptions options)
         {
+            _desktopNetworkStreamFactory = desktopNetworkStreamFactory;
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
@@ -87,7 +92,7 @@ namespace FellowOakDicom.Network
                     tcpClient.NoDelay = noDelay;
 
                     //  let DesktopNetworkStream dispose the TCP Client when it is disposed
-                    return await DesktopNetworkStream.CreateAsServerAsync(tcpClient, certificate, true, _options, token);
+                    return await _desktopNetworkStreamFactory.CreateAsServerAsync(tcpClient, certificate, true, _options, token);
                 }
 
                 Stop();

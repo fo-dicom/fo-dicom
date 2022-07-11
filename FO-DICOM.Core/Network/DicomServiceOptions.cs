@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Net.Security;
 
 namespace FellowOakDicom.Network
 {
@@ -62,9 +63,11 @@ namespace FellowOakDicom.Network
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
 
         /// <summary>
-        /// Whether or not to require mutual authentication, i.e. the client must present a valid certificate as well
+        /// Whether or not to require mutual SSL authentication, i.e. the client must present a valid certificate as well
         /// </summary>
         public bool RequireMutualAuthentication { get; set; } = false;
+
+        public RemoteCertificateValidationCallback ServerCertificateValidationCallback { get; set; }
 
         public DicomServiceOptions Clone() =>
             new DicomServiceOptions

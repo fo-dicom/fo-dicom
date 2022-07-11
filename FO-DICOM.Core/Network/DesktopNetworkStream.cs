@@ -21,7 +21,6 @@ namespace FellowOakDicom.Network
     {
         #region FIELDS
 
-        private static readonly TimeSpan _sslHandshakeTimeout = TimeSpan.FromMinutes(1);
 
         private bool _disposed;
 
@@ -44,121 +43,7 @@ namespace FellowOakDicom.Network
             LocalPort = localPort;
         }
 
-        /// <summary>
-        /// Initializes a server instance of <see cref="DesktopNetworkStream"/>.
-        /// </summary>
-        /// <param name="tcpClient">TCP client.</param>
-        /// <param name="certificate">Certificate for authenticated connection.</param>
-        /// <param name="ownsTcpClient">Whether or not the TCP client should be disposed when this instance is disposed</param>
-        /// <param name="options">The network listener options</param>
-        /// <param name="cancellationToken"></param>
-        /// <remarks>
-        /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
-        /// 
-        /// if <paramref name="ownsTcpClient"/> is false, <paramref name="tcpClient"/> must be disposed by caller.
-        /// this is default so that compatible with older versions.
-        /// 
-        /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
-        /// </remarks>
-        internal static async Task<DesktopNetworkStream> CreateAsServerAsync(
-            TcpClient tcpClient, 
-            X509Certificate certificate, 
-            bool ownsTcpClient, 
-            NetworkListenerCreationOptions options,
-            CancellationToken cancellationToken)
-        {
-            var localHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
-            var localPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
-            var remoteHost = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-            var remotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
-
-            Stream stream = tcpClient.GetStream();
-            if (certificate != null)
-            {
-                var ssl = new SslStream(stream, false);
-
-                var sslHandshake = Task.Run(() => ssl.AuthenticateAsServerAsync(certificate, options.RequireMutualAuthentication, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false), cancellationToken);
-                var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
-
-                if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
-                {
-                    throw new DicomNetworkException($"SSL server authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
-                }
-
-                try
-                {
-                    await sslHandshake.ConfigureAwait(false);
-                }
-                catch (AuthenticationException e)
-                {
-                    throw new DicomNetworkException("Server SSL authentication failed", e);
-                }
-
-                if (options.RequireMutualAuthentication && !ssl.IsMutuallyAuthenticated)
-                {
-                    throw new DicomNetworkException("Client SSL authentication failed");
-                }
-
-                stream = ssl;
-            }
-
-            return new DesktopNetworkStream(localHost, localPort, remoteHost, remotePort, stream, ownsTcpClient ? tcpClient : null);
-        }
-
-        /// <summary>
-        /// Initializes a client instance of <see cref="DesktopNetworkStream"/>.
-        /// </summary>
-        /// <param name="options">The options that specify how to open a connection</param>
-        /// <param name="cancellationToken">The cancellation token that cancels the connection</param>
-        internal static async Task<DesktopNetworkStream> CreateAsClientAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            var remoteHost = options.Host;
-            var remotePort = options.Port;
-
-            var tcpClient = new TcpClient { NoDelay = options.NoDelay };
-
-            await tcpClient.ConnectAsync(options.Host, options.Port).ConfigureAwait(false);
-
-            Stream stream = tcpClient.GetStream();
-            if (options.UseTls)
-            {
-                var userCertificateValidationCallback = options.ClientCertificateValidationCallback
-                    ?? ((sender, certificate, chain, errors) => errors == SslPolicyErrors.None || options.IgnoreSslPolicyErrors);
-                var ssl = new SslStream(
-                    stream,
-                    false,
-                    userCertificateValidationCallback);
-                ssl.ReadTimeout = (int) options.Timeout.TotalMilliseconds;
-                ssl.WriteTimeout = (int) options.Timeout.TotalMilliseconds;
-
-                var sslProtocols = options.ClientSslProtocols ?? (SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12);
-                var checkClientCertificateRevocation = options.CheckClientCertificateRevocation ?? false;
-                var sslHandshake = options.ClientCertificates != null && options.ClientCertificates.Count > 0
-                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host, options.ClientCertificates, sslProtocols, checkClientCertificateRevocation), cancellationToken)
-                    : Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host), cancellationToken);
-                
-                var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
-                
-                if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
-                {
-                    throw new DicomNetworkException($"SSL client authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
-                }
-
-                await sslHandshake.ConfigureAwait(false);
-
-                stream = ssl;
-            }
-
-            var localHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
-            var localPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
-            
-            return new DesktopNetworkStream(localHost, localPort, remoteHost, remotePort, stream, tcpClient);
-        } 
+        
 
         /// <summary>
         /// Destructor.

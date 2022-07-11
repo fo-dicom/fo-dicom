@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom.Log;
+using System;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
@@ -63,5 +64,10 @@ namespace FellowOakDicom.Network
         /// The callback function that will be invoked the client certificate validation results
         /// </summary>
         public RemoteCertificateValidationCallback ClientCertificateValidationCallback { get; set; }
+
+        /// <summary>
+        /// The logger to use
+        /// </summary>
+        public ILogger Logger { get; set; }
     }
 }

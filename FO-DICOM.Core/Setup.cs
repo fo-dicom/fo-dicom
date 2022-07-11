@@ -60,7 +60,7 @@ namespace FellowOakDicom
                     new DicomSetupBuilder().Build();
                 }
 
-                return _serviceProviderHost.GetServiceProvider();
+                return _serviceProviderHost!.GetServiceProvider();
             }
             private set => _serviceProviderHost = new DefaultServiceProviderHost(value);
         }
@@ -94,6 +94,7 @@ namespace FellowOakDicom
             services.TryAddSingleton<DicomServiceDependencies>();
             services.TryAddSingleton<IDicomClientFactory, DefaultDicomClientFactory>();
             services.TryAddSingleton<IAdvancedDicomClientConnectionFactory, DefaultAdvancedDicomClientConnectionFactory>();
+            services.TryAddSingleton<IDesktopNetworkStreamFactory, DesktopNetworkStreamFactory>();
             services.Configure(options ?? (o => { }));
             return services;
         }
@@ -104,6 +105,7 @@ namespace FellowOakDicom
             services.TryAddSingleton<DicomServerDependencies>();
             services.TryAddSingleton<IDicomServerRegistry, DefaultDicomServerRegistry>();
             services.TryAddSingleton<IDicomServerFactory, DefaultDicomServerFactory>();
+            services.TryAddSingleton<IDesktopNetworkStreamFactory, DesktopNetworkStreamFactory>();
             services.Configure(options ?? (o => { }));
             return services;
         }

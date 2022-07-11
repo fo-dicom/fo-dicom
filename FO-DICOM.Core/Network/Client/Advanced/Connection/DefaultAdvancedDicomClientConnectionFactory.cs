@@ -88,6 +88,8 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             try
             {
+                request.NetworkStreamCreationOptions.Logger ??= request.Logger;
+
                 networkStream = await _networkManager.CreateNetworkStreamAsync(request.NetworkStreamCreationOptions, cancellationToken).ConfigureAwait(false);
 
                 var eventCollector = new AdvancedDicomClientConnectionEventCollector(request.RequestHandlers);

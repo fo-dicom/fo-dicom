@@ -1391,19 +1391,60 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(echoResponse3);
         }
 
-        [Fact]
-        public async Task SendAsync_WithClientCertificate_ShouldAuthenticate()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task SendAsync_WithClientCertificate_ShouldAuthenticate(bool requireMutualAuthentication)
         {
             var port = Ports.GetNext();
-            var logger = _logger.IncludePrefix("Test");
             var certificate = new X509Certificate2("./Test Data/FellowOakDicom.pfx", "FellowOakDicom");
 
             using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, certificate: certificate);
-            server.Options.RequireMutualAuthentication = true;
+            server.Options.RequireMutualAuthentication = requireMutualAuthentication;
+            server.Options.ServerCertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+            {
+                if (errors != SslPolicyErrors.None)
+                {
+                    switch (errors)
+                    {
+                        case SslPolicyErrors.RemoteCertificateNotAvailable:
+                            server.Logger.Debug("SSL policy errors: client certificate is missing");
+                            if (!requireMutualAuthentication)
+                            {
+                                // No remote certificate needed if mutual authentication is disabled
+                                return true;
+                            }
+                            break;
+                        case SslPolicyErrors.RemoteCertificateNameMismatch:
+                            server.Logger.Debug("SSL policy errors: client certificate name mismatch");
+                            break;
+                        case SslPolicyErrors.RemoteCertificateChainErrors:
+                            server.Logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
+                            break;
+                    }
+
+                    for (var index = 0; index < chain.ChainStatus.Length; index++)
+                    {
+                        var chainStatus = chain.ChainStatus[index];
+                        server.Logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+
+                        // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                        if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
+                            return true;
+                    }
+
+                    return false;
+                }
+
+                return true;
+            };
 
             var client = CreateClient("127.0.0.1", port, true, "SCU", "ANY-SCP");
             client.NetworkStreamCreationOptions.UseTls = true;
-            client.NetworkStreamCreationOptions.ClientCertificates = new X509CertificateCollection { certificate };
+            if (requireMutualAuthentication)
+            {
+                client.NetworkStreamCreationOptions.ClientCertificates = new X509CertificateCollection { certificate };
+            }
             client.NetworkStreamCreationOptions.CheckClientCertificateRevocation = false;
             client.NetworkStreamCreationOptions.ClientCertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
             {
@@ -1412,20 +1453,20 @@ namespace FellowOakDicom.Tests.Network.Client
                     switch (errors)
                     {
                         case SslPolicyErrors.RemoteCertificateNotAvailable:
-                            logger.Debug("SSL policy errors: remote certificate is missing");
+                            client.Logger.Debug("SSL policy errors: server certificate is missing");
                             break;
                         case SslPolicyErrors.RemoteCertificateNameMismatch:
-                            logger.Debug("SSL policy errors: remote certificate name mismatch");
+                            client.Logger.Debug("SSL policy errors: server certificate name mismatch");
                             break;
                         case SslPolicyErrors.RemoteCertificateChainErrors:
-                            logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
+                            client.Logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the server certificate");
                             break;
                     }
 
                     for (var index = 0; index < chain.ChainStatus.Length; index++)
                     {
                         var chainStatus = chain.ChainStatus[index];
-                        logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                        client.Logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
 
                         // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                         if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))

@@ -1,4 +1,6 @@
-﻿namespace FellowOakDicom.Network
+﻿using FellowOakDicom.Log;
+
+namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Contains the necessary parameters to start a new network listener
@@ -16,8 +18,13 @@
         public int Port { get; set; }
 
         /// <summary>
-        /// Whether or not to require mutual authentication, i.e. the client must present a valid certificate as well
+        /// The service options of this listener
         /// </summary>
-        public bool RequireMutualAuthentication { get; set; }
+        public DicomServiceOptions ServiceOptions { get; set; }
+
+        /// <summary>
+        /// The logger to use
+        /// </summary>
+        public ILogger Logger { get; set; }
     }
 }

@@ -115,7 +115,8 @@ namespace FellowOakDicom.Tests.Bugs
                         shouldTimeoutNextRequest = false;
                         Thread.Sleep(2000);
                     }
-                }
+                },
+                Setup.ServiceProvider.GetRequiredService<IDesktopNetworkStreamFactory>()
             ));
             var client = clientFactory.Create("127.0.0.1", port, false, "AnySCU", "AnySCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = 0;

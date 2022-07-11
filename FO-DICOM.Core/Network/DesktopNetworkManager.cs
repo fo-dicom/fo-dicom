@@ -16,27 +16,13 @@ namespace FellowOakDicom.Network
     /// </summary>
     public class DesktopNetworkManager : NetworkManager
     {
-        #region FIELDS
+        private readonly IDesktopNetworkStreamFactory _desktopNetworkStreamFactory;
 
-        /// <summary>
-        /// Singleton instance of <see cref="DesktopNetworkManager"/>.
-        /// </summary>
-        public static readonly NetworkManager Instance;
-        
-        #endregion
-
-        #region CONSTRUCTORS
-
-        /// <summary>
-        /// Initializes the static fields of <see cref="DesktopNetworkManager"/>.
-        /// </summary>
-        static DesktopNetworkManager()
+        public DesktopNetworkManager(IDesktopNetworkStreamFactory desktopNetworkStreamFactory)
         {
-            Instance = new DesktopNetworkManager();
+            _desktopNetworkStreamFactory = desktopNetworkStreamFactory ?? throw new ArgumentNullException(nameof(desktopNetworkStreamFactory));
         }
-
-        #endregion
-
+        
         #region PROPERTIES
 
         /// <inheritdoc />
@@ -51,7 +37,7 @@ namespace FellowOakDicom.Network
             CreateNetworkListenerImpl(new NetworkListenerCreationOptions { IpAddress = ipAddress, Port = port });
 
         protected internal override INetworkListener CreateNetworkListenerImpl(NetworkListenerCreationOptions options) => 
-            new DesktopNetworkListener(options);
+            new DesktopNetworkListener(_desktopNetworkStreamFactory, options);
 
         /// <inheritdoc />
         protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
@@ -72,7 +58,7 @@ namespace FellowOakDicom.Network
             CreateNetworkStreamImplAsync(options, CancellationToken.None).GetAwaiter().GetResult();
 
         protected override async Task<INetworkStream> CreateNetworkStreamImplAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
-            => await DesktopNetworkStream.CreateAsClientAsync(options, cancellationToken).ConfigureAwait(false);
+            => await _desktopNetworkStreamFactory.CreateAsClientAsync(options, cancellationToken).ConfigureAwait(false);
 
         /// <inheritdoc />
         protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)

@@ -5,26 +5,21 @@ using System;
 
 namespace FellowOakDicom
 {
-
     public interface IServiceProviderHost
     {
         IServiceProvider GetServiceProvider();
     }
 
-
     public class DefaultServiceProviderHost : IServiceProviderHost
     {
-
-        private readonly IServiceProvider _seriveProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         public DefaultServiceProviderHost(IServiceProvider serviceProvider)
         {
-            _seriveProvider = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
 
         public IServiceProvider GetServiceProvider()
-            => _seriveProvider;
-
+            => _serviceProvider;
     }
-
 }
