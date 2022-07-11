@@ -73,7 +73,7 @@ namespace FellowOakDicom
                 DicomVR.LO);
 
         private readonly ConcurrentDictionary<string, DicomPrivateCreator> _creators;
-        private readonly ConcurrentDictionary<DicomPrivateCreator, DicomDictionary> _private;
+        private readonly ConcurrentDictionary<string, DicomDictionary> _private;
         private readonly ConcurrentDictionary<DicomTag, DicomDictionaryEntry> _entries;
         private readonly ConcurrentDictionary<string, DicomTag> _keywords;
         private readonly ConcurrentStack<DicomDictionaryEntry> _masked;
@@ -85,15 +85,15 @@ namespace FellowOakDicom
         public DicomDictionary()
         {
             _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
-            _private = new ConcurrentDictionary<DicomPrivateCreator, DicomDictionary>();
+            _private = new ConcurrentDictionary<string, DicomDictionary>();
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
 
-        private DicomDictionary(DicomPrivateCreator creator)
+        private DicomDictionary(string privateCreator)
         {
-            PrivateCreator = creator;
+            PrivateCreator = new DicomPrivateCreator(privateCreator);
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
             _keywords = new ConcurrentDictionary<string, DicomTag>();
             _masked = new ConcurrentStack<DicomDictionaryEntry>();
@@ -218,8 +218,9 @@ namespace FellowOakDicom
         {
             get
             {
-                if (_private != null && tag.PrivateCreator != null
-                    && _private.TryGetValue(tag.PrivateCreator, out DicomDictionary pvt))
+                if (_private != null 
+                    && tag.PrivateCreator?.Creator != null
+                    && _private.TryGetValue(tag.PrivateCreator.Creator, out DicomDictionary pvt))
                 {
                     return pvt[tag];
                 }
@@ -252,7 +253,7 @@ namespace FellowOakDicom
             }
         }
 
-        public DicomDictionary this[DicomPrivateCreator creator] => _private.GetOrAdd(creator, c => new DicomDictionary(c));
+        public DicomDictionary this[DicomPrivateCreator creator] => _private.GetOrAdd(creator.Creator, c => new DicomDictionary(c));
 
         /// <summary>
         /// Gets the DIcomTag for a given keyword.
