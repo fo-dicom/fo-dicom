@@ -84,10 +84,10 @@ namespace FellowOakDicom
 
         public DicomDictionary()
         {
-            _creators = new ConcurrentDictionary<string, DicomPrivateCreator>();
-            _private = new ConcurrentDictionary<string, DicomDictionary>();
+            _creators = new ConcurrentDictionary<string, DicomPrivateCreator>(StringComparer.Ordinal);
+            _private = new ConcurrentDictionary<string, DicomDictionary>(StringComparer.Ordinal);
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
-            _keywords = new ConcurrentDictionary<string, DicomTag>();
+            _keywords = new ConcurrentDictionary<string, DicomTag>(StringComparer.Ordinal);
             _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
 
@@ -95,7 +95,7 @@ namespace FellowOakDicom
         {
             PrivateCreator = new DicomPrivateCreator(privateCreator);
             _entries = new ConcurrentDictionary<DicomTag, DicomDictionaryEntry>();
-            _keywords = new ConcurrentDictionary<string, DicomTag>();
+            _keywords = new ConcurrentDictionary<string, DicomTag>(StringComparer.Ordinal);
             _masked = new ConcurrentStack<DicomDictionaryEntry>();
         }
 
