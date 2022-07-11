@@ -40,23 +40,18 @@ namespace FellowOakDicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        protected internal override string MachineNameImpl
-        {
-            get
-            {
-                return Environment.GetEnvironmentVariable("COMPUTERNAME");
-            }
-        }
+        protected internal override string MachineNameImpl => Environment.GetEnvironmentVariable("COMPUTERNAME");
 
         #endregion
 
         #region METHODS
 
         /// <inheritdoc />
-        protected internal override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
-        {
-            return new DesktopNetworkListener(ipAddress, port);
-        }
+        protected internal override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port) => 
+            CreateNetworkListenerImpl(new NetworkListenerCreationOptions { IpAddress = ipAddress, Port = port });
+
+        protected internal override INetworkListener CreateNetworkListenerImpl(NetworkListenerCreationOptions options) => 
+            new DesktopNetworkListener(options);
 
         /// <inheritdoc />
         protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)

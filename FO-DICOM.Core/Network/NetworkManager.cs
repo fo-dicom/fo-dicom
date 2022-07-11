@@ -15,7 +15,15 @@ namespace FellowOakDicom.Network
         /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
+        [Obsolete("Please use " + nameof(CreateNetworkListener) + "(" + nameof(NetworkListenerCreationOptions) + " options) instead")]
         INetworkListener CreateNetworkListener(string ipAddress, int port);
+
+        /// <summary>
+        /// Platform-specific implementation to create a network listener object.
+        /// </summary>
+        /// <param name="options">The options that specify how the listener must be initialized</param>
+        /// <returns>Network listener implementation.</returns>
+        INetworkListener CreateNetworkListener(NetworkListenerCreationOptions options);
         
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
@@ -117,6 +125,13 @@ namespace FellowOakDicom.Network
         protected internal abstract INetworkListener CreateNetworkListenerImpl(string ipAddress, int port);
 
         /// <summary>
+        /// Platform-specific implementation to create a network listener object.
+        /// </summary>
+        /// <param name="options">The options that specify how the listener must be initialized</param>
+        /// <returns>Network listener implementation.</returns>
+        protected internal abstract INetworkListener CreateNetworkListenerImpl(NetworkListenerCreationOptions options);
+
+        /// <summary>
         /// Platform-specific implementation to create a network stream object.
         /// </summary>
         /// <param name="host">Network host.</param>
@@ -153,6 +168,9 @@ namespace FellowOakDicom.Network
 
         INetworkListener INetworkManager.CreateNetworkListener(string ipAddress, int port) 
             => CreateNetworkListenerImpl(ipAddress, port);
+        
+        INetworkListener INetworkManager.CreateNetworkListener(NetworkListenerCreationOptions options) 
+            => CreateNetworkListenerImpl(options);
 
         INetworkStream INetworkManager.CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
             => CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);

@@ -1399,6 +1399,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var certificate = new X509Certificate2("./Test Data/FellowOakDicom.pfx", "FellowOakDicom");
 
             using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, certificate: certificate);
+            server.Options.RequireMutualAuthentication = true;
 
             var client = CreateClient("127.0.0.1", port, true, "SCU", "ANY-SCP");
             client.NetworkStreamCreationOptions.UseTls = true;

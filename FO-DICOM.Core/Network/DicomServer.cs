@@ -274,8 +274,14 @@ namespace FellowOakDicom.Network
             try
             {
                 var noDelay = Options.TcpNoDelay;
+                var requireMutualAuthentication = Options.RequireMutualAuthentication;
 
-                listener = _networkManager.CreateNetworkListener(IPAddress, Port);
+                listener = _networkManager.CreateNetworkListener(new NetworkListenerCreationOptions
+                {
+                    IpAddress = IPAddress,
+                    Port = Port,
+                    RequireMutualAuthentication = requireMutualAuthentication
+                });
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 

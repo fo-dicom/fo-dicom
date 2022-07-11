@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -14,9 +15,11 @@ namespace FellowOakDicom.Network
     /// </summary>
     public class DesktopNetworkListener : INetworkListener
     {
+        private readonly NetworkListenerCreationOptions _options;
+
         #region FIELDS
 
-        private readonly TcpListener _listener;
+        private TcpListener _listener;
 
         #endregion
 
@@ -25,18 +28,10 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Initializes a new instance of the <see cref="DesktopNetworkListener"/> class. 
         /// </summary>
-        /// <param name="ipAddress">IP address(es) to listen to.</param>
-        /// <param name="port">
-        /// TCP/IP port to listen to.
-        /// </param>
-        internal DesktopNetworkListener(string ipAddress, int port)
+        /// <param name="options">The options that specify how the listener must be initialized</param>
+        internal DesktopNetworkListener(NetworkListenerCreationOptions options)
         {
-            if (!IPAddress.TryParse(ipAddress, out IPAddress addr))
-            {
-                addr = IPAddress.Any;
-            }
-
-            _listener = new TcpListener(addr, port);
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         #endregion
@@ -46,30 +41,53 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public Task StartAsync()
         {
+            if (_listener != null)
+            {
+                throw new DicomNetworkException("Cannot start a network listener that was already started");
+            }
+            
+            if (!IPAddress.TryParse(_options.IpAddress, out IPAddress ipAddress))
+            {
+                ipAddress = IPAddress.Any;
+            }
+
+            _listener = new TcpListener(ipAddress, _options.Port);
             _listener.Start();
-            return Task.FromResult(0);
+            
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
-        public void Stop() => _listener.Stop();
+        public void Stop()
+        {
+            if (_listener == null)
+            {
+                throw new DicomNetworkException("Cannot stop a network listener that was never started");
+            }
+            
+            _listener?.Stop();
+        }
 
         public async Task<INetworkStream> AcceptNetworkStreamAsync(X509Certificate certificate, bool noDelay, CancellationToken token)
         {
+            if (_listener == null)
+            {
+                throw new DicomNetworkException("Cannot accept an incoming network stream because the listener has not been started yet");
+            }
+            
             try
             {
-                Task awaiter;
-                Task<TcpClient> acceptTcpClientTask;
                 using var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                acceptTcpClientTask = _listener.AcceptTcpClientAsync();
-                awaiter = await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
+                var acceptTcpClientTask = _listener.AcceptTcpClientAsync();
+                var awaiter = await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
                 cancelSource.Cancel();
-                if (awaiter is Task<TcpClient> tcpClientTask)
+                if (awaiter == acceptTcpClientTask)
                 {
-                    var tcpClient = tcpClientTask.Result;
+                    var tcpClient = await acceptTcpClientTask; // No need for ConfigureAwait(false) here because the task has already completed
                     tcpClient.NoDelay = noDelay;
 
                     //  let DesktopNetworkStream dispose the TCP Client when it is disposed
-                    return await DesktopNetworkStream.CreateAsServerAsync(tcpClient, certificate, true, token);
+                    return await DesktopNetworkStream.CreateAsServerAsync(tcpClient, certificate, true, _options, token);
                 }
 
                 Stop();

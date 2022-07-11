@@ -49,7 +49,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="tcpClient">TCP client.</param>
         /// <param name="certificate">Certificate for authenticated connection.</param>
-        /// <param name="ownsTcpClient">dispose tcpClient on Dispose</param>
+        /// <param name="ownsTcpClient">Whether or not the TCP client should be disposed when this instance is disposed</param>
+        /// <param name="options">The network listener options</param>
         /// <param name="cancellationToken"></param>
         /// <remarks>
         /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
@@ -59,7 +60,12 @@ namespace FellowOakDicom.Network
         /// 
         /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
         /// </remarks>
-        internal static async Task<DesktopNetworkStream> CreateAsServerAsync(TcpClient tcpClient, X509Certificate certificate, bool ownsTcpClient, CancellationToken cancellationToken)
+        internal static async Task<DesktopNetworkStream> CreateAsServerAsync(
+            TcpClient tcpClient, 
+            X509Certificate certificate, 
+            bool ownsTcpClient, 
+            NetworkListenerCreationOptions options,
+            CancellationToken cancellationToken)
         {
             var localHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
             var localPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
@@ -71,7 +77,7 @@ namespace FellowOakDicom.Network
             {
                 var ssl = new SslStream(stream, false);
 
-                var sslHandshake = Task.Run(() => ssl.AuthenticateAsServerAsync(certificate, true, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false), cancellationToken);
+                var sslHandshake = Task.Run(() => ssl.AuthenticateAsServerAsync(certificate, options.RequireMutualAuthentication, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false), cancellationToken);
                 var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
@@ -79,7 +85,19 @@ namespace FellowOakDicom.Network
                     throw new DicomNetworkException($"SSL server authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
                 }
 
-                await sslHandshake.ConfigureAwait(false);
+                try
+                {
+                    await sslHandshake.ConfigureAwait(false);
+                }
+                catch (AuthenticationException e)
+                {
+                    throw new DicomNetworkException("Server SSL authentication failed", e);
+                }
+
+                if (options.RequireMutualAuthentication && !ssl.IsMutuallyAuthenticated)
+                {
+                    throw new DicomNetworkException("Client SSL authentication failed");
+                }
 
                 stream = ssl;
             }

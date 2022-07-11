@@ -61,6 +61,11 @@ namespace FellowOakDicom.Network
         /// </summary>
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
 
+        /// <summary>
+        /// Whether or not to require mutual authentication, i.e. the client must present a valid certificate as well
+        /// </summary>
+        public bool RequireMutualAuthentication { get; set; } = false;
+
         public DicomServiceOptions Clone() =>
             new DicomServiceOptions
             {
@@ -75,7 +80,8 @@ namespace FellowOakDicom.Network
                 MaxClientsAllowed = MaxClientsAllowed,
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
-                MaxPDVsPerPDU = MaxPDVsPerPDU
+                MaxPDVsPerPDU = MaxPDVsPerPDU,
+                RequireMutualAuthentication = RequireMutualAuthentication
             };
     }
 }
