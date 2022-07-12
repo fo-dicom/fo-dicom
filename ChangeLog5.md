@@ -1,4 +1,5 @@
 #### 5.0.4 (TBD)
+* Add support for mutual TLS authentication and more fine grained TLS configuration (#1418)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
 * Improve throughput of DicomClient when more requests are added mid-flight (#1396)
