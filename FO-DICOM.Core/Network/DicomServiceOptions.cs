@@ -67,6 +67,9 @@ namespace FellowOakDicom.Network
         /// </summary>
         public bool RequireMutualAuthentication { get; set; } = false;
 
+        /// <summary>
+        /// A callback that is invoked after validating the certificate of an incoming client connection
+        /// </summary>
         public RemoteCertificateValidationCallback ServerCertificateValidationCallback { get; set; }
 
         public DicomServiceOptions Clone() =>
@@ -84,7 +87,8 @@ namespace FellowOakDicom.Network
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
                 MaxPDVsPerPDU = MaxPDVsPerPDU,
-                RequireMutualAuthentication = RequireMutualAuthentication
+                RequireMutualAuthentication = RequireMutualAuthentication,
+                ServerCertificateValidationCallback = ServerCertificateValidationCallback
             };
     }
 }
