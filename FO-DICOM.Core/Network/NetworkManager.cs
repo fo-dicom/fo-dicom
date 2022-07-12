@@ -32,11 +32,10 @@ namespace FellowOakDicom.Network
         /// <param name="port">Network port.</param>
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
-        /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
         /// <returns>Network stream implementation.</returns>
         [Obsolete("Please use " + nameof(CreateNetworkStreamAsync) + " instead")]
-        INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
+        INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, int millisecondsTimeout);
 
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
@@ -138,10 +137,9 @@ namespace FellowOakDicom.Network
         /// <param name="port">Network port.</param>
         /// <param name="useTls">Use TLS layer?</param>
         /// <param name="noDelay">No delay?</param>
-        /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
         /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
         /// <returns>Network stream implementation.</returns>
-        protected internal abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
+        protected internal abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, int millisecondsTimeout);
 
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
@@ -172,8 +170,8 @@ namespace FellowOakDicom.Network
         INetworkListener INetworkManager.CreateNetworkListener(NetworkListenerCreationOptions options) 
             => CreateNetworkListenerImpl(options);
 
-        INetworkStream INetworkManager.CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
-            => CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
+        INetworkStream INetworkManager.CreateNetworkStream(string host, int port, bool useTls, bool noDelay, int millisecondsTimeout)
+            => CreateNetworkStreamImpl(host, port, useTls, noDelay, millisecondsTimeout);
 
         INetworkStream INetworkManager.CreateNetworkStream(NetworkStreamCreationOptions options)
             => CreateNetworkStreamImpl(options);
@@ -189,7 +187,7 @@ namespace FellowOakDicom.Network
 
         string INetworkManager.MachineName => MachineNameImpl;
         
-        protected virtual Task<INetworkStream> CreateNetworkStreamImplAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken) 
+        protected virtual Task<INetworkStream> CreateNetworkStreamImplAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
             => Task.FromResult(CreateNetworkStreamImpl(options));
 
         #endregion

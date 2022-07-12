@@ -60,13 +60,13 @@ namespace FellowOakDicom.Tests.Network.Client
             return server;
         }
 
-        private TServer CreateServer<TProvider, TServer>(int port, X509Certificate certificate = null)
+        private TServer CreateServer<TProvider, TServer>(int port, DicomServerTlsOptions tlsOptions = null)
             where TProvider : DicomService, IDicomServiceProvider
             where TServer : class, IDicomServer<TProvider>
         {
             var logger = _logger.IncludePrefix(nameof(IDicomServer));
             var ipAddress = NetworkManager.IPv4Any;
-            var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, certificate: certificate);
+            var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, tlsOptions: tlsOptions);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
             return server as TServer;
@@ -1396,88 +1396,100 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(false)]
         public async Task SendAsync_WithClientCertificate_ShouldAuthenticate(bool requireMutualAuthentication)
         {
+            // Arrange
             var port = Ports.GetNext();
             var certificate = new X509Certificate2("./Test Data/FellowOakDicom.pfx", "FellowOakDicom");
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, certificate: certificate);
-            server.Options.RequireMutualAuthentication = requireMutualAuthentication;
-            server.Options.ServerCertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+            var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
+            var serverTlsOptions = new DicomServerTlsOptions
             {
-                if (errors != SslPolicyErrors.None)
+                Certificate = certificate,
+                RequireMutualAuthentication = requireMutualAuthentication,
+                CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
                 {
-                    switch (errors)
+                    if (errors != SslPolicyErrors.None)
                     {
-                        case SslPolicyErrors.RemoteCertificateNotAvailable:
-                            server.Logger.Debug("SSL policy errors: client certificate is missing");
-                            if (!requireMutualAuthentication)
-                            {
-                                // No remote certificate needed if mutual authentication is disabled
+                        switch (errors)
+                        {
+                            case SslPolicyErrors.RemoteCertificateNotAvailable:
+                                serverLogger.Debug("SSL policy errors: client certificate is missing");
+                                if (!requireMutualAuthentication)
+                                {
+                                    // No remote certificate needed if mutual authentication is disabled
+                                    return true;
+                                }
+                                break;
+                            case SslPolicyErrors.RemoteCertificateNameMismatch:
+                                serverLogger.Debug("SSL policy errors: client certificate name mismatch");
+                                break;
+                            case SslPolicyErrors.RemoteCertificateChainErrors:
+                                serverLogger.Debug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
+                                break;
+                        }
+
+                        for (var index = 0; index < chain.ChainStatus.Length; index++)
+                        {
+                            var chainStatus = chain.ChainStatus[index];
+                            serverLogger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+
+                            // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                            if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
                                 return true;
-                            }
-                            break;
-                        case SslPolicyErrors.RemoteCertificateNameMismatch:
-                            server.Logger.Debug("SSL policy errors: client certificate name mismatch");
-                            break;
-                        case SslPolicyErrors.RemoteCertificateChainErrors:
-                            server.Logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
-                            break;
+                        }
+
+                        return false;
                     }
 
-                    for (var index = 0; index < chain.ChainStatus.Length; index++)
-                    {
-                        var chainStatus = chain.ChainStatus[index];
-                        server.Logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
-
-                        // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
-                        if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
-                            return true;
-                    }
-
-                    return false;
+                    return true;
                 }
-
-                return true;
             };
+
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, tlsOptions: serverTlsOptions);
 
             var client = CreateClient("127.0.0.1", port, true, "SCU", "ANY-SCP");
-            client.NetworkStreamCreationOptions.UseTls = true;
+
+            var clientTlsOptions = new DicomClientTlsOptions
+            {
+                CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+                {
+                    if (errors != SslPolicyErrors.None)
+                    {
+                        switch (errors)
+                        {
+                            case SslPolicyErrors.RemoteCertificateNotAvailable:
+                                client.Logger.Debug("SSL policy errors: server certificate is missing");
+                                break;
+                            case SslPolicyErrors.RemoteCertificateNameMismatch:
+                                client.Logger.Debug("SSL policy errors: server certificate name mismatch");
+                                break;
+                            case SslPolicyErrors.RemoteCertificateChainErrors:
+                                client.Logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the server certificate");
+                                break;
+                        }
+
+                        for (var index = 0; index < chain.ChainStatus.Length; index++)
+                        {
+                            var chainStatus = chain.ChainStatus[index];
+                            client.Logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+
+                            // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                            if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
+                                return true;
+                        }
+
+                        return false;
+                    }
+
+                    return true;
+                }
+            };
             if (requireMutualAuthentication)
             {
-                client.NetworkStreamCreationOptions.ClientCertificates = new X509CertificateCollection { certificate };
+                clientTlsOptions.Certificates = new X509CertificateCollection { certificate };
             }
-            client.NetworkStreamCreationOptions.CheckClientCertificateRevocation = false;
-            client.NetworkStreamCreationOptions.ClientCertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
-            {
-                if (errors != SslPolicyErrors.None)
-                {
-                    switch (errors)
-                    {
-                        case SslPolicyErrors.RemoteCertificateNotAvailable:
-                            client.Logger.Debug("SSL policy errors: server certificate is missing");
-                            break;
-                        case SslPolicyErrors.RemoteCertificateNameMismatch:
-                            client.Logger.Debug("SSL policy errors: server certificate name mismatch");
-                            break;
-                        case SslPolicyErrors.RemoteCertificateChainErrors:
-                            client.Logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the server certificate");
-                            break;
-                    }
 
-                    for (var index = 0; index < chain.ChainStatus.Length; index++)
-                    {
-                        var chainStatus = chain.ChainStatus[index];
-                        client.Logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
-
-                        // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
-                        if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
-                            return true;
-                    }
-
-                    return false;
-                }
-
-                return true;
-            };
+            client.NetworkStreamCreationOptions.UseTls = true;
+            client.NetworkStreamCreationOptions.TlsOptions = clientTlsOptions;
 
             DicomCEchoResponse actualResponse = null;
             var dicomCEchoRequest = new DicomCEchoRequest

@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
-using FellowOakDicom.Network.Client.Advanced;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -30,7 +29,7 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
+        /// <param name="useTls">Whether or not TLS should be used to connect to the SCP.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         public static IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
@@ -86,7 +85,7 @@ namespace FellowOakDicom.Network.Client
                 UseTls = useTls,
                 Timeout = TimeSpan.FromMilliseconds(clientOptions.AssociationRequestTimeoutInMs),
                 NoDelay = serviceOptions.TcpNoDelay,
-                IgnoreSslPolicyErrors = serviceOptions.IgnoreSslPolicyErrors
+                TlsOptions = new DicomClientTlsOptions()
             };
 
             return new DicomClient(networkStreamCreationOptions, callingAe, calledAe, clientOptions, serviceOptions, logger, _advancedDicomClientConnectionFactory);

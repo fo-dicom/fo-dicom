@@ -1,5 +1,4 @@
-﻿using FellowOakDicom.Log;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,7 +17,7 @@ namespace FellowOakDicom.Network
         /// Initializes a server instance of <see cref="DesktopNetworkStream"/>.
         /// </summary>
         /// <param name="tcpClient">TCP client.</param>
-        /// <param name="certificate">Certificate for authenticated connection.</param>
+        /// <param name="tlsOptions">The options that configure TLS authentication</param>
         /// <param name="ownsTcpClient">Whether or not the TCP client should be disposed when this instance is disposed</param>
         /// <param name="options">The network listener options</param>
         /// <param name="cancellationToken"></param>
@@ -32,7 +31,7 @@ namespace FellowOakDicom.Network
         /// </remarks>
         Task<DesktopNetworkStream> CreateAsServerAsync(
             TcpClient tcpClient,
-            X509Certificate certificate,
+            DicomServerTlsOptions tlsOptions,
             bool ownsTcpClient,
             NetworkListenerCreationOptions options,
             CancellationToken cancellationToken);
@@ -47,27 +46,10 @@ namespace FellowOakDicom.Network
 
     public class DesktopNetworkStreamFactory : IDesktopNetworkStreamFactory
     {
-        private static readonly TimeSpan _sslHandshakeTimeout = TimeSpan.FromMinutes(1);
-
-        /// <summary>
-        /// Initializes a server instance of <see cref="DesktopNetworkStream"/>.
-        /// </summary>
-        /// <param name="tcpClient">TCP client.</param>
-        /// <param name="certificate">Certificate for authenticated connection.</param>
-        /// <param name="ownsTcpClient">Whether or not the TCP client should be disposed when this instance is disposed</param>
-        /// <param name="options">The network listener options</param>
-        /// <param name="cancellationToken"></param>
-        /// <remarks>
-        /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
-        /// 
-        /// if <paramref name="ownsTcpClient"/> is false, <paramref name="tcpClient"/> must be disposed by caller.
-        /// this is default so that compatible with older versions.
-        /// 
-        /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
-        /// </remarks>
+        /// <inheritdoc cref="IDesktopNetworkStreamFactory.CreateAsServerAsync" />
         public async Task<DesktopNetworkStream> CreateAsServerAsync(
             TcpClient tcpClient,
-            X509Certificate certificate,
+            DicomServerTlsOptions tlsOptions,
             bool ownsTcpClient,
             NetworkListenerCreationOptions options,
             CancellationToken cancellationToken)
@@ -81,32 +63,37 @@ namespace FellowOakDicom.Network
             var remotePort = remoteEndpoint.Port;
 
             Stream stream = tcpClient.GetStream();
-            if (certificate != null)
+            
+            if (tlsOptions?.Certificate != null)
             {
-                logger?.Debug("Setting up server SSL network stream with certificate {ServerCertificateSubject}", certificate.Subject);
+                var certificate = tlsOptions.Certificate;
                 
-                var requireMutualAuthentication = options.ServiceOptions.RequireMutualAuthentication;
-                var userCertificateValidationCallback = options.ServiceOptions.ServerCertificateValidationCallback
+                var requireMutualAuthentication = tlsOptions.RequireMutualAuthentication;
+                var userCertificateValidationCallback = tlsOptions.CertificateValidationCallback
                                                         ?? ((sender, _, chain, errors) =>
                                                         {
                                                             if (!requireMutualAuthentication)
                                                             {
                                                                 errors &= ~SslPolicyErrors.RemoteCertificateNotAvailable;
                                                             }
-
-                                                            return errors == SslPolicyErrors.None || options.ServiceOptions.IgnoreSslPolicyErrors;
+                                                            return errors == SslPolicyErrors.None;
                                                         });
+                var protocols = tlsOptions.Protocols;
+                var checkCertificateRevocation = tlsOptions.CheckCertificateRevocation;
+                var timeout = tlsOptions.Timeout;
                 
+                logger?.Debug("Setting up server SSL network stream with certificate {ServerCertificateSubject}", certificate.Subject);
+
                 var ssl = new SslStream(stream, false, userCertificateValidationCallback);
                 var sslHandshake =
                     Task.Run(
-                        () => ssl.AuthenticateAsServerAsync(certificate, requireMutualAuthentication, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false),
+                        () => ssl.AuthenticateAsServerAsync(certificate, requireMutualAuthentication, protocols, checkCertificateRevocation),
                         cancellationToken);
-                var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
+                var sslHandshakeTimeout = Task.Delay(timeout, cancellationToken);
 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
                 {
-                    throw new DicomNetworkException($"SSL server authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
+                    throw new DicomNetworkException($"SSL server authentication took longer than {timeout.TotalSeconds}s");
                 }
 
                 try
@@ -115,21 +102,21 @@ namespace FellowOakDicom.Network
                 }
                 catch (AuthenticationException e)
                 {
-                    throw new DicomNetworkException("Server SSL authentication failed", e);
+                    throw new DicomNetworkException("Server TLS authentication failed", e);
                 }
 
                 if (requireMutualAuthentication)
                 {
                     if (!ssl.IsMutuallyAuthenticated)
                     {
-                        throw new DicomNetworkException("Client SSL authentication failed");
+                        throw new DicomNetworkException("Client TLS authentication failed");
                     }
 
-                    logger?.Debug("Mutual server and client SSL authentication succeeded");
+                    logger?.Debug("Mutual server and client TLS authentication succeeded");
                 }
                 else
                 {
-                    logger?.Debug("Server SSL authentication succeeded");
+                    logger?.Debug("Server TLS authentication succeeded");
                 }
 
                 stream = ssl;
@@ -138,11 +125,7 @@ namespace FellowOakDicom.Network
             return new DesktopNetworkStream(localHost, localPort, remoteHost, remotePort, stream, ownsTcpClient ? tcpClient : null);
         }
 
-        /// <summary>
-        /// Initializes a client instance of <see cref="DesktopNetworkStream"/>.
-        /// </summary>
-        /// <param name="options">The options that specify how to open a connection</param>
-        /// <param name="cancellationToken">The cancellation token that cancels the connection</param>
+        /// <inheritdoc cref="IDesktopNetworkStreamFactory.CreateAsClientAsync"/>
         public async Task<DesktopNetworkStream> CreateAsClientAsync(NetworkStreamCreationOptions options, CancellationToken cancellationToken)
         {
             if (options == null)
@@ -153,52 +136,65 @@ namespace FellowOakDicom.Network
             var remoteHost = options.Host;
             var remotePort = options.Port;
             var logger = options.Logger;
+            var tlsOptions = options.TlsOptions;
 
             var tcpClient = new TcpClient { NoDelay = options.NoDelay };
 
             await tcpClient.ConnectAsync(options.Host, options.Port).ConfigureAwait(false);
 
-            Stream stream = tcpClient.GetStream();
-            if (options.UseTls)
+            var networkStream = tcpClient.GetStream();
+            Stream stream;
+            if (options.UseTls && tlsOptions != null)
             {
-                if (options.ClientCertificates != null && options.ClientCertificates.Count > 0)
+                var certificates = tlsOptions.Certificates;
+                var protocols = tlsOptions.Protocols;
+                var checkCertificateRevocation = tlsOptions.CheckCertificateRevocation;
+                var userCertificateValidationCallback = tlsOptions.CertificateValidationCallback
+                                                        ?? ((sender, certificate, chain, errors) => errors == SslPolicyErrors.None);
+                var timeout = tlsOptions.Timeout;
+                
+                if (certificates?.Count > 0)
                 {
-                    var clientCertificateSubjects = string.Join(" and ", options.ClientCertificates.OfType<X509Certificate>().Select(c => c.Subject));
-                    logger?.Debug("Setting up client SSL authentication with certificates: {ClientCertificateSubjects}", Environment.NewLine, clientCertificateSubjects);
+                    var clientCertificateSubjects = string.Join(" and ", tlsOptions.Certificates.OfType<X509Certificate>().Select(c => c.Subject));
+                    logger?.Debug("Setting up client TLS authentication with certificates: {CertificateSubjects}", clientCertificateSubjects);
                 }
                 else
                 {
-                    logger?.Debug("Setting up client SSL authentication");
+                    logger?.Debug("Setting up client TLS authentication");
                 }
 
-                var optionsIgnoreSslPolicyErrors = options.IgnoreSslPolicyErrors;
-                var userCertificateValidationCallback = options.ClientCertificateValidationCallback
-                                                        ?? ((sender, certificate, chain, errors) => errors == SslPolicyErrors.None || optionsIgnoreSslPolicyErrors);
-                var ssl = new SslStream(
-                    stream,
-                    false,
-                    userCertificateValidationCallback);
-                ssl.ReadTimeout = (int)options.Timeout.TotalMilliseconds;
-                ssl.WriteTimeout = (int)options.Timeout.TotalMilliseconds;
+                var ssl = new SslStream(networkStream, false, userCertificateValidationCallback);
+                if (options.Timeout != null)
+                {
+                    ssl.ReadTimeout = (int)options.Timeout.Value.TotalMilliseconds;
+                    ssl.WriteTimeout = (int)options.Timeout.Value.TotalMilliseconds;
+                }
 
-                var sslProtocols = options.ClientSslProtocols ?? (SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12);
-                var checkClientCertificateRevocation = options.CheckClientCertificateRevocation ?? false;
-                var sslHandshake = options.ClientCertificates != null && options.ClientCertificates.Count > 0
-                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host, options.ClientCertificates, sslProtocols, checkClientCertificateRevocation), cancellationToken)
+                var sslHandshake = certificates?.Count > 0
+                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host, certificates, protocols, checkCertificateRevocation), cancellationToken)
                     : Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host), cancellationToken);
-
-                var sslHandshakeTimeout = Task.Delay(_sslHandshakeTimeout, cancellationToken);
+                var sslHandshakeTimeout = Task.Delay(timeout, cancellationToken);
 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
                 {
-                    throw new DicomNetworkException($"Client SSL authentication failed because it took longer than {_sslHandshakeTimeout.TotalSeconds}s");
+                    throw new DicomNetworkException($"Client TLS authentication failed because it took longer than {timeout.TotalSeconds}s");
                 }
 
                 await sslHandshake.ConfigureAwait(false);
                 
-                logger?.Debug("Client SSL authentication succeeded");
+                logger?.Debug("Client TLS authentication succeeded");
 
                 stream = ssl;
+            }
+            else
+            {
+                if (options.Timeout != null)
+                {
+                    networkStream.ReadTimeout = (int)options.Timeout.Value.TotalMilliseconds;
+                    networkStream.WriteTimeout = (int)options.Timeout.Value.TotalMilliseconds;
+                }
+
+                stream = networkStream;
             }
 
             var localHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();

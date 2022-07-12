@@ -70,12 +70,12 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="ipAddress">IP address(es) for the server to listen to.</param>
         /// <param name="port">Port to which the server should be listening.</param>
-        /// <param name="certificate">Certificate for secure connections.</param>
+        /// <param name="tlsOptions">The options that configure TLS authentication</param>
         /// <param name="fallbackEncoding">Encoding to apply if no encoding is identified.</param>
         /// <param name="options">Service options.</param>
         /// <param name="userState">User state to be shared with the connected services.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        Task StartAsync(string ipAddress, int port, X509Certificate certificate, Encoding fallbackEncoding,
+        Task StartAsync(string ipAddress, int port, DicomServerTlsOptions tlsOptions, Encoding fallbackEncoding,
             DicomServiceOptions options, object userState);
 
         /// <summary>

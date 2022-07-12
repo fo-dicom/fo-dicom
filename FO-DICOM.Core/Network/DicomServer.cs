@@ -40,7 +40,7 @@ namespace FellowOakDicom.Network
 
         private object _userState;
 
-        private X509Certificate _certificate;
+        private DicomServerTlsOptions _tlsOptions;
 
         private Encoding _fallbackEncoding;
 
@@ -180,7 +180,7 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, X509Certificate certificate, Encoding fallbackEncoding,
+        public virtual Task StartAsync(string ipAddress, int port, DicomServerTlsOptions tlsOptions, Encoding fallbackEncoding,
             DicomServiceOptions options, object userState)
         {
             if (_wasStarted)
@@ -195,7 +195,7 @@ namespace FellowOakDicom.Network
             Options = options;
 
             _userState = userState;
-            _certificate = certificate;
+            _tlsOptions = tlsOptions;
             _fallbackEncoding = fallbackEncoding;
 
             return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
@@ -290,7 +290,7 @@ namespace FellowOakDicom.Network
                     await _hasNonMaxServicesFlag.WaitAsync().ConfigureAwait(false);
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificate, noDelay, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_tlsOptions, noDelay, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)

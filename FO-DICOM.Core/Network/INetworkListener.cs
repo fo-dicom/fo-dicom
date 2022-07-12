@@ -26,10 +26,10 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Wait until a network stream is trying to connect, and return the accepted stream.
         /// </summary>
-        /// <param name="certificate">Certificate of authenticated connections.</param>
+        /// <param name="tlsOptions">The options that configure TLS authentication</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(X509Certificate certificate, bool noDelay, CancellationToken token);
+        Task<INetworkStream> AcceptNetworkStreamAsync(DicomServerTlsOptions tlsOptions, bool noDelay, CancellationToken token);
     }
 }

@@ -811,12 +811,11 @@ namespace FellowOakDicom.Tests.Network.Client
                 _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
             }
 
-            protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors,
-                int millisecondsTimeout)
+            protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, int millisecondsTimeout)
             {
                 return new ConfigurableDesktopNetworkStreamDecorator(
                     _onStreamWrite,
-                    base.CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
+                    base.CreateNetworkStreamImpl(host, port, useTls, noDelay, millisecondsTimeout)
                 );
             }
 

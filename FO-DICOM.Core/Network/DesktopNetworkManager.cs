@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network.Client;
 using System;
 using System.Globalization;
 using System.Net.NetworkInformation;
@@ -40,7 +41,7 @@ namespace FellowOakDicom.Network
             new DesktopNetworkListener(_desktopNetworkStreamFactory, options);
 
         /// <inheritdoc />
-        protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
+        protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, int millisecondsTimeout)
         {
             var options = new NetworkStreamCreationOptions
             {
@@ -48,7 +49,6 @@ namespace FellowOakDicom.Network
                 Port = port,
                 UseTls = useTls,
                 NoDelay = noDelay,
-                IgnoreSslPolicyErrors = ignoreSslPolicyErrors,
                 Timeout = TimeSpan.FromMilliseconds(millisecondsTimeout)
             };
             return CreateNetworkStreamImpl(options);

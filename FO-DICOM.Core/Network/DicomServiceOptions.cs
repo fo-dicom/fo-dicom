@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Net.Security;
 
 namespace FellowOakDicom.Network
 {
@@ -28,9 +27,6 @@ namespace FellowOakDicom.Network
 
         /// <summary>Gets or sets maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxDataBuffer { get; set; } = 1 * 1024 * 1024; //1MB
-
-        /// <summary>Gets or sets whether DICOM client should ignore SSL certificate errors.</summary>
-        public bool IgnoreSslPolicyErrors { get; set; } = false;
 
         /// <summary>Gets or sets whether to enable (true) or disable (false) TCP Nagle algorithm.</summary>
         public bool TcpNoDelay { get; set; } = true;
@@ -62,16 +58,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
 
-        /// <summary>
-        /// Whether or not to require mutual SSL authentication, i.e. the client must present a valid certificate as well
-        /// </summary>
-        public bool RequireMutualAuthentication { get; set; } = false;
-
-        /// <summary>
-        /// A callback that is invoked after validating the certificate of an incoming client connection
-        /// </summary>
-        public RemoteCertificateValidationCallback ServerCertificateValidationCallback { get; set; }
-
         public DicomServiceOptions Clone() =>
             new DicomServiceOptions
             {
@@ -80,15 +66,12 @@ namespace FellowOakDicom.Network
                 UseRemoteAEForLogName = UseRemoteAEForLogName,
                 MaxCommandBuffer = MaxCommandBuffer,
                 MaxDataBuffer = MaxDataBuffer,
-                IgnoreSslPolicyErrors = IgnoreSslPolicyErrors,
                 TcpNoDelay = TcpNoDelay,
                 RequestTimeout = RequestTimeout,
                 MaxClientsAllowed = MaxClientsAllowed,
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
-                MaxPDVsPerPDU = MaxPDVsPerPDU,
-                RequireMutualAuthentication = RequireMutualAuthentication,
-                ServerCertificateValidationCallback = ServerCertificateValidationCallback
+                MaxPDVsPerPDU = MaxPDVsPerPDU
             };
     }
 }

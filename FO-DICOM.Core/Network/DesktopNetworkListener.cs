@@ -4,7 +4,6 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -73,7 +72,7 @@ namespace FellowOakDicom.Network
             _listener?.Stop();
         }
 
-        public async Task<INetworkStream> AcceptNetworkStreamAsync(X509Certificate certificate, bool noDelay, CancellationToken token)
+        public async Task<INetworkStream> AcceptNetworkStreamAsync(DicomServerTlsOptions tlsOptions, bool noDelay, CancellationToken token)
         {
             if (_listener == null)
             {
@@ -92,7 +91,7 @@ namespace FellowOakDicom.Network
                     tcpClient.NoDelay = noDelay;
 
                     //  let DesktopNetworkStream dispose the TCP Client when it is disposed
-                    return await _desktopNetworkStreamFactory.CreateAsServerAsync(tcpClient, certificate, true, _options, token);
+                    return await _desktopNetworkStreamFactory.CreateAsServerAsync(tcpClient, tlsOptions, true, _options, token);
                 }
 
                 Stop();
