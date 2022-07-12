@@ -67,7 +67,6 @@ namespace FellowOakDicom.Network
             if (tlsOptions?.Certificate != null)
             {
                 var certificate = tlsOptions.Certificate;
-                
                 var requireMutualAuthentication = tlsOptions.RequireMutualAuthentication;
                 var userCertificateValidationCallback = tlsOptions.CertificateValidationCallback
                                                         ?? ((sender, _, chain, errors) =>
@@ -137,25 +136,28 @@ namespace FellowOakDicom.Network
             var remotePort = options.Port;
             var logger = options.Logger;
             var tlsOptions = options.TlsOptions;
+            var noDelay = options.NoDelay;
+            var useTls = options.UseTls;
+            var timeout = options.Timeout;
 
-            var tcpClient = new TcpClient { NoDelay = options.NoDelay };
+            var tcpClient = new TcpClient { NoDelay = noDelay };
 
-            await tcpClient.ConnectAsync(options.Host, options.Port).ConfigureAwait(false);
+            await tcpClient.ConnectAsync(remoteHost, remotePort).ConfigureAwait(false);
 
             var networkStream = tcpClient.GetStream();
             Stream stream;
-            if (options.UseTls && tlsOptions != null)
+            if (useTls && tlsOptions != null)
             {
                 var certificates = tlsOptions.Certificates;
                 var protocols = tlsOptions.Protocols;
                 var checkCertificateRevocation = tlsOptions.CheckCertificateRevocation;
                 var userCertificateValidationCallback = tlsOptions.CertificateValidationCallback
                                                         ?? ((sender, certificate, chain, errors) => errors == SslPolicyErrors.None);
-                var timeout = tlsOptions.Timeout;
+                var tlsTimeout = tlsOptions.Timeout;
                 
                 if (certificates?.Count > 0)
                 {
-                    var clientCertificateSubjects = string.Join(" and ", tlsOptions.Certificates.OfType<X509Certificate>().Select(c => c.Subject));
+                    var clientCertificateSubjects = string.Join(" and ", certificates.OfType<X509Certificate>().Select(c => c.Subject));
                     logger?.Debug("Setting up client TLS authentication with certificates: {CertificateSubjects}", clientCertificateSubjects);
                 }
                 else
@@ -164,20 +166,20 @@ namespace FellowOakDicom.Network
                 }
 
                 var ssl = new SslStream(networkStream, false, userCertificateValidationCallback);
-                if (options.Timeout != null)
+                if (timeout != null)
                 {
-                    ssl.ReadTimeout = (int)options.Timeout.Value.TotalMilliseconds;
-                    ssl.WriteTimeout = (int)options.Timeout.Value.TotalMilliseconds;
+                    ssl.ReadTimeout = (int)timeout.Value.TotalMilliseconds;
+                    ssl.WriteTimeout = (int)timeout.Value.TotalMilliseconds;
                 }
 
                 var sslHandshake = certificates?.Count > 0
-                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host, certificates, protocols, checkCertificateRevocation), cancellationToken)
-                    : Task.Run(() => ssl.AuthenticateAsClientAsync(options.Host), cancellationToken);
-                var sslHandshakeTimeout = Task.Delay(timeout, cancellationToken);
+                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(remoteHost, certificates, protocols, checkCertificateRevocation), cancellationToken)
+                    : Task.Run(() => ssl.AuthenticateAsClientAsync(remoteHost), cancellationToken);
+                var sslHandshakeTimeout = Task.Delay(tlsTimeout, cancellationToken);
 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
                 {
-                    throw new DicomNetworkException($"Client TLS authentication failed because it took longer than {timeout.TotalSeconds}s");
+                    throw new DicomNetworkException($"Client TLS authentication failed because it took longer than {tlsTimeout.TotalSeconds}s");
                 }
 
                 await sslHandshake.ConfigureAwait(false);
@@ -188,10 +190,10 @@ namespace FellowOakDicom.Network
             }
             else
             {
-                if (options.Timeout != null)
+                if (timeout != null)
                 {
-                    networkStream.ReadTimeout = (int)options.Timeout.Value.TotalMilliseconds;
-                    networkStream.WriteTimeout = (int)options.Timeout.Value.TotalMilliseconds;
+                    networkStream.ReadTimeout = (int)timeout.Value.TotalMilliseconds;
+                    networkStream.WriteTimeout = (int)timeout.Value.TotalMilliseconds;
                 }
 
                 stream = networkStream;
