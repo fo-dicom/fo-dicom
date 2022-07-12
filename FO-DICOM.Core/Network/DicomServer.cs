@@ -279,7 +279,6 @@ namespace FellowOakDicom.Network
                 {
                     IpAddress = IPAddress,
                     Port = Port,
-                    ServiceOptions = Options,
                     Logger = _logger
                 });
                 await listener.StartAsync().ConfigureAwait(false);

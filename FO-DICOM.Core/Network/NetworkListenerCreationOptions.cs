@@ -18,11 +18,6 @@ namespace FellowOakDicom.Network
         public int Port { get; set; }
 
         /// <summary>
-        /// The service options of this listener
-        /// </summary>
-        public DicomServiceOptions ServiceOptions { get; set; }
-
-        /// <summary>
         /// The logger to use
         /// </summary>
         public ILogger Logger { get; set; }
