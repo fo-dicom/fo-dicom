@@ -459,7 +459,18 @@ namespace FellowOakDicom
 
             if (item is DicomElement element)
             {
-                if (typeof(T[]) == typeof(byte[])) { return (T[])(object)element.Buffer.Data; }
+                if (typeof(T[]) == typeof(byte[]))
+                {
+                    var data = element.Buffer.Data;
+                    if (data.Length != element.Buffer.Size)
+                    {
+                        var copy = new byte[(int)element.Buffer.Size];
+                        Array.Copy(data, 0, copy, 0, copy.Length);
+                        return (T[])(object)copy;
+                    }
+
+                    return (T[])(object)data;
+                }
 
                 return element.Get<T[]>(-1);
             }

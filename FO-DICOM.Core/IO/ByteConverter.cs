@@ -114,7 +114,8 @@ namespace FellowOakDicom.IO
         {
             byte[] bytes = new byte[data.Size / 2];
             byte[] datab = data.Data;
-            for (int i = 0; i < bytes.Length && (i * 2) < datab.Length; i++)
+            int databLength = (int)data.Size;
+            for (int i = 0; i < bytes.Length && (i * 2) < databLength; i++)
             {
                 bytes[i] = datab[i * 2];
             }
@@ -125,7 +126,8 @@ namespace FellowOakDicom.IO
         {
             byte[] bytes = new byte[data.Size / 2];
             byte[] datab = data.Data;
-            for (int i = 0; i < bytes.Length && ((i * 2) + 1) < datab.Length; i++)
+            int databLength = (int)data.Size;
+            for (int i = 0; i < bytes.Length && ((i * 2) + 1) < databLength; i++)
             {
                 bytes[i] = datab[(i * 2) + 1];
             }

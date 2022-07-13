@@ -74,7 +74,7 @@ namespace FellowOakDicom.Imaging.Codec
             {
                 DicomItem item = pixelData.Dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
                 IByteBuffer buffer = item is DicomFragmentSequence fragmentSequence ? fragmentSequence.Fragments[0] : (item as DicomElement).Buffer;
-                var ms = new MemoryStream(buffer.Data);
+                var ms = new MemoryStream(buffer.Data, 0, (int)buffer.Size);
                 BinaryReader br = EndianBinaryReader.Create(ms, Endian.Big, false);
 
                 long length = ms.Length;

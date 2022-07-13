@@ -704,6 +704,9 @@ namespace FellowOakDicom.IO.Reader
                         return false;
                     }
 
+                    // TODO Alex rent a single memory for the whole DICOM header, this is only a few kb
+                    // TODO Alex Each buffer would then have an offset and a length into this buffer
+                    // TODO Alex this would prevent a call to memoryProvider.Provide for every element
                     var buffer = source.GetBuffer(_length);
 
                     if (buffer != null)
@@ -723,7 +726,7 @@ namespace FellowOakDicom.IO.Reader
                     if (_tag.IsPrivate && _tag.Element >= 0x0010 && _tag.Element <= 0x00ff)
                     {
                         var creator =
-                            DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
+                            DicomEncoding.Default.GetString(buffer.Data, 0, (int) buffer.Size)
                                 .TrimEnd((char)DicomVR.LO.PaddingValue);
                         var card = (uint)(_tag.Group << 16) + _tag.Element;
 
@@ -876,7 +879,7 @@ namespace FellowOakDicom.IO.Reader
                     if (_tag.IsPrivate && _tag.Element >= 0x0010 && _tag.Element <= 0x00ff)
                     {
                         var creator =
-                            DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
+                            DicomEncoding.Default.GetString(buffer.Data, 0, (int) buffer.Size)
                                 .TrimEnd((char)DicomVR.LO.PaddingValue);
                         var card = (uint)(_tag.Group << 16) + _tag.Element;
 

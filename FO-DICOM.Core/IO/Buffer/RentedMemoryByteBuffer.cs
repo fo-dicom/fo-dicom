@@ -12,7 +12,6 @@ namespace FellowOakDicom.IO.Buffer
     public sealed class RentedMemoryByteBuffer : IByteBuffer, IDisposable
     {
         private readonly IMemory _memory;
-        private byte[] _data;
 
         /// <summary>
         /// Creates a new RentedMemoryByteBuffer based on rented memory.
@@ -25,19 +24,7 @@ namespace FellowOakDicom.IO.Buffer
 
         public bool IsMemory => true;
 
-        public byte[] Data
-        {
-            get
-            {
-                // This should be avoided at all cost
-                if (_data != null)
-                {
-                    _data = _memory.Span.ToArray();
-                }
-
-                return _data;
-            }
-        }
+        public byte[] Data => _memory.Bytes;
 
         public long Size => _memory.Length;
 

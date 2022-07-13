@@ -21,7 +21,7 @@ namespace FellowOakDicom.Imaging
         public static IByteBuffer InterleavedToPlanar24(IByteBuffer data)
         {
             var oldPixels = data.Data;
-            var newPixels = new byte[oldPixels.Length];
+            var newPixels = new byte[(int) data.Size];
             var pixelCount = newPixels.Length / 3;
 
             unchecked
@@ -45,7 +45,7 @@ namespace FellowOakDicom.Imaging
         public static IByteBuffer PlanarToInterleaved24(IByteBuffer data)
         {
             var oldPixels = data.Data;
-            var newPixels = new byte[oldPixels.Length];
+            var newPixels = new byte[(int) data.Size];
             var pixelCount = newPixels.Length / 3;
 
             unchecked
@@ -69,7 +69,7 @@ namespace FellowOakDicom.Imaging
         public static IByteBuffer YbrFullToRgb(IByteBuffer data)
         {
             var oldPixels = data.Data;
-            var newPixels = new byte[oldPixels.Length];
+            var newPixels = new byte[(int) data.Size];
 
             unchecked
             {
@@ -97,7 +97,7 @@ namespace FellowOakDicom.Imaging
         public static IByteBuffer YbrFull422ToRgb(IByteBuffer data, int width)
         {
             var oldPixels = data.Data;
-            var newPixels = new byte[oldPixels.Length / 4 * 2 * 3];
+            var newPixels = new byte[((int) data.Size) / 4 * 2 * 3];
 
             unchecked
             {
@@ -140,7 +140,7 @@ namespace FellowOakDicom.Imaging
         public static IByteBuffer YbrPartial422ToRgb(IByteBuffer data, int width)
         {
             var oldPixels = data.Data;
-            var newPixels = new byte[oldPixels.Length / 4 * 2 * 3];
+            var newPixels = new byte[((int) data.Size) / 4 * 2 * 3];
 
             unchecked
             {
@@ -218,7 +218,7 @@ namespace FellowOakDicom.Imaging
         public static IByteBuffer ReverseBits(IByteBuffer data)
         {
             byte[] oldPixels = data.Data;
-            byte[] newPixels = new byte[oldPixels.Length];
+            byte[] newPixels = new byte[(int) data.Size];
 
             unchecked
             {

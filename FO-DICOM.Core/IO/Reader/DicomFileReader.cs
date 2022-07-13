@@ -295,7 +295,7 @@ namespace FellowOakDicom.IO.Reader
                         {
                             try
                             {
-                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, (int) ea.Data.Size);
                             }
                             catch
                             {
@@ -308,7 +308,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         try
                         {
-                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, (int) ea.Data.Size);
                         }
                         catch
                         {
@@ -365,7 +365,7 @@ namespace FellowOakDicom.IO.Reader
                         {
                             try
                             {
-                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                                code = Encoding.UTF8.GetString(ea.Data.Data, 0, (int) ea.Data.Size);
                             }
                             catch
                             {
@@ -378,7 +378,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         try
                         {
-                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, ea.Data.Data.Length);
+                            uid = Encoding.UTF8.GetString(ea.Data.Data, 0, (int) ea.Data.Size);
                         }
                         catch
                         {

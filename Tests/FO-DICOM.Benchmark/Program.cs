@@ -15,9 +15,10 @@ namespace FellowOakDicom.Benchmark
         {
             // Run all benchmarks in assembly
             /*BenchmarkRunner.Run(typeof(Program).Assembly);*/
+            /*BenchmarkRunner.Run<OpenFileBenchmarks>();*/
             for (var i = 0; i < 10000; i++)
             {
-                DicomFile.Open(@"C:\Users\a.moerman\Downloads\teststudies\Demo_Ziekenhuis_1_-_34473\0a5f3d7d-9439-4908-9ce1-29c5dcce382c.dcm");
+                using var _ = DicomFile2.Open(@"C:\Users\a.moerman\Downloads\teststudies\Demo_Ziekenhuis_1_-_34473\0a5f3d7d-9439-4908-9ce1-29c5dcce382c.dcm");
                 Console.WriteLine(i);
             }
             /*var vrCodes = typeof(DicomVRCode)

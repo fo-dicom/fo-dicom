@@ -668,7 +668,7 @@ namespace FellowOakDicom.Serialization
             else if (elem.Count != 0)
             {
                 writer.WritePropertyName("InlineBinary");
-                writer.WriteValue(Convert.ToBase64String(elem.Buffer.Data));
+                writer.WriteValue(Convert.ToBase64String(elem.Buffer.Data, 0, (int) elem.Buffer.Size));
             }
         }
 

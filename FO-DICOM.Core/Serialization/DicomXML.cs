@@ -150,7 +150,7 @@ namespace FellowOakDicom.Serialization
         {
             IByteBuffer buffer = item.Buffer;
             if (buffer == null) return string.Empty;
-            return Convert.ToBase64String(buffer.Data);
+            return Convert.ToBase64String(buffer.Data, 0, (int) buffer.Size);
         }
 
         private static string EscapeXml(string text)
