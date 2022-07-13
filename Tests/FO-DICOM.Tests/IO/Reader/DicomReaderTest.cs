@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Memory;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Reader
@@ -24,7 +25,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         {
             var stream = new MemoryStream(bytes);
             var source = new StreamByteSource(stream);
-            var reader = new DicomReader { IsExplicitVR = true };
+            var reader = new DicomReader(new ArrayPoolMemoryProvider()) { IsExplicitVR = true };
 
             var observer = new LastElementObserver();
             var result = reader.Read(source, observer);
@@ -41,7 +42,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         {
             var stream = new MemoryStream(bytes);
             var source = new StreamByteSource(stream);
-            var reader = new DicomReader { IsExplicitVR = true };
+            var reader = new DicomReader(new ArrayPoolMemoryProvider()) { IsExplicitVR = true };
 
             var observer = new MockObserver();
             var result = reader.Read(source, observer);
