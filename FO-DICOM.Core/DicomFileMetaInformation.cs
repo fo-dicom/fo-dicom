@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FellowOakDicom
 {
-
     /// <summary>
     /// Representation of the file meta information in a DICOM Part 10 file.
     /// </summary>
@@ -103,7 +102,7 @@ namespace FellowOakDicom
         /// <summary>
         /// Gets or sets the file meta information version.
         /// </summary>
-        public byte[] Version
+        public virtual byte[] Version
         {
             get => GetValues<byte>(DicomTag.FileMetaInformationVersion);
             set => AddOrUpdate(DicomTag.FileMetaInformationVersion, value);

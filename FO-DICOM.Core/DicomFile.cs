@@ -4,6 +4,7 @@
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
+using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -61,7 +62,6 @@ namespace FellowOakDicom
         /// </summary>
         ReadAll
     }
-
 
     /// <summary>
     /// Representation of one DICOM file.
@@ -223,10 +223,12 @@ namespace FellowOakDicom
 
             try
             {
-                df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
+                var fileReferenceFactory = Setup.ServiceProvider.GetService<IFileReferenceFactory>();
+                var memoryProvider = Setup.ServiceProvider.GetService<IMemoryProvider>();
+                df.File = fileReferenceFactory.Create(fileName);
 
                 using var unvalidatedDataset = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize, memoryProvider, false);
                 var reader = new DicomFileReader();
                 var result = reader.Read(
                     source,
@@ -277,7 +279,7 @@ namespace FellowOakDicom
 
             try
             {
-                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize, false);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
@@ -334,10 +336,12 @@ namespace FellowOakDicom
 
             try
             {
-                df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
+                var fileReferenceFactory = Setup.ServiceProvider.GetService<IFileReferenceFactory>();
+                var memoryProvider = Setup.ServiceProvider.GetService<IMemoryProvider>();
+                df.File = fileReferenceFactory.Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize, memoryProvider, false);
                 var reader = new DicomFileReader();
                 var result =
                     await
@@ -390,7 +394,7 @@ namespace FellowOakDicom
 
             try
             {
-                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize, false);
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
                 var result =
@@ -465,7 +469,8 @@ namespace FellowOakDicom
             {
                 df.File = file;
 
-                using var source = new FileByteSource(file, readOption, largeObjectSize);
+                var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
+                using var source = new FileByteSource(file, readOption, largeObjectSize, memoryProvider, false);
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
                 var result = reader.Read(

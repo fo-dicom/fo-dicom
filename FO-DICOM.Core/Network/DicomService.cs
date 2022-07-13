@@ -778,7 +778,7 @@ namespace FellowOakDicom.Network
                             var command = new DicomDataset().NotValidated();
 
                             var reader = new DicomReader(_memoryProvider) { IsExplicitVR = false };
-                            reader.Read(StreamByteSourceFactory.Create(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
+                            reader.Read(StreamByteSourceFactory.Create(_dimseStream, FileReadOption.Default, 0, false), new DicomDatasetReaderObserver(command));
 
                             _dimseStream = null;
                             _dimseStreamFile = null;
@@ -829,7 +829,7 @@ namespace FellowOakDicom.Network
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
 
-                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default)
+                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default, 0, _memoryProvider, false)
                                 {
                                     Endian = pc.AcceptedTransferSyntax.Endian
                                 };

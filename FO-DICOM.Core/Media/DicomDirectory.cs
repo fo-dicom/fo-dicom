@@ -4,6 +4,7 @@
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
+using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -172,7 +173,7 @@ namespace FellowOakDicom.Media
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
@@ -223,7 +224,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize: largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize: largeObjectSize, false);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();
@@ -279,7 +280,7 @@ namespace FellowOakDicom.Media
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
@@ -332,7 +333,7 @@ namespace FellowOakDicom.Media
 
             try
             {
-                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize: largeObjectSize);
+                var source = StreamByteSourceFactory.Create(stream, readOption, largeObjectSize: largeObjectSize, false);
 
                 using var unvalidatedScop = new UnvalidatedScope(df.Dataset);
                 var reader = new DicomFileReader();

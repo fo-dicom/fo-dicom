@@ -88,7 +88,7 @@ namespace FellowOakDicom.IO
                 readOption = FileReadOption.ReadAll;
             }
 
-            _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
+            _byteSource = new StreamByteSource(stream, readOption, largeObjectSize, memoryProvider, false);
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _buffer = new MemoryStream();
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine, false);

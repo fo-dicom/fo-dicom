@@ -20,15 +20,16 @@ namespace FellowOakDicom.IO
         /// <param name="readOption">Defines the handling of large tags.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not.
         /// If 0 is passed, then the default of 64k is used.</param>
-        public static IByteSource Create(Stream stream, FileReadOption readOption = FileReadOption.Default,
-            int largeObjectSize = 0)
+        /// <param name="useRentedMemoryByteBuffers"></param>
+        public static IByteSource Create(Stream stream, FileReadOption readOption, int largeObjectSize, bool useRentedMemoryByteBuffers)
         {
+            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
+            
             if (stream.CanSeek)
             {
-                return new StreamByteSource(stream, readOption, largeObjectSize);
+                return new StreamByteSource(stream, readOption, largeObjectSize, memoryProvider, useRentedMemoryByteBuffers);
             }
 
-            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
             
             return new UnseekableStreamByteSource(stream, readOption, largeObjectSize, memoryProvider);
         }

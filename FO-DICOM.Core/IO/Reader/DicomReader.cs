@@ -4,6 +4,7 @@
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -319,7 +320,8 @@ namespace FellowOakDicom.IO.Reader
                 }
 
                 decompressed.Seek(0, SeekOrigin.Begin);
-                return new StreamByteSource(decompressed);
+                // TODO Alex retain the original settings of the inner source if possible, e.g. using a new object ByteSourceOptions
+                return new StreamByteSource(decompressed, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
             }
 
 

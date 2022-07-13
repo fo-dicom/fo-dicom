@@ -99,7 +99,7 @@ namespace FellowOakDicom.IO.Writer
         /// <param name="options">Writer options.</param>
         private static void WriteFileMetaInfo(
             IByteTarget target,
-            DicomDataset fileMetaInfo,
+            DicomFileMetaInformation fileMetaInfo,
             DicomWriteOptions options)
         {
             // recalculate FMI group length as required by standard

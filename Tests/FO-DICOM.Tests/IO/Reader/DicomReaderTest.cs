@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Reader
@@ -24,7 +25,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void Read_ValidExplicitVRData_YieldsSuccess(DicomTag tag, DicomVR vr, string data, byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
-            var source = new StreamByteSource(stream);
+            var source = new StreamByteSource(stream, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
             var reader = new DicomReader(new ArrayPoolMemoryProvider()) { IsExplicitVR = true };
 
             var observer = new LastElementObserver();
@@ -41,7 +42,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void Read_ValidExplicitVRSequence_YieldsSuccess(byte[] bytes)
         {
             var stream = new MemoryStream(bytes);
-            var source = new StreamByteSource(stream);
+            var source = new StreamByteSource(stream, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
             var reader = new DicomReader(new ArrayPoolMemoryProvider()) { IsExplicitVR = true };
 
             var observer = new MockObserver();

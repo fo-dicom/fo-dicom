@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Memory;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace FellowOakDicom.IO
         #region FIELDS
 
         private readonly Stream _stream;
+        private readonly IMemoryProvider _memoryProvider;
+        private readonly bool _useRentedMemoryByteBuffers;
 
         private Endian _endian;
 
@@ -38,9 +41,14 @@ namespace FellowOakDicom.IO
         /// <param name="stream">Stream to read from.</param>
         /// <param name="readOption">Defines how large values are handled.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passed, then the default of 64k is used.</param>
-        public StreamByteSource(Stream stream, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
+        /// <param name="memoryProvider">The memory provider that will be used to borrow memory</param>
+        /// <param name="useRentedMemoryByteBuffers">Whether or not to rent memory byte buffers to hold the values</param>
+        public StreamByteSource(Stream stream, FileReadOption readOption, 
+            int largeObjectSize, IMemoryProvider memoryProvider, bool useRentedMemoryByteBuffers)
         {
             _stream = stream;
+            _memoryProvider = memoryProvider;
+            _useRentedMemoryByteBuffers = useRentedMemoryByteBuffers;
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian, false);
             _mark = 0;
@@ -155,7 +163,16 @@ namespace FellowOakDicom.IO
             }
             else // count < LargeObjectSize || ReadOption == FileReadOption.ReadAll
             {
-                buffer = new MemoryByteBuffer(GetBytes((int)count));
+                if (_useRentedMemoryByteBuffers && count <= int.MaxValue)
+                {
+                    var memory = _memoryProvider.Provide((int)count);
+                    GetBytes(memory.Bytes, 0, memory.Length);
+                    buffer = new RentedMemoryByteBuffer(memory);
+                }
+                else
+                {
+                    buffer = new MemoryByteBuffer(GetBytes((int)count));
+                }
             }
             return buffer;
         }
