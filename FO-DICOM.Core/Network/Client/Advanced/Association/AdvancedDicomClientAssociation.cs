@@ -16,18 +16,18 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
     /// <summary>
     /// Represents an open DICOM association.
     /// </summary>
-    public interface IAdvancedDicomClientAssociation: IDisposable
+    public interface IAdvancedDicomClientAssociation : IDisposable
     {
         /// <summary>
         /// Contains information about the DICOM association that was opened
         /// </summary>
         DicomAssociation Association { get; }
-        
+
         /// <summary>
         /// Whether or not this association is already disposed.
         /// </summary>
         bool IsDisposed { get; }
-        
+
         /// <summary>
         /// Sends a request over this association and returns the received responses from the other AE
         /// There is no guarantee that the message will be sent immediately.
@@ -81,12 +81,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly ConcurrentDictionary<int, Channel<IAdvancedDicomClientConnectionEvent>> _requestChannels;
         private readonly Channel<IAdvancedDicomClientConnectionEvent> _associationChannel;
         private readonly IAdvancedDicomClientConnection _connection;
-        
+
         private long _isDisposed;
         private ConnectionClosedEvent _connectionClosedEvent;
-        
+
         public bool IsDisposed => Interlocked.Read(ref _isDisposed) > 0;
-        
+
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.Association"/>
         public DicomAssociation Association { get; }
 
@@ -109,7 +109,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             Association = association ?? throw new ArgumentNullException(nameof(association));
         }
-        
+
         /// <summary>
         /// The finalizer will be called when this instance is not disposed properly.
         /// </summary>
@@ -270,21 +270,21 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                         break;
                     }
                 }
-            }        
+            }
         }
-        
+
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.SendRequestAsync"/>
-        public async IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken) 
+        public async IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             if (dicomRequest == null)
             {
                 throw new ArgumentNullException(nameof(dicomRequest));
             }
-            
+
             ThrowIfAlreadyDisposed();
 
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             var requestChannel = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
             {
                 SingleReader = true,
@@ -293,11 +293,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             });
 
             var messageId = dicomRequest.MessageID;
-            
+
             if (!_requestChannels.TryAdd(messageId, requestChannel))
             {
                 throw new DicomNetworkException($"This DICOM request is already being sent: [{messageId}] {dicomRequest.GetType()}");
             }
+
             try
             {
                 ThrowIfAlreadyDisconnected();
@@ -354,12 +355,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             }
             finally
             {
-                if(!_requestChannels.TryRemove(messageId, out _))
+                if (!_requestChannels.TryRemove(messageId, out _))
                 {
                     throw new DicomNetworkException($"The response channel {dicomRequest} has already been cleaned up, this should never happen");
                 }
             }
-            
+
             ThrowIfAlreadyDisposed();
         }
 
@@ -436,7 +437,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         }
 
         private bool IsDisconnected => Interlocked.CompareExchange(ref _connectionClosedEvent, null, null) != null;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfAlreadyDisconnected()
         {
@@ -472,7 +473,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 return;
             }
-            
+
             // Ensure the association event collector stops running
             _eventCollectorCts.Cancel();
             _eventCollectorCts.Dispose();
