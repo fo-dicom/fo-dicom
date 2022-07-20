@@ -4,7 +4,6 @@
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -67,10 +66,11 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="source">Byte source to read.</param>
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
+        /// <param name="rentedMemory">The memory instances that were rented while reading</param>
         /// <returns>Reader resulting status.</returns>
-        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
+        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null, List<IMemory> rentedMemory = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
+            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider, rentedMemory);
             return worker.DoWork(source);
         }
 
@@ -80,10 +80,11 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="source">Byte source to read.</param>
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
+        /// <param name="rentedMemory">The memory instances that were rented while reading</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
+        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null, List<IMemory> rentedMemory = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
+            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider, rentedMemory);
             return worker.DoWorkAsync(source);
         }
 
@@ -114,6 +115,8 @@ namespace FellowOakDicom.IO.Reader
             /// </summary>
             private const uint _undefinedLength = 0xffffffff;
 
+            private const int MemoryBlockSize = 1024;
+
             private readonly IDicomReaderObserver _observer;
 
             private readonly Func<ParseState, bool> _stop;
@@ -122,6 +125,7 @@ namespace FellowOakDicom.IO.Reader
 
             private readonly Dictionary<uint, string> _private;
             private readonly IMemoryProvider _memoryProvider;
+            private readonly List<IMemory> _rentedMemory;
 
             private bool _isExplicitVR;
 
@@ -153,6 +157,8 @@ namespace FellowOakDicom.IO.Reader
             
             private DicomTag _previousTag;
 
+            private int _lastMemoryIndex = 0;
+
             #endregion
 
             #region CONSTRUCTORS
@@ -167,7 +173,8 @@ namespace FellowOakDicom.IO.Reader
                 bool isExplicitVR,
                 bool isDeflated,
                 Dictionary<uint, string> @private,
-                IMemoryProvider memoryProvider)
+                IMemoryProvider memoryProvider,
+                List<IMemory> rentedMemory)
             {
                 _observer = observer;
                 _stop = stop;
@@ -176,6 +183,7 @@ namespace FellowOakDicom.IO.Reader
                 _isDeflated = isDeflated;
                 _private = @private;
                 _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
+                _rentedMemory = rentedMemory;
                 _locker = new object();
             }
 
@@ -320,8 +328,7 @@ namespace FellowOakDicom.IO.Reader
                 }
 
                 decompressed.Seek(0, SeekOrigin.Begin);
-                // TODO Alex retain the original settings of the inner source if possible, e.g. using a new object ByteSourceOptions
-                return new StreamByteSource(decompressed, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
+                return new StreamByteSource(decompressed, FileReadOption.Default, 0);
             }
 
 
@@ -704,10 +711,47 @@ namespace FellowOakDicom.IO.Reader
                         return false;
                     }
 
-                    // TODO Alex rent a single memory for the whole DICOM header, this is only a few kb
-                    // TODO Alex Each buffer would then have an offset and a length into this buffer
-                    // TODO Alex this would prevent a call to memoryProvider.Provide for every element
-                    var buffer = source.GetBuffer(_length);
+                    
+                    IByteBuffer buffer;
+                    if (_rentedMemory == null || _length > MemoryBlockSize)
+                    {
+                        buffer = source.GetBuffer(_length);
+                    }
+                    else
+                    {
+                        int intLength = (int)_length;
+                        
+                        // Provision an instance of IMemory to hold the data
+                        IMemory memory;
+                        if (_rentedMemory.Count == 0)
+                        {
+                            // Rent a new block of memory for the very first time
+                            memory = _memoryProvider.Provide(MemoryBlockSize);
+                            _rentedMemory.Add(memory);
+                        }
+                        else
+                        {
+                            // Check if the last block still has room
+                            memory = _rentedMemory[_rentedMemory.Count - 1];
+                            if ((memory.Bytes.Length - _lastMemoryIndex) < intLength)
+                            {
+                                // If there is no room, provision a new block
+                                memory = _memoryProvider.Provide(MemoryBlockSize);
+                                _rentedMemory.Add(memory);
+                                _lastMemoryIndex = 0;
+                            }
+                        }
+                        
+                        if (source.TryGetBufferIntoMemory(memory, _lastMemoryIndex, intLength))
+                        {
+                            buffer = new RentedMemoryByteBuffer(memory, _lastMemoryIndex, intLength);
+                            _lastMemoryIndex += intLength;
+                        }
+                        else
+                        {
+                            buffer = source.GetBuffer(_length);
+                        }
+                    }
 
                     if (buffer != null)
                     {
@@ -863,7 +907,46 @@ namespace FellowOakDicom.IO.Reader
                         return false;
                     }
 
-                    var buffer = await source.GetBufferAsync(_length).ConfigureAwait(false);
+                    IByteBuffer buffer;
+                    if (_rentedMemory == null || _length > MemoryBlockSize)
+                    {
+                        buffer = await source.GetBufferAsync(_length).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        int intLength = (int)_length;
+                        
+                        // Provision an instance of IMemory to hold the data
+                        IMemory memory;
+                        if (_rentedMemory.Count == 0)
+                        {
+                            // Rent a new block of memory for the very first time
+                            memory = _memoryProvider.Provide(MemoryBlockSize);
+                            _rentedMemory.Add(memory);
+                        }
+                        else
+                        {
+                            // Check if the last block still has room
+                            memory = _rentedMemory[_rentedMemory.Count - 1];
+                            if ((memory.Bytes.Length - _lastMemoryIndex) < intLength)
+                            {
+                                // If there is no room, provision a new block
+                                memory = _memoryProvider.Provide(MemoryBlockSize);
+                                _rentedMemory.Add(memory);
+                                _lastMemoryIndex = 0;
+                            }
+                        }
+                        
+                        if (await source.TryGetBufferIntoMemoryAsync(memory, _lastMemoryIndex, intLength).ConfigureAwait(false))
+                        {
+                            buffer = new RentedMemoryByteBuffer(memory, _lastMemoryIndex, intLength);
+                            _lastMemoryIndex += intLength;
+                        }
+                        else
+                        {
+                            buffer = await source.GetBufferAsync(_length).ConfigureAwait(false);
+                        }
+                    }
 
                     if (!_vr.IsString)
                     {

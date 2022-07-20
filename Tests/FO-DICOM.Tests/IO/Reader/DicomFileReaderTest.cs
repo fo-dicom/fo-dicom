@@ -98,7 +98,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void Read_ValidSource_ReturnsSuccess()
         {
             using var stream = File.OpenRead(TestData.Resolve("CT1_J2KI"));
-            var source = new StreamByteSource(stream, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
+            var source = new StreamByteSource(stream, FileReadOption.Default, 0);
             var reader = new DicomFileReader();
 
             var fileMetaInfo = new DicomFileMetaInformation();
@@ -121,7 +121,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public void Read_CompressedImage_RecognizeTransferSyntax()
         {
             using var stream = File.OpenRead(TestData.Resolve("CT1_J2KI"));
-            var source = new StreamByteSource(stream, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
+            var source = new StreamByteSource(stream, FileReadOption.Default, 0);
             var reader = new DicomFileReader();
 
             var fileMetaInfo = new DicomFileMetaInformation();
@@ -142,7 +142,7 @@ namespace FellowOakDicom.Tests.IO.Reader
         public async Task ReadAsync_CompressedImage_RecognizeTransferSyntax()
         {
             using var stream = File.OpenRead(TestData.Resolve("CT1_J2KI"));
-            var source = new StreamByteSource(stream, FileReadOption.Default, 0, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
+            var source = new StreamByteSource(stream, FileReadOption.Default, 0);
             var reader = new DicomFileReader();
 
             var fileMetaInfo = new DicomFileMetaInformation();

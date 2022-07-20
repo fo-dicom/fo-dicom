@@ -14,7 +14,7 @@ using Xunit;
 namespace FellowOakDicom.Tests
 {
     [Collection("General")]
-    public class DicomFile2Test
+    public class DisposableDicomFileTest
     {
         private class UnseekableStream : MemoryStream
         {
@@ -104,12 +104,12 @@ namespace FellowOakDicom.Tests
                     new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
             };
 
-            using var outFile = new DicomFile2(dataset);
+            using var outFile = new DisposableDicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
 
             stream.Seek(0, SeekOrigin.Begin);
-            using var inFile = DicomFile2.Open(stream);
+            using var inFile = DisposableDicomFile.Open(stream);
             var actual = inFile.Dataset.GetString(tag);
 
             Assert.NotEqual(expected, actual);
@@ -127,12 +127,12 @@ namespace FellowOakDicom.Tests
                     new MemoryByteBuffer(DicomEncoding.GetEncoding("ISO IR 192").GetBytes(expected)))
             };
 
-            using var outFile = new DicomFile2(dataset);
+            using var outFile = new DisposableDicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
 
             stream.Seek(0, SeekOrigin.Begin);
-            using var inFile = DicomFile2.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
+            using var inFile = DisposableDicomFile.Open(stream, DicomEncoding.GetEncoding("ISO IR 192"));
             var actual = inFile.Dataset.GetString(tag);
 
             Assert.Equal(expected, actual);
@@ -149,12 +149,12 @@ namespace FellowOakDicom.Tests
                 new DicomLongString(tag, expected)
             };
 
-            using var outFile = new DicomFile2(dataset);
+            using var outFile = new DisposableDicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
 
             stream.Seek(0, SeekOrigin.Begin);
-            using var inFile = DicomFile2.Open(stream);
+            using var inFile = DisposableDicomFile.Open(stream);
             var actual = inFile.Dataset.GetString(tag);
 
             Assert.NotEqual(expected, actual);
@@ -172,12 +172,12 @@ namespace FellowOakDicom.Tests
                 { DicomTag.SpecificCharacterSet, "ISO IR 192" }
             };
 
-            using var outFile = new DicomFile2(dataset);
+            using var outFile = new DisposableDicomFile(dataset);
             var stream = new MemoryStream();
             outFile.Save(stream);
 
             stream.Seek(0, SeekOrigin.Begin);
-            using var inFile = DicomFile2.Open(stream);
+            using var inFile = DisposableDicomFile.Open(stream);
             var actual = inFile.Dataset.GetString(tag);
 
             Assert.Equal(expected, actual);
@@ -187,7 +187,7 @@ namespace FellowOakDicom.Tests
         public void Open_TooSmallFile_Raises()
         {
             var stream = new MemoryStream(new byte[20]);
-            var exception = Record.Exception(() => DicomFile2.Open(stream));
+            var exception = Record.Exception(() => DisposableDicomFile.Open(stream));
             Assert.IsType<DicomFileException>(exception);
             Assert.StartsWith("Not a valid DICOM file", exception.Message);
         }
@@ -195,7 +195,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Save_ToFile_FileExistsOnDisk()
         {
-            using var saveFile = new DicomFile2(_minimumDataset);
+            using var saveFile = new DisposableDicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
             Assert.True(File.Exists(fileName));
@@ -205,7 +205,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsync_ToFile_FileExistsOnDisk()
         {
-            using var saveFile = new DicomFile2(_minimumDataset);
+            using var saveFile = new DisposableDicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             await saveFile.SaveAsync(fileName);
             Assert.True(File.Exists(fileName));
@@ -215,11 +215,11 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_FromFile_YieldsValidDicomFile()
         {
-            using var saveFile = new DicomFile2(_minimumDataset);
+            using var saveFile = new DisposableDicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            using var openFile = DicomFile2.Open(fileName);
+            using var openFile = DisposableDicomFile.Open(fileName);
             var expected = _minimumDatasetInstanceUid;
             var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
             Assert.Equal(expected, actual);
@@ -229,11 +229,11 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_FromStream_UsingNoSeek_YieldsValidDicomFile()
         {
-            using var file = new DicomFile2(_allVrDataset);
+            using var file = new DisposableDicomFile(_allVrDataset);
             var stream = new UnseekableStream();
             file.Save(stream);
             stream.Reset();
-            using var openFile = DicomFile2.Open(stream);
+            using var openFile = DisposableDicomFile.Open(stream);
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
@@ -241,11 +241,11 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(FileNames))]
         public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
         {
-            using var file = DicomFile2.Open(TestData.Resolve(fileName), FileReadOption.SkipLargeTags);
+            using var file = DisposableDicomFile.Open(TestData.Resolve(fileName), FileReadOption.SkipLargeTags);
             var stream = new UnseekableStream();
             file.Save(stream);
             stream.Reset();
-            using var openFile = DicomFile2.Open(stream, FileReadOption.ReadLargeOnDemand);
+            using var openFile = DisposableDicomFile.Open(stream, FileReadOption.ReadLargeOnDemand);
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
@@ -253,11 +253,11 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(FileNames))]
         public void Open_FileFromStream_YieldsValidDicomFile(string fileName)
         {
-            using var file = DicomFile2.Open(TestData.Resolve(fileName));
+            using var file = DisposableDicomFile.Open(TestData.Resolve(fileName));
             var stream = new MemoryStream();
             file.Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
-            using var openFile = DicomFile2.Open(stream);
+            using var openFile = DisposableDicomFile.Open(stream);
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
@@ -281,22 +281,22 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_FromStream_YieldsValidDicomFile()
         {
-            using var file = new DicomFile2(_allVrDataset);
+            using var file = new DisposableDicomFile(_allVrDataset);
             var stream = new MemoryStream();
             file.Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
-            using var openFile = DicomFile2.Open(stream);
+            using var openFile = DisposableDicomFile.Open(stream);
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
         [Fact]
         public async Task OpenAsync_FromFile_YieldsValidDicomFile()
         {
-            using var saveFile = new DicomFile2(_minimumDataset);
+            using var saveFile = new DisposableDicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
-            using var openFile = await DicomFile2.OpenAsync(fileName);
+            using var openFile = await DisposableDicomFile.OpenAsync(fileName);
             Assert.True(new DicomDatasetComparer().Equals(_minimumDataset, openFile.Dataset));
             IOHelper.DeleteIfExists(fileName);
         }
@@ -304,14 +304,14 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StreamOfMemoryMappedFile_YieldsValidDicomFile()
         {
-            using var saveFile = new DicomFile2(_minimumDataset);
+            using var saveFile = new DisposableDicomFile(_minimumDataset);
             var fileName = Path.GetTempFileName();
             saveFile.Save(fileName);
 
             using (var file = MemoryMappedFile.CreateFromFile(fileName))
             using (var stream = file.CreateViewStream())
             {
-                using var openFile = DicomFile2.Open(stream);
+                using var openFile = DisposableDicomFile.Open(stream);
                 var expected = _minimumDatasetInstanceUid;
                 var actual = openFile.Dataset.GetString(DicomTag.SOPInstanceUID);
                 Assert.Equal(expected, actual);
@@ -323,7 +323,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void HasValidHeader_Part10File_ReturnsTrue()
         {
-            var validHeader = DicomFile2.HasValidHeader(TestData.Resolve("CT1_J2KI"));
+            var validHeader = DisposableDicomFile.HasValidHeader(TestData.Resolve("CT1_J2KI"));
             Assert.True(validHeader);
         }
 
@@ -332,7 +332,7 @@ namespace FellowOakDicom.Tests
         {
             static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
 
-            using var file = DicomFile2.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
+            using var file = DisposableDicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
         }
 
@@ -341,7 +341,7 @@ namespace FellowOakDicom.Tests
         {
             static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
 
-            using var file = DicomFile2.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
+            using var file = DisposableDicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
         }
 
@@ -350,7 +350,7 @@ namespace FellowOakDicom.Tests
         {
             static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
 
-            using var file = DicomFile2.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
+            using var file = DisposableDicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
 
@@ -360,14 +360,14 @@ namespace FellowOakDicom.Tests
             static bool criterion(ParseState state) =>
                 state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
 
-            using var file = DicomFile2.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
+            using var file = DisposableDicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
         }
 
         [Fact]
         public void Save_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            using var file = DicomFile2.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            using var file = DisposableDicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             using var stream1 = new MemoryStream();
             using var stream2 = new MemoryStream();
@@ -383,7 +383,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsync_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            using var file = DicomFile2.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            using var file = DisposableDicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             using var stream1 = new MemoryStream();
             using var stream2 = new MemoryStream();
@@ -399,7 +399,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void SaveToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            using var file = DicomFile2.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            using var file = DisposableDicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
             file.Save("saveasynctofile1", options1);
@@ -415,7 +415,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public async Task SaveAsyncToFile_PixelDataWrittenInManyChunks_EqualsWhenPixelDataWrittenInOneChunk()
         {
-            using var file = DicomFile2.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            using var file = DisposableDicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
             await file.SaveAsync("saveasynctofile1", options1).ConfigureAwait(false);

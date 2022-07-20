@@ -4,6 +4,7 @@
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -95,14 +96,16 @@ namespace FellowOakDicom.IO.Reader
       /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
       /// <param name="dataset">Reader observer for dataset.</param>
       /// <param name="stop">Stop criterion in dataset.</param>
+      /// <param name="rentedMemory">The memory instances that were rented while reading</param>
       /// <returns>Reader result.</returns>
       public DicomReaderResult Read(
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset,
-            Func<ParseState, bool> stop = null)
+            Func<ParseState, bool> stop = null,
+            List<IMemory> rentedMemory = null)
         {
-            var parse = Parse(source, fileMetaInfo, dataset, stop);
+            var parse = Parse(source, fileMetaInfo, dataset, stop, rentedMemory);
             lock (_locker)
             {
                 FileFormat = parse.Format;
@@ -112,21 +115,23 @@ namespace FellowOakDicom.IO.Reader
             return parse.Result;
         }
 
-        /// <summary>
-        /// Asynchronously read DICOM file object.
-        /// </summary>
-        /// <param name="source">Byte source to read.</param>
-        /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
-        /// <param name="dataset">Reader observer for dataset.</param>
-        /// <param name="stop">Stop criterion in dataset.</param>
-        /// <returns>Awaitable reader result.</returns>
-        public async Task<DicomReaderResult> ReadAsync(
+      /// <summary>
+      /// Asynchronously read DICOM file object.
+      /// </summary>
+      /// <param name="source">Byte source to read.</param>
+      /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
+      /// <param name="dataset">Reader observer for dataset.</param>
+      /// <param name="stop">Stop criterion in dataset.</param>
+      /// <param name="rentedMemory">The memory instances that were rented while reading</param>
+      /// <returns>Awaitable reader result.</returns>
+      public async Task<DicomReaderResult> ReadAsync(
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset,
-            Func<ParseState, bool> stop = null)
+            Func<ParseState, bool> stop = null,
+            List<IMemory> rentedMemory = null)
         {
-            var parse = await ParseAsync(source, fileMetaInfo, dataset, stop).ConfigureAwait(false);
+            var parse = await ParseAsync(source, fileMetaInfo, dataset, stop, rentedMemory).ConfigureAwait(false);
             lock (_locker)
             {
                 FileFormat = parse.Item2;
@@ -139,7 +144,8 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<ParseState, bool> stop)
+            Func<ParseState, bool> stop,
+            List<IMemory> rentedMemory)
         {
             if (!source.Require(132))
             {
@@ -156,6 +162,7 @@ namespace FellowOakDicom.IO.Reader
                 fileMetasetInfoObserver,
                 datasetObserver,
                 stop,
+                rentedMemory,
                 ref syntax,
                 ref fileFormat);
 
@@ -166,7 +173,8 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<ParseState, bool> stop)
+            Func<ParseState, bool> stop,
+            List<IMemory> rentedMemory)
         {
             if (!source.Require(132))
             {
@@ -180,7 +188,7 @@ namespace FellowOakDicom.IO.Reader
 
             return
                 await
-                DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, stop, syntax, fileFormat).ConfigureAwait(false);
+                DoParseAsync(source, fileMetasetInfoObserver, datasetObserver, stop, rentedMemory, syntax, fileFormat).ConfigureAwait(false);
         }
 
         private static void Preprocess(
@@ -281,6 +289,7 @@ namespace FellowOakDicom.IO.Reader
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
             Func<ParseState, bool> stop,
+            List<IMemory> rentedMemory,
             ref DicomTransferSyntax syntax,
             ref DicomFileFormat fileFormat)
         {
@@ -320,12 +329,12 @@ namespace FellowOakDicom.IO.Reader
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
             {
-                result = reader.Read(source, new DicomReaderMultiObserver(obs, datasetObserver), stop);
+                result = reader.Read(source, new DicomReaderMultiObserver(obs, datasetObserver), stop, rentedMemory);
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
             }
             else
             {
-                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), _FileMetaInfoStopCriterion)
+                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), _FileMetaInfoStopCriterion, rentedMemory)
                     != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
@@ -340,7 +349,7 @@ namespace FellowOakDicom.IO.Reader
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
                 reader.IsDeflated = syntax.IsDeflate;
-                result = reader.Read(source, datasetObserver, stop);
+                result = reader.Read(source, datasetObserver, stop, rentedMemory);
             }
 
             return result;
@@ -351,6 +360,7 @@ namespace FellowOakDicom.IO.Reader
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
             Func<ParseState, bool> stop,
+            List<IMemory> rentedMemory,
             DicomTransferSyntax syntax,
             DicomFileFormat fileFormat)
         {
@@ -392,7 +402,7 @@ namespace FellowOakDicom.IO.Reader
             {
                 result =
                     await
-                    reader.ReadAsync(source, new DicomReaderMultiObserver(obs, datasetObserver), stop).ConfigureAwait(false);
+                    reader.ReadAsync(source, new DicomReaderMultiObserver(obs, datasetObserver), stop, rentedMemory).ConfigureAwait(false);
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
             }
             else
@@ -402,7 +412,8 @@ namespace FellowOakDicom.IO.Reader
                     reader.ReadAsync(
                         source,
                         new DicomReaderMultiObserver(obs, fileMetasetInfoObserver),
-                        _FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
+                        _FileMetaInfoStopCriterion,
+                        rentedMemory).ConfigureAwait(false) != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
                 }
@@ -416,7 +427,7 @@ namespace FellowOakDicom.IO.Reader
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
                 reader.IsDeflated = syntax.IsDeflate;
-                result = await reader.ReadAsync(source, datasetObserver, stop).ConfigureAwait(false);
+                result = await reader.ReadAsync(source, datasetObserver, stop, rentedMemory).ConfigureAwait(false);
             }
 
             return Tuple.Create(result, fileFormat, syntax);

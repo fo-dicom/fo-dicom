@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Reader
@@ -62,7 +64,7 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
-        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
+        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null, List<IMemory> rentedMemory = null);
 
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
@@ -71,7 +73,7 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
+        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null, List<IMemory> rentedMemory = null);
 
     }
 }

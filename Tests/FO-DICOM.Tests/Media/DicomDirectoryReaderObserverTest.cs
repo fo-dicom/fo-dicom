@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FellowOakDicom.Memory;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Media
@@ -157,6 +158,10 @@ namespace FellowOakDicom.Tests.Media
 
         public IByteBuffer GetBuffer(uint count) => throw new NotImplementedException();
         public Task<IByteBuffer> GetBufferAsync(uint count) => throw new NotImplementedException();
+        public bool TryGetBufferIntoMemory(IMemory memory, int offset, int count) => throw new NotImplementedException();
+
+        public Task<bool> TryGetBufferIntoMemoryAsync(IMemory memory, int offset, int count) => throw new NotImplementedException();
+
         public void Skip(uint count) => throw new NotImplementedException();
         public void Skip(int count) => throw new NotImplementedException();
         public byte[] GetBytes(int count) => throw new NotImplementedException();

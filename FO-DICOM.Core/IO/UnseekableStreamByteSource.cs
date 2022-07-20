@@ -88,7 +88,7 @@ namespace FellowOakDicom.IO
                 readOption = FileReadOption.ReadAll;
             }
 
-            _byteSource = new StreamByteSource(stream, readOption, largeObjectSize, memoryProvider, false);
+            _byteSource = new StreamByteSource(stream, readOption, largeObjectSize);
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
             _buffer = new MemoryStream();
             _bufferReader = EndianBinaryReader.Create(_buffer, Endian.LocalMachine, false);
@@ -256,6 +256,10 @@ namespace FellowOakDicom.IO
 
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
+
+        public bool TryGetBufferIntoMemory(IMemory memory, int offset, int count) => _byteSource.TryGetBufferIntoMemory(memory, offset, count);
+
+        public Task<bool> TryGetBufferIntoMemoryAsync(IMemory memory, int offset, int count) => _byteSource.TryGetBufferIntoMemoryAsync(memory, offset, count);
 
         /// <inheritdoc />
         public void Skip(uint count)

@@ -829,7 +829,7 @@ namespace FellowOakDicom.Network
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
 
-                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default, 0, _memoryProvider, false)
+                                var source = new StreamByteSource(_dimseStream, FileReadOption.Default, 0)
                                 {
                                     Endian = pc.AcceptedTransferSyntax.Endian
                                 };

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using BenchmarkDotNet.Attributes;
 using System.IO;
 using System.Reflection;
@@ -17,11 +18,15 @@ namespace FellowOakDicom.Benchmark
         private MemoryStream _mgData;
         private MemoryStream _dicomdirData;
 
+        private Action<Stream> _parse;
 
         public ParseDatasetBenchmark()
         {
             _rootpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         }
+
+        [Params("DicomFile", "DisposableDicomFile")]
+        public string Type { get; set; }
 
         [GlobalSetup]
         public void Setup()
@@ -30,26 +35,38 @@ namespace FellowOakDicom.Benchmark
             _mrData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\mr.dcm")));
             _mgData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\mg.dcm")));
             _dicomdirData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\DICOMDIR")));
+
+            switch (Type)
+            {
+                case "DicomFile":
+                    _parse = stream => DicomFile.Open(stream);
+                    break;
+                case "DisposableDicomFile":
+                    _parse = stream =>
+                    {
+                        using var _ = DisposableDicomFile.Open(stream);
+                    };
+                    break;
+            }
         }
 
 
         [Benchmark]
-        public object CT_LE_Implicit() => ParseHeader(_ctData);
+        public void CT_LE_Implicit() => ParseHeader(_ctData);
 
         [Benchmark]
-        public object MR_LE_Implicit() => ParseHeader(_mrData);
+        public void MR_LE_Implicit() => ParseHeader(_mrData);
 
         [Benchmark]
-        public object MG_LE_Explicit() => ParseHeader(_mgData);
+        public void MG_LE_Explicit() => ParseHeader(_mgData);
 
         [Benchmark]
-        public object DICOMDIR() => ParseHeader(_dicomdirData);
+        public void DICOMDIR() => ParseHeader(_dicomdirData);
 
-        public static object ParseHeader(Stream content)
+        public void ParseHeader(Stream content)
         {
             content.Position = 0;
-            var file = DicomFile.Open(content);
-            return file;
+            _parse(content);
         }
 
     }

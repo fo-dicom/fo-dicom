@@ -27,7 +27,7 @@ namespace FellowOakDicom.IO
             
             if (stream.CanSeek)
             {
-                return new StreamByteSource(stream, readOption, largeObjectSize, memoryProvider, useRentedMemoryByteBuffers);
+                return new StreamByteSource(stream, readOption, largeObjectSize);
             }
 
             

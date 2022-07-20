@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -267,6 +268,20 @@ namespace FellowOakDicom.IO.Buffer
         {
             return Task.FromResult(GetBuffer(count));
         }
+
+        public bool TryGetBufferIntoMemory(IMemory memory, int offset, int count)
+        {
+            var read = GetBytes(memory.Bytes, offset, count);
+            
+            if (read < count)
+            {
+                throw new DicomIoException($"Unexpectedly read {read} bytes from DICOM byte buffers instead of {count} bytes");
+            }
+
+            return true;
+        }
+
+        public Task<bool> TryGetBufferIntoMemoryAsync(IMemory memory, int offset, int count) => Task.FromResult(TryGetBufferIntoMemory(memory, offset, count));
 
         /// <inheritdoc />
         public void Skip(uint count)

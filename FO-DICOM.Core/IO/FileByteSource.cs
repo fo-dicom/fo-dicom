@@ -46,14 +46,9 @@ namespace FellowOakDicom.IO
         /// <param name="file">File to read from.</param>
         /// <param name="readOption">Option how to deal with large values, if they should be loaded directly into memory or lazy loaded on demand</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
-        /// <param name="memoryProvider">The memory provider that will be used to borrow memory</param>
-        /// <param name="useRentedMemoryByteBuffers">Whether or not to rent memory byte buffers to hold the values</param>
-        public FileByteSource(IFileReference file, FileReadOption readOption, int largeObjectSize,
-            IMemoryProvider memoryProvider, bool useRentedMemoryByteBuffers)
+        public FileByteSource(IFileReference file, FileReadOption readOption, int largeObjectSize)
         {
             _file = file;
-            _memoryProvider = memoryProvider;
-            _useRentedMemoryByteBuffers = useRentedMemoryByteBuffers;
             _stream = _file.OpenRead();
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian, false);
@@ -166,22 +161,42 @@ namespace FellowOakDicom.IO
             }
             else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
             {
-                if (_useRentedMemoryByteBuffers && count <= int.MaxValue)
-                {
-                    var memory = _memoryProvider.Provide((int)count);
-                    GetBytes(memory.Bytes, 0, memory.Length);
-                    buffer = new RentedMemoryByteBuffer(memory);
-                }
-                else
-                {
-                    buffer = new MemoryByteBuffer(GetBytes((int)count));
-                }
+                buffer = new MemoryByteBuffer(GetBytes((int)count));
             }
             return buffer;
         }
 
         /// <inheritdoc />
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
+
+        public bool TryGetBufferIntoMemory(IMemory memory, int offset, int count)
+        {
+            if (count == 0)
+            {
+                return true;
+            }
+
+            if (count >= LargeObjectSize && _readOption == FileReadOption.ReadLargeOnDemand)
+            {
+                return false;
+            }
+
+            if (count >= LargeObjectSize && _readOption == FileReadOption.SkipLargeTags)
+            {
+                return false;
+            }
+
+            var read = _reader.Read(memory.Bytes, offset, count);
+
+            if (read < count)
+            {
+                throw new DicomIoException($"Unexpectedly read {read} bytes from DICOM file instead of {count} bytes");
+            }
+            
+            return true;
+        }
+
+        public Task<bool> TryGetBufferIntoMemoryAsync(IMemory memory, int offset, int count) => Task.FromResult(TryGetBufferIntoMemory(memory, offset, count));
 
         /// <inheritdoc />
         /// <param name="count">Number of bytes to skip.</param>

@@ -5,9 +5,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using BenchmarkDotNet.Attributes;
-using FellowOakDicom.Imaging;
-using FellowOakDicom.Serialization;
-using Newtonsoft.Json;
 
 namespace FellowOakDicom.Benchmark
 {
@@ -39,8 +36,8 @@ namespace FellowOakDicom.Benchmark
                     _dispose = _ => { };
                     break;
                 case "DicomFile2":
-                    _open = (path, option) => DicomFile2.Open(path, option);
-                    _dispose = file => ((DicomFile2)file).Dispose();
+                    _open = (path, option) => DisposableDicomFile.Open(path, option);
+                    _dispose = file => ((DisposableDicomFile)file).Dispose();
                     break;
             }
             /*

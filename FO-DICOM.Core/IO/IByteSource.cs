@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
+using FellowOakDicom.Memory;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -134,6 +135,24 @@ namespace FellowOakDicom.IO
         /// <param name="count">Number of bytes to read.</param>
         /// <returns>Awaitable byte buffer containing the read bytes.</returns>
         Task<IByteBuffer> GetBufferAsync(uint count);
+
+        /// <summary>
+        /// Tries to get a number of bytes into a memory buffer of specified length from the current position and moves to subsequent position.
+        /// </summary>
+        /// <param name="memory">The memory to write into</param>
+        /// <param name="offset">The offset in memory to start writing</param>
+        /// <param name="count">Number of bytes to read.</param>
+        /// <returns>True if the bytes were written to the memory buffer, false otherwise.</returns>
+        bool TryGetBufferIntoMemory(IMemory memory, int offset, int count);
+
+        /// <summary>
+        /// Asynchronously tries to get a number of bytes into a memory buffer of specified length from the current position and moves to subsequent position.
+        /// </summary>
+        /// <param name="memory">The memory to write into</param>
+        /// <param name="offset">The offset in memory to start writing</param>
+        /// <param name="count">Number of bytes to read.</param>
+        /// <returns>True if the bytes were written to the memory buffer, false otherwise.</returns>
+        Task<bool> TryGetBufferIntoMemoryAsync(IMemory memory, int offset, int count);
 
         /// <summary>
         /// Skip position <paramref name="count"/> number of bytes.

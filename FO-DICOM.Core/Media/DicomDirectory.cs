@@ -173,7 +173,7 @@ namespace FellowOakDicom.Media
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption, largeObjectSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
@@ -280,7 +280,7 @@ namespace FellowOakDicom.Media
                 df.File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
 
                 using var unvalidated = new UnvalidatedScope(df.Dataset);
-                using var source = new FileByteSource(df.File, readOption, largeObjectSize, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>(), false);
+                using var source = new FileByteSource(df.File, readOption, largeObjectSize);
                 var reader = new DicomFileReader();
                 var dirObserver = new DicomDirectoryReaderObserver(df.Dataset);
 
