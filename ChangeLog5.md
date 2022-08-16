@@ -4,6 +4,7 @@
 * Improve throughput of DicomClient when more requests are added mid-flight (#1396)
 * Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)
 * Fix overwriting of Lossy Compression ratio tag (#1400)
+* Fix DicomClientFactory logger name (#1429)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
