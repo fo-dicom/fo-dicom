@@ -148,7 +148,7 @@ namespace FellowOakDicom.Network
             Stream stream;
             if (useTls && tlsOptions != null)
             {
-                var certificates = tlsOptions.Certificates;
+                var certificates = tlsOptions.Certificates ?? new X509CertificateCollection();
                 var protocols = tlsOptions.Protocols;
                 var checkCertificateRevocation = tlsOptions.CheckCertificateRevocation;
                 var userCertificateValidationCallback = tlsOptions.CertificateValidationCallback
@@ -172,9 +172,7 @@ namespace FellowOakDicom.Network
                     ssl.WriteTimeout = (int)timeout.Value.TotalMilliseconds;
                 }
 
-                var sslHandshake = certificates?.Count > 0
-                    ? Task.Run(() => ssl.AuthenticateAsClientAsync(remoteHost, certificates, protocols, checkCertificateRevocation), cancellationToken)
-                    : Task.Run(() => ssl.AuthenticateAsClientAsync(remoteHost), cancellationToken);
+                var sslHandshake = Task.Run(() => ssl.AuthenticateAsClientAsync(remoteHost, certificates, protocols, checkCertificateRevocation), cancellationToken);
                 var sslHandshakeTimeout = Task.Delay(tlsTimeout, cancellationToken);
 
                 if (await Task.WhenAny(sslHandshake, sslHandshakeTimeout).ConfigureAwait(false) == sslHandshakeTimeout)
