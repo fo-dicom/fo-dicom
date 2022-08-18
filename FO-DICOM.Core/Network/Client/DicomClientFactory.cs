@@ -77,7 +77,7 @@ namespace FellowOakDicom.Network.Client
 
             var clientOptions = _defaultClientOptions.Value.Clone();
             var serviceOptions = _defaultServiceOptions.Value.Clone();
-            var logger = _logManager.GetLogger("Dicom.Network");
+            var logger = _logManager.GetLogger("FellowOakDicom.Network");
             var networkStreamCreationOptions = new NetworkStreamCreationOptions
             {
                 Host = host,
