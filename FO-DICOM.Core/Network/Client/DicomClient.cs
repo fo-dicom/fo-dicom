@@ -422,7 +422,7 @@ namespace FellowOakDicom.Network.Client
 
                             if (!connection.CanStillProcessPDataTF)
                             {
-                                _logger.Debug($"The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
+                                _logger.LogDebug($"The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
                                 requestsToRetry.AddRange(requestsToSend);
                                 break;
                             }

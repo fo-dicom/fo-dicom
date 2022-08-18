@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced.Connection;
@@ -14,6 +13,7 @@ using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
 using FellowOakDicom.Tests.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 using Xunit.Abstractions;
@@ -32,15 +32,15 @@ namespace FellowOakDicom.Tests.Bugs
 
         private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
-            var logManager = Setup.ServiceProvider.GetRequiredService<ILogManager>();
+            var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
             var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
-            var advancedDicomClientConnectionFactory = new DefaultAdvancedDicomClientConnectionFactory(networkManager, logManager, defaultServiceOptions, dicomServiceDependencies);
+            var advancedDicomClientConnectionFactory = new DefaultAdvancedDicomClientConnectionFactory(networkManager, loggerFactory, defaultServiceOptions, dicomServiceDependencies);
             return new DefaultDicomClientFactory(
                 defaultClientOptions,
                 defaultServiceOptions,
-                logManager,
+                loggerFactory,
                 advancedDicomClientConnectionFactory);
         }
 
@@ -142,8 +142,8 @@ namespace FellowOakDicom.Tests.Bugs
             var numberOfRequestsThatSucceeded = responses.Count(r => r.Status.State == DicomState.Success);
             var numberOfRequestsThatFailed = requests.Count - numberOfRequestsThatSucceeded;
 
-            _logger.Info($"Succeeded: {numberOfRequestsThatSucceeded}");
-            _logger.Info($"Failed: {numberOfRequestsThatFailed}");
+            _logger.LogInformation($"Succeeded: {numberOfRequestsThatSucceeded}");
+            _logger.LogInformation($"Failed: {numberOfRequestsThatFailed}");
 
             Assert.Contains(requestsThatSucceeded, r => r.MessageID == firstRequest.MessageID);
             Assert.Contains(requestsThatFailed, r => r.MessageID == secondRequest.MessageID);
@@ -164,7 +164,7 @@ namespace FellowOakDicom.Tests.Bugs
             Parallel.For((long)0, receivedRequestsThatSucceeded.Count, i =>
             {
                 var request = receivedRequestsThatSucceeded[(int) i];
-                _logger.Info($"Verifying pixel data of request [{request.MessageID}]");
+                _logger.LogInformation($"Verifying pixel data of request [{request.MessageID}]");
 
                 var actualPixelData = DicomPixelData.Create(request.File.Dataset);
 
