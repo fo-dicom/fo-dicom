@@ -14,6 +14,7 @@ namespace FellowOakDicom.Benchmark
 
         private MemoryStream _ctData;
         private MemoryStream _mrData;
+        private MemoryStream _mgData;
         private MemoryStream _dicomdirData;
 
 
@@ -27,19 +28,22 @@ namespace FellowOakDicom.Benchmark
         {
             _ctData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\ct.dcm")));
             _mrData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\mr.dcm")));
+            _mgData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\mg.dcm")));
             _dicomdirData = new MemoryStream(File.ReadAllBytes(Path.Combine(_rootpath, "Data\\DICOMDIR")));
         }
 
 
         [Benchmark]
-        public object ParseCT() => ParseHeader(_ctData);
+        public object CT_LE_Implicit() => ParseHeader(_ctData);
 
         [Benchmark]
-        public object ParseMR() => ParseHeader(_mrData);
+        public object MR_LE_Implicit() => ParseHeader(_mrData);
 
         [Benchmark]
-        public object ParseDicomdir() => ParseHeader(_dicomdirData);
+        public object MG_LE_Explicit() => ParseHeader(_mgData);
 
+        [Benchmark]
+        public object DICOMDIR() => ParseHeader(_dicomdirData);
 
         public static object ParseHeader(Stream content)
         {

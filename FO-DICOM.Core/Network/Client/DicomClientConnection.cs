@@ -22,6 +22,13 @@ namespace FellowOakDicom.Network.Client
         /// Gets whether or not SendNextMessage is required, i.e. if any requests still have to be sent and there is no send loop currently running.
         /// </summary>
         bool IsSendNextMessageRequired { get; }
+        
+        /// <summary>
+        /// Gets whether or not the connection can still process P-DATA-TF
+        /// This can be false when a previous P-DATA-TF timed out before it was sent completely
+        /// In this scenario, the connection can only be used for control PDUs anymore
+        /// </summary>
+        bool CanStillProcessPDataTF { get; }
 
         /// <summary>
         /// Gets whether or not the send queue is empty, i.e. if all requests are sent *and* handled

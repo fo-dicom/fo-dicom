@@ -2,8 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
+using FellowOakDicom.Network.Client.Tasks;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -16,6 +18,7 @@ namespace FellowOakDicom.Network
         #region FIELDS
 
         private DicomDataset _dataset;
+        private readonly TaskCompletionSource<bool> _allPDUsSentTCS = TaskCompletionSourceFactory.Create<bool>();
 
         #endregion
 
@@ -137,7 +140,13 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the timestamp of when the last PDU was sent
         /// </summary>
-        public DateTime? LastPDUSent { get; set; }
+        internal DateTime? LastPDUSent { get; set; }
+
+        /// <summary>
+        /// Gets a task that will complete when all the PDUs of this DICOM message have been sent
+        /// Important caveat: if this DICOM message is never picked up to be sent (e.g. because of connection issues) then this task never completes
+        /// </summary>
+        internal Task AllPDUsSent => _allPDUsSentTCS.Task;
 
         /// <summary>
         /// Gets or sets the timestamp of when the last response with status 'Pending' was received
@@ -168,6 +177,9 @@ namespace FellowOakDicom.Network
 
             return false;
         }
+
+        internal void AllPDUsWereSentSuccessfully() => _allPDUsSentTCS.TrySetResult(true);
+        internal void NotAllPDUsWereSentSuccessfully() => _allPDUsSentTCS.TrySetResult(false);
 
         /// <summary>
         /// Formatted output of the DICOM message.

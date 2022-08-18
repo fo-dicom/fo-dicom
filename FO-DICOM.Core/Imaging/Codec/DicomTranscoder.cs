@@ -283,8 +283,15 @@ namespace FellowOakDicom.Imaging.Codec
 
                 double oldSize = oldPixelData.GetFrame(0).Size;
                 double newSize = newPixelData.GetFrame(0).Size;
-                var ratio = string.Format(CultureInfo.InvariantCulture, "{0:0.000}", oldSize / newSize);
-                newDataset.AddOrUpdate(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratio));
+
+                List<string> ratios = new List<string>();
+                if (newDataset.Contains(DicomTag.LossyImageCompressionRatio))
+                {
+                    ratios.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionRatio));
+                }
+                
+                ratios.Add(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", oldSize / newSize));
+                newDataset.AddOrUpdate(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratios.ToArray()));
             }
 
             ProcessOverlays(oldDataset, newDataset);

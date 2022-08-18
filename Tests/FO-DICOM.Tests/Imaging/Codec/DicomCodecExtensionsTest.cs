@@ -19,6 +19,25 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         #region Unit tests
 
         [FactForNetCore]
+        public void CheckLossyCompressionRatio_HasAddedMultiValueAfterCompression()
+        {
+            var file = DicomFile.Open(TestData.Resolve("GH538-JPEG1.dcm"));
+            var oldRatios = file.Dataset.GetValues<string>(DicomTag.LossyImageCompressionRatio);
+            var ds = file.Clone(DicomTransferSyntax.JPEGProcess1).Dataset;
+            var newRatios = ds.GetValues<string>(DicomTag.LossyImageCompressionRatio);
+            Assert.Equal(oldRatios.Length+1, newRatios.Length);
+        }
+
+        [FactForNetCore]
+        public void CheckLossyCompressionRatio_HasSingleValueAfterCompression()
+        {
+            var file = DicomFile.Open(TestData.Resolve("GH538-JPEG14SV1.dcm"));
+            var ds = file.Clone(DicomTransferSyntax.JPEGProcess1).Dataset;
+            var ratios = ds.GetValues<string>(DicomTag.LossyImageCompressionRatio);
+            Assert.Single(ratios);
+        }
+
+        [FactForNetCore]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));

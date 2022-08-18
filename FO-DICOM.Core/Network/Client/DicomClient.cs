@@ -326,15 +326,14 @@ namespace FellowOakDicom.Network.Client
 
                         SetState(DicomClientRequestAssociationState.Instance);
 
-                        var requests = new List<DicomRequest>();
-                        requests.AddRange(requestsToRetry);
+                        var requestsToSend = new Queue<DicomRequest>(requestsToRetry);
                         requestsToRetry.Clear();
-                        var numberOfRequests = requests.Count;
+                        var numberOfRequests = requestsToSend.Count;
 
                         while (numberOfRequests < maximumNumberOfRequestsPerAssociation
                                && QueuedRequests.TryDequeue(out var request))
                         {
-                            requests.Add(request.Value);
+                            requestsToSend.Enqueue(request.Value);
                             numberOfRequests++;
                         }
                         
@@ -348,7 +347,7 @@ namespace FellowOakDicom.Network.Client
                             MaxAsyncOpsPerformed = AsyncPerformed,
                         };
 
-                        foreach (var request in requests)
+                        foreach (var request in requestsToSend)
                         {
                             associationRequest.PresentationContexts.AddFromRequest(request);
                             associationRequest.ExtendedNegotiations.AddFromRequest(request);
@@ -408,7 +407,7 @@ namespace FellowOakDicom.Network.Client
                                 }
 
                                 // Save the requests to retry, otherwise they are lost because we already extracted them from QueuedRequests
-                                requestsToRetry.AddRange(requests);
+                                requestsToRetry.AddRange(requestsToSend);
 
                                 // try again
                                 continue;
@@ -417,43 +416,76 @@ namespace FellowOakDicom.Network.Client
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
 
-                        while (requests.Count > 0 && exception == null)
+                        while (requestsToSend.Count > 0 && exception == null)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            SetState(DicomClientSendingRequestsState.Instance);
-
-                            _logger.LogDebug("Queueing {NumberOfRequests} requests", requests.Count);
-                            var sendTasks = new List<Task>(requests.Count);
-                            
-                            // Try to send all tasks immediately, this could work depending on the nr of requests and the async ops invoked setting
-                            foreach(var request in requests)
+                            if (!connection.CanStillProcessPDataTF)
                             {
-                                sendTasks.Add(SendRequestAsync(association, request, cancellationToken));
+                                _logger.Debug($"The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
+                                requestsToRetry.AddRange(requestsToSend);
+                                break;
                             }
 
-                            // Now wait for the requests to complete
-                            await Task.WhenAll(sendTasks).ConfigureAwait(false);
-                            
-                            requests.Clear();
+                            SetState(DicomClientSendingRequestsState.Instance);
 
-                            // If more requests were queued since we started, try to send those too over the same association
-                            while (numberOfRequests < maximumNumberOfRequestsPerAssociation
-                                   && QueuedRequests.TryDequeue(out var request))
+                            /*
+                             * Now we will send the DICOM requests
+                             * Depending on the agreed upon AsyncInvoked setting, we can have x outstanding DICOM requests
+                             * This means we can immediately send x DICOM requests in parallel
+                             * Then, whenever one of the parallel DICOM requests complete, we can send another DICOM request
+                             * Furthermore, after each DICOM request completes, we also check if more requests were queued into this DICOM client
+                             * This should result in a maximum throughput of DICOM requests, always utilizing the maximum of async invoked requests
+                             */
+                            _logger.LogDebug("Sending {NumberOfRequests} requests", requestsToSend.Count);
+                            var maximumNumberOfParallelRequests = association.Association.MaxAsyncOpsInvoked;
+                            var parallelRequests = new List<Task>(maximumNumberOfParallelRequests);
+                            while (parallelRequests.Count < maximumNumberOfParallelRequests
+                                   && requestsToSend.Count > 0
+                                   && connection.CanStillProcessPDataTF)
+                            {
+                                var nextRequest = requestsToSend.Dequeue();
+                                var sendTask = SendRequestAsync(association, nextRequest, cancellationToken);
+                                parallelRequests.Add(sendTask);
+                                // Wait until the request is fully sent or until the request completes with an error or cancellation
+                                await Task.WhenAny(nextRequest.AllPDUsSent, sendTask).ConfigureAwait(false);
+                            }
+                            
+                            while (parallelRequests.Count > 0)
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                requests.Add(request.Value);
+                                var finishedRequest = await Task.WhenAny(parallelRequests).ConfigureAwait(false);
+                                await finishedRequest.ConfigureAwait(false);
+                                parallelRequests.Remove(finishedRequest);
+                                
+                                // Check if more requests were queued in the meantime that we could possibly also send over the current association
+                                while (numberOfRequests < maximumNumberOfRequestsPerAssociation
+                                       && connection.CanStillProcessPDataTF
+                                       && QueuedRequests.TryDequeue(out var request))
+                                {
+                                    requestsToSend.Enqueue(request.Value);
 
-                                numberOfRequests++;
+                                    numberOfRequests++;
+                                }
+
+                                if (requestsToSend.Count > 0 && connection.CanStillProcessPDataTF)
+                                {
+                                    var nextRequest = requestsToSend.Dequeue();
+                                    var sendTask = SendRequestAsync(association, nextRequest, cancellationToken);
+                                    parallelRequests.Add(sendTask);
+                                    // Wait until the request is fully sent or until the request completes with an error or cancellation
+                                    await Task.WhenAny(nextRequest.AllPDUsSent, sendTask).ConfigureAwait(false);
+                                }
                             }
-
+                            
                             _hasMoreRequests.Reset();
                             
                             // Linger behavior: if the queue is empty, wait for a bit before closing the association
-                            if (requests.Count == 0
+                            if (requestsToSend.Count == 0
                                 && numberOfRequests < maximumNumberOfRequestsPerAssociation
-                                && ClientOptions.AssociationLingerTimeoutInMs > 0)
+                                && ClientOptions.AssociationLingerTimeoutInMs > 0
+                                && connection.CanStillProcessPDataTF)
                             {
                                 _logger.LogDebug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
 
@@ -470,7 +502,7 @@ namespace FellowOakDicom.Network.Client
                                 {
                                     cancellationToken.ThrowIfCancellationRequested();
 
-                                    requests.Add(request.Value);
+                                    requestsToSend.Enqueue(request.Value);
 
                                     numberOfRequests++;
                                 }
@@ -562,7 +594,7 @@ namespace FellowOakDicom.Network.Client
                 throw new ArgumentNullException(nameof(request));
             }
             
-            _logger.LogDebug("{Request} is being enqueued for sending", request.ToString());
+            _logger.LogDebug("{Request} is being sent", request.ToString());
 
             try
             {

@@ -170,5 +170,47 @@ namespace FellowOakDicom.Network
             sb.Length -= 1;
             return sb.ToString();
         }
+        
+        /// <summary>
+        /// Creates a snapshot clone of this DICOM association.
+        /// This can be helpful when trying to diagnose association issues, because DicomAssociations are typically modified during the DICOM handshake
+        /// </summary>
+        /// <returns></returns>
+        internal DicomAssociation Clone()
+        {
+            var clone = new DicomAssociation(CallingAE, CalledAE)
+            {
+                Options = Options,
+                RemoteHost = RemoteHost,
+                RemotePort = RemotePort,
+                MaxAsyncOpsInvoked = MaxAsyncOpsInvoked,
+                MaxAsyncOpsPerformed = MaxAsyncOpsPerformed,
+                RemoteImplementationVersion = RemoteImplementationVersion,
+                RemoteImplementationClassUID = RemoteImplementationClassUID,
+                MaximumPDULength = MaximumPDULength
+            };
+
+            foreach (var presentationContext in PresentationContexts)
+            {
+                clone.PresentationContexts.Add(
+                    presentationContext.AbstractSyntax,
+                    presentationContext.UserRole,
+                    presentationContext.ProviderRole,
+                    presentationContext.GetTransferSyntaxes().ToArray()
+                );
+            }
+
+            foreach (var extendedNegotiation in ExtendedNegotiations)
+            {
+                clone.ExtendedNegotiations.Add(
+                    extendedNegotiation.SopClassUid,
+                    extendedNegotiation.RequestedApplicationInfo,
+                    extendedNegotiation.ServiceClassUid,
+                    extendedNegotiation.RelatedGeneralSopClasses.ToArray()
+                );
+            }
+
+            return clone;
+        }
     }
 }
