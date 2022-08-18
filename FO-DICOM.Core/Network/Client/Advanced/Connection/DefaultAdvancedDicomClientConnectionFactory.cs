@@ -73,7 +73,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            request.Logger ??= _logManager.GetLogger("Dicom.Network");
+            request.Logger ??= _logManager.GetLogger("FellowOakDicom.Network");
 
             request.DicomServiceOptions ??= _defaultDicomServiceOptions.Value;
 
