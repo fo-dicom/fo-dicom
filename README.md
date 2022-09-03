@@ -74,9 +74,9 @@ or
 
 ```csharp
 var image = new DicomImage("filename.dcm");
-var shartimage = image.RenderImage().AsSharpImage();
+var sharpimage = image.RenderImage().AsSharpImage();
 ```
-
+    
 #### Logging configuration
 Fellow Oak DICOM uses `Microsoft.Extensions.Logging`, so if you are already using that, Fellow Oak DICOM logging will show up automatically.
 
