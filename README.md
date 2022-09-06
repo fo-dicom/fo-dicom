@@ -68,7 +68,7 @@ Then when rendering you can cast the IImage to the type by
 or
 
     var image = new DicomImage("filename.dcm");
-    var shartimage = image.RenderImage().AsSharpImage();
+    var sharpimage = image.RenderImage().AsSharpImage();
 
 #### Logging configuration
 By default, logging defaults to the no-op `NullLogerManager`. There are several logmanagers configurable within `DicomSetupBuilder` like
