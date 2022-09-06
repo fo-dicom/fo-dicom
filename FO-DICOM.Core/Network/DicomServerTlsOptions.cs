@@ -11,7 +11,7 @@ namespace FellowOakDicom.Network
     public class DicomServerTlsOptions
     {
         /// <summary>
-        /// The certificate the use for authenticated connections
+        /// The certificate to use for authenticated connections
         /// </summary>
         public X509Certificate Certificate { get; set; }
 
