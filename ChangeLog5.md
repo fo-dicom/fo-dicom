@@ -2,6 +2,7 @@
 * **Breaking Change** DicomServerFactory.Create now accepts DicomServerTlsOptions instead of a X509Certificate. (#1418)
 * **Breaking Change** The option 'IgnoreSslPolicyErrors' has been removed. For both client and server, you can now configure a RemoteCertificationValidationCallback that always returns true if you still want the same behavior. (#1418)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
+* Allow accessing person name components for empty items (#1405)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
 * Improve throughput of DicomClient when more requests are added mid-flight (#1396)
 * Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)
