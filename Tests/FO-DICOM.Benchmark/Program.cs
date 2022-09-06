@@ -11,7 +11,6 @@ namespace FellowOakDicom.Benchmark
         {
             // Run all benchmarks in assembly
             BenchmarkRunner.Run(typeof(Program).Assembly);
-            // BenchmarkRunner.Run<ServerBenchmarks>();
         }
     }
 }

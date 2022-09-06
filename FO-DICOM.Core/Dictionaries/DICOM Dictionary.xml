@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2021 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2021e">
+<dictionary version="2022b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -101,7 +101,9 @@
     <tag group="0008" element="0014" keyword="InstanceCreatorUID" vr="UI" vm="1">Instance Creator UID</tag>
     <tag group="0008" element="0015" keyword="InstanceCoercionDateTime" vr="DT" vm="1">Instance Coercion DateTime</tag>
     <tag group="0008" element="0016" keyword="SOPClassUID" vr="UI" vm="1">SOP Class UID</tag>
+    <tag group="0008" element="0017" keyword="AcquisitionUID" vr="UI" vm="1">Acquisition UID</tag>
     <tag group="0008" element="0018" keyword="SOPInstanceUID" vr="UI" vm="1">SOP Instance UID</tag>
+    <tag group="0008" element="0019" keyword="PyramidUID" vr="UI" vm="1">Pyramid UID</tag>
     <tag group="0008" element="001A" keyword="RelatedGeneralSOPClassUID" vr="UI" vm="1-n">Related General SOP Class UID</tag>
     <tag group="0008" element="001B" keyword="OriginalSpecializedSOPClassUID" vr="UI" vm="1">Original Specialized SOP Class UID</tag>
     <tag group="0008" element="0020" keyword="StudyDate" vr="DA" vm="1">Study Date</tag>
@@ -212,6 +214,7 @@
     <tag group="0008" element="1072" keyword="OperatorIdentificationSequence" vr="SQ" vm="1">Operator Identification Sequence</tag>
     <tag group="0008" element="1080" keyword="AdmittingDiagnosesDescription" vr="LO" vm="1-n">Admitting Diagnoses Description</tag>
     <tag group="0008" element="1084" keyword="AdmittingDiagnosesCodeSequence" vr="SQ" vm="1">Admitting Diagnoses Code Sequence</tag>
+    <tag group="0008" element="1088" keyword="PyramidDescription" vr="LO" vm="1">Pyramid Description</tag>
     <tag group="0008" element="1090" keyword="ManufacturerModelName" vr="LO" vm="1">Manufacturer's Model Name</tag>
     <tag group="0008" element="1100" keyword="ReferencedResultsSequence" vr="SQ" vm="1" retired="true">Referenced Results Sequence</tag>
     <tag group="0008" element="1110" keyword="ReferencedStudySequence" vr="SQ" vm="1">Referenced Study Sequence</tag>
@@ -903,6 +906,7 @@
     <tag group="0018" element="1200" keyword="DateOfLastCalibration" vr="DA" vm="1-n">Date of Last Calibration</tag>
     <tag group="0018" element="1201" keyword="TimeOfLastCalibration" vr="TM" vm="1-n">Time of Last Calibration</tag>
     <tag group="0018" element="1202" keyword="DateTimeOfLastCalibration" vr="DT" vm="1">DateTime of Last Calibration</tag>
+    <tag group="0018" element="1203" keyword="CalibrationDateTime" vr="DT" vm="1">Calibration DateTime</tag>
     <tag group="0018" element="1210" keyword="ConvolutionKernel" vr="SH" vm="1-n">Convolution Kernel</tag>
     <tag group="0018" element="1240" keyword="UpperLowerPixelValues" vr="IS" vm="1-n" retired="true">Upper/Lower Pixel Values</tag>
     <tag group="0018" element="1242" keyword="ActualFrameDuration" vr="IS" vm="1">Actual Frame Duration</tag>
@@ -1598,6 +1602,7 @@
     <tag group="0020" element="0022" keyword="OverlayNumber" vr="IS" vm="1" retired="true">Overlay Number</tag>
     <tag group="0020" element="0024" keyword="CurveNumber" vr="IS" vm="1" retired="true">Curve Number</tag>
     <tag group="0020" element="0026" keyword="LUTNumber" vr="IS" vm="1" retired="true">LUT Number</tag>
+    <tag group="0020" element="0027" keyword="PyramidLabel" vr="LO" vm="1">Pyramid Label</tag>
     <tag group="0020" element="0030" keyword="ImagePosition" vr="DS" vm="3" retired="true">Image Position</tag>
     <tag group="0020" element="0032" keyword="ImagePositionPatient" vr="DS" vm="3">Image Position (Patient)</tag>
     <tag group="0020" element="0035" keyword="ImageOrientation" vr="DS" vm="6" retired="true">Image Orientation</tag>
@@ -2250,6 +2255,7 @@
     <tag group="0032" element="1055" keyword="StudyComponentStatusID" vr="CS" vm="1" retired="true">Study Component Status ID</tag>
     <tag group="0032" element="1060" keyword="RequestedProcedureDescription" vr="LO" vm="1">Requested Procedure Description</tag>
     <tag group="0032" element="1064" keyword="RequestedProcedureCodeSequence" vr="SQ" vm="1">Requested Procedure Code Sequence</tag>
+    <tag group="0032" element="1065" keyword="RequestedLateralityCodeSequence" vr="SQ" vm="1">Requested Laterality Code Sequence</tag>
     <tag group="0032" element="1066" keyword="ReasonForVisit" vr="UT" vm="1">Reason for Visit</tag>
     <tag group="0032" element="1067" keyword="ReasonForVisitCodeSequence" vr="SQ" vm="1">Reason for Visit Code Sequence</tag>
     <tag group="0032" element="1070" keyword="RequestedContrastAgent" vr="LO" vm="1">Requested Contrast Agent</tag>
@@ -3748,8 +3754,8 @@
     <tag group="2130" element="0050" keyword="AnnotationContentSequence" vr="SQ" vm="1" retired="true">Annotation Content Sequence</tag>
     <tag group="2130" element="0060" keyword="ImageOverlayBoxContentSequence" vr="SQ" vm="1" retired="true">Image Overlay Box Content Sequence</tag>
     <tag group="2130" element="0080" keyword="PresentationLUTContentSequence" vr="SQ" vm="1" retired="true">Presentation LUT Content Sequence</tag>
-    <tag group="2130" element="00A0" keyword="ProposedStudySequence" vr="SQ" vm="1" retired="true">Proposed Study Sequence</tag>
-    <tag group="2130" element="00C0" keyword="OriginalImageSequence" vr="SQ" vm="1" retired="true">Original Image Sequence</tag>
+    <tag group="2130" element="00A0" keyword="ProposedStudySequence" vr="SQ" vm="1">Proposed Study Sequence</tag>
+    <tag group="2130" element="00C0" keyword="OriginalImageSequence" vr="SQ" vm="1">Original Image Sequence</tag>
     <tag group="2200" element="0001" keyword="LabelUsingInformationExtractedFromInstances" vr="CS" vm="1">Label Using Information Extracted From Instances</tag>
     <tag group="2200" element="0002" keyword="LabelText" vr="UT" vm="1">Label Text</tag>
     <tag group="2200" element="0003" keyword="LabelStyleSelection" vr="CS" vm="1">Label Style Selection</tag>
@@ -3927,6 +3933,7 @@
     <tag group="3008" element="00B0" keyword="RecordedWedgeSequence" vr="SQ" vm="1">Recorded Wedge Sequence</tag>
     <tag group="3008" element="00C0" keyword="RecordedCompensatorSequence" vr="SQ" vm="1">Recorded Compensator Sequence</tag>
     <tag group="3008" element="00D0" keyword="RecordedBlockSequence" vr="SQ" vm="1">Recorded Block Sequence</tag>
+    <tag group="3008" element="00D1" keyword="RecordedBlockSlabSequence" vr="SQ" vm="1">Recorded Block Slab Sequence</tag>
     <tag group="3008" element="00E0" keyword="TreatmentSummaryMeasuredDoseReferenceSequence" vr="SQ" vm="1">Treatment Summary Measured Dose Reference Sequence</tag>
     <tag group="3008" element="00F0" keyword="RecordedSnoutSequence" vr="SQ" vm="1">Recorded Snout Sequence</tag>
     <tag group="3008" element="00F2" keyword="RecordedRangeShifterSequence" vr="SQ" vm="1">Recorded Range Shifter Sequence</tag>
@@ -3973,7 +3980,7 @@
     <tag group="300A" element="0007" keyword="RTPlanTime" vr="TM" vm="1">RT Plan Time</tag>
     <tag group="300A" element="0009" keyword="TreatmentProtocols" vr="LO" vm="1-n">Treatment Protocols</tag>
     <tag group="300A" element="000A" keyword="PlanIntent" vr="CS" vm="1">Plan Intent</tag>
-    <tag group="300A" element="000B" keyword="TreatmentSites" vr="LO" vm="1-n">Treatment Sites</tag>
+    <tag group="300A" element="000B" keyword="TreatmentSites" vr="LO" vm="1-n" retired="true">Treatment Sites</tag>
     <tag group="300A" element="000C" keyword="RTPlanGeometry" vr="CS" vm="1">RT Plan Geometry</tag>
     <tag group="300A" element="000E" keyword="PrescriptionDescription" vr="ST" vm="1">Prescription Description</tag>
     <tag group="300A" element="0010" keyword="DoseReferenceSequence" vr="SQ" vm="1">Dose Reference Sequence</tag>
@@ -4609,6 +4616,21 @@
     <tag group="300C" element="0111" keyword="OmittedBeamTaskSequence" vr="SQ" vm="1">Omitted Beam Task Sequence</tag>
     <tag group="300C" element="0112" keyword="ReasonForOmission" vr="CS" vm="1">Reason for Omission</tag>
     <tag group="300C" element="0113" keyword="ReasonForOmissionDescription" vr="LO" vm="1">Reason for Omission Description</tag>
+    <tag group="300C" element="0114" keyword="PrescriptionOverviewSequence" vr="SQ" vm="1">Prescription Overview Sequence</tag>
+    <tag group="300C" element="0115" keyword="TotalPrescriptionDose" vr="FL" vm="1">Total Prescription Dose</tag>
+    <tag group="300C" element="0116" keyword="PlanOverviewSequence" vr="SQ" vm="1">Plan Overview Sequence</tag>
+    <tag group="300C" element="0117" keyword="PlanOverviewIndex" vr="US" vm="1">Plan Overview Index</tag>
+    <tag group="300C" element="0118" keyword="ReferencedPlanOverviewIndex" vr="US" vm="1">Referenced Plan Overview Index</tag>
+    <tag group="300C" element="0119" keyword="NumberOfFractionsIncluded" vr="US" vm="1">Number of Fractions Included</tag>
+    <tag group="300C" element="0120" keyword="DoseCalibrationConditionsSequence" vr="SQ" vm="1">Dose Calibration Conditions Sequence</tag>
+    <tag group="300C" element="0121" keyword="AbsorbedDoseToMetersetRatio" vr="FD" vm="1">Absorbed Dose to Meterset Ratio</tag>
+    <tag group="300C" element="0122" keyword="DelineatedRadiationFieldSize" vr="FD" vm="2">Delineated Radiation Field Size</tag>
+    <tag group="300C" element="0123" keyword="DoseCalibrationConditionsVerifiedFlag" vr="CS" vm="1">Dose Calibration Conditions Verified Flag</tag>
+    <tag group="300C" element="0124" keyword="CalibrationReferencePointDepth" vr="FD" vm="1">Calibration Reference Point Depth</tag>
+    <tag group="300C" element="0125" keyword="GatingBeamHoldTransitionSequence" vr="SQ" vm="1">Gating Beam Hold Transition Sequence</tag>
+    <tag group="300C" element="0126" keyword="BeamHoldTransition" vr="CS" vm="1">Beam Hold Transition</tag>
+    <tag group="300C" element="0127" keyword="BeamHoldTransitionDateTime" vr="DT" vm="1">Beam Hold Transition DateTime</tag>
+    <tag group="300C" element="0128" keyword="BeamHoldOriginatingDeviceSequence" vr="SQ" vm="1">Beam Hold Originating Device Sequence</tag>
     <tag group="300E" element="0002" keyword="ApprovalStatus" vr="CS" vm="1">Approval Status</tag>
     <tag group="300E" element="0004" keyword="ReviewDate" vr="DA" vm="1">Review Date</tag>
     <tag group="300E" element="0005" keyword="ReviewTime" vr="TM" vm="1">Review Time</tag>
@@ -5054,6 +5076,8 @@
     <uid uid="1.2.840.10008.2.16.14" keyword="RO" type="Coding Scheme">Radiomics Ontology</uid>
     <uid uid="1.2.840.10008.2.16.15" keyword="RADELEMENT" type="Coding Scheme">RadElement</uid>
     <uid uid="1.2.840.10008.2.16.16" keyword="I11" type="Coding Scheme">ICD-11</uid>
+    <uid uid="1.2.840.10008.2.16.17" keyword="UNS" type="Coding Scheme">Unified numbering system (UNS) for metals and alloys</uid>
+    <uid uid="1.2.840.10008.2.16.18" keyword="RRID" type="Coding Scheme">Research Resource Identification</uid>
     <uid uid="1.2.840.10008.3.1.1.1" keyword="DICOMApplicationContext" type="Application Context Name">DICOM Application Context Name</uid>
     <uid uid="1.2.840.10008.3.1.2.1.1" keyword="DetachedPatientManagement" type="SOP Class" retired="true">Detached Patient Management SOP Class (Retired)</uid>
     <uid uid="1.2.840.10008.3.1.2.1.4" keyword="DetachedPatientManagementMeta" type="Meta SOP Class" retired="true">Detached Patient Management Meta SOP Class (Retired)</uid>
@@ -6609,12 +6633,12 @@
     <uid uid="1.2.840.10008.6.1.1317" keyword="PartsOfOrgansLateralized12131" type="Context Group Name">Parts of Organs (Lateralized) (12131)</uid>
     <uid uid="1.2.840.10008.6.1.1318" keyword="TreatmentTerminationReasons9561" type="Context Group Name">Treatment Termination Reasons (9561)</uid>
     <uid uid="1.2.840.10008.6.1.1319" keyword="RadiotherapyTreatmentDeliveryPersonRoles9562" type="Context Group Name">Radiotherapy Treatment Delivery Person Roles (9562)</uid>
-    <uid uid="1.2.840.10008.6.1.1320" keyword="InterlockResolutions9563" type="Context Group Name">Interlock Resolutions (9563)</uid>
+    <uid uid="1.2.840.10008.6.1.1320" keyword="RadiotherapyInterlockResolutions9563" type="Context Group Name">Radiotherapy Interlock Resolutions (9563)</uid>
     <uid uid="1.2.840.10008.6.1.1321" keyword="TreatmentSessionConfirmationAssertions9564" type="Context Group Name">Treatment Session Confirmation Assertions (9564)</uid>
     <uid uid="1.2.840.10008.6.1.1322" keyword="TreatmentToleranceViolationCauses9565" type="Context Group Name">Treatment Tolerance Violation Causes (9565)</uid>
     <uid uid="1.2.840.10008.6.1.1323" keyword="ClinicalToleranceViolationTypes9566" type="Context Group Name">Clinical Tolerance Violation Types (9566)</uid>
     <uid uid="1.2.840.10008.6.1.1324" keyword="MachineToleranceViolationTypes9567" type="Context Group Name">Machine Tolerance Violation Types (9567)</uid>
-    <uid uid="1.2.840.10008.6.1.1325" keyword="TreatmentInterlocks9568" type="Context Group Name">Treatment Interlocks (9568)</uid>
+    <uid uid="1.2.840.10008.6.1.1325" keyword="RadiotherapyTreatmentInterlocks9568" type="Context Group Name">Radiotherapy Treatment Interlocks (9568)</uid>
     <uid uid="1.2.840.10008.6.1.1326" keyword="IsocentricPatientSupportPositionParameters9569" type="Context Group Name">Isocentric Patient Support Position Parameters (9569)</uid>
     <uid uid="1.2.840.10008.6.1.1327" keyword="RTOverriddenTreatmentParameters9570" type="Context Group Name">RT Overridden Treatment Parameters (9570)</uid>
     <uid uid="1.2.840.10008.6.1.1328" keyword="EEGLeads3030" type="Context Group Name">EEG Leads (3030)</uid>
@@ -6721,4 +6745,18 @@
     <uid uid="1.2.840.10008.6.1.1429" keyword="AssessmentFromCADRADS3020" type="Context Group Name">Assessment from CAD-RADS™ (3020)</uid>
     <uid uid="1.2.840.10008.6.1.1430" keyword="CADRADSStenosisAssessmentModifier3021" type="Context Group Name">CAD-RADS™ Stenosis Assessment Modifier (3021)</uid>
     <uid uid="1.2.840.10008.6.1.1431" keyword="CADRADSAssessmentModifier3022" type="Context Group Name">CAD-RADS™ Assessment Modifier (3022)</uid>
+    <uid uid="1.2.840.10008.6.1.1432" keyword="RTSegmentMaterials9579" type="Context Group Name">RT Segment Materials (9579)</uid>
+    <uid uid="1.2.840.10008.6.1.1433" keyword="VertebralAnatomicStructures7602" type="Context Group Name">Vertebral Anatomic Structures (7602)</uid>
+    <uid uid="1.2.840.10008.6.1.1434" keyword="Vertebrae7603" type="Context Group Name">Vertebrae (7603)</uid>
+    <uid uid="1.2.840.10008.6.1.1435" keyword="IntervertebralDiscs7604" type="Context Group Name">Intervertebral Discs (7604)</uid>
+    <uid uid="1.2.840.10008.6.1.1436" keyword="ImagingProcedures101" type="Context Group Name">Imaging Procedures (101)</uid>
+    <uid uid="1.2.840.10008.6.1.1437" keyword="NICIPShortCodesForImagingProcedures103" type="Context Group Name">NICIP Short Codes for Imaging Procedures (103)</uid>
+    <uid uid="1.2.840.10008.6.1.1438" keyword="NICIPSNOMEDSubsetOfImagingProcedures104" type="Context Group Name">NICIP SNOMED Subset of Imaging Procedures (104)</uid>
+    <uid uid="1.2.840.10008.6.1.1439" keyword="ICD10PCSImagingProcedures105" type="Context Group Name">ICD-10-PCS Imaging Procedures (105)</uid>
+    <uid uid="1.2.840.10008.6.1.1440" keyword="ICD10PCSNuclearMedicineProcedures106" type="Context Group Name">ICD-10-PCS Nuclear Medicine Procedures (106)</uid>
+    <uid uid="1.2.840.10008.6.1.1441" keyword="ICD10PCSRadiationTherapyProcedures107" type="Context Group Name">ICD-10-PCS Radiation Therapy Procedures (107)</uid>
+    <uid uid="1.2.840.10008.6.1.1442" keyword="RTSegmentationPropertyCategories9580" type="Context Group Name">RT Segmentation Property Categories (9580)</uid>
+    <uid uid="1.2.840.10008.6.1.1443" keyword="RadiotherapyRegistrationMarks9581" type="Context Group Name">Radiotherapy Registration Marks (9581)</uid>
+    <uid uid="1.2.840.10008.6.1.1444" keyword="RadiotherapyDoseRegions9582" type="Context Group Name">Radiotherapy Dose Regions (9582)</uid>
+    <uid uid="1.2.840.10008.6.1.1445" keyword="AnatomicallyLocalizedLesionSegmentationTypes7199" type="Context Group Name">Anatomically Localized Lesion Segmentation Types (7199)</uid>
 </dictionary>

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace FellowOakDicom.Log
+namespace FellowOakDicom.Log.Obsolete
 {
 
     [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]

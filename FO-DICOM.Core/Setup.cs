@@ -4,10 +4,11 @@
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
-using FellowOakDicom.Log;
+using FellowOakDicom.Log.Obsolete;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -91,6 +92,7 @@ namespace FellowOakDicom
         {
             services.TryAddSingleton<DicomServiceDependencies>();
             services.TryAddSingleton<IDicomClientFactory, DefaultDicomClientFactory>();
+            services.TryAddSingleton<IAdvancedDicomClientConnectionFactory, DefaultAdvancedDicomClientConnectionFactory>();
             services.Configure(options ?? (o => { }));
             return services;
         }

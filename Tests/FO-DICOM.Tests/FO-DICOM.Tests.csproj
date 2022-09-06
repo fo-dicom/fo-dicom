@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
     <TargetFrameworks>net462;netcoreapp3.1;net6.0</TargetFrameworks>
     <RootNamespace>FellowOakDicom.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
@@ -12,10 +11,6 @@
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Bugs\GH553.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.4.1" />

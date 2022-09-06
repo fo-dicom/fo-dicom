@@ -428,7 +428,7 @@ namespace FellowOakDicom.Tests.Network
             server.Stop();
         }
 
-        [Fact]
+        [Fact(Skip = "This test is flaky because it crashes whenever a parallel test happens to have an unobserved exception")]
         public void StopServerWithoutException()
         {
             object ue = null;

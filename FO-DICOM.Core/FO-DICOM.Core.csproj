@@ -14,7 +14,7 @@
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <Description>A NetStandard DICOM library.
 Version 5 has some breaking changes to version 4. Read here for more information how to migrate: https://github.com/fo-dicom/fo-dicom/wiki/Upgrade-from-version-4-to-version-5</Description>
-    <Version>5.0.2</Version>
+    <Version>5.0.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>fo-dicom</PackageId>
     <LangVersion>8.0</LangVersion>
@@ -83,6 +83,7 @@ Version 5 has some breaking changes to version 4. Read here for more information
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

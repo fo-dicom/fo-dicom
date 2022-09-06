@@ -179,6 +179,7 @@ namespace FellowOakDicom.Network
             {
                 server.Logger = logger;
             }
+            server.ServiceScope = dicomServerScope;
 
             var serviceOptions = _defaultServiceOptions.Value.Clone();
             
@@ -187,7 +188,6 @@ namespace FellowOakDicom.Network
             var registration = _dicomServerRegistry.Register(server, runner);
 
             server.Registration = registration;
-            server.ServiceScope = dicomServerScope;
 
             return server;
         }

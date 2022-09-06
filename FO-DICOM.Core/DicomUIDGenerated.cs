@@ -95,6 +95,8 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.RO.UID, DicomUID.RO);
             _uids.Add(DicomUID.RADELEMENT.UID, DicomUID.RADELEMENT);
             _uids.Add(DicomUID.I11.UID, DicomUID.I11);
+            _uids.Add(DicomUID.UNS.UID, DicomUID.UNS);
+            _uids.Add(DicomUID.RRID.UID, DicomUID.RRID);
             _uids.Add(DicomUID.DICOMApplicationContext.UID, DicomUID.DICOMApplicationContext);
             _uids.Add(DicomUID.DetachedPatientManagementRETIRED.UID, DicomUID.DetachedPatientManagementRETIRED);
             _uids.Add(DicomUID.DetachedPatientManagementMetaRETIRED.UID, DicomUID.DetachedPatientManagementMetaRETIRED);
@@ -1650,12 +1652,12 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.PartsOfOrgansLateralized12131.UID, DicomUID.PartsOfOrgansLateralized12131);
             _uids.Add(DicomUID.TreatmentTerminationReasons9561.UID, DicomUID.TreatmentTerminationReasons9561);
             _uids.Add(DicomUID.RadiotherapyTreatmentDeliveryPersonRoles9562.UID, DicomUID.RadiotherapyTreatmentDeliveryPersonRoles9562);
-            _uids.Add(DicomUID.InterlockResolutions9563.UID, DicomUID.InterlockResolutions9563);
+            _uids.Add(DicomUID.RadiotherapyInterlockResolutions9563.UID, DicomUID.RadiotherapyInterlockResolutions9563);
             _uids.Add(DicomUID.TreatmentSessionConfirmationAssertions9564.UID, DicomUID.TreatmentSessionConfirmationAssertions9564);
             _uids.Add(DicomUID.TreatmentToleranceViolationCauses9565.UID, DicomUID.TreatmentToleranceViolationCauses9565);
             _uids.Add(DicomUID.ClinicalToleranceViolationTypes9566.UID, DicomUID.ClinicalToleranceViolationTypes9566);
             _uids.Add(DicomUID.MachineToleranceViolationTypes9567.UID, DicomUID.MachineToleranceViolationTypes9567);
-            _uids.Add(DicomUID.TreatmentInterlocks9568.UID, DicomUID.TreatmentInterlocks9568);
+            _uids.Add(DicomUID.RadiotherapyTreatmentInterlocks9568.UID, DicomUID.RadiotherapyTreatmentInterlocks9568);
             _uids.Add(DicomUID.IsocentricPatientSupportPositionParameters9569.UID, DicomUID.IsocentricPatientSupportPositionParameters9569);
             _uids.Add(DicomUID.RTOverriddenTreatmentParameters9570.UID, DicomUID.RTOverriddenTreatmentParameters9570);
             _uids.Add(DicomUID.EEGLeads3030.UID, DicomUID.EEGLeads3030);
@@ -1762,6 +1764,20 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.AssessmentFromCADRADS3020.UID, DicomUID.AssessmentFromCADRADS3020);
             _uids.Add(DicomUID.CADRADSStenosisAssessmentModifier3021.UID, DicomUID.CADRADSStenosisAssessmentModifier3021);
             _uids.Add(DicomUID.CADRADSAssessmentModifier3022.UID, DicomUID.CADRADSAssessmentModifier3022);
+            _uids.Add(DicomUID.RTSegmentMaterials9579.UID, DicomUID.RTSegmentMaterials9579);
+            _uids.Add(DicomUID.VertebralAnatomicStructures7602.UID, DicomUID.VertebralAnatomicStructures7602);
+            _uids.Add(DicomUID.Vertebrae7603.UID, DicomUID.Vertebrae7603);
+            _uids.Add(DicomUID.IntervertebralDiscs7604.UID, DicomUID.IntervertebralDiscs7604);
+            _uids.Add(DicomUID.ImagingProcedures101.UID, DicomUID.ImagingProcedures101);
+            _uids.Add(DicomUID.NICIPShortCodesForImagingProcedures103.UID, DicomUID.NICIPShortCodesForImagingProcedures103);
+            _uids.Add(DicomUID.NICIPSNOMEDSubsetOfImagingProcedures104.UID, DicomUID.NICIPSNOMEDSubsetOfImagingProcedures104);
+            _uids.Add(DicomUID.ICD10PCSImagingProcedures105.UID, DicomUID.ICD10PCSImagingProcedures105);
+            _uids.Add(DicomUID.ICD10PCSNuclearMedicineProcedures106.UID, DicomUID.ICD10PCSNuclearMedicineProcedures106);
+            _uids.Add(DicomUID.ICD10PCSRadiationTherapyProcedures107.UID, DicomUID.ICD10PCSRadiationTherapyProcedures107);
+            _uids.Add(DicomUID.RTSegmentationPropertyCategories9580.UID, DicomUID.RTSegmentationPropertyCategories9580);
+            _uids.Add(DicomUID.RadiotherapyRegistrationMarks9581.UID, DicomUID.RadiotherapyRegistrationMarks9581);
+            _uids.Add(DicomUID.RadiotherapyDoseRegions9582.UID, DicomUID.RadiotherapyDoseRegions9582);
+            _uids.Add(DicomUID.AnatomicallyLocalizedLesionSegmentationTypes7199.UID, DicomUID.AnatomicallyLocalizedLesionSegmentationTypes7199);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2003,6 +2019,12 @@ namespace FellowOakDicom
 
         ///<summary>Coding Scheme: ICD-11</summary>
         public static readonly DicomUID I11 = new DicomUID("1.2.840.10008.2.16.16", "ICD-11", DicomUidType.CodingScheme, false);
+
+        ///<summary>Coding Scheme: Unified numbering system (UNS) for metals and alloys</summary>
+        public static readonly DicomUID UNS = new DicomUID("1.2.840.10008.2.16.17", "Unified numbering system (UNS) for metals and alloys", DicomUidType.CodingScheme, false);
+
+        ///<summary>Coding Scheme: Research Resource Identification</summary>
+        public static readonly DicomUID RRID = new DicomUID("1.2.840.10008.2.16.18", "Research Resource Identification", DicomUidType.CodingScheme, false);
 
         ///<summary>Application Context Name: DICOM Application Context Name</summary>
         public static readonly DicomUID DICOMApplicationContext = new DicomUID("1.2.840.10008.3.1.1.1", "DICOM Application Context Name", DicomUidType.ApplicationContextName, false);
@@ -6669,8 +6691,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Radiotherapy Treatment Delivery Person Roles (9562)</summary>
         public static readonly DicomUID RadiotherapyTreatmentDeliveryPersonRoles9562 = new DicomUID("1.2.840.10008.6.1.1319", "Radiotherapy Treatment Delivery Person Roles (9562)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Interlock Resolutions (9563)</summary>
-        public static readonly DicomUID InterlockResolutions9563 = new DicomUID("1.2.840.10008.6.1.1320", "Interlock Resolutions (9563)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Radiotherapy Interlock Resolutions (9563)</summary>
+        public static readonly DicomUID RadiotherapyInterlockResolutions9563 = new DicomUID("1.2.840.10008.6.1.1320", "Radiotherapy Interlock Resolutions (9563)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Treatment Session Confirmation Assertions (9564)</summary>
         public static readonly DicomUID TreatmentSessionConfirmationAssertions9564 = new DicomUID("1.2.840.10008.6.1.1321", "Treatment Session Confirmation Assertions (9564)", DicomUidType.ContextGroupName, false);
@@ -6684,8 +6706,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Machine Tolerance Violation Types (9567)</summary>
         public static readonly DicomUID MachineToleranceViolationTypes9567 = new DicomUID("1.2.840.10008.6.1.1324", "Machine Tolerance Violation Types (9567)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Treatment Interlocks (9568)</summary>
-        public static readonly DicomUID TreatmentInterlocks9568 = new DicomUID("1.2.840.10008.6.1.1325", "Treatment Interlocks (9568)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Radiotherapy Treatment Interlocks (9568)</summary>
+        public static readonly DicomUID RadiotherapyTreatmentInterlocks9568 = new DicomUID("1.2.840.10008.6.1.1325", "Radiotherapy Treatment Interlocks (9568)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Isocentric Patient Support Position Parameters (9569)</summary>
         public static readonly DicomUID IsocentricPatientSupportPositionParameters9569 = new DicomUID("1.2.840.10008.6.1.1326", "Isocentric Patient Support Position Parameters (9569)", DicomUidType.ContextGroupName, false);
@@ -7004,6 +7026,48 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: CAD-RADS™ Assessment Modifier (3022)</summary>
         public static readonly DicomUID CADRADSAssessmentModifier3022 = new DicomUID("1.2.840.10008.6.1.1431", "CAD-RADS™ Assessment Modifier (3022)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Segment Materials (9579)</summary>
+        public static readonly DicomUID RTSegmentMaterials9579 = new DicomUID("1.2.840.10008.6.1.1432", "RT Segment Materials (9579)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Vertebral Anatomic Structures (7602)</summary>
+        public static readonly DicomUID VertebralAnatomicStructures7602 = new DicomUID("1.2.840.10008.6.1.1433", "Vertebral Anatomic Structures (7602)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Vertebrae (7603)</summary>
+        public static readonly DicomUID Vertebrae7603 = new DicomUID("1.2.840.10008.6.1.1434", "Vertebrae (7603)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Intervertebral Discs (7604)</summary>
+        public static readonly DicomUID IntervertebralDiscs7604 = new DicomUID("1.2.840.10008.6.1.1435", "Intervertebral Discs (7604)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Imaging Procedures (101)</summary>
+        public static readonly DicomUID ImagingProcedures101 = new DicomUID("1.2.840.10008.6.1.1436", "Imaging Procedures (101)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: NICIP Short Codes for Imaging Procedures (103)</summary>
+        public static readonly DicomUID NICIPShortCodesForImagingProcedures103 = new DicomUID("1.2.840.10008.6.1.1437", "NICIP Short Codes for Imaging Procedures (103)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: NICIP SNOMED Subset of Imaging Procedures (104)</summary>
+        public static readonly DicomUID NICIPSNOMEDSubsetOfImagingProcedures104 = new DicomUID("1.2.840.10008.6.1.1438", "NICIP SNOMED Subset of Imaging Procedures (104)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: ICD-10-PCS Imaging Procedures (105)</summary>
+        public static readonly DicomUID ICD10PCSImagingProcedures105 = new DicomUID("1.2.840.10008.6.1.1439", "ICD-10-PCS Imaging Procedures (105)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: ICD-10-PCS Nuclear Medicine Procedures (106)</summary>
+        public static readonly DicomUID ICD10PCSNuclearMedicineProcedures106 = new DicomUID("1.2.840.10008.6.1.1440", "ICD-10-PCS Nuclear Medicine Procedures (106)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: ICD-10-PCS Radiation Therapy Procedures (107)</summary>
+        public static readonly DicomUID ICD10PCSRadiationTherapyProcedures107 = new DicomUID("1.2.840.10008.6.1.1441", "ICD-10-PCS Radiation Therapy Procedures (107)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Segmentation Property Categories (9580)</summary>
+        public static readonly DicomUID RTSegmentationPropertyCategories9580 = new DicomUID("1.2.840.10008.6.1.1442", "RT Segmentation Property Categories (9580)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Registration Marks (9581)</summary>
+        public static readonly DicomUID RadiotherapyRegistrationMarks9581 = new DicomUID("1.2.840.10008.6.1.1443", "Radiotherapy Registration Marks (9581)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Dose Regions (9582)</summary>
+        public static readonly DicomUID RadiotherapyDoseRegions9582 = new DicomUID("1.2.840.10008.6.1.1444", "Radiotherapy Dose Regions (9582)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Anatomically Localized Lesion Segmentation Types (7199)</summary>
+        public static readonly DicomUID AnatomicallyLocalizedLesionSegmentationTypes7199 = new DicomUID("1.2.840.10008.6.1.1445", "Anatomically Localized Lesion Segmentation Types (7199)", DicomUidType.ContextGroupName, false);
 
     }
 }

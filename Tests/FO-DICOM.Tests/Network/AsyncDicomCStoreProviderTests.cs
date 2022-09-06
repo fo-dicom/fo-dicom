@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network")]
+    [Collection("Network"), Trait("Category", "Network")]
     public class AsyncDicomCStoreProviderTests
     {
         private readonly XUnitDicomLogger _logger;
@@ -35,7 +35,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<AsyncDicomCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 DicomCStoreResponse response = null;
@@ -56,14 +56,14 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public async Task OnCStoreRequestAsync_PreferedTransfersyntax()
+        public async Task OnCStoreRequestAsync_PreferredTransfersyntax()
         {
             var port = Ports.GetNext();
 
             using (DicomServerFactory.Create<AsyncDicomCStoreProviderPreferingUncompressedTS>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 int numberOfContexts = 0;
