@@ -1,6 +1,7 @@
 #### 5.0.4 (TBD)
 * Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they have moved to the `FellowOakDicom.Log.Obsolete` namespace and are now marked as obsolete
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
+* Allow accessing person name components for empty items (#1405)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
 * Improve throughput of DicomClient when more requests are added mid-flight (#1396)
 * Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)

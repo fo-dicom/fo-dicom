@@ -624,6 +624,19 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected, readValue);
         }
 
+        [Fact]
+        public void AccessingAttributes_InEmptyPersonNameTag_IsPossible()
+        {
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate<DicomDataset>(DicomTag.ReferringPhysicianName, null);
+            var patientItem = dataset.GetDicomItem<DicomPersonName>(DicomTag.ReferringPhysicianName);
+
+            Assert.Equal("", patientItem.First);
+            Assert.Equal("", patientItem.Last);
+            Assert.Equal("", patientItem.Middle);
+            Assert.Equal("", patientItem.Prefix);
+            Assert.Equal("", patientItem.Suffix);
+        }
 
         [Fact]
         public void DicomEncoding_AppliedToMultipleNestedDatasetsWithDifferentEncodingsOnWriting()

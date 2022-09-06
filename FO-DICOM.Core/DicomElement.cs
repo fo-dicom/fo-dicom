@@ -1408,80 +1408,47 @@ namespace FellowOakDicom
 
         public override DicomVR ValueRepresentation => DicomVR.PN;
 
-        public string Last
-        {
-            get
-            {
-                string[] s = Get<string>().Split('\\');
-                if (!s.Any()) return "";
-                s = s[0].Split('=');
-                if (!s.Any()) return "";
-                s = s[0].Split('^');
-                if (!s.Any()) return "";
-                return s[0];
-            }
-        }
+        /// <summary> Family name or empty string. </summary>
+        public string Last => GetComponent(0);
 
-        public string First
-        {
-            get
-            {
-                string[] s = Get<string>().Split('\\');
-                if (!s.Any()) return "";
-                s = s[0].Split('=');
-                if (!s.Any()) return "";
-                s = s[0].Split('^');
-                if (s.Count() < 2) return "";
-                return s[1];
-            }
-        }
+        /// <summary> Given name or empty string. </summary>
+        public string First => GetComponent(1);
 
-        public string Middle
-        {
-            get
-            {
-                string[] s = Get<string>().Split('\\');
-                if (!s.Any()) return "";
-                s = s[0].Split('=');
-                if (!s.Any()) return "";
-                s = s[0].Split('^');
-                if (s.Count() < 3) return "";
-                return s[2];
-            }
-        }
+        /// <summary> Middle name or empty string. </summary>
+        public string Middle => GetComponent(2);
 
+        /// <summary> Name prefix or empty string. </summary>
+        public string Prefix => GetComponent(3);
 
-        public string Prefix
-        {
-            get
-            {
-                string[] s = Get<string>().Split('\\');
-                if (!s.Any()) return "";
-                s = s[0].Split('=');
-                if (!s.Any()) return "";
-                s = s[0].Split('^');
-                if (s.Count() < 4) return "";
-                return s[3];
-            }
-        }
-
-        public string Suffix
-        {
-            get
-            {
-                string[] s = Get<string>().Split('\\');
-                if (!s.Any()) return "";
-                s = s[0].Split('=');
-                if (!s.Any()) return "";
-                s = s[0].Split('^');
-                if (s.Count() < 5) return "";
-                return s[4];
-            }
-        }
+        /// <summary> Name suffix or empty string. </summary>
+        public string Suffix => GetComponent(4);
 
         #endregion
 
         #region Private Functions
+
+        private string GetComponent(int index)
+        {
+            string[] s = Get<string>()?.Split('\\');
+            if (s == null || !s.Any())
+            {
+                return "";
+            }
+
+            s = s[0].Split('=');
+            if (!s.Any())
+            {
+                return "";
+            }
+
+            s = s[0].Split('^');
+            if (s.Count() < index + 1)
+            {
+                return "";
+            }
+
+            return s[index];
+        }
 
         private static string ConcatName(
             string Last,
