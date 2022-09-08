@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -319,16 +320,15 @@ namespace FellowOakDicom.Serialization
                 case "SV":
                     if (data is IByteBuffer dataBufferSV)
                     {
-                        item = new DicomSignedVeryLong(tag, dataBufferSV);
+                        item = new DicomSignedVeryLongString(tag, dataBufferSV);
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        var dataAsLongs = dataAsStrings.Select(s => long.Parse(s)).ToArray();
-                        item = new DicomSignedVeryLong(tag, dataAsLongs);
+                        item = new DicomSignedVeryLongString(tag, dataAsStrings);
                     }
                     else
                     {
-                        item = new DicomSignedVeryLong(tag, (long[])data);
+                        item = new DicomSignedVeryLongString(tag, (long[])data);
                     }
                     break;
                 case "TM":
@@ -386,16 +386,15 @@ namespace FellowOakDicom.Serialization
                 case "UV":
                     if (data is IByteBuffer dataBufferUV)
                     {
-                        item = new DicomUnsignedVeryLong(tag, dataBufferUV);
+                        item = new DicomUnsignedVeryLongString(tag, dataBufferUV);
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        var dataAsULongs = dataAsStrings.Select(s => ulong.Parse(s)).ToArray();
-                        item = new DicomUnsignedVeryLong(tag, dataAsULongs);
+                        item = new DicomUnsignedVeryLongString(tag, dataAsStrings);
                     }
                     else
                     {
-                        item = new DicomUnsignedVeryLong(tag, (ulong[])data);
+                        item = new DicomUnsignedVeryLongString(tag, (ulong[])data);
                     }
                     break;
                 default:
@@ -825,6 +824,7 @@ namespace FellowOakDicom.Serialization
             var data = childStrings.ToArray();
             return data;
         }
+
 
         private object ReadJsonMultiNumberOrString<T>(JToken itemObject)
         {

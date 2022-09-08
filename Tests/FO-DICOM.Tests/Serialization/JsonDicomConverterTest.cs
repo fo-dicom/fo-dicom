@@ -83,6 +83,17 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public void DeserializeEmptyDoesNotThrowException()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            string json = string.Empty;
+
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            Assert.Null(dataset);
+        }
+
+        [Fact]
         public void DeserializeDSAsString()
         {
             // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
@@ -104,6 +115,98 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal(174.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientSize));
         }
 
+        [Fact]
+        public void DeserializeDSWithInvalidValueAsStringThrowsException()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00101030"": {
+                    ""vr"":""DS"",
+                    ""Value"":[84.5]
+                },
+                ""00101020"": {
+                    ""vr"":""DS"",
+                    ""Value"":[""asdf""]
+                }
+
+            }";
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter(autoValidate: false));
+            Assert.NotNull(dataset);
+            Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
+            Assert.Equal(@"asdf", dataset.GetString(DicomTag.PatientSize));
+        }
+
+        [Fact]
+        public void DeserializeISWithInvalidValueAsStringThrowsException()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00201206"": {
+                    ""vr"":""IS"",
+                    ""Value"":[311]
+                },
+                ""00201209"": {
+                    ""vr"":""IS"",
+                    ""Value"":[""asdf""]
+                },
+                ""00201204"": {
+                    ""vr"":""IS"",
+                    ""Value"":[]
+                }
+            }";
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter(autoValidate: false));
+            Assert.NotNull(dataset);
+            Assert.Equal(311, dataset.GetSingleValue<decimal>(DicomTag.NumberOfStudyRelatedSeries));
+            Assert.Equal(@"asdf", dataset.GetString(DicomTag.NumberOfSeriesRelatedInstances));
+        }
+
+
+        [Fact]
+        public void DeserializeSVWithInvalidValueAsStringThrowsException()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00101030"": {
+                    ""vr"":""SV"",
+                    ""Value"":[84]
+                },
+                ""00101020"": {
+                    ""vr"":""SV"",
+                    ""Value"":[""asdf""]
+                }
+
+            }";
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter(autoValidate: false));
+            Assert.NotNull(dataset);
+            Assert.Equal(84, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
+            Assert.Equal(@"asdf", dataset.GetString(DicomTag.PatientSize));
+        }
+
+
+        [Fact]
+        public void DeserializeUVWithInvalidValueAsStringThrowsException()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            var json = @"
+            {
+                ""00101030"": {
+                    ""vr"":""UV"",
+                    ""Value"":[84]
+                },
+                ""00101020"": {
+                    ""vr"":""UV"",
+                    ""Value"":[""asdf""]
+                }
+
+            }";
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter(autoValidate: false));
+            Assert.NotNull(dataset);
+            Assert.Equal(84, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
+            Assert.Equal(@"asdf", dataset.GetString(DicomTag.PatientSize));
+        }
 
         [Fact]
         public void ParseEmptyValues()
@@ -256,11 +359,11 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.All(
                 dataset,
                 item =>
-                    {
-                        if ((item.Tag.Element & 0xff00) != 0) Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
-                        Assert.NotNull(item.Tag.DictionaryEntry);
-                        if (item.ValueRepresentation == DicomVR.SQ) Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
-                    });
+                {
+                    if ((item.Tag.Element & 0xff00) != 0) Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
+                    Assert.NotNull(item.Tag.DictionaryEntry);
+                    if (item.ValueRepresentation == DicomVR.SQ) Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
+                });
         }
 
         /// <summary>
@@ -928,7 +1031,7 @@ namespace FellowOakDicom.Tests.Serialization
             ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0017, privateCreator)), new[] { new DicomDataset { new DicomShortText(new DicomTag(3, 0x0018, privateCreator), "ಠ_ಠ") } }));
             ds.Add(new DicomSignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0019, privateCreator)), -32768));
             ds.Add(new DicomShortText(ds.GetPrivateTag(new DicomTag(3, 0x001a, privateCreator)), "ಠ_ಠ"));
-            ds.Add(new DicomSignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), -12345678));
+            ds.Add(new DicomSignedVeryLongString(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), -12345678));
             ds.Add(new DicomTime(ds.GetPrivateTag(new DicomTag(3, 0x001c, privateCreator)), "123456"));
             ds.Add(new DicomUnlimitedCharacters(ds.GetPrivateTag(new DicomTag(3, 0x001d, privateCreator)), "Hmph."));
             ds.Add(new DicomUniqueIdentifier(ds.GetPrivateTag(new DicomTag(3, 0x001e, privateCreator)), DicomUID.CTImageStorage));
@@ -937,7 +1040,7 @@ namespace FellowOakDicom.Tests.Serialization
             ds.Add(new DicomUniversalResource(ds.GetPrivateTag(new DicomTag(3, 0x0021, privateCreator)), "http://example.com?q=1"));
             ds.Add(new DicomUnsignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0022, privateCreator)), 0xffff));
             ds.Add(new DicomUnlimitedText(ds.GetPrivateTag(new DicomTag(3, 0x0023, privateCreator)), "unlimited!"));
-            ds.Add(new DicomUnsignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0024, privateCreator)), 0xffffffffffffffff));
+            ds.Add(new DicomUnsignedVeryLongString(ds.GetPrivateTag(new DicomTag(3, 0x0024, privateCreator)), 0xffffffffffffffff));
 
             return ds;
         }
@@ -1185,8 +1288,8 @@ namespace FellowOakDicom.Tests.Serialization
             const ulong validUV = 18446744073709551600;
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
-            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
-            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
+            dataset.Add(new DicomSignedVeryLongString(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, validUV));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber));
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[299792458]},\"00101020\":{\"vr\":\"DS\",\"Value\":[3.1415926535]},\"00720082\":{\"vr\":\"SV\",\"Value\":[9223372036854775800]},\"00720083\":{\"vr\":\"UV\",\"Value\":[18446744073709551600]}}", json);
         }
@@ -1201,8 +1304,8 @@ namespace FellowOakDicom.Tests.Serialization
             const ulong validUV = 18446744073709551600;
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
-            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
-            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
+            dataset.Add(new DicomSignedVeryLongString(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, validUV));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.PreferablyAsNumber));
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[299792458]},\"00101020\":{\"vr\":\"DS\",\"Value\":[3.1415926535]},\"00720082\":{\"vr\":\"SV\",\"Value\":[9223372036854775800]},\"00720083\":{\"vr\":\"UV\",\"Value\":[18446744073709551600]}}", json);
         }
@@ -1217,8 +1320,8 @@ namespace FellowOakDicom.Tests.Serialization
             const ulong validUV = 18446744073709551600;
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
-            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
-            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
+            dataset.Add(new DicomSignedVeryLongString(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, validUV));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsString));
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"299792458\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"3.1415926535\"]},\"00720082\":{\"vr\":\"SV\",\"Value\":[\"9223372036854775800\"]},\"00720083\":{\"vr\":\"UV\",\"Value\":[\"18446744073709551600\"]}}", json);
         }

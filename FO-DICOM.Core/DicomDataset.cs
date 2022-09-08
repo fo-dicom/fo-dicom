@@ -1349,12 +1349,12 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.SV)
             {
-                if (values == null) return DoAdd(new DicomSignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(long)) return DoAdd(new DicomSignedVeryLong(tag, values.Cast<long>().ToArray()), allowUpdate);
+                if (values == null) return DoAdd(new DicomSignedVeryLongString(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(long)) return DoAdd(new DicomSignedVeryLongString(tag, values.Cast<long>().ToArray()), allowUpdate);
 
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, long.Parse, out IEnumerable<long> parsedValues))
                 {
-                    return DoAdd(new DicomSignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                    return DoAdd(new DicomSignedVeryLongString(tag, parsedValues.ToArray()), allowUpdate);
                 }
             }
 
@@ -1429,12 +1429,12 @@ namespace FellowOakDicom
 
             if (vr == DicomVR.UV)
             {
-                if (values == null) return DoAdd(new DicomUnsignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
-                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomUnsignedVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
+                if (values == null) return DoAdd(new DicomUnsignedVeryLongString(tag, EmptyBuffer.Value), allowUpdate);
+                if (typeof(T) == typeof(ulong)) return DoAdd(new DicomUnsignedVeryLongString(tag, values.Cast<ulong>().ToArray()), allowUpdate);
 
                 if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ulong.Parse, out IEnumerable<ulong> parsedValues))
                 {
-                    return DoAdd(new DicomUnsignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
+                    return DoAdd(new DicomUnsignedVeryLongString(tag, parsedValues.ToArray()), allowUpdate);
                 }
             }
 

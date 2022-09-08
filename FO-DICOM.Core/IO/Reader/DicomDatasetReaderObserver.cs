@@ -68,7 +68,7 @@ namespace FellowOakDicom.IO.Reader
                 "SL" => new DicomSignedLong(tag, data),
                 "SS" => new DicomSignedShort(tag, data),
                 "ST" => new DicomShortText(tag, _encodings.Peek(), data),
-                "SV" => new DicomSignedVeryLong(tag, data),
+                "SV" => new DicomSignedVeryLongString(tag, data),
                 "TM" => new DicomTime(tag, data),
                 "UC" => new DicomUnlimitedCharacters(tag, _encodings.Peek(), data),
                 "UI" => new DicomUniqueIdentifier(tag, data),
@@ -77,7 +77,7 @@ namespace FellowOakDicom.IO.Reader
                 "UR" => new DicomUniversalResource(tag, _encodings.Peek(), data),
                 "US" => new DicomUnsignedShort(tag, data),
                 "UT" => new DicomUnlimitedText(tag, _encodings.Peek(), data),
-                "UV" => new DicomUnsignedVeryLong(tag, data),
+                "UV" => new DicomUnsignedVeryLongString(tag, data),
                 _ => throw new DicomDataException($"Unhandled VR in DICOM parser observer: {vr.Code}"),
             };
             if (element.Tag == DicomTag.SpecificCharacterSet)
