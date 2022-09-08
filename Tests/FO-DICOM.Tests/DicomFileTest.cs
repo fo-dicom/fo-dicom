@@ -72,7 +72,7 @@ namespace FellowOakDicom.Tests
                 new DicomSignedLong(DicomTag.ReferencePixelX0, -12345),
                 new DicomSignedShort(DicomTag.TIDOffset, -2030),
                 new DicomShortText(DicomTag.SelectorSTValue, "Some short text"),
-                new DicomSignedVeryLongString(DicomTag.SelectorSVValue, -1234567890),
+                new DicomSignedVeryLong(DicomTag.SelectorSVValue, -1234567890),
                 new DicomTime(DicomTag.SeriesTime, "113022.45"),
                 new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "Some very long text"),
                 new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "123.4.5.89"),
@@ -81,7 +81,7 @@ namespace FellowOakDicom.Tests
                 new DicomUniversalResource(DicomTag.SelectorURValue, "https://example.com"),
                 new DicomUnsignedShort(DicomTag.BitsAllocated, 8),
                 new DicomUnlimitedText(DicomTag.SelectorUTValue, "More text..."),
-                new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, 1234567890),
+                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, 1234567890),
             };
 
         #endregion

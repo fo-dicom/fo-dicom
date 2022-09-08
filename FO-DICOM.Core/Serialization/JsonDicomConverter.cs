@@ -321,8 +321,8 @@ namespace FellowOakDicom.Serialization
                             ? new DicomShortText(tag, _jsonTextEncodings, dataBufferST)
                             : new DicomShortText(tag, data.GetAsStringArray().GetFirstOrEmpty()),
                 "SV" => data is IByteBuffer dataBufferSV
-                                ? new DicomSignedVeryLongString(tag, dataBufferSV)
-                                : new DicomSignedVeryLongString(tag, (long[])data),
+                                ? new DicomSignedVeryLong(tag, dataBufferSV)
+                                : new DicomSignedVeryLong(tag, (long[])data),
                 "TM" => new DicomTime(tag, (string[])data),
                 "UC" => data is IByteBuffer dataBufferUC
                             ? new DicomUnlimitedCharacters(tag, _jsonTextEncodings, dataBufferUC)
@@ -340,8 +340,8 @@ namespace FellowOakDicom.Serialization
                             ? new DicomUnlimitedText(tag, _jsonTextEncodings, dataBufferUT)
                             : new DicomUnlimitedText(tag, data.GetAsStringArray().GetSingleOrEmpty()),
                 "UV" => data is IByteBuffer dataBufferUV
-                            ? new DicomUnsignedVeryLongString(tag, dataBufferUV)
-                            : new DicomUnsignedVeryLongString(tag, (ulong[])data),
+                            ? new DicomUnsignedVeryLong(tag, dataBufferUV)
+                            : new DicomUnsignedVeryLong(tag, (ulong[])data),
                 _ => throw new NotSupportedException("Unsupported value representation"),
             };
             return item;

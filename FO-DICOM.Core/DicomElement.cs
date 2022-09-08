@@ -1599,7 +1599,7 @@ namespace FellowOakDicom
     }
 
     /// <summary>Signed Very Long (SV)</summary>
-    public class DicomSignedVeryLongString : DicomMultiStringElement
+    public class DicomSignedVeryLong : DicomMultiStringElement
     {
         #region FIELDS
 
@@ -1609,17 +1609,17 @@ namespace FellowOakDicom
 
         #region Public Constructors
 
-        public DicomSignedVeryLongString(DicomTag tag, IByteBuffer data)
+        public DicomSignedVeryLong(DicomTag tag, IByteBuffer data)
             : base(tag, null, data)
         {
         }
 
-        public DicomSignedVeryLongString(DicomTag tag, params string[] values)
+        public DicomSignedVeryLong(DicomTag tag, params string[] values)
             : base(tag, values)
         {
         }
 
-        public DicomSignedVeryLongString(DicomTag tag, params long[] values)
+        public DicomSignedVeryLong(DicomTag tag, params long[] values)
             : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
@@ -2016,7 +2016,7 @@ namespace FellowOakDicom
     }
 
     /// <summary>Unsigned Very Long (UV)</summary>
-    public class DicomUnsignedVeryLongString : DicomMultiStringElement
+    public class DicomUnsignedVeryLong : DicomMultiStringElement
     {
         #region FIELDS
 
@@ -2026,17 +2026,17 @@ namespace FellowOakDicom
 
         #region Public Constructors
 
-        public DicomUnsignedVeryLongString(DicomTag tag, IByteBuffer data)
+        public DicomUnsignedVeryLong(DicomTag tag, IByteBuffer data)
             : base(tag, null, data)
         {
         }
 
-        public DicomUnsignedVeryLongString(DicomTag tag, params string[] values)
+        public DicomUnsignedVeryLong(DicomTag tag, params string[] values)
             : base(tag, values)
         {
         }
 
-        public DicomUnsignedVeryLongString(DicomTag tag, params ulong[] values)
+        public DicomUnsignedVeryLong(DicomTag tag, params ulong[] values)
             : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }

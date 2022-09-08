@@ -320,15 +320,15 @@ namespace FellowOakDicom.Serialization
                 case "SV":
                     if (data is IByteBuffer dataBufferSV)
                     {
-                        item = new DicomSignedVeryLongString(tag, dataBufferSV);
+                        item = new DicomSignedVeryLong(tag, dataBufferSV);
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        item = new DicomSignedVeryLongString(tag, dataAsStrings);
+                        item = new DicomSignedVeryLong(tag, dataAsStrings);
                     }
                     else
                     {
-                        item = new DicomSignedVeryLongString(tag, (long[])data);
+                        item = new DicomSignedVeryLong(tag, (long[])data);
                     }
                     break;
                 case "TM":
@@ -386,15 +386,15 @@ namespace FellowOakDicom.Serialization
                 case "UV":
                     if (data is IByteBuffer dataBufferUV)
                     {
-                        item = new DicomUnsignedVeryLongString(tag, dataBufferUV);
+                        item = new DicomUnsignedVeryLong(tag, dataBufferUV);
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        item = new DicomUnsignedVeryLongString(tag, dataAsStrings);
+                        item = new DicomUnsignedVeryLong(tag, dataAsStrings);
                     }
                     else
                     {
-                        item = new DicomUnsignedVeryLongString(tag, (ulong[])data);
+                        item = new DicomUnsignedVeryLong(tag, (ulong[])data);
                     }
                     break;
                 default:

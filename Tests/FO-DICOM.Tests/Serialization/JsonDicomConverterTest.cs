@@ -1031,7 +1031,7 @@ namespace FellowOakDicom.Tests.Serialization
             ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0017, privateCreator)), new[] { new DicomDataset { new DicomShortText(new DicomTag(3, 0x0018, privateCreator), "ಠ_ಠ") } }));
             ds.Add(new DicomSignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0019, privateCreator)), -32768));
             ds.Add(new DicomShortText(ds.GetPrivateTag(new DicomTag(3, 0x001a, privateCreator)), "ಠ_ಠ"));
-            ds.Add(new DicomSignedVeryLongString(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), -12345678));
+            ds.Add(new DicomSignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x001b, privateCreator)), -12345678));
             ds.Add(new DicomTime(ds.GetPrivateTag(new DicomTag(3, 0x001c, privateCreator)), "123456"));
             ds.Add(new DicomUnlimitedCharacters(ds.GetPrivateTag(new DicomTag(3, 0x001d, privateCreator)), "Hmph."));
             ds.Add(new DicomUniqueIdentifier(ds.GetPrivateTag(new DicomTag(3, 0x001e, privateCreator)), DicomUID.CTImageStorage));
@@ -1040,7 +1040,7 @@ namespace FellowOakDicom.Tests.Serialization
             ds.Add(new DicomUniversalResource(ds.GetPrivateTag(new DicomTag(3, 0x0021, privateCreator)), "http://example.com?q=1"));
             ds.Add(new DicomUnsignedShort(ds.GetPrivateTag(new DicomTag(3, 0x0022, privateCreator)), 0xffff));
             ds.Add(new DicomUnlimitedText(ds.GetPrivateTag(new DicomTag(3, 0x0023, privateCreator)), "unlimited!"));
-            ds.Add(new DicomUnsignedVeryLongString(ds.GetPrivateTag(new DicomTag(3, 0x0024, privateCreator)), 0xffffffffffffffff));
+            ds.Add(new DicomUnsignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0024, privateCreator)), 0xffffffffffffffff));
 
             return ds;
         }
@@ -1288,8 +1288,8 @@ namespace FellowOakDicom.Tests.Serialization
             const ulong validUV = 18446744073709551600;
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
-            dataset.Add(new DicomSignedVeryLongString(DicomTag.SelectorSVValue, validSV));
-            dataset.Add(new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, validUV));
+            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber));
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[299792458]},\"00101020\":{\"vr\":\"DS\",\"Value\":[3.1415926535]},\"00720082\":{\"vr\":\"SV\",\"Value\":[9223372036854775800]},\"00720083\":{\"vr\":\"UV\",\"Value\":[18446744073709551600]}}", json);
         }
@@ -1304,8 +1304,8 @@ namespace FellowOakDicom.Tests.Serialization
             const ulong validUV = 18446744073709551600;
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
-            dataset.Add(new DicomSignedVeryLongString(DicomTag.SelectorSVValue, validSV));
-            dataset.Add(new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, validUV));
+            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.PreferablyAsNumber));
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[299792458]},\"00101020\":{\"vr\":\"DS\",\"Value\":[3.1415926535]},\"00720082\":{\"vr\":\"SV\",\"Value\":[9223372036854775800]},\"00720083\":{\"vr\":\"UV\",\"Value\":[18446744073709551600]}}", json);
         }
@@ -1320,8 +1320,8 @@ namespace FellowOakDicom.Tests.Serialization
             const ulong validUV = 18446744073709551600;
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, validDS));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validIS));
-            dataset.Add(new DicomSignedVeryLongString(DicomTag.SelectorSVValue, validSV));
-            dataset.Add(new DicomUnsignedVeryLongString(DicomTag.SelectorUVValue, validUV));
+            dataset.Add(new DicomSignedVeryLong(DicomTag.SelectorSVValue, validSV));
+            dataset.Add(new DicomUnsignedVeryLong(DicomTag.SelectorUVValue, validUV));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsString));
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"299792458\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"3.1415926535\"]},\"00720082\":{\"vr\":\"SV\",\"Value\":[\"9223372036854775800\"]},\"00720083\":{\"vr\":\"UV\",\"Value\":[\"18446744073709551600\"]}}", json);
         }
