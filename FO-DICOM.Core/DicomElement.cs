@@ -1609,18 +1609,13 @@ namespace FellowOakDicom
 
         #region Public Constructors
 
+        public DicomSignedVeryLong(DicomTag tag, params long[] values)
+            : base(tag, values.Select(x => x.ToString()).ToArray())
+        {
+        }
+
         public DicomSignedVeryLong(DicomTag tag, IByteBuffer data)
             : base(tag, null, data)
-        {
-        }
-
-        public DicomSignedVeryLong(DicomTag tag, params string[] values)
-            : base(tag, values)
-        {
-        }
-
-        public DicomSignedVeryLong(DicomTag tag, params long[] values)
-            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
@@ -2026,18 +2021,13 @@ namespace FellowOakDicom
 
         #region Public Constructors
 
+        public DicomUnsignedVeryLong(DicomTag tag, params ulong[] values)
+            : base(tag, values.Select(x => x.ToString()).ToArray())
+        {
+        }
+
         public DicomUnsignedVeryLong(DicomTag tag, IByteBuffer data)
             : base(tag, null, data)
-        {
-        }
-
-        public DicomUnsignedVeryLong(DicomTag tag, params string[] values)
-            : base(tag, values)
-        {
-        }
-
-        public DicomUnsignedVeryLong(DicomTag tag, params ulong[] values)
-            : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
         }
 
@@ -2077,7 +2067,6 @@ namespace FellowOakDicom
                 if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
                 if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
                 if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
-                if (t == typeof(ulong)) return (T)(object)tmp.Cast<ulong>().ToArray();
                 if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
                 if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
                 if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();

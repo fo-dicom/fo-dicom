@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -324,7 +325,9 @@ namespace FellowOakDicom.Serialization
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        item = new DicomSignedVeryLong(tag, dataAsStrings);
+                        var byteBuffer = ByteConverter.ToByteBuffer(string.Join("\\", dataAsStrings));
+
+                        item = new DicomSignedVeryLong(tag, byteBuffer);
                     }
                     else
                     {
@@ -390,7 +393,9 @@ namespace FellowOakDicom.Serialization
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        item = new DicomUnsignedVeryLong(tag, dataAsStrings);
+                        var byteBuffer = ByteConverter.ToByteBuffer(string.Join("\\", dataAsStrings));
+
+                        item = new DicomUnsignedVeryLong(tag, byteBuffer);
                     }
                     else
                     {
