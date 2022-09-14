@@ -709,7 +709,7 @@ namespace FellowOakDicom.Tests.Serialization
 
 
         [Fact]
-        public void DeserializeDSWithInvalidValueAsStringDoesNotThrowException()
+        public void DeserializeDSWithNonNumericValueAsStringDoesNotThrowException()
         {
             // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
             var json = @"
@@ -732,7 +732,7 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
-        public void DeserializeISWithInvalidValueAsStringDoesNotThrowException()
+        public void DeserializeISWithNonNumericValueAsStringDoesNotThrowException()
         {
             // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
             var json = @"
@@ -758,7 +758,7 @@ namespace FellowOakDicom.Tests.Serialization
 
 
         [Fact]
-        public void DeserializeSVWithInvalidValueAsStringDoesNotThrowException()
+        public void DeserializeSVWithNonNumericValueAsStringDoesNotThrowException()
         {
             // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
             var json = @"
@@ -781,7 +781,7 @@ namespace FellowOakDicom.Tests.Serialization
 
 
         [Fact]
-        public void DeserializeUVWithInvalidValueAsStringDoesNotThrowException()
+        public void DeserializeUVWithNonNumericValueAsStringDoesNotThrowException()
         {
             // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
             var json = @"
