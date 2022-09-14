@@ -1646,7 +1646,7 @@ namespace FellowOakDicom
             {
                 var t = typeof(T).GetElementType();
 
-                if (t == typeof(decimal)) return (T)(object)_values;
+                if (t == typeof(long)) return (T)(object)_values;
 
                 var tu = Nullable.GetUnderlyingType(t) ?? t;
                 var tmp = _values.Select(x => Convert.ChangeType(x, tu));
@@ -1655,11 +1655,13 @@ namespace FellowOakDicom
                 if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
                 if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
                 if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
+                if (t == typeof(ulong)) return (T)(object)tmp.Cast<ulong>().ToArray();
                 if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
                 if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
                 if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();
                 if (t == typeof(double?)) return (T)(object)tmp.Cast<double?>().ToArray();
                 if (t == typeof(float?)) return (T)(object)tmp.Cast<float?>().ToArray();
+                if (t == typeof(ulong?)) return (T)(object)tmp.Cast<ulong?>().ToArray();
                 if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
                 if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
                 if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();
@@ -2058,7 +2060,7 @@ namespace FellowOakDicom
             {
                 var t = typeof(T).GetElementType();
 
-                if (t == typeof(decimal)) return (T)(object)_values;
+                if (t == typeof(ulong)) return (T)(object)_values;
 
                 var tu = Nullable.GetUnderlyingType(t) ?? t;
                 var tmp = _values.Select(x => Convert.ChangeType(x, tu));
@@ -2067,11 +2069,13 @@ namespace FellowOakDicom
                 if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
                 if (t == typeof(float)) return (T)(object)tmp.Cast<float>().ToArray();
                 if (t == typeof(long)) return (T)(object)tmp.Cast<long>().ToArray();
+                if (t == typeof(ulong)) return (T)(object)tmp.Cast<ulong>().ToArray();
                 if (t == typeof(int)) return (T)(object)tmp.Cast<int>().ToArray();
                 if (t == typeof(short)) return (T)(object)tmp.Cast<short>().ToArray();
                 if (t == typeof(decimal?)) return (T)(object)tmp.Cast<decimal?>().ToArray();
                 if (t == typeof(double?)) return (T)(object)tmp.Cast<double?>().ToArray();
                 if (t == typeof(float?)) return (T)(object)tmp.Cast<float?>().ToArray();
+                if (t == typeof(ulong?)) return (T)(object)tmp.Cast<ulong?>().ToArray();
                 if (t == typeof(long?)) return (T)(object)tmp.Cast<long?>().ToArray();
                 if (t == typeof(int?)) return (T)(object)tmp.Cast<int?>().ToArray();
                 if (t == typeof(short?)) return (T)(object)tmp.Cast<short?>().ToArray();

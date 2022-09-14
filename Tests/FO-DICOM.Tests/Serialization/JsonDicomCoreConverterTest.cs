@@ -720,7 +720,7 @@ namespace FellowOakDicom.Tests.Serialization
                 },
                 ""00101020"": {
                     ""vr"":""DS"",
-                    ""Value"":[""asdfgfsd""]
+                    ""Value"":[""asd""]
                 }
 
             }";
@@ -728,7 +728,7 @@ namespace FellowOakDicom.Tests.Serialization
             var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
             Assert.NotNull(dataset);
             Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
-            Assert.Equal(@"asdfgfsd", dataset.GetString(DicomTag.PatientSize));
+            Assert.Equal(@"asd", dataset.GetString(DicomTag.PatientSize));
         }
 
         [Fact]
@@ -743,7 +743,7 @@ namespace FellowOakDicom.Tests.Serialization
                 },
                 ""00201209"": {
                     ""vr"":""IS"",
-                    ""Value"":[""asdfgfsd""]
+                    ""Value"":[""asd""]
                 },
                 ""00201204"": {
                     ""vr"":""IS"",
@@ -753,7 +753,7 @@ namespace FellowOakDicom.Tests.Serialization
             var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
             Assert.NotNull(dataset);
             Assert.Equal(311, dataset.GetSingleValue<decimal>(DicomTag.NumberOfStudyRelatedSeries));
-            Assert.Equal(@"asdfgfsd", dataset.GetString(DicomTag.NumberOfSeriesRelatedInstances));
+            Assert.Equal(@"asd", dataset.GetString(DicomTag.NumberOfSeriesRelatedInstances));
         }
 
 
@@ -769,14 +769,14 @@ namespace FellowOakDicom.Tests.Serialization
                 },
                 ""00101020"": {
                     ""vr"":""SV"",
-                    ""Value"":[""asdfgfsd""]
+                    ""Value"":[""asd""]
                 }
 
             }";
             var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
             Assert.NotNull(dataset);
             Assert.Equal(84, dataset.GetSingleValue<long>(DicomTag.PatientWeight));
-            Assert.Equal(@"asdfgfsd", dataset.GetString(DicomTag.PatientSize));
+            Assert.Equal(@"asd", dataset.GetString(DicomTag.PatientSize));
         }
 
 
@@ -792,14 +792,14 @@ namespace FellowOakDicom.Tests.Serialization
                 },
                 ""00101020"": {
                     ""vr"":""UV"",
-                    ""Value"":[""asdfgfsd""]
+                    ""Value"":[""asd""]
                 }
 
             }";
             var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
             Assert.NotNull(dataset);
             Assert.Equal(84ul, dataset.GetSingleValue<ulong>(DicomTag.PatientWeight));
-            Assert.Equal(@"asdfgfsd", dataset.GetString(DicomTag.PatientSize));
+            Assert.Equal(@"asd", dataset.GetString(DicomTag.PatientSize));
         }
 
         private static DicomDataset[] LegacyConvertJsonToDicomArray(string json)
