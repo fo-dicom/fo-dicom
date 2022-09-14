@@ -1869,8 +1869,6 @@ namespace FellowOakDicom
 
         private readonly Func<string, TType> _toNumber;
 
-        private readonly DicomVR _vrType;
-
         #endregion
 
         #region Public Constructors
