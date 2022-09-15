@@ -887,7 +887,7 @@ namespace FellowOakDicom.Serialization
                 {
                     childValues.Add(parsed);
                 }
-                else if (reader.TokenType == JsonTokenType.String && (_numberSerializationMode == NumberSerializationMode.AsString || _numberSerializationMode == NumberSerializationMode.PreferablyAsNumber))
+                else if (reader.TokenType == JsonTokenType.String && !_autoValidate)
                 {
                     hasNonNumericString = true;
                     childValues.Add(reader.GetString());
