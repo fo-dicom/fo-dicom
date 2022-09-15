@@ -24,6 +24,20 @@ namespace FellowOakDicom
         [DataMember]
         public string Creator { get; private set; }
 
+        /// <summary>
+        /// Check if the given DicomItem is valid
+        /// https://dicom.nema.org/dicom/2013/output/chtml/part05/sect_7.8.html private creator data item should be VR =LO and VM = 1
+        /// /// </summary>
+        /// <param name="dataElement"></param>
+        /// <returns></returns>
+        public static bool IsValid(DicomItem dataElement)
+        {
+            // if DicomPrivateCreatoe was also a DicomItem we could have just overrided Validate method.
+            // making a simple change, while still moving the logic inside the class
+            return dataElement is DicomLongString element
+                   && element.Count == 1;
+        }
+
         public int CompareTo(DicomPrivateCreator other)
         {
             return Creator.CompareTo(other.Creator);

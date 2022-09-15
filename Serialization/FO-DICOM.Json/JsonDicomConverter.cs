@@ -130,8 +130,7 @@ namespace FellowOakDicom.Serialization
                     if (dataset.Contains(privateCreatorTag))
                     {
                         var privateCreatorItem = dataset.GetDicomItem<DicomItem>(privateCreatorTag);
-                        // Based on standard https://dicom.nema.org/dicom/2013/output/chtml/part05/sect_7.8.html private creator data item should be VM = 1, but there are buggy dcms
-                        bool isValidPrivateCreatorItem = privateCreatorItem is DicomLongString element && element.Count == 1;
+                        bool isValidPrivateCreatorItem = DicomPrivateCreator.IsValid(privateCreatorItem);
                         // Allow de-serialization to continue if autoValidate was set to false
                         if (isValidPrivateCreatorItem || _autoValidate)
                         {
