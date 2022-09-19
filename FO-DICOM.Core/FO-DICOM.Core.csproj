@@ -3,8 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom</RootNamespace>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.core</AssemblyName>
     <Copyright>Copyright (c) fo-dicom contributors 2012-2022</Copyright>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
