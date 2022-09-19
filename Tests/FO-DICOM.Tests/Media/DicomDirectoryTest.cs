@@ -9,6 +9,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
+// These tests cover some obsolete properties such as AutoValidate
+#pragma warning disable CS0618
+
 namespace FellowOakDicom.Tests.Media
 {
 

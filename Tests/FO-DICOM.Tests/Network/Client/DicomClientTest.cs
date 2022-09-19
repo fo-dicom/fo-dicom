@@ -18,6 +18,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
+// These tests cover some obsolete properties
+#pragma warning disable CS0618
+
 namespace FellowOakDicom.Tests.Network.Client
 {
     [Collection("Network"), Trait("Category", "Network")]
