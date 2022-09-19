@@ -4,8 +4,6 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>FellowOakDicom.NLog</RootNamespace>
     <AssemblyName>fo-dicom.NLog</AssemblyName>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>5.0.3</Version>
     <Authors>fo-dicom contributors</Authors>
