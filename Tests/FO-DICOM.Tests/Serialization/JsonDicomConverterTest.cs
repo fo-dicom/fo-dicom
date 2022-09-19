@@ -1270,31 +1270,6 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.NotNull(ds);
         }
 
-        [Fact]
-        public static void GivenDicomJsonDatasetWithInvalidPrivateCreatorDataElementWithValidation_WhenDeserialized_Throws()
-        {
-            // bad data private creator data
-            const string json = @"
-            {
-                ""00090010"": {
-                    ""vr"": ""US"",
-                     ""Value"": [
-                        1234,
-                        3333
-                    ]
-                 },
-                ""00091001"": {
-                    ""vr"": ""CS"",
-                    ""Value"": [
-                        ""00""
-                    ]
-                }
-            } ";
-            
-            // throws when validate is true
-            Assert.Throws<DicomDataException>(() => DicomJson.ConvertJsonToDicom(json, autoValidate: true));
-        }
-
         #region Sample Data
 
         private string _jsonExampleFromDicomNemaOrg = @"
