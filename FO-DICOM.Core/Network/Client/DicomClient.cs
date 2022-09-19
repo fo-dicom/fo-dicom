@@ -16,6 +16,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+// DICOM client still provides some obsolete APIs that should not be removed yet, but should also not provide obsolete compiler warnings
+#pragma warning disable CS0618
+#pragma warning disable CS0612
+
 namespace FellowOakDicom.Network.Client
 {
     public interface IDicomClient
