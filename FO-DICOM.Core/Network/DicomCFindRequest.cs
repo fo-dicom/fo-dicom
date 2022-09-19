@@ -310,7 +310,10 @@ namespace FellowOakDicom.Network
                 case DicomQueryRetrieveLevel.Series:
                 case DicomQueryRetrieveLevel.Image:
                     return DicomUID.StudyRootQueryRetrieveInformationModelFind;
+#pragma warning disable CS0618
+                // While this QR level is obsolete, we must still support it
                 case DicomQueryRetrieveLevel.Worklist:
+#pragma warning restore CS0618
                 case DicomQueryRetrieveLevel.NotApplicable:
                     return DicomUID.ModalityWorklistInformationModelFind;
                 default:
