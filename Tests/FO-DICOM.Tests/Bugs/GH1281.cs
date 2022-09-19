@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Bugs
             dicomClient.ServiceOptions.LogDimseDatasets = true;
             dicomClient.Logger = _logger.IncludePrefix("Client");
 
-            DicomCStoreResponse? response = null;
+            DicomCStoreResponse response = null;
 
             var file = "Test Data/Issue1097_FailToOpenDeflatedFileWithSQ.dcm";
 
