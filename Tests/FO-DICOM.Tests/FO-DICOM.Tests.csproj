@@ -10,6 +10,8 @@
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
+    <!-- Bug in nuget: https://github.com/dotnet/sdk/issues/24747 -->
+    <NoWarn>NU1504</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
