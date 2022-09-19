@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,14 +22,16 @@ namespace FellowOakDicom.Tests.Serialization
     /// <summary>
     /// The json dicom converter test.
     /// </summary>
-    [Collection("General")]
+    [Collection("WithHttpClient")]
     public class JsonDicomConverterTest
     {
         private readonly ITestOutputHelper _output;
+        private readonly HttpClientFixture _httpClientFixture;
 
-        public JsonDicomConverterTest(ITestOutputHelper output)
+        public JsonDicomConverterTest(ITestOutputHelper output, HttpClientFixture httpClientFixture)
         {
-            _output = output;
+            _output = output ?? throw new ArgumentNullException(nameof(output));
+            _httpClientFixture = httpClientFixture ?? throw new ArgumentNullException(nameof(httpClientFixture));
         }
 
         /// <summary>
@@ -698,20 +701,18 @@ namespace FellowOakDicom.Tests.Serialization
             VerifyJsonTripleTrip(ds);
         }
 
-        private void DownloadBulkData(BulkDataUriByteBuffer bulkData)
+        private async Task DownloadBulkDataAsync(BulkDataUriByteBuffer bulkData)
         {
-            var request = WebRequest.Create(bulkData.BulkDataUri);
-            using var response = request.GetResponse();
-            using var responseStream = response.GetResponseStream();
-            bulkData.Data = new byte[response.ContentLength];
-            responseStream.Read(bulkData.Data, 0, (int)response.ContentLength);
+            var httpClient = _httpClientFixture.HttpClient;
+
+            bulkData.Data = await httpClient.GetByteArrayAsync(bulkData.BulkDataUri);
         }
 
         /// <summary>
         /// The bulk data read.
         /// </summary>
         [Fact]
-        public void BulkDataRead()
+        public async Task BulkDataRead()
         {
             File.WriteAllText("test.txt", "xxx!");
             var path = Path.GetFullPath("test.txt");
@@ -726,8 +727,8 @@ namespace FellowOakDicom.Tests.Serialization
             var json2 = JsonConvert.SerializeObject(reconstituated, Formatting.Indented, new JsonDicomConverter());
             Assert.Equal(json, json2);
 
-            DownloadBulkData(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as BulkDataUriByteBuffer);
-            DownloadBulkData(bulkData);
+            await DownloadBulkDataAsync(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as BulkDataUriByteBuffer);
+            await DownloadBulkDataAsync(bulkData);
 
             Assert.True(ValueEquals(target, reconstituated));
 

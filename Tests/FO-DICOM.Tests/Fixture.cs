@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
+using System.Net.Http;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,6 +57,21 @@ namespace FellowOakDicom.Tests
         }
     }
 
+    public class HttpClientFixture : IDisposable
+    {
+        public HttpClientFixture()
+        {
+            HttpClient = new HttpClient();
+        }
+
+        public HttpClient HttpClient { get; }
+
+        public void Dispose()
+        {
+            HttpClient.Dispose();
+        }
+    }
+
 
     [CollectionDefinition("General")]
     public class GeneralCollection : ICollectionFixture<GlobalFixture>
@@ -89,6 +105,11 @@ namespace FellowOakDicom.Tests
 
     [CollectionDefinition("WithTranscoder")]
     public class WithTranscoderCollection : ICollectionFixture<GlobalFixture>
+    {
+    }
+
+    [CollectionDefinition("WithHttpClient")]
+    public class WithHttpClientFixture : ICollectionFixture<HttpClientFixture>
     {
     }
 }
