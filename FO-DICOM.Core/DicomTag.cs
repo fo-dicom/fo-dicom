@@ -171,7 +171,7 @@ namespace FellowOakDicom
                     return ((uint)(Group << 16) | Element).GetHashCode();
                 }
 
-                return ((uint)(Group << 16) | (Element & 0xff)).GetHashCode() ^ PrivateCreator.GetHashCode();
+                return ((uint)(Group << 16) | (uint)(Element & 0xff)).GetHashCode() ^ PrivateCreator.GetHashCode();
             }
         }
 
