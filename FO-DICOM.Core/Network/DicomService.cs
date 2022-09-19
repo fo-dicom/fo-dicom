@@ -1128,7 +1128,8 @@ namespace FellowOakDicom.Network
 
                         dicomRequest.PendingSince = DateTime.Now;
 
-#pragma warning disable 4014 This call should not be awaited because it can only complete when the pending queue is empty
+                        // This call should not be awaited because it can only complete when the pending queue is empty
+#pragma warning disable 4014 
                         Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
 #pragma warning restore 4014
                     }

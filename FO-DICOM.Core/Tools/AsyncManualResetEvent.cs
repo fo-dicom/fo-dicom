@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Tasks
+namespace FellowOakDicom.Tools
 {
     /// <summary>
     /// An async-compatible manual-reset event.
@@ -44,6 +44,20 @@ namespace FellowOakDicom.Network.Client.Tasks
         public AsyncManualResetEvent()
             : this(false)
         {
+        }
+        
+        /// <summary>
+        /// Gets whether the event is set or not.
+        /// </summary>
+        public bool IsSet
+        {
+            get
+            {
+                lock (_mutex)
+                {
+                    return _tcs.Task.IsCompleted;
+                }
+            }
         }
 
         /// <summary>
