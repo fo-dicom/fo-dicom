@@ -4,6 +4,8 @@
     <TargetFrameworks>net462;netcoreapp3.1;net6.0</TargetFrameworks>
     <RootNamespace>FellowOakDicom.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.Tests</AssemblyName>
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
