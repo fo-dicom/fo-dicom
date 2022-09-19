@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
+// These tests cover some obsolete methods or properties
+#pragma warning disable CS0618
+
 namespace FellowOakDicom.Tests.Network
 {
 
