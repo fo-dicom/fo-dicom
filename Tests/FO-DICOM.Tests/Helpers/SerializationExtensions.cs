@@ -26,31 +26,5 @@ namespace FellowOakDicom.Tests.Helpers
             deserializedObject = (T)serializer.ReadObject(stream);
             return deserializedObject;
         }
-
-        public static T GetBinaryFormatterDeserializedObject<T>(this T input)
-        {
-            T deserialized;
-            var formatter = new BinaryFormatter();
-            var tempFileName = Path.GetTempFileName();
-            try
-            {
-                using var write = File.OpenWrite(tempFileName);
-                formatter.Serialize(write, input);
-                write.Close();
-                using var read = File.OpenRead(tempFileName);
-                deserialized = (T)formatter.Deserialize(read);
-            }
-            finally
-            {
-                try
-                {
-                    File.Delete(tempFileName);
-                }
-                catch
-                {
-                }
-            }
-            return deserialized;
-        }
     }
 }

@@ -19,12 +19,5 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
             var actual = expected.GetDataContractSerializerDeserializedObject();
             Assert.Equal(expected, actual);
         }
-
-        [Fact]
-        public void Serialization_BinaryFormatter_Throws()
-        {
-            var point = new Point2(-2, 12);
-            Assert.Throws<SerializationException>(() => point.GetBinaryFormatterDeserializedObject());
-        }
     }
 }
