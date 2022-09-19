@@ -965,11 +965,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 set => _inner.WriteTimeout = value;
             }
 
-            public override object InitializeLifetimeService()
-            {
-                return _inner.InitializeLifetimeService();
-            }
-
             public override string ToString()
             {
                 return _inner.ToString();
