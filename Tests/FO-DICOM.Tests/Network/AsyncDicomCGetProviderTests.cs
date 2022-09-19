@@ -131,6 +131,7 @@ namespace FellowOakDicom.Tests.Network
 
         public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
         {
+            await Task.Yield();
             yield return new DicomCGetResponse(request, DicomStatus.Success);
         }
 
@@ -174,6 +175,7 @@ namespace FellowOakDicom.Tests.Network
 
         public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
         {
+            await Task.Yield();
             yield return new DicomCGetResponse(request, DicomStatus.Pending);
             yield return new DicomCGetResponse(request, DicomStatus.Pending);
             yield return new DicomCGetResponse(request, DicomStatus.Success);

@@ -95,6 +95,7 @@ namespace FellowOakDicom.Tests.Network
 
         public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
         {
+            await Task.Yield();
             return new DicomCEchoResponse(request, DicomStatus.Success);
         }
     }
