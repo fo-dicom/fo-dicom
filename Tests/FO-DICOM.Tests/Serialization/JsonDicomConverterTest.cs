@@ -703,9 +703,18 @@ namespace FellowOakDicom.Tests.Serialization
 
         private async Task DownloadBulkDataAsync(BulkDataUriByteBuffer bulkData)
         {
-            var httpClient = _httpClientFixture.HttpClient;
-
-            bulkData.Data = await httpClient.GetByteArrayAsync(bulkData.BulkDataUri);
+            var uri = new UriBuilder(bulkData.BulkDataUri);
+            switch (uri.Scheme)
+            {
+                case "file":
+                    bulkData.Data = File.ReadAllBytes(uri.Path);
+                    break;
+                case "http":
+                case "https":
+                    var httpClient = _httpClientFixture.HttpClient;
+                    bulkData.Data = await httpClient.GetByteArrayAsync(bulkData.BulkDataUri);
+                    return;
+            }
         }
 
         /// <summary>
