@@ -10,8 +10,9 @@
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
-    <!-- Bug in nuget: https://github.com/dotnet/sdk/issues/24747 -->
-    <NoWarn>NU1504</NoWarn>
+    <!-- NU1504 bug in nuget: https://github.com/dotnet/sdk/issues/24747 -->
+    <!-- CS8002 referenced assemblies are not strong named. This is okay, we don't distribute our tests project -->
+    <NoWarn>NU1504;CS8002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
