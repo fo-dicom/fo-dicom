@@ -27,7 +27,7 @@
         "dest": "usage/"
       },
       {
-        "files": [ "ChangeLog5.md", "Contributors.md" ],
+        "files": [ "ChangeLog.md", "Contributors.md" ],
         "src": "../..",
         "dest": "developer/"
       },
