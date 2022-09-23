@@ -837,6 +837,16 @@ namespace FellowOakDicom
         }
 
         /// <summary>
+        /// Add a DICOM item to the dataset. Update existing items.
+        /// </summary>
+        /// <param name="item">DICOM item to add.</param>
+        /// <returns>The dataset instance.</returns>
+        public DicomDataset AddOrUpdate(DicomItem item)
+        {
+            return DoAdd(item, true);
+        }
+
+        /// <summary>
         /// Add a collection of DICOM items to the dataset. Update existing items.
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
