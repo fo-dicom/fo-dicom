@@ -136,6 +136,9 @@ namespace FellowOakDicom.IO
         public byte[] GetBytes(int count) => _reader.ReadBytes(count);
 
         /// <inheritdoc />
+        public int GetBytes(byte[] buffer, int index, int count) => _reader.Read(buffer, index, count);
+
+        /// <inheritdoc />
         public IByteBuffer GetBuffer(uint count)
         {
             IByteBuffer buffer;

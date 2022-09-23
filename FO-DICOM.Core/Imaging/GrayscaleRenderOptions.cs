@@ -118,25 +118,51 @@ namespace FellowOakDicom.Imaging
         /// <returns>New grayscale render options instance</returns>
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset)
         {
+            GrayscaleRenderOptions grayscaleRenderOptions;
             if (dataset.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) && windowWidth >= 1.0
                 && dataset.Contains(DicomTag.WindowCenter))
             {
-                //If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
-                return FromWindowLevel(dataset);
+                // If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
+                grayscaleRenderOptions = FromWindowLevel(dataset);
             }
-
-            if (dataset.TryGetSingleValue(DicomTag.SmallestImagePixelValue, out int smallest) &&
+            else if (dataset.TryGetSingleValue(DicomTag.SmallestImagePixelValue, out int smallest) &&
                 dataset.TryGetSingleValue(DicomTag.LargestImagePixelValue, out int largest)
                 && smallest < largest)
             {
-                //If dataset contains valid SmallesImagePixelValue and LargesImagePixelValue attributes, use range to calculate
-                //WindowWidth and WindowCenter
-                return FromImagePixelValueTags(dataset);
+                // If dataset contains valid SmallesImagePixelValue and LargesImagePixelValue attributes, use range to calculate
+                // WindowWidth and WindowCenter
+                grayscaleRenderOptions = FromImagePixelValueTags(dataset);
+            }
+            else
+            {
+                // If reached here, minimum and maximum pixel values calculated from pixels data to calculate
+                // WindowWidth and WindowCenter
+                grayscaleRenderOptions = FromMinMax(dataset);    
             }
 
-            //If reached here, minimum and maximum pixel values calculated from pixels data to calculate
-            //WindowWidth and WindowCenter
-            return FromMinMax(dataset);
+            /*
+                David Clunie in comp.protocols.dicom (2000-12-13)
+                https://groups.google.com/g/comp.protocols.dicom/c/UBxhOZ2anJ0/m/D0R_QP8V2wIJ
+                --------------------------------------------------
+                
+                Modality LUTs in XA and XRF objects are totally screwy and do not follow the normal rules. 
+                [...]
+                A Modality LUT may be included with the image to allow it to be scaled back to its proportional value to X-Ray beam intensity. 
+                In other words, for the objects that use this module (XA and XRF), the Modality LUT is used BACKWARDS. 
+                It is used to convert stored pixels to X-Ray beam intensity space, but it is NOT APPLIED to stored pixels for the purpose of display 
+                (or more specifically prior to application of the VOI LUT Module attributes to the stored pixel data).
+            */
+            if (grayscaleRenderOptions.ModalityLUTSequence != null && dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClassUID))
+            {
+                if (sopClassUID.UID == DicomUID.XRayAngiographicImageStorage.UID
+                    || sopClassUID.UID == DicomUID.XRayRadiofluoroscopicImageStorage.UID
+                    || sopClassUID.UID == DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED.UID)
+                {
+                    grayscaleRenderOptions.ModalityLUTSequence = null;
+                }
+            }
+
+            return grayscaleRenderOptions;
         }
 
         /// <summary>

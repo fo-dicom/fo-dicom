@@ -112,6 +112,16 @@ namespace FellowOakDicom.IO
         byte[] GetBytes(int count);
 
         /// <summary>
+        /// Gets a specified number of bytes from the current position and moves to subsequent position.
+        /// The bytes will be written to <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to write the bytes to</param>
+        /// <param name="index">The index in the buffer at which to start writing</param>
+        /// <param name="count">Number of bytes to read.</param>
+        /// <returns>The number of bytes that were filled in the buffer</returns>
+        int GetBytes(byte[] buffer, int index, int count);
+
+        /// <summary>
         /// Gets a byte buffer of specified length from the current position and moves to subsequent position.
         /// </summary>
         /// <param name="count">Number of bytes to read.</param>
