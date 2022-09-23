@@ -7,6 +7,7 @@
 * Fix overwriting of Lossy Compression ratio tag (#1400)
 * Fix DicomClientFactory logger name (#1429)
 * Improve performance and reduce memory usage when opening DICOM files (#1414)
+* Fix rendering of XA/XRF images that include a modality LUT sequence (#1442)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
