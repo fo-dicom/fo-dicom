@@ -6,6 +6,7 @@
 * Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)
 * Fix overwriting of Lossy Compression ratio tag (#1400)
 * Fix DicomClientFactory logger name (#1429)
+* Improve performance and reduce memory usage when opening DICOM files (#1414)
 * Fix rendering of XA/XRF images that include a modality LUT sequence (#1442)
 
 #### 5.0.3 (2022-05-23)
