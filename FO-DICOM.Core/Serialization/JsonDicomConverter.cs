@@ -906,7 +906,7 @@ namespace FellowOakDicom.Serialization
                 return ByteConverter.ToByteBuffer(string.Join("\\", valArray));
             }
 
-            return childValues.Select(x => x).Cast<T>().ToArray();
+            return childValues.Cast<T>().ToArray();
         }
 
         private object ReadJsonMultiNumber<T>(ref Utf8JsonReader reader, GetValue<T> getValue)
