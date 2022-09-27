@@ -154,11 +154,13 @@ namespace FellowOakDicom.Tests.Media
         public bool IsEOF { get; set; }
         public bool CanRewind { get; set; }
         public int MilestonesCount { get; set; }
+
         public IByteBuffer GetBuffer(uint count) => throw new NotImplementedException();
         public Task<IByteBuffer> GetBufferAsync(uint count) => throw new NotImplementedException();
         public void Skip(uint count) => throw new NotImplementedException();
         public void Skip(int count) => throw new NotImplementedException();
         public byte[] GetBytes(int count) => throw new NotImplementedException();
+        public int GetBytes(byte[] buffer, int index, int count) => throw new NotImplementedException();
         public double GetDouble() => throw new NotImplementedException();
         public short GetInt16() => throw new NotImplementedException();
         public int GetInt32() => throw new NotImplementedException();
