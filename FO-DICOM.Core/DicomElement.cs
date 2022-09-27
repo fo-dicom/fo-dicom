@@ -793,13 +793,18 @@ namespace FellowOakDicom
     /// <summary>Decimal String (DS)</summary>
     public class DicomDecimalString : DicomMultiStringOrNumberElement<decimal>
     {
+        #region FIELDS
+
+        private static readonly Func<string, decimal> _toDecimalValue = new Func<string, decimal>(
+            x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture));
+
+        #endregion
+
+
         #region Public Constructors
 
         public DicomDecimalString(DicomTag tag, params decimal[] values)
-            : base(tag,
-                  new Func<decimal, string>(x => ToDecimalString(x)),
-                  new Func<string, decimal>(x => decimal.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)),
-                  values)
+            : base(tag, ToDecimalString, _toDecimalValue, values)
         {
         }
 
@@ -963,13 +968,20 @@ namespace FellowOakDicom
     /// <summary>Integer String (IS)</summary>
     public class DicomIntegerString : DicomMultiStringOrNumberElement<int>
     {
+        #region FIELDS
+
+        private static readonly Func<int, string> _toIntegerString = new Func<int, string>(
+            x => x.ToString(CultureInfo.InvariantCulture));
+
+        private static readonly Func<string, int> _toIntegerValue = new Func<string, int>(
+            x => int.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
+
+        #endregion
+
         #region Public Constructors
 
         public DicomIntegerString(DicomTag tag, params int[] values)
-            : base(tag,
-                  new Func<int, string>(x => x.ToString(CultureInfo.InvariantCulture)),
-                  new Func<string, int>(x => int.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture)),
-                  values)
+            : base(tag, _toIntegerString, _toIntegerValue, values)
         {
         }
 
@@ -1477,13 +1489,19 @@ namespace FellowOakDicom
     /// <summary>Signed Very Long (SV)</summary>
     public class DicomSignedVeryLong : DicomMultiStringOrNumberElement<long>
     {
+        #region FIELDS
+
+        private static readonly Func<long, string> _toLongString = new Func<long, string>(x => x.ToString());
+
+        private static readonly Func<string, long> _toLongValue = new Func<string, long>(
+            x => long.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture));
+
+        #endregion
+
         #region Public Constructors
 
         public DicomSignedVeryLong(DicomTag tag, params long[] values)
-            : base(tag,
-                  new Func<long, string>(x => x.ToString()),
-                  new Func<string, long>(x => long.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)),
-                  values)
+            : base(tag, _toLongString, _toLongValue, values)
         {
         }
 
@@ -1833,13 +1851,19 @@ namespace FellowOakDicom
     /// <summary>Unsigned Very Long (UV)</summary>
     public class DicomUnsignedVeryLong : DicomMultiStringOrNumberElement<ulong>
     {
+        #region FIELDS
+
+        private static readonly Func<ulong, string> _toUnsignedLongString = new Func<ulong, string>(x => x.ToString());
+
+        private static readonly Func<string, ulong> _toUnsignedLongValue = new Func<string, ulong>(
+            x => ulong.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture));
+
+        #endregion
+
         #region Public Constructors
 
         public DicomUnsignedVeryLong(DicomTag tag, params ulong[] values)
-            : base(tag,
-                  new Func<ulong, string>(x => x.ToString()),
-                  new Func<string, ulong>(x => ulong.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)),
-                  values)
+            : base(tag, _toUnsignedLongString, _toUnsignedLongValue, values)
         {
         }
 
