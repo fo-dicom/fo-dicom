@@ -809,12 +809,12 @@ namespace FellowOakDicom
         }
 
         public DicomDecimalString(DicomTag tag, params string[] values)
-            : base(tag, values)
+            : base(tag, ToDecimalString, _toDecimalValue, values)
         {
         }
 
         public DicomDecimalString(DicomTag tag, IByteBuffer data)
-            : base(tag, data)
+            : base(tag, ToDecimalString, _toDecimalValue, data)
         {
         }
 
@@ -986,12 +986,12 @@ namespace FellowOakDicom
         }
 
         public DicomIntegerString(DicomTag tag, params string[] values)
-            : base(tag, values)
+            : base(tag, _toIntegerString, _toIntegerValue, values)
         {
         }
 
         public DicomIntegerString(DicomTag tag, IByteBuffer data)
-            : base(tag, data)
+            : base(tag, _toIntegerString, _toIntegerValue, data)
         {
         }
 
@@ -1506,7 +1506,7 @@ namespace FellowOakDicom
         }
 
         public DicomSignedVeryLong(DicomTag tag, IByteBuffer data)
-            : base(tag, data)
+            : base(tag, _toLongString, _toLongValue, data)
         {
         }
 
@@ -1868,7 +1868,7 @@ namespace FellowOakDicom
         }
 
         public DicomUnsignedVeryLong(DicomTag tag, IByteBuffer data)
-            : base(tag, data)
+            : base(tag, _toUnsignedLongString, _toUnsignedLongValue, data)
         {
         }
 
@@ -1903,14 +1903,16 @@ namespace FellowOakDicom
             _toNumber = toNumber;
         }
 
-        public DicomMultiStringOrNumberElement(DicomTag tag, params string[] values)
+        public DicomMultiStringOrNumberElement(DicomTag tag, Func<TType, string> toString, Func<string, TType> toNumber, params string[] values)
             : base(tag, values)
         {
+            _toNumber = toNumber;
         }
 
-        public DicomMultiStringOrNumberElement(DicomTag tag, IByteBuffer data)
+        public DicomMultiStringOrNumberElement(DicomTag tag, Func<TType, string> toString, Func<string, TType> toNumber, IByteBuffer data)
             : base(tag, null, data)
         {
+            _toNumber = toNumber;
         }
 
         #endregion
