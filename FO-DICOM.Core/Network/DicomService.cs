@@ -777,7 +777,7 @@ namespace FellowOakDicom.Network
 
                             var command = new DicomDataset().NotValidated();
 
-                            var reader = new DicomReader { IsExplicitVR = false };
+                            var reader = new DicomReader(_memoryProvider) { IsExplicitVR = false };
                             reader.Read(StreamByteSourceFactory.Create(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
 
                             _dimseStream = null;
@@ -834,7 +834,7 @@ namespace FellowOakDicom.Network
                                     Endian = pc.AcceptedTransferSyntax.Endian
                                 };
 
-                                var reader = new DicomReader { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
+                                var reader = new DicomReader(_memoryProvider) { IsExplicitVR = pc.AcceptedTransferSyntax.IsExplicitVR };
 
                                 // when receiving data via network, accept it and dont validate
                                 using var unvalidated = new UnvalidatedScope(_dimse.Dataset);

@@ -175,6 +175,125 @@ namespace FellowOakDicom
             }
         }
 
+        /// <summary>
+        /// Try to get VR for given UTF8 encoded string value.
+        /// </summary>
+        /// <param name="vr">UTF8 encoded byte array representation of VR</param>
+        /// <param name="result">VR code</param>
+        /// <returns>true if VR was successfully parsed, false otherwise</returns>
+        public static bool TryParse(byte[] vr, out DicomVR result)
+        {
+            result = TryParse(vr, out bool valid);
+            return valid;
+        }
+
+        private static DicomVR TryParse(byte[] vr, out bool valid)
+        {
+            if (vr == null || vr.Length < 2)
+            {
+                valid = false;
+                return null;
+            }
+            
+            valid = true;
+            // This is a precompiled switch table
+            switch (vr[0])
+            {
+                case 65:
+                    switch (vr[1])
+                    {
+                        case 69: return AE;
+                        case 83: return AS;
+                        case 84: return AT;
+                    }
+                    break;
+                case 67:
+                    switch (vr[1])
+                    {
+                        case 83: return CS;
+                    }
+                    break;
+                case 68:
+                    switch (vr[1])
+                    {
+                        case 65: return DA;
+                        case 83: return DS;
+                        case 84: return DT;
+                    }
+                    break;
+                case 70:
+                    switch (vr[1])
+                    {
+                        case 68: return FD;
+                        case 76: return FL;
+                    }
+                    break;
+                case 73:
+                    switch (vr[1])
+                    {
+                        case 83: return IS;
+                    }
+                    break;
+                case 76:
+                    switch (vr[1])
+                    {
+                        case 79: return LO;
+                        case 84: return LT;
+                    }
+                    break;
+                case 79:
+                    switch (vr[1])
+                    {
+                        case 66: return OB;
+                        case 68: return OD;
+                        case 70: return OF;
+                        case 76: return OL;
+                        case 86: return OV;
+                        case 87: return OW;
+                    }
+                    break;
+                case 80:
+                    switch (vr[1])
+                    {
+                        case 78: return PN;
+                    }
+                    break;
+                case 83:
+                    switch (vr[1])
+                    {
+                        case 72: return SH;
+                        case 76: return SL;
+                        case 81: return SQ;
+                        case 83: return SS;
+                        case 84: return ST;
+                        case 86: return SV;
+                    }
+                    break;
+                case 84:
+                    switch (vr[1])
+                    {
+                        case 77: return TM;
+                    }
+                    break;
+                case 85:
+                    switch (vr[1])
+                    {
+                        case 67: return UC;
+                        case 73: return UI;
+                        case 76: return UL;
+                        case 78: return UN;
+                        case 82: return UR;
+                        case 83: return US;
+                        case 84: return UT;
+                        case 86: return UV;
+                    }
+                    break;
+            }
+            
+            valid = false;
+            return null;
+        }
+
         /// <summary>Implicit VR in Explicit VR context</summary>
         internal static readonly DicomVR Implicit = new DicomVR();
 
