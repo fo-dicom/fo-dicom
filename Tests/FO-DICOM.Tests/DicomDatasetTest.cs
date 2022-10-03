@@ -444,6 +444,27 @@ namespace FellowOakDicom.Tests
         }
 
         /// <summary>
+        /// Associated with Github issue #1454
+        /// </summary>
+        [Theory]
+        [InlineData(0.142916000000001)]
+        [InlineData(-12345678901234.1)]
+        [InlineData(123456789112345.6)]
+        [InlineData(0.12345678911234567)]
+        [InlineData(-0.12345678911234567)]
+        public void Add_AnyDecimalValue_PassesValidation(decimal value)
+        {
+            var tag = DicomTag.MaterialThickness;
+            DicomDataset dataSet = null;
+            var exception = Record.Exception(() =>
+            {
+                dataSet = new DicomDataset { { tag, value } };
+            });
+            Assert.Null(exception);
+            Assert.True(dataSet.Contains(tag));
+        }
+
+        /// <summary>
         /// Associated with Github issue #535.
         /// </summary>
         [Theory]
