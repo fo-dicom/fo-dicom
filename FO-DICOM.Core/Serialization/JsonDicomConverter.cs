@@ -232,7 +232,9 @@ namespace FellowOakDicom.Serialization
 
                     if (dataset.Contains(privateCreatorTag))
                     {
-                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
+                        var privateCreatorItem = dataset.GetDicomItem<DicomElement>(privateCreatorTag);
+
+                        item.Tag.PrivateCreator = new DicomPrivateCreator(privateCreatorItem.Get<string>());
                     }
                 }
             }

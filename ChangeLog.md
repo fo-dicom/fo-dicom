@@ -9,6 +9,7 @@
 * Fix overwriting of Lossy Compression ratio tag (#1400)
 * Fix DicomClientFactory logger name (#1429)
 * Add support for mutual TLS authentication and more fine grained TLS configuration (#1418)
+* Fix DicomJsonConverter deserialization to handle invalid private creator item (#1445)
 * Improve performance and reduce memory usage when opening DICOM files (#1414)
 * Fix rendering of XA/XRF images that include a modality LUT sequence (#1442)
 
