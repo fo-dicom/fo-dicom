@@ -448,20 +448,39 @@ namespace FellowOakDicom.Tests
         /// </summary>
         [Theory]
         [InlineData(0.142916000000001)]
-        [InlineData(-12345678901234.1)]
+        [InlineData(0.142916)]
+        [InlineData(12345678901234.1)]
         [InlineData(123456789112345.6)]
-        [InlineData(0.12345678911234567)]
-        [InlineData(-0.12345678911234567)]
-        public void Add_AnyDecimalValue_PassesValidation(decimal value)
+        [InlineData(1234567891123456)]
+        [InlineData(1234567891123456789)]
+        [InlineData(123456789112345)]
+        [InlineData(0.123456789112345)]
+        [InlineData(0.12345678911234)]
+        [InlineData(0.1234567891123)]
+        [InlineData(5.23e-16)]
+        public void Add_AnyDecimalValue_IsStoredWithExpectedPrecision(decimal value)
         {
             var tag = DicomTag.MaterialThickness;
+            var negativeTag = DicomTag.TableTopLateralPosition;
             DicomDataset dataSet = null;
             var exception = Record.Exception(() =>
             {
-                dataSet = new DicomDataset { { tag, value } };
+                dataSet = new DicomDataset
+                {
+                    { tag, value },
+                    { negativeTag, -value }
+                };
             });
+
+            // Assert
             Assert.Null(exception);
-            Assert.True(dataSet.Contains(tag));
+
+            var actualValue = dataSet.GetSingleValue<decimal>(tag);
+            var actualNegativeValue = dataSet.GetSingleValue<decimal>(negativeTag);
+            var expectedDelta = 1E-10m * Math.Abs(value);
+            var comparer = new DecimalDeltaComparer(expectedDelta);
+            Assert.Equal(value, actualValue, comparer);
+            Assert.Equal(-value, actualNegativeValue, comparer);
         }
 
         /// <summary>
@@ -872,6 +891,14 @@ namespace FellowOakDicom.Tests
                 Assert.Equal(testValues[index], ds.GetValue<T>(element.Tag, index));
             }
             return true;
+        }
+
+        private class DecimalDeltaComparer : IEqualityComparer<decimal>
+        {
+            private readonly decimal _delta;
+            public DecimalDeltaComparer(decimal delta) { _delta = delta; }
+            public bool Equals(decimal x, decimal y) => Math.Abs(x - y) < _delta;
+            public int GetHashCode(decimal obj) => throw new NotImplementedException();
         }
 
         #endregion
