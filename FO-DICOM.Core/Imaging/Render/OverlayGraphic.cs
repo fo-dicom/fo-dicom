@@ -31,7 +31,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="OverlayGraphic"/>
+        /// Initialize new instance of <see cref="OverlayGraphic"/>
         /// </summary>
         /// <param name="pixelData">Overlay pixel data</param>
         /// <param name="offsetx">X offset</param>
