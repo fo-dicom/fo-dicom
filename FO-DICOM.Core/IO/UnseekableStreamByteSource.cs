@@ -182,6 +182,19 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public byte[] GetBytes(int count)
         {
+            var buffer = new byte[count];
+            var bytesRead = GetBytes(buffer, 0, count);
+            if (bytesRead != count)
+            {
+                throw new DicomIoException($"Failed to get {count} bytes");
+            }
+
+            return buffer;
+        }
+
+        public int GetBytes(byte[] buffer, int index, int count)
+        {
+            int read;
             if (IsReadingBuffer)
             {
                 var bufferByteCount = (int)(_buffer.Length - _buffer.Position);
@@ -190,7 +203,7 @@ namespace FellowOakDicom.IO
                     UpdateBufferState();
                     if (bufferByteCount == count)
                     {
-                        var read = _bufferReader.ReadBytes(count);
+                        read = _bufferReader.Read(buffer, index, count);
                         ClearBuffer();
                         return read;
                     }
@@ -199,29 +212,25 @@ namespace FellowOakDicom.IO
 
                     if (bufferByteCount == 0)
                     {
-                        return _byteSource.GetBytes(count);
+                        return _byteSource.GetBytes(buffer, index, count);
                     }
 
                     var nrBytesInBuffer = (int)(_buffer.Length - _buffer.Position);
-                    var bytesInBuffer = _bufferReader.ReadBytes(nrBytesInBuffer);
-                    var bytesInSource = GetBytes(count - nrBytesInBuffer);
-                    var bytes = new byte[bytesInBuffer.Length + bytesInSource.Length];
-                    bytesInBuffer.CopyTo(bytes, 0);
-                    bytesInSource.CopyTo(bytes, bytesInBuffer.Length);
-                    return bytes;
+                    var nrBytesInBufferRead = _bufferReader.Read(buffer, index, nrBytesInBuffer);
+                    return nrBytesInBuffer + GetBytes(buffer, index + nrBytesInBufferRead, count - nrBytesInBufferRead);
                 }
 
-                return _bufferReader.ReadBytes(count);
+                return _bufferReader.Read(buffer, index, count);
             }
 
-            var data = _byteSource.GetBytes(count);
+            read = _byteSource.GetBytes(buffer, index, count);
             if (_bufferState == BufferState.Write)
             {
-                ResizeBuffer(count);
-                _bufferWriter.Write(data);
+                ResizeBuffer(read);
+                _bufferWriter.Write(buffer, index, read);
             }
 
-            return data;
+            return read;
         }
 
         /// <inheritdoc />
@@ -270,7 +279,7 @@ namespace FellowOakDicom.IO
             if (_bufferState == BufferState.Write)
             {
                 ResizeBuffer((int)count);
-                _byteSource.ReadBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
+                _byteSource.GetBytes(_buffer.GetBuffer(), (int)(_buffer.Position), (int)count);
                 _buffer.Position += count;
             }
             else
@@ -279,11 +288,11 @@ namespace FellowOakDicom.IO
                 using var temp = _memoryProvider.Provide(bufferSize);
                 while (count > _tempBufferSize)
                 {
-                    _byteSource.ReadBytes(temp.Bytes, 0, _tempBufferSize);
+                    _byteSource.GetBytes(temp.Bytes, 0, _tempBufferSize);
                     count -= _tempBufferSize;
                 }
 
-                _byteSource.ReadBytes(temp.Bytes, 0, (int)count);
+                _byteSource.GetBytes(temp.Bytes, 0, (int)count);
             }
         }
 
