@@ -7,7 +7,7 @@ namespace FellowOakDicom.Imaging.Render
 {
 
     /// <summary>
-    /// RGB color pipeline implementation of <seealso cref="IPipeline"/> interface
+    /// RGB color pipeline implementation of <see cref="IPipeline"/> interface
     /// </summary>
     public class RgbColorPipeline : IPipeline
     {
