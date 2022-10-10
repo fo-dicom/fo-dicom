@@ -96,12 +96,11 @@ namespace FellowOakDicom.Tests.Bugs
             };
 
             var receivedRequests = new List<DicomCStoreRequest>();
-            var random = new Random();
             server.OnCStoreRequest = (association, storeRequest) =>
             {
                 receivedRequests.Add(storeRequest);
 
-                Thread.Sleep(random.Next(0, 100));
+                Thread.Sleep(100);
 
                 return new DicomCStoreResponse(storeRequest, DicomStatus.Success);
             };
@@ -119,7 +118,7 @@ namespace FellowOakDicom.Tests.Bugs
             ));
             var client = clientFactory.Create("127.0.0.1", port, false, "AnySCU", "AnySCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = 0;
-            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(5);
             client.ServiceOptions.MaxPDULength = server.Options.MaxPDULength;
             client.Logger = _logger.IncludePrefix("Client");
             client.NegotiateAsyncOps(asyncInvoked, 1);
