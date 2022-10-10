@@ -102,7 +102,7 @@ namespace FellowOakDicom.Tests.Network
                     return Task.FromResult(new DicomNEventReportResponse(eventReq, DicomStatus.Success));
                 };
 
-                dicomClient.ClientOptions.AssociationLingerTimeoutInMs = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+                dicomClient.ClientOptions.AssociationLingerTimeoutInMs = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
                 await dicomClient.SendAsync().ConfigureAwait(false);
 
                 Assert.Equal(DicomStatus.Success, status);
