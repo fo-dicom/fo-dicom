@@ -213,11 +213,28 @@ namespace FellowOakDicom.IO.Buffer
         /// <inheritdoc />
         public byte[] GetBytes(int count)
         {
+            var buffer = new byte[count];
+            var bytesRead = GetBytes(buffer, 0, count);
+            if (bytesRead != count)
+            {
+                throw new DicomIoException($"Failed to get {count} bytes");
+            }
+
+            return buffer;
+        }
+
+        public int GetBytes(byte[] buffer, int index, int count)
+        {
+            if (buffer.Length < count)
+            {
+                throw new ArgumentException($"Buffer is not large enough to hold {count} bytes");
+            }
+
             lock (_lock)
             {
-                int p = 0;
-                byte[] bytes = new byte[count];
-                while (count > 0)
+                int p = index;
+                int bytesToRead = count;
+                while (bytesToRead > 0)
                 {
                     if (_current == -1 || _currentPos >= _currentData.Length)
                     {
@@ -228,14 +245,14 @@ namespace FellowOakDicom.IO.Buffer
                     }
 
                     int n = (int)Math.Min(_currentData.Length - _currentPos, count);
-                    Array.Copy(_currentData, _currentPos, bytes, p, n);
+                    Array.Copy(_currentData, _currentPos, buffer, p, n);
 
-                    count -= n;
+                    bytesToRead -= n;
                     p += n;
                     _position += n;
                     _currentPos += n;
                 }
-                return bytes;
+                return count;
             }
         }
 

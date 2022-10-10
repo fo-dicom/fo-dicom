@@ -1244,6 +1244,32 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"299792458\",\"InvalidNumber\"]}}", json);
         }
 
+        [Fact]
+        public static void GivenDicomJsonDatasetWithInvalidPrivateCreatorDataElement_WhenDeserialized_IsSuccessful()
+        {
+            // allowing deserializer to handle bad data private creator data more gracefully
+            const string json = @"
+            {
+                ""00090010"": {
+                    ""vr"": ""US"",
+                     ""Value"": [
+                        1234,
+                        3333
+                    ]
+                 },
+                ""00091001"": {
+                    ""vr"": ""CS"",
+                    ""Value"": [
+                        ""00""
+                    ]
+                }
+            } ";
+
+            // make sure below serialization does not throw
+            var ds = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter(autoValidate: false));
+            Assert.NotNull(ds);
+        }
+
         #region Sample Data
 
         private string _jsonExampleFromDicomNemaOrg = @"

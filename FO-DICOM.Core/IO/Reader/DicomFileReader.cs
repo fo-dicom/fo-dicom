@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +51,8 @@ namespace FellowOakDicom.IO.Reader
         private static readonly Func<ParseState, bool> _FileMetaInfoStopCriterion =
             state => state.Tag.CompareTo(_FileMetaInfoStopTag) >= 0
                 || (state.PreviousTag?.Group == 0x0002 && state.PreviousTag.CompareTo(state.Tag) >= 0);
+
+        private static readonly Lazy<IMemoryProvider> _MemoryProvider = new Lazy<IMemoryProvider>(() => Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
 
         private readonly object _locker;
 
@@ -236,13 +240,22 @@ namespace FellowOakDicom.IO.Reader
                 }
 
                 var element = source.GetUInt16();
-                var tag = new DicomTag(@group, element);
+                var tag = DicomTagsIndex.LookupOrCreate(group, element);
+                var tagDictionaryEntry = tag.DictionaryEntry;
+                var vrCode = tagDictionaryEntry.ValueRepresentations[0].Code;
 
                 // test for explicit VR
-                var vrt = Encoding.UTF8.GetBytes(tag.DictionaryEntry.ValueRepresentations[0].Code);
-                var vrs = source.GetBytes(2);
+                using var vrMemory = _MemoryProvider.Value.Provide(2 + Encoding.UTF8.GetMaxByteCount(vrCode.Length));
+                var vrBytes = vrMemory.Bytes;
+                if (source.GetBytes(vrBytes, 0, 2) != 2)
+                {
+                    fileFormat = DicomFileFormat.Unknown;
+                    source.Rewind();
+                    break;
+                }
+                Encoding.UTF8.GetBytes(vrCode, 0, vrCode.Length, vrBytes, 2);
 
-                if (vrt[0] != vrs[0] || vrt[1] != vrs[1])
+                if (vrBytes[0] != vrBytes[2] || vrBytes[1] != vrBytes[3])
                 {
                     // implicit VR
                     syntax = syntax.Endian == Endian.Little
@@ -271,6 +284,7 @@ namespace FellowOakDicom.IO.Reader
             ref DicomTransferSyntax syntax,
             ref DicomFileFormat fileFormat)
         {
+            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
             string code = null, uid = null;
             var obs = new DicomReaderCallbackObserver();
             if (fileFormat != DicomFileFormat.DICOM3)
@@ -301,7 +315,7 @@ namespace FellowOakDicom.IO.Reader
                         }
                     });
 
-            var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            var reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
@@ -340,6 +354,7 @@ namespace FellowOakDicom.IO.Reader
             DicomTransferSyntax syntax,
             DicomFileFormat fileFormat)
         {
+            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
             string code = null, uid = null;
             var obs = new DicomReaderCallbackObserver();
             if (fileFormat != DicomFileFormat.DICOM3)
@@ -370,7 +385,7 @@ namespace FellowOakDicom.IO.Reader
                         }
                     });
 
-            var reader = new DicomReader { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            var reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
