@@ -45,9 +45,11 @@ namespace FellowOakDicom.Tests.Network
 
         #endregion
 
-
-
+#if NET462
+        [Fact(Skip = "This test is flaky in .NET Framework")]
+#else
         [Fact]
+#endif
         public async Task ClientHandleNEventReport_SynchronousEvent()
         {
             var port = Ports.GetNext();
