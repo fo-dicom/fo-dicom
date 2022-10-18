@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Bugs
         public void Contains_PrivateTag_SufficientlyFound()
         {
             var dataset = new DicomDataset();
-            dataset.Add(new DicomTag(0x0021, 0x0010, "TEST"), "TEST");
+            dataset.Add(DicomVR.LO, new DicomTag(0x0021, 0x0010, "TEST"), "TEST");
             var found = dataset.Contains(new DicomTag(0x0021, 0x0010, "TEST"));
             Assert.True(found);
         }
