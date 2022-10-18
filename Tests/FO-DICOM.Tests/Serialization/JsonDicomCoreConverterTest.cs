@@ -1062,7 +1062,7 @@ namespace FellowOakDicom.Tests.Serialization
             {
                 { DicomTag.Modality, "CT" },
                 new DicomCodeString(privTag1, "TESTA"),
-                { privTag2, "TESTB" },
+                { DicomVR.LO, privTag2, "TESTB" },
             };
 
             var json = DicomJson.ConvertDicomToJson(ds);

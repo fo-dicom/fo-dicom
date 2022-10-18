@@ -438,7 +438,7 @@ namespace FellowOakDicom.Tests
 
             var ds = new DicomDataset
             {
-                { dictEntry.Tag, "VAL1" }
+                {DicomVR.CS, dictEntry.Tag, "VAL1" }
             };
             Assert.Equal(DicomVR.CS, ds.GetDicomItem<DicomItem>(dictEntry.Tag).ValueRepresentation);
         }
@@ -516,8 +516,8 @@ namespace FellowOakDicom.Tests
         {
             var dataset = new DicomDataset
             {
-                { new DicomTag(group, hiElem, hiCreator), 2 },
-                { new DicomTag(group, loElem, loCreator), 1 }
+                { DicomVR.IS, new DicomTag(group, hiElem, hiCreator), 2 },
+                { DicomVR.IS, new DicomTag(group, loElem, loCreator), 1 }
             };
 
             var firstElem = dataset.First().Tag.Element;
@@ -539,7 +539,7 @@ namespace FellowOakDicom.Tests
 
             var dataset = new DicomDataset
             {
-                { tag1Private, 1 }
+                { DicomVR.IS, tag1Private, 1 }
             };
 
             var item1 = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
@@ -558,8 +558,8 @@ namespace FellowOakDicom.Tests
 
             // By using the .Add(DicomTag, ...) method, private tags get automatically updated so that a private
             // creator group number is generated (if private creator is new) and inserted into the tag element.
-            dataset.Add(tag1, 1);
-            dataset.Add(tag2, 3.14);
+            dataset.Add(DicomVR.IS, tag1, 1);
+            dataset.Add(DicomVR.FD, tag2, 3.14);
 
             // Should confirm that element of the tag is not updated to include the private creator group number.
             dataset.Add(new DicomIntegerString(tag3, 50));
@@ -584,9 +584,9 @@ namespace FellowOakDicom.Tests
 
             // By using the .Add(DicomTag, ...) method, private tags get automatically updated so that a private
             // creator group number is generated (if private creator is new) and inserted into the tag element.
-            dataset.Add(tag1, 1);
-            dataset.Add(tag2, 3.14);
-            dataset.Add(tag3, "COOL");
+            dataset.Add(DicomVR.IS, tag1, 1);
+            dataset.Add(DicomVR.FD, tag2, 3.14);
+            dataset.Add(DicomVR.LO, tag3, "COOL");
 
             var tag1Private = dataset.GetPrivateTag(tag1);
             var contained = dataset.SingleOrDefault(item => item.Tag.Group == tag1Private.Group &&
@@ -602,6 +602,52 @@ namespace FellowOakDicom.Tests
 
             var thirdItem = dataset.ElementAt(2);
             Assert.Equal(thirdItem, contained);
+        }
+
+        [Fact]
+        public void Add_PrivateTagWithoutExplicitVR_ShouldThrow()
+        {
+            var dataset = new DicomDataset();
+
+            var privateTag = new DicomTag(0x3001, 0x08, "PRIVATE");
+
+            var e = Record.Exception(() => dataset.Add<string>(privateTag, "FO-DICOM"));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void Add_PrivateTagWithExplicitVR_ShouldBeAdded()
+        {
+            var dataset = new DicomDataset();
+
+            var privateTag = new DicomTag(0x3001, 0x08);
+
+            dataset.Add<string>(DicomVR.LO, privateTag, "FO-DICOM");
+
+            Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
+        }
+
+        [Fact]
+        public void AddOrUpdate_PrivateTagWithoutExplicitVR_ShouldThrow()
+        {
+            var dataset = new DicomDataset();
+
+            var privateTag = new DicomTag(0x3001, 0x08, "PRIVATE");
+
+            var e = Record.Exception(() => dataset.AddOrUpdate<string>(privateTag, "FO-DICOM"));
+            Assert.IsType<DicomDataException>(e);
+        }
+
+        [Fact]
+        public void AddOrUpdate_PrivateTagWithExplicitVR_ShouldBeAdded()
+        {
+            var dataset = new DicomDataset();
+
+            var privateTag = new DicomTag(0x3001, 0x08);
+
+            dataset.AddOrUpdate<string>(DicomVR.LO, privateTag, "FO-DICOM");
+
+            Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
         }
 
         [Fact]
