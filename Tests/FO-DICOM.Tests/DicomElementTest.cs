@@ -419,6 +419,16 @@ namespace FellowOakDicom.Tests
             Assert.IsType<DicomDataException>(exception);
         }
 
+        [Theory]
+        [MemberData(nameof(ValidDecimalToStringData))]
+        public void DicomDecimalString_ToDecimalString_ReturnsExpectedValue(decimal value, string expectedString)
+        {
+            var actual = DicomDecimalString.ToDecimalString(value);
+
+            Assert.True(actual.Length <= 16, actual);
+            Assert.Equal(expectedString, actual);
+        }
+
         #endregion
 
         #region Support methods
@@ -505,6 +515,23 @@ namespace FellowOakDicom.Tests
             new object[] { DicomUID.StorageCommitmentPushModel },
             new object[] { DicomUID.dicomTransferSyntax },
             new object[] { DicomUID.PETPalette }
+        };
+
+        public static IEnumerable<object[]> ValidDecimalToStringData = new[]
+        {
+            new object[] { 0.142916000000001m, "0.142916" },
+            new object[] { 0.142916m, "0.142916" },
+            new object[] { 0.12345678911234m, "0.12345678911234" },
+            new object[] { 0.12345678911234567m, "0.1234567891" },
+            new object[] { -0.12345678911234567m, "-0.1234567891" },
+            new object[] { -12345678911234.1m, "-1.234567891E+13" },
+            new object[] { 12345678911234.1m,  "12345678911234.1" },
+            new object[] { 123456789112345.7m, "1.234567891E+14" },
+            new object[] { 1234567891123456789m, "1.234567891E+18" },
+            new object[] { 1.1E-27m, "1.1E-27" },
+            new object[] { -1.1E-27m, "-1.1E-27" },
+            new object[] { 1.1E27m, "1.1E+27" },
+            new object[] { -1.1E27m, "-1.1E+27" }
         };
 
         #endregion
