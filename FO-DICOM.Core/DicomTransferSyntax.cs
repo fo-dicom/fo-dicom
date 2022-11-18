@@ -472,9 +472,32 @@ namespace FellowOakDicom
                 Endian = Endian.Little
             };
 
+
+        /// <summary>Fragmentable MPEG2 Main Profile @ Main Level</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG2 =
+            new DicomTransferSyntax(DicomUID.MPEG2MPMLF)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_13818_2",
+                Endian = Endian.Little
+            };
+
         ///<summary>MPEG2 Main Profile / High Level</summary>
         public static readonly DicomTransferSyntax MPEG2MainProfileHighLevel =
             new DicomTransferSyntax(DicomUID.MPEG2MPHL)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_13818_2",
+                Endian = Endian.Little
+            };
+
+        ///<summary>Fragmentable MPEG2 Main Profile / High Level</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG2MainProfileHighLevel =
+            new DicomTransferSyntax(DicomUID.MPEG2MPHLF)
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
@@ -489,6 +512,19 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
+                Endian = Endian.Little
+            };
+
+        ///<summary>Fragmentable MPEG-4 AVC/H.264 High Profile / Level 4.1</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG4AVCH264HighProfileLevel41 =
+            new DicomTransferSyntax(DicomUID.MPEG4HP41F)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
                 Endian = Endian.Little
             };
 
@@ -498,6 +534,19 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
+                Endian = Endian.Little
+            };
+
+        ///<summary>Fragmentable MPEG-4 AVC/H.264 BD-compatible High Profile / Level 4.1</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG4AVCH264BDCompatibleHighProfileLevel41 =
+            new DicomTransferSyntax(DicomUID.MPEG4HP41BDF)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
                 Endian = Endian.Little
             };
 
@@ -507,6 +556,19 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
+                Endian = Endian.Little
+            };
+
+        ///<summary>Fragmentable MPEG-4 AVC/H.264 High Profile / Level 4.2 For 2D Video</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG4AVCH264HighProfileLevel42For2DVideo =
+            new DicomTransferSyntax(DicomUID.MPEG4HP422DF)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
                 Endian = Endian.Little
             };
 
@@ -516,6 +578,19 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
+                Endian = Endian.Little
+            };
+
+        ///<summary>Fragmentable MPEG-4 AVC/H.264 High Profile / Level 4.2 For 3D Video</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG4AVCH264HighProfileLevel42For3DVideo =
+            new DicomTransferSyntax(DicomUID.MPEG4HP423DF)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
                 Endian = Endian.Little
             };
 
@@ -525,6 +600,19 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
+                Endian = Endian.Little
+            };
+
+        ///<summary>Fragmentable MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</summary>
+        public static readonly DicomTransferSyntax FragmentableMPEG4AVCH264StereoHighProfileLevel42 =
+            new DicomTransferSyntax(DicomUID.MPEG4HP42STEREOF)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_14496_10",
                 Endian = Endian.Little
             };
 
@@ -534,6 +622,8 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_23008_2",
                 Endian = Endian.Little
             };
 
@@ -543,6 +633,8 @@ namespace FellowOakDicom
             {
                 IsExplicitVR = true,
                 IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_23008_2",
                 Endian = Endian.Little
             };
 

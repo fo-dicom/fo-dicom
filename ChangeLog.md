@@ -1,4 +1,6 @@
 #### 5.0.4 (TBD)
+* **Breaking change**: Updated DICOM Dictionary to 2022d. Several DicomTag constant names changed to singular name from plural form (#1469)
+* Added support for DICOM supplement 225, Multi-Fragment video transfer syntax (#1469)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
