@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -390,6 +391,23 @@ namespace FellowOakDicom.Tests.Network.Client
                         Record.ExceptionAsync(() => client.SendAsync())
                             .ConfigureAwait(false);
                 Assert.IsType<DicomAssociationRejectedException>(exception);
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_NoResponse_ShouldYieldException()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateClient("127.0.0.1", port + 10, false, "SCU", "INVALID");
+                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+
+                var exception =
+                    await
+                        Record.ExceptionAsync(() => client.SendAsync())
+                            .ConfigureAwait(false);
+                Assert.IsAssignableFrom<SocketException>(exception);
             }
         }
 
@@ -1389,8 +1407,7 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(echoResponse3);
         }
 
-
-        #region Support classes
+#region Support classes
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
@@ -1683,7 +1700,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
         }
 
-        #endregion
+#endregion
 
     }
 }

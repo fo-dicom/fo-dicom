@@ -1,4 +1,5 @@
 #### 5.0.4 (TBD)
+* Fix AggregateException thrown during SendAsync, instead of SocketException (#1471)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
