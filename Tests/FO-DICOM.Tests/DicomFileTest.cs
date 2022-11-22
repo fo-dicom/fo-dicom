@@ -428,6 +428,31 @@ namespace FellowOakDicom.Tests
             Assert.Equal(bytes1, bytes2);
         }
 
+        [Fact]
+        public void Clone_FromValidDataset_ResultEqualsOriginal()
+        {
+            var file = new DicomFile(_allVrDataset);
+            var clone = file.Clone();
+            foreach (DicomItem item in clone.Dataset)
+            {
+                Assert.Equal(file.Dataset.GetString(item.Tag), clone.Dataset.GetString(item.Tag));
+            }
+        }
+
+        [Fact]
+        public void Clone_FromInValidDataset_ResultEqualsOriginal()
+        {
+            var file = new DicomFile(_allVrDataset);
+            file.Dataset.ValidateItems = false;
+            file.Dataset.AddOrUpdate(DicomTag.InstanceCreationDate, "20221313");
+            file.Dataset.ValidateItems = true;
+            var clone = file.Clone();
+            foreach (DicomItem item in clone.Dataset)
+            {
+                Assert.Equal(file.Dataset.GetString(item.Tag), clone.Dataset.GetString(item.Tag));
+            }
+        }
+
         #endregion
     }
 }

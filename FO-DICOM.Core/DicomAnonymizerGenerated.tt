@@ -21,6 +21,7 @@ namespace FellowOakDicom
             /// - RetainSafePrivateOption
             /// - RetainUIDsOption
             /// - RetainDeviceIdentOption
+            /// - RetainInstitutionIdentOption
             /// - RetainPatientCharsOption
             /// - RetainLongFullDatesOption
             /// - RetainLongModifDatesOption
@@ -29,10 +30,10 @@ namespace FellowOakDicom
             /// - CleanGraphOption
             /// </remarks>
             protected const string DefaultProfile = @"
-                [0-9A-F]{3}[13579BDF],[0-9A-F]{4};X;C;;;;;;;;
-                50[0-9A-F]{2},[0-9A-F]{4};X;;;;;;;;;C
-                60[0-9A-F]{2},4000;X;;;;;;;;;C
-                60[0-9A-F]{2},3000;X;;;;;;;;;C                
+                [0-9A-F]{3}[13579BDF],[0-9A-F]{4};X;C;;;;;;;;;
+                50[0-9A-F]{2},[0-9A-F]{4};X;;;;;;;;;;C
+                60[0-9A-F]{2},4000;X;;;;;;;;;;C
+                60[0-9A-F]{2},3000;X;;;;;;;;;;C                
 <#
     var rows = GetConfidentialityProfileData();
 
