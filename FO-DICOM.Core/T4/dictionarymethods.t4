@@ -9,13 +9,13 @@
 private const string DocbookNamespace = "http://docbook.org/ns/docbook";
 
 #if DEBUG
-private static XmlDocument Part6Document = null;
-private static XmlDocument Part7Document = null;
-private static XmlDocument Part15Document = null;
-private static XmlNamespaceManager NsManager = null;
-private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary = null;
+private static XmlDocument Part6Document;
+private static XmlDocument Part7Document;
+private static XmlDocument Part15Document;
+private static XmlNamespaceManager NsManager;
+private static Dictionary<string, Tuple<string, string>> ContextGroupDictionary;
 
-private void Init()
+private static void Init()
 {
 	if (NsManager != null) return;
 
@@ -441,7 +441,7 @@ private static List<string> GetConfidentialityProfileData()
 		if (list.Count != TableColumns || list[1].Contains("x") || list[1].Contains("g")) continue;
 
 		rows.Add($"{list[1].Replace("(", "").Replace(")", "").Replace(" ", "")};" + 
-			string.Join(";", Enumerable.Range(4, 10).Select(i => $"{list[i]}")));
+			string.Join(";", Enumerable.Range(4, TableColumns-4).Select(i => $"{list[i]}")));
 	}
 
 	return rows;
