@@ -10,6 +10,7 @@
 * Improve performance and reduce memory usage when opening DICOM files (#1414)
 * Fix rendering of XA/XRF images that include a modality LUT sequence (#1442)
 * Fix incorrect conversion of some decimal strings (#1454)
+* Disabled dataset validation on `DicomFile.Clone()` (#1465)
 * Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212) 
 
 #### 5.0.3 (2022-05-23)
