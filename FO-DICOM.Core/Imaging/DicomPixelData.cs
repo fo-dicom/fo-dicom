@@ -411,7 +411,7 @@ namespace FellowOakDicom.Imaging
 
                 buffer.Buffers.Remove(this._padingByteBuffer);
                 buffer.Buffers.Add(data);
-                if (buffer.Buffers.Count % 2 == 1)
+                if (buffer.Size % 2 == 1)
                 {
                     buffer.Buffers.Add(this._padingByteBuffer);
                 }
