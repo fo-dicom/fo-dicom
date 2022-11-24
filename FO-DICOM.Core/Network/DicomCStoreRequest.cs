@@ -99,6 +99,12 @@ namespace FellowOakDicom.Network
         public DicomTransferSyntax[] AdditionalTransferSyntaxes { get; set; }
 
         /// <summary>
+        /// Automatically add the Implicit VR Little Endian transfer syntax
+        /// if not present in the request itself.
+        /// </summary>
+        public bool AddDefaultTransferSyntax { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the (optional) Common Extended Negotiation Service Class UID.
         /// </summary>
         public DicomUID CommonServiceClassUid { get; set; }

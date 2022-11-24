@@ -136,7 +136,8 @@ namespace FellowOakDicom.Network
                     {
                         tx.AddRange(cstore.AdditionalTransferSyntaxes);
                     }
-                    if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
+                    if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian
+                        && cstore.AddDefaultTransferSyntax)
                     {
                         tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
                     }
