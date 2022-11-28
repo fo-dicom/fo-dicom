@@ -510,7 +510,7 @@ namespace FellowOakDicom.Tests
 
         public static IEnumerable<object[]> NonTransferSyntaxUids = new[]
         {
-            new object[] { DicomUID.AbdominopelvicArteriesPaired12111 },
+            new object[] { DicomUID.AbdominopelvicArteryPaired12111 },
             new object[] { DicomUID.CTImageStorage },
             new object[] { DicomUID.StorageCommitmentPushModel },
             new object[] { DicomUID.dicomTransferSyntax },
