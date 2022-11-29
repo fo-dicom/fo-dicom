@@ -1,17 +1,15 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using FellowOakDicom.Imaging.Mathematics;
-using FellowOakDicom.IO;
-using FellowOakDicom.IO.Buffer;
 using ByteConverter = FellowOakDicom.IO.ByteConverter;
 
 namespace FellowOakDicom
@@ -1982,11 +1980,10 @@ namespace FellowOakDicom
 
         private T GetValue<T>(TType val)
         {
+            // If nullable, need to apply conversions on underlying type (#212)
             var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
             if (!t.IsEnum) return (T)Convert.ChangeType(val, t);
-
-            if (Enum.IsDefined(typeof(T), val)) return (T)Enum.ToObject(t, val);
 
             return (T)Enum.Parse(t, val.ToString());
         }
