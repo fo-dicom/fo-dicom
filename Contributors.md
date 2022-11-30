@@ -81,3 +81,4 @@
 * [James A Sutherland](https://github.com/jas88)
 * [Chris Conway](https://github.com/CeeJayCee)
 * [Michael Ovens](https://github.com/MichaelOvens)
+* [Magnus Larsson](https://github.com/magla42)
