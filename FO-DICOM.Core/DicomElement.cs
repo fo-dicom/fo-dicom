@@ -879,7 +879,7 @@ namespace FellowOakDicom
             var valueString = value.ToString(CultureInfo.InvariantCulture);
             if (valueString.Length > 16)
             {
-                valueString = value.ToString("G11", CultureInfo.InvariantCulture);
+                valueString = value.ToString("G10", CultureInfo.InvariantCulture);
             }
             return valueString;
         }
