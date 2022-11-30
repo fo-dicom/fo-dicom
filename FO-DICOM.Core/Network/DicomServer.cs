@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -278,8 +277,7 @@ namespace FellowOakDicom.Network
                 listener = _networkManager.CreateNetworkListener(new NetworkListenerCreationOptions
                 {
                     IpAddress = IPAddress,
-                    Port = Port,
-                    Logger = _logger
+                    Port = Port
                 });
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
