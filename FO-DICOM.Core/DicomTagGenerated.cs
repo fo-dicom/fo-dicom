@@ -584,6 +584,132 @@ namespace FellowOakDicom
         ///<summary>(0008,0310) VR=SQ VM=1 Private Data Element Definition Sequence</summary>
         public readonly static DicomTag PrivateDataElementDefinitionSequence = new DicomTag(0x0008, 0x0310);
 
+        ///<summary>(0008,0400) VR=SQ VM=1 Scope of Inventory Sequence</summary>
+        public readonly static DicomTag ScopeOfInventorySequence = new DicomTag(0x0008, 0x0400);
+
+        ///<summary>(0008,0401) VR=LT VM=1 Inventory Purpose</summary>
+        public readonly static DicomTag InventoryPurpose = new DicomTag(0x0008, 0x0401);
+
+        ///<summary>(0008,0402) VR=LT VM=1 Inventory Instance Description</summary>
+        public readonly static DicomTag InventoryInstanceDescription = new DicomTag(0x0008, 0x0402);
+
+        ///<summary>(0008,0403) VR=CS VM=1 Inventory Level</summary>
+        public readonly static DicomTag InventoryContentLevel = new DicomTag(0x0008, 0x0403);
+
+        ///<summary>(0008,0404) VR=DT VM=1 Item Inventory DateTime</summary>
+        public readonly static DicomTag ItemInventoryDateTime = new DicomTag(0x0008, 0x0404);
+
+        ///<summary>(0008,0405) VR=CS VM=1 Removed from Operational Use</summary>
+        public readonly static DicomTag RemovedFromOperationalUse = new DicomTag(0x0008, 0x0405);
+
+        ///<summary>(0008,0406) VR=SQ VM=1 Reason for Removal Code Sequence</summary>
+        public readonly static DicomTag ReasonForRemovalCodeSequence = new DicomTag(0x0008, 0x0406);
+
+        ///<summary>(0008,0407) VR=UR VM=1 Stored Instance Base URI</summary>
+        public readonly static DicomTag StoredInstanceBaseURI = new DicomTag(0x0008, 0x0407);
+
+        ///<summary>(0008,0408) VR=UR VM=1 Folder Access URI</summary>
+        public readonly static DicomTag FolderAccessURI = new DicomTag(0x0008, 0x0408);
+
+        ///<summary>(0008,0409) VR=UR VM=1 File Access URI</summary>
+        public readonly static DicomTag FileAccessURI = new DicomTag(0x0008, 0x0409);
+
+        ///<summary>(0008,040A) VR=CS VM=1 Container File Type</summary>
+        public readonly static DicomTag ContainerFileType = new DicomTag(0x0008, 0x040A);
+
+        ///<summary>(0008,040B) VR=UR VM=1 Filename in Container</summary>
+        public readonly static DicomTag FilenameInContainer = new DicomTag(0x0008, 0x040B);
+
+        ///<summary>(0008,040C) VR=UV VM=1 File Offset in Container</summary>
+        public readonly static DicomTag FileOffsetInContainer = new DicomTag(0x0008, 0x040C);
+
+        ///<summary>(0008,040D) VR=UV VM=1 File Length in Container</summary>
+        public readonly static DicomTag FileLengthInContainer = new DicomTag(0x0008, 0x040D);
+
+        ///<summary>(0008,040E) VR=UI VM=1 Stored Instance Transfer Syntax UID</summary>
+        public readonly static DicomTag StoredInstanceTransferSyntaxUID = new DicomTag(0x0008, 0x040E);
+
+        ///<summary>(0008,040F) VR=CS VM=1-n Extended Matching Mechanisms</summary>
+        public readonly static DicomTag ExtendedMatchingMechanisms = new DicomTag(0x0008, 0x040F);
+
+        ///<summary>(0008,0410) VR=SQ VM=1 Range Matching Sequence</summary>
+        public readonly static DicomTag RangeMatchingSequence = new DicomTag(0x0008, 0x0410);
+
+        ///<summary>(0008,0411) VR=SQ VM=1 List of UID Matching Sequence</summary>
+        public readonly static DicomTag UIDListMatchingSequence = new DicomTag(0x0008, 0x0411);
+
+        ///<summary>(0008,0412) VR=SQ VM=1 Empty Value Matching Sequence</summary>
+        public readonly static DicomTag EmptyValueMatchingSequence = new DicomTag(0x0008, 0x0412);
+
+        ///<summary>(0008,0413) VR=SQ VM=1 General Matching Sequence</summary>
+        public readonly static DicomTag GeneralMatchingSequence = new DicomTag(0x0008, 0x0413);
+
+        ///<summary>(0008,0414) VR=US VM=1 Requested Status Interval</summary>
+        public readonly static DicomTag RequestedStatusInterval = new DicomTag(0x0008, 0x0414);
+
+        ///<summary>(0008,0415) VR=CS VM=1 Retain Instances</summary>
+        public readonly static DicomTag RetainInstances = new DicomTag(0x0008, 0x0415);
+
+        ///<summary>(0008,0416) VR=DT VM=1 Expiration DateTime</summary>
+        public readonly static DicomTag ExpirationDateTime = new DicomTag(0x0008, 0x0416);
+
+        ///<summary>(0008,0417) VR=CS VM=1 Transaction Status</summary>
+        public readonly static DicomTag TransactionStatus = new DicomTag(0x0008, 0x0417);
+
+        ///<summary>(0008,0418) VR=LT VM=1 Transaction Status Comment</summary>
+        public readonly static DicomTag TransactionStatusComment = new DicomTag(0x0008, 0x0418);
+
+        ///<summary>(0008,0419) VR=SQ VM=1 File Set Access Sequence</summary>
+        public readonly static DicomTag FileSetAccessSequence = new DicomTag(0x0008, 0x0419);
+
+        ///<summary>(0008,041A) VR=SQ VM=1 File Access Sequence</summary>
+        public readonly static DicomTag FileAccessSequence = new DicomTag(0x0008, 0x041A);
+
+        ///<summary>(0008,041B) VR=OB VM=1 Record Key</summary>
+        public readonly static DicomTag RecordKey = new DicomTag(0x0008, 0x041B);
+
+        ///<summary>(0008,041C) VR=OB VM=1 Prior Record Key</summary>
+        public readonly static DicomTag PriorRecordKey = new DicomTag(0x0008, 0x041C);
+
+        ///<summary>(0008,041D) VR=SQ VM=1 Metadata Sequence</summary>
+        public readonly static DicomTag MetadataSequence = new DicomTag(0x0008, 0x041D);
+
+        ///<summary>(0008,041E) VR=SQ VM=1 Updated Metadata Sequence</summary>
+        public readonly static DicomTag UpdatedMetadataSequence = new DicomTag(0x0008, 0x041E);
+
+        ///<summary>(0008,041F) VR=DT VM=1 Study Update DateTime</summary>
+        public readonly static DicomTag StudyUpdateDateTime = new DicomTag(0x0008, 0x041F);
+
+        ///<summary>(0008,0420) VR=SQ VM=1 Inventory Access End Points Sequence</summary>
+        public readonly static DicomTag InventoryAccessEndPointsSequence = new DicomTag(0x0008, 0x0420);
+
+        ///<summary>(0008,0421) VR=SQ VM=1 Study Access End Points Sequence</summary>
+        public readonly static DicomTag StudyAccessEndPointsSequence = new DicomTag(0x0008, 0x0421);
+
+        ///<summary>(0008,0422) VR=SQ VM=1 Incorporated Inventory Instance Sequence</summary>
+        public readonly static DicomTag IncorporatedInventoryInstanceSequence = new DicomTag(0x0008, 0x0422);
+
+        ///<summary>(0008,0423) VR=SQ VM=1 Inventoried Studies Sequence</summary>
+        public readonly static DicomTag InventoriedStudiesSequence = new DicomTag(0x0008, 0x0423);
+
+        ///<summary>(0008,0424) VR=SQ VM=1 Inventoried Series Sequence</summary>
+        public readonly static DicomTag InventoriedSeriesSequence = new DicomTag(0x0008, 0x0424);
+
+        ///<summary>(0008,0425) VR=SQ VM=1 Inventoried Instances Sequence</summary>
+        public readonly static DicomTag InventoriedInstancesSequence = new DicomTag(0x0008, 0x0425);
+
+        ///<summary>(0008,0426) VR=CS VM=1 Inventory Completion Status</summary>
+        public readonly static DicomTag InventoryCompletionStatus = new DicomTag(0x0008, 0x0426);
+
+        ///<summary>(0008,0427) VR=UL VM=1 Number of Study Records in Instance</summary>
+        public readonly static DicomTag NumberOfStudyRecordsInInstance = new DicomTag(0x0008, 0x0427);
+
+        ///<summary>(0008,0428) VR=UV VM=1 Total Number of Study Records</summary>
+        public readonly static DicomTag TotalNumberOfStudyRecords = new DicomTag(0x0008, 0x0428);
+
+        ///<summary>(0008,0429) VR=UV VM=1 Maximum Number of Records</summary>
+        public readonly static DicomTag MaximumNumberOfRecords = new DicomTag(0x0008, 0x0429);
+
         ///<summary>(0008,1000) VR=AE VM=1 Network ID (RETIRED)</summary>
         public readonly static DicomTag NetworkIDRETIRED = new DicomTag(0x0008, 0x1000);
 
@@ -1187,6 +1313,9 @@ namespace FellowOakDicom
         ///<summary>(0012,0053) VR=CS VM=1 Longitudinal Temporal Event Type</summary>
         public readonly static DicomTag LongitudinalTemporalEventType = new DicomTag(0x0012, 0x0053);
 
+        ///<summary>(0012,0054) VR=SQ VM=1 Clinical Trial Time Point Type Code Sequence</summary>
+        public readonly static DicomTag ClinicalTrialTimePointTypeCodeSequence = new DicomTag(0x0012, 0x0054);
+
         ///<summary>(0012,0060) VR=LO VM=1 Clinical Trial Coordinating Center Name</summary>
         public readonly static DicomTag ClinicalTrialCoordinatingCenterName = new DicomTag(0x0012, 0x0060);
 
@@ -1297,6 +1426,30 @@ namespace FellowOakDicom
 
         ///<summary>(0014,0108) VR=CS VM=1-n Other Secondary Approval Status</summary>
         public readonly static DicomTag OtherSecondaryApprovalStatus = new DicomTag(0x0014, 0x0108);
+
+        ///<summary>(0014,0200) VR=SQ VM=1 Data Element Label Sequence</summary>
+        public readonly static DicomTag DataElementLabelSequence = new DicomTag(0x0014, 0x0200);
+
+        ///<summary>(0014,0201) VR=SQ VM=1 Data Element Label Item Sequence</summary>
+        public readonly static DicomTag DataElementLabelItemSequence = new DicomTag(0x0014, 0x0201);
+
+        ///<summary>(0014,0202) VR=AT VM=1 Data Element</summary>
+        public readonly static DicomTag DataElement = new DicomTag(0x0014, 0x0202);
+
+        ///<summary>(0014,0203) VR=LO VM=1 Data Element Name</summary>
+        public readonly static DicomTag DataElementName = new DicomTag(0x0014, 0x0203);
+
+        ///<summary>(0014,0204) VR=LO VM=1 Data Element Description</summary>
+        public readonly static DicomTag DataElementDescription = new DicomTag(0x0014, 0x0204);
+
+        ///<summary>(0014,0205) VR=CS VM=1 Data Element Conditionality</summary>
+        public readonly static DicomTag DataElementConditionality = new DicomTag(0x0014, 0x0205);
+
+        ///<summary>(0014,0206) VR=IS VM=1 Data Element Minimum Characters</summary>
+        public readonly static DicomTag DataElementMinimumCharacters = new DicomTag(0x0014, 0x0206);
+
+        ///<summary>(0014,0207) VR=IS VM=1 Data Element Maximum Characters</summary>
+        public readonly static DicomTag DataElementMaximumCharacters = new DicomTag(0x0014, 0x0207);
 
         ///<summary>(0014,1010) VR=ST VM=1 Actual Environmental Conditions</summary>
         public readonly static DicomTag ActualEnvironmentalConditions = new DicomTag(0x0014, 0x1010);
@@ -7037,6 +7190,60 @@ namespace FellowOakDicom
         ///<summary>(003A,0316) VR=CS VM=1 Impedance Measurement Current Type</summary>
         public readonly static DicomTag ImpedanceMeasurementCurrentType = new DicomTag(0x003A, 0x0316);
 
+        ///<summary>(003A,0317) VR=CS VM=1 Waveform Amplifier Type</summary>
+        public readonly static DicomTag WaveformAmplifierType = new DicomTag(0x003A, 0x0317);
+
+        ///<summary>(003A,0318) VR=SQ VM=1 Filter Low Frequency Characteristics Sequence</summary>
+        public readonly static DicomTag FilterLowFrequencyCharacteristicsSequence = new DicomTag(0x003A, 0x0318);
+
+        ///<summary>(003A,0319) VR=SQ VM=1 Filter High Frequency Characteristics Sequence</summary>
+        public readonly static DicomTag FilterHighFrequencyCharacteristicsSequence = new DicomTag(0x003A, 0x0319);
+
+        ///<summary>(003A,0320) VR=SQ VM=1 Summarized Filter Lookup Table Sequence</summary>
+        public readonly static DicomTag SummarizedFilterLookupTable = new DicomTag(0x003A, 0x0320);
+
+        ///<summary>(003A,0321) VR=SQ VM=1 Notch Filter Characteristics Sequence</summary>
+        public readonly static DicomTag NotchFilterCharacteristicsSequence = new DicomTag(0x003A, 0x0321);
+
+        ///<summary>(003A,0322) VR=CS VM=1 Waveform Filter Type</summary>
+        public readonly static DicomTag WaveformFilterType = new DicomTag(0x003A, 0x0322);
+
+        ///<summary>(003A,0323) VR=SQ VM=1 Analog Filter Characteristics Sequence</summary>
+        public readonly static DicomTag AnalogFilterCharacteristicsSequence = new DicomTag(0x003A, 0x0323);
+
+        ///<summary>(003A,0324) VR=DS VM=1 Analog Filter Roll Off </summary>
+        public readonly static DicomTag AnalogFilterRollOff = new DicomTag(0x003A, 0x0324);
+
+        ///<summary>(003A,0325) VR=SQ VM=1 Analog Filter Type Code Sequence</summary>
+        public readonly static DicomTag AnalogFilterType = new DicomTag(0x003A, 0x0325);
+
+        ///<summary>(003A,0326) VR=SQ VM=1 Digital Filter Characteristics Sequence</summary>
+        public readonly static DicomTag DigitalFilterCharacteristicsSequence = new DicomTag(0x003A, 0x0326);
+
+        ///<summary>(003A,0327) VR=IS VM=1 Digital Filter Order</summary>
+        public readonly static DicomTag DigitalFilterOrder = new DicomTag(0x003A, 0x0327);
+
+        ///<summary>(003A,0328) VR=SQ VM=1 Digital Filter Type Code Sequence</summary>
+        public readonly static DicomTag DigitalFilterTypeCodeSequence = new DicomTag(0x003A, 0x0328);
+
+        ///<summary>(003A,0329) VR=ST VM=1 Waveform Filter Description</summary>
+        public readonly static DicomTag WaveformFilterDescription = new DicomTag(0x003A, 0x0329);
+
+        ///<summary>(003A,032A) VR=SQ VM=1 Filter Lookup Table Sequence</summary>
+        public readonly static DicomTag FilterLookupTableSequence = new DicomTag(0x003A, 0x032A);
+
+        ///<summary>(003A,032B) VR=ST VM=1 Filter Lookup Table Description</summary>
+        public readonly static DicomTag FilterLookupTableDescription = new DicomTag(0x003A, 0x032B);
+
+        ///<summary>(003A,032C) VR=SQ VM=1 Frequency Encoding Code Sequence</summary>
+        public readonly static DicomTag FrequencyEncodingCodeSequence = new DicomTag(0x003A, 0x032C);
+
+        ///<summary>(003A,032D) VR=SQ VM=1 Magnitude Encoding Code Sequence</summary>
+        public readonly static DicomTag MagnitudeEncodingCodeSequence = new DicomTag(0x003A, 0x032D);
+
+        ///<summary>(003A,032E) VR=OD VM=1 Filter Lookup Table Data</summary>
+        public readonly static DicomTag FilterLookupTableData = new DicomTag(0x003A, 0x032E);
+
         ///<summary>(0040,0001) VR=AE VM=1-n Scheduled Station AE Title</summary>
         public readonly static DicomTag ScheduledStationAETitle = new DicomTag(0x0040, 0x0001);
 
@@ -9731,6 +9938,9 @@ namespace FellowOakDicom
         ///<summary>(0070,0314) VR=SQ VM=1 Used Fiducials Sequence</summary>
         public readonly static DicomTag UsedFiducialsSequence = new DicomTag(0x0070, 0x0314);
 
+        ///<summary>(0070,0315) VR=SQ VM=1 Used RT Structure Set ROI Sequence</summary>
+        public readonly static DicomTag UsedRTStructureSetROISequence = new DicomTag(0x0070, 0x0315);
+
         ///<summary>(0070,0318) VR=SQ VM=1 Graphic Coordinates Data Sequence</summary>
         public readonly static DicomTag GraphicCoordinatesDataSequence = new DicomTag(0x0070, 0x0318);
 
@@ -11564,14 +11774,14 @@ namespace FellowOakDicom
         ///<summary>(3006,0084) VR=IS VM=1 Referenced ROI Number</summary>
         public readonly static DicomTag ReferencedROINumber = new DicomTag(0x3006, 0x0084);
 
-        ///<summary>(3006,0085) VR=SH VM=1 ROI Observation Label</summary>
-        public readonly static DicomTag ROIObservationLabel = new DicomTag(0x3006, 0x0085);
+        ///<summary>(3006,0085) VR=SH VM=1 ROI Observation Label (RETIRED)</summary>
+        public readonly static DicomTag ROIObservationLabelRETIRED = new DicomTag(0x3006, 0x0085);
 
         ///<summary>(3006,0086) VR=SQ VM=1 RT ROI Identification Code Sequence</summary>
         public readonly static DicomTag RTROIIdentificationCodeSequence = new DicomTag(0x3006, 0x0086);
 
-        ///<summary>(3006,0088) VR=ST VM=1 ROI Observation Description</summary>
-        public readonly static DicomTag ROIObservationDescription = new DicomTag(0x3006, 0x0088);
+        ///<summary>(3006,0088) VR=ST VM=1 ROI Observation Description (RETIRED)</summary>
+        public readonly static DicomTag ROIObservationDescriptionRETIRED = new DicomTag(0x3006, 0x0088);
 
         ///<summary>(3006,00A0) VR=SQ VM=1 Related RT ROI Observations Sequence</summary>
         public readonly static DicomTag RelatedRTROIObservationsSequence = new DicomTag(0x3006, 0x00A0);
@@ -14342,6 +14552,9 @@ namespace FellowOakDicom
         ///<summary>(3010,009A) VR=FD VM=1-n Tomotherapeutic Leaf Initial Closed Durations</summary>
         public readonly static DicomTag TomotherapeuticLeafInitialClosedDurations = new DicomTag(0x3010, 0x009A);
 
+        ///<summary>(3010,00A0) VR=SQ VM=1 Conceptual Volume Identification Sequence</summary>
+        public readonly static DicomTag ConceptualVolumeIdentificationSequence = new DicomTag(0x3010, 0x00A0);
+
         ///<summary>(4000,0010) VR=LT VM=1 Arbitrary (RETIRED)</summary>
         public readonly static DicomTag ArbitraryRETIRED = new DicomTag(0x4000, 0x0010);
 
@@ -14929,6 +15142,9 @@ namespace FellowOakDicom
 
         ///<summary>(7FE0,0002) VR=OV VM=1 Extended Offset Table Lengths</summary>
         public readonly static DicomTag ExtendedOffsetTableLengths = new DicomTag(0x7FE0, 0x0002);
+
+        ///<summary>(7FE0,0003) VR=UV VM=1 Encapsulated Pixel Data Value Total Length</summary>
+        public readonly static DicomTag EncapsulatedPixelDataValueTotalLength = new DicomTag(0x7FE0, 0x0003);
 
         ///<summary>(7FE0,0008) VR=OF VM=1 Float Pixel Data</summary>
         public readonly static DicomTag FloatPixelData = new DicomTag(0x7FE0, 0x0008);

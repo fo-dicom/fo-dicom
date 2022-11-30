@@ -13,6 +13,8 @@
 * Fix incorrect conversion of some decimal strings (#1454)
 * Disabled dataset validation on `DicomFile.Clone()` (#1465)
 * Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212) 
+* **Breaking change**: Updated DICOM Dictionary to 2022d. Several DicomTag constant names changed to singular name from plural form (#1469)
+* Added support for DICOM supplement 225, Multi-Fragment video transfer syntax (#1469)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
