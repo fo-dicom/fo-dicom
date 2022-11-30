@@ -45,11 +45,11 @@ namespace FellowOakDicom.Network
 
     public class DesktopNetworkStreamFactory : IDesktopNetworkStreamFactory
     {
-        private readonly ILogger<DesktopNetworkStreamFactory> _logger;
+        private readonly ILogger _logger;
 
-        public DesktopNetworkStreamFactory(ILogger<DesktopNetworkStreamFactory> logger)
+        public DesktopNetworkStreamFactory(ILogManager logManager)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logManager.GetLogger("FellowOakDicom.Network");
         }
         
         /// <inheritdoc cref="IDesktopNetworkStreamFactory.CreateAsServerAsync" />
