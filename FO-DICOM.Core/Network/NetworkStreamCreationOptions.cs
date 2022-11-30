@@ -45,10 +45,5 @@ namespace FellowOakDicom.Network
         /// Configures TLS authentication
         /// </summary>
         public DicomClientTlsOptions TlsOptions { get; set; } = new DicomClientTlsOptions();
-
-        /// <summary>
-        /// The logger to use
-        /// </summary>
-        public ILogger Logger { get; set; }
     }
 }

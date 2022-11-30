@@ -141,7 +141,6 @@ namespace FellowOakDicom.Network
 
             var remoteHost = options.Host;
             var remotePort = options.Port;
-            var logger = options.Logger;
             var tlsOptions = options.TlsOptions;
             var noDelay = options.NoDelay;
             var useTls = options.UseTls;
@@ -165,11 +164,11 @@ namespace FellowOakDicom.Network
                 if (certificates?.Count > 0)
                 {
                     var clientCertificateSubjects = string.Join(" and ", certificates.OfType<X509Certificate>().Select(c => c.Subject));
-                    logger?.Debug("Setting up client TLS authentication with certificates: {CertificateSubjects}", clientCertificateSubjects);
+                    _logger?.Debug("Setting up client TLS authentication with certificates: {CertificateSubjects}", clientCertificateSubjects);
                 }
                 else
                 {
-                    logger?.Debug("Setting up client TLS authentication");
+                    _logger?.Debug("Setting up client TLS authentication");
                 }
 
                 var ssl = new SslStream(networkStream, false, userCertificateValidationCallback);
@@ -189,7 +188,7 @@ namespace FellowOakDicom.Network
 
                 await sslHandshake.ConfigureAwait(false);
                 
-                logger?.Debug("Client TLS authentication succeeded");
+                _logger?.Debug("Client TLS authentication succeeded");
 
                 stream = ssl;
             }
