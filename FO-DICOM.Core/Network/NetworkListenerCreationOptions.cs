@@ -1,6 +1,4 @@
-﻿using FellowOakDicom.Log;
-
-namespace FellowOakDicom.Network
+﻿namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Contains the necessary parameters to start a new network listener
@@ -16,10 +14,5 @@ namespace FellowOakDicom.Network
         /// Network port to listen on
         /// </summary>
         public int Port { get; set; }
-
-        /// <summary>
-        /// The logger to use
-        /// </summary>
-        public ILogger Logger { get; set; }
     }
 }
