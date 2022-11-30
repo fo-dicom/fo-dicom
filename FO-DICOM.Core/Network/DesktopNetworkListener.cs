@@ -91,7 +91,7 @@ namespace FellowOakDicom.Network
                     tcpClient.NoDelay = noDelay;
 
                     //  let DesktopNetworkStream dispose the TCP Client when it is disposed
-                    return await _desktopNetworkStreamFactory.CreateAsServerAsync(tcpClient, tlsOptions, true, _options, token);
+                    return await _desktopNetworkStreamFactory.CreateAsServerAsync(tcpClient, tlsOptions, true, token);
                 }
 
                 Stop();

@@ -20,7 +20,6 @@ namespace FellowOakDicom.Network
         /// <param name="tcpClient">TCP client.</param>
         /// <param name="tlsOptions">The options that configure TLS authentication</param>
         /// <param name="ownsTcpClient">Whether or not the TCP client should be disposed when this instance is disposed</param>
-        /// <param name="options">The network listener options</param>
         /// <param name="cancellationToken"></param>
         /// <remarks>
         /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
@@ -34,7 +33,6 @@ namespace FellowOakDicom.Network
             TcpClient tcpClient,
             DicomServerTlsOptions tlsOptions,
             bool ownsTcpClient,
-            NetworkListenerCreationOptions options,
             CancellationToken cancellationToken);
 
         /// <summary>
@@ -59,7 +57,6 @@ namespace FellowOakDicom.Network
             TcpClient tcpClient,
             DicomServerTlsOptions tlsOptions,
             bool ownsTcpClient,
-            NetworkListenerCreationOptions options,
             CancellationToken cancellationToken)
         {
             var localEndpoint = (IPEndPoint) tcpClient.Client.LocalEndPoint;
@@ -161,7 +158,7 @@ namespace FellowOakDicom.Network
                                                         ?? ((sender, certificate, chain, errors) => errors == SslPolicyErrors.None);
                 var tlsTimeout = tlsOptions.Timeout;
                 
-                if (certificates?.Count > 0)
+                if (certificates.Count > 0)
                 {
                     var clientCertificateSubjects = string.Join(" and ", certificates.OfType<X509Certificate>().Select(c => c.Subject));
                     _logger?.Debug("Setting up client TLS authentication with certificates: {CertificateSubjects}", clientCertificateSubjects);
