@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom.Log;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -46,6 +47,13 @@ namespace FellowOakDicom.Network
 
     public class DesktopNetworkStreamFactory : IDesktopNetworkStreamFactory
     {
+        private readonly ILogger<DesktopNetworkStreamFactory> _logger;
+
+        public DesktopNetworkStreamFactory(ILogger<DesktopNetworkStreamFactory> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+        
         /// <inheritdoc cref="IDesktopNetworkStreamFactory.CreateAsServerAsync" />
         public async Task<DesktopNetworkStream> CreateAsServerAsync(
             TcpClient tcpClient,
@@ -56,7 +64,6 @@ namespace FellowOakDicom.Network
         {
             var localEndpoint = (IPEndPoint) tcpClient.Client.LocalEndPoint;
             var remoteEndpoint = ((IPEndPoint)tcpClient.Client.RemoteEndPoint);
-            var logger = options.Logger;
             var localHost = localEndpoint.Address.ToString();
             var localPort = localEndpoint.Port;
             var remoteHost = remoteEndpoint.Address.ToString();
@@ -81,7 +88,7 @@ namespace FellowOakDicom.Network
                 var checkCertificateRevocation = tlsOptions.CheckCertificateRevocation;
                 var timeout = tlsOptions.Timeout;
                 
-                logger?.Debug("Setting up server SSL network stream with certificate {ServerCertificateSubject}", certificate.Subject);
+                _logger?.Debug("Setting up server SSL network stream with certificate {ServerCertificateSubject}", certificate.Subject);
 
                 var ssl = new SslStream(stream, false, userCertificateValidationCallback);
                 var sslHandshake =
@@ -111,11 +118,11 @@ namespace FellowOakDicom.Network
                         throw new DicomNetworkException("Client TLS authentication failed");
                     }
 
-                    logger?.Debug("Mutual server and client TLS authentication succeeded");
+                    _logger?.Debug("Mutual server and client TLS authentication succeeded");
                 }
                 else
                 {
-                    logger?.Debug("Server TLS authentication succeeded");
+                    _logger?.Debug("Server TLS authentication succeeded");
                 }
 
                 stream = ssl;
