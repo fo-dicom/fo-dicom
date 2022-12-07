@@ -350,7 +350,10 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
+                    _logger.Debug($"DICOM server {IPAddress}:{Port} services cleanup: waiting until there are DICOM services");
+                    
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
+                    
                     List<Task> runningDicomServiceTasks;
                     lock (_services)
                     {
@@ -359,9 +362,20 @@ namespace FellowOakDicom.Network
 
                     if (runningDicomServiceTasks.Count > 0)
                     {
-                        await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
+                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: {runningDicomServiceTasks.Count} DICOM services are running, waiting for one of them to complete");
+
+                        var task = await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
+                        
+                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: DICOM service [{runningDicomServiceTasks.IndexOf(task)}] of {runningDicomServiceTasks.Count} has completed");
+                    }
+                    else
+                    {
+                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: there are no DICOM services running");
                     }
 
+                    bool isHasNonMaxServicesFlagSet = false;
+                    int numberOfCompletedServices = 0;
+                    int numberOfRemainingServices = 0;
                     lock (_services)
                     {
                         for (int i = _services.Count - 1; i >= 0; i--)
@@ -372,6 +386,12 @@ namespace FellowOakDicom.Network
                                 _services.RemoveAt(i);
 
                                 service.Dispose();
+
+                                numberOfCompletedServices++;
+                            }
+                            else
+                            {
+                                numberOfRemainingServices++;
                             }
                         }
 
@@ -383,9 +403,18 @@ namespace FellowOakDicom.Network
                         if (!IsServicesAtMax)
                         {
                             _hasNonMaxServicesFlag.Set();
+                            isHasNonMaxServicesFlagSet = true;
                         }
                     }
 
+                    _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: {numberOfCompletedServices} completed services were removed.");
+                    _logger.Debug(numberOfRemainingServices == 0 
+                        ? $"DICOM server {IPAddress}:{Port} cleanup: there are no more services running now. " 
+                        : $"DICOM server {IPAddress}:{Port} cleanup: there are still {numberOfRemainingServices} services running.");
+                    if (isHasNonMaxServicesFlagSet)
+                    {
+                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: the server can now accept another client again");
+                    }
                 }
                 catch (OperationCanceledException)
                 {
