@@ -83,6 +83,17 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public void DeserializeEmptyDoesNotThrowException()
+        {
+            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
+            string json = string.Empty;
+
+            var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
+
+            Assert.Null(dataset);
+        }
+
+        [Fact]
         public void DeserializeDSAsString()
         {
             // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
@@ -103,7 +114,6 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
             Assert.Equal(174.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientSize));
         }
-
 
         [Fact]
         public void ParseEmptyValues()
@@ -256,11 +266,11 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.All(
                 dataset,
                 item =>
-                    {
-                        if ((item.Tag.Element & 0xff00) != 0) Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
-                        Assert.NotNull(item.Tag.DictionaryEntry);
-                        if (item.ValueRepresentation == DicomVR.SQ) Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
-                    });
+                {
+                    if ((item.Tag.Element & 0xff00) != 0) Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
+                    Assert.NotNull(item.Tag.DictionaryEntry);
+                    if (item.ValueRepresentation == DicomVR.SQ) Assert.All(((DicomSequence)item).Items, ds => ValidatePrivateCreatorsExist_(ds));
+                });
         }
 
         /// <summary>

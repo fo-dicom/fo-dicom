@@ -12,6 +12,7 @@
 * Fix incorrect conversion of some decimal strings (#1454)
 * Disabled dataset validation on `DicomFile.Clone()` (#1465)
 * Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212) 
+* Fix DicomJsonConverter has different behavior than DicomReader/Writer (#1451)
 * **Breaking change**: Updated DICOM Dictionary to 2022d. Several DicomTag constant names changed to singular name from plural form (#1469)
 * Added support for DICOM supplement 225, Multi-Fragment video transfer syntax (#1469)
 

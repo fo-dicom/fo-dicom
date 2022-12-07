@@ -44,10 +44,10 @@ namespace FellowOakDicom.Serialization
         /// Converts a Json-String to a <see cref="DicomDataset"/>.
         /// </summary>
         /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset.</param>
-        public static DicomDataset ConvertJsonToDicom(string json, bool autoValidate = true)
+        public static DicomDataset ConvertJsonToDicom(string json, bool autoValidate = true, NumberSerializationMode numberSerializationMode = NumberSerializationMode.AsNumber)
         {
             var options = new JsonSerializerOptions();
-            options.Converters.Add(new DicomJsonConverter(autoValidate: autoValidate));
+            options.Converters.Add(new DicomJsonConverter(autoValidate: autoValidate, numberSerializationMode: numberSerializationMode));
             options.ReadCommentHandling = JsonCommentHandling.Skip;
             var ds = JsonSerializer.Deserialize<DicomDataset>(json, options);
             return ds;
