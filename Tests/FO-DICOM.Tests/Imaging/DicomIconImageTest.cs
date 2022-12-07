@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Imaging
 
             // Verify that the palette has been successfully applied by checking a specific pixel value
             // ARGB (x:=39, y:=24) == [255, 122, 76, 89]
-            // (24 * 64 + 39) * 4 = 6300
+            // Position within buffer: (24 * 64 + 39) * 4 = 6300
 
             // Components stored BGRA in buffer
             Assert.Equal(89, buffer[6300]);
@@ -40,10 +40,10 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(255, buffer[6303]);
         }
 
-        public void Read_Encapsulated_IconImageSequence_From_Encapsulated_Dataset()
-        {
-            // Get a sample image to test this!
-        }
+        //public void Read_Encapsulated_IconImageSequence_From_Encapsulated_Dataset()
+        //{
+        //    // Get a sample image to test this!
+        //}
     }
 }
 
