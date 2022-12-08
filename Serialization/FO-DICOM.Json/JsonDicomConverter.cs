@@ -4,12 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -326,9 +324,8 @@ namespace FellowOakDicom.Serialization
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        var byteBuffer = ByteConverter.ToByteBuffer(string.Join("\\", dataAsStrings));
-
-                        item = new DicomSignedVeryLong(tag, byteBuffer);
+                        var dataAsLongs = dataAsStrings.Select(s => long.Parse(s)).ToArray();
+                        item = new DicomSignedVeryLong(tag, dataAsLongs);
                     }
                     else
                     {
@@ -394,9 +391,8 @@ namespace FellowOakDicom.Serialization
                     }
                     else if (data is string[] dataAsStrings)
                     {
-                        var byteBuffer = ByteConverter.ToByteBuffer(string.Join("\\", dataAsStrings));
-
-                        item = new DicomUnsignedVeryLong(tag, byteBuffer);
+                        var dataAsULongs = dataAsStrings.Select(s => ulong.Parse(s)).ToArray();
+                        item = new DicomUnsignedVeryLong(tag, dataAsULongs);
                     }
                     else
                     {
@@ -830,7 +826,6 @@ namespace FellowOakDicom.Serialization
             var data = childStrings.ToArray();
             return data;
         }
-
 
         private object ReadJsonMultiNumberOrString<T>(JToken itemObject)
         {

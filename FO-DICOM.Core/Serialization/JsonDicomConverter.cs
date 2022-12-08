@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
@@ -864,7 +863,7 @@ namespace FellowOakDicom.Serialization
             }
         }
 
-        private object ReadJsonMultiNumberOrStringValue<T>(ref Utf8JsonReader reader, GetValue<T> getValue, TryParse<T> tryParse)
+        private static T[] ReadJsonMultiNumberOrStringValue<T>(ref Utf8JsonReader reader, GetValue<T> getValue, TryParse<T> tryParse)
         {
             if (reader.TokenType == JsonTokenType.Null)
             {
@@ -873,8 +872,7 @@ namespace FellowOakDicom.Serialization
             }
             reader.AssumeAndSkip(JsonTokenType.StartArray);
 
-            var hasNonNumericString = false;
-            var childValues = new List<object>();
+            var childValues = new List<T>();
             while (reader.TokenType != JsonTokenType.EndArray)
             {
                 if (reader.TokenType == JsonTokenType.Number)
@@ -889,11 +887,6 @@ namespace FellowOakDicom.Serialization
                 {
                     childValues.Add(parsed);
                 }
-                else if (reader.TokenType == JsonTokenType.String && !_autoValidate)
-                {
-                    hasNonNumericString = true;
-                    childValues.Add(reader.GetString());
-                }
                 else
                 {
                     throw new JsonException("Malformed DICOM json, number expected");
@@ -902,13 +895,8 @@ namespace FellowOakDicom.Serialization
             }
             reader.AssumeAndSkip(JsonTokenType.EndArray);
 
-            if (hasNonNumericString)
-            {
-                var valArray = childValues.Select(x => x.ToString()).ToArray();
-                return ByteConverter.ToByteBuffer(string.Join("\\", valArray));
-            }
-
-            return childValues.Cast<T>().ToArray();
+            var data = childValues.ToArray();
+            return data;
         }
 
         private object ReadJsonMultiNumber<T>(ref Utf8JsonReader reader, GetValue<T> getValue)
