@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -376,6 +377,23 @@ namespace FellowOakDicom.Tests.Network.Client
                 var acceptedNegotiation = acceptedNegotiations.First();
                 Assert.Equal(requestedNegotiation.SopClassUid, acceptedNegotiation.SopClassUid);
                 Assert.Equal(requestedNegotiation.RequestedApplicationInfo.GetValues(), acceptedNegotiation.AcceptedApplicationInfo.GetValues());
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_NoResponse_ShouldYieldException()
+        {
+            var port = Ports.GetNext();
+            using (CreateServer<MockCEchoProvider>(port))
+            {
+                var client = CreateClient("127.0.0.1", port + 10, false, "SCU", "INVALID");
+                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+
+                var exception =
+                    await
+                        Record.ExceptionAsync(() => client.SendAsync())
+                            .ConfigureAwait(false);
+                Assert.IsAssignableFrom<SocketException>(exception);
             }
         }
 
