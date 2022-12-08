@@ -706,101 +706,6 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
 
-
-        [Fact]
-        public void DeserializeDSWithNonNumericValueAsStringDoesNotThrowException()
-        {
-            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
-            var json = @"
-            {
-                ""00101030"": {
-                    ""vr"":""DS"",
-                    ""Value"":[84.5]
-                },
-                ""00101020"": {
-                    ""vr"":""DS"",
-                    ""Value"":[""asd""]
-                }
-
-            }";
-
-            var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
-            Assert.NotNull(dataset);
-            Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
-            Assert.Equal(@"asd", dataset.GetString(DicomTag.PatientSize));
-        }
-
-        [Fact]
-        public void DeserializeISWithNonNumericValueAsStringDoesNotThrowException()
-        {
-            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
-            var json = @"
-            {
-                ""00201206"": {
-                    ""vr"":""IS"",
-                    ""Value"":[311]
-                },
-                ""00201209"": {
-                    ""vr"":""IS"",
-                    ""Value"":[""asd""]
-                },
-                ""00201204"": {
-                    ""vr"":""IS"",
-                    ""Value"":[]
-                }
-            }";
-            var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
-            Assert.NotNull(dataset);
-            Assert.Equal(311, dataset.GetSingleValue<decimal>(DicomTag.NumberOfStudyRelatedSeries));
-            Assert.Equal(@"asd", dataset.GetString(DicomTag.NumberOfSeriesRelatedInstances));
-        }
-
-
-        [Fact]
-        public void DeserializeSVWithNonNumericValueAsStringDoesNotThrowException()
-        {
-            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
-            var json = @"
-            {
-                ""00101030"": {
-                    ""vr"":""SV"",
-                    ""Value"":[84]
-                },
-                ""00101020"": {
-                    ""vr"":""SV"",
-                    ""Value"":[""asd""]
-                }
-
-            }";
-            var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
-            Assert.NotNull(dataset);
-            Assert.Equal(84, dataset.GetSingleValue<long>(DicomTag.PatientWeight));
-            Assert.Equal(@"asd", dataset.GetString(DicomTag.PatientSize));
-        }
-
-
-        [Fact]
-        public void DeserializeUVWithNonNumericValueAsStringDoesNotThrowException()
-        {
-            // in DICOM Standard PS3.18 F.2.3.1 now VRs DS, IS SV and UV may be either number or string
-            var json = @"
-            {
-                ""00101030"": {
-                    ""vr"":""UV"",
-                    ""Value"":[84]
-                },
-                ""00101020"": {
-                    ""vr"":""UV"",
-                    ""Value"":[""asd""]
-                }
-
-            }";
-            var dataset = DicomJson.ConvertJsonToDicom(json, autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
-            Assert.NotNull(dataset);
-            Assert.Equal(84ul, dataset.GetSingleValue<ulong>(DicomTag.PatientWeight));
-            Assert.Equal(@"asd", dataset.GetString(DicomTag.PatientSize));
-        }
-
         private static DicomDataset[] LegacyConvertJsonToDicomArray(string json)
         {
             var options = new JsonSerializerOptions();
@@ -808,7 +713,7 @@ namespace FellowOakDicom.Tests.Serialization
             options.Converters.Add(new DicomArrayJsonConverter());
 #pragma warning restore CS0618
             options.ReadCommentHandling = JsonCommentHandling.Skip;
-            return System.Text.Json.JsonSerializer.Deserialize<DicomDataset[]>(json, options);
+            return JsonSerializer.Deserialize<DicomDataset[]>(json, options);
         }
 
         /// <summary>
@@ -1241,7 +1146,7 @@ namespace FellowOakDicom.Tests.Serialization
         public static void GivenInvalidJsonToken_WhenDeserialization_ThenThrowsJsonException()
         {
             string invalidDatasetJson = "12345";
-            Assert.Throws<System.Text.Json.JsonException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
+            Assert.Throws<JsonException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
         }
 
         [Theory]
@@ -1265,7 +1170,7 @@ namespace FellowOakDicom.Tests.Serialization
     }
   }
 ]";
-            Assert.Throws<System.Text.Json.JsonException>(() => useLegacyConverter ? LegacyConvertJsonToDicomArray(invalidDatasetJson) : DicomJson.ConvertJsonToDicomArray(invalidDatasetJson));
+            Assert.Throws<JsonException>(() => useLegacyConverter ? LegacyConvertJsonToDicomArray(invalidDatasetJson) : DicomJson.ConvertJsonToDicomArray(invalidDatasetJson));
         }
 
         [Fact]
