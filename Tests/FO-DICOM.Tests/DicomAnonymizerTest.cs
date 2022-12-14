@@ -4,6 +4,8 @@
 using Xunit;
 using System.Text;
 using System;
+using System.IO;
+using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.Tests
 {
@@ -254,6 +256,48 @@ namespace FellowOakDicom.Tests
             Assert.Null(ex);
         }
 
+        [Fact]
+        public void AnonymizeInPlace_DicomValueElement_ShouldBeDefault_WhenBlanking()
+        {
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
+            var floatTag = new DicomTag(0x300f, 0x1010, new DicomPrivateCreator("TEST"));
+            var doubleTag = new DicomTag(0x300f, 0x1011, new DicomPrivateCreator("TEST"));
+            var longTag = new DicomTag(0x300f, 0x1012, new DicomPrivateCreator("TEST"));
+            var unsignedLongTag = new DicomTag(0x300f, 0x1013, new DicomPrivateCreator("TEST"));
+            var shortTag = new DicomTag(0x300f, 0x1014, new DicomPrivateCreator("TEST"));
+            var unsignedShortTag = new DicomTag(0x300f, 0x1015, new DicomPrivateCreator("TEST"));
+            var profile = new StringReader(@"300f,10[0-9A-F]{2};C;;;;;;;;;;");
+
+            dataset.Add(new DicomFloatingPointSingle(floatTag, 12.5f));
+            dataset.Add(new DicomFloatingPointDouble(doubleTag, 12.5d));
+            dataset.Add(new DicomSignedLong(longTag, -125));
+            dataset.Add(new DicomUnsignedLong(unsignedLongTag, 125U));
+            dataset.Add(new DicomSignedShort(shortTag, -12));
+            dataset.Add(new DicomUnsignedShort(unsignedShortTag, 12));
+
+            var _anonymizer = new DicomAnonymizer(DicomAnonymizer.SecurityProfile.LoadProfile(profile, DicomAnonymizer.SecurityProfileOptions.BasicProfile));
+            _anonymizer.AnonymizeInPlace(dataset);
+            Assert.Equal(new float(), dataset.GetSingleValue<float>(floatTag));
+            Assert.Equal(new double(), dataset.GetSingleValue<double>(doubleTag));
+            Assert.Equal(new long(), dataset.GetSingleValue<long>(longTag));
+            Assert.Equal(new ulong(), dataset.GetSingleValue<ulong>(unsignedLongTag));
+            Assert.Equal(new short(), dataset.GetSingleValue<short>(shortTag));
+            Assert.Equal(new ushort(), dataset.GetSingleValue<ushort>(unsignedShortTag));
+        }
+
+        [Fact]
+        public void AnonymizeInPlace_OtherElement_ShouldBeEmpty_WhenBlanking()
+        {
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
+            var testTag = new DicomTag(0x300f, 0x1010, new DicomPrivateCreator("TEST"));
+            var profile = new StringReader(@"300f,1010;C;;;;;;;;;;");
+
+            dataset.Add(new DicomOtherFloat(testTag, 12.5f));
+
+            var _anonymizer = new DicomAnonymizer(DicomAnonymizer.SecurityProfile.LoadProfile(profile, DicomAnonymizer.SecurityProfileOptions.BasicProfile));
+            _anonymizer.AnonymizeInPlace(dataset);
+            Assert.Equal(0, dataset.GetValueCount(testTag));
+        }
         #endregion
     }
 }
