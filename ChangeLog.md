@@ -1,5 +1,5 @@
 #### 5.1.0 (TBD)
-* Cache file length in FileByteSource to improve parse speed (#????)
+* Cache file length in FileByteSource to improve parse speed (#1493)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
