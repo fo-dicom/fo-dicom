@@ -21,6 +21,7 @@ namespace FellowOakDicom.IO
         private readonly IFileReference _file;
 
         private readonly Stream _stream;
+        private readonly long _length;
 
         private Endian _endian;
 
@@ -47,6 +48,10 @@ namespace FellowOakDicom.IO
         {
             _file = file;
             _stream = _file.OpenRead();
+            // this is a read stream, so length won't change ... we need to 
+            // call Require all the time while parsing, so caching this 
+            // value is a huge win for large files
+            _length = _stream.Length;
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian, false);
             Marker = 0;
@@ -88,7 +93,7 @@ namespace FellowOakDicom.IO
         public long Marker { get; private set; }
 
         /// <inheritdoc />
-        public bool IsEOF => _stream.Position >= _stream.Length;
+        public bool IsEOF => _stream.Position >= _length;
 
         /// <inheritdoc />
         public bool CanRewind => _stream.CanSeek;
@@ -211,7 +216,7 @@ namespace FellowOakDicom.IO
         {
             lock (_lock)
             {
-                return (_stream.Length - _stream.Position) >= count;
+                return (_length - _stream.Position) >= count;
             }
         }
 
