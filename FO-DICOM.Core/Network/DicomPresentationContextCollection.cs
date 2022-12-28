@@ -136,9 +136,20 @@ namespace FellowOakDicom.Network
                     {
                         tx.AddRange(cstore.AdditionalTransferSyntaxes);
                     }
+
                     if (cstore.TransferSyntax != DicomTransferSyntax.ImplicitVRLittleEndian)
                     {
-                        tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
+                        if (cstore.OmitImplicitVrTransferSyntaxInAssociationRequest)
+                        {
+                            // This should only be allowed when the original
+                            // data is using a lossy compression
+                            if (!cstore.TransferSyntax.IsLossy)
+                                throw new InvalidOperationException("It is only permissable to omit default transfer syntax with lossy encapsulated data");
+                        }
+                        else
+                        {
+                            tx.Add(DicomTransferSyntax.ImplicitVRLittleEndian);
+                        }
                     }
 
                     if (tx.Any())

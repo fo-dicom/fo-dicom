@@ -82,3 +82,4 @@
 * [Chris Conway](https://github.com/CeeJayCee)
 * [Michael Ovens](https://github.com/MichaelOvens)
 * [Magnus Larsson](https://github.com/magla42)
+* [John Cupitt](https://github.com/jcupitt)
