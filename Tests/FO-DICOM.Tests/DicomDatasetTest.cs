@@ -487,8 +487,8 @@ namespace FellowOakDicom.Tests
         /// Associated with Github issue #535.
         /// </summary>
         [Theory]
-        [InlineData(0x0016, 0x1106, 0x1053)]
-        [InlineData(0x0016, 0x1053, 0x1006)]
+        [InlineData(0x0016, 0x0018, 0x000F)]
+        [InlineData(0x0016, 0x000F, 0x000E)]
         public void Add_RegularTags_ShouldBeSortedInGroupElementOrder(ushort group, ushort hiElem, ushort loElem)
         {
             var dataset = new DicomDataset
@@ -616,13 +616,26 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void Add_PrivateTagWithExplicitVR_ShouldBeAdded()
+        public void Add_UnknownPrivateTagWithExplicitVR_ShouldBeAdded()
         {
             var dataset = new DicomDataset();
 
             var privateTag = new DicomTag(0x3001, 0x08);
 
             dataset.Add<string>(DicomVR.LO, privateTag, "FO-DICOM");
+
+            Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
+        }
+
+        [Fact]
+        public void Add_KnownPrivateTagWithoutExplicitVR_ShouldBeAdded()
+        {
+            var dataset = new DicomDataset();
+
+            // <tag group="0019" element="100d" vr="DS" vm="1">AP Offcenter</tag> is known private tag
+            var privateTag = new DicomTag(0x0019, 0x100a,"PHILIPS MR/PART");
+
+            dataset.Add<int>(privateTag,1);
 
             Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
         }
@@ -639,7 +652,7 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void AddOrUpdate_PrivateTagWithExplicitVR_ShouldBeAdded()
+        public void AddOrUpdate_UnknownPrivateTagWithExplicitVR_ShouldBeAdded()
         {
             var dataset = new DicomDataset();
 
@@ -649,6 +662,20 @@ namespace FellowOakDicom.Tests
 
             Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
         }
+
+        [Fact]
+        public void AddOrUpdate_KnownPrivateTagWithoutExplicitVR_ShouldBeAdded()
+        {
+            var dataset = new DicomDataset();
+
+            // <tag group="0019" element="100d" vr="DS" vm="1">AP Offcenter</tag> is known private tag
+            var privateTag = new DicomTag(0x0019, 0x100a,"PHILIPS MR/PART");
+
+            dataset.AddOrUpdate<int>(privateTag,1);
+
+            Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
+        }
+
 
         [Fact]
         public void Get_ByteArrayFromStringElement_ReturnsValidArray()
