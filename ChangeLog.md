@@ -15,6 +15,7 @@
 * Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212)
 * **Breaking change**: Updated DICOM Dictionary to 2022d. Several DicomTag constant names changed to singular name from plural form (#1469)
 * Added support for DICOM supplement 225, Multi-Fragment video transfer syntax (#1469)
+* Added support for rendering native icon image stored within encapsulated sop instance (#1483)
 * Added property to omit adding the default Implicit VR Little Endian transfer syntax for CStoreRequest (#1475)
 * Fix blanking of ValueElements in the anonymizer (#1491)
 * Throw error when adding private dicom tag without explicit VR (#1462)
