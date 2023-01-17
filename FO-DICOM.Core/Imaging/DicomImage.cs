@@ -220,8 +220,7 @@ namespace FellowOakDicom.Imaging
 
                 if (load)
                 {
-                    var frameIndex = GetFrameIndex(frame);
-                    pixels = PixelDataFactory.Create(_pixelData, frameIndex).Rescale(_scale);
+                    pixels = GetFrameData(frame).Rescale(_scale);
                     _pixels = pixels;
                 }
                 else
@@ -267,6 +266,33 @@ namespace FellowOakDicom.Imaging
 
             return image;
         }
+
+
+        /// <summary>
+        /// If necessary, prepare new frame data, and return appropriate data.
+        /// </summary>
+        /// <param name="frame">The frame number to create pixeldata for.</param>
+        /// <returns>Data the frame</returns>
+        private IPixelData GetFrameData(int frame)
+        {
+            EstablishPipeline();
+
+            if (_dataset.InternalTransferSyntax.IsEncapsulated)
+            {
+                    // decompress single frame from source dataset
+                    var transcoder = new DicomTranscoder(
+                        _dataset.InternalTransferSyntax,
+                        DicomTransferSyntax.ExplicitVRLittleEndian);
+                    var pixels = transcoder.DecodePixelData(_dataset, frame);
+
+                return pixels;
+            }
+            else
+            {
+                return PixelDataFactory.Create(_pixelData, frame);
+            }
+        }
+
 
         /// <summary>
         /// If necessary, prepare new frame data, and return appropriate frame index.
