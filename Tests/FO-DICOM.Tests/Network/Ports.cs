@@ -8,7 +8,7 @@ namespace FellowOakDicom.Tests.Network
     public static class Ports
     {
         private static object _lock = new object();
-        private static int _port = 11112;
+        private static int _port = 11113;
 
         public static int GetNext()
         {
