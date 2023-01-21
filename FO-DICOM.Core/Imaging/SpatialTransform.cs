@@ -56,13 +56,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets whether the transform is set or reset.
         /// </summary>
-        public bool IsTransformed
-        {
-            get
-            {
-                return this.Scale != 1.0 || this.Rotation != 0 || !this.Pan.Equals(Point2.Origin);
-            }
-        }
+        public bool IsTransformed => Scale != 1.0 || Rotation != 0 || !Pan.Equals(Point2.Origin);
 
         #endregion
 
@@ -74,7 +68,7 @@ namespace FellowOakDicom.Imaging
         /// <param name="angle">Angle with which to rotate.</param>
         public void Rotate(int angle)
         {
-            this.Rotation += angle;
+            Rotation += angle;
         }
 
         /// <summary>
@@ -82,10 +76,10 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public void Reset()
         {
-            this.Scale = 1.0;
-            this.Rotation = 0;
-            this.FlipX = false;
-            this.FlipY = false;
+            Scale = 1.0;
+            Rotation = 0;
+            FlipX = false;
+            FlipY = false;
             Pan.X = 0;
             Pan.Y = 0;
         }
