@@ -108,7 +108,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
             {
                 if (_lut == null)
                 {
-                    var option = GrayscaleRenderOptions.FromDataset(_slices.First().Dataset);
+                    var option = GrayscaleRenderOptions.FromDataset(_slices.First().Dataset, 0);
                     var pipelie = new GenericGrayscalePipeline(option);
                     _lut = pipelie.LUT;
                     _lut.Recalculate();

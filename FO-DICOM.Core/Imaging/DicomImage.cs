@@ -25,19 +25,21 @@ namespace FellowOakDicom.Imaging
 
         private bool _rerender;
 
+        // the source of data
         private readonly DicomDataset _dataset;
 
+        // this is a buffer of decoded frames. they are inserted here in order of rendering. So the _frameIndices dictionary holds the mapping. 
         private readonly DicomPixelData _pixelData;
+        private readonly IDictionary<int, int> _frameIndices;
 
         private DicomOverlayData[] _overlays;
 
+        // a cache of pixels, This cached data will be takten as long as _rerender is false or the CurrrentFrame does not change
         private IPixelData _pixels;
 
         private IPipeline _pipeline;
 
         private GrayscaleRenderOptions _renderOptions;
-
-        private readonly IDictionary<int, int> _frameIndices;
 
         #endregion
 
@@ -105,12 +107,12 @@ namespace FellowOakDicom.Imaging
         {
             get
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
                 return _renderOptions?.WindowWidth ?? 255;
             }
             set
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
 
                 if (_renderOptions != null)
                 {
@@ -124,12 +126,12 @@ namespace FellowOakDicom.Imaging
         {
             get
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
                 return _renderOptions?.WindowCenter ?? 127;
             }
             set
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
 
                 if (_renderOptions != null)
                 {
@@ -143,12 +145,12 @@ namespace FellowOakDicom.Imaging
         {
             get
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
                 return _renderOptions?.UseVOILUT ?? false;
             }
             set
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
 
                 if (_renderOptions != null)
                 {
@@ -163,12 +165,12 @@ namespace FellowOakDicom.Imaging
         {
             get
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
                 return _renderOptions?.ColorMap;
             }
             set
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
 
                 if (_renderOptions != null)
                 {
@@ -186,7 +188,7 @@ namespace FellowOakDicom.Imaging
         {
             get
             {
-                EstablishPipeline();
+                EstablishPipeline(CurrentFrame);
                 return _renderOptions != null;
             }
         }
@@ -220,6 +222,9 @@ namespace FellowOakDicom.Imaging
 
                 if (load)
                 {
+                    // trigger recreating the pipeline
+                    _pipeline = null;
+
                     pixels = GetFrameData(frame).Rescale(_scale);
                     _pixels = pixels;
                 }
@@ -275,7 +280,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Data the frame</returns>
         private IPixelData GetFrameData(int frame)
         {
-            EstablishPipeline();
+            EstablishPipeline(frame);
 
             if (_dataset.InternalTransferSyntax.IsEncapsulated)
             {
@@ -301,7 +306,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Index of the frame, might be diffrent than the frame number for encapsulated images.</returns>
         private int GetFrameIndex(int frame)
         {
-            EstablishPipeline();
+            EstablishPipeline(frame);
 
             if (_dataset.InternalTransferSyntax.IsEncapsulated)
             {
@@ -330,7 +335,7 @@ namespace FellowOakDicom.Imaging
             return frame;
         }
 
-        private void EstablishPipeline()
+        private void EstablishPipeline(int frame)
         {
             bool create;
             lock (_lock)
@@ -338,7 +343,7 @@ namespace FellowOakDicom.Imaging
                 create = _pipeline == null;
             }
 
-            (IPipeline pipeline, GrayscaleRenderOptions renderOptions) = create ? CreatePipelineData(_dataset, _pixelData) : (null, null);
+            (IPipeline pipeline, GrayscaleRenderOptions renderOptions) = create ? CreatePipelineData(_dataset, _pixelData, frame) : (null, null);
 
             lock (_lock)
             {
@@ -438,23 +443,24 @@ namespace FellowOakDicom.Imaging
         /// Create image rendering pipeline according to the <see cref="DicomPixelData.PhotometricInterpretation">photometric interpretation</see>
         /// of the pixel data.
         /// </summary>
-        private static (IPipeline pipeline, GrayscaleRenderOptions renderOptions) CreatePipelineData(DicomDataset dataset, DicomPixelData pixelData)
+        private static (IPipeline pipeline, GrayscaleRenderOptions renderOptions) CreatePipelineData(DicomDataset dataset, DicomPixelData pixelData, int frame)
         {
             var pi = pixelData.PhotometricInterpretation;
-            var samples = dataset.GetSingleValueOrDefault(DicomTag.SamplesPerPixel, (ushort)0);
+            var samples = pixelData.SamplesPerPixel;
 
-            // temporary fix for JPEG compressed YBR images
-            if ((dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
-                 || dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
-            {
-                pi = PhotometricInterpretation.Rgb;
-            }
+            //note. those fixes should not be necessary any more!
+            //// temporary fix for JPEG compressed YBR images
+            //if ((dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
+            //     || dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
+            //{
+            //    pi = PhotometricInterpretation.Rgb;
+            //}
 
-            // temporary fix for JPEG 2000 Lossy images
-            if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct)
-            {
-                pi = PhotometricInterpretation.Rgb;
-            }
+            //// temporary fix for JPEG 2000 Lossy images
+            //if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct)
+            //{
+            //    pi = PhotometricInterpretation.Rgb;
+            //}
 
             if (pi == null)
             {
@@ -477,7 +483,7 @@ namespace FellowOakDicom.Imaging
             if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2)
             {
                 // Monochrome1 or Monochrome2 for grayscale image
-                renderOptions = GrayscaleRenderOptions.FromDataset(dataset);
+                renderOptions = GrayscaleRenderOptions.FromDataset(dataset, frame);
                 pipeline = new GenericGrayscalePipeline(renderOptions);
             }
             else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull
