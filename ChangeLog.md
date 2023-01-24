@@ -19,6 +19,7 @@
 * Added property to omit adding the default Implicit VR Little Endian transfer syntax for CStoreRequest (#1475)
 * Fix blanking of ValueElements in the anonymizer (#1491)
 * Throw error when adding private dicom tag without explicit VR (#1462)
+* Fix incorrect JSON conversion of inline binaries (#1487)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)

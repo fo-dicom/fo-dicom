@@ -85,3 +85,4 @@
 * [John Cupitt](https://github.com/jcupitt)
 * [Taehyun Hwang](https://github.com/HwangTaehyun)
 * [Hyojae Eum](https://github.com/Amdhj22)
+* [Atte Kojo](https://github.com/akojo)
