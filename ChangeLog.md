@@ -1,4 +1,5 @@
 #### 5.1.0 (TBD)
+* Fix Truncating UIDs during Dimse and PDU logging (#1505)
 * Cache file length in FileByteSource to improve parse speed (#1493)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)
