@@ -67,6 +67,18 @@ namespace FellowOakDicom.Tests
             var leadingZeroUid = validUid + ".03";
             var ex2 = Assert.ThrowsAny<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.SeriesInstanceUID, leadingZeroUid));
             Assert.Contains("leading zero", ex2.Message);
+
+            var emptyComponentUid = validUid + ".";
+            var ex3 = Assert.ThrowsAny<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.SeriesInstanceUID, emptyComponentUid));
+            Assert.Contains("not be empty", ex3.Message);
+
+            var emptyComponent2Uid = validUid + ".2..3459.123";
+            var ex4 = Assert.ThrowsAny<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.SeriesInstanceUID, emptyComponent2Uid));
+            Assert.Contains("not be empty", ex4.Message);
+
+            var emptyComponent3Uid = "." + validUid;
+            var ex5 = Assert.ThrowsAny<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.SeriesInstanceUID, emptyComponent3Uid));
+            Assert.Contains("not be empty", ex5.Message);
         }
 
         [Fact]
