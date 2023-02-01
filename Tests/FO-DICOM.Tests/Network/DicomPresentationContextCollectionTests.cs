@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using FellowOakDicom.Network;
 using Xunit;
@@ -110,6 +111,46 @@ namespace FellowOakDicom.Tests.Network
             Assert.NotNull(presentationContext);
             Assert.True(presentationContext.HasTransferSyntax(DicomTransferSyntax.DeflatedExplicitVRLittleEndian));
             Assert.True(presentationContext.HasTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian));
+        }
+
+        [Fact]
+        public void AddFromRequest_CStoreRequest_OmitImplicitVR_For_Lossless_Throws()
+        {
+            // Arrange
+            var presentationContexts = new DicomPresentationContextCollection();
+            var file = "Test Data/CR-ModalitySequenceLUT.dcm"; // JPEG Lossless
+            var dicomFile = DicomFile.Open(file);
+            var cStoreRequest = new DicomCStoreRequest(dicomFile);
+
+            // Act
+            cStoreRequest.OmitImplicitVrTransferSyntaxInAssociationRequest = true;
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(() => presentationContexts.AddFromRequest(cStoreRequest));
+        }
+
+        [Fact]
+        public void AddFromRequest_CStoreRequest_OmitImplicitVR_For_Lossy_ShouldNotIncludeExplicitVRLittleEndian()
+        {
+            // Arrange
+            var presentationContexts = new DicomPresentationContextCollection();
+            var file = "Test Data/GH538-jpeg1.dcm"; // JPEG Process 1
+            var dicomFile = DicomFile.Open(file);
+            var cStoreRequest = new DicomCStoreRequest(dicomFile);
+
+            // Act
+            cStoreRequest.OmitImplicitVrTransferSyntaxInAssociationRequest = true;
+            presentationContexts.AddFromRequest(cStoreRequest);
+
+            // Assert
+            Print(presentationContexts);
+            var presentationContext = presentationContexts.FirstOrDefault(pc =>
+                pc.AbstractSyntax == cStoreRequest.SOPClassUID
+                && pc.HasTransferSyntax(cStoreRequest.TransferSyntax));
+
+            Assert.NotNull(presentationContext);
+            Assert.True(presentationContext.HasTransferSyntax(DicomTransferSyntax.JPEGProcess1));
+            Assert.False(presentationContext.HasTransferSyntax(DicomTransferSyntax.ImplicitVRLittleEndian));
         }
 
     }
