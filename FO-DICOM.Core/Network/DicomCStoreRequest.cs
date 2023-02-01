@@ -100,6 +100,13 @@ namespace FellowOakDicom.Network
         public DicomTransferSyntax[] AdditionalTransferSyntaxes { get; set; }
 
         /// <summary>
+        /// If set, the default transfer syntax (Implicit VR Little Endian) will
+        /// not be automatically proposed when associating with remote system. 
+        /// This should only be used in exception cases (See PS3.5 section 10.1).
+        /// </summary>
+        public bool OmitImplicitVrTransferSyntaxInAssociationRequest { get; set; }
+
+        /// <summary>
         /// Gets or sets the (optional) Common Extended Negotiation Service Class UID.
         /// </summary>
         public DicomUID CommonServiceClassUid { get; set; }
