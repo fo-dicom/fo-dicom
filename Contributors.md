@@ -86,3 +86,4 @@
 * [Taehyun Hwang](https://github.com/HwangTaehyun)
 * [Hyojae Eum](https://github.com/Amdhj22)
 * [Atte Kojo](https://github.com/akojo)
+* [Olivier Revelat](https://github.com/olivier-med)
