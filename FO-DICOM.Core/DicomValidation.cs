@@ -674,7 +674,7 @@ namespace FellowOakDicom
             {
                 throw new DicomValidationException(content, DicomVR.UI, "components must not have leading zeros");
             }
-            if (Regex.IsMatch(content, @"^[.]") || Regex.IsMatch(content, @"[.][.]+") || Regex.IsMatch(content, @"[.]$"))
+            if (Regex.IsMatch(content, @"^[.]") || Regex.IsMatch(content, @"[.][.]") || Regex.IsMatch(content, @"[.]$"))
             {
                 throw new DicomValidationException(content, DicomVR.UI, "a component can not be empty");
             }
