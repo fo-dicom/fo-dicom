@@ -93,8 +93,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void GetDateTimeOffset_DateAndTimeAndNoTimezoneAvailable_ReturnsSpecifiedDateTimeInLocalTimezone()
         {
-            var local = DateTimeOffset.Now.Offset;
-            var expected = new DateTimeOffset(2016, 5, 25, 15, 54, 31, local);
+            var expected = new DateTimeOffset(new DateTime(2016, 5, 25, 15, 54, 31));
 
             var dataset = new DicomDataset(
                 new DicomDate(DicomTag.CreationDate, "20160525"),
@@ -115,6 +114,19 @@ namespace FellowOakDicom.Tests
                 new DicomShortString(DicomTag.TimezoneOffsetFromUTC, "-0900"));
 
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetDateTimeOffset_NeitherDateNorTime_ReturnsMinValue()
+        {
+            var expected = DateTimeOffset.MinValue;
+
+            var dataset = new DicomDataset(
+                new DicomShortString(DicomTag.TimezoneOffsetFromUTC, "-0900"));
+
+            var actual = dataset.GetDateTimeOffset(DicomTag.StudyDate, DicomTag.StudyTime);
 
             Assert.Equal(expected, actual);
         }
