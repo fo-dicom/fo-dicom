@@ -132,7 +132,7 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void Test()
+        public void GetDateTimeOffset_TopLevelDataset_With_TimeZone_Is_Applied()
         {
             var expected = new DateTimeOffset(2016, 5, 25, 14, 30, 0, new TimeSpan(-09, 00, 00));
 
