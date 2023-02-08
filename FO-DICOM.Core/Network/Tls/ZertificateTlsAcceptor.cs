@@ -10,9 +10,35 @@ namespace FellowOakDicom.Network.Tls
     public class ZertificateTlsAcceptor : ITlsAcceptor
     {
 
+        /// <summary>
+        /// The certificate to use for authenticated connections
+        /// </summary>
         public X509Certificate Certificate { get; set; }
 
+        /// <summary>
+        /// The timeout after which TLS authentication will be considered to have failed
+        /// </summary>
         public TimeSpan SslHandshakeTimeout { get; set; } = TimeSpan.FromMinutes(1);
+
+        /// <summary>
+        /// The protocols that should be supported
+        /// </summary>
+        public SslProtocols Protocols { get; set; } = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+
+        /// <summary>
+        /// Whether or not to require mutual TLS authentication, i.e. the client must present a valid certificate as well
+        /// </summary>
+        public bool RequireMutualAuthentication { get; set; } = false;
+
+        /// <summary>
+        /// Whether or not the certificate revocation list should be checked during authentication
+        /// </summary>
+        public bool CheckCertificateRevocation { get; set; } = false;
+
+        /// <summary>
+        /// The callback that will be invoked after validating the certificate of an incoming client connection
+        /// </summary>
+        public RemoteCertificateValidationCallback CertificateValidationCallback { get; set; } = null;
 
 
         public ZertificateTlsAcceptor(string certificateName)
@@ -20,12 +46,23 @@ namespace FellowOakDicom.Network.Tls
             Certificate = GetX509Certificate(certificateName);
         }
 
+
         public Stream AcceptTls(Stream encryptedStream, string remoteAddress, int localPort)
         {
-            var ssl = new SslStream(encryptedStream, false);
+            var userCertificateValidationCallback = CertificateValidationCallback
+                                    ?? new RemoteCertificateValidationCallback((sender, _, chain, errors) =>
+                                    {
+                                        if (!RequireMutualAuthentication)
+                                        {
+                                            errors &= ~SslPolicyErrors.RemoteCertificateNotAvailable;
+                                        }
+                                        return errors == SslPolicyErrors.None;
+                                    });
+
+            var ssl = new SslStream(encryptedStream, false, userCertificateValidationCallback);
 
             var authenticationSucceeded = Task.Run(
-                async () => await ssl.AuthenticateAsServerAsync(Certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).ConfigureAwait(false)
+                async () => await ssl.AuthenticateAsServerAsync(Certificate, RequireMutualAuthentication, Protocols, CheckCertificateRevocation).ConfigureAwait(false)
                 ).Wait(SslHandshakeTimeout);
 
             if (!authenticationSucceeded)
@@ -33,7 +70,12 @@ namespace FellowOakDicom.Network.Tls
                 throw new DicomNetworkException($"SSL server authentication took longer than {SslHandshakeTimeout.TotalSeconds}s");
             }
 
-           return ssl;
+            if (RequireMutualAuthentication && !ssl.IsMutuallyAuthenticated)
+            {
+                throw new DicomNetworkException("Client TLS authentication failed");
+            }
+
+            return ssl;
         }
 
         /// <summary>
