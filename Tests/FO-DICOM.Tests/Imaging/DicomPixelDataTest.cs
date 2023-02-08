@@ -3,9 +3,6 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
-using FellowOakDicom.Tests.Helpers;
-using Microsoft.Toolkit.HighPerformance.Helpers;
-using System.IO;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
@@ -65,13 +62,13 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal("OtherBytePixelData", pixelData.GetType().Name);
         }
 
-
-
         [Fact]
         public void CheckEvenBytesInOtherBytePixelData()
         {
-            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
-            dataset.Add(DicomTag.BitsAllocated, (ushort)1);
+            var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian)
+            {
+                { DicomTag.BitsAllocated, (ushort)1 }
+            };
             var pixelData = DicomPixelData.Create(dataset, true);
 
             Assert.Equal("OtherBytePixelData", pixelData.GetType().Name);
@@ -80,12 +77,15 @@ namespace FellowOakDicom.Tests.Imaging
             pixelData.AddFrame(new TempFileBuffer(new byte[2]));
             pixelData.AddFrame(new TempFileBuffer(new byte[1]));
 
-            Assert.True(3 == pixelData.NumberOfFrames);
-            //var pixels = pixelData.Dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
+            Assert.Equal(3, pixelData.NumberOfFrames);
+            var pixels = pixelData.Dataset.GetDicomItem<DicomElement>(DicomTag.PixelData);
+            var size = pixels.Buffer.Size;
+            Assert.True(size % 2 == 0);
 
-
-            dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
-            dataset.Add(DicomTag.BitsAllocated, (ushort)1);
+            dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian)
+            {
+                { DicomTag.BitsAllocated, (ushort)1 }
+            };
             pixelData = DicomPixelData.Create(dataset, true);
 
             Assert.Equal("OtherBytePixelData", pixelData.GetType().Name);
@@ -93,10 +93,11 @@ namespace FellowOakDicom.Tests.Imaging
             pixelData.AddFrame(new TempFileBuffer(new byte[1]));
             pixelData.AddFrame(new TempFileBuffer(new byte[2]));
 
-            Assert.True(2 == pixelData.NumberOfFrames);
-            
-            //pixels = pixelData.Dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
+            Assert.Equal(2, pixelData.NumberOfFrames);
 
+            pixels = pixelData.Dataset.GetDicomItem<DicomElement>(DicomTag.PixelData);
+            size = pixels.Buffer.Size;
+            Assert.True(size % 2 == 0);
         }
 
         [Theory]

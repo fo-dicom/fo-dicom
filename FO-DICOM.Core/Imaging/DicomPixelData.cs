@@ -404,16 +404,14 @@ namespace FellowOakDicom.Imaging
             /// <inheritdoc />
             public override void AddFrame(IByteBuffer data)
             {
-
-
                 var buffer = _element.Buffer as CompositeByteBuffer ??
                     throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
 
-                buffer.Buffers.Remove(this._padingByteBuffer);
+                buffer.Buffers.Remove(_padingByteBuffer);
                 buffer.Buffers.Add(data);
                 if (buffer.Size % 2 == 1)
                 {
-                    buffer.Buffers.Add(this._padingByteBuffer);
+                    buffer.Buffers.Add(_padingByteBuffer);
                 }
 
                 NumberOfFrames++;
