@@ -20,6 +20,7 @@
 * Fix blanking of ValueElements in the anonymizer (#1491)
 * Throw error when adding private dicom tag without explicit VR (#1462)
 * Fix incorrect JSON conversion of inline binaries (#1487)
+* Update VR=UI validation to reject empty component (#1509)
 * Fix GetDateTimeOffset with default offset from date/time (#1511)
 * Fix even length in pixel data by adding payload (#1019)
 
