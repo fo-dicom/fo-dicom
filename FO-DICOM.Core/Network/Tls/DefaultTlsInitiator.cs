@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Tls
 {
+    /// <summary>
+    /// Default implementation of ITlsInitiator.
+    /// This implementation will use windows certificate store in order to validate the server certificate
+    /// </summary>
     public class DefaultTlsInitiator : ITlsInitiator
     {
 

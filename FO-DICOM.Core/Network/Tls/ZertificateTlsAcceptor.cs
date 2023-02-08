@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Tls
 {
+    /// <summary>
+    /// Default implementation of ITlsAcceptor
+    /// This class requires an X509Certificate that can be passed as name of an certificate that is stored in windows certificate storage or as a certificate file
+    /// </summary>
     public class ZertificateTlsAcceptor : ITlsAcceptor
     {
 
