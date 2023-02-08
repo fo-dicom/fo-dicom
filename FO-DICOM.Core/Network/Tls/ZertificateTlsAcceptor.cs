@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.IO;
 using System.Net.Security;
 using System.Security.Authentication;
@@ -44,6 +47,16 @@ namespace FellowOakDicom.Network.Tls
         public ZertificateTlsAcceptor(string certificateName)
         {
             Certificate = GetX509Certificate(certificateName);
+        }
+
+        public ZertificateTlsAcceptor(string certificateFilename, string password)
+        {
+            Certificate = new X509Certificate2(certificateFilename, password);
+        }
+
+        public ZertificateTlsAcceptor(X509Certificate certificate)
+        {
+            Certificate = certificate;
         }
 
 
