@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom.Network.Tls;
+using System;
 
 namespace FellowOakDicom.Network
 {
@@ -18,20 +19,15 @@ namespace FellowOakDicom.Network
         public int Port { get; set; }
         
         /// <summary>
-        /// Whether or not to use TLS (SSLStream) when opening the TCP connection
+        /// Gets or sets the handler to use TLS (SSLStream) when opening the TCP connection. If this handler is null then no TLS will be used
         /// </summary>
-        public bool UseTls { get; set; }
+        public ITlsInitiator TlsInitiator { get; set; }
         
         /// <summary>
         /// Whether or not to disable the delay when buffers are not full
         /// </summary>
         /// <seealso cref="System.Net.Sockets.TcpClient.NoDelay"/>
         public bool NoDelay { get; set; }
-        
-        /// <summary>
-        /// Whether or not to ignore any certificate validation errors that occur when authenticating as a client over SSL
-        /// </summary>
-        public bool IgnoreSslPolicyErrors { get; set; }
         
         /// <summary>
         /// After how much time a write or read operation over the TCP connection must time out

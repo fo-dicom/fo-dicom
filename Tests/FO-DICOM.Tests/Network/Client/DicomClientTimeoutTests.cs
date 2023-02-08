@@ -1,6 +1,14 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Connection;
+using FellowOakDicom.Network.Client.EventArguments;
+using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -81,7 +89,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 defaultClientOptions,
                 defaultServiceOptions,
                 loggerFactory,
-                advancedDicomClientConnectionFactory);
+                advancedDicomClientConnectionFactory,
+                Setup.ServiceProvider);
         }
 
         [Fact]
@@ -803,15 +812,6 @@ namespace FellowOakDicom.Tests.Network.Client
             public ConfigurableNetworkManager(Action onStreamWrite)
             {
                 _onStreamWrite = onStreamWrite ?? throw new ArgumentNullException(nameof(onStreamWrite));
-            }
-
-            protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors,
-                int millisecondsTimeout)
-            {
-                return new ConfigurableDesktopNetworkStreamDecorator(
-                    _onStreamWrite,
-                    new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout)
-                );
             }
 
             protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
