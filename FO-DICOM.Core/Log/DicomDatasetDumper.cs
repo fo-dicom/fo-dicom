@@ -15,13 +15,13 @@ namespace FellowOakDicom.Log
 
         private int _width = 128;
 
-        private int _value = 64;
+        private int _value = 82;
 
         private int _depth = 0;
 
         private string _pad = string.Empty;
 
-        public DicomDatasetDumper(StringBuilder log, int width = 128, int valueLength = 64)
+        public DicomDatasetDumper(StringBuilder log, int width = 128, int valueLength = 82)
         {
             _log = log;
             _width = width;
