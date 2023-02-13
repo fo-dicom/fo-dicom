@@ -222,7 +222,7 @@ namespace FellowOakDicom.Imaging.Render
                 lut.Recalculate();
             }
 
-            var image = ImageManager.CreateImage(ScaledWidth, ScaledHeight);
+            var image = ImageFactory.CreateImage(ScaledWidth, ScaledHeight);
 
             var pixels = image.Pixels.Data;
             ScaledData.Render(_applyLut ? lut : null, pixels);

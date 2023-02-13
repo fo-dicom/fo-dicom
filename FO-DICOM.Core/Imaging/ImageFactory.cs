@@ -11,7 +11,7 @@ namespace FellowOakDicom.Imaging
     /// <summary>
     /// Manager for creation of image objects.
     /// </summary>
-    public class ImageManager
+    public class ImageFactory
     {
 
         #region METHODS
@@ -23,7 +23,7 @@ namespace FellowOakDicom.Imaging
         /// <param name="height">Image height.</param>
         /// <returns><see cref="IImage"/> object.</returns>
         public static IImage CreateImage(int width, int height)
-            => Setup.ServiceProvider.GetService<IImageManager>().CreateImage(width, height);
+            => Setup.ServiceProvider.GetService<IImageFactory>().CreateImage(width, height);
 
 
         #endregion

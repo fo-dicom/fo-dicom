@@ -6,9 +6,9 @@ namespace FellowOakDicom.Imaging
 {
 
     /// <summary>
-    /// BGRA byte array implementation of the <see cref="ImageManager"/>.
+    /// BGRA byte array implementation of the <see cref="ImageFactory"/>.
     /// </summary>
-    public sealed class RawImageManager : IImageManager
+    public sealed class RawImageFactory : IImageFactory
     {
  
         /// <summary>

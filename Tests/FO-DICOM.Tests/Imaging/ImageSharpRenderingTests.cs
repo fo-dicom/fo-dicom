@@ -20,7 +20,7 @@ namespace FellowOakDicom.Tests.Imaging
 #endif
         public void TestRenderImage()
         {
-            var image = ImageManager.CreateImage(100, 100);
+            var image = ImageFactory.CreateImage(100, 100);
             image.Render(4, false, false, 0);
             Assert.IsType<ImageSharpImage>(image);
         }

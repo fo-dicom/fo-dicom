@@ -7,7 +7,7 @@ namespace FellowOakDicom.Imaging
     /// <summary>
     /// Windows Forms-based image manager implementation.
     /// </summary>
-    public sealed class ImageSharpImageManager : IImageManager
+    public sealed class ImageSharpImageFactory : IImageFactory
     {
 
         public IImage CreateImage(int width, int height)

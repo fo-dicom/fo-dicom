@@ -34,7 +34,7 @@ namespace FellowOakDicom.Dump
                 .RegisterServices(s => s
                     .AddFellowOakDicom()
                     .AddTranscoderManager<NativeTranscoderManager>()
-                    .AddImageManager<ImageSharpImageManager>())
+                    .AddImageFactory<ImageSharpImageFactory>())
                 .Build();
         }
 
