@@ -14,7 +14,7 @@ namespace FellowOakDicom.Network.Tls
     /// Default implementation of ITlsAcceptor
     /// This class requires an X509Certificate that can be passed as name of an certificate that is stored in windows certificate storage or as a certificate file
     /// </summary>
-    public class ZertificateTlsAcceptor : ITlsAcceptor
+    public class CertificateTlsAcceptor : ITlsAcceptor
     {
 
         /// <summary>
@@ -48,17 +48,17 @@ namespace FellowOakDicom.Network.Tls
         public RemoteCertificateValidationCallback CertificateValidationCallback { get; set; } = null;
 
 
-        public ZertificateTlsAcceptor(string certificateName)
+        public CertificateTlsAcceptor(string certificateName)
         {
             Certificate = GetX509Certificate(certificateName);
         }
 
-        public ZertificateTlsAcceptor(string certificateFilename, string password)
+        public CertificateTlsAcceptor(string certificateFilename, string password)
         {
             Certificate = new X509Certificate2(certificateFilename, password);
         }
 
-        public ZertificateTlsAcceptor(X509Certificate certificate)
+        public CertificateTlsAcceptor(X509Certificate certificate)
         {
             Certificate = certificate;
         }
