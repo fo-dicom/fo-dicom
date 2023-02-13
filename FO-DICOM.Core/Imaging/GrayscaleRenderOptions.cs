@@ -182,7 +182,9 @@ namespace FellowOakDicom.Imaging
         {
             if (!dataset.Contains(DicomTag.WindowWidth) ||
                 !dataset.Contains(DicomTag.WindowCenter))
+            {
                 return null;
+            }
 
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
@@ -222,7 +224,9 @@ namespace FellowOakDicom.Imaging
             var functional = dataset.FunctionalGroupValues(frame).ToList();
             if (!functional.Any() || !functional.Contains(DicomTag.WindowWidth) ||
                !functional.Contains(DicomTag.WindowCenter))
+            {
                 return null;
+            }
 
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
@@ -272,7 +276,9 @@ namespace FellowOakDicom.Imaging
         {
             if (!dataset.Contains(DicomTag.SmallestImagePixelValue) ||
                 !dataset.Contains(DicomTag.LargestImagePixelValue))
+            {
                 return null;
+            }
 
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)

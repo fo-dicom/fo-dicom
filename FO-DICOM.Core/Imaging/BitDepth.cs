@@ -42,24 +42,12 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// The maximum possible pixel value from stored bits
         /// </summary>
-        public int MaximumValue
-        {
-            get
-            {
-                return GetMaximumValue(BitsStored, IsSigned);
-            }
-        }
+        public int MaximumValue => GetMaximumValue(BitsStored, IsSigned);
 
         /// <summary>
         /// The minimum possible pixel value from stored bits
         /// </summary>
-        public int MinimumValue
-        {
-            get
-            {
-                return GetMinimumValue(BitsStored, IsSigned);
-            }
-        }
+        public int MinimumValue => GetMinimumValue(BitsStored, IsSigned);
 
         /// <summary>Rounds up to the next power of 2.</summary>
         /// <param name="value"></param>
@@ -84,8 +72,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>The minimum value</returns>
         public static int GetMinimumValue(int bitsStored, bool isSigned)
         {
-            if (isSigned) return -(1 << (bitsStored - 1));
-            return 0;
+            return isSigned ? -(1 << (bitsStored - 1)) : 0;
         }
 
         /// <summary>
@@ -96,8 +83,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>The maximum value</returns>
         public static int GetMaximumValue(int bitsStored, bool isSigned)
         {
-            if (isSigned) return (1 << (bitsStored - 1)) - 1;
-            return (1 << bitsStored) - 1;
+            return isSigned ? (1 << (bitsStored - 1)) - 1 : (1 << bitsStored) - 1;
         }
 
         /// <summary>
@@ -108,8 +94,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Index of high data bit (excluding sign bit if data is signed)</returns>
         public static int GetHighBit(int bitsStored, bool isSigned)
         {
-            if (isSigned) return bitsStored - 1;
-            return bitsStored;
+            return isSigned ? bitsStored - 1 : bitsStored;
         }
 
         /// <summary>

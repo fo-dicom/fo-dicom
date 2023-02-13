@@ -5,8 +5,6 @@
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO.Buffer;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace FellowOakDicom.Imaging
@@ -30,7 +28,6 @@ namespace FellowOakDicom.Imaging
 
         // this is a buffer of decoded frames. they are inserted here in order of rendering. So the _frameIndices dictionary holds the mapping. 
         private readonly DicomPixelData _pixelData;
-        private readonly IDictionary<int, int> _frameIndices;
 
         private DicomOverlayData[] _overlays;
 
@@ -56,7 +53,6 @@ namespace FellowOakDicom.Imaging
 
             _scale = 1.0;
             _rerender = true;
-            _frameIndices = new ConcurrentDictionary<int, int>();
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
             _pixelData = CreateDicomPixelData(_dataset);
@@ -298,43 +294,6 @@ namespace FellowOakDicom.Imaging
             }
         }
 
-
-        /// <summary>
-        /// If necessary, prepare new frame data, and return appropriate frame index.
-        /// </summary>
-        /// <param name="frame">The frame number to create pixeldata for.</param>
-        /// <returns>Index of the frame, might be diffrent than the frame number for encapsulated images.</returns>
-        private int GetFrameIndex(int frame)
-        {
-            EstablishPipeline(frame);
-
-            if (_dataset.InternalTransferSyntax.IsEncapsulated)
-            {
-                if (!_frameIndices.TryGetValue(frame, out int index))
-                {
-                    // decompress single frame from source dataset
-                    var transcoder = new DicomTranscoder(
-                        _dataset.InternalTransferSyntax,
-                        DicomTransferSyntax.ExplicitVRLittleEndian);
-                    var buffer = transcoder.DecodeFrame(_dataset, frame);
-
-                    // Additional check to ensure that frame has not been provided by other thread.
-                    if (!_frameIndices.TryGetValue(frame, out index))
-                    {
-                        // Get frame/index mapping for previously unstored frame.
-                        index = _pixelData.NumberOfFrames;
-                        _frameIndices.Add(frame, index);
-
-                        _pixelData.AddFrame(buffer);
-                    }
-                }
-
-                return index;
-            }
-
-            return frame;
-        }
-
         private void EstablishPipeline(int frame)
         {
             bool create;
@@ -447,20 +406,6 @@ namespace FellowOakDicom.Imaging
         {
             var pi = pixelData.PhotometricInterpretation;
             var samples = pixelData.SamplesPerPixel;
-
-            //note. those fixes should not be necessary any more!
-            //// temporary fix for JPEG compressed YBR images
-            //if ((dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess1
-            //     || dataset.InternalTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && samples == 3)
-            //{
-            //    pi = PhotometricInterpretation.Rgb;
-            //}
-
-            //// temporary fix for JPEG 2000 Lossy images
-            //if (pi == PhotometricInterpretation.YbrIct || pi == PhotometricInterpretation.YbrRct)
-            //{
-            //    pi = PhotometricInterpretation.Rgb;
-            //}
 
             if (pi == null)
             {

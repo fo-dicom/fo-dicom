@@ -33,7 +33,7 @@ namespace FellowOakDicom.Imaging
     {
         #region FIELDS
 
-        private const int SizeOfBgra = 4;
+        private const int _sizeOfBgra = 4;
 
         #endregion
 
@@ -74,10 +74,10 @@ namespace FellowOakDicom.Imaging
         /// <param name="rotation">Image rotation.</param>
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
-            var w = this.width;
-            var h = this.height;
+            var w = _width;
+            var h = _height;
 
-            this.image = ToBytes(ref w, ref h, components, flipX, flipY, rotation, this.pixels.Data);
+            _image = ToBytes(ref w, ref h, components, flipX, flipY, rotation, _pixels.Data);
         }
 
         /// <summary>
@@ -86,22 +86,22 @@ namespace FellowOakDicom.Imaging
         /// <param name="graphics">Graphics to draw.</param>
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
-            var dstStride = SizeOfBgra * this.width;
+            var dstStride = _sizeOfBgra * _width;
 
             foreach (var graphic in graphics)
             {
-                var srcStride = SizeOfBgra * graphic.ScaledWidth;
+                var srcStride = _sizeOfBgra * graphic.ScaledWidth;
                 var h = graphic.ScaledHeight;
                 var x0 = graphic.ScaledOffsetX;
                 var y0 = graphic.ScaledOffsetY;
 
                 var layer = graphic.RenderImage(null).As<byte[]>();
 
-                for (int y = 0, srcIdx = 0, dstIdx = y0 * dstStride + SizeOfBgra * x0;
+                for (int y = 0, srcIdx = 0, dstIdx = y0 * dstStride + _sizeOfBgra * x0;
                      y < h;
                      ++y, srcIdx += srcStride, dstIdx += dstStride)
                 {
-                    Array.Copy(layer, srcIdx, this.image, dstIdx, srcStride);
+                    Array.Copy(layer, srcIdx, _image, dstIdx, srcStride);
                 }
             }
         }
@@ -113,14 +113,14 @@ namespace FellowOakDicom.Imaging
         public override IImage Clone()
         {
             byte[] bytes = null;
-            if (this.image != null)
+            if (_image != null)
             {
-                var length = this.image.Length;
+                var length = _image.Length;
                 bytes = new byte[length];
-                Array.Copy(this.image, bytes, length);
+                Array.Copy(_image, bytes, length);
             }
 
-            return new RawImage(this.width, this.height, new PinnedIntArray(this.pixels.Data), bytes);
+            return new RawImage(_width, _height, new PinnedIntArray(_pixels.Data), bytes);
         }
 
         #endregion

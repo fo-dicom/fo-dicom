@@ -47,24 +47,24 @@ namespace FellowOakDicom.Imaging
         /// <param name="disposing">Dispose mode?</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposed)
+            if (_disposed)
             {
                 return;
             }
 
-            if (image != null)
+            if (_image != null)
             {
-                image.Dispose();
-                image = null;
+                _image.Dispose();
+                _image = null;
             }
 
-            if (pixels != null)
+            if (_pixels != null)
             {
-                pixels.Dispose();
-                pixels = null;
+                _pixels.Dispose();
+                _pixels = null;
             }
 
-            disposed = true;
+            _disposed = true;
         }
 
         #endregion

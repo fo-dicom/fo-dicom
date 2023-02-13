@@ -31,7 +31,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Grayscale look-up table.</returns>
         private static Color32[] InitGrayscaleLUT(bool reverse)
         {
-            Color32[] lut = new Color32[256];
+            var lut = new Color32[256];
             int i;
             byte b;
             if (reverse)
@@ -58,7 +58,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Reversed look-up table.</returns>
         public static Color32[] Reverse(Color32[] lut)
         {
-            Color32[] clone = new Color32[lut.Length];
+            var clone = new Color32[lut.Length];
             Array.Copy(lut, clone, clone.Length);
             Array.Reverse(clone);
             return clone;
