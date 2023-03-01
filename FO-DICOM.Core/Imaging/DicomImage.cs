@@ -5,6 +5,7 @@
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO.Buffer;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FellowOakDicom.Imaging
@@ -26,13 +27,12 @@ namespace FellowOakDicom.Imaging
         // the source of data
         private readonly DicomDataset _dataset;
 
-        // this is a buffer of decoded frames. they are inserted here in order of rendering. So the _frameIndices dictionary holds the mapping. 
-        private readonly DicomPixelData _pixelData;
-
         private DicomOverlayData[] _overlays;
 
+        private readonly DicomPixelData _pixelDataCache;
+
         // a cache of pixels, This cached data will be takten as long as _rerender is false or the CurrrentFrame does not change
-        private IPixelData _pixels;
+        private readonly Dictionary<int, IPixelData> _pixelsCache = new Dictionary<int, IPixelData>();
 
         private IPipeline _pipeline;
 
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Imaging
             _rerender = true;
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
-            _pixelData = CreateDicomPixelData(_dataset);
+            _pixelDataCache = CreateDicomPixelData(_dataset);
             CurrentFrame = frame;
         }
 
@@ -71,11 +71,13 @@ namespace FellowOakDicom.Imaging
 
         #region PROPERTIES
 
+        public CacheType CacheMode { get; set; } = CacheType.None;
+
         /// <summary>Width of image in pixels</summary>
-        public int Width => _pixelData.Width;
+        public int Width => _dataset.GetSingleValue<ushort>(DicomTag.Columns);
 
         /// <summary>Height of image in pixels</summary>
-        public int Height => _pixelData.Height;
+        public int Height => _dataset.GetSingleValue<ushort>(DicomTag.Rows);
 
         /// <summary>Scaling factor of the rendered image</summary>
         public double Scale
@@ -90,10 +92,6 @@ namespace FellowOakDicom.Imaging
                 }
             }
         }
-
-        // Note that the NumberOfFrames getter accesses the dataset's attribute. This is because the corresponding
-        // getter in the pixel data might not be complete in the case of encapsulated datasets, where the frames are
-        // continuously added upon request.
 
         /// <summary>Number of frames contained in image data.</summary>
         public int NumberOfFrames => _dataset.GetSingleValueOrDefault(DicomTag.NumberOfFrames, (ushort)1);
@@ -174,7 +172,7 @@ namespace FellowOakDicom.Imaging
                 }
                 else
                 {
-                    throw new DicomImagingException($"Grayscale color map not applicable for photometric interpretation: {_pixelData.PhotometricInterpretation}");
+                    throw new DicomImagingException($"Grayscale color map not applicable for photometric interpretation: {_pixelDataCache.PhotometricInterpretation}");
                 }
             }
         }
@@ -212,7 +210,7 @@ namespace FellowOakDicom.Imaging
             IPixelData pixels;
             lock (_lock)
             {
-                var load = frame >= 0 && (frame != CurrentFrame || _rerender);
+                var load = frame >= 0 && (_rerender || !_pixelsCache.ContainsKey(frame));
                 CurrentFrame = frame;
                 _rerender = false;
 
@@ -222,11 +220,11 @@ namespace FellowOakDicom.Imaging
                     _pipeline = null;
 
                     pixels = GetFrameData(frame).Rescale(_scale);
-                    _pixels = pixels;
+                    _pixelsCache.Add(frame, pixels);
                 }
                 else
                 {
-                    pixels = _pixels;
+                    pixels = _pixelsCache[frame];
                 }
             }
 
@@ -280,17 +278,17 @@ namespace FellowOakDicom.Imaging
 
             if (_dataset.InternalTransferSyntax.IsEncapsulated)
             {
-                    // decompress single frame from source dataset
-                    var transcoder = new DicomTranscoder(
-                        _dataset.InternalTransferSyntax,
-                        DicomTransferSyntax.ExplicitVRLittleEndian);
-                    var pixels = transcoder.DecodePixelData(_dataset, frame);
+                // decompress single frame from source dataset
+                var transcoder = new DicomTranscoder(
+                    _dataset.InternalTransferSyntax,
+                    DicomTransferSyntax.ExplicitVRLittleEndian);
+                var pixels = transcoder.DecodePixelData(_dataset, frame);
 
                 return pixels;
             }
             else
             {
-                return PixelDataFactory.Create(_pixelData, frame);
+                return PixelDataFactory.Create(_pixelDataCache, frame);
             }
         }
 
@@ -302,7 +300,7 @@ namespace FellowOakDicom.Imaging
                 create = _pipeline == null;
             }
 
-            (IPipeline pipeline, GrayscaleRenderOptions renderOptions) = create ? CreatePipelineData(_dataset, _pixelData, frame) : (null, null);
+            (IPipeline pipeline, GrayscaleRenderOptions renderOptions) = create ? CreatePipelineData(_dataset, _pixelDataCache, frame) : (null, null);
 
             lock (_lock)
             {
@@ -352,6 +350,8 @@ namespace FellowOakDicom.Imaging
             clone.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 
             var pixelData = DicomPixelData.Create(clone, true);
+
+            // TODO: can this temporary fixes be removed now?
 
             // temporary fix for JPEG compressed YBR images, according to enforcement above
             if ((inputTransferSyntax == DicomTransferSyntax.JPEGProcess1
