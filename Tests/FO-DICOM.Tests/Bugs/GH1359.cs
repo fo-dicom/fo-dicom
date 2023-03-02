@@ -44,7 +44,7 @@ namespace FellowOakDicom.Tests.Bugs
                 advancedDicomClientConnectionFactory);
         }
 
-        [Theory]
+        [TheoryForNetCore] // This test is flaky in .NET Framework
         [InlineData(1)]
         [InlineData(3)]
         public async Task SendingCStoreRequest_AfterPreviousCStoreRequestTimedOut_ShouldUseSeparateAssociation(int asyncInvoked)
@@ -145,9 +145,11 @@ namespace FellowOakDicom.Tests.Bugs
             _logger.Info($"Succeeded: {numberOfRequestsThatSucceeded}");
             _logger.Info($"Failed: {numberOfRequestsThatFailed}");
 
-            Assert.Contains(requestsThatSucceeded, r => r.MessageID == firstRequest.MessageID);
-            Assert.Contains(requestsThatFailed, r => r.MessageID == secondRequest.MessageID);
-            Assert.Contains(requestsThatSucceeded, r => r.MessageID == thirdRequest.MessageID);
+            var idsThatSucceeded = requestsThatSucceeded.ToList().Select(r => r.MessageID.ToString()).ToList();
+            var idsThatFailed = requestsThatFailed.ToList().Select(r => r.MessageID.ToString()).ToList();
+            Assert.Contains(firstRequest.MessageID.ToString(), idsThatSucceeded);
+            Assert.Contains(secondRequest.MessageID.ToString(), idsThatFailed);
+            Assert.Contains(thirdRequest.MessageID.ToString(), idsThatSucceeded);
 
             var receivedRequestsThatSucceeded = receivedRequests
                 .Where(r => !messageIdsThatTimedOut.Contains(r.MessageID))
