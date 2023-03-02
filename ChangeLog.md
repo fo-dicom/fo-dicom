@@ -1,4 +1,5 @@
 #### 5.1.0 (TBD)
+* Fix Truncating UIDs during Dimse and PDU logging (#1505)
 * Cache file length in FileByteSource to improve parse speed (#1493)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)
@@ -20,6 +21,11 @@
 * Fix blanking of ValueElements in the anonymizer (#1491)
 * Throw error when adding private dicom tag without explicit VR (#1462)
 * Fix incorrect JSON conversion of inline binaries (#1487)
+* Update VR=UI validation to reject empty component (#1509)
+* Fix GetDateTimeOffset with default offset from date/time (#1511)
+* Fix even length in pixel data by adding payload (#1019)
+* Use CommunityToolkit.HighPerformance (#1473)
+* Fix JsonDicomConverter number serialization mode 'PreferablyAsNumber' to handle integers greater than int.MaxValue or lesser than int.MinValue (#1521)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)

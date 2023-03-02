@@ -435,7 +435,7 @@ namespace FellowOakDicom.Serialization
                 {
                     numberWriterAction();
                 }
-                catch (FormatException)
+                catch (Exception ex) when (ex is FormatException || ex is OverflowException)
                 {
                     if (_numberSerializationMode == NumberSerializationMode.PreferablyAsNumber)
                     {
