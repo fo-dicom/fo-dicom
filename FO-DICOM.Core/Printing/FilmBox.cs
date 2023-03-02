@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
-using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +21,7 @@ namespace FellowOakDicom.Printing
         #region Properties and Attributes
 
         private static ILogger _logger;
-        private static ILogger Logger => _logger ??= Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(LogCategories.Printing);
+        private static ILogger Logger => _logger ??= Setup.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(Log.LogCategories.Printing);
 
         private readonly FilmSession _filmSession = null;
 
@@ -739,7 +738,7 @@ namespace FellowOakDicom.Printing
 
             var filmBoxFile = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(filmBoxTextFile);
             using var writer = new StreamWriter(filmBoxFile.Create());
-            writer.Write(this.WriteToString());
+            writer.Write(Log.Extensions.WriteToString(this));
 
             var imageBoxFolderInfo = new DirectoryReference(Path.Combine(filmBoxFolder, "Images"));
             imageBoxFolderInfo.Create();

@@ -1,7 +1,6 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
@@ -228,7 +227,7 @@ namespace FellowOakDicom.Network.Client
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             
-            _logger = loggerFactory.CreateLogger(LogCategories.Network);
+            _logger = loggerFactory.CreateLogger(Log.LogCategories.Network);
             _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
             _state = DicomClientIdleState.Instance;
             _isSending = 0;
