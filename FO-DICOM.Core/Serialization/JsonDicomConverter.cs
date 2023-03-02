@@ -435,7 +435,7 @@ namespace FellowOakDicom.Serialization
                 {
                     numberWriterAction();
                 }
-                catch (FormatException)
+                catch (Exception ex) when (ex is FormatException || ex is OverflowException)
                 {
                     if (_numberSerializationMode == NumberSerializationMode.PreferablyAsNumber)
                     {
@@ -620,9 +620,7 @@ namespace FellowOakDicom.Serialization
             else if (elem.Count != 0)
             {
                 writer.WritePropertyName("InlineBinary");
-                writer.WriteStartArray();
                 writer.WriteBase64StringValue(elem.Buffer.Data);
-                writer.WriteEndArray();
             }
         }
 
@@ -1108,16 +1106,29 @@ namespace FellowOakDicom.Serialization
         }
 
 
-        private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader)
+        private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader) 
+            => reader.TokenType == JsonTokenType.StartArray
+                ? ReadJsonInlineBinaryArray(ref reader)
+                : ReadJsonInlineBinaryString(ref reader);
+
+        private static IByteBuffer ReadJsonInlineBinaryArray(ref Utf8JsonReader reader)
         {
-            reader.AssumeAndSkip(JsonTokenType.StartArray);
-            if (reader.TokenType != JsonTokenType.String) { throw new JsonException("Malformed DICOM json. string expected"); }
-            var data = new MemoryByteBuffer(reader.GetBytesFromBase64());
-            reader.Read();
+            reader.Read(); // caller already checked for StartArray
+            var data = ReadJsonInlineBinaryString(ref reader);
             reader.AssumeAndSkip(JsonTokenType.EndArray);
-            return data;
+            return data;            
         }
 
+        private static IByteBuffer ReadJsonInlineBinaryString(ref Utf8JsonReader reader)
+        {
+            if (reader.TokenType != JsonTokenType.String)
+            {
+                throw new JsonException("Malformed DICOM json. string expected");
+            }
+            var data = new MemoryByteBuffer(reader.GetBytesFromBase64());
+            reader.Read();
+            return data;
+        }
 
         private IBulkDataUriByteBuffer ReadJsonBulkDataUri(ref Utf8JsonReader reader)
         {

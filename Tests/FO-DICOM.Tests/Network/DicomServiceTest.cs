@@ -39,7 +39,7 @@ namespace FellowOakDicom.Tests.Network
             request.Dataset = new DicomDataset
                 {
                     { DicomTag.Modality, "CT" },
-                    { privTag1, "TESTA" },
+                    { DicomVR.LO, privTag1, "TESTA" },
                     new DicomCodeString(privTag2, "TESTB")
                 };
 

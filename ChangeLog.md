@@ -1,4 +1,6 @@
 #### 5.1.0 (TBD)
+* Fix Truncating UIDs during Dimse and PDU logging (#1505)
+* Cache file length in FileByteSource to improve parse speed (#1493)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)
 * Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
@@ -11,9 +13,19 @@
 * Fix rendering of XA/XRF images that include a modality LUT sequence (#1442)
 * Fix incorrect conversion of some decimal strings (#1454)
 * Disabled dataset validation on `DicomFile.Clone()` (#1465)
-* Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212) 
+* Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212)
 * **Breaking change**: Updated DICOM Dictionary to 2022d. Several DicomTag constant names changed to singular name from plural form (#1469)
 * Added support for DICOM supplement 225, Multi-Fragment video transfer syntax (#1469)
+* Added support for rendering native icon image stored within encapsulated sop instance (#1483)
+* Added property to omit adding the default Implicit VR Little Endian transfer syntax for CStoreRequest (#1475)
+* Fix blanking of ValueElements in the anonymizer (#1491)
+* Throw error when adding private dicom tag without explicit VR (#1462)
+* Fix incorrect JSON conversion of inline binaries (#1487)
+* Update VR=UI validation to reject empty component (#1509)
+* Fix GetDateTimeOffset with default offset from date/time (#1511)
+* Fix even length in pixel data by adding payload (#1019)
+* Use CommunityToolkit.HighPerformance (#1473)
+* Fix JsonDicomConverter number serialization mode 'PreferablyAsNumber' to handle integers greater than int.MaxValue or lesser than int.MinValue (#1521)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
@@ -42,7 +54,7 @@
 * Add possibility to read from streams without `Seek` like `BrowserFileStream` (#1218)
 * Add method to convert an array of DicomDatasets into a json string (#1271)
 * Improved bilinear interpolation
-* Fix issue where sending a deflated DICOM file via C-STORE was sent inflated, causing errors (#1283) 
+* Fix issue where sending a deflated DICOM file via C-STORE was sent inflated, causing errors (#1283)
 * Optimize performance and reduce memory allocations in network layer (#1267 and #1273)
 * Enhance Association Request Timeout (#1284)
 * Do not change target encoding for strings that are not encoded (#1301)
@@ -53,7 +65,7 @@
 * Fix IO Exception with >2GB images (#1148)
 * Bug fix: Correct Source PDU Field in Association Abort Request (#984)
 * Bug fix: Correct Person Name VR Json model (#1235)
-* Vulnerability fix: Use secure version of `System.Text.Encodings.Web` package (#1223) 
+* Vulnerability fix: Use secure version of `System.Text.Encodings.Web` package (#1223)
 * Change: `DicomFile.Open` now throws a `DicomFileException` if the file size is less than 132 bytes (#641)
 * Add XML documentation to nuget package
 * Change: Trying to add a DICOM element with invalid group ID to DICOM meta information now throws `DicomDataException` (#750)
@@ -68,7 +80,7 @@
 * New helper classes to build up a volume from a stack and calculate stacks/slices out of this volume in arbitrary orientation
 * Optional parameter in DicomFile.Open methods to define the limit of large object size (#958)
 * Add initial support for code extensions (#43)
-* Add possibility to register additional encodings via `DicomEncoding.RegisterEncoding()` 
+* Add possibility to register additional encodings via `DicomEncoding.RegisterEncoding()`
 * Do not validate VM for VRs OF, OL and OV (#1186)
 * Add possibility to add values for the VRs UV, SV and OV
 * Log warning messages on decoding errors (#1200)
@@ -122,7 +134,7 @@
 * new methods in `IByteBuffer` to directly manipulate/use the data instead of copying it around multiple times.
 * Include Json serialization/deserialization directly into *fo-dicom.core* based on `System.Text.Json`.
 * Text encoding is now handled when a string is written into a network- or file-stream.
-* Switch to IAsyncEnumerator using Microsoft.Bcl.AsyncInterfaces. LanguageVersion is set to 8.0. 
+* Switch to IAsyncEnumerator using Microsoft.Bcl.AsyncInterfaces. LanguageVersion is set to 8.0.
 * internal: SCU now sends two presentation context per CStoreRequest: one with the original TS and one with the additional and the mandatory ImplicitLittleEndian. So the chance is higher to send the file without conversion. (#1048)
 * Optimize DicomTag.GetHashCode()
 * Bug fix: Prevent special characters in association requests from crashing Fellow Oak DICOM (#1104)
@@ -154,4 +166,4 @@
 * DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncodings`, that is applied to all string-based tags.
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
 
-   
+

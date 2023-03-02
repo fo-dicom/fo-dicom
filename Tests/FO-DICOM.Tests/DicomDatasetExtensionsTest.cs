@@ -93,8 +93,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void GetDateTimeOffset_DateAndTimeAndNoTimezoneAvailable_ReturnsSpecifiedDateTimeInLocalTimezone()
         {
-            var local = DateTimeOffset.Now.Offset;
-            var expected = new DateTimeOffset(2016, 5, 25, 15, 54, 31, local);
+            var expected = new DateTimeOffset(new DateTime(2016, 5, 25, 15, 54, 31));
 
             var dataset = new DicomDataset(
                 new DicomDate(DicomTag.CreationDate, "20160525"),
@@ -118,6 +117,40 @@ namespace FellowOakDicom.Tests
 
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void GetDateTimeOffset_NeitherDateNorTime_ReturnsMinValue()
+        {
+            var expected = DateTimeOffset.MinValue;
+
+            var dataset = new DicomDataset(
+                new DicomShortString(DicomTag.TimezoneOffsetFromUTC, "-0900"));
+
+            var actual = dataset.GetDateTimeOffset(DicomTag.StudyDate, DicomTag.StudyTime);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetDateTimeOffset_TopLevelDataset_With_TimeZone_Is_Applied()
+        {
+            var expected = new DateTimeOffset(2016, 5, 25, 14, 30, 0, new TimeSpan(-09, 00, 00));
+
+            var scheduledProcedure = new DicomDataset()
+            {
+                { DicomTag.ScheduledProcedureStepStartDate, "20160525" },
+                { DicomTag.ScheduledProcedureStepStartTime, "143000" }
+            };
+
+            var dataset = new DicomDataset(
+                new DicomDate(DicomTag.CreationDate, "20160524"),
+                new DicomShortString(DicomTag.TimezoneOffsetFromUTC, "-0900"),
+                new DicomSequence(DicomTag.ScheduledProcedureStepSequence, scheduledProcedure));
+ 
+            var actual = scheduledProcedure.GetDateTimeOffset(DicomTag.ScheduledProcedureStepStartDate, DicomTag.ScheduledProcedureStepStartTime, dataset);
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
     }
 }
