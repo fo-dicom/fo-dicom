@@ -35,8 +35,6 @@ namespace FellowOakDicom.Network
         #region FIELDS
 
         private const int _maxBytesToRead = 16384;
-        
-        private const int _delayInMsUntilNoNetworkCommunicationWarning = 5 * 60 * 1000; // 5 minutes
 
         private long _isDisposed;
 
@@ -486,22 +484,8 @@ namespace FellowOakDicom.Network
 
                     // This is the (extremely small) buffer we use to read the raw PDU header
                     using var rawPduCommonFieldsBuffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength);
-
-                    var readTask = stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes, 0, rawPduCommonFieldsBuffer.Length);
-                    var delayTask = Task.Delay(_delayInMsUntilNoNetworkCommunicationWarning);
-                    Task delayOrReadTask;
-                    do
-                    {
-                        delayOrReadTask = await Task.WhenAny(readTask, delayTask).ConfigureAwait(false);
-                        if (delayOrReadTask == delayTask)
-                        {
-                            Logger.Warn($"No incoming network traffic detected for {_delayInMsUntilNoNetworkCommunicationWarning / 1000}s, but the connection is still open");
-                            delayTask = Task.Delay(_delayInMsUntilNoNetworkCommunicationWarning);
-                        }
-                    } 
-                    while (delayOrReadTask != readTask);
                     
-                    var count = await readTask.ConfigureAwait(false);
+                    var count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes, 0, rawPduCommonFieldsBuffer.Length).ConfigureAwait(false);
 
                     do
                     {
