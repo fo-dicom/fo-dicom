@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Tools;
 using System;
 using System.Threading.Tasks;
 
@@ -31,7 +32,7 @@ namespace FellowOakDicom.Network
         /// <param name="value">Value of the set event.</param>
         internal AsyncManualResetEvent(bool isSet, T value)
         {
-            _tcs = new TaskCompletionSource<T>();
+            _tcs = TaskCompletionSourceFactory.Create<T>();
             if (isSet)
             {
                 _tcs.TrySetResult(value);
@@ -89,7 +90,7 @@ namespace FellowOakDicom.Network
             {
                 if (_tcs.Task.IsCompleted)
                 {
-                    _tcs = new TaskCompletionSource<T>();
+                    _tcs = TaskCompletionSourceFactory.Create<T>();
                 }
 
                 _tcs.TrySetResult(value);
@@ -105,7 +106,7 @@ namespace FellowOakDicom.Network
             {
                 if (_tcs.Task.IsCompleted)
                 {
-                    _tcs = new TaskCompletionSource<T>();
+                    _tcs = TaskCompletionSourceFactory.Create<T>();
                 }
 
                 _tcs.TrySetResult(default(T));
