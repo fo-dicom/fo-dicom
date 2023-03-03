@@ -280,21 +280,16 @@ namespace FellowOakDicom.Network
 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
-                    bool hasNonMaxServices = false;
-                    while (!hasNonMaxServices)
+                    while (true)
                     {
-                        var delay = TimeSpan.FromMinutes(1);
-                        var delayTask = Task.Delay(delay, _cancellationToken);
-                        var hasNonMaxServicesTask = _hasNonMaxServicesFlag.WaitAsync();
-                        var winner = await Task.WhenAny(delayTask, hasNonMaxServicesTask).ConfigureAwait(false);
-                        if (winner == hasNonMaxServicesTask)
+                        var hasNonMaxServicesFlag = _hasNonMaxServicesFlag.WaitAsync();
+                        var oneMinuteDelay = Task.Delay(60 * 1000, _cancellationToken);
+                        var winner = await Task.WhenAny(hasNonMaxServicesFlag, oneMinuteDelay).ConfigureAwait(false);
+                        if (winner == hasNonMaxServicesFlag)
                         {
-                            hasNonMaxServices = true;
+                            break;
                         }
-                        else
-                        {
-                            _logger.Warn($"Waited {delay.TotalSeconds}s but this DICOM server is still at maximum capacity, so it cannot accept new clients");
-                        }
+                        _logger.Warn("DICOM service on port {Port} cannot accept incoming connections because the maximum number of clients has been reached", Port);
                     }
 
                     var networkStream = await listener
