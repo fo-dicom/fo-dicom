@@ -1113,13 +1113,20 @@ namespace FellowOakDicom
         private DicomDataset DoAdd<T>(DicomTag tag, IList<T> values, bool allowUpdate)
         {
             var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
-            if (entry == null)
+            if (entry == DicomDictionary.UnknownTag && tag.IsPrivate) {
+                string groupNumber = tag.Group.ToString("X4");
+                string elementNumber = tag.Element.ToString("X4");
+                throw new DicomDataException($"Unknown private tag <{tag.PrivateCreator}> ({groupNumber}, {elementNumber}) has no VR defined.");
+            }
+            if (entry == DicomDictionary.UnknownTag && !tag.IsPrivate) {
                 throw new DicomDataException($"Tag {tag} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.");
+            }
 
             DicomVR vr = null;
             if (values != null) vr = entry.ValueRepresentations.FirstOrDefault(x => x.ValueType == typeof(T));
-            if (vr == null) vr = entry.ValueRepresentations.First();
-
+            if (vr == null) {
+                vr = entry.ValueRepresentations.First();   
+            }
             return DoAdd(vr, tag, values, allowUpdate);
         }
 

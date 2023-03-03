@@ -1056,7 +1056,7 @@ namespace FellowOakDicom.Tests.Serialization
             {
                 { DicomTag.Modality, "CT" },
                 new DicomCodeString(privTag1, "TESTA"),
-                { privTag2, "TESTB" },
+                { DicomVR.LO, privTag2, "TESTB" },
             };
 
             var json = JsonConvert.SerializeObject(ds, new JsonDicomConverter());
@@ -1151,14 +1151,16 @@ namespace FellowOakDicom.Tests.Serialization
             var dataset = new DicomDataset().NotValidated();
             const string invalidDS = "InvalidDS";
             const string invalidIS = "InvalidIS";
+            const string invalidISThatThrowsOverflowException = "73.8";
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidDS))));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidIS))));
+            dataset.Add(new DicomIntegerString(DicomTag.Exposure, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidISThatThrowsOverflowException))));
             var json = JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.PreferablyAsNumber));
-            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]}}", json);
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]},\"00181152\":{\"vr\":\"IS\",\"Value\":[\"73.8\"]}}", json);
         }
 
         [Fact]
-        public static void GivenInvalidValueForDS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        public static void GivenInvalidValueForDS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowFormatException()
         {
             var dataset = new DicomDataset().NotValidated();
             const string invalidNumber = "InvalidNumber";
@@ -1167,12 +1169,21 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
-        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowFormatException()
         {
             var dataset = new DicomDataset().NotValidated();
             const string invalidNumber = "InvalidNumber";
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidNumber))));
             Assert.Throws<FormatException>(() => JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber)));
+        }
+
+        [Fact]
+        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowOverflowException()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string invalidNumber = "2147483647500";
+            dataset.Add(new DicomIntegerString(DicomTag.Exposure, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidNumber))));
+            Assert.Throws<OverflowException>(() => JsonConvert.SerializeObject(dataset, new JsonDicomConverter(numberSerializationMode: NumberSerializationMode.AsNumber)));
         }
 
         [Fact]

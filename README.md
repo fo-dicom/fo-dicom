@@ -21,6 +21,16 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 * DICOM services
 * Customize components via DI container 
 
+### Supported Runtimes
+
+Fellow Oak DICOM officially supports the following runtimes:
+
+* .NET Core 7.0
+* .NET Core 6.0
+* .NET Framework 4.6.2
+
+Other runtimes that implement .NET Standard 2.0 may work, but be aware that our CI pipeline only tests these platforms (and only on Windows)
+
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
 

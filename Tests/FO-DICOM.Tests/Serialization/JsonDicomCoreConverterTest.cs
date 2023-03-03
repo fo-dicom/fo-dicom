@@ -1039,8 +1039,45 @@ namespace FellowOakDicom.Tests.Serialization
                          new DicomDecimalString(DicomTag.GantryAngle, 36)
                      };
             var json = DicomJson.ConvertDicomToJson(ds, writeTagsAsKeywords: true);
-            Assert.Equal("{\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":[\"V0hBVElTVEhJUw==\"]},\"00031010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36]}}",
-                json);
+            Assert.Equal("{\"00030010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"00031002\":{\"vr\":\"AE\",\"Value\":[\"AETITLE\"]},\"00031003\":{\"vr\":\"UN\",\"InlineBinary\":\"V0hBVElTVEhJUw==\"},\"00031010\":{\"vr\":\"LO\",\"Value\":[\"TEST\"]},\"GantryAngle\":{\"vr\":\"DS\",\"Value\":[36]}}", json);
+        }
+
+        [Fact]
+        public static void TestInlineBinarySerialization()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomOtherByte(DicomTag.PixelData, Encoding.ASCII.GetBytes("OTHERBYTES"))
+            };
+            Assert.Equal(
+                "{\"7FE00010\":{\"vr\":\"OB\",\"InlineBinary\":\"T1RIRVJCWVRFUw==\"}}",
+                DicomJson.ConvertDicomToJson(ds)
+            );
+        }
+
+        [Fact]
+        public static void TestInlineBinaryDeserialization()
+        {
+            var json = "{\"7FE00010\":{\"vr\":\"OB\",\"InlineBinary\":\"T1RIRVJCWVRFUw==\"}}";
+            Assert.True(DicomJson.ConvertJsonToDicom(json).Contains(DicomTag.PixelData));
+        }
+
+        [Fact]
+        public static void TestInlineBinaryDeserialization_WithLegacy50Format()
+        {
+            var json = "{\"7FE00010\":{\"vr\":\"OB\",\"InlineBinary\":[\"T1RIRVJCWVRFUw==\"]}}";
+            Assert.True(DicomJson.ConvertJsonToDicom(json).Contains(DicomTag.PixelData));
+        }
+
+        [Fact]
+        public static void TestInvalidInlineBinaryDeserialization()
+        {
+            Assert.Throws<JsonException>(
+                () => DicomJson.ConvertJsonToDicom("{\"7FE00010\":{\"vr\":\"OB\",\"InlineBinary\":1}}")
+            );
+            Assert.Throws<JsonException>(
+                () => DicomJson.ConvertJsonToDicom("{\"7FE00010\":{\"vr\":\"OB\",\"InlineBinary\":[1]}}")
+            );
         }
 
         [Fact]
@@ -1062,7 +1099,7 @@ namespace FellowOakDicom.Tests.Serialization
             {
                 { DicomTag.Modality, "CT" },
                 new DicomCodeString(privTag1, "TESTA"),
-                { privTag2, "TESTB" },
+                { DicomVR.LO, privTag2, "TESTB" },
             };
 
             var json = DicomJson.ConvertDicomToJson(ds);
@@ -1234,14 +1271,16 @@ namespace FellowOakDicom.Tests.Serialization
             var dataset = new DicomDataset().NotValidated();
             const string invalidDS = "InvalidDS";
             const string invalidIS = "InvalidIS";
+            const string invalidISThatThrowsOverflowException = "73.8";
             dataset.Add(new DicomDecimalString(DicomTag.PatientSize, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidDS))));
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidIS))));
+            dataset.Add(new DicomIntegerString(DicomTag.Exposure, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidISThatThrowsOverflowException))));
             var json = DicomJson.ConvertDicomToJson(dataset, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
-            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]}}", json);
+            Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"InvalidIS\"]},\"00101020\":{\"vr\":\"DS\",\"Value\":[\"InvalidDS\"]},\"00181152\":{\"vr\":\"IS\",\"Value\":[\"73.8\"]}}", json);
         }
 
         [Fact]
-        public static void GivenInvalidValueForDS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        public static void GivenInvalidValueForDS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowFormatException()
         {
             var dataset = new DicomDataset().NotValidated();
             const string invalidNumber = "InvalidNumber";
@@ -1250,12 +1289,21 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
-        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowError()
+        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowFormatException()
         {
             var dataset = new DicomDataset().NotValidated();
             const string invalidNumber = "InvalidNumber";
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidNumber))));
             Assert.Throws<FormatException>(() => DicomJson.ConvertDicomToJson(dataset, numberSerializationMode: NumberSerializationMode.AsNumber));
+        }
+
+        [Fact]
+        public static void GivenInvalidValueForIS_WhenNumberSerializationModeAsNumber_ThenDeserializationShouldThrowOverflowException()
+        {
+            var dataset = new DicomDataset().NotValidated();
+            const string invalidNumber = "2147483647500";
+            dataset.Add(new DicomIntegerString(DicomTag.Exposure, new MemoryByteBuffer(Encoding.ASCII.GetBytes(invalidNumber))));
+            Assert.Throws<OverflowException>(() => DicomJson.ConvertDicomToJson(dataset, numberSerializationMode: NumberSerializationMode.AsNumber));
         }
 
         [Fact]
@@ -1406,7 +1454,7 @@ namespace FellowOakDicom.Tests.Serialization
         },
         ""00091002"": {
             ""vr"": ""UN"",
-            ""InlineBinary"": [ ""z0x9c8v7"" ]
+            ""InlineBinary"": ""z0x9c8v7""
         },
         ""00100010"": {
             ""vr"": ""PN"",
@@ -1521,7 +1569,7 @@ namespace FellowOakDicom.Tests.Serialization
         },
         ""00091002"": {
             ""vr"": ""UN"",
-            ""InlineBinary"": [ ""z0x9c8v7"" ]
+            ""InlineBinary"": ""z0x9c8v7""
         },
         ""00100010"": {
             ""vr"": ""PN"",
