@@ -51,9 +51,8 @@ namespace FellowOakDicom.Network
 
         private bool _disposed;
 
-        private readonly Tools.AsyncManualResetEvent _hasServicesFlag;
-
-        private readonly Tools.AsyncManualResetEvent _hasNonMaxServicesFlag;
+        private readonly AsyncManualResetEvent _hasServicesFlag;
+        private readonly AsyncManualResetEvent _hasNonMaxServicesFlag;
 
         #endregion
 
@@ -80,8 +79,8 @@ namespace FellowOakDicom.Network
 
             _disposed = false;
 
-            _hasServicesFlag = new Tools.AsyncManualResetEvent(false);
-            _hasNonMaxServicesFlag = new Tools.AsyncManualResetEvent(true);
+            _hasServicesFlag = new AsyncManualResetEvent(false);
+            _hasNonMaxServicesFlag = new AsyncManualResetEvent(true);
         }
 
         #endregion
@@ -280,8 +279,13 @@ namespace FellowOakDicom.Network
 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
+                    // If max clients is configured and the limit is reached
+                    // we need to wait until one of the existing clients closes its connection
                     while (true)
                     {
+                        // Instead of simply waiting for the flag
+                        // We use Task.WhenAny with a one minute delay in a while loop
+                        // This allows us to log a warning every minute instead of silently not accepting connections
                         var hasNonMaxServicesFlag = _hasNonMaxServicesFlag.WaitAsync();
                         var oneMinuteDelay = Task.Delay(60 * 1000, _cancellationToken);
                         var winner = await Task.WhenAny(hasNonMaxServicesFlag, oneMinuteDelay).ConfigureAwait(false);
@@ -289,7 +293,10 @@ namespace FellowOakDicom.Network
                         {
                             break;
                         }
-                        _logger.Warn("DICOM service on port {Port} cannot accept incoming connections because the maximum number of clients has been reached", Port);
+                        // Allow proper triggering of the OperationCanceledException, if any
+                        await oneMinuteDelay.ConfigureAwait(false);
+                        _logger.Warn("Cannot accept another incoming connection " +
+                                     "because the maximum number of clients ({MaxClientsAllowed}) has been reached", Options.MaxClientsAllowed);
                     }
 
                     var networkStream = await listener
@@ -305,14 +312,20 @@ namespace FellowOakDicom.Network
                         }
 
                         var serviceTask = scp.RunAsync();
+                        int numberOfServices;
                         lock (_services)
                         {
                             _services.Add(new RunningDicomService(scp, serviceTask));
+                            numberOfServices = _services.Count;
                         }
+                        
+                        _logger.Debug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", IPAddress, Port, numberOfServices);
                         
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax)
                         {
+                            _logger.Warn("Reached the maximum number of simultaneously connected clients, " +
+                                         "further incoming connections will be blocked until one or more clients disconnect", IPAddress, Port);
                             _hasNonMaxServicesFlag.Reset();
                         }
                     }
@@ -345,7 +358,7 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    _logger.Debug($"DICOM server {IPAddress}:{Port} services cleanup: waiting until there are DICOM services");
+                    _logger.Debug("Waiting for incoming client connections");
                     
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
                     
@@ -354,41 +367,29 @@ namespace FellowOakDicom.Network
                     {
                         runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
                     }
-
-                    if (runningDicomServiceTasks.Count > 0)
+                    var numberOfDicomServices = runningDicomServiceTasks.Count;
+                    _logger.Debug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
+                    if (numberOfDicomServices > 0)
                     {
-                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: {runningDicomServiceTasks.Count} DICOM services are running, waiting for one of them to complete");
-
-                        var task = await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
-                        
-                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: DICOM service [{runningDicomServiceTasks.IndexOf(task)}] of {runningDicomServiceTasks.Count} has completed");
-                    }
-                    else
-                    {
-                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: there are no DICOM services running");
+                        await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
                     }
 
-                    bool isHasNonMaxServicesFlagSet = false;
-                    int numberOfCompletedServices = 0;
-                    int numberOfRemainingServices = 0;
+                    var isHasNonMaxServicesFlagSet = false;
+                    int numberOfRemainingServices;
+                    var servicesToDispose = new List<RunningDicomService>();
                     lock (_services)
                     {
-                        for (int i = _services.Count - 1; i >= 0; i--)
+                        for (var i = _services.Count - 1; i >= 0; i--)
                         {
                             var service = _services[i];
                             if (service.Task.IsCompleted)
                             {
                                 _services.RemoveAt(i);
-
-                                service.Dispose();
-
-                                numberOfCompletedServices++;
-                            }
-                            else
-                            {
-                                numberOfRemainingServices++;
+                                servicesToDispose.Add(service);
                             }
                         }
+
+                        numberOfRemainingServices = _services.Count;
 
                         if (_services.Count == 0)
                         {
@@ -401,19 +402,49 @@ namespace FellowOakDicom.Network
                             isHasNonMaxServicesFlagSet = true;
                         }
                     }
+                    var numberOfCompletedServices = servicesToDispose.Count;
+                    foreach (var service in servicesToDispose)
+                    {
+                        try
+                        {
+                            service.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.Warn("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
+                        }
+                    }
 
-                    _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: {numberOfCompletedServices} completed services were removed.");
-                    _logger.Debug(numberOfRemainingServices == 0 
-                        ? $"DICOM server {IPAddress}:{Port} cleanup: there are no more services running now. " 
-                        : $"DICOM server {IPAddress}:{Port} cleanup: there are still {numberOfRemainingServices} services running.");
+                    _logger.Debug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
+                    if (numberOfRemainingServices > 0)
+                    {
+                        _logger.Debug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
+                    }
+                    else
+                    {
+                        _logger.Debug("There are no clients connected now");
+                    }
+                    
                     if (isHasNonMaxServicesFlagSet)
                     {
-                        _logger.Debug($"DICOM server {IPAddress}:{Port} cleanup: the server can now accept another client again");
+                        if (Options.MaxClientsAllowed > 0)
+                        {
+                            var numberOfExtraClientsAllowed = Options.MaxClientsAllowed - numberOfRemainingServices;
+                            _logger.Debug("{NumberOfExtraServicesAllowed} more incoming client connections are allowed", numberOfExtraClientsAllowed);
+                        }
+                        else
+                        {
+                            _logger.Debug("Unlimited more incoming client connections are allowed");
+                        }
+                    }
+                    else
+                    {
+                        _logger.Debug("Cannot accept more incoming client connections until one or more clients disconnect");    
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.Info("Disconnected client cleanup manually terminated.");
+                    Logger.Info("Stopping disconnected client cleanup because the DICOM server is being stopped");
                     ClearServices();
                 }
                 catch (Exception e)
@@ -425,14 +456,23 @@ namespace FellowOakDicom.Network
 
         private void ClearServices()
         {
+            var servicesToDispose = new List<RunningDicomService>();
             lock (_services)
             {
-                foreach (var service in _services)
+                servicesToDispose.AddRange(_services);
+                _services.Clear();
+            }
+            
+            foreach (var service in servicesToDispose)
+            {
+                try
                 {
                     service.Dispose();
                 }
-
-                _services.Clear();
+                catch (Exception e)
+                {
+                    _logger.Warn("An error occurred while trying to dispose a DICOM service: {@Error}", e);
+                }
             }
             
             _hasServicesFlag.Reset();
