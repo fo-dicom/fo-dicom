@@ -11,7 +11,7 @@ namespace FellowOakDicom.Network
     /// Asynchronous manual reset event class, enabling the possibility to set a return value of <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Type of value that the event can be set to.</typeparam>
-    [Obsolete("For fo-dicom consumers: use the AsyncEx library instead, for fo-dicom contributors: use FellowOakDicom.Network.Client.Tasks.AsyncManualResetEvent")]
+    [Obsolete("For fo-dicom consumers: use the AsyncEx library instead, for fo-dicom contributors: use FellowOakDicom.Tools.AsyncManualResetEvent")]
     public class AsyncManualResetEvent<T>
     {
         #region FIELDS

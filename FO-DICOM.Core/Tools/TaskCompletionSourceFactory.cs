@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Tasks
+namespace FellowOakDicom.Tools
 {
     internal static class TaskCompletionSourceFactory
     {
