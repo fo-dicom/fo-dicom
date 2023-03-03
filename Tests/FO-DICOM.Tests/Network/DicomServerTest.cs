@@ -5,10 +5,10 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Association;
+using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Tests.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -420,6 +420,145 @@ namespace FellowOakDicom.Tests.Network
             Assert.Equal(DicomStatus.Success, status);
         }
 
+        [Fact]
+        public async Task MaxClientsAllowed_ShouldRejectFurtherConnectionsWhenLimitIsReached()
+        {
+            var port = Ports.GetNext();
+            var serverLogger = _logger.IncludePrefix("Server");
+            var clientLogger = _logger.IncludePrefix("Client");
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: serverLogger);
+            server.Options.MaxClientsAllowed = 1;
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
+            {
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                {
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = clientLogger,
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
+            var associationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = "AnySCU",
+                CalledAE = "AnySCP",
+            };
+            associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
+
+            IAdvancedDicomClientConnection connection1 = null, connection2 = null;
+            IAdvancedDicomClientAssociation association1 = null, association2 = null;
+            Exception exception1 = null, exception2 = null;
+            try
+            {
+                connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, CancellationToken.None);
+                association1 = await connection1.OpenAssociationAsync(associationRequest, CancellationToken.None);
+                await association1.ReleaseAsync(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                exception1 = e;
+            }
+
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cts.Token);
+                association2 = await connection2.OpenAssociationAsync(associationRequest, cts.Token);
+                await association2.ReleaseAsync(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                exception2 = e;
+            }
+
+            association1?.Dispose();
+            association2?.Dispose();
+            connection1?.Dispose();
+            connection2?.Dispose();
+
+            // Nothing should have gone wrong with connection 1
+            Assert.NotNull(association1);
+            Assert.Null(exception1);
+
+            // Connection 2 should have timed out because of the cancellation token
+            Assert.Null(association2);
+            Assert.NotNull(exception2);
+            Assert.IsType<OperationCanceledException>(exception2);
+        }
+
+        [Fact]
+        public async Task MaxClientsAllowed_ShouldAllowFurtherConnectionsWhenPreviousConnectionsAreDropped()
+        {
+            var port = Ports.GetNext();
+            var serverLogger = _logger.IncludePrefix("Server");
+            var clientLogger = _logger.IncludePrefix("Client");
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: serverLogger);
+            server.Options.MaxClientsAllowed = 1;
+            var connectionRequest = new AdvancedDicomClientConnectionRequest
+            {
+                NetworkStreamCreationOptions = new NetworkStreamCreationOptions
+                {
+                    Host = "127.0.0.1",
+                    Port = server.Port,
+                },
+                Logger = clientLogger,
+                FallbackEncoding = DicomEncoding.Default,
+                DicomServiceOptions = new DicomServiceOptions()
+            };
+            var associationRequest = new AdvancedDicomClientAssociationRequest
+            {
+                CallingAE = "AnySCU",
+                CalledAE = "AnySCP",
+            };
+            associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
+
+            IAdvancedDicomClientConnection connection1 = null, connection2 = null;
+            IAdvancedDicomClientAssociation association1 = null, association2 = null;
+            Exception exception1 = null, exception2 = null;
+            try
+            {
+                connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, CancellationToken.None);
+                association1 = await connection1.OpenAssociationAsync(associationRequest, CancellationToken.None);
+                await association1.ReleaseAsync(CancellationToken.None);
+                association1.Dispose();
+                connection1.Dispose();
+            }
+            catch (Exception e)
+            {
+                exception1 = e;
+            }
+
+            // Allow 5 seconds for the server to clean up its running DICOM services
+            await Task.Delay(5000);
+
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cts.Token);
+                association2 = await connection2.OpenAssociationAsync(associationRequest, cts.Token);
+                await association2.ReleaseAsync(CancellationToken.None);
+                association2.Dispose();
+                connection2.Dispose();
+            }
+            catch (Exception e)
+            {
+                exception2 = e;
+            }
+
+            association1?.Dispose();
+            association2?.Dispose();
+            connection1?.Dispose();
+            connection2?.Dispose();
+
+            // Nothing should have gone wrong with connection 1
+            Assert.NotNull(association1);
+            Assert.Null(exception1);
+
+            // Nothing should have gone wrong with connection 2
+            Assert.NotNull(association2);
+            Assert.Null(exception2);
+        }
 
         private void TestFoDicomUnhandledException(int port)
         {
