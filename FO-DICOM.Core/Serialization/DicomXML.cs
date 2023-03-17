@@ -155,6 +155,10 @@ namespace FellowOakDicom.Serialization
 
         private static string EscapeXml(string text)
         {
+            if (text == null)
+            {
+                return string.Empty;
+            }
             return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&apos;");
         }
 
