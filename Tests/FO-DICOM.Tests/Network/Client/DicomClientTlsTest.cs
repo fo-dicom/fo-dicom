@@ -128,14 +128,17 @@ namespace FellowOakDicom.Tests.Network.Client
                                 break;
                         }
 
-                        for (var index = 0; index < chain.ChainStatus.Length; index++)
+                        if (chain != null)
                         {
-                            var chainStatus = chain.ChainStatus[index];
-                            serverLogger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                            for (var index = 0; index < chain.ChainStatus.Length; index++)
+                            {
+                                var chainStatus = chain.ChainStatus[index];
+                                serverLogger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
 
-                            // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
-                            if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
-                                return true;
+                                // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                                if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
+                                    return true;
+                            }
                         }
 
                         return false;
@@ -184,7 +187,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 };
             if (requireMutualAuthentication)
             {
-                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate("./Test Data/FellowOakDicom.pfx", "FellowOakDicom") };
+                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate("./Test Data/FellowOakDicomClient.pfx", "FellowOakDicom") };
             }
 
 
