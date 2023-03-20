@@ -103,7 +103,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
-            var tlsAcceptor = new CertificateTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
+            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
             {
                 RequireMutualAuthentication = requireMutualAuthentication,
                 CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
