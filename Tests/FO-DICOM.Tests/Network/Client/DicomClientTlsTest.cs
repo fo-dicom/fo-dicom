@@ -138,6 +138,9 @@ namespace FellowOakDicom.Tests.Network.Client
                                 // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                                 if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
                                     return true;
+                                // since we're using a generated client from an unknown CA, the chain will not be checked successfully.
+                                if (chainStatus.Status.HasFlag(X509ChainStatusFlags.PartialChain))
+                                    return true;
                             }
                         }
 
@@ -187,7 +190,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 };
             if (requireMutualAuthentication)
             {
-                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate("./Test Data/FellowOakDicomClient.pfx", "FellowOakDicom") };
+                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate("./Test Data/testclienteku.contoso.com.pfx", "PLACEHOLDER") };
             }
 
 
