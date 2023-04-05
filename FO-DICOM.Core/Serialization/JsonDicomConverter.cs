@@ -141,6 +141,20 @@ namespace FellowOakDicom.Serialization
             _numberSerializationMode = numberSerializationMode;
         }
 
+        /// <summary>
+        /// With his option enabled, Dicom tag keyword will be written as a
+        /// distinct Json attribute. 
+        /// Note! This is non-standard and may break parsers!
+        /// </summary>
+        public bool WriteKeyword { get; set; } = false;
+
+        /// <summary>
+        /// With his option enabled, Dicom tag name will be written as a
+        /// distinct Json attribute. 
+        /// Note! This is non-standard and may break parsers!
+        /// </summary>
+        public bool WriteName { get; set; } = false;
+
         #region JsonConverter overrides
 
 
@@ -415,6 +429,21 @@ namespace FellowOakDicom.Serialization
                 default:
                     WriteJsonElement<string>(writer, (DicomElement)item, (w, v) => writer.WriteStringValue(v));
                     break;
+            }
+
+            if (WriteKeyword || WriteName)
+            {
+                var unknown = item.Tag.DictionaryEntry == null
+                              || string.IsNullOrWhiteSpace(item.Tag.DictionaryEntry.Keyword)
+                              || (item.Tag.DictionaryEntry.MaskTag != null && item.Tag.DictionaryEntry.MaskTag.Mask != 0xffffffff);
+
+                if (!unknown)
+                {
+                    if (WriteKeyword)
+                        writer.WriteString("keyword", item.Tag.DictionaryEntry.Keyword);
+                    if (WriteName)
+                        writer.WriteString("name", item.Tag.DictionaryEntry.Name);
+                }
             }
 
             writer.WriteEndObject();
