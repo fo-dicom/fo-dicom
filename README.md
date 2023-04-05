@@ -140,7 +140,7 @@ await client.SendAsync();
 ```csharp
 var cfind = DicomCFindRequest.CreateStudyQuery(patientId: "12345");
 cfind.OnResponseReceived = (DicomCFindRequest rq, DicomCFindResponse rp) => {
-	Console.WriteLine("Study UID: {0}", rp.Dataset.Get<string>(DicomTag.StudyInstanceUID));
+	Console.WriteLine("Study UID: {0}", rp.Dataset.GetString(DicomTag.StudyInstanceUID));
 };
 
 var client = DicomClientFactory.Create("127.0.0.1", 11112, false, "SCU-AE", "SCP-AE");
