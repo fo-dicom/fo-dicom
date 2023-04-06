@@ -1376,6 +1376,107 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public static void AddKeywordAndName_WhenSerializing()
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(DicomTag.AccessionNumber, "123456");
+
+            // Enable write keyword and name
+            var converter = new DicomJsonConverter()
+            {
+                WriteKeyword = true,
+                WriteName = true
+            };
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(converter);
+            var json = JsonSerializer.Serialize(dataset, options);
+
+            string expected = "{\"00080050\":{\"vr\":\"SH\",\"Value\":[\"123456\"],\"keyword\":\"AccessionNumber\",\"name\":\"Accession Number\"}}";
+            Assert.Equal(expected, json);
+        }
+
+        [Fact]
+        public static void GivenJsonWithOptionalAttributes_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""vr"": ""SH"",
+		        ""name"": ""Accession Number"",
+		        ""Value"": [ ""123456"" ]
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.Equal("123456", dataset.GetSingleValue<string>(DicomTag.AccessionNumber));
+        }
+
+        [Fact]
+        public static void GivenJsonDifferentOrder_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""name"": ""Accession Number"",
+		        ""vr"": ""SH"",
+		        ""Value"": [ ""123456"" ]
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.Equal("123456", dataset.GetSingleValue<string>(DicomTag.AccessionNumber));
+        }
+
+        [Fact]
+        public static void GivenJsonEmptyPerson_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080090"": {
+		        ""vr"": ""PN"",
+		        ""keyword"": ""ReferringPhysicianName""
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.True(dataset.Contains(DicomTag.ReferringPhysicianName));
+            Assert.Equal(0, dataset.GetValueCount(DicomTag.ReferringPhysicianName));
+        }
+
+        [Fact]
+        public static void GivenJsonWithInnerObject_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""name"": ""Accession Number"",
+		        ""vr"": ""SH"",
+        	    ""confusing-object"": {
+        		    ""vr"": ""CS"",
+        		    ""Value"": [
+        			    ""ORIGINAL"",
+        			    ""PRIMARY""
+        		    ]
+        	    },
+		        ""Value"": [ ""123456"" ]
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            var accessionNumber = dataset.GetDicomItem<DicomItem>(DicomTag.AccessionNumber);
+            Assert.NotNull(accessionNumber);
+            Assert.Equal("SH", accessionNumber.ValueRepresentation.Code);
+            Assert.Equal("123456", dataset.GetSingleValue<string>(DicomTag.AccessionNumber));
+        }
+
+        [Fact]
+        public static void GivenJsonWithoutValueButWithOptionalAttributes_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""vr"": ""SH"",
+		        ""name"": ""Accession Number""
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.True(dataset.Contains(DicomTag.AccessionNumber));
+            Assert.False(dataset.TryGetSingleValue<string>(DicomTag.AccessionNumber, out _));
+        }
+
+        [Fact]
         public static void GivenDicomJsonDatasetWithInvalidPrivateCreatorDataElement_WhenDeserialized_IsSuccessful()
         {
             // allowing deserializer to handle bad data private creator data more gracefully
