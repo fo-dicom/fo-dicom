@@ -753,8 +753,8 @@ namespace FellowOakDicom.Network
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
                                 file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
                                 file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
-                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID;
-                                file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
+                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID ?? DicomImplementation.ClassUID;
+                                file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion ?? DicomImplementation.Version;
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
                                 CreateCStoreReceiveStream(file);
