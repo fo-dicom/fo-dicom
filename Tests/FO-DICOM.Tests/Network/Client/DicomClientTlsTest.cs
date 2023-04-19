@@ -55,12 +55,11 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Helper functions
 
-        private TServer CreateServer<TProvider, TServer>(int port, ITlsAcceptor tlsAcceptor = null)
+        private TServer CreateServer<TProvider, TServer>(string ipAddress, int port, ITlsAcceptor tlsAcceptor = null)
             where TProvider : DicomService, IDicomServiceProvider
             where TServer : class, IDicomServer<TProvider>
         {
             var logger = _logger.IncludePrefix(nameof(IDicomServer));
-            var ipAddress = NetworkManager.IPv4Any;
             var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, tlsAcceptor: tlsAcceptor);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
@@ -151,7 +150,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
             };
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port, tlsAcceptor: tlsAcceptor);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", port, tlsAcceptor: tlsAcceptor);
 
             var tlsInitiator = new DefaultTlsInitiator();
             var client = CreateClient("127.0.0.1", port, tlsInitiator, "SCU", "ANY-SCP");
@@ -190,7 +189,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 };
             if (requireMutualAuthentication)
             {
-                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate("./Test Data/testclienteku.contoso.com.pfx", "PLACEHOLDER") };
+                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate(TestData.Resolve("testclienteku.contoso.com.pfx"), "PLACEHOLDER") };
             }
 
 
