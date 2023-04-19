@@ -94,7 +94,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
 
         [Theory]
+#if !NET462
         [InlineData(true)]
+#endif
         [InlineData(false)]
         public async Task SendAsync_WithClientCertificate_ShouldAuthenticate(bool requireMutualAuthentication)
         {
