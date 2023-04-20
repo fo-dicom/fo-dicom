@@ -65,7 +65,7 @@ namespace FellowOakDicom.Tests
             var metaInfo =
                 new DicomFileMetaInformation(
                     inFile.FileMetaInfo,
-                    useExistingImplementionClassIdAnVersion: true);
+                    useExistingImplementionClassIdAnVersion: false);
 
             var exception = Record.Exception(() =>
             {
@@ -101,7 +101,7 @@ namespace FellowOakDicom.Tests
             var metaInfo =
                 new DicomFileMetaInformation(
                     inFile.FileMetaInfo,
-                    useExistingImplementionClassIdAnVersion: true);
+                    useExistingImplementionClassIdAnVersion: false);
 
             var exception = Record.Exception(() =>
             {
