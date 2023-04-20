@@ -52,7 +52,7 @@ namespace FellowOakDicom.Tests
             var exception = Record.Exception(() =>
             {
                 Assert.NotNull(metaInfo.ImplementationVersionName);
-                Assert.Equal(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationVersionName);
+                Assert.Equal(inFile.FileMetaInfo.GetSingleValue<string>(DicomTag.ImplementationVersionName), metaInfo.ImplementationVersionName);
             });
 
             Assert.Null(exception);
@@ -70,7 +70,7 @@ namespace FellowOakDicom.Tests
             var exception = Record.Exception(() =>
             {
                 Assert.NotNull(metaInfo.ImplementationVersionName);
-                Assert.NotEqual(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationVersionName);
+                Assert.NotEqual(inFile.FileMetaInfo.GetSingleValue<string>(DicomTag.ImplementationVersionName), metaInfo.ImplementationVersionName);
             });
 
             Assert.Null(exception);
@@ -88,7 +88,7 @@ namespace FellowOakDicom.Tests
             var exception = Record.Exception(() =>
             {
                 Assert.NotNull(metaInfo.ImplementationVersionName);
-                Assert.Equal(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationClassUID);
+                Assert.Equal(inFile.FileMetaInfo.GetSingleValue<DicomUID>(DicomTag.ImplementationClassUID), metaInfo.ImplementationClassUID);
             });
 
             Assert.Null(exception);
@@ -106,7 +106,7 @@ namespace FellowOakDicom.Tests
             var exception = Record.Exception(() =>
             {
                 Assert.NotNull(metaInfo.ImplementationVersionName);
-                Assert.NotEqual(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationClassUID);
+                Assert.NotEqual(inFile.FileMetaInfo.GetSingleValue<DicomUID>(DicomTag.ImplementationClassUID), metaInfo.ImplementationClassUID);
             });
 
             Assert.Null(exception);
