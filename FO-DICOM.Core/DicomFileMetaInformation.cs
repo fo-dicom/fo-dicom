@@ -70,7 +70,7 @@ namespace FellowOakDicom
         /// Initializes a new instance of the <see cref="DicomFileMetaInformation"/> class.
         /// </summary>
         /// <param name="metaInfo">DICOM file meta information to be updated.</param>
-        public DicomFileMetaInformation(DicomFileMetaInformation metaInfo)
+        public DicomFileMetaInformation(DicomFileMetaInformation metaInfo, bool useExistingImplementionClassIdAnVersion = false)
         {
             ValidateItems = metaInfo.ValidateItems;
             Version = new byte[] { 0x00, 0x01 };
@@ -79,8 +79,10 @@ namespace FellowOakDicom
             if (metaInfo.Contains(DicomTag.MediaStorageSOPInstanceUID)) MediaStorageSOPInstanceUID = metaInfo.MediaStorageSOPInstanceUID;
             if (metaInfo.Contains(DicomTag.TransferSyntaxUID)) TransferSyntax = metaInfo.TransferSyntax;
 
-            ImplementationClassUID = DicomImplementation.ClassUID;
-            ImplementationVersionName = DicomImplementation.Version;
+            ImplementationClassUID = useExistingImplementionClassIdAnVersion 
+                ? metaInfo.GetSingleValueOrDefault(DicomTag.ImplementationClassUID, DicomImplementation.ClassUID) : DicomImplementation.ClassUID;
+            ImplementationVersionName = useExistingImplementionClassIdAnVersion
+                ? metaInfo.GetSingleValueOrDefault(DicomTag.ImplementationVersionName, DicomImplementation.Version) : DicomImplementation.Version;
 
             var aet = metaInfo.Contains(DicomTag.SourceApplicationEntityTitle) ?
                 metaInfo.SourceApplicationEntityTitle : null;

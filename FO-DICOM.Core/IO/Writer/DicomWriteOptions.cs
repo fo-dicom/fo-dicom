@@ -21,6 +21,7 @@ namespace FellowOakDicom.IO.Writer
             ExplicitLengthSequenceItems = options.ExplicitLengthSequenceItems;
             KeepGroupLengths = options.KeepGroupLengths;
             LargeObjectSize = options.LargeObjectSize;
+            KeepExistingImplementionClassIdAndVersionValue = options.KeepExistingImplementionClassIdAndVersionValue;
         }
 
         private static DicomWriteOptions _default;
@@ -44,5 +45,7 @@ namespace FellowOakDicom.IO.Writer
         public bool KeepGroupLengths { get; set; }
 
         public uint LargeObjectSize { get; set; }
+
+        public bool KeepExistingImplementionClassIdAndVersionValue { get; set; }
     }
 }

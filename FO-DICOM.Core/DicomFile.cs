@@ -127,7 +127,7 @@ namespace FellowOakDicom
         /// <param name="options">Options to apply during writing.</param>
         public void Save(string fileName, DicomWriteOptions options = null)
         {
-            PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation(options.KeepExistingImplementionClassIdAndVersionValue);
 
             File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
             File.Delete();
@@ -146,7 +146,7 @@ namespace FellowOakDicom
         /// <param name="options">Options to apply during writing.</param>
         public void Save(Stream stream, DicomWriteOptions options = null)
         {
-            PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation(options.KeepExistingImplementionClassIdAndVersionValue);
             OnSave();
 
             var target = new StreamByteTarget(stream);
@@ -162,7 +162,7 @@ namespace FellowOakDicom
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public async Task SaveAsync(string fileName, DicomWriteOptions options = null)
         {
-            PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation(options.KeepExistingImplementionClassIdAndVersionValue);
 
             File = Setup.ServiceProvider.GetService<IFileReferenceFactory>().Create(fileName);
             File.Delete();
@@ -182,7 +182,7 @@ namespace FellowOakDicom
         /// <returns>Awaitable task.</returns>
         public async Task SaveAsync(Stream stream, DicomWriteOptions options = null)
         {
-            PreprocessFileMetaInformation();
+            PreprocessFileMetaInformation(options.KeepExistingImplementionClassIdAndVersionValue);
             OnSave();
 
             var target = new StreamByteTarget(stream);
@@ -514,7 +514,7 @@ namespace FellowOakDicom
         /// Preprocess file meta information before save.
         /// </summary>
         /// <exception cref="DicomFileException">If file format is ACR-NEMA version 2 or 3.</exception>
-        private void PreprocessFileMetaInformation()
+        private void PreprocessFileMetaInformation(bool useExistingImplementionClassIdAnVersion = false)
         {
             if (Format == DicomFileFormat.ACRNEMA1 || Format == DicomFileFormat.ACRNEMA2)
             {
@@ -524,7 +524,7 @@ namespace FellowOakDicom
             // create file meta information from dataset or update existing file meta information.
             FileMetaInfo = Format == DicomFileFormat.DICOM3NoFileMetaInfo
                                     ? new DicomFileMetaInformation(Dataset)
-                                    : new DicomFileMetaInformation(FileMetaInfo);
+                                    : new DicomFileMetaInformation(FileMetaInfo, useExistingImplementionClassIdAnVersion);
         }
 
         #endregion

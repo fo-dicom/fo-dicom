@@ -41,6 +41,78 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void ImplementationVersionName_GetterWhenAttributeIncludedAndUseExisting_ReturnsValue()
+        {
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    inFile.FileMetaInfo,
+                    useExistingImplementionClassIdAnVersion: true);
+
+            var exception = Record.Exception(() =>
+            {
+                Assert.NotNull(metaInfo.ImplementationVersionName);
+                Assert.Equal(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationVersionName);
+            });
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void ImplementationVersionName_GetterWhenAttributeIncludedAndUseExistingIsFalse_ReturnsValue()
+        {
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    inFile.FileMetaInfo,
+                    useExistingImplementionClassIdAnVersion: true);
+
+            var exception = Record.Exception(() =>
+            {
+                Assert.NotNull(metaInfo.ImplementationVersionName);
+                Assert.NotEqual(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationVersionName);
+            });
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void ImplementationClassUID_GetterWhenAttributeIncludedAndUseExisting_ReturnsValue()
+        {
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    inFile.FileMetaInfo,
+                    useExistingImplementionClassIdAnVersion: true);
+
+            var exception = Record.Exception(() =>
+            {
+                Assert.NotNull(metaInfo.ImplementationVersionName);
+                Assert.Equal(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationClassUID);
+            });
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void ImplementationClassUID_GetterWhenAttributeIncludedAndUseExistingIsFalse_ReturnsValue()
+        {
+            var inFile = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
+            var metaInfo =
+                new DicomFileMetaInformation(
+                    inFile.FileMetaInfo,
+                    useExistingImplementionClassIdAnVersion: true);
+
+            var exception = Record.Exception(() =>
+            {
+                Assert.NotNull(metaInfo.ImplementationVersionName);
+                Assert.NotEqual(inFile.FileMetaInfo.GetSingleValue(DicomTag.ImplementationClassUID), metaInfo.ImplementationClassUID);
+            });
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
         public void SourceApplicationEntityTitle_GetterWhenAttributeMissing_ReturnsNull()
         {
             var metaInfo =
