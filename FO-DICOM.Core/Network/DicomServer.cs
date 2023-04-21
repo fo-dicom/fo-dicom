@@ -295,8 +295,7 @@ namespace FellowOakDicom.Network
                         }
                         // Allow proper triggering of the OperationCanceledException, if any
                         await oneMinuteDelay.ConfigureAwait(false);
-                        _logger.Warn("Cannot accept another incoming connection " +
-                                     "because the maximum number of clients ({MaxClientsAllowed}) has been reached", Options.MaxClientsAllowed);
+                        _logger.LogWarning("Cannot accept another incoming connection because the maximum number of clients ({MaxClientsAllowed}) has been reached", Options.MaxClientsAllowed);
                     }
 
                     var networkStream = await listener
@@ -319,13 +318,12 @@ namespace FellowOakDicom.Network
                             numberOfServices = _services.Count;
                         }
                         
-                        _logger.Debug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", IPAddress, Port, numberOfServices);
+                        _logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
                         
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax)
                         {
-                            _logger.Warn("Reached the maximum number of simultaneously connected clients, " +
-                                         "further incoming connections will be blocked until one or more clients disconnect", IPAddress, Port);
+                            _logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
                             _hasNonMaxServicesFlag.Reset();
                         }
                     }
@@ -358,7 +356,7 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    _logger.Debug("Waiting for incoming client connections");
+                    _logger.LogDebug("Waiting for incoming client connections");
                     
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
                     
@@ -368,7 +366,7 @@ namespace FellowOakDicom.Network
                         runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
                     }
                     var numberOfDicomServices = runningDicomServiceTasks.Count;
-                    _logger.Debug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
+                    _logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
                     if (numberOfDicomServices > 0)
                     {
                         await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
@@ -411,18 +409,18 @@ namespace FellowOakDicom.Network
                         }
                         catch (Exception e)
                         {
-                            _logger.Warn("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
+                            _logger.LogWarning("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
                         }
                     }
 
-                    _logger.Debug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
+                    _logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
                     if (numberOfRemainingServices > 0)
                     {
-                        _logger.Debug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
+                        _logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
                     }
                     else
                     {
-                        _logger.Debug("There are no clients connected now");
+                        _logger.LogDebug("There are no clients connected now");
                     }
                     
                     if (isHasNonMaxServicesFlagSet)
@@ -430,16 +428,16 @@ namespace FellowOakDicom.Network
                         if (Options.MaxClientsAllowed > 0)
                         {
                             var numberOfExtraClientsAllowed = Options.MaxClientsAllowed - numberOfRemainingServices;
-                            _logger.Debug("{NumberOfExtraServicesAllowed} more incoming client connections are allowed", numberOfExtraClientsAllowed);
+                            _logger.LogDebug("{NumberOfExtraServicesAllowed} more incoming client connections are allowed", numberOfExtraClientsAllowed);
                         }
                         else
                         {
-                            _logger.Debug("Unlimited more incoming client connections are allowed");
+                            _logger.LogDebug("Unlimited more incoming client connections are allowed");
                         }
                     }
                     else
                     {
-                        _logger.Debug("Cannot accept more incoming client connections until one or more clients disconnect");    
+                        _logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");    
                     }
                 }
                 catch (OperationCanceledException)
@@ -471,7 +469,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _logger.Warn("An error occurred while trying to dispose a DICOM service: {@Error}", e);
+                    _logger.LogWarning("An error occurred while trying to dispose a DICOM service: {@Error}", e);
                 }
             }
             

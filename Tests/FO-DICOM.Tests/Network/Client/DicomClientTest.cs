@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -147,14 +148,14 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task LogAssociationProperties()
         {
             var writer = new StringWriter();
-            ILogManager logManager = new TextWriterLogManager(writer);
+            var logger = new TextWriterLogger(writer);
 
             int port = Ports.GetNext();
             using (CreateServer<DicomCEchoProvider>(port))
             {
                 var request = new DicomCEchoRequest { };
                 var client = CreateClient("127.0.0.1", port, false, "LOG-SCU", "ANY-SCP");
-                client.Logger = logManager.GetLogger("client");
+                client.Logger = logger;
 
                 await client.AddRequestAsync(request).ConfigureAwait(false);
                 await client.SendAsync().ConfigureAwait(false);
