@@ -32,6 +32,7 @@
 * Added private tags from Varian official DICOM Conformance Statements (#1556)
 * Fix handling of negative overlay origin (#1559)
 * Add better logging for inbound connections (#1561)
+* Added User Identity Negotiation support (#1110)
 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)

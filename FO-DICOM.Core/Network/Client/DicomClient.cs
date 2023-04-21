@@ -75,6 +75,11 @@ namespace FellowOakDicom.Network.Client
         List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
 
         /// <summary>
+        /// Gets or sets the user identity to negotiate with association.
+        /// </summary>
+        DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
+
+        /// <summary>
         /// Gets or sets the fallback encoding.
         /// </summary>
         Encoding FallbackEncoding { get; set; }
@@ -135,6 +140,12 @@ namespace FellowOakDicom.Network.Client
         void NegotiateAsyncOps(int invoked = 0, int performed = 0);
 
         /// <summary>
+        /// Set negotiation of user identity.
+        /// </summary>
+        /// <param name="userIdentityNegotiation">User identity negotiation information.</param>
+        void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentityNegotiation);
+
+        /// <summary>
         /// Enqueues a new DICOM request for execution.
         /// </summary>
         /// <param name="dicomRequest">The DICOM request to send</param>
@@ -188,6 +199,7 @@ namespace FellowOakDicom.Network.Client
         public DicomServiceOptions ServiceOptions { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
+        public DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
         public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
@@ -243,6 +255,8 @@ namespace FellowOakDicom.Network.Client
             AsyncInvoked = invoked;
             AsyncPerformed = performed;
         }
+
+        public void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentity) => UserIdentityNegotiation = userIdentity;
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {
@@ -348,6 +362,7 @@ namespace FellowOakDicom.Network.Client
                             CalledAE = CalledAe,
                             MaxAsyncOpsInvoked = AsyncInvoked,
                             MaxAsyncOpsPerformed = AsyncPerformed,
+                            UserIdentityNegotiation = UserIdentityNegotiation
                         };
 
                         foreach (var request in requestsToSend)

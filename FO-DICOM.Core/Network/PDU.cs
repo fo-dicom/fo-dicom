@@ -661,6 +661,23 @@ namespace FellowOakDicom.Network
                 pdu.WriteLength16();
             }
 
+            // User Identity Negotiation
+            if (_assoc.UserIdentityNegotiation != null)
+            {
+                pdu.Write("Item-Type", 0x58);
+                pdu.Write("Reserved", 0x00);
+                pdu.MarkLength16("Item-Length");
+                pdu.Write("User Identity Type", (byte)_assoc.UserIdentityNegotiation.UserIdentityType);
+                pdu.Write("Positive Response Requested", _assoc.UserIdentityNegotiation.PositiveResponseRequested ? (byte)1 : (byte)0);
+                pdu.MarkLength16("User Identity Primary Field-Length");
+                pdu.Write("User Identity Primary Field", _assoc.UserIdentityNegotiation.PrimaryField);
+                pdu.WriteLength16();
+                pdu.MarkLength16("User Identity Secondary Field-Length");
+                pdu.Write("User Identity Secondary Field", _assoc.UserIdentityNegotiation.SecondaryField);
+                pdu.WriteLength16();
+                pdu.WriteLength16();
+            }
+
             pdu.WriteLength16();
         }
 
@@ -798,6 +815,24 @@ namespace FellowOakDicom.Network
                             {
                                 raw.SkipBytes("User Item Value", remaining);
                             }
+                        }
+                        else if (ut == 0x58)
+                        {
+                            // User Identity Negotiation
+                            var userIdentityType = (DicomUserIdentityType)raw.ReadByte("User Identity Type");
+                            var positiveResponseRequested = raw.ReadByte("Positive Response Requested") == 0x01;
+                            var primaryFieldLength = raw.ReadUInt16("User Identity Primary Field-Length");
+                            var primaryField = raw.ReadString("User Identity Primary Field", primaryFieldLength);
+                            var secondaryFieldLength = raw.ReadUInt16("User Identity Secondary Field-Length");
+                            var secondaryField = raw.ReadString("User Identity Secondary Field", secondaryFieldLength);
+
+                            _assoc.UserIdentityNegotiation = new DicomUserIdentityNegotiation
+                            {
+                                UserIdentityType = userIdentityType,
+                                PositiveResponseRequested = positiveResponseRequested,
+                                PrimaryField = primaryField,
+                                SecondaryField = secondaryField
+                            };
                         }
                         else
                         {
@@ -963,6 +998,18 @@ namespace FellowOakDicom.Network
                 pdu.WriteLength16();
             }
 
+            // User Identity Negotiation
+            if (_assoc.UserIdentityNegotiation != null)
+            {
+                pdu.Write("Item-Type", 0x59);
+                pdu.Write("Reserved", 0x00);
+                pdu.MarkLength16("Item-Length");
+                pdu.MarkLength16("Server Response-Length");
+                pdu.Write("Server Response", _assoc.UserIdentityNegotiation.ServerResponse);
+                pdu.WriteLength16();
+                pdu.WriteLength16();
+            }
+
             pdu.WriteLength16();
         }
 
@@ -1086,6 +1133,17 @@ namespace FellowOakDicom.Network
                             var info = raw.ReadBytes("Service Class Application Information", infoLen);
                             var appInfo = DicomServiceApplicationInfo.Create(uid, info);
                             _assoc.ExtendedNegotiations.AcceptApplicationInfo(uid, appInfo);
+                        }
+                        else if (ut == 0x59)
+                        {
+                            // User Identity Negotiation
+                            var serverResponseLength = raw.ReadUInt16("Server Response-Length");
+                            var serverResponse = raw.ReadString("Server Response", serverResponseLength);
+
+                            if (_assoc.UserIdentityNegotiation != null)
+                            {
+                                _assoc.UserIdentityNegotiation.ServerResponse = serverResponse;
+                            }
                         }
                         else
                         {

@@ -175,6 +175,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 MaxAsyncOpsInvoked = request.MaxAsyncOpsInvoked,
                 MaxAsyncOpsPerformed = request.MaxAsyncOpsPerformed,
                 MaximumPDULength = Options.MaxPDULength,
+                UserIdentityNegotiation = request.UserIdentityNegotiation
             };
 
             foreach (var presentationContext in request.PresentationContexts)
