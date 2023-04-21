@@ -169,7 +169,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         {
             var dicomAssociation = new DicomAssociation(request.CallingAE, request.CalledAE)
             {
-                Options = Options, MaxAsyncOpsInvoked = request.MaxAsyncOpsInvoked, MaxAsyncOpsPerformed = request.MaxAsyncOpsPerformed, MaximumPDULength = Options.MaxPDULength,
+                RemoteHost = NetworkStream.RemoteHost,
+                RemotePort = NetworkStream.RemotePort,
+                Options = Options,
+                MaxAsyncOpsInvoked = request.MaxAsyncOpsInvoked,
+                MaxAsyncOpsPerformed = request.MaxAsyncOpsPerformed,
+                MaximumPDULength = Options.MaxPDULength,
             };
 
             foreach (var presentationContext in request.PresentationContexts)

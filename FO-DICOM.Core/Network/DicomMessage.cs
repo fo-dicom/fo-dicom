@@ -2,7 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Log;
-using FellowOakDicom.Network.Client.Tasks;
+using FellowOakDicom.Tools;
 using System;
 using System.Text;
 using System.Threading.Tasks;

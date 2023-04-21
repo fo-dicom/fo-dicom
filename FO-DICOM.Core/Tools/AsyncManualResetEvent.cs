@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace FellowOakDicom.Network.Client.Tasks
+namespace FellowOakDicom.Tools
 {
     /// <summary>
     /// An async-compatible manual-reset event.

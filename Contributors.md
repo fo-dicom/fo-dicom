@@ -88,3 +88,4 @@
 * [Atte Kojo](https://github.com/akojo)
 * [Olivier Revelat](https://github.com/olivier-med)
 * [Tars De Jaeger](https://github.com/tarsdejaeger)
+* [Ryan Rozario](https://github.com/ryan-rozario)

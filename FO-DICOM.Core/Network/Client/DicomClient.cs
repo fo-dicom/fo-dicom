@@ -159,7 +159,7 @@ namespace FellowOakDicom.Network.Client
         private ILogger _logger;
         private DicomClientState _state;
         private long _isSending;
-        private readonly Tasks.AsyncManualResetEvent _hasMoreRequests;
+        private readonly Tools.AsyncManualResetEvent _hasMoreRequests;
 
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
         
@@ -231,7 +231,7 @@ namespace FellowOakDicom.Network.Client
             _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
             _state = DicomClientIdleState.Instance;
             _isSending = 0;
-            _hasMoreRequests = new Tasks.AsyncManualResetEvent();
+            _hasMoreRequests = new Tools.AsyncManualResetEvent();
         }
 
         public void NegotiateAsyncOps(int invoked = 0, int performed = 0)
