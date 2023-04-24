@@ -8,7 +8,6 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging.Mathematics
 {
-
     [Collection("General")]
     public class Point2Tests
     {

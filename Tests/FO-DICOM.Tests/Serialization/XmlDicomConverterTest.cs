@@ -17,6 +17,8 @@ namespace FellowOakDicom.Tests.Serialization
             var dataset = new DicomDataset();
             dataset.AddOrUpdate(DicomTag.StudyInstanceUID, "1.2.345");
             dataset.AddOrUpdate(DicomTag.PatientName, "Test^Name");
+            string[] patientCommentsValue = null;
+            dataset.AddOrUpdate(DicomTag.PatientComments, patientCommentsValue);
             var finalXml = new StringBuilder();
             finalXml.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
             finalXml.AppendLine(@"<NativeDicomModel>");
@@ -27,6 +29,9 @@ namespace FellowOakDicom.Tests.Serialization
             finalXml.AppendLine(@"<GivenName>Name</GivenName>");
             finalXml.AppendLine(@"</Alphabetic>");
             finalXml.AppendLine(@"</PersonName>");
+            finalXml.AppendLine(@"</DicomAttribute>");
+            finalXml.AppendLine(@"<DicomAttribute tag=""00104000"" vr=""LT"" keyword=""PatientComments"">");
+            finalXml.AppendLine(@"<Value number=""1""></Value>");
             finalXml.AppendLine(@"</DicomAttribute>");
             finalXml.AppendLine(@"<DicomAttribute tag=""0020000D"" vr=""UI"" keyword=""StudyInstanceUID"">");
             finalXml.AppendLine(@"<Value number=""1"">1.2.345</Value>");
