@@ -13,6 +13,7 @@ namespace FellowOakDicom.Log
     /// <summary>
     /// DICOM dataset walker for logging.
     /// </summary>
+    [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     public class DicomDatasetLogger : IDicomDatasetWalker
     {
         private readonly ILogger _log;

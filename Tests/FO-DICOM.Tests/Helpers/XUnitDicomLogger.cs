@@ -43,7 +43,7 @@ namespace FellowOakDicom.Tests.Helpers
 
         public XUnitDicomLogger WithMinimumLevel(LogLevel minimumLevel) => new XUnitDicomLogger(_testOutputHelper, minimumLevel, _prefixEnrichers);
 
-        public void Log<TState>(LogLevel level, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        public void Log<TState>(LogLevel level, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             var prefix = _prefixEnrichers.Aggregate(
                 $"{nameof(XUnitDicomLogger), 20} {level.ToString().ToUpper(), 7}",

@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using Microsoft.Extensions.Logging;
+using System;
 using System.Text;
 
 namespace FellowOakDicom.Log
@@ -10,12 +11,14 @@ namespace FellowOakDicom.Log
     public static class Extensions
     {
 
+        [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
         public static void WriteToLog(this DicomDataset dataset, ILogger log, LogLevel level)
         {
             var logger = new DicomDatasetLogger(log, level);
             new DicomDatasetWalker(dataset).Walk(logger);
         }
 
+        [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
         public static void WriteToLog(this DicomFile file, ILogger log, LogLevel level)
         {
             var logger = new DicomDatasetLogger(log, level);

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Log
 {
+    [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     public class DicomParserLogger : IDicomReaderObserver
     {
         private readonly ILogger _log;
