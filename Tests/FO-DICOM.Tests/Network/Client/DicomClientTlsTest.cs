@@ -1,23 +1,17 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Network.Tls;
 using FellowOakDicom.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using static FellowOakDicom.Tests.Network.Client.DicomClientTest;
@@ -80,7 +74,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var logger = _logger.IncludePrefix("Responses");
             foreach (var r in responses)
             {
-                logger.Info($"{r.Type} [{r.RequestMessageID}]: " +
+                logger.LogInformation($"{r.Type} [{r.RequestMessageID}]: " +
                             $"Status = {r.Status.State}, " +
                             $"Code = {r.Status.Code}, " +
                             $"ErrorComment = {r.Status.ErrorComment}, " +
@@ -114,7 +108,7 @@ namespace FellowOakDicom.Tests.Network.Client
                         switch (errors)
                         {
                             case SslPolicyErrors.RemoteCertificateNotAvailable:
-                                serverLogger.Debug("SSL policy errors: client certificate is missing");
+                                serverLogger.LogDebug("SSL policy errors: client certificate is missing");
                                 if (!requireMutualAuthentication)
                                 {
                                     // No remote certificate needed if mutual authentication is disabled
@@ -122,10 +116,10 @@ namespace FellowOakDicom.Tests.Network.Client
                                 }
                                 break;
                             case SslPolicyErrors.RemoteCertificateNameMismatch:
-                                serverLogger.Debug("SSL policy errors: client certificate name mismatch");
+                                serverLogger.LogDebug("SSL policy errors: client certificate name mismatch");
                                 break;
                             case SslPolicyErrors.RemoteCertificateChainErrors:
-                                serverLogger.Debug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
+                                serverLogger.LogDebug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
                                 break;
                         }
 
@@ -134,7 +128,7 @@ namespace FellowOakDicom.Tests.Network.Client
                             for (var index = 0; index < chain.ChainStatus.Length; index++)
                             {
                                 var chainStatus = chain.ChainStatus[index];
-                                serverLogger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                                serverLogger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
 
                                 // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                                 if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
@@ -164,20 +158,20 @@ namespace FellowOakDicom.Tests.Network.Client
                         switch (errors)
                         {
                             case SslPolicyErrors.RemoteCertificateNotAvailable:
-                                client.Logger.Debug("SSL policy errors: server certificate is missing");
+                                client.Logger.LogDebug("SSL policy errors: server certificate is missing");
                                 break;
                             case SslPolicyErrors.RemoteCertificateNameMismatch:
-                                client.Logger.Debug("SSL policy errors: server certificate name mismatch");
+                                client.Logger.LogDebug("SSL policy errors: server certificate name mismatch");
                                 break;
                             case SslPolicyErrors.RemoteCertificateChainErrors:
-                                client.Logger.Debug("SSL policy errors: validation error somewhere in the chain validation of the server certificate");
+                                client.Logger.LogDebug("SSL policy errors: validation error somewhere in the chain validation of the server certificate");
                                 break;
                         }
 
                         for (var index = 0; index < chain.ChainStatus.Length; index++)
                         {
                             var chainStatus = chain.ChainStatus[index];
-                            client.Logger.Debug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                            client.Logger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
 
                             // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                             if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))

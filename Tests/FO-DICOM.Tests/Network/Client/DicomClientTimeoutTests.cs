@@ -1,13 +1,13 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -18,14 +18,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Network.Client.EventArguments;
-using FellowOakDicom.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Xunit;
 using Xunit.Abstractions;
 
