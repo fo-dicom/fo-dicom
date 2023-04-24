@@ -3,8 +3,8 @@
 
 using System;
 using System.Text;
-using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace FellowOakDicom.Network
@@ -24,7 +24,7 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null,
+            ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
@@ -42,7 +42,7 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null,
+            ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
@@ -81,7 +81,7 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null,
+            ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T>(port, certificateName, fallbackEncoding, logger, userState);
@@ -101,7 +101,7 @@ namespace FellowOakDicom.Network
             int port,
             string certificateName = null,
             Encoding fallbackEncoding = null,
-            Logger logger = null,
+            ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, certificateName, fallbackEncoding, logger, userState);
@@ -149,12 +149,12 @@ namespace FellowOakDicom.Network
             int port, 
             string certificateName = null,
             Encoding fallbackEncoding = null, 
-            Logger logger = null,
+            ILogger logger = null,
             object userState = null)
             where T : DicomService, IDicomServiceProvider 
             => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, certificateName, fallbackEncoding, logger);
 
-        public IDicomServer Create<T>(string ipAddress, int port, string certificateName = null, Encoding fallbackEncoding = null, Logger logger = null, object userState = null) where T : DicomService, IDicomServiceProvider
+        public IDicomServer Create<T>(string ipAddress, int port, string certificateName = null, Encoding fallbackEncoding = null, ILogger logger = null, object userState = null) where T : DicomService, IDicomServiceProvider
             => Create<T, DicomServer<T>>(ipAddress, port, userState, certificateName, fallbackEncoding, logger);
 
         public virtual IDicomServer Create<TServiceProvider, TServer>(

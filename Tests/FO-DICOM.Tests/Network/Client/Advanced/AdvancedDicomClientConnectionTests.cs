@@ -4,10 +4,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 

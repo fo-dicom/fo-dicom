@@ -4,15 +4,14 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Benchmark
 {
     public class NopCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
-        public NopCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+        public NopCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {
         }

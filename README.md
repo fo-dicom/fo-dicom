@@ -42,7 +42,6 @@ Package | Description
 [fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Core package containing parser, services and tools.
 [fo-dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with referencte to System.Drawing, required for rendering into Bitmaps
 [fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Desktop/) | Library with reference to ImageSharp, can be used for platform independent rendering
-[fo-dicom.NLog](https://www.nuget.org/packages/fo-dicom.NLog/) | .NET connector to enable *fo-dicom* logging with NLog
 [fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform Dicom codecs for fo-dicom, developed by Efferent Health (https://github.com/Efferent-Health/fo-dicom.Codecs)
 
 
@@ -59,35 +58,56 @@ Documentation, including API documentation, is available via GitHub pages:
 #### Image rendering configuration
 Out-of-the-box, *fo-dicom* defaults to an internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget package you desire and then call:
 
-    new DicomSetupBuilder()
-        .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<WinFormsImageManager>())
-	.Build();
-	
+```csharp
+new DicomSetupBuilder()
+    .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<WinFormsImageManager>())
+.Build();
+```
+
 or
 
-    new DicomSetupBuilder()
-        .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>())
-	.Build();
+```csharp
+new DicomSetupBuilder()
+    .RegisterServices(s => s.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>())
+.Build();
+```
 
 Then when rendering you can cast the IImage to the type by
 
-    var image = new DicomImage("filename.dcm");
-    var bitmap = image.RenderImage().As<Bitmap>();
+```csharp
+var image = new DicomImage("filename.dcm");
+var bitmap = image.RenderImage().As<Bitmap>();
+```
 
 or
 
-    var image = new DicomImage("filename.dcm");
-    var sharpimage = image.RenderImage().AsSharpImage();
-
-#### Logging configuration
-By default, logging defaults to the no-op `NullLogerManager`. There are several logmanagers configurable within `DicomSetupBuilder` like
-
-    s.AddLogManager<ConsoleLogManager>()  // or ...
-    s.AddLogManager<NLogManager>()   // or ...
+```csharp
+var image = new DicomImage("filename.dcm");
+var sharpimage = image.RenderImage().AsSharpImage();
+```
     
+#### Logging configuration
+Fellow Oak DICOM uses `Microsoft.Extensions.Logging`, so if you are already using that, Fellow Oak DICOM logging will show up automatically.
 
-    LogManager.SetImplementation(ConsoleLogManager.Instance);  // or ...
-    LogManager.SetImplementation(NLogManager.Instance);        // or ...
+In the past, Fellow Oak DICOM had a custom abstraction for logging: ILogger and ILogManager.
+For backwards compatibility purposes, this is still supported but not recommended for new applications.
+
+```csharp
+services.AddLogManager<MyLogManager>();
+```
+
+where MyLogManager looks like this:
+
+```
+using FellowOakDicom.Log;
+
+public class MyLogManager: ILogManager {
+    public ILogger GetLogger(string name) {
+        ...
+    }
+}
+```
+
 
 ### Sample applications
 There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples

@@ -17,7 +17,6 @@ namespace FellowOakDicom.AspNetCore
 
         public static IServiceCollection UseFellowOakDicom(this IServiceCollection services)
             => services.AddFellowOakDicom()
-                .AddLogManager<DicomLogManager>()
                 .AddTransient<IHostedService, DicomInitializationHelper>(provider => {
                     DicomSetupBuilder.UseServiceProvider(provider);
                     return new DicomInitializationHelper();

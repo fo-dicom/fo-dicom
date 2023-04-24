@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using System;
 using System.IO;
@@ -10,6 +9,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.Imaging.Codec;
 using Xunit;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Tests.Bugs
 {
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.Bugs
             DicomTransferSyntax.ImplicitVRLittleEndian
         };
 
-        public VideoCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log, DicomServiceDependencies dependencies)
+        public VideoCStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {
         }
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
-            Logger.Info(tempName);
+            Logger.LogInformation(tempName);
             await request.File.SaveAsync(tempName);
 
             _storedFiles.Add(tempName);

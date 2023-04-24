@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Association;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.ExceptionServices;
 using System.Text;
@@ -109,7 +109,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _logger.Debug("Sending association request from {CallingAE} to {CalledAE}", request.CallingAE, request.CalledAE);
+            _logger.LogDebug("Sending association request from {CallingAE} to {CalledAE}", request.CallingAE, request.CalledAE);
 
             await SendAssociationRequestAsync(ToDicomAssociation(request)).ConfigureAwait(false);
 
@@ -119,7 +119,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 {
                     case DicomAssociationAcceptedEvent dicomAssociationAcceptedEvent:
                         {
-                            _logger.Debug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
+                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
 
                             return new AdvancedDicomClientAssociation(this, dicomAssociationAcceptedEvent.Association, _logger);
                         }
@@ -129,7 +129,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                             var source = dicomAssociationRejectedEvent.Source;
                             var reason = dicomAssociationRejectedEvent.Reason;
 
-                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it: {Result} {Source} {Reason}",
+                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it: {Result} {Source} {Reason}",
                                 request.CallingAE, request.CalledAE, request.CalledAE, result, source, reason);
 
                             throw new DicomAssociationRejectedException(result, source, reason);
@@ -139,14 +139,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                             var source = dicomAbortedEvent.Source;
                             var reason = dicomAbortedEvent.Reason;
 
-                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it: {Source} {Reason}",
+                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it: {Source} {Reason}",
                                 request.CallingAE, request.CalledAE, request.CalledAE, source, reason);
 
                             throw new DicomAssociationAbortedException(source, reason);
                         }
                     case ConnectionClosedEvent connectionClosedEvent:
                         {
-                            _logger.Debug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
+                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
 
                             if (connectionClosedEvent.Exception != null)
                             {

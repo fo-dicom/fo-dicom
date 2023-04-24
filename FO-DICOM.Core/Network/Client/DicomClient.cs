@@ -1,7 +1,6 @@
 // Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
@@ -15,6 +14,7 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 // DICOM client still provides some obsolete APIs that should not be removed yet, but should also not provide obsolete compiler warnings
 #pragma warning disable CS0618
@@ -210,12 +210,12 @@ namespace FellowOakDicom.Network.Client
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
-        /// <param name="logger">The logger</param>
+        /// <param name="loggerFactory">The log manager that will be used to extract a default logger</param>
         /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
         public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
-            ILogger logger,
+            ILoggerFactory loggerFactory,
             IAdvancedDicomClientConnectionFactory advancedDicomClientConnectionFactory)
         {
             Host = host;
@@ -231,7 +231,7 @@ namespace FellowOakDicom.Network.Client
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = loggerFactory.CreateLogger(Log.LogCategories.Network);
             _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
             _state = DicomClientIdleState.Instance;
             _isSending = 0;
@@ -425,7 +425,7 @@ namespace FellowOakDicom.Network.Client
 
                             if (!connection.CanStillProcessPDataTF)
                             {
-                                _logger.Debug($"The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
+                                _logger.LogDebug($"The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
                                 requestsToRetry.AddRange(requestsToSend);
                                 break;
                             }
@@ -440,7 +440,7 @@ namespace FellowOakDicom.Network.Client
                              * Furthermore, after each DICOM request completes, we also check if more requests were queued into this DICOM client
                              * This should result in a maximum throughput of DICOM requests, always utilizing the maximum of async invoked requests
                              */
-                            _logger.Debug("Sending {NumberOfRequests} requests", requestsToSend.Count);
+                            _logger.LogDebug("Sending {NumberOfRequests} requests", requestsToSend.Count);
                             var maximumNumberOfParallelRequests = association.Association.MaxAsyncOpsInvoked;
                             var parallelRequests = new List<Task>(maximumNumberOfParallelRequests);
                             while (parallelRequests.Count < maximumNumberOfParallelRequests
@@ -490,7 +490,7 @@ namespace FellowOakDicom.Network.Client
                                 && ClientOptions.AssociationLingerTimeoutInMs > 0
                                 && connection.CanStillProcessPDataTF)
                             {
-                                _logger.Debug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
+                                _logger.LogDebug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
 
                                 SetState(DicomClientLingeringState.Instance);
                                 
@@ -526,7 +526,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (OperationCanceledException)
                     {
-                        _logger.Warn("DICOM request sending was cancelled");
+                        _logger.LogWarning("DICOM request sending was cancelled");
 
                         if (association != null && association.IsDisposed == false)
                         {
@@ -547,7 +547,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (Exception e)
                     {
-                        _logger.Error("An error occurred while sending DICOM requests: {Error}", e);
+                        _logger.LogError(e, "An error occurred while sending DICOM requests");
 
                         exception = e;
 
@@ -597,7 +597,7 @@ namespace FellowOakDicom.Network.Client
                 throw new ArgumentNullException(nameof(request));
             }
             
-            _logger.Debug("{Request} is being sent", request.ToString());
+            _logger.LogDebug("{Request} is being sent", request.ToString());
 
             try
             {
@@ -608,13 +608,13 @@ namespace FellowOakDicom.Network.Client
                     cancellationToken.ThrowIfCancellationRequested();
                 }
 
-                _logger.Debug("{Request} has completed", request.ToString());
+                _logger.LogDebug("{Request} has completed", request.ToString());
             }
             catch (DicomRequestTimedOutException e)
             {
                 RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
 
-                _logger.Debug("{Request} has timed out", request.ToString());
+                _logger.LogDebug("{Request} has timed out", request.ToString());
             }
         }
         
@@ -640,7 +640,7 @@ namespace FellowOakDicom.Network.Client
 
             _state = state;
             
-            _logger.Debug($"[{oldState}] --> [{newState}]");
+            _logger.LogDebug("[{OldState}] --> [{NewState}]", oldState, newState);
 
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
         }

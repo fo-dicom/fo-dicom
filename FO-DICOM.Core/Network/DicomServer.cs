@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace FellowOakDicom.Network
         
         private readonly INetworkManager _networkManager;
         
-        private readonly ILogManager _logManager;
+        private readonly ILoggerFactory _loggerFactory;
 
         private readonly List<RunningDicomService> _services;
 
@@ -65,7 +65,7 @@ namespace FellowOakDicom.Network
         public DicomServer(DicomServerDependencies dependencies)
         {
             _networkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
-            _logManager = dependencies.LogManager ?? throw new ArgumentNullException(nameof(dependencies.LogManager));
+            _loggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;
@@ -131,7 +131,7 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public ILogger Logger
         {
-            get => _logger ?? (_logger = _logManager.GetLogger("FellowOakDicom.Network"));
+            get => _logger ??= _loggerFactory.CreateLogger(Log.LogCategories.Network);
             set => _logger  = value;
         }
 
@@ -243,7 +243,7 @@ namespace FellowOakDicom.Network
         /// <returns>An instance of the DICOM service class.</returns>
         protected virtual T CreateScp(INetworkStream stream)
         {
-            var creator = ActivatorUtilities.CreateFactory(typeof(T), new[] { typeof(INetworkStream), typeof(Encoding), typeof(Logger) });
+            var creator = ActivatorUtilities.CreateFactory(typeof(T), new[] { typeof(INetworkStream), typeof(Encoding), typeof(ILogger) });
             var instance = (T)creator(ServiceScope.ServiceProvider, new object[] { stream, _fallbackEncoding, Logger });
             
             // Please do not use property injection. See https://stackoverflow.com/a/39853478/563070
@@ -296,8 +296,7 @@ namespace FellowOakDicom.Network
                         }
                         // Allow proper triggering of the OperationCanceledException, if any
                         await oneMinuteDelay.ConfigureAwait(false);
-                        _logger.Warn("Cannot accept another incoming connection " +
-                                     "because the maximum number of clients ({MaxClientsAllowed}) has been reached", Options.MaxClientsAllowed);
+                        _logger.LogWarning("Cannot accept another incoming connection because the maximum number of clients ({MaxClientsAllowed}) has been reached", Options.MaxClientsAllowed);
                     }
 
                     var networkStream = await listener
@@ -320,13 +319,12 @@ namespace FellowOakDicom.Network
                             numberOfServices = _services.Count;
                         }
                         
-                        _logger.Debug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", IPAddress, Port, numberOfServices);
+                        _logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
                         
                         _hasServicesFlag.Set();
                         if (IsServicesAtMax)
                         {
-                            _logger.Warn("Reached the maximum number of simultaneously connected clients, " +
-                                         "further incoming connections will be blocked until one or more clients disconnect", IPAddress, Port);
+                            _logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
                             _hasNonMaxServicesFlag.Reset();
                         }
                     }
@@ -334,11 +332,11 @@ namespace FellowOakDicom.Network
             }
             catch (OperationCanceledException e)
             {
-                Logger.Warn("DICOM server was canceled, {@error}", e);
+                Logger.LogWarning(e, "DICOM server was canceled");
             }
             catch (Exception e)
             {
-                Logger.Error("Exception listening for DICOM services, {@error}", e);
+                Logger.LogError(e, "Exception listening for DICOM services");
 
                 Stop();
                 Exception = e;
@@ -359,7 +357,7 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    _logger.Debug("Waiting for incoming client connections");
+                    _logger.LogDebug("Waiting for incoming client connections");
                     
                     await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
                     
@@ -369,7 +367,7 @@ namespace FellowOakDicom.Network
                         runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
                     }
                     var numberOfDicomServices = runningDicomServiceTasks.Count;
-                    _logger.Debug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
+                    _logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
                     if (numberOfDicomServices > 0)
                     {
                         await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
@@ -412,18 +410,18 @@ namespace FellowOakDicom.Network
                         }
                         catch (Exception e)
                         {
-                            _logger.Warn("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
+                            _logger.LogWarning("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
                         }
                     }
 
-                    _logger.Debug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
+                    _logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
                     if (numberOfRemainingServices > 0)
                     {
-                        _logger.Debug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
+                        _logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
                     }
                     else
                     {
-                        _logger.Debug("There are no clients connected now");
+                        _logger.LogDebug("There are no clients connected now");
                     }
                     
                     if (isHasNonMaxServicesFlagSet)
@@ -431,26 +429,26 @@ namespace FellowOakDicom.Network
                         if (Options.MaxClientsAllowed > 0)
                         {
                             var numberOfExtraClientsAllowed = Options.MaxClientsAllowed - numberOfRemainingServices;
-                            _logger.Debug("{NumberOfExtraServicesAllowed} more incoming client connections are allowed", numberOfExtraClientsAllowed);
+                            _logger.LogDebug("{NumberOfExtraServicesAllowed} more incoming client connections are allowed", numberOfExtraClientsAllowed);
                         }
                         else
                         {
-                            _logger.Debug("Unlimited more incoming client connections are allowed");
+                            _logger.LogDebug("Unlimited more incoming client connections are allowed");
                         }
                     }
                     else
                     {
-                        _logger.Debug("Cannot accept more incoming client connections until one or more clients disconnect");    
+                        _logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");    
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.Info("Stopping disconnected client cleanup because the DICOM server is being stopped");
+                    Logger.LogInformation("Disconnected client cleanup manually terminated.");
                     ClearServices();
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn("Exception removing disconnected clients, {@error}", e);
+                    Logger.LogWarning(e, "Exception removing disconnected clients");
                 }
             }
         }
@@ -472,7 +470,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _logger.Warn("An error occurred while trying to dispose a DICOM service: {@Error}", e);
+                    _logger.LogWarning("An error occurred while trying to dispose a DICOM service: {@Error}", e);
                 }
             }
             

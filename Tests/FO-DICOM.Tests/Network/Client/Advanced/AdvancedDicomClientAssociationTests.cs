@@ -6,14 +6,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client.Advanced;
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -557,7 +554,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
         public class MockCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            public MockCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dependencies)
                 : base(stream, fallbackEncoding, log, dependencies)
             {
