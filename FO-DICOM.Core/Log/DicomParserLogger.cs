@@ -10,18 +10,26 @@ using Microsoft.Extensions.Logging;
 
 namespace FellowOakDicom.Log
 {
-    [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     public class DicomParserLogger : IDicomReaderObserver
     {
-        private readonly ILogger _log;
+        private readonly Microsoft.Extensions.Logging.ILogger _log;
 
-        private readonly LogLevel _level;
+        private readonly Microsoft.Extensions.Logging.LogLevel _level;
 
         private int _depth;
 
         private readonly string _pad;
 
+        [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
         public DicomParserLogger(ILogger log, LogLevel level)
+        {
+            _log = new FellowOakDicomLogger(log);
+            _level = level.ToMicrosoftLogLevel();
+            _depth = 0;
+            _pad = string.Empty;
+        }
+
+        public DicomParserLogger(Microsoft.Extensions.Logging.ILogger log, Microsoft.Extensions.Logging.LogLevel level)
         {
             _log = log;
             _level = level;

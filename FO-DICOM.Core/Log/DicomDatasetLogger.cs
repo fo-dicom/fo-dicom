@@ -13,12 +13,11 @@ namespace FellowOakDicom.Log
     /// <summary>
     /// DICOM dataset walker for logging.
     /// </summary>
-    [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
     public class DicomDatasetLogger : IDicomDatasetWalker
     {
-        private readonly ILogger _log;
+        private readonly Microsoft.Extensions.Logging.ILogger _log;
 
-        private readonly LogLevel _level;
+        private readonly Microsoft.Extensions.Logging.LogLevel _level;
 
         private readonly int _width;
 
@@ -35,7 +34,23 @@ namespace FellowOakDicom.Log
         /// <param name="level">Log level.</param>
         /// <param name="width">Maximum write width.</param>
         /// <param name="valueLength">Maximum value length.</param>
+        [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging, please use the constructor overload that takes a Microsoft.Extensions.Logging.ILogger")]
         public DicomDatasetLogger(ILogger logger, LogLevel level, int width = 128, int valueLength = 64)
+        {
+            _log = new FellowOakDicomLogger(logger);
+            _level = level.ToMicrosoftLogLevel();
+            _width = width;
+            _value = valueLength;
+        }
+
+        /// <summary>
+        /// Initializes an instance of <see cref="DicomDatasetLogger"/>.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        /// <param name="level">Log level.</param>
+        /// <param name="width">Maximum write width.</param>
+        /// <param name="valueLength">Maximum value length.</param>
+        public DicomDatasetLogger(Microsoft.Extensions.Logging.ILogger logger, Microsoft.Extensions.Logging.LogLevel level, int width = 128, int valueLength = 64)
         {
             _log = logger;
             _level = level;

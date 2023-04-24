@@ -16,4 +16,26 @@ namespace FellowOakDicom.Log
         Fatal
     }
 
+    internal static class LogLevelExtensions
+    {
+        [Obsolete("Only use this in obsolete methods")]
+        public static Microsoft.Extensions.Logging.LogLevel ToMicrosoftLogLevel(this LogLevel logLevel)
+        {
+            switch (logLevel)
+            {
+                case LogLevel.Debug:
+                    return Microsoft.Extensions.Logging.LogLevel.Debug;
+                case LogLevel.Info:
+                    return Microsoft.Extensions.Logging.LogLevel.Information;
+                case LogLevel.Warning:
+                    return Microsoft.Extensions.Logging.LogLevel.Warning;
+                case LogLevel.Error:
+                    return Microsoft.Extensions.Logging.LogLevel.Error;
+                case LogLevel.Fatal:
+                    return Microsoft.Extensions.Logging.LogLevel.Critical;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+            }
+        }
+    }
 }
