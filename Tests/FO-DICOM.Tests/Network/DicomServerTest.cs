@@ -179,7 +179,8 @@ namespace FellowOakDicom.Tests.Network
             while (server.IsListening) { Thread.Sleep(10); }
 
             var dicomServer = DicomServerRegistry.Get(port)?.DicomServer;
-            Assert.False(dicomServer?.IsListening ?? false);
+            Assert.NotNull(dicomServer);
+            Assert.False(dicomServer.IsListening);
         }
 
         [Fact]
