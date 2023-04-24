@@ -4,11 +4,10 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -60,7 +59,7 @@ namespace FellowOakDicom.Tests.Network
 
     public class AsyncDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
     {
-        public AsyncDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public AsyncDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {

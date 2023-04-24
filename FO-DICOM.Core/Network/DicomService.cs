@@ -5,9 +5,9 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
-using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -109,7 +109,7 @@ namespace FellowOakDicom.Network
             MaximumPDUsInQueue = 16;
 
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            LogManager = dependencies.LogManager ?? throw new ArgumentNullException(nameof(dependencies.LogManager));
+            LoggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
             NetworkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
             TranscoderManager = dependencies.TranscoderManager ?? throw new ArgumentNullException(nameof(dependencies.TranscoderManager));
 
@@ -213,7 +213,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// The log manager being used by this DICOM service
         /// </summary>
-        private ILogManager LogManager { get; }
+        private ILoggerFactory LoggerFactory { get; }
 
         /// <summary>
         /// The transcoder manager being used by this DICOM service
@@ -273,7 +273,7 @@ namespace FellowOakDicom.Network
             }
             else
             {
-                Logger?.Warn($"DICOM service {GetType().FullName} was not disposed correctly, but was garbage collected instead");
+                Logger.LogWarning("DICOM service {DicomServiceType} was not disposed correctly, but was garbage collected instead", GetType().FullName);
             }
         }
 
@@ -434,7 +434,7 @@ namespace FellowOakDicom.Network
 
                 if (Options.LogDataPDUs && pdu is PDataTF)
                 {
-                    Logger.Info("{logId} -> {pdu}", LogID, pdu);
+                    Logger.LogInformation("{logId} -> {pdu}", LogID, pdu);
                 }
 
                 try
@@ -451,13 +451,13 @@ namespace FellowOakDicom.Network
                 catch (ObjectDisposedException e)
                 {
                     // This may happen when closing a connection.
-                    Logger.Error("An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
-                                 "This can happen when the connection is being closed", e);
+                    Logger.LogError(e, "An 'object disposed' exception occurred while writing the next PDU to the network stream. " +
+                                 "This can happen when the connection is being closed");
                     throw new DicomNetworkException("This DICOM service was disposed while sending a PDU", e);
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Exception sending PDU: {@error}", e);
+                    Logger.LogError(e, "Exception sending PDU");
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                     throw new DicomNetworkException("An exception occurred while sending a PDU", e);
                 }
@@ -492,7 +492,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            Logger.Debug("Read 0 bytes from network stream while reading PDU header, connection will be marked as closed");
+                            Logger.LogDebug("Read 0 bytes from network stream while reading PDU header, connection will be marked as closed");
                             await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
@@ -528,7 +528,7 @@ namespace FellowOakDicom.Network
                         if (count == 0)
                         {
                             // disconnected
-                            Logger.Debug("Read 0 bytes from network stream while reading PDU, connection will be marked as closed");
+                            Logger.LogDebug("Read 0 bytes from network stream while reading PDU, connection will be marked as closed");
                             await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                             return;
                         }
@@ -566,13 +566,13 @@ namespace FellowOakDicom.Network
                                 LogID = Association.CallingAE;
                                 if (Options.UseRemoteAEForLogName)
                                 {
-                                    Logger = LogManager.GetLogger(LogID);
+                                    Logger = LoggerFactory.CreateLogger(LogID);
                                 }
 
-                                Logger.Info(
-                                    "{callingAE} <- Association request:\n{association}",
+                                Logger.LogInformation(
+                                    "{CallingAE} <- Association request:\n{Association}",
                                     LogID,
-                                    Association.ToString());
+                                    Association);
                                 if (this is IDicomServiceProvider provider)
                                 {
                                     await provider.OnReceiveAssociationRequestAsync(Association).ConfigureAwait(false);
@@ -585,10 +585,10 @@ namespace FellowOakDicom.Network
                                 var pdu = new AAssociateAC(Association, _memoryProvider);
                                 pdu.Read(raw);
                                 LogID = Association.CalledAE;
-                                Logger.Info(
-                                    "{calledAE} <- Association accept:\n{assocation}",
+                                Logger.LogInformation(
+                                    "{CalledAE} <- Association accept:\n{Assocation}",
                                     LogID,
-                                    Association.ToString());
+                                    Association);
                                 if (this is IDicomClientConnection connection)
                                 {
                                     await connection.OnReceiveAssociationAcceptAsync(Association).ConfigureAwait(false);
@@ -600,7 +600,7 @@ namespace FellowOakDicom.Network
                             {
                                 var pdu = new AAssociateRJ(_memoryProvider);
                                 pdu.Read(raw);
-                                Logger.Info(
+                                Logger.LogInformation(
                                     "{logId} <- Association reject [result: {pduResult}; source: {pduSource}; reason: {pduReason}]",
                                     LogID,
                                     pdu.Result,
@@ -625,7 +625,7 @@ namespace FellowOakDicom.Network
                                 pdu.Read(raw);
                                 if (Options.LogDataPDUs)
                                 {
-                                    Logger.Info("{logId} <- {@pdu}", LogID, pdu);
+                                    Logger.LogInformation("{logId} <- {@pdu}", LogID, pdu);
                                 }
 
                                 await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
@@ -635,7 +635,7 @@ namespace FellowOakDicom.Network
                             {
                                 var pdu = new AReleaseRQ(_memoryProvider);
                                 pdu.Read(raw);
-                                Logger.Info("{logId} <- Association release request", LogID);
+                                Logger.LogInformation("{logId} <- Association release request", LogID);
                                 if (this is IDicomServiceProvider provider)
                                 {
                                     await provider.OnReceiveAssociationReleaseRequestAsync().ConfigureAwait(false);
@@ -647,7 +647,7 @@ namespace FellowOakDicom.Network
                             {
                                 var pdu = new AReleaseRP(_memoryProvider);
                                 pdu.Read(raw);
-                                Logger.Info("{logId} <- Association release response", LogID);
+                                Logger.LogInformation("{logId} <- Association release response", LogID);
                                 if (this is IDicomClientConnection connection)
                                 {
                                     await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
@@ -664,7 +664,7 @@ namespace FellowOakDicom.Network
                             {
                                 var pdu = new AAbort(_memoryProvider);
                                 pdu.Read(raw);
-                                Logger.Info(
+                                Logger.LogInformation(
                                     "{logId} <- Abort: {pduSource} - {pduReason}",
                                     LogID,
                                     pdu.Source,
@@ -696,15 +696,15 @@ namespace FellowOakDicom.Network
                 catch (ObjectDisposedException e)
                 {
                     // silently ignore
-                    Logger.Debug("An 'object disposed' exception occurred while listening to the network stream. " +
-                                 "This can happen when the connection is being closed. {Exception}", e);
+                    Logger.LogDebug(e, "An 'object disposed' exception occurred while listening to the network stream. " +
+                                 "This can happen when the connection is being closed. ");
                     await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (NullReferenceException e)
                 {
                     // connection already closed; silently ignore
-                    Logger.Debug("A 'null reference' exception occurred while listening to the network stream. " +
-                                 "This can happen when the connection is already closed. {Exception}", e);
+                    Logger.LogDebug(e, "A 'null reference' exception occurred while listening to the network stream. " +
+                                 "This can happen when the connection is already closed. ");
                     await TryCloseConnectionAsync(force: true).ConfigureAwait(false);
                 }
                 catch (IOException e)
@@ -715,7 +715,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Exception processing PDU: {@error}", e);
+                    Logger.LogError(e, "Exception processing PDU");
                     await TryCloseConnectionAsync(e, true).ConfigureAwait(false);
                 }
             }
@@ -873,7 +873,7 @@ namespace FellowOakDicom.Network
                                     }
                                     await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
-                                    Logger.Error("Error parsing C-Store dataset: {@error}", e);
+                                    Logger.LogError(e, "Error parsing C-Store dataset");
                                     await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
                                     return;
                                 }
@@ -887,7 +887,7 @@ namespace FellowOakDicom.Network
             }
             catch (Exception e)
             {
-                Logger.Error("Exception processing P-Data-TF PDU: {@error}", e);
+                Logger.LogError(e, "Exception processing P-Data-TF PDU");
                 throw;
             }
             finally
@@ -898,7 +898,10 @@ namespace FellowOakDicom.Network
 
         private async Task PerformDimseAsync(DicomMessage dimse)
         {
-            Logger.Info("{logId} <- {dicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation("{LogId} <- {DicomMessage}", LogID, dimse.ToString(Options.LogDimseDatasets));
+            }
 
             if (!DicomMessage.IsRequest(dimse.Type) && dimse is DicomResponse rsp)
             {
@@ -1128,7 +1131,8 @@ namespace FellowOakDicom.Network
 
                         dicomRequest.PendingSince = DateTime.Now;
 
-#pragma warning disable 4014 This call should not be awaited because it can only complete when the pending queue is empty
+                        // This call should not be awaited because it can only complete when the pending queue is empty
+#pragma warning disable 4014 
                         Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
 #pragma warning restore 4014
                     }
@@ -1140,11 +1144,11 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.Error($"Failed to send DICOM message due to {{@error}}", e);
+                    Logger.LogError(e, "Failed to send DICOM message");
 
                     if (msg is DicomRequest dicomRequest)
                     {
-                        Logger.Debug($"Removing request [{dicomRequest.MessageID}] from pending queue because an error occurred while sending it");
+                        Logger.LogDebug("Removing request [{MessageID}] from pending queue because an error occurred while sending it", dicomRequest.MessageID);
 
                         lock (_lock)
                         {
@@ -1257,7 +1261,7 @@ namespace FellowOakDicom.Network
                             break;
                         default:
                             response = null;
-                            Logger.Warn("Unknown message type: {type}", msg.Type);
+                            Logger.LogWarning("Unknown message type: {type}", msg.Type);
                             break;
 
                     }
@@ -1274,10 +1278,10 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Exception in DoSendMessageAsync: {error}", e);
+                    Logger.LogError(e, "An error occurred while sending a DICOM message");
                 }
 
-                Logger.Error("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
+                Logger.LogError("No accepted presentation context found for abstract syntax: {sopClassUid}", msg.SOPClassUID);
 
                 msg.NotAllPDUsWereSentSuccessfully();
             }
@@ -1303,18 +1307,18 @@ namespace FellowOakDicom.Network
                         if (!transcoderManager.CanTranscode(msg.Dataset.InternalTransferSyntax,
                                 pc.AcceptedTransferSyntax) && msg.Dataset.Contains(DicomTag.PixelData))
                         {
-                            Logger.Warn(
+                            Logger.LogWarning(
                                 "Conversion of dataset transfer syntax from: {datasetSyntax} to: {acceptedSyntax} is not supported.",
                                 msg.Dataset.InternalTransferSyntax, pc.AcceptedTransferSyntax);
 
                             if (Options.IgnoreUnsupportedTransferSyntaxChange)
                             {
-                                Logger.Warn("Will attempt to transfer dataset as-is.");
+                                Logger.LogWarning("Will attempt to transfer dataset as-is.");
                                 changeTransferSyntax = false;
                             }
                             else
                             {
-                                Logger.Warn("Pixel Data (7fe0,0010) is removed from dataset.");
+                                Logger.LogWarning("Pixel Data (7fe0,0010) is removed from dataset.");
                                 msg.Dataset = msg.Dataset.Clone().Remove(DicomTag.PixelData);
                             }
                         }
@@ -1331,7 +1335,7 @@ namespace FellowOakDicom.Network
                     throw new DicomNetworkException($"Failed to send {msg} because the connection to the DICOM server was lost");
                 }
 
-                Logger.Info("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
+                Logger.LogInformation("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
 
                 // This specialized Stream will write byte contents as PDUs with nested PDVs
                 PDataTFStream pDataStream = null;
@@ -1395,7 +1399,7 @@ namespace FellowOakDicom.Network
                 catch (Exception e)
                 {
                     msg.NotAllPDUsWereSentSuccessfully();
-                    Logger.Error("Exception sending DIMSE: {@error}", e);
+                    Logger.LogError(e, "An error occurred while sending a DICOM message");
                     throw new DicomNetworkException($"Failed to send DICOM message {msg}", e);
                 }
                 finally
@@ -1442,7 +1446,7 @@ namespace FellowOakDicom.Network
                             DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
                             try
                             {
-                                Logger.Warn($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
+                                Logger.LogWarning($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
                                 timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
                             }
                             finally
@@ -1470,7 +1474,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("An error occurred in the Fellow Oak DICOM timeout detection loop: {Error}", e);
+                    Logger.LogError(e, "An error occurred in the Fellow Oak DICOM timeout detection loop");
                 }
                 finally
                 {
@@ -1503,7 +1507,7 @@ namespace FellowOakDicom.Network
 
                     if (_pduQueue.Count > 0 || _msgQueue.Count > 0 || _pending.Count > 0)
                     {
-                        Logger.Info(
+                        Logger.LogInformation(
                             "Tried to close connection but queues are not empty, PDUs: {pduCount}, messages: {msgCount}, pending requests: {pendingCount}",
                             _pduQueue.Count,
                             _msgQueue.Count,
@@ -1523,7 +1527,7 @@ namespace FellowOakDicom.Network
             }
             catch (Exception e)
             {
-                Logger.Error("Error during close attempt: {@error}", e);
+                Logger.LogError(e, "Error during close attempt");
                 throw;
             }
 
@@ -1534,7 +1538,7 @@ namespace FellowOakDicom.Network
                 _pduQueueWatcher.Set();
             }
 
-            Logger.Info("Connection closed");
+            Logger.LogInformation("Connection closed");
 
             if (exception != null)
             {
@@ -1567,10 +1571,10 @@ namespace FellowOakDicom.Network
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName)
             {
-                Logger = LogManager.GetLogger(LogID);
+                Logger = LoggerFactory.CreateLogger(LogID);
             }
 
-            Logger.Info("{calledAE} -> Association request:\n{association}", LogID, association.ToString());
+            Logger.LogInformation("{CalledAE} -> Association request:\n{Association}", LogID, association);
 
             Association = association;
             return SendPDUAsync(new AAssociateRQ(Association, _memoryProvider));
@@ -1595,7 +1599,7 @@ namespace FellowOakDicom.Network
                 }
             }
 
-            Logger.Info("{logId} -> Association accept:\n{association}", LogID, association.ToString());
+            Logger.LogInformation("{LogId} -> Association accept:\n{Association}", LogID, association);
 
             return SendPDUAsync(new AAssociateAC(Association, _memoryProvider));
         }
@@ -1609,7 +1613,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason)
         {
             ThrowIfAlreadyDisposed();
-            Logger.Info("{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]", LogID,
+            Logger.LogInformation("{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]", LogID,
                 result, source, reason);
             return SendPDUAsync(new AAssociateRJ(result, source, reason, _memoryProvider));
         }
@@ -1620,7 +1624,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationReleaseRequestAsync()
         {
             ThrowIfAlreadyDisposed();
-            Logger.Info("{logId} -> Association release request", LogID);
+            Logger.LogInformation("{logId} -> Association release request", LogID);
             return SendPDUAsync(new AReleaseRQ(_memoryProvider));
         }
 
@@ -1630,7 +1634,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationReleaseResponseAsync()
         {
             ThrowIfAlreadyDisposed();
-            Logger.Info("{logId} -> Association release response", LogID);
+            Logger.LogInformation("{logId} -> Association release response", LogID);
             return SendPDUAsync(new AReleaseRP(_memoryProvider));
         }
 
@@ -1642,7 +1646,7 @@ namespace FellowOakDicom.Network
         protected Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason)
         {
             ThrowIfAlreadyDisposed();
-            Logger.Info("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
+            Logger.LogInformation("{logId} -> Abort [source: {source}; reason: {reason}]", LogID, source, reason);
             return SendPDUAsync(new AAbort(source, reason, _memoryProvider));
         }
 
@@ -1680,7 +1684,7 @@ namespace FellowOakDicom.Network
         {
             if (NetworkManager.IsSocketException(e.InnerException, out int errorCode, out string errorDescriptor))
             {
-                logger.Info(
+                logger.LogInformation(
                     $"Socket error while {(reading ? "reading" : "writing")} PDU: {{socketError}} [{{errorCode}}]",
                     errorDescriptor,
                     errorCode);
@@ -1689,11 +1693,11 @@ namespace FellowOakDicom.Network
 
             if (e.InnerException is ObjectDisposedException)
             {
-                logger.Info($"Object disposed while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
+                logger.LogInformation($"Object disposed while {(reading ? "reading" : "writing")} PDU");
             }
             else
             {
-                logger.Error($"I/O exception while {(reading ? "reading" : "writing")} PDU: {{@error}}", e);
+                logger.LogError(e, $"I/O exception while {(reading ? "reading" : "writing")} PDU");
             }
 
             return false;
@@ -1829,7 +1833,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _service.Logger.Error("Exception creating PDV: {@error}", e);
+                    _service.Logger.LogError(e, "Exception creating PDV");
                     throw;
                 }
             }
@@ -1967,7 +1971,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _service.Logger.Error("Exception writing data to PDV: {@error}", e);
+                    _service.Logger.LogError(e, "Exception writing data to PDV");
                     throw;
                 }
             }

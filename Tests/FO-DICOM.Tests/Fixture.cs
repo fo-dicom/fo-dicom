@@ -5,6 +5,7 @@ using System;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -25,7 +26,12 @@ namespace FellowOakDicom.Tests
 
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
-                .AddLogManager<CollectingConsoleLogManager>();
+                .AddLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                    logging.AddProvider(CollectingLoggerProvider.Instance);
+                });
 
             var collectionLogServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register("Logging", collectionLogServiceProvider);

@@ -6,11 +6,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -94,7 +93,7 @@ namespace FellowOakDicom.Tests.Network
 
     public class ImmediateSuccessAsyncDicomCFindProvider : DicomService, IDicomServiceProvider, IDicomCFindProvider
     {
-        public ImmediateSuccessAsyncDicomCFindProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public ImmediateSuccessAsyncDicomCFindProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {
@@ -137,7 +136,7 @@ namespace FellowOakDicom.Tests.Network
 
     public class PendingAsyncDicomCFindProvider : DicomService, IDicomServiceProvider, IDicomCFindProvider
     {
-        public PendingAsyncDicomCFindProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+        public PendingAsyncDicomCFindProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {

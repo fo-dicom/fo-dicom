@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FO_DICOM.AspNetCoreTest.Services
 {
