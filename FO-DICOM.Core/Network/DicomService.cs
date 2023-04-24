@@ -66,7 +66,7 @@ namespace FellowOakDicom.Network
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
-        private readonly FellowOakDicom.Tools.AsyncManualResetEvent _isDisconnectedFlag;
+        private readonly Tools.AsyncManualResetEvent _isDisconnectedFlag;
 
         protected Stream _dimseStream;
 
@@ -93,7 +93,7 @@ namespace FellowOakDicom.Network
             ILogger logger,
             DicomServiceDependencies dependencies)
         {
-            _isDisconnectedFlag = new FellowOakDicom.Tools.AsyncManualResetEvent();
+            _isDisconnectedFlag = new Tools.AsyncManualResetEvent();
             _canStillProcessPDataTF = true;
             _isInitialized = false;
             _network = stream;

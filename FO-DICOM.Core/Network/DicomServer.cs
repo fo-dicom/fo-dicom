@@ -51,9 +51,9 @@ namespace FellowOakDicom.Network
 
         private bool _disposed;
 
-        private readonly FellowOakDicom.Tools.AsyncManualResetEvent _hasServicesFlag;
+        private readonly Tools.AsyncManualResetEvent _hasServicesFlag;
 
-        private readonly FellowOakDicom.Tools.AsyncManualResetEvent _hasNonMaxServicesFlag;
+        private readonly Tools.AsyncManualResetEvent _hasNonMaxServicesFlag;
 
         #endregion
 
@@ -80,8 +80,8 @@ namespace FellowOakDicom.Network
 
             _disposed = false;
 
-            _hasServicesFlag = new FellowOakDicom.Tools.AsyncManualResetEvent(false);
-            _hasNonMaxServicesFlag = new FellowOakDicom.Tools.AsyncManualResetEvent(true);
+            _hasServicesFlag = new Tools.AsyncManualResetEvent(false);
+            _hasNonMaxServicesFlag = new Tools.AsyncManualResetEvent(true);
         }
 
         #endregion
