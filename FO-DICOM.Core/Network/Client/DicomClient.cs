@@ -112,7 +112,7 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
-        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClientConnection"/>
+        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="FellowOakDicom.Network.Client.Advanced.Connection.IAdvancedDicomClientConnection"/>
         /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
         [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]

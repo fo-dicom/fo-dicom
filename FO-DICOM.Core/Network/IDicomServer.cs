@@ -73,7 +73,7 @@ namespace FellowOakDicom.Network
         /// <param name="fallbackEncoding">Encoding to apply if no encoding is identified.</param>
         /// <param name="options">Service options.</param>
         /// <param name="userState">User state to be shared with the connected services.</param>
-        /// <returns>Awaitable <see cref="Task"/>.</returns>
+        /// <returns>Awaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
         Task StartAsync(string ipAddress, int port, string certificateName, Encoding fallbackEncoding,
             DicomServiceOptions options, object userState);
 

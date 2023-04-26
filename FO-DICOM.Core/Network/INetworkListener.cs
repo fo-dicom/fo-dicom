@@ -15,7 +15,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Start listening.
         /// </summary>
-        /// <returns>An await:able <see cref="Task"/>.</returns>
+        /// <returns>An awaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
         Task StartAsync();
         /// <summary>
         /// Stop listening.

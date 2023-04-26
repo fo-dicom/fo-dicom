@@ -26,7 +26,7 @@ namespace FellowOakDicom.Imaging.Render
         }
 
         /// <summary>
-        /// Get the <see cref="PaletteColorLUT"/>
+        /// Get the <see cref="FellowOakDicom.Imaging.LUT.PaletteColorLUT"/>
         /// </summary>
         public ILUT LUT { get; private set; }
     }

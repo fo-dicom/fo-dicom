@@ -70,7 +70,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Properties
 
         /// <summary>
-        /// Get <see cref="CompositeLUT"/> of LUTs available in this pipeline instance
+        /// Get <see cref="FellowOakDicom.Imaging.LUT.CompositeLUT"/> of LUTs available in this pipeline instance
         /// </summary>
         public ILUT LUT
         {
