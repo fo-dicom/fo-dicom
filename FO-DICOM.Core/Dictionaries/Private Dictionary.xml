@@ -4743,6 +4743,95 @@
 <tag group="7079" element="xx79" vr="US" vm="1">Unknown</tag>
 <tag group="7079" element="xx80" vr="LO" vm="1">Unknown</tag>
 </dictionary>
+<dictionary creator="IMPAC">
+<tag group="300B" element="xx01" vr="FL" vm="1">Distal Target Distance Tolerance</tag>
+<tag group="300B" element="xx02" vr="FL" vm="1">Maximum Collimated Field Diameter (Field Size)</tag>
+<tag group="300B" element="xx04" vr="FL" vm="1">Range (Planned Distal Target Distance)</tag>
+<tag group="300B" element="xx08" vr="SH" vm="1">Beam Line Data Table Version</tag>
+<tag group="300B" element="xx0E" vr="FL" vm="1">Nominal SOBP Width</tag>
+<tag group="300B" element="xx11" vr="FL" vm="1">Nominal SOBP Width Tolerance</tag>
+<tag group="300B" element="xx17" vr="FL" vm="1">Peak Range</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3243">
+<tag group="3243" element="xx09" vr="LO" vm="1">Beam Secondary Name</tag>
+<tag group="3243" element="xx28" vr="IS" vm="1">Related Referenced Beam Number</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3249">
+<tag group="3249" element="xx00" vr="DS" vm="1">Maximum Treatment Time</tag>
+<tag group="3249" element="xx10" vr="UI" vm="1">Referenced Primary Dose Reference UID</tag>
+<tag group="3249" element="xx20" vr="SQ" vm="1">Absolute Dose Calibration Sequence</tag>
+<tag group="3249" element="xx21" vr="FD" vm="1">Absolute Dose Calibration Referenced Field Size</tag>
+<tag group="3249" element="xx22" vr="FD" vm="1">Absolute Dose Calibration Source-Phantom-Distance</tag>
+<tag group="3249" element="xx23" vr="FD" vm="1">Absolute Dose Calibration Depth</tag>
+<tag group="3249" element="xx24" vr="FD" vm="1">Absolute Dose Calibration Reference Dose</tag>
+<tag group="3249" element="xx25" vr="FD" vm="1">Absolute Dose Calibration Reference Meterset</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3251">
+<tag group="3251" element="xx00" vr="LO" vm="1">Treatment Machine Note</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3253">
+<tag group="3253" element="xx00" vr="OB" vm="1">Extended Interface Data</tag>
+<tag group="3253" element="xx01" vr="IS" vm="1">Extended Interface Length</tag>
+<tag group="3253" element="xx02" vr="LO" vm="1">Extended Interface Format</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3259">
+<tag group="3259" element="xx00" vr="SQ" vm="0-n">Additional Dose Value Sequence SQ</tag>
+<tag group="3259" element="xx02" vr="DS" vm="1">Actual Session Dose</tag>
+<tag group="3259" element="xx04" vr="DS" vm="1">Daily Dose</tag>
+<tag group="3259" element="xx06" vr="DS" vm="1">Life Time Total Dose</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3261">
+<tag group="3261" element="xx2A" vr="OB" vm="1">Treatment Session Beam Extended Interface</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3263">
+<tag group="3263" element="xx01" vr="SQ" vm="1">Referenced Structure Set Relationship Sequence</tag>
+<tag group="3263" element="xx02" vr="CS" vm="1">Structure Set Relationship</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3265">
+<tag group="3265" element="xx00" vr="SL" vm="1">Total Number of Fractions</tag>
+<tag group="3265" element="xx01" vr="SL" vm="1">Last treated Fraction</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3271">
+<tag group="3271" element="xx00" vr="CS" vm="1">Marker Subtype</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3273">
+<tag group="3273" element="xx00" vr="DS" vm="3">RT Image Isocenter Position</tag>
+<tag group="3273" element="xx01" vr="CS" vm="1">RT Image Patient Position</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3275">
+<tag group="3275" element="xx00" vr="LO" vm="1">Registration Sub Type</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3285">
+<tag group="3285" element="xx00" vr="SQ" vm="1">Primary Fluence Mode Sequence (PRIVATE)</tag>
+<tag group="3285" element="xx01" vr="CS" vm="1">Fluence Mode (PRIVATE)</tag>
+<tag group="3285" element="xx02" vr="SH" vm="1">Fluence Mode ID (PRIVATE)</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3287">
+<tag group="3287" element="xx00" vr="SQ" vm="1">Plan Integrity Sequence</tag>
+<tag group="3287" element="xx01" vr="LO" vm="1">Plan Integrity Hash</tag>
+<tag group="3287" element="xx02" vr="SH" vm="1">Plan Integrity Hash Version</tag>
+<tag group="3287" element="xx03" vr="OB" vm="1">Plan Integrity Extended Information</tag>
+<tag group="3287" element="xx04" vr="SQ" vm="1">Plan Integrity Extended Sequence</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3291">
+<tag group="3291" element="xx00" vr="DS" vm="1">Source to General Accessory Distance</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3295">
+<tag group="3295" element="xx00" vr="FL" vm="1-n">Line Scan Meterset Weights Delivered</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3297">
+<tag group="3297" element="xx00" vr="IS" vm="1">Number of Line Scan Spot Positions</tag>
+<tag group="3297" element="xx01" vr="FL" vm="1-n">Line Scan Position Map</tag>
+<tag group="3297" element="xx02" vr="FL" vm="1-n">Line Scan Meterset Weights</tag>
+<tag group="3297" element="xx03" vr="IS" vm="1">Number of Line Scan Paintings</tag>
+<tag group="3297" element="xx04" vr="SH" vm="1">Line Scan Spot Tune ID</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3299">
+<tag group="3299" element="xx00" vr="OB" vm="1">Structure Detection Data</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3303">
+<tag group="3303" element="xx00" vr="UI" vm="1">Referenced Conceptual volume UID</tag>
+</dictionary>
 <dictionary creator="VEPRO DICOM TRANSFER 1.0">
 <tag group="0059" element="xx10" vr="SQ" vm="1">Unknown</tag>
 </dictionary>
