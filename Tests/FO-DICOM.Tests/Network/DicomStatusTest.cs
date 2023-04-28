@@ -76,12 +76,68 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void NullComparrison()
+        public void NullComparison()
         {
             Assert.True(DicomStatus.Success != null);
             Assert.True(((DicomStatus)null) == null);
             Assert.False(DicomStatus.Success == null);
             Assert.False(((DicomStatus)null) != null);
+        }
+
+        [Fact]
+        public void HashCodes()
+        {
+            Assert.Equal(DicomStatus.Success.GetHashCode(), DicomStatus.Success.GetHashCode());
+            Assert.Equal(
+                new DicomStatus( "DDDD", DicomState.Success, "DESC1").GetHashCode(),
+                new DicomStatus( "DDDD", DicomState.Success, "DESC1").GetHashCode()
+            );
+            Assert.Equal(
+                new DicomStatus("DDDD", DicomState.Success, "DESC1", "COMMENT1").GetHashCode(),
+                new DicomStatus("DDDD", DicomState.Success, "DESC1", "COMMENT1").GetHashCode()
+            );
+            Assert.Equal(
+                new DicomStatus( DicomStatus.Success, "COMMENT1").GetHashCode(),
+                new DicomStatus( DicomStatus.Success, "COMMENT1").GetHashCode()
+            );
+            Assert.Equal(
+                new DicomStatus(1, DicomStatus.Success).GetHashCode(),
+                new DicomStatus(1, DicomStatus.Success).GetHashCode()
+            );
+
+            Assert.NotEqual(DicomStatus.Success.GetHashCode(), DicomStatus.StorageStorageOutOfResources.GetHashCode());
+            Assert.NotEqual(
+                new DicomStatus("DDDD", DicomState.Success, "DESC1", "COMMENT1").GetHashCode(),
+                new DicomStatus("DDDE", DicomState.Success, "DESC1", "COMMENT1").GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus("DDDD", DicomState.Success, "DESC1", "COMMENT1").GetHashCode(),
+                new DicomStatus("DDDD", DicomState.Cancel, "DESC1", "COMMENT1").GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus("DDDD", DicomState.Success, "DESC1", "COMMENT1").GetHashCode(),
+                new DicomStatus("DDDD", DicomState.Success, "DESC2", "COMMENT1").GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus("DDDD", DicomState.Success, "DESC1", "COMMENT1").GetHashCode(),
+                new DicomStatus("DDDD", DicomState.Success, "DESC2", "COMMENT2").GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus( DicomStatus.Success, "COMMENT1").GetHashCode(),
+                new DicomStatus( DicomStatus.Success, "COMMENT2").GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus( DicomStatus.Success, "COMMENT1").GetHashCode(),
+                new DicomStatus( DicomStatus.Cancel, "COMMENT1").GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus(0xDDDD, DicomStatus.Success).GetHashCode(),
+                new DicomStatus(0xDDDE, DicomStatus.Success).GetHashCode()
+            );
+            Assert.NotEqual(
+                new DicomStatus(0xDDDD, DicomStatus.Success).GetHashCode(),
+                new DicomStatus(0xDDDD, DicomStatus.Cancel).GetHashCode()
+            );
         }
 
         #endregion
