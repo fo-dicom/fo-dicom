@@ -11,6 +11,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,14 +21,16 @@ namespace FellowOakDicom.Tests.Serialization
     /// <summary>
     /// The json dicom converter test.
     /// </summary>
-    [Collection("General")]
+    [Collection("WithHttpClient")]
     public class JsonDicomCoreConverterTest
     {
         private readonly ITestOutputHelper _output;
+        private readonly HttpClientFixture _httpClientFixture;
 
-        public JsonDicomCoreConverterTest(ITestOutputHelper output)
+        public JsonDicomCoreConverterTest(ITestOutputHelper output, HttpClientFixture httpClientFixture)
         {
-            _output = output;
+            _output = output ?? throw new ArgumentNullException(nameof(output));
+            _httpClientFixture = httpClientFixture ?? throw new ArgumentNullException(nameof(httpClientFixture));
         }
 
         /// <summary>
@@ -743,20 +746,27 @@ namespace FellowOakDicom.Tests.Serialization
             VerifyJsonTripleTrip(target);
         }
 
-        private void DownloadBulkData(BulkDataUriByteBuffer bulkData)
+        private async Task DownloadBulkDataAsync(BulkDataUriByteBuffer bulkData)
         {
-            var request = WebRequest.Create(bulkData.BulkDataUri);
-            using var response = request.GetResponse();
-            using var responseStream = response.GetResponseStream();
-            bulkData.Data = new byte[response.ContentLength];
-            responseStream.Read(bulkData.Data, 0, (int)response.ContentLength);
+            var uri = new UriBuilder(bulkData.BulkDataUri);
+            switch (uri.Scheme)
+            {
+                case "file":
+                    bulkData.Data = File.ReadAllBytes(uri.Path);
+                    break;
+                case "http":
+                case "https":
+                    var httpClient = _httpClientFixture.HttpClient;
+                    bulkData.Data = await httpClient.GetByteArrayAsync(bulkData.BulkDataUri);
+                    return;
+            }
         }
 
         /// <summary>
         /// The bulk data read.
         /// </summary>
         [Fact]
-        public void BulkDataRead()
+        public async Task BulkDataRead()
         {
             File.WriteAllText("test.txt", "xxx!");
             var path = Path.GetFullPath("test.txt");
@@ -771,8 +781,8 @@ namespace FellowOakDicom.Tests.Serialization
             var json2 = DicomJson.ConvertDicomToJson(reconstituated, formatIndented: true);
             Assert.Equal(json, json2);
 
-            DownloadBulkData(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as BulkDataUriByteBuffer);
-            DownloadBulkData(bulkData);
+            await DownloadBulkDataAsync(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer as BulkDataUriByteBuffer);
+            await DownloadBulkDataAsync(bulkData);
 
             Assert.True(ValueEquals(target, reconstituated));
 
@@ -1373,6 +1383,107 @@ namespace FellowOakDicom.Tests.Serialization
             dataset.Add(new DicomIntegerString(DicomTag.ReferencedFrameNumber, validNumber, invalidNumber));
             var json = DicomJson.ConvertDicomToJson(dataset, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
             Assert.Equal("{\"00081160\":{\"vr\":\"IS\",\"Value\":[\"299792458\",\"InvalidNumber\"]}}", json);
+        }
+
+        [Fact]
+        public static void AddKeywordAndName_WhenSerializing()
+        {
+            var dataset = new DicomDataset();
+            dataset.Add(DicomTag.AccessionNumber, "123456");
+
+            // Enable write keyword and name
+            var converter = new DicomJsonConverter()
+            {
+                WriteKeyword = true,
+                WriteName = true
+            };
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(converter);
+            var json = JsonSerializer.Serialize(dataset, options);
+
+            string expected = "{\"00080050\":{\"vr\":\"SH\",\"Value\":[\"123456\"],\"keyword\":\"AccessionNumber\",\"name\":\"Accession Number\"}}";
+            Assert.Equal(expected, json);
+        }
+
+        [Fact]
+        public static void GivenJsonWithOptionalAttributes_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""vr"": ""SH"",
+		        ""name"": ""Accession Number"",
+		        ""Value"": [ ""123456"" ]
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.Equal("123456", dataset.GetSingleValue<string>(DicomTag.AccessionNumber));
+        }
+
+        [Fact]
+        public static void GivenJsonDifferentOrder_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""name"": ""Accession Number"",
+		        ""vr"": ""SH"",
+		        ""Value"": [ ""123456"" ]
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.Equal("123456", dataset.GetSingleValue<string>(DicomTag.AccessionNumber));
+        }
+
+        [Fact]
+        public static void GivenJsonEmptyPerson_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080090"": {
+		        ""vr"": ""PN"",
+		        ""keyword"": ""ReferringPhysicianName""
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.True(dataset.Contains(DicomTag.ReferringPhysicianName));
+            Assert.Equal(0, dataset.GetValueCount(DicomTag.ReferringPhysicianName));
+        }
+
+        [Fact]
+        public static void GivenJsonWithInnerObject_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""name"": ""Accession Number"",
+		        ""vr"": ""SH"",
+        	    ""confusing-object"": {
+        		    ""vr"": ""CS"",
+        		    ""Value"": [
+        			    ""ORIGINAL"",
+        			    ""PRIMARY""
+        		    ]
+        	    },
+		        ""Value"": [ ""123456"" ]
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            var accessionNumber = dataset.GetDicomItem<DicomItem>(DicomTag.AccessionNumber);
+            Assert.NotNull(accessionNumber);
+            Assert.Equal("SH", accessionNumber.ValueRepresentation.Code);
+            Assert.Equal("123456", dataset.GetSingleValue<string>(DicomTag.AccessionNumber));
+        }
+
+        [Fact]
+        public static void GivenJsonWithoutValueButWithOptionalAttributes_WhenDeserialized_IsDeserializedCorrectly()
+        {
+            string json = @"{ ""00080050"": {
+		        ""vr"": ""SH"",
+		        ""name"": ""Accession Number""
+	        }}";
+
+            var dataset = DicomJson.ConvertJsonToDicom(json);
+            Assert.NotNull(dataset);
+            Assert.True(dataset.Contains(DicomTag.AccessionNumber));
+            Assert.False(dataset.TryGetSingleValue<string>(DicomTag.AccessionNumber, out _));
         }
 
         [Fact]
