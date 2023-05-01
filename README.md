@@ -249,8 +249,8 @@ var associationRequest = new AdvancedDicomClientAssociationRequest
 {
     CallingAE = "EchoSCU",
     CalledAE = "EchoSCP",
-	// Negotiate user identity
-	UserIdentityNegotiation = new DicomUserIdentityNegotiation
+    // Negotiate user identity
+    UserIdentityNegotiation = new DicomUserIdentityNegotiation
     {
         UserIdentityType = DicomUserIdentityType.UsernameAndPasscode,
         PositiveResponseRequested = true,

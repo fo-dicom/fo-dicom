@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 using System.Threading;
@@ -47,6 +47,33 @@ namespace FellowOakDicom.Tests.Network
         }
 
         #endregion
+
+        [Fact]
+        public void DicomUserIdentityNegotiation_ShouldInstantiateAndClone()
+        {
+            var expectedUserIdentityType = DicomUserIdentityType.Kerberos;
+            var expectedPositiveResponseRequested = true;
+            var expectedPrimaryField = DicomUserIdentityNegotiationTestData.Username;
+            var expectedSecondaryField = DicomUserIdentityNegotiationTestData.Passcode;
+            var expectedServerResponse = DicomUserIdentityNegotiationTestData.KerberosServerResponse;
+
+            var userIdentity = new DicomUserIdentityNegotiation
+            {
+                UserIdentityType = expectedUserIdentityType,
+                PositiveResponseRequested = expectedPositiveResponseRequested,
+                PrimaryField = expectedPrimaryField,
+                SecondaryField = expectedSecondaryField,
+                ServerResponse = expectedServerResponse
+            };
+
+            var clonedUserIdentity = userIdentity.Clone();
+
+            Assert.Equal(clonedUserIdentity.UserIdentityType, expectedUserIdentityType);
+            Assert.Equal(clonedUserIdentity.PositiveResponseRequested, expectedPositiveResponseRequested);
+            Assert.Equal(clonedUserIdentity.PrimaryField, expectedPrimaryField);
+            Assert.Equal(clonedUserIdentity.SecondaryField, expectedSecondaryField);
+            Assert.Equal(clonedUserIdentity.ServerResponse, expectedServerResponse);
+        }
 
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_ThrowsRejectionForEmptyUserIdentity()
@@ -619,7 +646,7 @@ namespace FellowOakDicom.Tests.Network
 
         public class MockMandatoryUserIdentityCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
         {
-            public MockMandatoryUserIdentityCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Logger log,
+            public MockMandatoryUserIdentityCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dependencies)
                 : base(stream, fallbackEncoding, log, dependencies)
             {
