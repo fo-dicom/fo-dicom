@@ -254,8 +254,8 @@ var associationRequest = new AdvancedDicomClientAssociationRequest
     {
         UserIdentityType = DicomUserIdentityType.UsernameAndPasscode,
         PositiveResponseRequested = true,
-        PrimaryField = DicomUserIdentityNegotiationTestData.Username,
-        SecondaryField = DicomUserIdentityNegotiationTestData.Passcode,
+        PrimaryField = "USERNAME",
+        SecondaryField = "PASSCODE",
     }
 };
 
