@@ -256,7 +256,15 @@ namespace FellowOakDicom.Network.Client
             AsyncPerformed = performed;
         }
 
-        public void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentity) => UserIdentityNegotiation = userIdentity;
+        public void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentity)
+        {
+            if (userIdentity != null)
+            {
+                userIdentity.Validate();
+            }
+
+            UserIdentityNegotiation = userIdentity;
+        }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {

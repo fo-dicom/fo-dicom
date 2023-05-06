@@ -662,7 +662,7 @@ namespace FellowOakDicom.Network
             }
 
             // User Identity Negotiation
-            if (_assoc.UserIdentityNegotiation != null)
+            if (_assoc.UserIdentityNegotiation != null && _assoc.UserIdentityNegotiation.UserIdentityType.HasValue)
             {
                 pdu.Write("Item-Type", 0x58);
                 pdu.Write("Reserved", 0x00);
@@ -670,10 +670,10 @@ namespace FellowOakDicom.Network
                 pdu.Write("User Identity Type", (byte)_assoc.UserIdentityNegotiation.UserIdentityType);
                 pdu.Write("Positive Response Requested", _assoc.UserIdentityNegotiation.PositiveResponseRequested ? (byte)1 : (byte)0);
                 pdu.MarkLength16("User Identity Primary Field-Length");
-                pdu.Write("User Identity Primary Field", _assoc.UserIdentityNegotiation.PrimaryField);
+                pdu.Write("User Identity Primary Field", _assoc.UserIdentityNegotiation.PrimaryField ?? "");
                 pdu.WriteLength16();
                 pdu.MarkLength16("User Identity Secondary Field-Length");
-                pdu.Write("User Identity Secondary Field", _assoc.UserIdentityNegotiation.SecondaryField);
+                pdu.Write("User Identity Secondary Field", _assoc.UserIdentityNegotiation.SecondaryField ?? "");
                 pdu.WriteLength16();
                 pdu.WriteLength16();
             }
@@ -1005,7 +1005,7 @@ namespace FellowOakDicom.Network
                 pdu.Write("Reserved", 0x00);
                 pdu.MarkLength16("Item-Length");
                 pdu.MarkLength16("Server Response-Length");
-                pdu.Write("Server Response", _assoc.UserIdentityNegotiation.ServerResponse);
+                pdu.Write("Server Response", _assoc.UserIdentityNegotiation.ServerResponse ?? "");
                 pdu.WriteLength16();
                 pdu.WriteLength16();
             }

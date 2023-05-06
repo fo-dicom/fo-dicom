@@ -27,33 +27,60 @@ namespace FellowOakDicom.Network
     public class DicomUserIdentityNegotiation
     {
         /// <summary>
-        /// Gets or sets the form of user identity being provided
+        /// Gets or sets the form of user identity being provided.
         /// </summary>
-        public DicomUserIdentityType UserIdentityType { get; set; } = DicomUserIdentityType.Username;
+        public DicomUserIdentityType? UserIdentityType { get; set; }
 
         /// <summary>
-        /// Gets or sets whether a positive server response is requested
+        /// Gets or sets whether a positive server response is requested.
         /// </summary>
         public bool PositiveResponseRequested { get; set; }
 
         /// <summary>
         /// Gets or sets the identity primary field which might consist of the username,
-        /// the Kerberos Service ticket or the SAML assertion
+        /// the Kerberos Service ticket or the SAML assertion.
         /// </summary>
-        public String PrimaryField { get; set; } = String.Empty;
+        public string PrimaryField { get; set; }
 
         /// <summary>
         /// Gets or sets the identity secondary field which is only used when the
-        /// user identity type is username and pass code
+        /// user identity type is username and pass code.
         /// </summary>
-        public String SecondaryField { get; set; } = String.Empty;
+        public string SecondaryField { get; set; }
 
         /// <summary>
         /// Gets or sets the server response which might consist of the
-        /// Kerberos Service ticket, the SAML response or the JSON web token
+        /// Kerberos Service ticket, the SAML response or the JSON web token.
         /// </summary>
-        public String ServerResponse { get; set; } = String.Empty;
+        public string ServerResponse { get; set; }
 
+        /// <summary>
+        /// Performs a validation of the user identity negotiation properties.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">An exception is thrown if the user identity type is null</exception>
+        /// <exception cref="ArgumentException">An exception is thrown if the secondary field is populated
+        /// while the user identity type is not UsernameAndPasscode</exception>
+        public void Validate()
+        {
+            if (!UserIdentityType.HasValue)
+            {
+                throw new ArgumentNullException(nameof(UserIdentityType), "User identity type should be one of Username, UsernameAndPasscode, Kerberos, Saml or Jwt");
+            }
+
+            if ((UserIdentityType == DicomUserIdentityType.Username ||
+                UserIdentityType == DicomUserIdentityType.Kerberos ||
+                UserIdentityType == DicomUserIdentityType.Saml ||
+                UserIdentityType == DicomUserIdentityType.Jwt) &&
+                !string.IsNullOrWhiteSpace(SecondaryField))
+            {
+                throw new ArgumentException("Secondary field should only be populated when the user identity type is UsernameAndPasscode");
+            }
+        }
+
+        /// <summary>
+        /// Clones the user identity negotiation.
+        /// </summary>
+        /// <returns>Clone of user identity negotiation</returns>
         public DicomUserIdentityNegotiation Clone() =>
             new DicomUserIdentityNegotiation
             {

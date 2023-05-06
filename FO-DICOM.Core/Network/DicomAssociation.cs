@@ -119,7 +119,7 @@ namespace FellowOakDicom.Network
             sb.AppendFormat("Async Ops Invoked:      {0}\n", MaxAsyncOpsInvoked);
             sb.AppendFormat("Async Ops Performed:    {0}\n", MaxAsyncOpsPerformed);
             sb.AppendFormat("Presentation Contexts:  {0}\n", PresentationContexts.Count);
-            if (UserIdentityNegotiation != null)
+            if (UserIdentityNegotiation != null && UserIdentityNegotiation.UserIdentityType.HasValue)
             { 
                 sb.AppendFormat("User Identity:          {0}\n", UserIdentityNegotiation.UserIdentityType.ToString());
             }
