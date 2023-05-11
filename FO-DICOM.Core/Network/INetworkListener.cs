@@ -27,8 +27,10 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
+        /// <param name="receiveBufferSize">The size of the receive buffer of the underlying TCP connection</param>
+        /// <param name="sendBufferSize">The size of the send buffer of the underlying TCP connection</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token);
+        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, int? receiveBufferSize, int? sendBufferSize, CancellationToken token);
     }
 }

@@ -59,6 +59,8 @@ namespace FellowOakDicom.Network
         public async Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
+            int? receiveBufferSize,
+            int? sendBufferSize,
             CancellationToken token)
         {
             try
@@ -73,7 +75,14 @@ namespace FellowOakDicom.Network
                 {
                     var tcpClient = tcpClientTask.Result;
                     tcpClient.NoDelay = noDelay;
-
+                    if (receiveBufferSize.HasValue)
+                    {
+                        tcpClient.ReceiveBufferSize = receiveBufferSize.Value;
+                    }
+                    if (sendBufferSize.HasValue)
+                    {
+                        tcpClient.SendBufferSize = sendBufferSize.Value;
+                    }
                     if (!string.IsNullOrEmpty(certificateName) && _certificate == null)
                     {
                         _certificate = GetX509Certificate(certificateName);

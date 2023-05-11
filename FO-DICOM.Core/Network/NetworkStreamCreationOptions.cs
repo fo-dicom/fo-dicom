@@ -39,5 +39,19 @@ namespace FellowOakDicom.Network
         /// <seealso cref="System.Net.Security.SslStream.ReadTimeout"/>
         /// <seealso cref="System.Net.Security.SslStream.WriteTimeout"/>
         public TimeSpan Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the receive buffer of the underlying TCP connection
+        /// If not configured, the default value of 8192 bytes will be used
+        /// </summary>
+        /// <seealso cref="System.Net.Sockets.TcpClient.ReceiveBufferSize"/>
+        public int? ReceiveBufferSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the send buffer of the underlying TCP connection
+        /// If not configured, the default value of 8192 bytes will be used
+        /// </summary>
+        /// <seealso cref="System.Net.Sockets.TcpClient.SendBufferSize"/>
+        public int? SendBufferSize { get; set; }
     }
 }

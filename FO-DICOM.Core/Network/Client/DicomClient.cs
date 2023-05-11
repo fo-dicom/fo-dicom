@@ -309,6 +309,8 @@ namespace FellowOakDicom.Network.Client
                                 Port = Port,
                                 UseTls = UseTls,
                                 NoDelay = ServiceOptions.TcpNoDelay,
+                                ReceiveBufferSize = ServiceOptions.TcpReceiveBufferSize,
+                                SendBufferSize = ServiceOptions.TcpSendBufferSize,
                                 IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
                                 Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
                             },

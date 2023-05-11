@@ -272,6 +272,8 @@ namespace FellowOakDicom.Network
             try
             {
                 var noDelay = Options.TcpNoDelay;
+                var receiveBufferSize = Options.TcpReceiveBufferSize;
+                var sendBufferSize = Options.TcpSendBufferSize;
 
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
@@ -299,7 +301,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificateName, noDelay, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_certificateName, noDelay, receiveBufferSize, sendBufferSize, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)
