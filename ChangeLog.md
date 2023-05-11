@@ -30,7 +30,7 @@
 * Fixed missing logging of RemoteHost and RemoteIP in SCU (#1518)
 * Added null check for EscapeXml in DicomXML (#1392)
 * Added private tags from Varian official DICOM Conformance Statements (#1556)
-* Add the possibility to configure TCP buffer sizes
+* Add the possibility to configure TCP buffer sizes (#1564)
 * 
 #### 5.0.3 (2022-05-23)
 * **Breaking change**: subclasses of DicomService will have to pass an instance of DicomServiceDependencies along to the DicomService base constructor. This replaces the old LogManager / NetworkManager / TranscoderManager dependencies. (Implemented in the context of #1291)
