@@ -86,7 +86,11 @@ namespace FellowOakDicom.Imaging.Render
                     if (data[i] > 0)
                     {
                         if (ox + x >= width) break;
-                        pixels[p] |= _color;
+
+                        if (p >= 0)
+                        {
+                            pixels[p] |= _color;
+                        }
                     }
                 }
             }
