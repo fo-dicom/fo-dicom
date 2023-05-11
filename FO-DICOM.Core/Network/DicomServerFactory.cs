@@ -187,6 +187,7 @@ namespace FellowOakDicom.Network
 
             if (server.Exception != null)
             {
+                server.Dispose();
                 throw new DicomNetworkException("Failed to start DICOM server", server.Exception);
             }
 
