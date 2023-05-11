@@ -113,6 +113,28 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
+        public void Create_TwiceOnSamePortWithoutDisposalInBetween_Throws()
+        {
+            var port = Ports.GetNext();
+
+            Exception e;
+            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            {
+                e = Record.Exception(
+                    () =>
+                    {
+                        using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+                        {
+                            Assert.NotNull(DicomServerRegistry.Get(port)?.DicomServer);
+                        }
+                    });
+            }
+
+            Assert.NotNull(e);
+            Assert.IsType<DicomNetworkException>(e);
+        }
+
+        [Fact]
         public void Create_GetInstanceDifferentPort_ReturnsNull()
         {
             var port = Ports.GetNext();
