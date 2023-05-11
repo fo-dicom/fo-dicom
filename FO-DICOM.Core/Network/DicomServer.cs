@@ -272,6 +272,7 @@ namespace FellowOakDicom.Network
             try
             {
                 var noDelay = Options.TcpNoDelay;
+                var lingerOption = Options.TcpLingerOption;
 
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
@@ -299,7 +300,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificateName, noDelay, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_certificateName, noDelay, lingerOption, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)

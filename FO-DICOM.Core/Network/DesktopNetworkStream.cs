@@ -47,6 +47,10 @@ namespace FellowOakDicom.Network
             RemotePort = options.Port;
 
             _tcpClient = new TcpClient { NoDelay = options.NoDelay };
+            if (options.LingerOption != null)
+            {
+                _tcpClient.LingerState = options.LingerOption;
+            }
             _tcpClient.ConnectAsync(options.Host, options.Port).Wait();
 
             Stream stream = _tcpClient.GetStream();

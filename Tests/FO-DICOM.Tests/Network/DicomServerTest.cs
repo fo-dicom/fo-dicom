@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.Network;
@@ -96,8 +97,9 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
+                server.Options.TcpLingerOption = new LingerOption(false, 0);
                 /* do nothing here */
             }
 
@@ -118,8 +120,10 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
 
             Exception e;
-            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            using (var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
+                server.Options.TcpLingerOption = new LingerOption(false, 0);
+
                 e = Record.Exception(
                     () =>
                     {

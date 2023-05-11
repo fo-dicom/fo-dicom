@@ -310,7 +310,8 @@ namespace FellowOakDicom.Network.Client
                                 UseTls = UseTls,
                                 NoDelay = ServiceOptions.TcpNoDelay,
                                 IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
-                                Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
+                                Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs),
+                                LingerOption = ServiceOptions.TcpLingerOption
                             },
                             RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers
                             {
