@@ -14,7 +14,10 @@ namespace FellowOakDicom.Tests.Imaging.Render
             var expectedColor = Color32.White;
 
             // Act
-            var dicomImage = new DicomImage(dicomFile.Dataset);
+            var dicomImage = new DicomImage(dicomFile.Dataset)
+            {
+                OverlayColor = Color32.White.Value
+            };
             var image = dicomImage.RenderImage(0);
 
             // Assert
