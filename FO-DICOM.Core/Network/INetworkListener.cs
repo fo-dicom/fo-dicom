@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,9 +27,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
-        /// <param name="lingerOption">The linger option that is applied to the underlying TCP connection</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, LingerOption lingerOption, CancellationToken token);
+        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token);
     }
 }

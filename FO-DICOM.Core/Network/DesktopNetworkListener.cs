@@ -59,7 +59,6 @@ namespace FellowOakDicom.Network
         public async Task<INetworkStream> AcceptNetworkStreamAsync(
             string certificateName,
             bool noDelay,
-            LingerOption lingerOption,
             CancellationToken token)
         {
             try
@@ -74,10 +73,6 @@ namespace FellowOakDicom.Network
                 {
                     var tcpClient = tcpClientTask.Result;
                     tcpClient.NoDelay = noDelay;
-                    if (lingerOption != null)
-                    {
-                        tcpClient.LingerState = lingerOption;
-                    }
 
                     if (!string.IsNullOrEmpty(certificateName) && _certificate == null)
                     {

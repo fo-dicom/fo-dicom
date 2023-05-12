@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 
 namespace FellowOakDicom.Network
 {
@@ -40,11 +39,5 @@ namespace FellowOakDicom.Network
         /// <seealso cref="System.Net.Security.SslStream.ReadTimeout"/>
         /// <seealso cref="System.Net.Security.SslStream.WriteTimeout"/>
         public TimeSpan Timeout { get; set; }
-
-        /// <summary>
-        /// Gets or sets the linger option of the underlying TCP connection
-        /// </summary>
-        /// <seealso cref="System.Net.Sockets.TcpClient.LingerState"/>
-        public LingerOption LingerOption { get; set; }
     }
 }

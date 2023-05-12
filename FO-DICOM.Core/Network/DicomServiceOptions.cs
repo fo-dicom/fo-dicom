@@ -2,7 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
-using System.Net.Sockets;
 
 namespace FellowOakDicom.Network
 {
@@ -61,12 +60,6 @@ namespace FellowOakDicom.Network
         /// Gets the maximum PDU length, increasing this may speed up the sending of C-Store requests, but beware too high values in spotty networks.
         /// </summary>
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
-        
-        /// <summary>
-        /// Gets or sets the linger option of the underlying TCP connection
-        /// </summary>
-        /// <seealso cref="System.Net.Sockets.TcpClient.LingerState"/>
-        public LingerOption TcpLingerOption { get; set; }
 
         public DicomServiceOptions Clone() =>
             new DicomServiceOptions
@@ -82,8 +75,7 @@ namespace FellowOakDicom.Network
                 MaxClientsAllowed = MaxClientsAllowed,
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
-                MaxPDVsPerPDU = MaxPDVsPerPDU,
-                TcpLingerOption = TcpLingerOption
+                MaxPDVsPerPDU = MaxPDVsPerPDU
             };
     }
 }
