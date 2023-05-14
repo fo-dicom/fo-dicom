@@ -148,6 +148,8 @@ namespace FellowOakDicom.Tests.Imaging
 
             Assert.Equal(expected.WindowWidth, actual.WindowWidth);
             Assert.Equal(expected.WindowCenter, actual.WindowCenter);
+            Assert.Equal(expectedWindowWidth, actual.WindowWidth);
+            Assert.Equal(expectedWindowCenter, actual.WindowCenter);
         }
 
         [Theory]

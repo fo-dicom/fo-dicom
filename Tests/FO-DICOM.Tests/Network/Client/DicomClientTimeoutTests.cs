@@ -474,9 +474,7 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithSocketException_ShouldNotLoopInfinitely()
         {
             var port = Ports.GetNext();
-            var logger = _logger.IncludePrefix("UnitTest");
 
-            IDicomServer server = null;
             DicomCStoreResponse response1 = null, response2 = null, response3 = null;
             DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
@@ -967,11 +965,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 set => _inner.WriteTimeout = value;
             }
 
-            public override object InitializeLifetimeService()
-            {
-                return _inner.InitializeLifetimeService();
-            }
-
             public override string ToString()
             {
                 return _inner.ToString();
@@ -1071,12 +1064,14 @@ namespace FellowOakDicom.Tests.Network.Client
 
             public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
             {
+                await Task.Yield();
                 _requests.Add(request);
                 yield break;
             }
 
             public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
+                await Task.Yield();
                 _requests.Add(request);
                 yield break;
             }
