@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,8 +28,9 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="certificateName">Certificate name of authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
+        /// <param name="logger">The logger</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, CancellationToken token);
+        Task<INetworkStream> AcceptNetworkStreamAsync(string certificateName, bool noDelay, ILogger logger, CancellationToken token);
     }
 }
