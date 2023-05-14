@@ -15,17 +15,17 @@ Of course it's recommended to build your own class inheriting from ITlsAcceptor 
 
 Instead of passing the instance to your DicomServer Factory method, you also can register your implementation of ITlsAcceptor in your DI container.
 If not set explicitly as parameter, the Create-method will check the DI ServiceProvider if there is a service of type ITlsAcceptor registered and then takes the instance.
-So you can easyly configure or set your server certificate on application startup by configuring the DI services. This is also usefull if you want go get some other methods from DI service provider within your ITlsAcceptor implementation (like logger, certificate manager, etc).
+So you can easyly configure or set your server certificate on application startup by configuring the DI services. This is also useful if you want go get some other methods from DI service provider within your ITlsAcceptor implementation (like logger, certificate manager, etc).
 
 ### Client certificate
 
-The DicomClient factory method `DicomClientFactory.Create` can take a instance of `ITlsAcceptor` as parameter. With that, your client can initiate an ssl connection to a DicomServer with the method
+The DicomClient factory method `DicomClientFactory.Create` can take a instance of `ITlsInitiator` as parameter. With that, your client can initiate a ssl connection to a DicomServer with the method
 
 ```csharp
 Stream InitiateTls(Stream plainStream, string remoteAddress, int remotePort)
 ```
 
-fo-dicom comes with a default implementation of this interface, namely `DefaultTlsInitiator`. This implementation has some properties with that you can control the behavior. For example you can turn off all ssl checks by setting `IgnoreSslProicyError` to `false`. This implementation also has the .net built in `RemoteCertificateValidationCallback` handler.
+fo-dicom comes with a default implementation of this interface, namely `DefaultTlsInitiator`. This implementation has some properties to control the behavior. For example you can turn off all ssl checks by setting `IgnoreSslProicyError` to `false`. This implementation also has the .net built in `RemoteCertificateValidationCallback` handler.
 By setting a X509Certificate to the `DefaultTlsInitiator` you can also tell the client to use a client certifiate for authentication.
 
 If you only want the default behavor and let your operating system do all ssl checks, then you can still call the DicomClientFactory method and just set the `useSsl` property to true, then fo-dicom will automatically create an default instance of the `ITlsInitiator` implementation.

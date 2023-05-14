@@ -89,7 +89,7 @@ namespace FellowOakDicom.Network.Tls
 
             if (RequireMutualAuthentication && !ssl.IsMutuallyAuthenticated)
             {
-                throw new DicomNetworkException("Client TLS authentication failed");
+                throw new DicomNetworkException("Client TLS mutual authentication failed");
             }
 
             return ssl;

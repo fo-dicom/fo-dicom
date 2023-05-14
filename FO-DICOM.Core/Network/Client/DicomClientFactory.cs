@@ -28,7 +28,7 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="tlsInitiator">The handler to initialte TLS security, if null then to TLS is enabled.</param>
+        /// <param name="tlsInitiator">The handler to initialte TLS security, if null then no TLS is enabled.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         IDicomClient Create(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe);
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="tlsInitiator">The handler to initialte TLS security, if null then to TLS is enabled.</param>
+        /// <param name="tlsInitiator">The handler to initialte TLS security, if null then no TLS is enabled.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         public static IDicomClient Create(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe)
