@@ -77,10 +77,8 @@ namespace FellowOakDicom
 
         #region METHODS
 
-        /// <inheritdoc />
         public override string ToString() => UID.Name;
 
-        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj switch
@@ -92,7 +90,6 @@ namespace FellowOakDicom
             };
         }
 
-        /// <inheritdoc />
         public override int GetHashCode() => UID.GetHashCode();
 
         #endregion

@@ -27,7 +27,7 @@ namespace FellowOakDicom.IO
         public static readonly Endian Big = new Endian(true);
 
         /// <summary>
-        /// Endianness of the local machine, according to <see cref="BitConverter.IsLittleEndian"/>.
+        /// Endianness of the local machine, according to <see cref="System.BitConverter.IsLittleEndian"/>.
         /// </summary>
         public static readonly Endian LocalMachine = BitConverter.IsLittleEndian ? Little : Big;
 
@@ -47,7 +47,6 @@ namespace FellowOakDicom.IO
             _isBigEndian = isBigEndian;
         }
 
-        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
@@ -55,13 +54,11 @@ namespace FellowOakDicom.IO
             return false;
         }
 
-        /// <inheritdoc />
         public override int GetHashCode()
         {
             return _isBigEndian.GetHashCode();
         }
 
-        /// <inheritdoc />
         public override string ToString()
         {
             return _isBigEndian ? "Big Endian" : "Little Endian";
@@ -324,7 +321,7 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <typeparam name="T">Array element type, must be one of <see cref="short"/>, <see cref="ushort"/>, <see cref="int"/> or <see cref="uint"/>.</typeparam>
         /// <param name="values">Array of values to swap.</param>
-        /// <exception cref="InvalidOperationException">if array element type is not <see cref="short"/>, <see cref="ushort"/>, <see cref="int"/> or <see cref="uint"/>.</exception>
+        /// <exception cref="System.InvalidOperationException">if array element type is not <see cref="short"/>, <see cref="ushort"/>, <see cref="int"/> or <see cref="uint"/>.</exception>
         public static void Swap<T>(T[] values)
         {
             if (typeof(T) == typeof(short)) Swap(values as short[]);

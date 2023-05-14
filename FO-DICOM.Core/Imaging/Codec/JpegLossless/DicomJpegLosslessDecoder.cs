@@ -45,7 +45,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         /// </summary>
         /// <param name="data">ByteBuffer which contains a jpeg lossess</param>
         /// <returns>if successfully a MemoryStream contained the codeded data is returned</returns>
-        /// <exception cref="IOException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         private MemoryStream ReadImage(IByteBuffer data)
         {
             using var decoder = new DicomJpegLosslessDecoderImpl(data);

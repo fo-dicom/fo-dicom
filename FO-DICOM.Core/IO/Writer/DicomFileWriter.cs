@@ -53,7 +53,7 @@ namespace FellowOakDicom.IO.Writer
         /// <param name="target">Byte target subject to writing.</param>
         /// <param name="fileMetaInfo">File meta information.</param>
         /// <param name="dataset">Dataset.</param>
-        /// <returns>Awaitable <see cref="Task"/>.</returns>
+        /// <returns>Awaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
         public async Task WriteAsync(IByteTarget target, DicomFileMetaInformation fileMetaInfo, DicomDataset dataset)
         {
             await WritePreambleAsync(target).ConfigureAwait(false);
