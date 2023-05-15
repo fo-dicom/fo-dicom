@@ -7,7 +7,7 @@ namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>
-    /// Abstract VOI LUT implementation of <seealso cref="ILUT"/>
+    /// Abstract VOI LUT implementation of <see cref="ILUT"/>
     /// </summary>
     public abstract class VOILUT : ILUT
     {
@@ -20,7 +20,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="VOILUT"/>
+        /// Initialize new instance of <see cref="VOILUT"/>
         /// </summary>
         /// <param name="options">Render options</param>
         protected VOILUT(GrayscaleRenderOptions options)
@@ -111,7 +111,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="VOILinearLUT"/>
+        /// Initialize new instance of <see cref="VOILinearLUT"/>
         /// </summary>
         /// <param name="options">Render options</param>
         public VOILinearLUT(GrayscaleRenderOptions options)
@@ -157,7 +157,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="VOILinearLUT"/>
+        /// Initialize new instance of <see cref="VOILinearLUT"/>
         /// </summary>
         /// <param name="options">Render options</param>
         public VOILinearExactLUT(GrayscaleRenderOptions options)
@@ -202,7 +202,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="VOISigmoidLUT"/>
+        /// Initialize new instance of <see cref="VOISigmoidLUT"/>
         /// </summary>
         /// <param name="options">Render options</param>
         public VOISigmoidLUT(GrayscaleRenderOptions options)

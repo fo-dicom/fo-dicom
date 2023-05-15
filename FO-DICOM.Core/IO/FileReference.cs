@@ -22,7 +22,7 @@ namespace FellowOakDicom.IO
         private bool _isTempFile;
 
         /// <summary>
-        /// Initializes a <see cref="DesktopFileReference"/> object.
+        /// Initializes a <see cref="FileReference"/> object.
         /// </summary>
         /// <param name="fileName">File name.</param>
         public FileReference(string fileName)

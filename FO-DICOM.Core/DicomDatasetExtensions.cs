@@ -26,12 +26,12 @@ namespace FellowOakDicom
             };
 
         /// <summary>
-        /// Get a composite <see cref="DateTime"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
+        /// Get a composite <see cref="System.DateTime"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
         /// </summary>
         /// <param name="dataset">Dataset from which data should be retrieved.</param>
         /// <param name="date">Tag associated with date value.</param>
         /// <param name="time">Tag associated with time value.</param>
-        /// <returns>Composite <see cref="DateTime"/>.</returns>
+        /// <returns>Composite <see cref="System.DateTime"/>.</returns>
         public static DateTime GetDateTime(this DicomDataset dataset, DicomTag date, DicomTag time)
         {
             var dd = dataset.GetDicomItem<DicomDate>(date);
@@ -44,15 +44,15 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Get a composite <see cref="DateTimeOffset"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
+        /// Get a composite <see cref="System.DateTimeOffset"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
         /// This will take any time zone information specified in the dataset into account. 
-        /// If the dataset is a child sequence item, the <see cref="topLevelDataset"/> must be specified to find time zone information.
+        /// If the dataset is a child sequence item, the <paramref name="topLevelDataset"/> must be specified to find time zone information.
         /// </summary>
         /// <param name="dataset">Dataset from which data should be retrieved.</param>
         /// <param name="date">Tag associated with date value.</param>
         /// <param name="time">Tag associated with time value.</param>
         /// <param name="topLevelDataset">The top-level dataset (if different from the current dataset). This is where the time zone information will be located</param>
-        /// <returns>Composite <see cref="DateTimeOffset"/>.</returns>
+        /// <returns>Composite <see cref="System.DateTimeOffset"/>.</returns>
         public static DateTimeOffset GetDateTimeOffset(this DicomDataset dataset, DicomTag date, DicomTag time, DicomDataset topLevelDataset = null)
         {
             var datetime = GetDateTime(dataset, date, time);

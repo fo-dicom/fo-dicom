@@ -121,6 +121,7 @@ namespace FellowOakDicom.Tests.Network
             var actual = reject.Reason.ToString();
 
             Assert.Equal(expected, actual);
+            Assert.NotNull(_);
         }
 
         [Theory]
@@ -132,6 +133,7 @@ namespace FellowOakDicom.Tests.Network
             var actual = rawMs.ToArray();
 
             Assert.Equal(expected, actual);
+            Assert.NotNull(_);
         }
 
         [Theory]
@@ -162,6 +164,7 @@ namespace FellowOakDicom.Tests.Network
             var actual = stream.ToArray();
 
             Assert.Equal(expected, actual);
+            Assert.NotNull(_);
         }
 
         #endregion

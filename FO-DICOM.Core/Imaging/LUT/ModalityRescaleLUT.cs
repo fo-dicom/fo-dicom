@@ -5,7 +5,7 @@ namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>
-    /// Modality Rescale LUT implementation of <seealso cref="IModalityLUT"/> and <seealso cref="ILUT"/>
+    /// Modality Rescale LUT implementation of <see cref="IModalityLUT"/> and <see cref="ILUT"/>
     /// </summary>
     public class ModalityRescaleLUT : IModalityLUT
     {
@@ -18,7 +18,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="ModalityRescaleLUT"/> using the specified slope and intercept parameters
+        /// Initialize new instance of <see cref="ModalityRescaleLUT"/> using the specified slope and intercept parameters
         /// </summary>
         /// <param name="options">Render options</param>
         public ModalityRescaleLUT(GrayscaleRenderOptions options)

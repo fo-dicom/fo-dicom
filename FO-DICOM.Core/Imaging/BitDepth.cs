@@ -112,10 +112,10 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>
-        /// Create new instance of <seealso cref="BitDepth"/> from input <paramref name="dataset"/>
+        /// Create new instance of <see cref="BitDepth"/> from input <paramref name="dataset"/>
         /// </summary>
         /// <param name="dataset">Input dataset to extract bit depth information from</param>
-        /// <returns>New <seealso cref="BitDepth"/> instance</returns>
+        /// <returns>New <see cref="BitDepth"/> instance</returns>
         public static BitDepth FromDataset(DicomDataset dataset)
         {
             var allocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);

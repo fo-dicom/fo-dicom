@@ -10,7 +10,7 @@ namespace FellowOakDicom.Imaging.Render
 {
 
     /// <summary>
-    /// The Image Graphic implementation of <seealso cref="IGraphic"/>
+    /// The Image Graphic implementation of <see cref="IGraphic"/>
     /// </summary>
     public class ImageGraphic : IGraphic
     {
@@ -115,7 +115,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="ImageGraphic"/>
+        /// Initialize new instance of <see cref="ImageGraphic"/>
         /// </summary>
         /// <param name="pixelData">Pixel data</param>
         public ImageGraphic(IPixelData pixelData)

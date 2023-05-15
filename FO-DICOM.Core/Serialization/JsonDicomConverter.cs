@@ -273,7 +273,7 @@ namespace FellowOakDicom.Serialization
         /// <summary>
         /// Create an instance of a IBulkDataUriByteBuffer. Override this method to use a different IBulkDataUriByteBuffer implementation in applications.
         /// </summary>
-        /// <param name="bulkDataUri">The URI of a bulk data element as defined in <see cref="!:http://dicom.nema.org/medical/dicom/current/output/chtml/part19/chapter_A.html#table_A.1.5-2">Table A.1.5-2 in PS3.19</see>.</param>
+        /// <param name="bulkDataUri">The URI of a bulk data element as defined in <a href="http://dicom.nema.org/medical/dicom/current/output/chtml/part19/chapter_A.html#table_A.1.5-2">Table A.1.5-2 in PS3.19</a>.</param>
         /// <returns>An instance of a Bulk URI Byte buffer.</returns>
         protected virtual IBulkDataUriByteBuffer CreateBulkDataUriByteBuffer(string bulkDataUri) => new BulkDataUriByteBuffer(bulkDataUri);
 

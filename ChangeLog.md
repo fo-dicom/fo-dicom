@@ -30,6 +30,8 @@
 * Fixed missing logging of RemoteHost and RemoteIP in SCU (#1518)
 * Added null check for EscapeXml in DicomXML (#1392)
 * Added private tags from Varian official DICOM Conformance Statements (#1556)
+* Fix handling of negative overlay origin (#1559)
+* Add better logging for inbound connections (#1561)
 * Immediately throw an exception if DICOM server synchronously fails to start (#1562)
 * Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 

@@ -5,7 +5,7 @@ namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>
-    /// Paletter color LUT implementation of <seealso cref="ILUT"/> maps PALETTE COLOR images
+    /// Paletter color LUT implementation of <see cref="ILUT"/> maps PALETTE COLOR images
     /// </summary>
     public class PaletteColorLUT : ILUT
     {
@@ -20,7 +20,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="PaletteColorLUT"/>
+        /// Initialize new instance of <see cref="PaletteColorLUT"/>
         /// </summary>
         /// <param name="firstEntry">The first entry (minium value)</param>
         /// <param name="lut">The palette color LUT</param>
