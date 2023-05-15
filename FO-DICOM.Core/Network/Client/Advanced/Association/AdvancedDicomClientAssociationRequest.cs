@@ -38,6 +38,11 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// </summary>
         public DicomExtendedNegotiationCollection ExtendedNegotiations { get; }
 
+        /// <summary>
+        /// Gets or sets the user identity negotiation information
+        /// </summary>
+        public DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
+
         public AdvancedDicomClientAssociationRequest()
         {
             PresentationContexts = new DicomPresentationContextCollection();

@@ -151,6 +151,13 @@ var server = new DicomServer<DicomCEchoProvider>(12345);
 
 var client = DicomClientFactory.Create("127.0.0.1", 12345, false, "SCU", "ANY-SCP");
 client.NegotiateAsyncOps();
+// Optionally negotiate user identity
+client.NegotiateUserIdentity(new DicomUserIdentityNegotiation
+{
+    UserIdentityType = DicomUserIdentityType.Jwt,
+    PositiveResponseRequested = true,
+    PrimaryField = "JWT_TOKEN"
+});
 for (int i = 0; i < 10; i++)
     await client.AddRequestAsync(new DicomCEchoRequest());
 await client.SendAsync();
@@ -242,7 +249,15 @@ using var connection = await AdvancedDicomClientConnectionFactory.OpenConnection
 var associationRequest = new AdvancedDicomClientAssociationRequest
 {
     CallingAE = "EchoSCU",
-    CalledAE = "EchoSCP"
+    CalledAE = "EchoSCP",
+    // Optionally negotiate user identity
+    UserIdentityNegotiation = new DicomUserIdentityNegotiation
+    {
+        UserIdentityType = DicomUserIdentityType.UsernameAndPasscode,
+        PositiveResponseRequested = true,
+        PrimaryField = "USERNAME",
+        SecondaryField = "PASSCODE",
+    }
 };
 
 var cEchoRequest = new DicomCEchoRequest();
