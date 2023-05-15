@@ -7,4 +7,4 @@ updates:
   open-pull-requests-limit: 10
   ignore:
     - dependency-name: "Microsoft.*"
-      update-types: semver-major
+      update-types: [ "semver-major" ]
