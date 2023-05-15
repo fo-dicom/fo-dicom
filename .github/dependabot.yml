@@ -8,3 +8,6 @@ updates:
   ignore:
     - dependency-name: "Microsoft.*"
       update-types: [ "version-update:semver-major" ]
+  ignore:
+    - dependency-name: "System.*"
+      update-types: [ "version-update:semver-major" ]
