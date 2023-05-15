@@ -237,6 +237,80 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
+        public async Task DicomClientFactory_OpenAssociation_ThrowsForNonSuccessfulUserIdentityNegotiation()
+        {
+            var port = Ports.GetNext();
+            using var server = CreateServer<MockUserIdentityUnawareCEchoProvider>(port);
+
+            DicomNetworkException nonSuccessfulException = null;
+            try
+            {
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
+                client.Logger = _logger.IncludePrefix("Client");
+
+                client.RequireSuccessfulUserIdentityNegotiation = true;
+                client.NegotiateUserIdentity(new DicomUserIdentityNegotiation
+                {
+                    UserIdentityType = DicomUserIdentityType.Kerberos,
+                    PositiveResponseRequested = true,
+                    PrimaryField = DicomUserIdentityNegotiationTestData.KerberosServiceTicket
+                });
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                await client.SendAsync();
+            }
+            catch (DicomNetworkException e)
+            {
+                nonSuccessfulException = e;
+            }
+
+            DicomNetworkException successfulExceptionPositiveResponseRequested = null;
+            try
+            {
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
+                client.Logger = _logger.IncludePrefix("Client");
+
+                client.RequireSuccessfulUserIdentityNegotiation = true;
+                client.NegotiateUserIdentity(new DicomUserIdentityNegotiation
+                {
+                    UserIdentityType = DicomUserIdentityType.Kerberos,
+                    PositiveResponseRequested = false,
+                    PrimaryField = DicomUserIdentityNegotiationTestData.KerberosServiceTicket
+                });
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                await client.SendAsync();
+            }
+            catch (DicomNetworkException e)
+            {
+                successfulExceptionPositiveResponseRequested = e;
+            }
+
+            DicomNetworkException successfulExceptionRequireSuccessfulUserIdentityNegotiation = null;
+            try
+            {
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
+                client.Logger = _logger.IncludePrefix("Client");
+
+                client.RequireSuccessfulUserIdentityNegotiation = false;
+                client.NegotiateUserIdentity(new DicomUserIdentityNegotiation
+                {
+                    UserIdentityType = DicomUserIdentityType.Kerberos,
+                    PositiveResponseRequested = true,
+                    PrimaryField = DicomUserIdentityNegotiationTestData.KerberosServiceTicket
+                });
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                await client.SendAsync();
+            }
+            catch (DicomNetworkException e)
+            {
+                successfulExceptionRequireSuccessfulUserIdentityNegotiation = e;
+            }
+
+            Assert.NotNull(nonSuccessfulException);
+            Assert.Null(successfulExceptionPositiveResponseRequested);
+            Assert.Null(successfulExceptionRequireSuccessfulUserIdentityNegotiation);
+        }
+
+        [Fact]
         public async Task DicomClientFactory_OpenAssociation_ThrowsRejectionForEmptyUserIdentity()
         {
             var port = Ports.GetNext();
@@ -858,6 +932,42 @@ namespace FellowOakDicom.Tests.Network
 
                 return SendAssociationRejectAsync(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
                     DicomRejectReason.NoReasonGiven);
+            }
+
+            public Task OnReceiveAssociationReleaseRequestAsync()
+                => SendAssociationReleaseResponseAsync();
+
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
+            {
+            }
+
+            public void OnConnectionClosed(Exception exception)
+            {
+            }
+
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+                => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
+        }
+
+        public class MockUserIdentityUnawareCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+        {
+            public MockUserIdentityUnawareCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
+                DicomServiceDependencies dependencies)
+                : base(stream, fallbackEncoding, log, dependencies)
+            {
+            }
+
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            {
+                foreach (var pc in association.PresentationContexts)
+                {
+                    pc.AcceptTransferSyntaxes(DicomTransferSyntax.ImplicitVRLittleEndian);
+                }
+
+                // Emulate user identity unawareness
+                association.UserIdentityNegotiation = null;
+
+                return SendAssociationAcceptAsync(association);
             }
 
             public Task OnReceiveAssociationReleaseRequestAsync()

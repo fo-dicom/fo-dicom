@@ -75,6 +75,11 @@ namespace FellowOakDicom.Network.Client
         List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to require a successful user identity negotiation during association.
+        /// </summary>
+        bool RequireSuccessfulUserIdentityNegotiation { get; set; }
+
+        /// <summary>
         /// Gets or sets the user identity to negotiate with association.
         /// </summary>
         DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
@@ -199,6 +204,7 @@ namespace FellowOakDicom.Network.Client
         public DicomServiceOptions ServiceOptions { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
+        public bool RequireSuccessfulUserIdentityNegotiation { get; set; }
         public DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
@@ -240,6 +246,7 @@ namespace FellowOakDicom.Network.Client
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
+            RequireSuccessfulUserIdentityNegotiation = true;
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             
@@ -438,6 +445,19 @@ namespace FellowOakDicom.Network.Client
                                 // try again
                                 continue;
                             }
+                        }
+
+                        // Validate successful user identity negotiation response
+                        if (RequireSuccessfulUserIdentityNegotiation &&
+                            association.Association.UserIdentityNegotiation != null &&
+                            association.Association.UserIdentityNegotiation.ServerResponse == null)
+                        {
+                            if (association.Association.UserIdentityNegotiation.PositiveResponseRequested)
+                            {
+                                throw new DicomNetworkException($"A positive response requested for user identity type {association.Association.UserIdentityNegotiation.UserIdentityType} but server response was null");
+                            }
+
+                            _logger.LogWarning($"Successful user identity negotiation with type {association.Association.UserIdentityNegotiation.UserIdentityType} was required but server response was null");
                         }
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
