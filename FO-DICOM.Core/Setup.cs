@@ -77,7 +77,7 @@ namespace FellowOakDicom
                 .AddInternals()
                 .AddLogging()
                 .AddTranscoderManager<DefaultTranscoderManager>()
-                .AddImageFactory<RawImageManager>()
+                .AddImageFactory<RawImageFactory>()
                 .AddNetworkManager<DesktopNetworkManager>()
                 .AddDicomClient()
                 .AddDicomServer();
