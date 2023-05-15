@@ -2,6 +2,9 @@
 * **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete
 * **Breaking change**: Updated DICOM Dictionary to 2022d. Several DicomTag constant names changed to singular name from plural form (#1469)
 * Fix Truncating UIDs during Dimse and PDU logging (#1505)
+* **Breaking change**: DicomServer factories methods take an instance of ITlsAcceptor instead of a certificate name in case of Tls connection.
+* Add the possibility to use some certain client certificate for Tls connections.
+* New interfaces ITlsAcceptor and ITlsInitiator give more freedom in handling Tls connections.
 * Cache file length in FileByteSource to improve parse speed (#1493)
 * Fix reading of DICOM files with extra tags in File Meta Information (#1376)
 * Allow accessing person name components for empty items (#1405)

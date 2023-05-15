@@ -18,18 +18,6 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
         /// </summary>
-        /// <param name="host">Network host.</param>
-        /// <param name="port">Network port.</param>
-        /// <param name="useTls">Use TLS layer?</param>
-        /// <param name="noDelay">No delay?</param>
-        /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
-        /// <returns>Network stream implementation.</returns>
-        INetworkStream CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
-
-        /// <summary>
-        /// Platform-specific implementation to create a network stream object.
-        /// </summary>
         /// <param name="options">The various options that specify how the network stream must be created</param>
         /// <returns>Network stream implementation.</returns>
         INetworkStream CreateNetworkStream(NetworkStreamCreationOptions options);
@@ -107,18 +95,6 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
         /// </summary>
-        /// <param name="host">Network host.</param>
-        /// <param name="port">Network port.</param>
-        /// <param name="useTls">Use TLS layer?</param>
-        /// <param name="noDelay">No delay?</param>
-        /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        /// <param name="millisecondsTimeout">The timeout in milliseconds for creating a network stream</param>
-        /// <returns>Network stream implementation.</returns>
-        protected internal abstract INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout);
-
-        /// <summary>
-        /// Platform-specific implementation to create a network stream object.
-        /// </summary>
         /// <param name="networkStreamCreationOptions">The various options that specify how the network stream must be created</param>
         /// <returns>Network stream implementation.</returns>
         protected internal abstract INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions networkStreamCreationOptions);
@@ -141,9 +117,6 @@ namespace FellowOakDicom.Network
 
         INetworkListener INetworkManager.CreateNetworkListener(string ipAddress, int port) 
             => CreateNetworkListenerImpl(ipAddress, port);
-
-        INetworkStream INetworkManager.CreateNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
-            => CreateNetworkStreamImpl(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
 
         INetworkStream INetworkManager.CreateNetworkStream(NetworkStreamCreationOptions options)
             => CreateNetworkStreamImpl(options);
