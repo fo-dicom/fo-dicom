@@ -178,6 +178,7 @@ namespace FellowOakDicom.Tests.Network
 
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
+            await Task.Yield();
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }
 

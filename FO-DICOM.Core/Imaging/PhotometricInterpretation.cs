@@ -60,7 +60,6 @@ namespace FellowOakDicom.Imaging
 
         #region Public Methods
 
-        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj)) return true;
@@ -68,13 +67,11 @@ namespace FellowOakDicom.Imaging
             return ((PhotometricInterpretation)obj).Value == Value;
         }
 
-        /// <inheritdoc />
         public override int GetHashCode()
         {
             return Value.GetHashCode();
         }
 
-        /// <inheritdoc />
         public override string ToString()
         {
             return Description;

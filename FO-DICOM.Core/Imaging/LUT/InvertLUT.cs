@@ -5,7 +5,7 @@ namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>
-    /// Invert LUT implementation of <seealso cref="ILUT"/> to invert grayscale images
+    /// Invert LUT implementation of <see cref="ILUT"/> to invert grayscale images
     /// </summary>
     public class InvertLUT : ILUT
     {
@@ -16,7 +16,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="InvertLUT"/> 
+        /// Initialize new instance of <see cref="InvertLUT"/> 
         /// </summary>
         /// <param name="minValue">Miniumum input value</param>
         /// <param name="maxValue">Maximum output value</param>

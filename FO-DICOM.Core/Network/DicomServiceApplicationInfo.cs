@@ -52,7 +52,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="index">Application info field index.</param>
         /// <returns>Byte value</returns>
-        /// <exception cref="ArgumentException">Invalid field index.</exception>
+        /// <exception cref="System.ArgumentException">Invalid field index.</exception>
         public byte this[byte index]
         {
             get => _fields[index];
@@ -126,7 +126,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="index">Application info field index.</param>
         /// <param name="value">Application info field value.</param>
-        /// <exception cref="ArgumentException">Invalid field index or a field with same index already exists.</exception>
+        /// <exception cref="System.ArgumentException">Invalid field index or a field with same index already exists.</exception>
         public void Add(byte index, byte value)
         {
             if (index == 0)
@@ -143,7 +143,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="index">Application info field index.</param>
         /// <param name="value">Application info field value.</param>
-        /// <exception cref="ArgumentException">Invalid field index.</exception>
+        /// <exception cref="System.ArgumentException">Invalid field index.</exception>
         public void AddOrUpdate(byte index, byte value)
         {
             this[index] = value;
@@ -154,7 +154,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="index">Application info field index.</param>
         /// <param name="value">Application info field value.</param>
-        /// <exception cref="ArgumentException">Invalid field index.</exception>
+        /// <exception cref="System.ArgumentException">Invalid field index.</exception>
         public void AddOrUpdate(byte index, bool value)
         {
             this[index] = value ? (byte)1 : (byte)0;
@@ -196,7 +196,7 @@ namespace FellowOakDicom.Network
         /// <param name="index">Application info field index.</param>
         /// <param name="defaultValue">Default value if Application info field index does not exist.</param>
         /// <returns>Application info field value or <paramref name="defaultValue"/> if not exists.</returns>
-        /// <exception cref="ArgumentException"><paramref name="'T"/> is not an Enum.</exception>
+        /// <exception cref="System.ArgumentException"><paramref name="'T"/> is not an Enum.</exception>
         public byte GetValueForEnum<T>(byte index, byte defaultValue)
         {
             if (Contains(index) && Enum.IsDefined(typeof(T), (int)this[index]))

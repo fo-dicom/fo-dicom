@@ -301,7 +301,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificateName, noDelay, receiveBufferSize, sendBufferSize, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_certificateName, noDelay, receiveBufferSize, sendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)

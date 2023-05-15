@@ -110,7 +110,7 @@ namespace FellowOakDicom
         /// <param name="encoding">Encoding.</param>
         /// <param name="extended">If true, the extended version of the character set is returned.</param>
         /// <returns>The Specific Character Set as defined in DICOM.</returns>
-        /// <exception cref="ArgumentException">No character set found for the encoding.</exception>
+        /// <exception cref="System.ArgumentException">No character set found for the encoding.</exception>
         public static string GetCharset(Encoding encoding, bool extended = false)
         {
             var name = _knownEncodingNames.FirstOrDefault(x => x.Value == encoding.WebName &&

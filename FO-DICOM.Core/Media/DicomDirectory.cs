@@ -53,7 +53,7 @@ namespace FellowOakDicom.Media
         /// <summary>
         /// Gets or sets the file set ID.
         /// </summary>
-        /// <exception cref="ArgumentException">If applied file set ID is null or empty.</exception>
+        /// <exception cref="System.ArgumentException">If applied file set ID is null or empty.</exception>
         public string FileSetID
         {
             get => Dataset.GetSingleValueOrDefault(DicomTag.FileSetID, string.Empty);

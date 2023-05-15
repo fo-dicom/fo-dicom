@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
+// These tests cover some obsolete properties such as AutoValidate
+#pragma warning disable CS0618
+
 namespace FellowOakDicom.Tests
 {
 
@@ -64,7 +67,7 @@ namespace FellowOakDicom.Tests
                         new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"))
                         .Add(DicomTag.SourceApplicationEntityTitle, "ABCDEFG"));
 
-            var exception = Record.Exception(() => { Assert.Equal(metaInfo.SourceApplicationEntityTitle, "ABCDEFG"); });
+            var exception = Record.Exception(() => { Assert.Equal("ABCDEFG", metaInfo.SourceApplicationEntityTitle); });
             Assert.Null(exception);
         }
 

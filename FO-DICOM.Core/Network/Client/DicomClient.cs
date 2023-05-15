@@ -16,6 +16,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
+// DICOM client still provides some obsolete APIs that should not be removed yet, but should also not provide obsolete compiler warnings
+#pragma warning disable CS0618
+#pragma warning disable CS0612
+
 namespace FellowOakDicom.Network.Client
 {
     public interface IDicomClient
@@ -112,7 +116,7 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
-        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="IAdvancedDicomClientConnection"/>
+        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="FellowOakDicom.Network.Client.Advanced.Connection.IAdvancedDicomClientConnection"/>
         /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
         [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]

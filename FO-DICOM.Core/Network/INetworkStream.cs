@@ -38,9 +38,9 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <summary>
-        /// Get corresponding <see cref="Stream"/> object.
+        /// Get corresponding <see cref="System.IO.Stream"/> object.
         /// </summary>
-        /// <returns>Network stream as <see cref="Stream"/> object.</returns>
+        /// <returns>Network stream as <see cref="System.IO.Stream"/> object.</returns>
         Stream AsStream();
 
         #endregion

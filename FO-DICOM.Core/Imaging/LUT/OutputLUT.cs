@@ -5,7 +5,7 @@ namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>
-    /// Output LUT implementation of <seealso cref="ILUT"/> used to map grayscale images to RGB grays, or colorize grayscale 
+    /// Output LUT implementation of <see cref="ILUT"/> used to map grayscale images to RGB grays, or colorize grayscale 
     /// images using custom color map
     /// </summary>
     public class OutputLUT : ILUT
@@ -19,7 +19,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="OutputLUT"/> 
+        /// Initialize new instance of <see cref="OutputLUT"/> 
         /// </summary>
         /// <param name="options">The grayscale render options containing the grayscale color map.</param>
         public OutputLUT(GrayscaleRenderOptions options)

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2012-2021 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -14,11 +16,14 @@ namespace FellowOakDicom.Network
     /// </summary>
     public class DesktopNetworkListener : INetworkListener
     {
+
         #region FIELDS
 
         private readonly TcpListener _listener;
 
-        private X509Certificate _certificate = null;
+        private readonly IPEndPoint _endpoint;
+        
+        private X509Certificate _certificate;
 
         #endregion
 
@@ -38,7 +43,8 @@ namespace FellowOakDicom.Network
                 addr = IPAddress.Any;
             }
 
-            _listener = new TcpListener(addr, port);
+            _endpoint = new IPEndPoint(addr, port);
+            _listener = new TcpListener(_endpoint);
         }
 
         #endregion
@@ -61,19 +67,24 @@ namespace FellowOakDicom.Network
             bool noDelay,
             int? receiveBufferSize,
             int? sendBufferSize,
+            ILogger logger,
             CancellationToken token)
         {
             try
             {
-                Task awaiter;
-                Task<TcpClient> acceptTcpClientTask;
-                using var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                acceptTcpClientTask = _listener.AcceptTcpClientAsync();
-                awaiter = await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
-                cancelSource.Cancel();
-                if (awaiter is Task<TcpClient> tcpClientTask)
+                if (logger.IsEnabled(LogLevel.Debug))
                 {
-                    var tcpClient = tcpClientTask.Result;
+                    logger.LogDebug("Waiting for inbound client connection to {IPAddress}:{Port}",
+                        _endpoint.Address.ToString(), _endpoint.Port);                
+                }
+
+                using var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+                var acceptTcpClientTask = _listener.AcceptTcpClientAsync();
+                var awaiter = await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
+                cancelSource.Cancel();
+                if (awaiter == acceptTcpClientTask)
+                {
+                    var tcpClient = await acceptTcpClientTask;
                     tcpClient.NoDelay = noDelay;
                     if (receiveBufferSize.HasValue)
                     {
@@ -83,12 +94,19 @@ namespace FellowOakDicom.Network
                     {
                         tcpClient.SendBufferSize = sendBufferSize.Value;
                     }
+                    
+                    if (logger.IsEnabled(LogLevel.Debug))
+                    {
+                        logger.LogDebug("Client connected to {IPAddress}:{Port}",
+                            _endpoint.Address.ToString(), _endpoint.Port);                
+                    }
+
                     if (!string.IsNullOrEmpty(certificateName) && _certificate == null)
                     {
                         _certificate = GetX509Certificate(certificateName);
                     }
 
-                    //  let DesktopNetworkStream to dispose tcpClient
+                    // let DesktopNetworkStream dispose the TcpClient
                     return new DesktopNetworkStream(tcpClient, _certificate, true);
                 }
 
@@ -97,8 +115,29 @@ namespace FellowOakDicom.Network
 
                 return null;
             }
-            catch
+            catch (OperationCanceledException)
             {
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    logger.LogDebug("Listener for {IPAddress}:{Port} has stopped because it was cancelled",
+                        _endpoint.Address.ToString(), _endpoint.Port);
+                }
+
+                return null;
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.OperationAborted)
+            {
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    logger.LogDebug("Listener for {IPAddress}:{Port} has stopped because the connection was closed",
+                        _endpoint.Address.ToString(), _endpoint.Port);
+                }
+                return null;
+            }
+            catch(Exception exception)
+            {
+                logger.LogError(exception, "An error occurred while listening for inbound client connections to {IPAddress}:{Port}", 
+                    _endpoint.Address.ToString(), _endpoint.Port);
                 return null;
             }
         }

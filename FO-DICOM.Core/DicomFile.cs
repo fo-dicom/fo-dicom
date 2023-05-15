@@ -159,7 +159,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="fileName">Name of file.</param>
         /// <param name="options">Options to apply during writing.</param>
-        /// <returns>Awaitable <see cref="Task"/>.</returns>
+        /// <returns>Awaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
         public async Task SaveAsync(string fileName, DicomWriteOptions options = null)
         {
             PreprocessFileMetaInformation();
