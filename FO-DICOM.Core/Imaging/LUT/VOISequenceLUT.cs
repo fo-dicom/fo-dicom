@@ -10,7 +10,7 @@ namespace FellowOakDicom.Imaging.LUT
 
     public class VOISequenceLUT : ILUT
     {
-        private readonly GrayscaleRenderOptions _renderOptions;
+        private readonly DicomDataset _voiLUTItem;
 
         private int _nrOfEntries;
 
@@ -26,9 +26,9 @@ namespace FellowOakDicom.Imaging.LUT
         /// Initialize new instance of <see cref="VOISequenceLUT"/> using the specified VOI LUT Descriptor and Data
         /// </summary>
         /// <param name="options">Render options</param>
-        public VOISequenceLUT(GrayscaleRenderOptions options)
+        public VOISequenceLUT(DicomDataset voiLUTSequenceItem)
         {
-            _renderOptions = options;
+            _voiLUTItem = voiLUTSequenceItem;
             Recalculate();
         }
 
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Imaging.LUT
         {
             GetLUTDescriptor();
 
-            var LUTDataElement = _renderOptions.VOILUTSequence.Items[0].GetDicomItem<DicomElement>(DicomTag.LUTData);
+            var LUTDataElement = _voiLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTData);
             switch (LUTDataElement.ValueRepresentation.Code)
             {
                 case "OW":
@@ -111,7 +111,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         private void GetLUTDescriptor()
         {
-            var lutDescriptorElement = _renderOptions.VOILUTSequence.Items[0].GetDicomItem<DicomElement>(DicomTag.LUTDescriptor);
+            var lutDescriptorElement = _voiLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTDescriptor);
             if (lutDescriptorElement.ValueRepresentation.Code == "SS")
             {
                 var LUTDescriptor = lutDescriptorElement as DicomSignedShort;

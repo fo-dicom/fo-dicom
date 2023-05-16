@@ -1,45 +1,38 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
+
 namespace FellowOakDicom.Imaging
 {
+    [Flags]
     public enum CacheType
     {
 
         /// <summary>
         /// No caching at all
         /// </summary>
-        None,
-
-        /// <summary>
-        /// Specifies the raw compressed pixel data (where it needs to be read from disk)
-        /// </summary>
-        CompressedData,
+        None = 0,
 
         /// <summary>
         /// Specifies the raw uncompressed pixel data (where it needs to be decompressed or read from disk)
         /// </summary>
-        PixelData,
+        PixelData = 1,
 
         /// <summary>
-        /// Specifies the lookup tables generated as a result of windowing etc.
+        /// Specifies the lookup tables and pipelines generated as a result of windowing etc.
         /// </summary>
-        LookupTables,
+        LookupTables = 2,
 
         /// <summary>
-        /// Specifies the overlay data contained in a dataset.
+        /// Specifies the cached copy of the rendered display data
         /// </summary>
-        OverlayData,
-
-        /// <summary>
-        /// Specifies the cached copy of the pixel display data
-        /// </summary>
-        Display,
+        Display = 4,
 
         /// <summary>
         /// All caches
         /// </summary>
-        All,
+        All = PixelData | LookupTables | Display
 
     }
 }

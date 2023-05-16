@@ -3,6 +3,7 @@
 #nullable disable
 
 using FellowOakDicom.Imaging.LUT;
+using System.Linq;
 
 namespace FellowOakDicom.Imaging.Render
 {
@@ -20,12 +21,6 @@ namespace FellowOakDicom.Imaging.Render
 
         private readonly VOISequenceLUT _voiSequenceLut;
 
-        private readonly VOILUT _voiLut;
-
-        private readonly OutputLUT _outputLut;
-
-        private readonly InvertLUT _invertLut;
-
         private readonly GrayscaleRenderOptions _options;
 
         #endregion
@@ -42,33 +37,85 @@ namespace FellowOakDicom.Imaging.Render
             _options = options;
             if (options.ModalityLUTSequence != null)
             {
-                _modalityLut = new ModalitySequenceLUT(_options);
+                _modalityLut = new ModalitySequenceLUT(_options.ModalityLUTSequence.First());
             }
             else if (_options.RescaleSlope != 1.0 || _options.RescaleIntercept != 0.0)
             {
                 _modalityLut = new ModalityRescaleLUT(_options);
             }
 
-            if (_options.UseVOILUT && options.VOILUTSequence != null)
+            if (options.VOILUTSequence != null)
             {
-                _voiSequenceLut = new VOISequenceLUT(_options);
-                _voiLut = new VOILinearLUT(GrayscaleRenderOptions.CreateLinearOption(_options.BitDepth, _voiSequenceLut.MinimumOutputValue, _voiSequenceLut.MaximumOutputValue));
-            }
-            else
-            {
-                _voiLut = VOILUT.Create(_options);
-            }
-
-            _outputLut = new OutputLUT(_options);
-            if (_options.Invert)
-            {
-                _invertLut = new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue);
+                _voiSequenceLut = new VOISequenceLUT(_options.VOILUTSequence.First());
             }
         }
 
         #endregion
 
         #region Public Properties
+
+        public double WindowWidth
+        {
+            get => _options.WindowWidth;
+            set
+            {
+                if (value != _options.WindowWidth)
+                {
+                    _options.WindowWidth = value;
+                    ResetLut();
+                }
+            }
+        }
+
+        public double WindowCenter
+        {
+            get => _options.WindowCenter;
+            set
+            {
+                if (value != _options.WindowCenter)
+                {
+                    _options.WindowCenter = value;
+                    ResetLut();
+                }
+            }
+        }
+
+        public bool UseVOILUT
+        {
+            get => _options.UseVOILUT;
+            set
+            {
+                if (value != _options.UseVOILUT)
+                {
+                    _options.UseVOILUT = value;
+                    ResetLut();
+                }
+            }
+        }
+
+        public bool Invert
+        {
+            get => _options.Invert;
+            set
+            {
+                if (value != _options.Invert)
+                {
+                    _options.Invert = value;
+                    ResetLut();
+                }
+            }
+        }
+
+        public Color32[] GrayscaleColorMap
+        {
+            get => _options.ColorMap;
+            set
+            {
+                _options.ColorMap = value;
+                ResetLut();
+            }
+
+        }
 
         /// <summary>
         /// Get <see cref="FellowOakDicom.Imaging.LUT.CompositeLUT"/> of LUTs available in this pipeline instance
@@ -90,11 +137,24 @@ namespace FellowOakDicom.Imaging.Render
                         composite.Add(_voiSequenceLut);
                     }
 
-                    composite.Add(_voiLut);
-                    composite.Add(_outputLut);
-                    if (_invertLut != null)
+                    if (_options.UseVOILUT && _voiSequenceLut != null)
                     {
-                        composite.Add(_invertLut);
+                        var voiLut = new VOILinearLUT(GrayscaleRenderOptions.CreateLinearOption(_options.BitDepth, _voiSequenceLut.MinimumOutputValue, _voiSequenceLut.MaximumOutputValue));
+                        composite.Add(voiLut);
+                    }
+                    else
+                    {
+                        var voiLut = VOILUT.Create(_options);
+                        composite.Add(voiLut);
+                    }
+
+                    var outputLut = new OutputLUT(_options);
+                    composite.Add(outputLut);
+
+                    if (_options.Invert)
+                    {
+                        var invertLut = new InvertLUT(outputLut.MinimumOutputValue, outputLut.MaximumOutputValue);
+                        composite.Add(invertLut);
                     }
 
                     _lut = composite;
@@ -104,5 +164,15 @@ namespace FellowOakDicom.Imaging.Render
         }
 
         #endregion
+
+        #region Private Methods
+
+        private void ResetLut()
+        { 
+            _lut = null;
+        }
+
+        #endregion
+
     }
 }

@@ -30,7 +30,6 @@ namespace FellowOakDicom.Imaging
         private GrayscaleRenderOptions(BitDepth bits)
         {
             BitDepth = bits;
-            Invert = false;
         }
 
         #endregion
@@ -106,7 +105,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Set to true to render the output in inverted grey
         /// </summary>
-        public bool Invert { get; private set; }
+        public bool Invert { get; set; } = false;
 
         #endregion
 

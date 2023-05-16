@@ -15,7 +15,7 @@ namespace FellowOakDicom.Imaging.LUT
     {
         #region Private Members
 
-        private GrayscaleRenderOptions _renderOptions;
+        private readonly DicomDataset _modalityLUTItem;
 
         private int _nrOfEntries;
 
@@ -32,10 +32,10 @@ namespace FellowOakDicom.Imaging.LUT
         /// <summary>
         /// Initialize new instance of <see cref="ModalitySequenceLUT"/> using the specified Modality LUT Descriptor and Data
         /// </summary>
-        /// <param name="options">Render options</param>
-        public ModalitySequenceLUT(GrayscaleRenderOptions options)
+        /// <param name="modalityLUTSequenceItem">One item of the ModalityLUTSequence</param>
+        public ModalitySequenceLUT(DicomDataset modalityLUTSequenceItem)
         {
-            _renderOptions = options;
+            _modalityLUTItem = modalityLUTSequenceItem;
             Recalculate();
         }
 
@@ -74,7 +74,7 @@ namespace FellowOakDicom.Imaging.LUT
         {
             GetLUTDescriptor();
 
-            var LUTDataElement = _renderOptions.ModalityLUTSequence.Items[0].GetDicomItem<DicomElement>(DicomTag.LUTData);
+            var LUTDataElement = _modalityLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTData);
             switch (LUTDataElement.ValueRepresentation.Code)
             {
                 case "OW":
@@ -104,7 +104,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         private void GetLUTDescriptor()
         {
-            var lutDescriptorElement = _renderOptions.ModalityLUTSequence.Items[0].GetDicomItem<DicomElement>(DicomTag.LUTDescriptor);
+            var lutDescriptorElement = _modalityLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTDescriptor);
             if (lutDescriptorElement.ValueRepresentation.Code == "SS")
             {
                 var LUTDescriptor = lutDescriptorElement as DicomSignedShort;

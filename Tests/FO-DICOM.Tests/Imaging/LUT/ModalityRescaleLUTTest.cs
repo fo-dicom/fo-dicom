@@ -4,6 +4,7 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.LUT;
+using System.Linq;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging.LUT
@@ -28,7 +29,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         {
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset, 0);
-            var lut = new ModalitySequenceLUT(options);
+            var lut = new ModalitySequenceLUT(options.ModalityLUTSequence.First());
             Assert.Equal(1023, lut.MaximumOutputValue);
         }
 
