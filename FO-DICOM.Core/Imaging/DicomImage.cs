@@ -90,7 +90,7 @@ namespace FellowOakDicom.Imaging
 
         #region PROPERTIES
 
-        public CacheType CacheMode { get; set; } = CacheType.None;
+        public CacheType CacheMode { get; set; } = CacheType.PixelData;
 
         /// <summary>Width of image in pixels</summary>
         public int Width => _dataset.GetSingleValue<ushort>(DicomTag.Columns);
@@ -238,7 +238,7 @@ namespace FellowOakDicom.Imaging
                 return image;
             }
 
-            var pixels = _pixelsCache.GetOrAdd(frame, f => GetFrameData(f)).Rescale(_scale);
+            var pixels = GetOrCreateCachedPixelData(frame).Rescale(_scale);
 
             var pipeline = GetOrCreateCachedFramePipeline(frame);
 
@@ -271,13 +271,40 @@ namespace FellowOakDicom.Imaging
 
             image = graphic.RenderImage(pipeline.LUT);
 
-            _renderedImageCache.TryAdd(frame, image);
+            if (CacheMode.HasFlag(CacheType.Display))
+            {
+                _renderedImageCache.TryAdd(frame, image);
+            }
+
+            // now after rendering, the pipeline should remove the data, if caching is not configured
+            if (!CacheMode.HasFlag(CacheType.LookupTables))
+            {
+                pipeline.ClearCache();
+            }
 
             return image;
         }
 
+        private IPixelData GetOrCreateCachedPixelData(int frame)
+        {
+            if (CacheMode.HasFlag(CacheType.PixelData))
+            {
+                // get the pixel data from cache, or add it there
+                return _pixelsCache.GetOrAdd(frame, f => GetFrameData(f));
+            }
+            else
+            {
+                // no caching, so generate the pixel data without caching
+                return GetFrameData(frame);
+            }
+        }
+
         private IPipeline GetOrCreateCachedFramePipeline(int frame)
-            => _pipelineCache.GetOrAdd(frame, f => CreatePipelineData(f));
+        {
+            // even if caching of the lookuptable is disabled, the pipeline has to be created anyway.
+            // it is because of the rendering options, that the user wants to configure in pipeline before the actual rendering
+            return _pipelineCache.GetOrAdd(frame, f => CreatePipelineData(f));
+        }
 
         /// <summary>
         /// If necessary, prepare new frame data, and return appropriate data.

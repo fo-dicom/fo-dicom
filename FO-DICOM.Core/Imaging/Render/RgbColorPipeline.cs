@@ -14,5 +14,9 @@ namespace FellowOakDicom.Imaging.Render
     {
         /// <inheritdoc />
         public ILUT LUT => null;
+
+        /// <inheritdoc />
+        public void ClearCache()
+        { /* nothing to do here because this class has no cached data */ }
     }
 }

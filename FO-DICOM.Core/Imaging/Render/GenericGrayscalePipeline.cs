@@ -165,6 +165,13 @@ namespace FellowOakDicom.Imaging.Render
 
         #endregion
 
+        #region Public Methods
+
+        /// <inheritdoc />
+        public void ClearCache() => ResetLut();
+
+        #endregion
+
         #region Private Methods
 
         private void ResetLut()
