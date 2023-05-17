@@ -4,6 +4,9 @@
 - Add support for parsing DICOM files where the pixel data is not properly closed with a SequenceDelimitationItem (#1339)
 - Update Dicom json converter to handle Infinity values for FL and FD VRs (#1725)
 
+- Add support for rendering multiframe DICOM files where last fragment is 0 bytes (#1586)
+
+
 ### 5.1.2 (2023-12-21)
 
 - Update to DICOM Standard 2023e
@@ -35,6 +38,47 @@
 - Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
 
 #### 5.1.0 (2023-05-21)
+* **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete
+* **Breaking change**: Updated DICOM Dictionary to 2023b. Several DicomTag constant names changed to singular name from plural form (#1469)
+* Fix Truncating UIDs during Dimse and PDU logging (#1505)
+* **Breaking change**: DicomServer factories methods take an instance of ITlsAcceptor instead of a certificate name in case of Tls connection.
+* Add the possibility to use some certain client certificate for Tls connections.
+* New interfaces ITlsAcceptor and ITlsInitiator give more freedom in handling Tls connections.
+* Cache file length in FileByteSource to improve parse speed (#1493)
+* Fix reading of DICOM files with extra tags in File Meta Information (#1376)
+* Allow accessing person name components for empty items (#1405)
+* Fix sending more DICOM requests over an existing association where a request previously timed out (#1396)
+* Improve throughput of DicomClient when more requests are added mid-flight (#1396)
+* Fix race-condition where Dicom clients could be accepted for connection before the server was fully configured (#1398)
+* Fix overwriting of Lossy Compression ratio tag (#1400)
+* Fix DicomClientFactory logger name (#1429)
+* Fix DicomJsonConverter deserialization to handle invalid private creator item (#1445)
+* Improve performance and reduce memory usage when opening DICOM files (#1414)
+* Fix rendering of XA/XRF images that include a modality LUT sequence (#1442)
+* Fix incorrect conversion of some decimal strings (#1454)
+* Disabled dataset validation on `DicomFile.Clone()` (#1465)
+* Fix reading of Confidentiality Profile Attributes from standard (led to missing Clean Graphics option) (#1212)
+* Added support for DICOM supplement 225, Multi-Fragment video transfer syntax (#1469)
+* Added support for rendering native icon image stored within encapsulated sop instance (#1483)
+* Added property to omit adding the default Implicit VR Little Endian transfer syntax for CStoreRequest (#1475)
+* Fix blanking of ValueElements in the anonymizer (#1491)
+* Throw error when adding private dicom tag without explicit VR (#1462)
+* Fix incorrect JSON conversion of inline binaries (#1487)
+* Update VR=UI validation to reject empty component (#1509)
+* Fix GetDateTimeOffset with default offset from date/time (#1511)
+* Fix even length in pixel data by adding payload (#1019)
+* Use CommunityToolkit.HighPerformance (#1473)
+* Fix JsonDicomConverter number serialization mode 'PreferablyAsNumber' to handle integers greater than int.MaxValue or lesser than int.MinValue (#1521)
+* Fixed missing logging of RemoteHost and RemoteIP in SCU (#1518)
+* Added null check for EscapeXml in DicomXML (#1392)
+* Added private tags from Varian official DICOM Conformance Statements (#1556)
+* Fix handling of negative overlay origin (#1559)
+* Add better logging for inbound connections (#1561)
+* Added User Identity Negotiation support (#1110)
+* Rendering in DicomImage is threadsafe, several frames can be rendered in parallel (#806)
+* Convenience method for accessing items in Functionsl Group Sequences (#742)
+* Rendering of EnhancedCT, EnhancedMR and BTO read the correct rendering options from Functional Group Sequences (#917)
+* Fixed some Photometric Interpretation related rendering issues (#1497)
 
 - **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete
 - **Breaking change**: Updated DICOM Dictionary to 2023b. Several DicomTag constant names changed to singular name from plural form (#1469)
@@ -95,7 +139,6 @@
 - Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
 - Change: DicomAnonymizer private fields and methods changed to protected so they can be used in subclasses, made instance methods virtual so they can be overridden in subclasses
 - Fix VR's SV and UV VR Length field (#1386)
-- Add support for rendering multiframe DICOM files where last fragment is 0 bytes (#1586)
 
 #### 5.0.2 (2022-01-11)
 
