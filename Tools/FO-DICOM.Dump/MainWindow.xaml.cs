@@ -6,9 +6,7 @@ using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
 using Microsoft.Win32;
 using System;
-using System.IO;
 using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace FellowOakDicom.Dump
 {
@@ -34,7 +32,7 @@ namespace FellowOakDicom.Dump
                 .RegisterServices(s => s
                     .AddFellowOakDicom()
                     .AddTranscoderManager<NativeTranscoderManager>()
-                    .AddImageFactory<ImageSharpImageFactory>())
+                    .AddImageFactory<WPFImageFactory>())
                 .Build();
         }
 

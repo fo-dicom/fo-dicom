@@ -44,13 +44,9 @@ namespace FellowOakDicom.Dump
             }
 
             var img = _image.RenderImage(_frameNumber);
-            var sharpImage = img.AsSharpImage();
+            var sharpImage = img.AsWriteableBitmap();
 
-            using var ms = new MemoryStream();
-            sharpImage.Save(ms, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
-            ms.Position = 0;
-
-            ImageView.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            ImageView.Source = sharpImage;
         }
 
         private void ImageView_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
