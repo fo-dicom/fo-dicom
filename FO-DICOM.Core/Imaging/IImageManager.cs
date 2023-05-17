@@ -4,7 +4,7 @@
 
 namespace FellowOakDicom.Imaging
 {
-    public interface IImageFactory
+    public interface IImageManager
     {
 
         IImage CreateImage(int width, int height);

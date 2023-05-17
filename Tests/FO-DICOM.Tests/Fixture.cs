@@ -43,7 +43,7 @@ namespace FellowOakDicom.Tests
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
                 .AddTranscoderManager<NativeTranscoderManager>()
-                .AddImageFactory<ImageSharpImageFactory>();
+                .AddImageManager<ImageSharpImageManager>();
 
             var imageSharpServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register(TestCollections.ImageSharp, imageSharpServiceProvider);

@@ -77,7 +77,7 @@ namespace FellowOakDicom
                 .AddInternals()
                 .AddLogging()
                 .AddTranscoderManager<DefaultTranscoderManager>()
-                .AddImageFactory<RawImageFactory>()
+                .AddImageManager<RawImageManager>()
                 .AddNetworkManager<DesktopNetworkManager>()
                 .AddDicomClient()
                 .AddDicomServer();
@@ -124,9 +124,9 @@ namespace FellowOakDicom
             return services;
         }
 
-        public static IServiceCollection AddImageFactory<TImageFactory>(this IServiceCollection services) where TImageFactory : class, IImageFactory
+        public static IServiceCollection AddImageManager<TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
         {
-            services.Replace(ServiceDescriptor.Singleton<IImageFactory, TImageFactory>());
+            services.Replace(ServiceDescriptor.Singleton<IImageManager, TImageManager>());
             return services;
         }
 

@@ -24,7 +24,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             lock (_lock)
             {
-                var image = ImageFactory.CreateImage(100, 100);
+                var image = ImageManager.CreateImage(100, 100);
                 image.Render(4, false, false, 0);
                 Assert.IsType<RawImage>(image);
             }

@@ -32,7 +32,7 @@ namespace FellowOakDicom.Dump
                 .RegisterServices(s => s
                     .AddFellowOakDicom()
                     .AddTranscoderManager<NativeTranscoderManager>()
-                    .AddImageFactory<WPFImageFactory>())
+                    .AddImageManager<WPFImageManager>())
                 .Build();
         }
 

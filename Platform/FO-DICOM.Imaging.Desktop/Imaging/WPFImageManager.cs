@@ -4,14 +4,15 @@
 
 namespace FellowOakDicom.Imaging
 {
+
     /// <summary>
-    /// Windows Forms-based image manager implementation.
+    /// WPF based implementation of the <see cref="ImageManager"/>.
     /// </summary>
-    public sealed class WinFormsImageFactory : IImageFactory
+    public sealed class WPFImageManager : IImageManager
     {
 
         public IImage CreateImage(int width, int height)
-            => new WinFormsImage(width, height);
+            => new WPFImage(width, height);
 
     }
 }
