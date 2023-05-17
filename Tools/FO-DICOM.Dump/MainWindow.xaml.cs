@@ -161,18 +161,11 @@ namespace FellowOakDicom.Dump
 
         private void DisplayImage()
         {
-            ImageView.Source = null;
+            ImageView.ImageToDisplay = null;
             if (_file.Dataset.Contains(DicomTag.PixelData))
             {
                 var dicomImage = new DicomImage(_file.Dataset);
-                using var img = dicomImage.RenderImage();
-                using var sharpImage = img.AsSharpImage();
-
-                using var ms = new MemoryStream();
-                sharpImage.Save(ms, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
-                ms.Position = 0;
-
-                ImageView.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                ImageView.ImageToDisplay = dicomImage;
             }
         }
 

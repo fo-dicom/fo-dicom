@@ -46,8 +46,8 @@
 
             <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
-            <Image Grid.Row="2" Name="ImageView"  >
-            </Image>
+            <local:ImageViewer Grid.Row="2" x:Name="ImageView">
+            </local:ImageViewer>
 
         </Grid>
         
