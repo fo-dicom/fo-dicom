@@ -204,6 +204,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.VolumeRenderingVolumetricPresentationStateStorage.UID, DicomUID.VolumeRenderingVolumetricPresentationStateStorage);
             _uids.Add(DicomUID.SegmentedVolumeRenderingVolumetricPresentationStateStorage.UID, DicomUID.SegmentedVolumeRenderingVolumetricPresentationStateStorage);
             _uids.Add(DicomUID.MultipleVolumeRenderingVolumetricPresentationStateStorage.UID, DicomUID.MultipleVolumeRenderingVolumetricPresentationStateStorage);
+            _uids.Add(DicomUID.VariableModalityLUTPresentationStateStorage.UID, DicomUID.VariableModalityLUTPresentationStateStorage);
             _uids.Add(DicomUID.XRayAngiographicImageStorage.UID, DicomUID.XRayAngiographicImageStorage);
             _uids.Add(DicomUID.EnhancedXAImageStorage.UID, DicomUID.EnhancedXAImageStorage);
             _uids.Add(DicomUID.XRayRadiofluoroscopicImageStorage.UID, DicomUID.XRayRadiofluoroscopicImageStorage);
@@ -331,6 +332,9 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.RoboticRadiationRecordStorage.UID, DicomUID.RoboticRadiationRecordStorage);
             _uids.Add(DicomUID.RTRadiationSetDeliveryInstructionStorage.UID, DicomUID.RTRadiationSetDeliveryInstructionStorage);
             _uids.Add(DicomUID.RTTreatmentPreparationStorage.UID, DicomUID.RTTreatmentPreparationStorage);
+            _uids.Add(DicomUID.EnhancedRTImageStorage.UID, DicomUID.EnhancedRTImageStorage);
+            _uids.Add(DicomUID.EnhancedContinuousRTImageStorage.UID, DicomUID.EnhancedContinuousRTImageStorage);
+            _uids.Add(DicomUID.RTPatientPositionAcquisitionInstructionStorage.UID, DicomUID.RTPatientPositionAcquisitionInstructionStorage);
             _uids.Add(DicomUID.DICOSCTImageStorage.UID, DicomUID.DICOSCTImageStorage);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForPresentation.UID, DicomUID.DICOSDigitalXRayImageStorageForPresentation);
             _uids.Add(DicomUID.DICOSDigitalXRayImageStorageForProcessing.UID, DicomUID.DICOSDigitalXRayImageStorageForProcessing);
@@ -462,8 +466,8 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.ImageGuidedTherapeuticProcedure9.UID, DicomUID.ImageGuidedTherapeuticProcedure9);
             _uids.Add(DicomUID.InterventionalDrug10.UID, DicomUID.InterventionalDrug10);
             _uids.Add(DicomUID.AdministrationRoute11.UID, DicomUID.AdministrationRoute11);
-            _uids.Add(DicomUID.RadiographicContrastAgent12.UID, DicomUID.RadiographicContrastAgent12);
-            _uids.Add(DicomUID.RadiographicContrastAgentIngredient13.UID, DicomUID.RadiographicContrastAgentIngredient13);
+            _uids.Add(DicomUID.ImagingContrastAgent12.UID, DicomUID.ImagingContrastAgent12);
+            _uids.Add(DicomUID.ImagingContrastAgentIngredient13.UID, DicomUID.ImagingContrastAgentIngredient13);
             _uids.Add(DicomUID.RadiopharmaceuticalIsotope18.UID, DicomUID.RadiopharmaceuticalIsotope18);
             _uids.Add(DicomUID.PatientOrientation19.UID, DicomUID.PatientOrientation19);
             _uids.Add(DicomUID.PatientOrientationModifier20.UID, DicomUID.PatientOrientationModifier20);
@@ -1696,11 +1700,11 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.HistoryOfMalignantMelanoma4402.UID, DicomUID.HistoryOfMalignantMelanoma4402);
             _uids.Add(DicomUID.HistoryOfMelanomaInSitu4403.UID, DicomUID.HistoryOfMelanomaInSitu4403);
             _uids.Add(DicomUID.HistoryOfNonMelanomaSkinCancer4404.UID, DicomUID.HistoryOfNonMelanomaSkinCancer4404);
-            _uids.Add(DicomUID.HistoryOfNonMelanomaSkinCancer4405.UID, DicomUID.HistoryOfNonMelanomaSkinCancer4405);
+            _uids.Add(DicomUID.SkinDisorders4405.UID, DicomUID.SkinDisorders4405);
             _uids.Add(DicomUID.PatientReportedLesionCharacteristic4406.UID, DicomUID.PatientReportedLesionCharacteristic4406);
             _uids.Add(DicomUID.LesionPalpationFinding4407.UID, DicomUID.LesionPalpationFinding4407);
             _uids.Add(DicomUID.LesionVisualFinding4408.UID, DicomUID.LesionVisualFinding4408);
-            _uids.Add(DicomUID.LesionVisualFinding4409.UID, DicomUID.LesionVisualFinding4409);
+            _uids.Add(DicomUID.SkinProcedures4409.UID, DicomUID.SkinProcedures4409);
             _uids.Add(DicomUID.AbdominopelvicVessel12125.UID, DicomUID.AbdominopelvicVessel12125);
             _uids.Add(DicomUID.NumericValueFailureQualifier43.UID, DicomUID.NumericValueFailureQualifier43);
             _uids.Add(DicomUID.NumericValueUnknownQualifier44.UID, DicomUID.NumericValueUnknownQualifier44);
@@ -1803,6 +1807,20 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.DigitalWaveformFilter3043.UID, DicomUID.DigitalWaveformFilter3043);
             _uids.Add(DicomUID.WaveformFilterLookupTableInputFrequencyUnit3044.UID, DicomUID.WaveformFilterLookupTableInputFrequencyUnit3044);
             _uids.Add(DicomUID.WaveformFilterLookupTableOutputMagnitudeUnit3045.UID, DicomUID.WaveformFilterLookupTableOutputMagnitudeUnit3045);
+            _uids.Add(DicomUID.SpecificObservationSubjectClass272.UID, DicomUID.SpecificObservationSubjectClass272);
+            _uids.Add(DicomUID.MovableBeamLimitingDeviceType9540.UID, DicomUID.MovableBeamLimitingDeviceType9540);
+            _uids.Add(DicomUID.RadiotherapyAcquisitionWorkItemSubtasks9260.UID, DicomUID.RadiotherapyAcquisitionWorkItemSubtasks9260);
+            _uids.Add(DicomUID.PatientPositionAcquisitionRadiationSourceLocations9261.UID, DicomUID.PatientPositionAcquisitionRadiationSourceLocations9261);
+            _uids.Add(DicomUID.EnergyDerivationTypes9262.UID, DicomUID.EnergyDerivationTypes9262);
+            _uids.Add(DicomUID.KVImagingAcquisitionTechniques9263.UID, DicomUID.KVImagingAcquisitionTechniques9263);
+            _uids.Add(DicomUID.MVImagingAcquisitionTechniques9264.UID, DicomUID.MVImagingAcquisitionTechniques9264);
+            _uids.Add(DicomUID.PatientPositionAcquisitionProjectionTechniques9265.UID, DicomUID.PatientPositionAcquisitionProjectionTechniques9265);
+            _uids.Add(DicomUID.PatientPositionAcquisitionCTTechniques9266.UID, DicomUID.PatientPositionAcquisitionCTTechniques9266);
+            _uids.Add(DicomUID.PatientPositioningRelatedObjectPurposes9267.UID, DicomUID.PatientPositioningRelatedObjectPurposes9267);
+            _uids.Add(DicomUID.PatientPositionAcquisitionDevices9268.UID, DicomUID.PatientPositionAcquisitionDevices9268);
+            _uids.Add(DicomUID.RTRadiationMetersetUnits9269.UID, DicomUID.RTRadiationMetersetUnits9269);
+            _uids.Add(DicomUID.AcquisitionInitiationTypes9270.UID, DicomUID.AcquisitionInitiationTypes9270);
+            _uids.Add(DicomUID.RTImagePatientPositionAcquisitionDevices9271.UID, DicomUID.RTImagePatientPositionAcquisitionDevices9271);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2372,6 +2390,9 @@ namespace FellowOakDicom
         ///<summary>SOP Class: Multiple Volume Rendering Volumetric Presentation State Storage</summary>
         public static readonly DicomUID MultipleVolumeRenderingVolumetricPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.11", "Multiple Volume Rendering Volumetric Presentation State Storage", DicomUidType.SOPClass, false);
 
+        ///<summary>SOP Class: Variable Modality LUT Softcopy Presentation State Storage</summary>
+        public static readonly DicomUID VariableModalityLUTPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.11.12", "Variable Modality LUT Softcopy Presentation State Storage", DicomUidType.SOPClass, false);
+
         ///<summary>SOP Class: X-Ray Angiographic Image Storage</summary>
         public static readonly DicomUID XRayAngiographicImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.12.1", "X-Ray Angiographic Image Storage", DicomUidType.SOPClass, false);
 
@@ -2752,6 +2773,15 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: RT Treatment Preparation Storage</summary>
         public static readonly DicomUID RTTreatmentPreparationStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.22", "RT Treatment Preparation Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Enhanced RT Image Storage</summary>
+        public static readonly DicomUID EnhancedRTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.23", "Enhanced RT Image Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Enhanced Continuous RT Image Storage</summary>
+        public static readonly DicomUID EnhancedContinuousRTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.24", "Enhanced Continuous RT Image Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: RT Patient Position Acquisition Instruction Storage</summary>
+        public static readonly DicomUID RTPatientPositionAcquisitionInstructionStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.481.25", "RT Patient Position Acquisition Instruction Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: DICOS CT Image Storage</summary>
         public static readonly DicomUID DICOSCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.501.1", "DICOS CT Image Storage", DicomUidType.SOPClass, false);
@@ -3146,11 +3176,11 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Administration Route (11)</summary>
         public static readonly DicomUID AdministrationRoute11 = new DicomUID("1.2.840.10008.6.1.9", "Administration Route (11)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Radiographic Contrast Agent (12)</summary>
-        public static readonly DicomUID RadiographicContrastAgent12 = new DicomUID("1.2.840.10008.6.1.10", "Radiographic Contrast Agent (12)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Imaging Contrast Agent (12)</summary>
+        public static readonly DicomUID ImagingContrastAgent12 = new DicomUID("1.2.840.10008.6.1.10", "Imaging Contrast Agent (12)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Radiographic Contrast Agent Ingredient (13)</summary>
-        public static readonly DicomUID RadiographicContrastAgentIngredient13 = new DicomUID("1.2.840.10008.6.1.11", "Radiographic Contrast Agent Ingredient (13)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Imaging Contrast Agent Ingredient (13)</summary>
+        public static readonly DicomUID ImagingContrastAgentIngredient13 = new DicomUID("1.2.840.10008.6.1.11", "Imaging Contrast Agent Ingredient (13)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Radiopharmaceutical Isotope (18)</summary>
         public static readonly DicomUID RadiopharmaceuticalIsotope18 = new DicomUID("1.2.840.10008.6.1.12", "Radiopharmaceutical Isotope (18)", DicomUidType.ContextGroupName, false);
@@ -6848,8 +6878,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: History of Non-Melanoma Skin Cancer (4404)</summary>
         public static readonly DicomUID HistoryOfNonMelanomaSkinCancer4404 = new DicomUID("1.2.840.10008.6.1.1349", "History of Non-Melanoma Skin Cancer (4404)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: History of Non-Melanoma Skin Cancer (4405)</summary>
-        public static readonly DicomUID HistoryOfNonMelanomaSkinCancer4405 = new DicomUID("1.2.840.10008.6.1.1350", "History of Non-Melanoma Skin Cancer (4405)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Skin Disorders (4405)</summary>
+        public static readonly DicomUID SkinDisorders4405 = new DicomUID("1.2.840.10008.6.1.1350", "Skin Disorders (4405)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Patient Reported Lesion Characteristic (4406)</summary>
         public static readonly DicomUID PatientReportedLesionCharacteristic4406 = new DicomUID("1.2.840.10008.6.1.1351", "Patient Reported Lesion Characteristic (4406)", DicomUidType.ContextGroupName, false);
@@ -6860,8 +6890,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Lesion Visual Finding (4408)</summary>
         public static readonly DicomUID LesionVisualFinding4408 = new DicomUID("1.2.840.10008.6.1.1353", "Lesion Visual Finding (4408)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Lesion Visual Finding (4409)</summary>
-        public static readonly DicomUID LesionVisualFinding4409 = new DicomUID("1.2.840.10008.6.1.1354", "Lesion Visual Finding (4409)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Skin Procedures (4409)</summary>
+        public static readonly DicomUID SkinProcedures4409 = new DicomUID("1.2.840.10008.6.1.1354", "Skin Procedures (4409)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Abdominopelvic Vessel (12125)</summary>
         public static readonly DicomUID AbdominopelvicVessel12125 = new DicomUID("1.2.840.10008.6.1.1355", "Abdominopelvic Vessel (12125)", DicomUidType.ContextGroupName, false);
@@ -7168,6 +7198,48 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Waveform Filter Lookup Table Output Magnitude Unit (3045)</summary>
         public static readonly DicomUID WaveformFilterLookupTableOutputMagnitudeUnit3045 = new DicomUID("1.2.840.10008.6.1.1456", "Waveform Filter Lookup Table Output Magnitude Unit (3045)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Specific Observation Subject Class (272)</summary>
+        public static readonly DicomUID SpecificObservationSubjectClass272 = new DicomUID("1.2.840.10008.6.1.1457", "Specific Observation Subject Class (272)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Movable Beam Limiting Device Type (9540)</summary>
+        public static readonly DicomUID MovableBeamLimitingDeviceType9540 = new DicomUID("1.2.840.10008.6.1.1458", "Movable Beam Limiting Device Type (9540)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Acquisition WorkItem Subtasks (9260)</summary>
+        public static readonly DicomUID RadiotherapyAcquisitionWorkItemSubtasks9260 = new DicomUID("1.2.840.10008.6.1.1459", "Radiotherapy Acquisition WorkItem Subtasks (9260)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Position Acquisition Radiation Source Locations (9261)</summary>
+        public static readonly DicomUID PatientPositionAcquisitionRadiationSourceLocations9261 = new DicomUID("1.2.840.10008.6.1.1460", "Patient Position Acquisition Radiation Source Locations (9261)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Energy Derivation Types (9262)</summary>
+        public static readonly DicomUID EnergyDerivationTypes9262 = new DicomUID("1.2.840.10008.6.1.1461", "Energy Derivation Types (9262)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: KV Imaging Acquisition Techniques (9263)</summary>
+        public static readonly DicomUID KVImagingAcquisitionTechniques9263 = new DicomUID("1.2.840.10008.6.1.1462", "KV Imaging Acquisition Techniques (9263)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: MV Imaging Acquisition Techniques (9264)</summary>
+        public static readonly DicomUID MVImagingAcquisitionTechniques9264 = new DicomUID("1.2.840.10008.6.1.1463", "MV Imaging Acquisition Techniques (9264)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Position Acquisition - Projection Techniques (9265)</summary>
+        public static readonly DicomUID PatientPositionAcquisitionProjectionTechniques9265 = new DicomUID("1.2.840.10008.6.1.1464", "Patient Position Acquisition - Projection Techniques (9265)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Position Acquisition – CT Techniques (9266)</summary>
+        public static readonly DicomUID PatientPositionAcquisitionCTTechniques9266 = new DicomUID("1.2.840.10008.6.1.1465", "Patient Position Acquisition – CT Techniques (9266)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Positioning Related Object Purposes (9267)</summary>
+        public static readonly DicomUID PatientPositioningRelatedObjectPurposes9267 = new DicomUID("1.2.840.10008.6.1.1466", "Patient Positioning Related Object Purposes (9267)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Position Acquisition Devices (9268)</summary>
+        public static readonly DicomUID PatientPositionAcquisitionDevices9268 = new DicomUID("1.2.840.10008.6.1.1467", "Patient Position Acquisition Devices (9268)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Radiation Meterset Units (9269)</summary>
+        public static readonly DicomUID RTRadiationMetersetUnits9269 = new DicomUID("1.2.840.10008.6.1.1468", "RT Radiation Meterset Units (9269)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Acquisition Initiation Types (9270)</summary>
+        public static readonly DicomUID AcquisitionInitiationTypes9270 = new DicomUID("1.2.840.10008.6.1.1469", "Acquisition Initiation Types (9270)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Image Patient Position Acquisition Devices (9271)</summary>
+        public static readonly DicomUID RTImagePatientPositionAcquisitionDevices9271 = new DicomUID("1.2.840.10008.6.1.1470", "RT Image Patient Position Acquisition Devices (9271)", DicomUidType.ContextGroupName, false);
 
     }
 }
