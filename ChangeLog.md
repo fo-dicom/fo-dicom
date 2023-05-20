@@ -76,7 +76,7 @@
 * Add better logging for inbound connections (#1561)
 * Added User Identity Negotiation support (#1110)
 * Rendering in DicomImage is threadsafe, several frames can be rendered in parallel (#806)
-* Convenience method for accessing items in Functionsl Group Sequences (#742)
+* Convenience method for accessing items in Functional Group Sequences (#742)
 * Rendering of EnhancedCT, EnhancedMR and BTO read the correct rendering options from Functional Group Sequences (#917)
 * Fixed some Photometric Interpretation related rendering issues (#1497)
 

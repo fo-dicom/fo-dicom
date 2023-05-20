@@ -112,7 +112,7 @@ namespace FellowOakDicom.Imaging
         #region METHODS
 
         /// <summary>
-        /// Create <see cref="GrayscaleRenderOptions"/>  from <paramref name="dataset"/> and populate the options properties with values:
+        /// Create <see cref="GrayscaleRenderOptions"/> from <paramref name="dataset"/> and populate the options properties with values:
         /// Bit Depth
         /// Rescale Slope
         /// Rescale Intercept
@@ -120,6 +120,7 @@ namespace FellowOakDicom.Imaging
         /// Window Center
         /// </summary>
         /// <param name="dataset">Dataset to extract <see cref="GrayscaleRenderOptions"/> from</param>
+        /// <param name="frame">The 0-based framenumber for which the grayscale options should be extracted.</param>
         /// <returns>New grayscale render options instance</returns>
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset, int frame)
         {

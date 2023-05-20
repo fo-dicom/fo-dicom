@@ -1,46 +1,46 @@
-# Entfernen Sie die folgende Zeile, wenn Sie EDITORCONFIG-Einstellungen von höheren Verzeichnissen vererben möchten.
+# top-most EditorConfig file
 root = true
 
-# C#-Dateien
+# C#-files
 [*.cs]
 
-#### Wichtige EditorConfig-Optionen ####
+#### important EditorConfig-Options ####
 
-# Einzüge und Abstände
+# Tab indentation
 indent_size = 4
 indent_style = space
 tab_width = 4
 
-# Einstellungen für neue Zeilen
+# settings for new line
 end_of_line = crlf
 insert_final_newline = false
 
-#### .NET-Codierungskonventionen ####
+#### .NET Coding Conventions ####
 
-# Using-Direktiven organisieren
+# Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
 
-# this.- und Me.-Einstellungen
+# this. preferences
 dotnet_style_qualification_for_event = false:suggestion
 dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 
-# Einstellungen für Sprachschlüsselwörter und BCL-Typen
+# Language keywords vs BCL types preferences
 dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
-# Einstellungen für Klammern
+# Parentheses preferences
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:silent
 dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:silent
 dotnet_style_parentheses_in_other_operators = always_for_clarity:silent
 dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
 
-# Einstellungen für Modifizierer
+# Modifier preferences
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
 
-# Einstellungen für Ausdrucksebene
+# Expression-level preferences
 csharp_style_deconstructed_variable_declaration = true:suggestion
 csharp_style_inlined_variable_declaration = true:suggestion
 csharp_style_throw_expression = true:suggestion
@@ -63,14 +63,14 @@ dotnet_style_readonly_field = true:suggestion
 # Einstellungen für Parameter
 dotnet_code_quality_unused_parameters = all:suggestion
 
-#### C#-Codierungskonventionen ####
+#### C# Coding Conventions ####
 
-# Var-Einstellungen
+# var preferences
 csharp_style_var_elsewhere = false:silent
 csharp_style_var_for_built_in_types = false:silent
 csharp_style_var_when_type_is_apparent = true:suggestion
 
-# Ausdruckskörpermember
+# Expression-bodied members
 csharp_style_expression_bodied_accessors = true:suggestion
 csharp_style_expression_bodied_constructors = false:silent
 csharp_style_expression_bodied_indexers = true:suggestion
@@ -80,15 +80,15 @@ csharp_style_expression_bodied_methods = true:suggestion
 csharp_style_expression_bodied_operators = true:silent
 csharp_style_expression_bodied_properties = true:suggestion
 
-# Einstellungen für den Musterabgleich
+# Pattern matching preferences
 csharp_style_pattern_matching_over_as_with_null_check = true:warning
 csharp_style_pattern_matching_over_is_with_cast_check = true:warning
 csharp_style_prefer_switch_expression = true:suggestion
 
-# Einstellungen für NULL-Überprüfung
+# Null-checking preferences
 csharp_style_conditional_delegate_call = true:suggestion
 
-# Einstellungen für Modifizierer
+# Modifier preferences
 csharp_prefer_static_local_function = true:suggestion
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
 
@@ -96,7 +96,7 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 csharp_prefer_braces = true:suggestion
 csharp_prefer_simple_using_statement = true:suggestion
 
-# Einstellungen für Ausdrucksebene
+# Expression-level preferences
 csharp_prefer_simple_default_expression = true:suggestion
 csharp_style_pattern_local_over_anonymous_function = true:suggestion
 csharp_style_prefer_index_operator = true:suggestion
@@ -107,9 +107,9 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 # Einstellungen für using-Anweisungen
 csharp_using_directive_placement = outside_namespace:suggestion
 
-#### C#-Formatierungsregeln ####
+#### C# Formatting Rules ####
 
-# Einstellungen für neue Zeilen
+# New line preferences
 csharp_new_line_before_catch = true
 csharp_new_line_before_else = true
 csharp_new_line_before_finally = true
@@ -118,7 +118,7 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
 
-# Einstellungen für Einrückung
+# Indentation preferences
 csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
@@ -126,7 +126,7 @@ csharp_indent_case_contents_when_block = true
 csharp_indent_labels = no_change
 csharp_indent_switch_labels = true
 
-# Einstellungen für Abstände
+# Space preferences
 csharp_space_after_cast = false
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_after_comma = true
@@ -150,11 +150,11 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
 
-# Einstellungen für Umbrüche
+# Wrapping preferences
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
 
-#### Benennungsstile ####
+#### Naming Conventions ####
 
 # Benennungsregeln
 

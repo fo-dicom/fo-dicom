@@ -335,7 +335,6 @@ namespace FellowOakDicom.Imaging
         /// <param name="frame"></param>
         private void ResetRenderedImage(int frame)
         {
-            // if 
             _renderedImageCache.TryRemove(frame, out _);
         }
 
@@ -345,7 +344,6 @@ namespace FellowOakDicom.Imaging
         /// <param name="frame"></param>
         private void ResetAllRenderedImages()
         {
-            // if 
             _renderedImageCache.Clear();
         }
 

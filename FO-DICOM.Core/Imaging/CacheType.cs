@@ -15,17 +15,17 @@ namespace FellowOakDicom.Imaging
         None = 0,
 
         /// <summary>
-        /// Specifies the raw uncompressed pixel data (where it needs to be decompressed or read from disk)
+        /// Caches the raw uncompressed pixel data (where it needs to be decompressed or read from disk)
         /// </summary>
         PixelData = 1,
 
         /// <summary>
-        /// Specifies the lookup tables and pipelines generated as a result of windowing etc.
+        /// Caches the lookup tables and pipelines generated as a result of windowing etc.
         /// </summary>
         LookupTables = 2,
 
         /// <summary>
-        /// Specifies the cached copy of the rendered display data
+        /// Caches the cached copy of the rendered display data
         /// </summary>
         Display = 4,
 
