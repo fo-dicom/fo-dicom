@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "FO-DICOM.AspNetCore": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:54675;http://localhost:54676"
+    }
+  }
+}

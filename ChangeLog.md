@@ -1,4 +1,6 @@
-#### 5.1.0 (TBD)
+#### 5.1.1 (TBD)
+
+#### 5.1.0 (2023-05-21)
 * **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete
 * **Breaking change**: Updated DICOM Dictionary to 2023b. Several DicomTag constant names changed to singular name from plural form (#1469)
 * Fix Truncating UIDs during Dimse and PDU logging (#1505)
