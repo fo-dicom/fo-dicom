@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace FellowOakDicom.Log

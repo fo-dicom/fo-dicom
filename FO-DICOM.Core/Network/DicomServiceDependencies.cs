@@ -1,4 +1,7 @@
-﻿using FellowOakDicom.Imaging.Codec;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Memory;
 using Microsoft.Extensions.Logging;
 using System;
