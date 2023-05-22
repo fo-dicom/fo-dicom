@@ -5,6 +5,7 @@ using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;
+using FellowOakDicom.Network.Tls;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,9 +36,9 @@ namespace FellowOakDicom.Network.Client
         int Port { get; }
 
         /// <summary>
-        /// True if TLS security should be enabled, false otherwise.
+        /// A handler to initiate TLS security, if null then TLS is not enabled.
         /// </summary>
-        bool UseTls { get; }
+        ITlsInitiator TlsInitiator { get; }
 
         /// <summary>
         /// Calling Application Entity Title.
@@ -73,6 +74,16 @@ namespace FellowOakDicom.Network.Client
         /// Gets or sets extended negotiation items to negotiate with association.
         /// </summary>
         List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to require a successful user identity negotiation during association.
+        /// </summary>
+        bool RequireSuccessfulUserIdentityNegotiation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user identity to negotiate with association.
+        /// </summary>
+        DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
 
         /// <summary>
         /// Gets or sets the fallback encoding.
@@ -135,6 +146,12 @@ namespace FellowOakDicom.Network.Client
         void NegotiateAsyncOps(int invoked = 0, int performed = 0);
 
         /// <summary>
+        /// Set negotiation of user identity.
+        /// </summary>
+        /// <param name="userIdentityNegotiation">User identity negotiation information.</param>
+        void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentityNegotiation);
+
+        /// <summary>
         /// Enqueues a new DICOM request for execution.
         /// </summary>
         /// <param name="dicomRequest">The DICOM request to send</param>
@@ -172,7 +189,7 @@ namespace FellowOakDicom.Network.Client
 
         public string Host { get; }
         public int Port { get; }
-        public bool UseTls { get; }
+        public ITlsInitiator TlsInitiator { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
         
@@ -188,6 +205,8 @@ namespace FellowOakDicom.Network.Client
         public DicomServiceOptions ServiceOptions { get; set; }
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
+        public bool RequireSuccessfulUserIdentityNegotiation { get; set; }
+        public DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
         public Encoding FallbackEncoding { get; set; }
         public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
         public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
@@ -205,14 +224,14 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="useTls">True if TLS security should be enabled, false otherwise.</param>
+        /// <param name="tlsInitiator">if null then no TLS is enabled, otherwise the handler to initiate TLS security.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
         /// <param name="clientOptions">The options that further modify the behavior of this DICOM client</param>
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="loggerFactory">The log manager that will be used to extract a default logger</param>
         /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
-        public DicomClient(string host, int port, bool useTls, string callingAe, string calledAe,
+        public DicomClient(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             ILoggerFactory loggerFactory,
@@ -220,7 +239,7 @@ namespace FellowOakDicom.Network.Client
         {
             Host = host;
             Port = port;
-            UseTls = useTls;
+            TlsInitiator = tlsInitiator;
             CallingAe = callingAe;
             CalledAe = calledAe;
             ClientOptions = clientOptions;
@@ -228,6 +247,7 @@ namespace FellowOakDicom.Network.Client
             QueuedRequests = new ConcurrentQueue<StrongBox<DicomRequest>>();
             AdditionalPresentationContexts = new List<DicomPresentationContext>();
             AdditionalExtendedNegotiations = new List<DicomExtendedNegotiation>();
+            RequireSuccessfulUserIdentityNegotiation = true;
             AsyncInvoked = 1;
             AsyncPerformed = 1;
             
@@ -242,6 +262,16 @@ namespace FellowOakDicom.Network.Client
         {
             AsyncInvoked = invoked;
             AsyncPerformed = performed;
+        }
+
+        public void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentity)
+        {
+            if (userIdentity != null)
+            {
+                userIdentity.Validate();
+            }
+
+            UserIdentityNegotiation = userIdentity;
         }
 
         public Task AddRequestAsync(DicomRequest dicomRequest)
@@ -311,11 +341,12 @@ namespace FellowOakDicom.Network.Client
                             {
                                 Host = Host,
                                 Port = Port,
-                                UseTls = UseTls,
+                                TlsInitiator = TlsInitiator,
                                 NoDelay = ServiceOptions.TcpNoDelay,
                                 ReceiveBufferSize = ServiceOptions.TcpReceiveBufferSize,
                                 SendBufferSize = ServiceOptions.TcpSendBufferSize,
                                 IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
+
                                 Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
                             },
                             RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers
@@ -350,6 +381,7 @@ namespace FellowOakDicom.Network.Client
                             CalledAE = CalledAe,
                             MaxAsyncOpsInvoked = AsyncInvoked,
                             MaxAsyncOpsPerformed = AsyncPerformed,
+                            UserIdentityNegotiation = UserIdentityNegotiation
                         };
 
                         foreach (var request in requestsToSend)
@@ -417,6 +449,19 @@ namespace FellowOakDicom.Network.Client
                                 // try again
                                 continue;
                             }
+                        }
+
+                        // Validate successful user identity negotiation response
+                        if (RequireSuccessfulUserIdentityNegotiation &&
+                            association.Association.UserIdentityNegotiation != null &&
+                            association.Association.UserIdentityNegotiation.ServerResponse == null)
+                        {
+                            if (association.Association.UserIdentityNegotiation.PositiveResponseRequested)
+                            {
+                                throw new DicomNetworkException($"A positive response requested for user identity type {association.Association.UserIdentityNegotiation.UserIdentityType} but server response was null");
+                            }
+
+                            _logger.LogWarning($"Successful user identity negotiation with type {association.Association.UserIdentityNegotiation.UserIdentityType} was required but server response was null");
                         }
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));

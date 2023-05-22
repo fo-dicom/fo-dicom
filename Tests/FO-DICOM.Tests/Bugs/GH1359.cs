@@ -41,7 +41,8 @@ namespace FellowOakDicom.Tests.Bugs
                 defaultClientOptions,
                 defaultServiceOptions,
                 loggerFactory,
-                advancedDicomClientConnectionFactory);
+                advancedDicomClientConnectionFactory,
+                Setup.ServiceProvider);
         }
 
         [TheoryForNetCore] // This test is flaky in .NET Framework

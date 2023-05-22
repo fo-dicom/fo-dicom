@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2021 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2022d">
+<dictionary version="2023b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -199,7 +199,7 @@
     <tag group="0008" element="0400" keyword="ScopeOfInventorySequence" vr="SQ" vm="1">Scope of Inventory Sequence</tag>
     <tag group="0008" element="0401" keyword="InventoryPurpose" vr="LT" vm="1">Inventory Purpose</tag>
     <tag group="0008" element="0402" keyword="InventoryInstanceDescription" vr="LT" vm="1">Inventory Instance Description</tag>
-    <tag group="0008" element="0403" keyword="InventoryContentLevel" vr="CS" vm="1">Inventory Level</tag>
+    <tag group="0008" element="0403" keyword="InventoryLevel" vr="CS" vm="1">Inventory Level</tag>
     <tag group="0008" element="0404" keyword="ItemInventoryDateTime" vr="DT" vm="1">Item Inventory DateTime</tag>
     <tag group="0008" element="0405" keyword="RemovedFromOperationalUse" vr="CS" vm="1">Removed from Operational Use</tag>
     <tag group="0008" element="0406" keyword="ReasonForRemovalCodeSequence" vr="SQ" vm="1">Reason for Removal Code Sequence</tag>
@@ -213,7 +213,7 @@
     <tag group="0008" element="040E" keyword="StoredInstanceTransferSyntaxUID" vr="UI" vm="1">Stored Instance Transfer Syntax UID</tag>
     <tag group="0008" element="040F" keyword="ExtendedMatchingMechanisms" vr="CS" vm="1-n">Extended Matching Mechanisms</tag>
     <tag group="0008" element="0410" keyword="RangeMatchingSequence" vr="SQ" vm="1">Range Matching Sequence</tag>
-    <tag group="0008" element="0411" keyword="UIDListMatchingSequence" vr="SQ" vm="1">List of UID Matching Sequence</tag>
+    <tag group="0008" element="0411" keyword="ListOfUIDMatchingSequence" vr="SQ" vm="1">List of UID Matching Sequence</tag>
     <tag group="0008" element="0412" keyword="EmptyValueMatchingSequence" vr="SQ" vm="1">Empty Value Matching Sequence</tag>
     <tag group="0008" element="0413" keyword="GeneralMatchingSequence" vr="SQ" vm="1">General Matching Sequence</tag>
     <tag group="0008" element="0414" keyword="RequestedStatusInterval" vr="US" vm="1">Requested Status Interval</tag>
@@ -335,7 +335,7 @@
     <tag group="0008" element="3011" keyword="SourceIrradiationEventSequence" vr="SQ" vm="1">Source Irradiation Event Sequence</tag>
     <tag group="0008" element="3012" keyword="RadiopharmaceuticalAdministrationEventUID" vr="UI" vm="1">Radiopharmaceutical Administration Event UID</tag>
     <tag group="0008" element="4000" keyword="IdentifyingComments" vr="LT" vm="1" retired="true">Identifying Comments</tag>
-    <tag group="0008" element="9007" keyword="FrameType" vr="CS" vm="4">Frame Type</tag>
+    <tag group="0008" element="9007" keyword="FrameType" vr="CS" vm="4-5">Frame Type</tag>
     <tag group="0008" element="9092" keyword="ReferencedImageEvidenceSequence" vr="SQ" vm="1">Referenced Image Evidence Sequence</tag>
     <tag group="0008" element="9121" keyword="ReferencedRawDataSequence" vr="SQ" vm="1">Referenced Raw Data Sequence</tag>
     <tag group="0008" element="9123" keyword="CreatorVersionUID" vr="UI" vm="1">Creator-Version UID</tag>
@@ -2183,6 +2183,7 @@
     <tag group="0028" element="2112" keyword="LossyImageCompressionRatio" vr="DS" vm="1-n">Lossy Image Compression Ratio</tag>
     <tag group="0028" element="2114" keyword="LossyImageCompressionMethod" vr="CS" vm="1-n">Lossy Image Compression Method</tag>
     <tag group="0028" element="3000" keyword="ModalityLUTSequence" vr="SQ" vm="1">Modality LUT Sequence</tag>
+    <tag group="0028" element="3001" keyword="VariableModalityLUTSequence" vr="SQ" vm="1">Variable Modality LUT Sequence</tag>
     <tag group="0028" element="3002" keyword="LUTDescriptor" vr="US/SS" vm="3">LUT Descriptor</tag>
     <tag group="0028" element="3003" keyword="LUTExplanation" vr="LO" vm="1">LUT Explanation</tag>
     <tag group="0028" element="3004" keyword="ModalityLUTType" vr="LO" vm="1">Modality LUT Type</tag>
@@ -3867,6 +3868,60 @@
     <tag group="3002" element="0050" keyword="PrimaryFluenceModeSequence" vr="SQ" vm="1">Primary Fluence Mode Sequence</tag>
     <tag group="3002" element="0051" keyword="FluenceMode" vr="CS" vm="1">Fluence Mode</tag>
     <tag group="3002" element="0052" keyword="FluenceModeID" vr="SH" vm="1">Fluence Mode ID</tag>
+    <tag group="3002" element="0100" keyword="SelectedFrameNumber" vr="IS" vm="1">Selected Frame Number</tag>
+    <tag group="3002" element="0101" keyword="SelectedFrameFunctionalGroupsSequence" vr="SQ" vm="1">Selected Frame Functional Groups Sequence</tag>
+    <tag group="3002" element="0102" keyword="RTImageFrameGeneralContentSequence" vr="SQ" vm="1">RT Image Frame General Content Sequence</tag>
+    <tag group="3002" element="0103" keyword="RTImageFrameContextSequence" vr="SQ" vm="1">RT Image Frame Context Sequence</tag>
+    <tag group="3002" element="0104" keyword="RTImageScopeSequence" vr="SQ" vm="1">RT Image Scope Sequence</tag>
+    <tag group="3002" element="0105" keyword="BeamModifierCoordinatesPresenceFlag" vr="CS" vm="1">Beam Modifier Coordinates Presence Flag</tag>
+    <tag group="3002" element="0106" keyword="StartCumulativeMeterset" vr="FD" vm="1">Start Cumulative Meterset</tag>
+    <tag group="3002" element="0107" keyword="StopCumulativeMeterset" vr="FD" vm="1">Stop Cumulative Meterset</tag>
+    <tag group="3002" element="0108" keyword="RTAcquisitionPatientPositionSequence" vr="SQ" vm="1">RT Acquisition Patient Position Sequence</tag>
+    <tag group="3002" element="0109" keyword="RTImageFrameImagingDevicePositionSequence" vr="SQ" vm="1">RT Image Frame Imaging Device Position Sequence</tag>
+    <tag group="3002" element="010A" keyword="RTImageFramekVRadiationAcquisitionSequence" vr="SQ" vm="1">RT Image Frame kV Radiation Acquisition Sequence</tag>
+    <tag group="3002" element="010B" keyword="RTImageFrameMVRadiationAcquisitionSequence" vr="SQ" vm="1">RT Image Frame MV Radiation Acquisition Sequence</tag>
+    <tag group="3002" element="010C" keyword="RTImageFrameRadiationAcquisitionSequence" vr="SQ" vm="1">RT Image Frame Radiation Acquisition Sequence</tag>
+    <tag group="3002" element="010D" keyword="ImagingSourcePositionSequence" vr="SQ" vm="1">Imaging Source Position Sequence</tag>
+    <tag group="3002" element="010E" keyword="ImageReceptorPositionSequence" vr="SQ" vm="1">Image Receptor Position Sequence</tag>
+    <tag group="3002" element="010F" keyword="DevicePositionToEquipmentMappingMatrix" vr="FD" vm="16">Device Position to Equipment Mapping Matrix</tag>
+    <tag group="3002" element="0110" keyword="DevicePositionParameterSequence" vr="SQ" vm="1">Device Position Parameter Sequence</tag>
+    <tag group="3002" element="0111" keyword="ImagingSourceLocationSpecificationType" vr="CS" vm="1">Imaging Source Location Specification Type</tag>
+    <tag group="3002" element="0112" keyword="ImagingDeviceLocationMatrixSequence" vr="SQ" vm="1">Imaging Device Location Matrix Sequence</tag>
+    <tag group="3002" element="0113" keyword="ImagingDeviceLocationParameterSequence" vr="SQ" vm="1">Imaging Device Location Parameter Sequence</tag>
+    <tag group="3002" element="0114" keyword="ImagingApertureSequence" vr="SQ" vm="1">Imaging Aperture Sequence</tag>
+    <tag group="3002" element="0115" keyword="ImagingApertureSpecificationType" vr="CS" vm="1">Imaging Aperture Specification Type</tag>
+    <tag group="3002" element="0116" keyword="NumberOfAcquisitionDevices" vr="US" vm="1">Number of Acquisition Devices</tag>
+    <tag group="3002" element="0117" keyword="AcquisitionDeviceSequence" vr="SQ" vm="1">Acquisition Device Sequence</tag>
+    <tag group="3002" element="0118" keyword="AcquisitionTaskSequence" vr="SQ" vm="1">Acquisition Task Sequence</tag>
+    <tag group="3002" element="0119" keyword="AcquisitionTaskWorkitemCodeSequence" vr="SQ" vm="1">Acquisition Task Workitem Code Sequence</tag>
+    <tag group="3002" element="011A" keyword="AcquisitionSubtaskSequence" vr="SQ" vm="1">Acquisition Subtask Sequence</tag>
+    <tag group="3002" element="011B" keyword="SubtaskWorkitemCodeSequence" vr="SQ" vm="1">Subtask Workitem Code Sequence</tag>
+    <tag group="3002" element="011C" keyword="AcquisitionTaskIndex" vr="US" vm="1">Acquisition Task Index</tag>
+    <tag group="3002" element="011D" keyword="AcquisitionSubtaskIndex" vr="US" vm="1">Acquisition Subtask Index</tag>
+    <tag group="3002" element="011E" keyword="ReferencedBaselineParametersRTRadiationInstanceSequence" vr="SQ" vm="1">Referenced Baseline Parameters RT Radiation Instance Sequence</tag>
+    <tag group="3002" element="011F" keyword="PositionAcquisitionTemplateIdentificationSequence" vr="SQ" vm="1">Position Acquisition Template Identification Sequence</tag>
+    <tag group="3002" element="0120" keyword="PositionAcquisitionTemplateID" vr="ST" vm="1">Position Acquisition Template ID</tag>
+    <tag group="3002" element="0121" keyword="PositionAcquisitionTemplateName" vr="LO" vm="1">Position Acquisition Template Name</tag>
+    <tag group="3002" element="0122" keyword="PositionAcquisitionTemplateCodeSequence" vr="SQ" vm="1">Position Acquisition Template Code Sequence</tag>
+    <tag group="3002" element="0123" keyword="PositionAcquisitionTemplateDescription" vr="LT" vm="1">Position Acquisition Template Description</tag>
+    <tag group="3002" element="0124" keyword="AcquisitionTaskApplicabilitySequence" vr="SQ" vm="1">Acquisition Task Applicability Sequence</tag>
+    <tag group="3002" element="0125" keyword="ProjectionImagingAcquisitionParameterSequence" vr="SQ" vm="1">Projection Imaging Acquisition Parameter Sequence</tag>
+    <tag group="3002" element="0126" keyword="CTImagingAcquisitionParameterSequence" vr="SQ" vm="1">CT Imaging Acquisition Parameter Sequence</tag>
+    <tag group="3002" element="0127" keyword="KVImagingGenerationParametersSequence" vr="SQ" vm="1">KV Imaging Generation Parameters Sequence</tag>
+    <tag group="3002" element="0128" keyword="MVImagingGenerationParametersSequence" vr="SQ" vm="1">MV Imaging Generation Parameters Sequence</tag>
+    <tag group="3002" element="0129" keyword="AcquisitionSignalType" vr="CS" vm="1">Acquisition Signal Type</tag>
+    <tag group="3002" element="012A" keyword="AcquisitionMethod" vr="CS" vm="1">Acquisition Method</tag>
+    <tag group="3002" element="012B" keyword="ScanStartPositionSequence" vr="SQ" vm="1">Scan Start Position Sequence</tag>
+    <tag group="3002" element="012C" keyword="ScanStopPositionSequence" vr="SQ" vm="1">Scan Stop Position Sequence</tag>
+    <tag group="3002" element="012D" keyword="ImagingSourceToBeamModifierDefinitionPlaneDistance" vr="FD" vm="1">Imaging Source to Beam Modifier Definition Plane Distance</tag>
+    <tag group="3002" element="012E" keyword="ScanArcType" vr="CS" vm="1">Scan Arc Type</tag>
+    <tag group="3002" element="012F" keyword="DetectorPositioningType" vr="CS" vm="1">Detector Positioning Type</tag>
+    <tag group="3002" element="0130" keyword="AdditionalRTAccessoryDeviceSequence" vr="SQ" vm="1">Additional RT Accessory Device Sequence</tag>
+    <tag group="3002" element="0131" keyword="DeviceSpecificAcquisitionParameterSequence" vr="SQ" vm="1">Device-Specific Acquisition Parameter Sequence</tag>
+    <tag group="3002" element="0132" keyword="ReferencedPositionReferenceInstanceSequence" vr="SQ" vm="1">Referenced Position Reference Instance Sequence</tag>
+    <tag group="3002" element="0133" keyword="EnergyDerivationCodeSequence" vr="SQ" vm="1">Energy Derivation Code Sequence</tag>
+    <tag group="3002" element="0134" keyword="MaximumCumulativeMetersetExposure" vr="FD" vm="1">Maximum Cumulative Meterset Exposure</tag>
+    <tag group="3002" element="0135" keyword="AcquisitionInitiationSequence" vr="SQ" vm="1">Acquisition Initiation Sequence</tag>
     <tag group="3004" element="0001" keyword="DVHType" vr="CS" vm="1">DVH Type</tag>
     <tag group="3004" element="0002" keyword="DoseUnits" vr="CS" vm="1">Dose Units</tag>
     <tag group="3004" element="0004" keyword="DoseType" vr="CS" vm="1">Dose Type</tag>
@@ -3876,8 +3931,8 @@
     <tag group="3004" element="000A" keyword="DoseSummationType" vr="CS" vm="1">Dose Summation Type</tag>
     <tag group="3004" element="000C" keyword="GridFrameOffsetVector" vr="DS" vm="2-n">Grid Frame Offset Vector</tag>
     <tag group="3004" element="000E" keyword="DoseGridScaling" vr="DS" vm="1">Dose Grid Scaling</tag>
-    <tag group="3004" element="0010" keyword="RTDoseROISequence" vr="SQ" vm="1">RT Dose ROI Sequence</tag>
-    <tag group="3004" element="0012" keyword="DoseValue" vr="DS" vm="1">Dose Value</tag>
+    <tag group="3004" element="0010" keyword="RTDoseROISequence" vr="SQ" vm="1" retired="true">RT Dose ROI Sequence</tag>
+    <tag group="3004" element="0012" keyword="DoseValue" vr="DS" vm="1" retired="true">Dose Value</tag>
     <tag group="3004" element="0014" keyword="TissueHeterogeneityCorrection" vr="CS" vm="1-3">Tissue Heterogeneity Correction</tag>
     <tag group="3004" element="0040" keyword="DVHNormalizationPoint" vr="DS" vm="3">DVH Normalization Point</tag>
     <tag group="3004" element="0042" keyword="DVHNormalizationDoseValue" vr="DS" vm="1">DVH Normalization Dose Value</tag>
@@ -3957,7 +4012,7 @@
     <tag group="3008" element="0024" keyword="TreatmentControlPointDate" vr="DA" vm="1">Treatment Control Point Date</tag>
     <tag group="3008" element="0025" keyword="TreatmentControlPointTime" vr="TM" vm="1">Treatment Control Point Time</tag>
     <tag group="3008" element="002A" keyword="TreatmentTerminationStatus" vr="CS" vm="1">Treatment Termination Status</tag>
-    <tag group="3008" element="002B" keyword="TreatmentTerminationCode" vr="SH" vm="1">Treatment Termination Code</tag>
+    <tag group="3008" element="002B" keyword="TreatmentTerminationCode" vr="SH" vm="1" retired="true">Treatment Termination Code</tag>
     <tag group="3008" element="002C" keyword="TreatmentVerificationStatus" vr="CS" vm="1">Treatment Verification Status</tag>
     <tag group="3008" element="0030" keyword="ReferencedTreatmentRecordSequence" vr="SQ" vm="1">Referenced Treatment Record Sequence</tag>
     <tag group="3008" element="0032" keyword="SpecifiedPrimaryMeterset" vr="DS" vm="1">Specified Primary Meterset</tag>
@@ -4000,6 +4055,10 @@
     <tag group="3008" element="0090" keyword="ReferencedCalculatedDoseReferenceSequence" vr="SQ" vm="1">Referenced Calculated Dose Reference Sequence</tag>
     <tag group="3008" element="0092" keyword="ReferencedCalculatedDoseReferenceNumber" vr="IS" vm="1">Referenced Calculated Dose Reference Number</tag>
     <tag group="3008" element="00A0" keyword="BeamLimitingDeviceLeafPairsSequence" vr="SQ" vm="1">Beam Limiting Device Leaf Pairs Sequence</tag>
+    <tag group="3008" element="00A1" keyword="EnhancedRTBeamLimitingDeviceSequence" vr="SQ" vm="1">Enhanced RT Beam Limiting Device Sequence</tag>
+    <tag group="3008" element="00A2" keyword="EnhancedRTBeamLimitingOpeningSequence" vr="SQ" vm="1">Enhanced RT Beam Limiting Opening Sequence</tag>
+    <tag group="3008" element="00A3" keyword="EnhancedRTBeamLimitingDeviceDefinitionFlag" vr="CS" vm="1">Enhanced RT Beam Limiting Device Definition Flag</tag>
+    <tag group="3008" element="00A4" keyword="ParallelRTBeamDelimiterOpeningExtents" vr="FD" vm="2-2n">Parallel RT Beam Delimiter Opening Extents</tag>
     <tag group="3008" element="00B0" keyword="RecordedWedgeSequence" vr="SQ" vm="1">Recorded Wedge Sequence</tag>
     <tag group="3008" element="00C0" keyword="RecordedCompensatorSequence" vr="SQ" vm="1">Recorded Compensator Sequence</tag>
     <tag group="3008" element="00D0" keyword="RecordedBlockSequence" vr="SQ" vm="1">Recorded Block Sequence</tag>
@@ -4841,7 +4900,7 @@
     <tag group="3010" element="0087" keyword="WeekdayFractionPatternSequence" vr="SQ" vm="1">Weekday Fraction Pattern Sequence</tag>
     <tag group="3010" element="0088" keyword="DeliveryTimeStructureCodeSequence" vr="SQ" vm="1">Delivery Time Structure Code Sequence</tag>
     <tag group="3010" element="0089" keyword="TreatmentSiteModifierCodeSequence" vr="SQ" vm="1">Treatment Site Modifier Code Sequence</tag>
-    <tag group="3010" element="0090" keyword="RoboticBaseLocationIndicator" vr="CS" vm="1">Robotic Base Location Indicator</tag>
+    <tag group="3010" element="0090" keyword="RoboticBaseLocationIndicator" vr="CS" vm="1" retired="true">Robotic Base Location Indicator</tag>
     <tag group="3010" element="0091" keyword="RoboticPathNodeSetCodeSequence" vr="SQ" vm="1">Robotic Path Node Set Code Sequence</tag>
     <tag group="3010" element="0092" keyword="RoboticNodeIdentifier" vr="UL" vm="1">Robotic Node Identifier</tag>
     <tag group="3010" element="0093" keyword="RTTreatmentSourceCoordinates" vr="FD" vm="3">RT Treatment Source Coordinates</tag>
@@ -5257,6 +5316,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.11.9" keyword="VolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Volume Rendering Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.10" keyword="SegmentedVolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Segmented Volume Rendering Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.11" keyword="MultipleVolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Multiple Volume Rendering Volumetric Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.12" keyword="VariableModalityLUTPresentationStateStorage" type="SOP Class">Variable Modality LUT Softcopy Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1" keyword="XRayAngiographicImageStorage" type="SOP Class">X-Ray Angiographic Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1.1" keyword="EnhancedXAImageStorage" type="SOP Class">Enhanced XA Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.2" keyword="XRayRadiofluoroscopicImageStorage" type="SOP Class">X-Ray Radiofluoroscopic Image Storage</uid>
@@ -5384,6 +5444,9 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.481.20" keyword="RoboticRadiationRecordStorage" type="SOP Class">Robotic Radiation Record Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.21" keyword="RTRadiationSetDeliveryInstructionStorage" type="SOP Class">RT Radiation Set Delivery Instruction Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.481.22" keyword="RTTreatmentPreparationStorage" type="SOP Class">RT Treatment Preparation Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.23" keyword="EnhancedRTImageStorage" type="SOP Class">Enhanced RT Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.24" keyword="EnhancedContinuousRTImageStorage" type="SOP Class">Enhanced Continuous RT Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.481.25" keyword="RTPatientPositionAcquisitionInstructionStorage" type="SOP Class">RT Patient Position Acquisition Instruction Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.1" keyword="DICOSCTImageStorage" type="SOP Class">DICOS CT Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.2.1" keyword="DICOSDigitalXRayImageStorageForPresentation" type="SOP Class">DICOS Digital X-Ray Image Storage - For Presentation</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.501.2.2" keyword="DICOSDigitalXRayImageStorageForProcessing" type="SOP Class">DICOS Digital X-Ray Image Storage - For Processing</uid>
@@ -5515,8 +5578,8 @@
     <uid uid="1.2.840.10008.6.1.7" keyword="ImageGuidedTherapeuticProcedure9" type="Context Group Name">Image Guided Therapeutic Procedure (9)</uid>
     <uid uid="1.2.840.10008.6.1.8" keyword="InterventionalDrug10" type="Context Group Name">Interventional Drug (10)</uid>
     <uid uid="1.2.840.10008.6.1.9" keyword="AdministrationRoute11" type="Context Group Name">Administration Route (11)</uid>
-    <uid uid="1.2.840.10008.6.1.10" keyword="RadiographicContrastAgent12" type="Context Group Name">Radiographic Contrast Agent (12)</uid>
-    <uid uid="1.2.840.10008.6.1.11" keyword="RadiographicContrastAgentIngredient13" type="Context Group Name">Radiographic Contrast Agent Ingredient (13)</uid>
+    <uid uid="1.2.840.10008.6.1.10" keyword="ImagingContrastAgent12" type="Context Group Name">Imaging Contrast Agent (12)</uid>
+    <uid uid="1.2.840.10008.6.1.11" keyword="ImagingContrastAgentIngredient13" type="Context Group Name">Imaging Contrast Agent Ingredient (13)</uid>
     <uid uid="1.2.840.10008.6.1.12" keyword="RadiopharmaceuticalIsotope18" type="Context Group Name">Radiopharmaceutical Isotope (18)</uid>
     <uid uid="1.2.840.10008.6.1.13" keyword="PatientOrientation19" type="Context Group Name">Patient Orientation (19)</uid>
     <uid uid="1.2.840.10008.6.1.14" keyword="PatientOrientationModifier20" type="Context Group Name">Patient Orientation Modifier (20)</uid>
@@ -6749,11 +6812,11 @@
     <uid uid="1.2.840.10008.6.1.1347" keyword="HistoryOfMalignantMelanoma4402" type="Context Group Name">History of Malignant Melanoma (4402)</uid>
     <uid uid="1.2.840.10008.6.1.1348" keyword="HistoryOfMelanomaInSitu4403" type="Context Group Name">History of Melanoma in Situ (4403)</uid>
     <uid uid="1.2.840.10008.6.1.1349" keyword="HistoryOfNonMelanomaSkinCancer4404" type="Context Group Name">History of Non-Melanoma Skin Cancer (4404)</uid>
-    <uid uid="1.2.840.10008.6.1.1350" keyword="HistoryOfNonMelanomaSkinCancer4405" type="Context Group Name">History of Non-Melanoma Skin Cancer (4405)</uid>
+    <uid uid="1.2.840.10008.6.1.1350" keyword="SkinDisorders4405" type="Context Group Name">Skin Disorders (4405)</uid>
     <uid uid="1.2.840.10008.6.1.1351" keyword="PatientReportedLesionCharacteristic4406" type="Context Group Name">Patient Reported Lesion Characteristic (4406)</uid>
     <uid uid="1.2.840.10008.6.1.1352" keyword="LesionPalpationFinding4407" type="Context Group Name">Lesion Palpation Finding (4407)</uid>
     <uid uid="1.2.840.10008.6.1.1353" keyword="LesionVisualFinding4408" type="Context Group Name">Lesion Visual Finding (4408)</uid>
-    <uid uid="1.2.840.10008.6.1.1354" keyword="LesionVisualFinding4409" type="Context Group Name">Lesion Visual Finding (4409)</uid>
+    <uid uid="1.2.840.10008.6.1.1354" keyword="SkinProcedures4409" type="Context Group Name">Skin Procedures (4409)</uid>
     <uid uid="1.2.840.10008.6.1.1355" keyword="AbdominopelvicVessel12125" type="Context Group Name">Abdominopelvic Vessel (12125)</uid>
     <uid uid="1.2.840.10008.6.1.1356" keyword="NumericValueFailureQualifier43" type="Context Group Name">Numeric Value Failure Qualifier (43)</uid>
     <uid uid="1.2.840.10008.6.1.1357" keyword="NumericValueUnknownQualifier44" type="Context Group Name">Numeric Value Unknown Qualifier (44)</uid>
@@ -6856,4 +6919,18 @@
     <uid uid="1.2.840.10008.6.1.1454" keyword="DigitalWaveformFilter3043" type="Context Group Name">Digital Waveform Filter (3043)</uid>
     <uid uid="1.2.840.10008.6.1.1455" keyword="WaveformFilterLookupTableInputFrequencyUnit3044" type="Context Group Name">Waveform Filter Lookup Table Input Frequency Unit (3044)</uid>
     <uid uid="1.2.840.10008.6.1.1456" keyword="WaveformFilterLookupTableOutputMagnitudeUnit3045" type="Context Group Name">Waveform Filter Lookup Table Output Magnitude Unit (3045)</uid>
+    <uid uid="1.2.840.10008.6.1.1457" keyword="SpecificObservationSubjectClass272" type="Context Group Name">Specific Observation Subject Class (272)</uid>
+    <uid uid="1.2.840.10008.6.1.1458" keyword="MovableBeamLimitingDeviceType9540" type="Context Group Name">Movable Beam Limiting Device Type (9540)</uid>
+    <uid uid="1.2.840.10008.6.1.1459" keyword="RadiotherapyAcquisitionWorkItemSubtasks9260" type="Context Group Name">Radiotherapy Acquisition WorkItem Subtasks (9260)</uid>
+    <uid uid="1.2.840.10008.6.1.1460" keyword="PatientPositionAcquisitionRadiationSourceLocations9261" type="Context Group Name">Patient Position Acquisition Radiation Source Locations (9261)</uid>
+    <uid uid="1.2.840.10008.6.1.1461" keyword="EnergyDerivationTypes9262" type="Context Group Name">Energy Derivation Types (9262)</uid>
+    <uid uid="1.2.840.10008.6.1.1462" keyword="KVImagingAcquisitionTechniques9263" type="Context Group Name">KV Imaging Acquisition Techniques (9263)</uid>
+    <uid uid="1.2.840.10008.6.1.1463" keyword="MVImagingAcquisitionTechniques9264" type="Context Group Name">MV Imaging Acquisition Techniques (9264)</uid>
+    <uid uid="1.2.840.10008.6.1.1464" keyword="PatientPositionAcquisitionProjectionTechniques9265" type="Context Group Name">Patient Position Acquisition - Projection Techniques (9265)</uid>
+    <uid uid="1.2.840.10008.6.1.1465" keyword="PatientPositionAcquisitionCTTechniques9266" type="Context Group Name">Patient Position Acquisition – CT Techniques (9266)</uid>
+    <uid uid="1.2.840.10008.6.1.1466" keyword="PatientPositioningRelatedObjectPurposes9267" type="Context Group Name">Patient Positioning Related Object Purposes (9267)</uid>
+    <uid uid="1.2.840.10008.6.1.1467" keyword="PatientPositionAcquisitionDevices9268" type="Context Group Name">Patient Position Acquisition Devices (9268)</uid>
+    <uid uid="1.2.840.10008.6.1.1468" keyword="RTRadiationMetersetUnits9269" type="Context Group Name">RT Radiation Meterset Units (9269)</uid>
+    <uid uid="1.2.840.10008.6.1.1469" keyword="AcquisitionInitiationTypes9270" type="Context Group Name">Acquisition Initiation Types (9270)</uid>
+    <uid uid="1.2.840.10008.6.1.1470" keyword="RTImagePatientPositionAcquisitionDevices9271" type="Context Group Name">RT Image Patient Position Acquisition Devices (9271)</uid>
 </dictionary>

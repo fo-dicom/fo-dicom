@@ -13,7 +13,7 @@ set GenerateDocumentation=1
 
 @dotnet build ./../Platform/FO-DICOM.Imaging.ImageSharp/FO-DICOM.Imaging.ImageSharp.csproj --configuration Release
 
-@dotnet build ./../Logging/FO-DICOM.NLog/FO-DICOM.NLog.csproj --configuration Release
+@dotnet build ./../Serialization/FO-DICOM.Json/FO-DICOM.Json.csproj --configuration Release
 
 
 echo.

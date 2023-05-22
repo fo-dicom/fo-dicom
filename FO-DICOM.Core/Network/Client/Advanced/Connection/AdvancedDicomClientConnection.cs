@@ -107,6 +107,11 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 throw new ArgumentNullException(nameof(request));
             }
 
+            if (request.UserIdentityNegotiation != null)
+            {
+                request.UserIdentityNegotiation.Validate();
+            }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             _logger.LogDebug("Sending association request from {CallingAE} to {CalledAE}", request.CallingAE, request.CalledAE);
@@ -175,6 +180,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 MaxAsyncOpsInvoked = request.MaxAsyncOpsInvoked,
                 MaxAsyncOpsPerformed = request.MaxAsyncOpsPerformed,
                 MaximumPDULength = Options.MaxPDULength,
+                UserIdentityNegotiation = request.UserIdentityNegotiation
             };
 
             foreach (var presentationContext in request.PresentationContexts)
