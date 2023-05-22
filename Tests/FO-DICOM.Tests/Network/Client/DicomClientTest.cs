@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -182,7 +182,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 // DicomClientFactory cares about the length of AETitles,
                 // but in case some developer registeres a custom Factory or creates DicomClient directly for some other reason.
-                var client = new DicomClient("localhost", port, false, "STORAGECOMMITTEST", "DE__257a276f6d47",
+                var client = new DicomClient("localhost", port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
                     new DicomClientOptions { }, new DicomServiceOptions { },
                     Setup.ServiceProvider.GetRequiredService<ILoggerFactory>(),
                     Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());

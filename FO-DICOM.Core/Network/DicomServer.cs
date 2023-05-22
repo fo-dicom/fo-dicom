@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network.Tls;
 using FellowOakDicom.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,7 @@ namespace FellowOakDicom.Network
 
         private object _userState;
 
-        private string _certificateName;
+        private ITlsAcceptor _tlsAcceptor;
 
         private Encoding _fallbackEncoding;
 
@@ -179,7 +180,7 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, string certificateName, Encoding fallbackEncoding,
+        public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
             DicomServiceOptions options, object userState)
         {
             if (_wasStarted)
@@ -194,7 +195,7 @@ namespace FellowOakDicom.Network
             Options = options;
 
             _userState = userState;
-            _certificateName = certificateName;
+            _tlsAcceptor = tlsAcceptor;
             _fallbackEncoding = fallbackEncoding;
 
             return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
@@ -300,7 +301,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificateName, noDelay, Logger, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_tlsAcceptor, noDelay, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)

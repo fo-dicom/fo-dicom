@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -54,12 +54,6 @@ namespace FellowOakDicom.Network
         protected internal override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
         {
             return new DesktopNetworkListener(ipAddress, port);
-        }
-
-        /// <inheritdoc />
-        protected internal override INetworkStream CreateNetworkStreamImpl(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
-        {
-            return new DesktopNetworkStream(host, port, useTls, noDelay, ignoreSslPolicyErrors, millisecondsTimeout);
         }
 
         protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
