@@ -79,6 +79,56 @@ namespace FellowOakDicom.Network
         /// <param name="transferSyntaxes">Supported transfer syntaxes.</param>
         public void Add(DicomUID abstractSyntax, bool? userRole, bool? providerRole, params DicomTransferSyntax[] transferSyntaxes)
         {
+            transferSyntaxes = transferSyntaxes ?? Array.Empty<DicomTransferSyntax>();
+
+            // Double-check against duplicate presentation contexts
+            foreach (var existingPresentationContext in this)
+            {
+                // All properties must be identical, and the transfer syntaxes must be in identical order
+                if (existingPresentationContext.AbstractSyntax != abstractSyntax)
+                {
+                    continue;
+                }
+
+                if (existingPresentationContext.UserRole != userRole)
+                {
+                    continue;
+                }
+
+                if (existingPresentationContext.ProviderRole != providerRole)
+                {
+                    continue;
+                }
+
+                var existingTransferSyntaxes = existingPresentationContext.GetTransferSyntaxes();
+                if (existingTransferSyntaxes.Count != transferSyntaxes.Length)
+                {
+                    continue;
+                }
+
+                var transferSyntaxesAreDifferent = false;
+                for (var i = 0; i < existingTransferSyntaxes.Count; i++)
+                {
+                    var existingTransferSyntax = existingTransferSyntaxes[i];
+                    var transferSyntax = transferSyntaxes[i];
+
+                    if (existingTransferSyntax != transferSyntax)
+                    {
+                        transferSyntaxesAreDifferent = true;
+                        break;
+                    }
+                }
+
+                if (transferSyntaxesAreDifferent)
+                {
+                    continue;
+                }
+
+                // At this point, it is confirmed that the SOP class UID, the user & provider role and every transfer syntax is identical
+                // To avoid confusion and possible bugs, the presentation context will not be added
+                return;
+            }
+            
             var pc = new DicomPresentationContext(GetNextPresentationContextID(), abstractSyntax, userRole, providerRole);
 
             foreach (var tx in transferSyntaxes)
