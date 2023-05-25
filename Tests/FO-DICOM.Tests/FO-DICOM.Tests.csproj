@@ -33,6 +33,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
   </ItemGroup>
@@ -56,10 +57,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
+    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.ImageSharp.NetStandard\FO-DICOM.Imaging.ImageSharp.NetStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net462' ">
+    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.ImageSharp\FO-DICOM.Imaging.ImageSharp.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
-    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.ImageSharp\FO-DICOM.Imaging.ImageSharp.csproj" />
     <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj" />
   </ItemGroup>
 

@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom</RootNamespace>
-    <AssemblyName>fo-dicom.Imaging.ImageSharp</AssemblyName>
+    <AssemblyName>fo-dicom.Imaging.ImageSharp.NetStandard</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.1.2</Version>
+    <Version>5.1.0</Version>
     <Authors>fo-dicom contributors</Authors>
     <Copyright>Copyright (c) fo-dicom contributors 2012-2023</Copyright>
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
-    <Description>A modern .NET imaging library for fo-dicom</Description>
+    <Description>A .NET Standard 2.0 imaging library for fo-dicom</Description>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +30,7 @@
     <None Include="..\..\FellowOakSquareTransp.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+      <Link>FellowOakSquareTransp.png</Link>
     </None>
   </ItemGroup>
 
