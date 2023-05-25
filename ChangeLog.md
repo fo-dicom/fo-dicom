@@ -1,4 +1,5 @@
 #### 5.1.1 (TBD)
+* Prevent adding duplicate presentation contexts to an association request
 
 #### 5.1.0 (2023-05-21)
 * **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete
