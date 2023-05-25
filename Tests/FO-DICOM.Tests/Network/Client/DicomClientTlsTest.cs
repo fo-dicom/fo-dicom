@@ -18,7 +18,7 @@ using static FellowOakDicom.Tests.Network.Client.DicomClientTest;
 
 namespace FellowOakDicom.Tests.Network.Client
 {
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait("Category", "Network")]
     public class DicomClientTlsTest
     {
         private readonly ITestOutputHelper _testOutputHelper;

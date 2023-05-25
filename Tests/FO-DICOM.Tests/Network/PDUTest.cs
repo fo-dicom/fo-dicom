@@ -13,7 +13,7 @@ using FellowOakDicom.Memory;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network")]
+    [Collection(TestCollections.Network)]
     public class PDUTest
     {
         private readonly ArrayPoolMemoryProvider _memoryProvider;

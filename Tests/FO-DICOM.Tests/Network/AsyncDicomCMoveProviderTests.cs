@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait("Category", "Network")]
     public class AsyncDicomCMoveProviderTests
     {
         private readonly XUnitDicomLogger _logger;

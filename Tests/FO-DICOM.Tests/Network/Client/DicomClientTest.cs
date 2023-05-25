@@ -25,7 +25,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network.Client
 {
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait("Category", "Network")]
     public class DicomClientTest
     {
         private readonly ITestOutputHelper _testOutputHelper;

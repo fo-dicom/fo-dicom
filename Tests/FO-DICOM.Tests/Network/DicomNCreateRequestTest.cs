@@ -7,7 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Network
 {
 
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait("Category", "Network")]
     public class DicomNCreateRequestTest
     {
         [Fact]
