@@ -1,4 +1,5 @@
 #### 5.1.1 (TBD)
+* Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
 
 #### 5.1.0 (2023-05-21)
 * **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete
