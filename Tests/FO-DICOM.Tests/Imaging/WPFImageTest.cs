@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if NET462
+#if NET462 || WINDOWS
 
 using System.Drawing;
 using System.Windows.Media.Imaging;
