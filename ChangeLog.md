@@ -1,4 +1,7 @@
-#### 5.1.1 (TBD)
+### 5.1.2 (TBD)
+
+
+#### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
 
 #### 5.1.0 (2023-05-21)
