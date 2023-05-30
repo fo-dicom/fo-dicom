@@ -484,8 +484,10 @@ namespace FellowOakDicom.Network.Client
                              * This should result in a maximum throughput of DICOM requests, always utilizing the maximum of async invoked requests
                              */
                             _logger.LogDebug("Sending {NumberOfRequests} requests", requestsToSend.Count);
-                            var maximumNumberOfParallelRequests = association.Association.MaxAsyncOpsInvoked;
-                            var parallelRequests = new List<Task>(maximumNumberOfParallelRequests);
+                            var maximumNumberOfParallelRequests = association.Association.MaxAsyncOpsInvoked > 0
+                                ? association.Association.MaxAsyncOpsInvoked
+                                : int.MaxValue;
+                            var parallelRequests = new List<Task>(Math.Min(requestsToSend.Count, maximumNumberOfParallelRequests));
                             while (parallelRequests.Count < maximumNumberOfParallelRequests
                                    && requestsToSend.Count > 0
                                    && connection.CanStillProcessPDataTF)
