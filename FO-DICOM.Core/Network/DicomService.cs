@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Codec;
@@ -753,8 +753,8 @@ namespace FellowOakDicom.Network
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
                                 file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
                                 file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
-                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID;
-                                file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion;
+                                file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID ?? DicomImplementation.ClassUID;
+                                file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion ?? DicomImplementation.Version;
                                 file.FileMetaInfo.SourceApplicationEntityTitle = Association.CallingAE;
 
                                 CreateCStoreReceiveStream(file);

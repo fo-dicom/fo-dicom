@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
@@ -8,7 +8,7 @@ namespace FellowOakDicom.Imaging.LUT
 {
 
     /// <summary>
-    /// Modality Sequence LUT implementation of <seealso cref="IModalityLUT"/> and <seealso cref="ILUT"/>
+    /// Modality Sequence LUT implementation of <see cref="IModalityLUT"/> and <see cref="ILUT"/>
     /// </summary>
     public class ModalitySequenceLUT : IModalityLUT
     {
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="ModalitySequenceLUT"/> using the specified Modality LUT Descriptor and Data
+        /// Initialize new instance of <see cref="ModalitySequenceLUT"/> using the specified Modality LUT Descriptor and Data
         /// </summary>
         /// <param name="options">Render options</param>
         public ModalitySequenceLUT(GrayscaleRenderOptions options)

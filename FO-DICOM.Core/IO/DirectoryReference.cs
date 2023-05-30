@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace FellowOakDicom.IO
         #region CONSTRUCTORS
 
         /// <summary>
-        /// Initializes a <see cref="DesktopDirectoryReference"/> object.
+        /// Initializes a <see cref="DirectoryReference"/> object.
         /// </summary>
         /// <param name="directoryName">Name of the directory.</param>
         public DirectoryReference(string directoryName)

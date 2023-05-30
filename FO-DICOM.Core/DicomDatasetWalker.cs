@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -195,7 +195,7 @@ namespace FellowOakDicom
         /// Perform an asynchronous "walk" across the DICOM dataset provided in the <see cref="DicomDatasetWalker"/> constructor.
         /// </summary>
         /// <param name="walker">Dataset walker implementation to be used for dataset traversal.</param>
-        /// <returns>Awaitable <see cref="Task"/>.</returns>
+        /// <returns>Awaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
         public Task WalkAsync(IDicomDatasetWalker walker)
         {
             _dataset.OnBeforeSerializing();

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -181,11 +181,9 @@ namespace FellowOakDicom.Network
         /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
         /// </returns>
         /// <exception cref="T:System.NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
-        public override bool Equals(object obj)
-        {
-            return (DicomStatus)obj == this;
-        }
+        public override bool Equals(object obj) => (DicomStatus)obj == this;
 
+        public override int GetHashCode() => HashCode.Combine(Code, (int)State, Description, ErrorComment, _mask);
 
         #region Static
 

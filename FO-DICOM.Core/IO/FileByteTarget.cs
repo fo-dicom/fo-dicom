@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -164,7 +164,7 @@ namespace FellowOakDicom.IO
         /// <param name="buffer">Array of <see cref="byte"/>s to write.</param>
         /// <param name="offset">Index of first position in <paramref name="buffer"/> to write to byte target.</param>
         /// <param name="count">Number of bytes to write to byte target.</param>
-        /// <returns>Avaitable <see cref="Task"/>.</returns>
+        /// <returns>Avaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
         public Task WriteAsync(byte[] buffer, uint offset, uint count)
         {
             return _stream.WriteAsync(buffer, (int)offset, (int)count);

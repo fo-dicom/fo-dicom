@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -62,7 +62,7 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>
-        /// Gets new instance of <seealso cref="BitDepth"/> using dataset information.
+        /// Gets new instance of <see cref="BitDepth"/> using dataset information.
         /// </summary>
         public BitDepth BitDepth => new BitDepth(
             BitsAllocated,
@@ -206,12 +206,12 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>
-        /// Gets palette color LUT, valid for PALETTE COLOR <seealso cref="PhotometricInterpretation"/>
+        /// Gets palette color LUT, valid for PALETTE COLOR <see cref="PhotometricInterpretation"/>
         /// </summary>
         public Color32[] PaletteColorLUT => GetPaletteColorLUT();
 
         /// <summary>
-        /// Extracts the palette color LUT from DICOM dataset, valid for PALETTE COLOR <seealso cref="PhotometricInterpretation"/>
+        /// Extracts the palette color LUT from DICOM dataset, valid for PALETTE COLOR <see cref="PhotometricInterpretation"/>
         /// </summary>
         /// <returns>Palette color LUT</returns>
         /// <exception cref="DicomImagingException">Invalid photometric interpretation or plaette color lUT missing from database</exception>
@@ -286,12 +286,12 @@ namespace FellowOakDicom.Imaging
         public abstract void AddFrame(IByteBuffer data);
 
         /// <summary>
-        /// A factory method to initialize new instance of <seealso cref="DicomPixelData"/> implementation either 
-        /// <seealso cref="OtherWordPixelData"/>, <seealso cref="OtherBytePixelData"/>, or <seealso cref="EncapsulatedPixelData"/>
+        /// A factory method to initialize new instance of <see cref="DicomPixelData"/> implementation either 
+        /// <see cref="OtherWordPixelData"/>, <see cref="OtherBytePixelData"/>, or <see cref="EncapsulatedPixelData"/>
         /// </summary>
         /// <param name="dataset">Source DICOM Dataset</param>
-        /// <param name="newPixelData">true if new <seealso cref="DicomPixelData"/>will be created for current dataset,
-        /// false to read <seealso cref="DicomPixelData"/> from <paramref name="dataset"/>.
+        /// <param name="newPixelData">true if new <see cref="DicomPixelData"/>will be created for current dataset,
+        /// false to read <see cref="DicomPixelData"/> from <paramref name="dataset"/>.
         /// Default is false (read)</param>
         /// <returns>New instance of DicomPixelData</returns>
         public static DicomPixelData Create(DicomDataset dataset, bool newPixelData = false)
@@ -349,7 +349,7 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>
-        /// Other Byte (OB) implementation of <seealso cref="DicomPixelData"/>
+        /// Other Byte (OB) implementation of <see cref="DicomPixelData"/>
         /// </summary>
         private sealed class OtherBytePixelData : DicomPixelData
         {
@@ -421,7 +421,7 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>
-        /// Other Word (OW) implementation of <seealso cref="DicomPixelData"/>
+        /// Other Word (OW) implementation of <see cref="DicomPixelData"/>
         /// </summary>
         private sealed class OtherWordPixelData : DicomPixelData
         {
@@ -496,7 +496,7 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>
-        /// Other Byte/Word Fragment implementation of <seealso cref="DicomPixelData"/>, used for handling encapsulated (compressed)
+        /// Other Byte/Word Fragment implementation of <see cref="DicomPixelData"/>, used for handling encapsulated (compressed)
         /// pixel data
         /// </summary>
         private sealed class EncapsulatedPixelData : DicomPixelData

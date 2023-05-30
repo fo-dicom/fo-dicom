@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Mathematics;
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="OverlayGraphic"/>
+        /// Initialize new instance of <see cref="OverlayGraphic"/>
         /// </summary>
         /// <param name="pixelData">Overlay pixel data</param>
         /// <param name="offsetx">X offset</param>
@@ -86,7 +86,11 @@ namespace FellowOakDicom.Imaging.Render
                     if (data[i] > 0)
                     {
                         if (ox + x >= width) break;
-                        pixels[p] |= _color;
+
+                        if (p >= 0)
+                        {
+                            pixels[p] |= _color;
+                        }
                     }
                 }
             }

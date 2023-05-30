@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.LUT;
@@ -7,7 +7,7 @@ namespace FellowOakDicom.Imaging.Render
 {
 
     /// <summary>
-    /// Grayscale color pipeline implementation of <seealso cref="IPipeline"/> interface
+    /// Grayscale color pipeline implementation of <see cref="IPipeline"/> interface
     /// </summary>
     public class GenericGrayscalePipeline : IPipeline
     {
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Constructor
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="GenericGrayscalePipeline"/> which consist of the following sequence
+        /// Initialize new instance of <see cref="GenericGrayscalePipeline"/> which consist of the following sequence
         /// Rescale (Modality) LUT -> VOI LUT -> Output LUT and optionally Invert LUT if specified by grayscale options
         /// </summary>
         /// <param name="options">Grayscale options to use in the pipeline</param>
@@ -70,7 +70,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Properties
 
         /// <summary>
-        /// Get <seealso cref="CompositeLUT"/> of LUTs available in this pipeline instance
+        /// Get <see cref="FellowOakDicom.Imaging.LUT.CompositeLUT"/> of LUTs available in this pipeline instance
         /// </summary>
         public ILUT LUT
         {

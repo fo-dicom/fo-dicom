@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Algorithms;
@@ -79,18 +79,18 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Pixel data factory to create <seealso cref="IPixelData"/> and <seealso cref="SingleBitPixelData"/> from 
-    /// <seealso cref="DicomPixelData"/>
+    /// Pixel data factory to create <see cref="IPixelData"/> and <see cref="SingleBitPixelData"/> from 
+    /// <see cref="DicomPixelData"/>
     /// </summary>
     public static class PixelDataFactory
     {
         /// <summary>
         /// Create <see cref="IPixelData"/> form <see cref="DicomPixelData"/> 
-        /// according to the input <paramref name="pixelData"/> <seealso cref="PhotometricInterpretation"/>
+        /// according to the input <paramref name="pixelData"/> <see cref="PhotometricInterpretation"/>
         /// </summary>
         /// <param name="pixelData">Input pixel data</param>
         /// <param name="frame">Frame number (0 based)</param>
-        /// <returns>Implementation of <seealso cref="IPixelData"/> according to <seealso cref="PhotometricInterpretation"/></returns>
+        /// <returns>Implementation of <see cref="IPixelData"/> according to <see cref="PhotometricInterpretation"/></returns>
         public static IPixelData Create(DicomPixelData pixelData, int frame)
         {
             PhotometricInterpretation pi = pixelData.PhotometricInterpretation;
@@ -210,7 +210,7 @@ namespace FellowOakDicom.Imaging.Render
         /// according to the input <paramref name="overlayData"/>
         /// </summary>
         /// <param name="overlayData">The input overlay data</param>
-        /// <returns>The result overlay stored in <seealso cref="SingleBitPixelData"/></returns>
+        /// <returns>The result overlay stored in <see cref="SingleBitPixelData"/></returns>
         public static SingleBitPixelData Create(DicomOverlayData overlayData)
         {
             return new SingleBitPixelData(overlayData.Columns, overlayData.Rows, overlayData.Data);
@@ -218,7 +218,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Grayscale unsigned 8 bits <seealso cref="IPixelData"/> implementation
+    /// Grayscale unsigned 8 bits <see cref="IPixelData"/> implementation
     /// </summary>
     public class GrayscalePixelDataU8 : IPixelData
     {
@@ -366,7 +366,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Single bit pixel <seealso cref="IPixelData"/> implementation(for binary pixels) usually used for overlay pixel data
+    /// Single bit pixel <see cref="IPixelData"/> implementation(for binary pixels) usually used for overlay pixel data
     /// </summary>
     public class SingleBitPixelData : GrayscalePixelDataU8
     {
@@ -434,7 +434,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Grayscale signed 16 bits <seealso cref="IPixelData"/> implementation
+    /// Grayscale signed 16 bits <see cref="IPixelData"/> implementation
     /// </summary>
     public class GrayscalePixelDataS16 : IPixelData
     {
@@ -610,7 +610,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Grayscale unsigned 16 bits <seealso cref="IPixelData"/> implementation
+    /// Grayscale unsigned 16 bits <see cref="IPixelData"/> implementation
     /// </summary>
     public class GrayscalePixelDataU16 : IPixelData
     {
@@ -785,7 +785,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Grayscale signed 32 bits <seealso cref="IPixelData"/> implementation
+    /// Grayscale signed 32 bits <see cref="IPixelData"/> implementation
     /// </summary>
     public class GrayscalePixelDataS32 : IPixelData
     {
@@ -947,7 +947,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Grayscale unsigned 32 bits <seealso cref="IPixelData"/> implementation
+    /// Grayscale unsigned 32 bits <see cref="IPixelData"/> implementation
     /// </summary>
     public class GrayscalePixelDataU32 : IPixelData
     {
@@ -1111,7 +1111,7 @@ namespace FellowOakDicom.Imaging.Render
     }
 
     /// <summary>
-    /// Color 24 bits <seealso cref="IPixelData"/> implementation used for RGB
+    /// Color 24 bits <see cref="IPixelData"/> implementation used for RGB
     /// </summary>
     public class ColorPixelData24 : IPixelData
     {

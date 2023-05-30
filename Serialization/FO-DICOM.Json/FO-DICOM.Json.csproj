@@ -1,16 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom.Json</RootNamespace>
     <AssemblyName>fo-dicom.json</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>5.1.1</Version>
+    <Authors>fo-dicom contributors</Authors>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2023</Copyright>
+    <Company>fo-dicom</Company>
+    <Product>Fellow Oak DICOM</Product>
+    <Description>A library to make fo-dicom use Newtonsoft.Json</Description>
+    <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
+    <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <None Include="..\..\FellowOakSquareTransp.png" Link="FellowOakSquareTransp.png">
+      <PackagePath></PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>

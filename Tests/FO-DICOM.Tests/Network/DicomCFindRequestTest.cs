@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -7,6 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+
+// These tests cover some obsolete methods or properties
+#pragma warning disable CS0618
 
 namespace FellowOakDicom.Tests.Network
 {

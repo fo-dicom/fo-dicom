@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -310,7 +310,10 @@ namespace FellowOakDicom.Network
                 case DicomQueryRetrieveLevel.Series:
                 case DicomQueryRetrieveLevel.Image:
                     return DicomUID.StudyRootQueryRetrieveInformationModelFind;
+#pragma warning disable CS0618
+                // While this QR level is obsolete, we must still support it
                 case DicomQueryRetrieveLevel.Worklist:
+#pragma warning restore CS0618
                 case DicomQueryRetrieveLevel.NotApplicable:
                     return DicomUID.ModalityWorklistInformationModelFind;
                 default:

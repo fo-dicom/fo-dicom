@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -121,6 +121,7 @@ namespace FellowOakDicom.Tests.Network
             var actual = reject.Reason.ToString();
 
             Assert.Equal(expected, actual);
+            Assert.NotNull(_);
         }
 
         [Theory]
@@ -132,6 +133,7 @@ namespace FellowOakDicom.Tests.Network
             var actual = rawMs.ToArray();
 
             Assert.Equal(expected, actual);
+            Assert.NotNull(_);
         }
 
         [Theory]
@@ -162,6 +164,7 @@ namespace FellowOakDicom.Tests.Network
             var actual = stream.ToArray();
 
             Assert.Equal(expected, actual);
+            Assert.NotNull(_);
         }
 
         #endregion

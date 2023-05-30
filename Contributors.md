@@ -89,3 +89,5 @@
 * [Olivier Revelat](https://github.com/olivier-med)
 * [Tars De Jaeger](https://github.com/tarsdejaeger)
 * [Ryan Rozario](https://github.com/ryan-rozario)
+* [celeron533](https://github.com/celeron533)
+* [Pantelis Georgiadis](https://github.com/PantelisGeorgiadis)

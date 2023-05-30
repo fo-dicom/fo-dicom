@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -7,7 +7,7 @@ namespace FellowOakDicom.Network
 {
     /// <summary>
     /// Query&#47;Retrieve level of DICOM command messages, applicable to C-FIND, C-GET and C-MOVE.
-    /// <seealso cref="DicomTag.QueryRetrieveLevel"/>
+    /// <see cref="DicomTag.QueryRetrieveLevel"/>
     /// </summary>
     public enum DicomQueryRetrieveLevel
     {

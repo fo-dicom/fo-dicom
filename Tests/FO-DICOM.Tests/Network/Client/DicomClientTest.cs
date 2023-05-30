@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -19,6 +19,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+
+// These tests cover some obsolete properties
+#pragma warning disable CS0618
 
 namespace FellowOakDicom.Tests.Network.Client
 {
@@ -179,7 +182,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 // DicomClientFactory cares about the length of AETitles,
                 // but in case some developer registeres a custom Factory or creates DicomClient directly for some other reason.
-                var client = new DicomClient("localhost", port, false, "STORAGECOMMITTEST", "DE__257a276f6d47",
+                var client = new DicomClient("localhost", port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
                     new DicomClientOptions { }, new DicomServiceOptions { },
                     Setup.ServiceProvider.GetRequiredService<ILoggerFactory>(),
                     Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
@@ -1414,6 +1417,30 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(echoResponse2);
             Assert.Null(echoResponse3);
         }
+
+        [Fact]
+        public async Task UnlimitedAsyncOpsInvokedShouldBeSupported()
+        {
+            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("Server"));
+            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.NegotiateAsyncOps(0,0);
+            client.Logger = _logger.IncludePrefix("Client");
+
+            var numberOfRequests = 100;
+            var counter = 0;
+            for (var i = 0; i < numberOfRequests; i++)
+            {
+                var request = new DicomCEchoRequest
+                    { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+            }
+
+            await client.SendAsync().ConfigureAwait(false);
+
+            Assert.Equal(numberOfRequests, counter);
+        }
+
 
 
         #region Support classes

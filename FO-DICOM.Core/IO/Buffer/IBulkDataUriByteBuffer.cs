@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace FellowOakDicom.IO.Buffer
@@ -10,7 +10,7 @@ namespace FellowOakDicom.IO.Buffer
     public interface IBulkDataUriByteBuffer : IByteBuffer
     {
         /// <summary>
-        /// Gets the URI of a bulk data element as defined in <see cref="!:http://dicom.nema.org/medical/dicom/current/output/chtml/part19/chapter_A.html#table_A.1.5-2">Table A.1.5-2 in PS3.19</see>.
+        /// Gets the URI of a bulk data element as defined in <a href="http://dicom.nema.org/medical/dicom/current/output/chtml/part19/chapter_A.html#table_A.1.5-2">Table A.1.5-2 in PS3.19</a>.
         /// </summary>
         string BulkDataUri { get; }
     }

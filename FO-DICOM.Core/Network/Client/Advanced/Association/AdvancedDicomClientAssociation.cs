@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network.Client.Advanced.Connection;
@@ -41,10 +41,10 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// C-FIND or C-MOVE requests will typically receive back a pending response per SOP instance, and finally one last success response
         /// C-STORE and C-ECHO requests on the other hand typically only receives one response
         /// </returns>
-        /// <exception cref="OperationCanceledException">When the request is cancelled using the <paramref name="cancellationToken"/></exception>
+        /// <exception cref="System.OperationCanceledException">When the request is cancelled using the <paramref name="cancellationToken"/></exception>
         /// <exception cref="System.IO.IOException">When connection/socket issues occur</exception>
         /// <exception cref="DicomNetworkException">When DICOM protocol issues occur</exception>
-        /// <exception cref="ObjectDisposedException">When the association is already disposed</exception>
+        /// <exception cref="System.ObjectDisposedException">When the association is already disposed</exception>
         IAsyncEnumerable<DicomResponse> SendRequestAsync(DicomRequest dicomRequest, CancellationToken cancellationToken);
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// </summary>
         /// <param name="cancellationToken">The token that immediately cancels the request. Note that the association will be left in an unusable state regardless.</param>
         /// <returns>A task that will complete when the association release has been acknowledged, the association is aborted or the connection is closed by the other AE.</returns>
-        /// <exception cref="ObjectDisposedException">When the association is already disposed</exception>
+        /// <exception cref="System.ObjectDisposedException">When the association is already disposed</exception>
         ValueTask ReleaseAsync(CancellationToken cancellationToken);
 
         /// <summary>
@@ -64,11 +64,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// </summary>
         /// <param name="cancellationToken">The token that immediately cancels the abort notification. Note that the association will be left in an unusable state regardless.</param>
         /// <returns>A task that will complete when the association is aborted or the connection is closed by the other AE</returns>
-        /// <exception cref="ObjectDisposedException">When the association is already disposed</exception>
+        /// <exception cref="System.ObjectDisposedException">When the association is already disposed</exception>
         ValueTask AbortAsync(CancellationToken cancellationToken);
     }
 
-    /// <inheritdoc cref="IAdvancedDicomClientAssociation"/>>
+    /// <summary>
+    /// Represents an open DICOM association.
+    /// </summary>
     public class AdvancedDicomClientAssociation : IAdvancedDicomClientAssociation
     {
         private const string _responseChannelIsGoneNote = "(Note: the response channel is gone. This can happen when the request is cancelled after it has been sent)";

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -779,7 +779,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <returns>The dataset instance.</returns>
-        /// <exception cref="ArgumentException">If tag of added item already exists in dataset.</exception>
+        /// <exception cref="System.ArgumentException">If tag of added item already exists in dataset.</exception>
         public DicomDataset Add(params DicomItem[] items)
         {
             return DoAdd(items, false);
@@ -790,7 +790,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <returns>The dataset instance.</returns>
-        /// <exception cref="ArgumentException">If tag of added item already exists in dataset.</exception>
+        /// <exception cref="System.ArgumentException">If tag of added item already exists in dataset.</exception>
         public DicomDataset Add(IEnumerable<DicomItem> items)
         {
             return DoAdd(items, false);
@@ -803,7 +803,7 @@ namespace FellowOakDicom
         /// <param name="tag">DICOM tag of the added item.</param>
         /// <param name="values">Values of the added item.</param>
         /// <returns>The dataset instance.</returns>
-        /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
+        /// <exception cref="System.ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomTag tag, params T[] values)
         {
             return DoAdd(tag, values, false);
@@ -820,7 +820,7 @@ namespace FellowOakDicom
         /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
         /// </remarks>
         /// <returns>The dataset instance.</returns>
-        /// <exception cref="ArgumentException">If tag already exists in dataset.</exception>
+        /// <exception cref="System.ArgumentException">If tag already exists in dataset.</exception>
         public DicomDataset Add<T>(DicomVR vr, DicomTag tag, params T[] values)
         {
             return DoAdd(vr, tag, values, false);

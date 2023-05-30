@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
@@ -53,7 +53,7 @@ namespace FellowOakDicom.Media
         /// <summary>
         /// Gets or sets the file set ID.
         /// </summary>
-        /// <exception cref="ArgumentException">If applied file set ID is null or empty.</exception>
+        /// <exception cref="System.ArgumentException">If applied file set ID is null or empty.</exception>
         public string FileSetID
         {
             get => Dataset.GetSingleValueOrDefault(DicomTag.FileSetID, string.Empty);

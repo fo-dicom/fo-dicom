@@ -1,4 +1,7 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using BenchmarkDotNet.Attributes;
 using FellowOakDicom.Serialization;
 using Newtonsoft.Json;
 using System.IO;

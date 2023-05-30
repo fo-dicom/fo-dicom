@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.LUT;
@@ -7,13 +7,13 @@ namespace FellowOakDicom.Imaging.Render
 {
 
     /// <summary>
-    /// Palette color pipeline implementation of <seealso cref="IPipeline"/>
+    /// Palette color pipeline implementation of <see cref="IPipeline"/>
     /// </summary>
     public class PaletteColorPipeline : IPipeline
     {
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="PaletteColorPipeline"/> containing palette color LUT extracted from
+        /// Initialize new instance of <see cref="PaletteColorPipeline"/> containing palette color LUT extracted from
         /// <paramref name="pixelData"/>
         /// </summary>
         /// <param name="pixelData">Dicom Pixel Data containing paletter color LUT</param>
@@ -26,7 +26,7 @@ namespace FellowOakDicom.Imaging.Render
         }
 
         /// <summary>
-        /// Get the <seealso cref="PaletteColorLUT"/>
+        /// Get the <see cref="FellowOakDicom.Imaging.LUT.PaletteColorLUT"/>
         /// </summary>
         public ILUT LUT { get; private set; }
     }

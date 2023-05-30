@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2021 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO;
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Imaging.LUT
         #region Public Constructors
 
         /// <summary>
-        /// Initialize new instance of <seealso cref="VOISequenceLUT"/> using the specified VOI LUT Descriptor and Data
+        /// Initialize new instance of <see cref="VOISequenceLUT"/> using the specified VOI LUT Descriptor and Data
         /// </summary>
         /// <param name="options">Render options</param>
         public VOISequenceLUT(GrayscaleRenderOptions options)

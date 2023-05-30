@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2022 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -106,9 +106,9 @@ namespace FellowOakDicom
             /// <param name="source">A reader for a profile file source. If null, the default profile is loaded</param>
             /// <param name="options">The optional flags for the profile</param>
             /// <returns>A dictionary containing the security profile</returns>
-            /// <exception cref="ArgumentException">A regular expression parsing error occurred</exception>
-            /// <exception cref="IOException">An I/O error occurs</exception>
-            /// <exception cref="ObjectDisposedException">The TextReader is closed</exception>
+            /// <exception cref="System.ArgumentException">A regular expression parsing error occurred</exception>
+            /// <exception cref="System.IO.IOException">An I/O error occurs</exception>
+            /// <exception cref="System.ObjectDisposedException">The TextReader is closed</exception>
             public static SecurityProfile LoadProfile(TextReader source, SecurityProfileOptions options)
             {
                 var profile = new SecurityProfile();

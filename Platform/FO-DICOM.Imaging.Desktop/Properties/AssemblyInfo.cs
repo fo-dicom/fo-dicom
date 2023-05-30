@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

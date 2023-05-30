@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -45,7 +45,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         /// </summary>
         /// <param name="data">ByteBuffer which contains a jpeg lossess</param>
         /// <returns>if successfully a MemoryStream contained the codeded data is returned</returns>
-        /// <exception cref="IOException"></exception>
+        /// <exception cref="System.IO.IOException"></exception>
         private MemoryStream ReadImage(IByteBuffer data)
         {
             using var decoder = new DicomJpegLosslessDecoderImpl(data);

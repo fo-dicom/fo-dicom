@@ -1,10 +1,12 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using System;
 using FellowOakDicom.Tests.Helpers;
 using System.IO;
 using Xunit;
+
+// These tests cover some obsolete properties such as AutoValidate
+#pragma warning disable CS0618
 
 namespace FellowOakDicom.Tests
 {
