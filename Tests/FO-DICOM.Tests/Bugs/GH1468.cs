@@ -39,7 +39,6 @@ namespace FellowOakDicom.Tests.Bugs
                     Host = "127.0.0.1",
                     Port = server.Port,
                 },
-                Logger = _logger.IncludePrefix("Client"),
                 FallbackEncoding = DicomEncoding.Default,
                 DicomServiceOptions = new DicomServiceOptions()
             };
@@ -55,6 +54,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             // Act
             // This connection only closes at the end of the test
+            connectionRequest.Logger = _logger.IncludePrefix("Client1");
             using var connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
             using var association1 = await connection1.OpenAssociationAsync(openAssociationRequest, cancellationToken);
             var response1 = await association1.SendCEchoRequestAsync(new DicomCEchoRequest(), cancellationToken);
@@ -62,6 +62,7 @@ namespace FellowOakDicom.Tests.Bugs
             // This connection opens and closes
             DicomCEchoResponse response2;
             {
+                connectionRequest.Logger = _logger.IncludePrefix("Client2");
                 using var connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
                 using var association2 = await connection2.OpenAssociationAsync(openAssociationRequest, cancellationToken);
                 response2 = await association1.SendCEchoRequestAsync(new DicomCEchoRequest(), cancellationToken);
@@ -71,6 +72,7 @@ namespace FellowOakDicom.Tests.Bugs
             // This connection opens and closes
             DicomCEchoResponse response3;
             {
+                connectionRequest.Logger = _logger.IncludePrefix("Client3");
                 using var connection3 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
                 using var association3 = await connection3.OpenAssociationAsync(openAssociationRequest, cancellationToken);
                 response3 = await association1.SendCEchoRequestAsync(new DicomCEchoRequest(), cancellationToken);
