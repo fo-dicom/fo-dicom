@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -1417,6 +1417,30 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(echoResponse2);
             Assert.Null(echoResponse3);
         }
+
+        [Fact]
+        public async Task UnlimitedAsyncOpsInvokedShouldBeSupported()
+        {
+            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("Server"));
+            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.NegotiateAsyncOps(0,0);
+            client.Logger = _logger.IncludePrefix("Client");
+
+            var numberOfRequests = 100;
+            var counter = 0;
+            for (var i = 0; i < numberOfRequests; i++)
+            {
+                var request = new DicomCEchoRequest
+                    { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+            }
+
+            await client.SendAsync().ConfigureAwait(false);
+
+            Assert.Equal(numberOfRequests, counter);
+        }
+
 
         [Fact]
         public async Task SendAsync_CustomTcpBufferSizes_Works()
