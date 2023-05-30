@@ -345,8 +345,6 @@ namespace FellowOakDicom.Network.Client
                                 NoDelay = ServiceOptions.TcpNoDelay,
                                 ReceiveBufferSize = ServiceOptions.TcpReceiveBufferSize,
                                 SendBufferSize = ServiceOptions.TcpSendBufferSize,
-                                IgnoreSslPolicyErrors = ServiceOptions.IgnoreSslPolicyErrors,
-
                                 Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
                             },
                             RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers
