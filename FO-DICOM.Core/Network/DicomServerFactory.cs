@@ -7,8 +7,6 @@ using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Text;
 
 namespace FellowOakDicom.Network
 {
@@ -98,7 +96,7 @@ namespace FellowOakDicom.Network
             object userState = null,
             Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T>(port, tlsAcceptor, fallbackEncoding, logger, userState);
+            .GetRequiredService<IDicomServerFactory>().Create<T>(port, tlsAcceptor, fallbackEncoding, logger, userState, configure);
 
         /// <summary>
         /// Creates a DICOM server object out of DI-container.
@@ -121,7 +119,7 @@ namespace FellowOakDicom.Network
             object userState = null,
             Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, tlsAcceptor, fallbackEncoding, logger, userState);
+            .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, tlsAcceptor, fallbackEncoding, logger, userState, configure);
 
         /// <summary>
         /// Creates a DICOM server object out of DI-container.
@@ -145,7 +143,7 @@ namespace FellowOakDicom.Network
             ILogger logger = null,
             Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T, TServer>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger);
+            .GetRequiredService<IDicomServerFactory>().Create<T, TServer>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
     }
 
     public class DefaultDicomServerFactory : IDicomServerFactory
