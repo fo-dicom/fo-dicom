@@ -24,7 +24,7 @@ using Xunit.Abstractions;
 namespace FellowOakDicom.Tests.Network.Client
 {
 
-    [Collection(TestCollections.Network), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait(TestTraits.Category, TestCategories.Network)]
     public class DicomClientTimeoutTest
     {
         #region Fields

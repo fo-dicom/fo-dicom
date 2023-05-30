@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection(TestCollections.Network), Trait("Category", "Network"), TestCaseOrderer("FellowOakDicom.Tests.Helpers.PriorityOrderer", "fo-dicom.Tests")]
+    [Collection(TestCollections.Network), Trait(TestTraits.Category, TestCategories.Network), TestCaseOrderer("FellowOakDicom.Tests.Helpers.PriorityOrderer", "fo-dicom.Tests")]
     public class DicomServerTest
     {
         private readonly XUnitDicomLogger _logger;

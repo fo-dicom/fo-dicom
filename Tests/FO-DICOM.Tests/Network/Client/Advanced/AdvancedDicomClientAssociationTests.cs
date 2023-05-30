@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network.Client.Advanced
 {
-    [Collection(TestCollections.Network), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait(TestTraits.Category, TestCategories.Network)]
     public class AdvancedDicomClientAssociationTests
     {
         #region Fields

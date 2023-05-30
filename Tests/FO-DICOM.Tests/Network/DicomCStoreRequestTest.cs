@@ -8,7 +8,7 @@ namespace FellowOakDicom.Tests.Network
 {
 
     [Collection(TestCollections.Network)]
-    [Trait("Category", "Network")]
+    [Trait(TestTraits.Category, TestCategories.Network)]
     public class DicomCStoreRequestTest
     {
         [Fact]

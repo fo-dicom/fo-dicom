@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace FellowOakDicom.Tests.Network
 {
     [Collection(TestCollections.Network)]
-    [Trait("Category", "Network")]
+    [Trait(TestTraits.Category, TestCategories.Network)]
     public class DicomCEchoProviderTest
     {
         private readonly ITestOutputHelper _output;
