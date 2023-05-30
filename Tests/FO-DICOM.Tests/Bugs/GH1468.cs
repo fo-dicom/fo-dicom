@@ -25,12 +25,12 @@ namespace FellowOakDicom.Tests.Bugs
         {
             // Arrange
             var port = Ports.GetNext();
-            var callingAE = "SCU";
-            var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("Server"));
-            server.Options.MaxClientsAllowed = 2;
+            using var server = DicomServerFactory.Create<DicomCEchoProvider>(
+                port,
+                logger: _logger.IncludePrefix("Server"),
+                configure: o => o.MaxClientsAllowed = 2);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -46,9 +46,12 @@ namespace FellowOakDicom.Tests.Bugs
 
             var openAssociationRequest = new AdvancedDicomClientAssociationRequest
             {
-                CallingAE = callingAE,
-                CalledAE = calledAE
+                CallingAE = "SCU",
+                CalledAE = "ANY-SCP"
             };
+
+            openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
+            openAssociationRequest.ExtendedNegotiations.AddFromRequest(new DicomCEchoRequest());
 
             // Act
             // This connection only closes at the end of the test

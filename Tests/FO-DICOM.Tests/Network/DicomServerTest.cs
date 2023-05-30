@@ -386,7 +386,7 @@ namespace FellowOakDicom.Tests.Network
                     using (DicomServerFactory.Create<DicomCEchoProvider>(NetworkManager.IPv6Any, port, logger: _logger.IncludePrefix("DicomServer")))
                     {
                             // do nothing here
-                        }
+                    }
                 });
             Assert.Null(e);
         }
@@ -426,8 +426,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix("Server");
             var clientLogger = _logger.IncludePrefix("Client");
-            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: serverLogger);
-            server.Options.MaxClientsAllowed = 1;
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: serverLogger, configure: o => o.MaxClientsAllowed = 1);
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -493,8 +492,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix("Server");
             var clientLogger = _logger.IncludePrefix("Client");
-            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: serverLogger);
-            server.Options.MaxClientsAllowed = 1;
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: serverLogger, configure: o => o.MaxClientsAllowed = 1);
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
