@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using System;
 using System.Text;
 
 namespace FellowOakDicom.Log
@@ -18,6 +19,22 @@ namespace FellowOakDicom.Log
             var logger = new DicomDatasetLogger(log, level);
             new DicomDatasetWalker(file.FileMetaInfo).Walk(logger);
             new DicomDatasetWalker(file.Dataset).Walk(logger);
+        }
+        
+        [Obsolete("Use the overload that accepts a Microsoft.Extensions.Logging.ILogger")]
+        public static void WriteToLog(this DicomDataset dataset, ILogger log, LogLevel level)
+        {
+            var microsoftLogger = new FellowOakDicomLogger(log);
+            var microsoftLogLevel = level.ToMicrosoftLogLevel();
+            dataset.WriteToLog(microsoftLogger, microsoftLogLevel);
+        }
+
+        [Obsolete("Use the overload that accepts a Microsoft.Extensions.Logging.ILogger")]
+        public static void WriteToLog(this DicomFile file, ILogger log, LogLevel level)
+        {
+            var microsoftLogger = new FellowOakDicomLogger(log);
+            var microsoftLogLevel = level.ToMicrosoftLogLevel();
+            file.WriteToLog(microsoftLogger, microsoftLogLevel);
         }
 
         public static string WriteToString(this DicomDataset dataset)
