@@ -775,6 +775,17 @@ namespace FellowOakDicom
         }
 
         /// <summary>
+        /// Adds a DICOM item to the dataset.
+        /// </summary>
+        /// <param name="item">DICOM item to add.</param>
+        /// <returns>The dataset instance.</returns>
+        /// <exception cref="System.ArgumentException">If tag of added item already exists in dataset.</exception>
+        public DicomDataset Add(DicomItem item)
+        {
+            return DoAdd(item, false);
+        }
+
+        /// <summary>
         /// Add a collection of DICOM items to the dataset.
         /// </summary>
         /// <param name="items">Collection of DICOM items to add.</param>
