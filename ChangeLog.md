@@ -1,5 +1,5 @@
-### 5.1.2 (TBD)
-
+### 5.1.2 (TBD)  
+* Extension methods `DicomDataset.WriteToLog` and `DicomFile.WriteToLog` now also accept a `Microsoft.Extensions.Logging.ILogger` 
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
