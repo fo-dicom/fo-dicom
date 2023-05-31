@@ -1,22 +1,19 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace FellowOakDicom.Log
 {
-
     public static class Extensions
     {
-
-        public static void WriteToLog(this DicomDataset dataset, ILogger log, LogLevel level)
+        public static void WriteToLog(this DicomDataset dataset, Microsoft.Extensions.Logging.ILogger log, Microsoft.Extensions.Logging.LogLevel level)
         {
             var logger = new DicomDatasetLogger(log, level);
             new DicomDatasetWalker(dataset).Walk(logger);
         }
 
-        public static void WriteToLog(this DicomFile file, ILogger log, LogLevel level)
+        public static void WriteToLog(this DicomFile file, Microsoft.Extensions.Logging.ILogger log, Microsoft.Extensions.Logging.LogLevel level)
         {
             var logger = new DicomDatasetLogger(log, level);
             new DicomDatasetWalker(file.FileMetaInfo).Walk(logger);
