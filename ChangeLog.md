@@ -1,5 +1,5 @@
 ### 5.1.2 (TBD)
-
+* Optimize the common case of adding a single `DicomItem` to a `DicomDataset` by adding an overload `DicomDataset.Add(DicomItem item)` (#1604)
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
