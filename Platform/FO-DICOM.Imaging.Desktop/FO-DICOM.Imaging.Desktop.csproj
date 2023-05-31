@@ -5,7 +5,7 @@
     <RootNamespace>FellowOakDicom.Imaging.Desktop</RootNamespace>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>5.1.0</Version>
+    <Version>5.1.1</Version>
     <LangVersion>8.0</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyName>fo-dicom.Imaging.Desktop</AssemblyName>
