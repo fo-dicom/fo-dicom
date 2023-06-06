@@ -1,5 +1,6 @@
 ### 5.1.2 (TBD)
-
+* fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
+* FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)

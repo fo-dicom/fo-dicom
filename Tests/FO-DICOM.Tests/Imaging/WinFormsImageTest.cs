@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-#if NET462
-
 using System.Drawing;
 using FellowOakDicom.Imaging;
 using Xunit;
@@ -115,5 +113,3 @@ namespace FellowOakDicom.Tests.Imaging
 #endregion
     }
 }
-
-#endif
