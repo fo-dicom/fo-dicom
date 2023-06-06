@@ -25,8 +25,7 @@
     <Description>System.Drawing support</Description>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" Condition=" '$(Configuration)' == 'Debug' " />
-    <PackageReference Include="fo-dicom" Version="5.1.0" Condition=" '$(Configuration)' != 'Debug' " />
+    <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
