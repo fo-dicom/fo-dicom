@@ -2769,7 +2769,8 @@
 <tag group="4001" element="xx27" vr="DS" vm="1">Tomo intended back jaw position</tag>
 <tag group="4001" element="xx28" vr="DS" vm="1">Tomo intended front jaw position</tag>
 <tag group="4001" element="xx29" vr="ST" vm="1">Beam Dose Specification Point Name</tag>
-<tag group="4001" element="xx30" vr="SH" vm="1">Reference Beam DataID</tag>
+<tag group="4001" element="xx2A" vr="UI" vm="1">Tomo Plan SOP Instance UID</tag>
+<tag group="4001" element="xx30" vr="SH" vm="1">Reference Beam Data ID</tag>
 <tag group="4001" element="xx31" vr="DS" vm="1">Reference Depth in Water</tag>
 <tag group="4001" element="xx32" vr="DS" vm="1">Mitsubishi Reference Value</tag>
 <tag group="4001" element="xx33" vr="CS" vm="1">Treatment Machine RBE Mode</tag>
@@ -2786,7 +2787,6 @@
 <tag group="4001" element="xx50" vr="UI" vm="1">Referenced Structure Set SOP Instance UID</tag>
 <tag group="4001" element="xx51" vr="IS" vm="1">Referenced ROI Number</tag>
 <tag group="4001" element="xx52" vr="SQ" vm="1">Contour Data Sequence</tag>
-<tag group="4001" element="xx2A" vr="UI" vm="1">Tomo Plan SOP Instance UID</tag>
 <tag group="4001" element="xx53" vr="DS" vm="1">Tomo Projection Time</tag>
 <tag group="4001" element="xx54" vr="DS" vm="1">Applicator Thickness</tag>
 <tag group="4001" element="xx55" vr="IS" vm="1">Number Of Aperture Contour Points</tag>
