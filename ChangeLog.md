@@ -1,5 +1,5 @@
 ### 5.1.2 (TBD)
-
+* Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
