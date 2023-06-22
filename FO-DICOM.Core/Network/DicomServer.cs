@@ -377,15 +377,34 @@ namespace FellowOakDicom.Network
                             break;
                         }
 
-                        var tasks = new List<Task>();
+                        var tasks = new List<Task>(numberOfDicomServices + 1);
                         var anotherServiceHasStarted = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
                         tasks.Add(anotherServiceHasStarted);
                         tasks.AddRange(runningDicomServices.Select(s => s.Task));
                         var winner = await Task.WhenAny(tasks).ConfigureAwait(false);
-                        if (winner != anotherServiceHasStarted)
+                        if (winner == anotherServiceHasStarted)
                         {
+                            try
+                            {
+                                await anotherServiceHasStarted;
+                            }
+                            catch(OperationCanceledException)
+                            {
+                                // If the server is disposed while we were waiting, deal with that gracefully
+                                break;
+                            }
+                            catch (ChannelClosedException)
+                            {
+                                // If the server is disposed while we were waiting, deal with that gracefully
+                                break;
+                            }
+                            
                             // If another service started, we must restart the Task.WhenAny with the new set of running service tasks
                             _logger.LogDebug("Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
+                        }
+                        else
+                        {
+                            _logger.LogDebug("One or more running DICOM services have completed");
                             break;
                         }
                     }
@@ -419,7 +438,11 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    _maxClientsSemaphore?.Release(numberOfCompletedServices);
+                    // Avoid object disposed exception if we can
+                    if (!_cancellationToken.IsCancellationRequested)
+                    {
+                        _maxClientsSemaphore?.Release(numberOfCompletedServices);
+                    }
 
                     _logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
                     if (numberOfRemainingServices > 0)
@@ -452,7 +475,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.LogInformation("Disconnected client cleanup manually terminated.");
+                    Logger.LogInformation("Disconnected client cleanup manually terminated");
                     ClearServices();
                 }
                 catch (Exception e)
