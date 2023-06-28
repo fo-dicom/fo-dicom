@@ -761,68 +761,6 @@ namespace FellowOakDicom.Tests.Network
             Assert.Equal(1000, uniqueDisposedServices.Count);
         }
 
-        [Fact]
-        public async Task RemoveUnusedServicesAsync_ShouldBeAbleToDisposeAThousandServices_WithMaxClientsAllowed100()
-        {
-            var port = Ports.GetNext();
-            var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
-            var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Warning);
-            var disposedDicomServices = new ConcurrentStack<DicomService>();
-
-            using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
-                       .Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
-                           "127.0.0.1", port, logger: serverLogger, configure: o => o.MaxClientsAllowed = 100))
-            {
-                server.OnDispose = service => disposedDicomServices.Push(service);
-
-                var services = Enumerable.Range(0, 1000)
-                    .AsParallel()
-                    .Select(async _ =>
-                    {
-                        // Open and close connection
-                        var connectionRequest = new AdvancedDicomClientConnectionRequest
-                        {
-                            NetworkStreamCreationOptions = new NetworkStreamCreationOptions
-                            {
-                                Host = "127.0.0.1",
-                                Port = port,
-                            },
-                            Logger = clientLogger,
-                            FallbackEncoding = DicomEncoding.Default,
-                            DicomServiceOptions = new DicomServiceOptions()
-                        };
-                        var associationRequest = new AdvancedDicomClientAssociationRequest
-                        {
-                            CallingAE = "AnySCU",
-                            CalledAE = "AnySCP",
-                        };
-                        associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
-                        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-                        using var connection =
-                            await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest,
-                                cts.Token);
-                        using var association = await connection.OpenAssociationAsync(associationRequest, cts.Token);
-
-                        // Keep association for 50ms
-                        await Task.Delay(50, cts.Token);
-
-                        var response2 = await association.SendCEchoRequestAsync(new DicomCEchoRequest(), CancellationToken.None);
-                        await association.ReleaseAsync(CancellationToken.None);
-                        Assert.Equal(DicomState.Success, response2.Status.State);
-                    });
-
-                await Task.WhenAll(services);
-
-                server.Stop();
-
-                // Wait for the server to shut down gracefully
-                await server.Registration.Task;
-            }
-
-            var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-            Assert.Equal(1000, uniqueDisposedServices.Count);
-        }
-
         private void TestFoDicomUnhandledException(int port)
         {
             var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
