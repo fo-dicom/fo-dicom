@@ -198,7 +198,11 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// Execute the disposal.
@@ -365,6 +369,11 @@ namespace FellowOakDicom.Network
                     while (true)
                     {
                         List<RunningDicomService> runningDicomServices;
+                        
+                        while (_servicesChannel.Reader.TryRead(out _))
+                        {
+                            // Discard queued new services, we're only interested in new arrivals after we start waiting                            
+                        }
                         lock (_services)
                         {
                             runningDicomServices = _services.ToList();
@@ -472,6 +481,11 @@ namespace FellowOakDicom.Network
                     {
                         _logger.LogDebug("Unlimited more incoming client connections are allowed");
                     }
+                }
+                catch (ChannelClosedException)
+                {
+                    Logger.LogInformation("Disconnected client cleanup manually terminated");
+                    ClearServices();
                 }
                 catch (OperationCanceledException)
                 {
