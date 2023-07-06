@@ -1,5 +1,8 @@
 ### 5.1.2 (TBD)
 * Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
+* Fix incorrect values returned from `DicomEncoding.GetCharset()` (#1624)
+* Tolerate `Specific Character Set` values misspelled as "ISO-IR ###" additionally
+  to "ISO IR ###"
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)

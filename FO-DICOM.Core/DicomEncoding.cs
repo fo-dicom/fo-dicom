@@ -36,33 +36,42 @@ namespace FellowOakDicom
         static void RegisterEncodingProvider() => Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         /// <summary>
-        /// Default DICOM encoding.
+        /// Default encoding used in DICOM.
         /// </summary>
         public static readonly Encoding Default = Encoding.ASCII;
 
         public static readonly Encoding[] DefaultArray = { Default };
 
         /// <summary>
-        /// Get multiple encodings from charsets.
+        /// Get multiple encodings from Specific Character Set attribute values.
         /// </summary>
         /// <param name="charsets">List of character sets.</param>
-        /// <returns>DICOM encodings.</returns>
+        /// <returns>String encodings.</returns>
         public static Encoding[] GetEncodings(string[] charsets) =>
             (from charset in charsets select GetEncoding(charset)).ToArray();
 
         /// <summary>
-        /// Get encoding from charset.
+        /// Get encoding from Specific Character Set attribute value.
+        /// Tolerates some common misspellings.
         /// </summary>
-        /// <param name="charset">Charset.</param>
-        /// <returns>DICOM encoding.</returns>
+        /// <param name="charset">DICOM character set.</param>
+        /// <returns>String encoding.</returns>
         public static Encoding GetEncoding(string charset)
         {
-            if (string.IsNullOrEmpty(charset?.Trim()))
+            charset = charset?.Trim();
+            if (string.IsNullOrEmpty(charset))
             {
                 return Default;
             }
 
-            if (_knownEncodings.TryGetValue(charset.Trim().Replace("_", " "), out Encoding encoding))
+            if (_knownEncodings.TryGetValue(charset, out Encoding encoding))
+            {
+                return encoding;
+            }
+
+            // Also allow some common misspellings (ISO-IR ### or ISO IR ### instead of ISO_IR ###)
+            if (_knownEncodings.TryGetValue(charset.Replace("ISO IR", "ISO_IR")
+                    .Replace("ISO-IR", "ISO_IR"), out encoding))
             {
                 return encoding;
             }
@@ -125,19 +134,19 @@ namespace FellowOakDicom
 
         private static readonly IDictionary<string, string> _knownEncodingNames = new Dictionary<string, string>
         {
-            { "ISO IR 13", "shift_jis" }, // JIS X 0201 (Shift JIS)
-            { "ISO IR 100", "iso-8859-1" }, // Latin Alphabet No. 1
-            { "ISO IR 101", "iso-8859-2" }, // Latin Alphabet No. 2
-            { "ISO IR 109", "iso-8859-3" }, // Latin Alphabet No. 3
-            { "ISO IR 110", "iso-8859-4" }, // Latin Alphabet No. 4
-            { "ISO IR 126", "iso-8859-7" }, // Greek
-            { "ISO IR 127", "iso-8859-6" }, // Arabic
-            { "ISO IR 138", "iso-8859-8" }, // Hebrew
-            { "ISO IR 144", "iso-8859-5" }, // Cyrillic
-            { "ISO IR 148", "iso-8859-9" }, // Latin Alphabet No. 5 (Turkish)
-            { "ISO IR 149", "x-cp20949" }, // KS X 1001 (Hangul and Hanja)
-            { "ISO IR 166", "windows-874" }, // TIS 620-2533 (Thai)
-            { "ISO IR 192", "utf-8" }, // Unicode in UTF-8
+            { "ISO_IR 13", "shift_jis" }, // JIS X 0201 (Shift JIS)
+            { "ISO_IR 100", "iso-8859-1" }, // Latin Alphabet No. 1
+            { "ISO_IR 101", "iso-8859-2" }, // Latin Alphabet No. 2
+            { "ISO_IR 109", "iso-8859-3" }, // Latin Alphabet No. 3
+            { "ISO_IR 110", "iso-8859-4" }, // Latin Alphabet No. 4
+            { "ISO_IR 126", "iso-8859-7" }, // Greek
+            { "ISO_IR 127", "iso-8859-6" }, // Arabic
+            { "ISO_IR 138", "iso-8859-8" }, // Hebrew
+            { "ISO_IR 144", "iso-8859-5" }, // Cyrillic
+            { "ISO_IR 148", "iso-8859-9" }, // Latin Alphabet No. 5 (Turkish)
+            { "ISO_IR 149", "x-cp20949" }, // KS X 1001 (Hangul and Hanja)
+            { "ISO_IR 166", "windows-874" }, // TIS 620-2533 (Thai)
+            { "ISO_IR 192", "utf-8" }, // Unicode in UTF-8
             { "GBK", "GBK" }, // Chinese (Simplified)
             { "GB18030", "gb18030" }, // Chinese (supersedes GBK)
             { "ISO 2022 IR 6", "us-ascii" }, // ASCII

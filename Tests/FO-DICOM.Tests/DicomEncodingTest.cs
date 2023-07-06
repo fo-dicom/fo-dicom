@@ -34,6 +34,21 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void GetEncoding_WorksWithCommonMisspellings()
+        {
+            var expected = Encoding.GetEncoding("utf-8");
+            // correct spelling
+            var actual = DicomEncoding.GetEncoding("ISO_IR 192");
+            Assert.Equal(expected, actual);
+
+            // common misspellings
+            actual = DicomEncoding.GetEncoding("ISO IR 192");
+            Assert.Equal(expected, actual);
+            actual = DicomEncoding.GetEncoding("ISO-IR 192");
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void GetEncoding_GB18030() //https://github.com/fo-dicom/fo-dicom/issues/481
         {
             int codePage = 0;
@@ -99,6 +114,26 @@ namespace FellowOakDicom.Tests
             var actualName = dataset.GetSingleValue<string>(DicomTag.PatientName);
             Assert.Equal(patientName, actualName);
         }
+
+        [Theory]
+        [MemberData(nameof(EncodingNames))]
+        public void GetCharset(string encodingName, string charSetName)
+        {
+            var encoding = Encoding.GetEncoding(encodingName);
+            var actual = DicomEncoding.GetCharset(encoding);
+            Assert.Equal(charSetName, actual);
+        }
+
+
+        [Theory]
+        [MemberData(nameof(EncodingNamesExtended))]
+        public void GetCharsetExtended(string encodingName, string charSetName)
+        {
+            var encoding = Encoding.GetEncoding(encodingName);
+            var actual = DicomEncoding.GetCharset(encoding, extended:true);
+            Assert.Equal(charSetName, actual);
+        }
+
 
         [Theory]
         [MemberData(nameof(EncodedNames))]
@@ -307,6 +342,35 @@ namespace FellowOakDicom.Tests
                 new byte[] { 0x1b, 0x2d, 0x4d, 0xc7, 0x61, 0x76, 0x75, 0xfe, 0x6f, 0xf0, 0x6c, 0x75 } },
             new object[] { "ISO 2022 IR 166", "นามสกุล",
                 new byte[] { 0x1b, 0x2d, 0x54, 0xb9, 0xd2, 0xc1, 0xca, 0xa1, 0xd8, 0xc5 } }
+        };
+
+        public static readonly IEnumerable<object[]> EncodingNames = new[]
+        {
+            new object[] { "iso-8859-1", "ISO_IR 100" },
+            new object[] { "iso-8859-2", "ISO_IR 101" },
+            new object[] { "iso-8859-3", "ISO_IR 109" },
+            new object[] { "iso-8859-4", "ISO_IR 110" },
+            new object[] { "iso-8859-5", "ISO_IR 144" },
+            new object[] { "iso-8859-6", "ISO_IR 127" },
+            new object[] { "iso-8859-7", "ISO_IR 126" },
+            new object[] { "iso-8859-8", "ISO_IR 138" },
+            new object[] { "iso-8859-9", "ISO_IR 148" },
+            new object[] { "windows-874", "ISO_IR 166" },
+            new object[] { "utf-8", "ISO_IR 192" },
+        };
+
+        public static readonly IEnumerable<object[]> EncodingNamesExtended = new[]
+        {
+            new object[] { "iso-8859-1", "ISO 2022 IR 100" },
+            new object[] { "iso-8859-2", "ISO 2022 IR 101" },
+            new object[] { "iso-8859-3", "ISO 2022 IR 109" },
+            new object[] { "iso-8859-4", "ISO 2022 IR 110" },
+            new object[] { "iso-8859-5", "ISO 2022 IR 144" },
+            new object[] { "iso-8859-6", "ISO 2022 IR 127" },
+            new object[] { "iso-8859-7", "ISO 2022 IR 126" },
+            new object[] { "iso-8859-8", "ISO 2022 IR 138" },
+            new object[] { "iso-8859-9", "ISO 2022 IR 148" },
+            new object[] { "windows-874", "ISO 2022 IR 166" },
         };
 
         private CollectingLoggerSession NewLogCollector()
