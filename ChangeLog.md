@@ -1,4 +1,5 @@
-### 5.1.2 (TBD)  
+### 5.1.2 (TBD)
+* Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
 * Extension methods `DicomDataset.WriteToLog` and `DicomFile.WriteToLog` now also accept a `Microsoft.Extensions.Logging.ILogger` 
 
 #### 5.1.1 (2023-05-29)
