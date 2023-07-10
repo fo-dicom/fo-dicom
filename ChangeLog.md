@@ -1,4 +1,5 @@
-#### 5.2.0 (TBD)
+### 5.1.2 (TBD)
+* Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
 * Immediately throw an exception if DICOM server synchronously fails to start (#1562)
 * Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 
