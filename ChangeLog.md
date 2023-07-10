@@ -1,4 +1,5 @@
 ### 5.1.2 (TBD)
+* Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
 * Optimize the common case of adding a single `DicomItem` to a `DicomDataset` by adding an overload `DicomDataset.Add(DicomItem item)` (#1604)
 
 #### 5.1.1 (2023-05-29)
