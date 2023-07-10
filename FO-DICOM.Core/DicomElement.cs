@@ -134,7 +134,7 @@ namespace FellowOakDicom
         {
             get
             {
-                if (_value == null && Buffer != null && (Buffer != EmptyBuffer.Value))
+                if (_value == null && Buffer != null)
                 {
                     _value = Buffer == EmptyBuffer.Value
                         ? string.Empty

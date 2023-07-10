@@ -1,4 +1,5 @@
 ### 5.1.2 (TBD)
+* Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
 
