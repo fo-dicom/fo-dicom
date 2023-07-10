@@ -37,6 +37,7 @@ namespace FellowOakDicom.Network
 
         /// <summary>
         /// Gets or sets the maximum number of clients allowed for a specific server. Unlimited if set to zero.
+        /// This property is only applied when the DicomServer is created within the factory method. Changing this property from a running server will be ignored.
         /// </summary>
         public int MaxClientsAllowed { get; set; } = 0;
 
