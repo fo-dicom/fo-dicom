@@ -11,7 +11,7 @@ using Image = SixLabors.ImageSharp.Image;
 namespace FellowOakDicom.Tests.Imaging
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class WinFormsImageTest
     {
 #region Unit tests

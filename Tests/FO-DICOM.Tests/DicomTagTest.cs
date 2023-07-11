@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests
     ///     This is a test class for DicomTagTest and is intended
     ///     to contain all DicomTagTest Unit Tests
     /// </summary>
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomTagTest
     {
         #region Unit tests

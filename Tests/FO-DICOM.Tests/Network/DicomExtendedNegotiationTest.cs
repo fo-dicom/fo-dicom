@@ -9,7 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Network
 {
 
-    [Collection("Network")]
+    [Collection(TestCollections.Network)]
     public class DicomExtendedNegotiationTest
     {
         #region Unit tests

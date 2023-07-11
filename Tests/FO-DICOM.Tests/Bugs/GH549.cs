@@ -11,7 +11,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Bugs
 {
 
-    [Collection("WithTranscoder")]
+    [Collection(TestCollections.WithTranscoder)]
     public class GH549
     {
         #region Unit Tests

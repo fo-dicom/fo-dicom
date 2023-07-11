@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace FellowOakDicom.Tests.Bugs
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     internal class VideoCStoreProvider : DicomService, IDicomServiceProvider, IDicomCStoreProvider
     {
         private readonly List<string> _storedFiles = new List<string>();
