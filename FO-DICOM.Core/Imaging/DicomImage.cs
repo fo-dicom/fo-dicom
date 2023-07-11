@@ -124,10 +124,14 @@ namespace FellowOakDicom.Imaging
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.WindowWidth ?? 255;
             set
             {
-                if (GetOrCreateCachedFramePipeline(CurrentFrame) is GenericGrayscalePipeline pipeline && pipeline.WindowWidth != value)
+                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames-1) : (CurrentFrame, CurrentFrame);
+                for (var frame = from; frame <= to; frame++)
                 {
-                    pipeline.WindowWidth = value;
-                    ResetRenderedImage(CurrentFrame);
+                    if (GetOrCreateCachedFramePipeline(frame) is GenericGrayscalePipeline pipeline && pipeline.WindowWidth != value)
+                    {
+                        pipeline.WindowWidth = value;
+                        ResetRenderedImage(frame);
+                    }
                 }
             }
         }
@@ -138,10 +142,14 @@ namespace FellowOakDicom.Imaging
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.WindowCenter ?? 255;
             set
             {
-                if (GetOrCreateCachedFramePipeline(CurrentFrame) is GenericGrayscalePipeline pipeline && pipeline.WindowCenter != value)
+                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames - 1) : (CurrentFrame, CurrentFrame);
+                for (var frame = from; frame <= to; frame++)
                 {
-                    pipeline.WindowCenter = value;
-                    ResetRenderedImage(CurrentFrame);
+                    if (GetOrCreateCachedFramePipeline(frame) is GenericGrayscalePipeline pipeline && pipeline.WindowCenter != value)
+                    {
+                        pipeline.WindowCenter = value;
+                        ResetRenderedImage(frame);
+                    }
                 }
             }
         }
@@ -152,10 +160,14 @@ namespace FellowOakDicom.Imaging
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.UseVOILUT ?? false;
             set
             {
-                if (GetOrCreateCachedFramePipeline(CurrentFrame) is GenericGrayscalePipeline pipeline && pipeline.UseVOILUT != value)
+                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames - 1) : (CurrentFrame, CurrentFrame);
+                for (var frame = from; frame <= to; frame++)
                 {
-                    pipeline.UseVOILUT = value;
-                    ResetRenderedImage(CurrentFrame);
+                    if (GetOrCreateCachedFramePipeline(frame) is GenericGrayscalePipeline pipeline && pipeline.UseVOILUT != value)
+                    {
+                        pipeline.UseVOILUT = value;
+                        ResetRenderedImage(frame);
+                    }
                 }
             }
         }
@@ -166,10 +178,14 @@ namespace FellowOakDicom.Imaging
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.Invert ?? false;
             set
             {
-                if (GetOrCreateCachedFramePipeline(CurrentFrame) is GenericGrayscalePipeline pipeline && pipeline.Invert != value)
+                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames - 1) : (CurrentFrame, CurrentFrame);
+                for (var frame = from; frame <= to; frame++)
                 {
-                    pipeline.Invert = value;
-                    ResetRenderedImage(CurrentFrame);
+                    if (GetOrCreateCachedFramePipeline(frame) is GenericGrayscalePipeline pipeline && pipeline.Invert != value)
+                    {
+                        pipeline.Invert = value;
+                        ResetRenderedImage(frame);
+                    }
                 }
             }
         }
@@ -181,10 +197,14 @@ namespace FellowOakDicom.Imaging
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.GrayscaleColorMap;
             set
             {
-                if (GetOrCreateCachedFramePipeline(CurrentFrame) is GenericGrayscalePipeline pipeline)
+                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames - 1) : (CurrentFrame, CurrentFrame);
+                for (var frame = from; frame <= to; frame++)
                 {
-                    pipeline.GrayscaleColorMap = value;
-                    ResetRenderedImage(CurrentFrame);
+                    if (GetOrCreateCachedFramePipeline(frame) is GenericGrayscalePipeline pipeline)
+                    {
+                        pipeline.GrayscaleColorMap = value;
+                        ResetRenderedImage(frame);
+                    }
                 }
             }
         }
@@ -221,6 +241,12 @@ namespace FellowOakDicom.Imaging
         /// Gets the index of the current frame.
         /// </summary>
         public int CurrentFrame { get; private set; }
+
+        /// <summary>
+        /// Gets or sets wether the rendering options of all frames shall be updated when a property is changed, or only the rendering options of the current frame.
+        /// </summary>
+        public bool AutoApplyLUTToAllFrames { get; set; } = true;
+
 
         #endregion
 

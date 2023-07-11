@@ -1,0 +1,57 @@
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using FellowOakDicom.Imaging;
+using Xunit;
+
+namespace FellowOakDicom.Tests.Imaging
+{
+    [Collection("Imaging")]
+    public class EnhancedRenderingTest
+    {
+        [Fact]
+        public void EnhancedMRRenderFrames_Autoapply()
+        {
+            var image = new DicomImage(TestData.Resolve("MOVEKNEE.dcm"));
+            Assert.Equal(19, image.NumberOfFrames);
+
+            // render frame 0, the original windowwith from PerFrameSequence shall be applied
+            _ = image.RenderImage(0);
+            Assert.Equal(0, image.CurrentFrame);
+            Assert.Equal(2810, image.WindowWidth);
+
+            // render frame 2, the original windowwith from PerFrameSequence shall be applied
+            _ = image.RenderImage(2);
+            Assert.Equal(2, image.CurrentFrame);
+            Assert.Equal(2808, image.WindowWidth);
+
+            // disable autoapply to all frames
+            image.AutoApplyLUTToAllFrames = false;
+
+            // change the windowwith of the current frame 2, render the image and assert that the changed windowwidh
+            image.WindowWidth = 2700;
+            _ = image.RenderImage(2);
+            Assert.Equal(2, image.CurrentFrame);
+            Assert.Equal(2700, image.WindowWidth);
+
+            // render the frame 0 and assert that still the original windowwith is applied
+            _ = image.RenderImage(0);
+            Assert.Equal(0, image.CurrentFrame);
+            Assert.Equal(2810, image.WindowWidth);
+
+            // now enable autoapply to all frames
+            image.AutoApplyLUTToAllFrames = true;
+
+            // again change the windowwith of current frame 0
+            image.WindowWidth = 2600;
+            _ = image.RenderImage(0);
+            Assert.Equal(0, image.CurrentFrame);
+            Assert.Equal(2600, image.WindowWidth);
+
+            // now when rendering another frame, the changed windowwith should be applied
+            _ = image.RenderImage(2);
+            Assert.Equal(2, image.CurrentFrame);
+            Assert.Equal(2600, image.WindowWidth);
+        }
+    }
+}
