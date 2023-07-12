@@ -53,5 +53,33 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(2, image.CurrentFrame);
             Assert.Equal(2600, image.WindowWidth);
         }
+
+        [Fact]
+        public void EnhancedMRFrameGeometry_WithPositionPerFrame()
+        {
+            var image = DicomFile.Open(TestData.Resolve("mr_brucker.dcm"));
+            var geometryFrame1 = new FrameGeometry(image.Dataset, 0);
+            var geometryFrame4 = new FrameGeometry(image.Dataset, 3);
+
+            Assert.True(geometryFrame1.HasGeometryData);
+            Assert.True(geometryFrame4.HasGeometryData);
+
+            Assert.Equal(-6.2, geometryFrame1.PointTopLeft.Z);
+            Assert.Equal(-3.2, geometryFrame4.PointTopLeft.Z);
+        }
+
+        [Fact]
+        public void EnhancedMRFrameGeometry_WithPositionInShared()
+        {
+            var image = DicomFile.Open(TestData.Resolve("MOVEKNEE.dcm"));
+            var geometryFrame1 = new FrameGeometry(image.Dataset, 0);
+            var geometryFrame4 = new FrameGeometry(image.Dataset, 3);
+
+            Assert.True(geometryFrame1.HasGeometryData);
+            Assert.True(geometryFrame4.HasGeometryData);
+
+            Assert.Equal(geometryFrame4.PointTopLeft, geometryFrame1.PointTopLeft);
+        }
+
     }
 }
