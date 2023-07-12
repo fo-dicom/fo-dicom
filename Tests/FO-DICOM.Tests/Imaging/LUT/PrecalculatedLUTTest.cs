@@ -9,7 +9,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
 
     #region Unit tests
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class PrecalculatedLUTTest
     {
         [Theory(DisplayName = "Issue #219 ")]

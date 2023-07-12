@@ -8,7 +8,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
 {
-    [Collection("ImageSharp")]
+    [Collection(TestCollections.ImageSharp)]
     public class ImageSharpRenderingTests
     {
 

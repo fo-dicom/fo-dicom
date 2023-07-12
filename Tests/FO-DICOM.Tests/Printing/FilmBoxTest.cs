@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Printing
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class FilmBoxTest
     {
         #region Unit tests
