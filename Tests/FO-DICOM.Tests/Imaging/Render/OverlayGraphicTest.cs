@@ -6,7 +6,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging.Render
 {
-    [Collection("ImageSharp")]
+    [Collection(TestCollections.ImageSharp)]
     public class OverlayGraphicTest
     {
         [Fact]

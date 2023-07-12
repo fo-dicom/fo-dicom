@@ -7,7 +7,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.Mathematics
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class RectFTest
     {
         #region Unit tests

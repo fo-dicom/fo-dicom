@@ -8,7 +8,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
 {
-    [Collection("WithTranscoder")]
+    [Collection(TestCollections.WithTranscoder)]
     public class GrayscaleRenderOptionsTest
     {
         #region Unit tests

@@ -9,7 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.Codec
 {
 
-    [Collection("WithTranscoder")]
+    [Collection(TestCollections.WithTranscoder)]
     public class DicomTranscoderTest : IClassFixture<GlobalFixture>
     {
 
