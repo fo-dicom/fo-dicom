@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net462;net6.0-windows;net7.0-windows</TargetFrameworks>
-    <OutputType>Library</OutputType>
     <RootNamespace>FellowOakDicom.Imaging.Desktop</RootNamespace>
+    <AssemblyName>fo-dicom.Imaging.Desktop</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>5.1.1</Version>
+    <Authors>fo-dicom contributors</Authors>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-$([System.DateTime]::Now.ToString(`yyyy`))</Copyright>
+    
+    <OutputType>Library</OutputType>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>5.1.1</Version>
     <LangVersion>8.0</LangVersion>
     <SignAssembly>true</SignAssembly>
-    <AssemblyName>fo-dicom.Imaging.Desktop</AssemblyName>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <Title>Fellow Oak DICOM System.Drawing support</Title>
     <Product>FO-DICOM.Imaging.Desktop</Product>
     <AssemblyTitle>$(Product)</AssemblyTitle>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Authors>fo-dicom contributors</Authors>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-$([System.DateTime]::Now.ToString(`yyyy`))</Copyright>
     <Description>System.Drawing support</Description>
+	<Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
