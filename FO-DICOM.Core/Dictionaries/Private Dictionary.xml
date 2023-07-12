@@ -58,6 +58,9 @@
 <tag group="0087" element="xx20" vr="CS" vm="1">Media Location</tag>
 <tag group="0087" element="xx50" vr="IS" vm="1">Estimated Retrieve Time</tag>
 </dictionary>
+<dictionary creator="Accuray Robotic Control">
+<tag group="300F" element="xx01" vr="CS" vm="1">Use Increased Pitch Correction</tag>
+</dictionary>
 <dictionary creator="ACUSON">
 <tag group="0009" element="xx00" vr="IS" vm="1">Unknown</tag>
 <tag group="0009" element="xx01" vr="IS" vm="1">Unknown</tag>
@@ -175,6 +178,12 @@
 <tag group="0029" element="xx33" vr="DS" vm="1-2">Unknown</tag>
 <tag group="0029" element="xx34" vr="DS" vm="1-2">Unknown</tag>
 <tag group="0029" element="xx35" vr="LO" vm="1">Unknown</tag>
+</dictionary>
+<dictionary creator="Brainlab - ONC - Beam Parameters">
+<tag group="300B" element="xx10" vr="IS" vm="1-n">Referenced Beam List</tag>
+</dictionary>
+<dictionary creator="Brainlab - ONC - Multi-axial treatmentmachine">
+<tag group="320B" element="xx01" vr="CS" vm="1">DynamicTracking</tag>
 </dictionary>
 <dictionary creator="CAMTRONICS">
 <tag group="0029" element="xx10" vr="LT" vm="1">Commentline</tag>
@@ -1357,6 +1366,7 @@
 <tag group="0011" element="xx10" vr="SS" vm="1">Patient Status</tag>
 </dictionary>
 <dictionary creator="GEMS_PETD_01">
+<tag group="0009" element="xx0D" vr="DT" vm="1">GE PET Scan Time</tag>
 <tag group="0009" element="xx38" vr="UN" vm="1">Unknown</tag>
 <tag group="0009" element="xx39" vr="UN" vm="1">Unknown</tag>
 <tag group="0009" element="xx3b" vr="UN" vm="1">Unknown</tag>
@@ -1685,6 +1695,9 @@
 <tag group="0019" element="xx97" vr="UN" vm="1">Unknown</tag>
 <tag group="0019" element="xx99" vr="UN" vm="1">Unknown</tag>
 </dictionary>
+<dictionary creator="IBA">
+<tag group="300D" element="xx02" vr="SH" vm="1">IBA Scattered Mode</tag>
+</dictionary>
 <dictionary creator="INTEGRIS 1.0">
 <tag group="0009" element="xx08" vr="CS" vm="1-n">Exposure Channel</tag>
 <tag group="0009" element="xx32" vr="TM" vm="1">Exposure Start Time</tag>
@@ -1716,6 +1729,14 @@
 </dictionary>
 <dictionary creator="ISI">
 <tag group="0009" element="xx01" vr="UN" vm="1">SIENET General Purpose IMGEF</tag>
+</dictionary>
+<dictionary creator="medPhoton 1.0">
+<tag group="30BB" element="xx00" vr="SH" vm="1">Patient Setup ID</tag>
+<tag group="30BB" element="xx01" vr="SH" vm="1">Imaging Protocol ID</tag>
+<tag group="30BB" element="xx22" vr="DS" vm="2">Patient Support Angle Offset Interval</tag>
+<tag group="30BB" element="xx2C" vr="DS" vm="6">Isocenter Position Offset Interval</tag>
+<tag group="30BB" element="xx40" vr="DS" vm="2">Table Top Pitch Angle Offset Interval</tag>
+<tag group="30BB" element="xx44" vr="DS" vm="2">Table Top Roll Angle Offset Interval</tag>
 </dictionary>
 <dictionary creator="MeVis eatDicom">
 <tag group="0009" element="xx10" vr="LO" vm="1">Unknown</tag>
@@ -1795,6 +1816,10 @@
 <dictionary creator="PATRIOT_PRIVATE_IMAGE_DATA">
 <tag group="7001" element="xx01" vr="OB" vm="1">Unknown</tag>
 <tag group="7001" element="xx03" vr="UL" vm="1">Unknown</tag>
+</dictionary>
+<dictionary creator="Philips PET Private Group">
+<tag group="7053" element="xx00" vr="DS" vm="1">Philips SUV Scale Factor</tag>
+<tag group="7053" element="xx09" vr="DS" vm="1">Philips Activity Concentration Scale Factor</tag>
 </dictionary>
 <dictionary creator="Philips EV Imaging DD 022">
 <tag group="2007" element="xx35" vr="SQ" vm="1">Unknown</tag>
@@ -2718,6 +2743,75 @@
 <tag group="0029" element="xx33" vr="UL" vm="1">Unknown</tag>
 <tag group="0029" element="xx34" vr="CS" vm="1">Unknown</tag>
 </dictionary>
+<dictionary creator="RAYSEARCHLABS 2.0">
+<tag group="4001" element="xx01" vr="DT" vm="1">Treatment Machine Commission Time</tag>
+<tag group="4001" element="xx02" vr="ST" vm="1">RBE Model Name</tag>
+<tag group="4001" element="xx03" vr="DT" vm="1">RBE Model Commission Time</tag>
+<tag group="4001" element="xx04" vr="FL" vm="1">Block Milling Tool Diameter</tag>
+<tag group="4001" element="xx05" vr="FL" vm="1">Spill Length</tag>
+<tag group="4001" element="xx06" vr="FL" vm="1">Degrader</tag>
+<tag group="4001" element="xx07" vr="FL" vm="1">Particles Per Spill</tag>
+<tag group="4001" element="xx08" vr="DS" vm="1">CNAO Nominal Beam Energy</tag>
+<tag group="4001" element="xx09" vr="DS" vm="1">CNAO Nominal Beam Energy Scale Factor</tag>
+<tag group="4001" element="xx10" vr="ST" vm="1">Tissue Name</tag>
+<tag group="4001" element="xx11" vr="DS" vm="1">Target Prescription Effective Dose</tag>
+<tag group="4001" element="xx12" vr="SH" vm="1">Internal Treatment Machine Name</tag>
+<tag group="4001" element="xx21" vr="LO" vm="1">Tomo IDMS Beam ID</tag>
+<tag group="4001" element="xx14" vr="ST" vm="1">RBE Cell Type Name</tag>
+<tag group="4001" element="xx15" vr="DS" vm="1">Planned Blood Boron Concentration</tag>
+<tag group="4001" element="xx16" vr="OB" vm="1">ROI Index Pixel Data</tag>
+<tag group="4001" element="xx17" vr="US" vm="1">ROI Index Bits Allocated</tag>
+<tag group="4001" element="xx20" vr="LO" vm="1">Tomo IDMS Machine ID</tag>
+<tag group="4001" element="xx22" vr="DS" vm="3">Tomo Localization point</tag>
+<tag group="4001" element="xx23" vr="DS" vm="3">Tomo Beam Isocenter</tag>
+<tag group="4001" element="xx25" vr="IS" vm="1">Tomo machine revision</tag>
+<tag group="4001" element="xx26" vr="IS" vm="1">Tomo beam revision</tag>
+<tag group="4001" element="xx27" vr="DS" vm="1">Tomo intended back jaw position</tag>
+<tag group="4001" element="xx28" vr="DS" vm="1">Tomo intended front jaw position</tag>
+<tag group="4001" element="xx29" vr="ST" vm="1">Beam Dose Specification Point Name</tag>
+<tag group="4001" element="xx2A" vr="UI" vm="1">Tomo Plan SOP Instance UID</tag>
+<tag group="4001" element="xx30" vr="SH" vm="1">Reference Beam Data ID</tag>
+<tag group="4001" element="xx31" vr="DS" vm="1">Reference Depth in Water</tag>
+<tag group="4001" element="xx32" vr="DS" vm="1">Mitsubishi Reference Value</tag>
+<tag group="4001" element="xx33" vr="CS" vm="1">Treatment Machine RBE Mode</tag>
+<tag group="4001" element="xx40" vr="SQ" vm="1">ROI Contour Sequence</tag>
+<tag group="4001" element="xx41" vr="LO" vm="1">Contour Name</tag>
+<tag group="4001" element="xx42" vr="ST" vm="1">Contour Description</tag>
+<tag group="4001" element="xx43" vr="CS" vm="1">Contour Generation Algorithm</tag>
+<tag group="4001" element="xx44" vr="CS" vm="1">Contour Interpreted Type</tag>
+<tag group="4001" element="xx45" vr="IS" vm="3">Contour Display Color</tag>
+<tag group="4001" element="xx46" vr="IS" vm="1">Number of Contour Points</tag>
+<tag group="4001" element="xx47" vr="OF" vm="2-2n">Contour Data</tag>
+<tag group="4001" element="xx48" vr="IS" vm="1">Number of Pixel Contour Points</tag>
+<tag group="4001" element="xx49" vr="OF" vm="1">Pixel Contour Data</tag>
+<tag group="4001" element="xx50" vr="UI" vm="1">Referenced Structure Set SOP Instance UID</tag>
+<tag group="4001" element="xx51" vr="IS" vm="1">Referenced ROI Number</tag>
+<tag group="4001" element="xx52" vr="SQ" vm="1">Contour Data Sequence</tag>
+<tag group="4001" element="xx53" vr="DS" vm="1">Tomo Projection Time</tag>
+<tag group="4001" element="xx54" vr="DS" vm="1">Applicator Thickness</tag>
+<tag group="4001" element="xx55" vr="IS" vm="1">Number Of Aperture Contour Points</tag>
+<tag group="4001" element="xx56" vr="FL" vm="2-2n">Aperture Contour Point Map</tag>
+<tag group="4001" element="xx57" vr="CS" vm="1">Collimation Mode</tag>
+<tag group="4001" element="xx60" vr="LO" vm="1">RaySearch Checksum Algorithm Version</tag>
+<tag group="4001" element="xx61" vr="OB" vm="1">RaySearch Checksum Data</tag>
+<tag group="4001" element="xx62" vr="SQ" vm="1">Tracking ROI Sequence</tag>
+<tag group="4001" element="xx63" vr="DS" vm="1-6">Imaging Angles</tag>
+<tag group="4001" element="xx64" vr="OB" vm="1">Mevion SMC Output</tag>
+<tag group="4001" element="xx65" vr="LO" vm="1">Mevion SMC Version</tag>
+<tag group="4001" element="xx66" vr="DS" vm="1">Tomo Couch Insertion Position Y</tag>
+<tag group="4001" element="xx67" vr="DA" vm="1">Consent Expiry Date</tag>
+<tag group="4001" element="xx68" vr="FL" vm="1">Tomo Projection Time FL</tag>
+<tag group="4001" element="xx70" vr="DT" vm="1">Source Commission Time</tag>
+<tag group="4001" element="xx71" vr="DT" vm="1">Application Setup Commission Time</tag>
+</dictionary>
+<dictionary creator="SagiPlan">
+<tag group="1001" element="xx00" vr="UL" vm="1">Irradiation Data Check Sum 1</tag>
+<tag group="1001" element="xx01" vr="UL" vm="1">Irradiation Data Check Sum 2</tag>
+<tag group="1001" element="xx05" vr="DT" vm="1">Study Last Saved</tag>
+<tag group="1001" element="xx06" vr="UL" vm="1-n">Treat in Fraction</tag>
+<tag group="1001" element="xx09" vr="DS" vm="1">Dwell Position from Tip</tag>
+<tag group="1001" element="xx0A" vr="ST" vm="1">Reference to Applicator Database</tag>
+</dictionary>
 <dictionary creator="SFS1.00">
 <tag group="6b03" element="xx01" vr="OB" vm="1">Unknown</tag>
 </dictionary>
@@ -3257,6 +3351,26 @@
 <tag group="0019" element="xx6a" vr="UN" vm="1">Unknown</tag>
 <tag group="0019" element="xx6c" vr="UN" vm="1">Unknown</tag>
 <tag group="0019" element="xx72" vr="UN" vm="1">Unknown</tag>
+</dictionary>
+<dictionary creator="SIEMENS MED SYNGO RT">
+<tag group="300B" element="xx10" vr="CS" vm="1">Plan Type</tag>
+<tag group="300B" element="xx12" vr="LO" vm="1">Imager Organ Program</tag>
+<tag group="300B" element="xx20" vr="SQ" vm="1">Alternative Treatment Machine Name Sequence</tag>
+<tag group="300B" element="xx24" vr="DS" vm="1">Imager Angular Angle</tag>
+<tag group="300B" element="xx25" vr="DS" vm="1">Imager Iso-centric Angle</tag>
+<tag group="300B" element="xx26" vr="DS" vm="1">Imager Vertical Position</tag>
+<tag group="300B" element="xx27" vr="DS" vm="1">Imager Longitudinal Position</tag>
+<tag group="300B" element="xx28" vr="DS" vm="1">Imager Lateral Position</tag>
+<tag group="300B" element="xx29" vr="DS" vm="1">Imager Angular Rotation Direction</tag>
+<tag group="300B" element="xx2A" vr="DS" vm="1">Imager Isocentric Rotation Direction</tag>
+<tag group="300B" element="xx2C" vr="DS" vm="1">Imager Orbital Angle</tag>
+<tag group="300B" element="xx2E" vr="CS" vm="1">Imaging Technique</tag>
+<tag group="300B" element="xx2F" vr="DS" vm="1">Imager Orbital Rotation Direction</tag>
+<tag group="300B" element="xx76" vr="CS" vm="1">Fraction Group Code</tag>
+<tag group="300B" element="xx77" vr="IS" vm="1">Referenced Treatment Beam Number</tag>
+<tag group="300B" element="xx78" vr="DS" vm="1">Fraction Dose to Dose Reference</tag>
+<tag group="300B" element="xxA1" vr="OB" vm="1">Checksum Encryption Code</tag>
+<tag group="300B" element="xxE5" vr="OB" vm="1">Configuration Baseline</tag>
 </dictionary>
 <dictionary creator="SIEMENS MEDCOM HEADER">
 <tag group="0029" element="xx08" vr="CS" vm="1">Med Com Header Type</tag>
@@ -4580,6 +4694,30 @@
 <tag group="0099" element="xx04" vr="US" vm="1-n">Unknown</tag>
 <tag group="0099" element="xx05" vr="LO" vm="1">Unknown</tag>
 </dictionary>
+<dictionary creator="TOMO_HA_01">
+<tag group="300D" element="xx10" vr="CS" vm="1">Tomo Structure Blocking</tag>
+<tag group="300D" element="xx12" vr="IS" vm="1">Tomo Overlap Precedence</tag>
+<tag group="300D" element="xx14" vr="DS" vm="1">Tomo Modulation Factor</tag>
+<tag group="300D" element="xx16" vr="IS" vm="1">Tomo Target Minimum Dose Penalty</tag>
+<tag group="300D" element="xx17" vr="IS" vm="1">Tomo Target Maximum Dose Penalty</tag>
+<tag group="300D" element="xx18" vr="IS" vm="1">Tomo Organ At Risk Maximum Dose Penalty</tag>
+<tag group="300D" element="xx19" vr="IS" vm="1">Tomo Organ At Risk Full Volume Dose Penalty</tag>
+<tag group="300D" element="xx1B" vr="CS" vm="1">Tomo Primary Prescription Type</tag>
+<tag group="300D" element="xx40" vr="DS" vm="1">Tomo Gantry Period</tag>
+<tag group="300D" element="xx50" vr="UI" vm="1">Tomo Machine UID</tag>
+<tag group="300D" element="xx60" vr="DS" vm="1">Tomo Treatment Pitch</tag>
+<tag group="300D" element="xx80" vr="DS" vm="1">Tomo Couch Speed</tag>
+<tag group="300D" element="xx90" vr="CS" vm="3">Tomo Performed Work Items</tag>
+<tag group="300D" element="xxA4" vr="CS" vm="1">Tomo Plan Geometry</tag>
+<tag group="300D" element="xxA7" vr="DS" vm="64">Tomo Projection Sinogram Data</tag>
+<tag group="300D" element="xxA9" vr="DS" vm="3">Tomo Reference Isocenter</tag>
+<tag group="300D" element="xxB0" vr="DS" vm="3">Tomo Registration Translations</tag>
+<tag group="300D" element="xxB1" vr="DS" vm="3">Tomo Registration Rotations</tag>
+<tag group="300D" element="xxB5" vr="DS" vm="1">Tomo Delivered Secondary Meterset</tag>
+<tag group="300D" element="xxC0" vr="SQ" vm="1">Tomo Plan IVDT Sequence</tag>
+<tag group="300D" element="xxC1" vr="DS" vm="1">Tomo IVDT HU Entry</tag>
+<tag group="300D" element="xxC2" vr="DS" vm="1">Tomo IVDT Density Entry</tag>
+</dictionary>
 <dictionary creator="TOSHIBA COMAPL HEADER">
 <tag group="0029" element="xx31" vr="LO" vm="1">Unknown</tag>
 <tag group="0029" element="xx32" vr="UL" vm="1">Unknown</tag>
@@ -4751,6 +4889,13 @@
 <tag group="300B" element="xx0E" vr="FL" vm="1">Nominal SOBP Width</tag>
 <tag group="300B" element="xx11" vr="FL" vm="1">Nominal SOBP Width Tolerance</tag>
 <tag group="300B" element="xx17" vr="FL" vm="1">Peak Range</tag>
+<tag group="300B" element="xx20" vr="DS" vm="2">Respiratory Phase Gating Duty Cycle</tag>
+<tag group="300B" element="xx90" vr="SH" vm="1">Line Spot Tune ID</tag>
+<tag group="300B" element="xx92" vr="IS" vm="1">Number of Line Scan Spot Positions</tag>
+<tag group="300B" element="xx94" vr="FL" vm="1-n">Line Scan Position Map</tag>
+<tag group="300B" element="xx96" vr="FL" vm="1-n">Line Scan Meterset Weights</tag>
+<tag group="300B" element="xx98" vr="FL" vm="2">Line Scanning Spot Size</tag>
+<tag group="300B" element="xx9A" vr="IS" vm="1">Number of Line Scan Spot Paintings</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3243">
 <tag group="3243" element="xx09" vr="LO" vm="1">Beam Secondary Name</tag>

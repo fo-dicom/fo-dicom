@@ -1,6 +1,7 @@
 ### 5.1.2 (TBD)
 * fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
 * FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
+* Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
 * Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
 * Optimize the common case of adding a single `DicomItem` to a `DicomDataset` by adding an overload `DicomDataset.Add(DicomItem item)` (#1604)
 * Immediately throw an exception if DICOM server synchronously fails to start (#1562)
