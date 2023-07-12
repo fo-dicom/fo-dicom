@@ -165,7 +165,9 @@ namespace FellowOakDicom.Imaging
             */
             if (grayscaleRenderOptions.ModalityLUTSequence != null
                 && dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClassUID) 
-                && sopClassUID.UID.IsOneOf(DicomUID.XRayAngiographicImageStorage.UID, DicomUID.XRayRadiofluoroscopicImageStorage.UID, DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED.UID))
+                && (sopClassUID == DicomUID.XRayAngiographicImageStorage
+                || sopClassUID == DicomUID.XRayRadiofluoroscopicImageStorage
+                || sopClassUID == DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED))
             {
                 grayscaleRenderOptions.ModalityLUTSequence = null;
             }
