@@ -343,8 +343,8 @@ namespace FellowOakDicom.Network.Client
                                 Port = Port,
                                 TlsInitiator = TlsInitiator,
                                 NoDelay = ClientOptions.TcpNoDelay,
-                                ReceiveBufferSize = ServiceOptions.TcpReceiveBufferSize,
-                                SendBufferSize = ServiceOptions.TcpSendBufferSize,
+                                ReceiveBufferSize = ClientOptions.TcpReceiveBufferSize,
+                                SendBufferSize = ClientOptions.TcpSendBufferSize,
                                 Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
                             },
                             RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers

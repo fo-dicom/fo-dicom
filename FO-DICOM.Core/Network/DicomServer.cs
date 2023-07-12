@@ -278,15 +278,14 @@ namespace FellowOakDicom.Network
             INetworkListener listener = null;
             try
             {
-                var receiveBufferSize = Options.TcpReceiveBufferSize;
-                var sendBufferSize = Options.TcpSendBufferSize;
-
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
-                var noDelay = _serverOptions.TcpNoDelay;
                 var maxClientsAllowed = _serverOptions.MaxClientsAllowed;
+                var noDelay = _serverOptions.TcpNoDelay;
+                var receiveBufferSize = _serverOptions.TcpReceiveBufferSize;
+                var sendBufferSize = _serverOptions.TcpSendBufferSize;
                 
                 while (!_cancellationToken.IsCancellationRequested)
                 {

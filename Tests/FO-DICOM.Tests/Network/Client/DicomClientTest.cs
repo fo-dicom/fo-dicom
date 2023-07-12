@@ -56,9 +56,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Helper functions
 
-        private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
+        private IDicomServer CreateServer<T>(int port, Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
         {
-            var server = DicomServerFactory.Create<T>(port);
+            var server = DicomServerFactory.Create<T>(port, configure: configure);
             server.Logger = _logger.IncludePrefix(nameof(IDicomServer));
             return server;
         }
@@ -1450,16 +1450,18 @@ namespace FellowOakDicom.Tests.Network.Client
              */
             var port = Ports.GetNext();
             var bufferSize = 4 * 1024 * 1024;
-            using var server = CreateServer<DicomCEchoProvider>(port);
-            server.Options.TcpReceiveBufferSize = bufferSize;
-            server.Options.TcpReceiveBufferSize = bufferSize;
+            using var server = CreateServer<DicomCEchoProvider>(port, o =>
+            {
+                o.TcpReceiveBufferSize = bufferSize;
+                o.TcpSendBufferSize = bufferSize;
+            });
 
             var counter = 0;
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-            client.ServiceOptions.TcpReceiveBufferSize = bufferSize;
-            client.ServiceOptions.TcpSendBufferSize = bufferSize;
+            client.ClientOptions.TcpReceiveBufferSize = bufferSize;
+            client.ClientOptions.TcpSendBufferSize = bufferSize;
             await client.AddRequestAsync(request).ConfigureAwait(false);
 
             await client.SendAsync().ConfigureAwait(false);
