@@ -77,24 +77,24 @@ namespace FellowOakDicom.Imaging.LUT
         {
             GetLUTDescriptor();
 
-            var LUTDataElement = _voiLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTData);
-            switch (LUTDataElement.ValueRepresentation.Code)
+            var lutDataElement = _voiLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTData);
+            switch (lutDataElement.ValueRepresentation.Code)
             {
                 case "OW":
                 {
-                    var LUTData = LUTDataElement as DicomOtherWord;
+                    var LUTData = lutDataElement as DicomOtherWord;
                     _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "US":
                 {
-                    var LUTData = LUTDataElement as DicomUnsignedShort;
+                    var LUTData = lutDataElement as DicomUnsignedShort;
                     _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "SS":
                 {
-                    var LUTData = LUTDataElement as DicomSignedShort;
+                    var LUTData = lutDataElement as DicomSignedShort;
                     _LUTDataArray = ConvertAll(ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
                     break;
                 }

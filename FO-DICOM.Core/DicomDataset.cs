@@ -783,7 +783,7 @@ namespace FellowOakDicom
             // gets all items from SharedfunctionalGroup 
             if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence))
             {
-                var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.First();
+                var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.Items[0] ?? throw new DicomDataException("unexpected empty SharedFunctionalGroupsSequence");
                 foreach(var sequence in sharedFunctionGroupItem.OfType<DicomSequence>())
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
@@ -792,7 +792,7 @@ namespace FellowOakDicom
                     }
                     else
                     {
-                        foreach(var item in sequence.First())
+                        foreach(var item in sequence.Items[0])
                         {
                             yield return item;
                         }
@@ -802,7 +802,7 @@ namespace FellowOakDicom
             if (this.TryGetSequence(DicomTag.PerFrameFunctionalGroupsSequence, out var perFrameFunctionalGroupsSequence)
                 && perFrameFunctionalGroupsSequence.Items.Count > frame)
             {
-                var frameFunctionGroupItem = perFrameFunctionalGroupsSequence.ElementAt(frame);
+                var frameFunctionGroupItem = perFrameFunctionalGroupsSequence.Items[frame];
                 foreach (var sequence in frameFunctionGroupItem.OfType<DicomSequence>())
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
@@ -811,7 +811,7 @@ namespace FellowOakDicom
                     }
                     else
                     {
-                        foreach (var item in sequence.First())
+                        foreach (var item in sequence.Items[0])
                         {
                             yield return item;
                         }
