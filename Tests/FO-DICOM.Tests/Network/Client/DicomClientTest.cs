@@ -1442,6 +1442,29 @@ namespace FellowOakDicom.Tests.Network.Client
         }
 
 
+        [Fact]
+        public async Task SendAsync_CustomTcpBufferSizes_Works()
+        {
+            /*
+             * This test simply verifies that setting a custom TCP buffer size does not crash
+             */
+            var port = Ports.GetNext();
+            var bufferSize = 4 * 1024 * 1024;
+            using var server = CreateServer<DicomCEchoProvider>(port);
+            server.Options.TcpReceiveBufferSize = bufferSize;
+            server.Options.TcpReceiveBufferSize = bufferSize;
+
+            var counter = 0;
+            var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+
+            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.ServiceOptions.TcpReceiveBufferSize = bufferSize;
+            client.ServiceOptions.TcpSendBufferSize = bufferSize;
+            await client.AddRequestAsync(request).ConfigureAwait(false);
+
+            await client.SendAsync().ConfigureAwait(false);
+            Assert.Equal(1, counter);
+        }
 
         #region Support classes
 
