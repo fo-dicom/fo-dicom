@@ -375,8 +375,8 @@ namespace FellowOakDicom.Network
                     // First, we wait until at least one service is running
                     // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
                     // It is also possible that the DICOM server is stopped while are waiting here
-                    var serviceIsRunningTask = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
-                    await Task.WhenAny(serviceIsRunningTask, _stopped.Task).ConfigureAwait(false);
+                    var aServiceHasStarted = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
+                    await Task.WhenAny(aServiceHasStarted, _stopped.Task).ConfigureAwait(false);
                     _cancellationToken.ThrowIfCancellationRequested();
 
                     // Then, we wait until at least one service completes
@@ -402,7 +402,7 @@ namespace FellowOakDicom.Network
                         }
 
                         var tasks = new List<Task>(numberOfDicomServices + 1);
-                        var anotherServiceHasStarted = serviceIsRunningTask;
+                        var anotherServiceHasStarted = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
                         tasks.Add(anotherServiceHasStarted);
                         tasks.AddRange(runningDicomServices.Select(s => s.Task));
                         var winner = await Task.WhenAny(tasks).ConfigureAwait(false);
