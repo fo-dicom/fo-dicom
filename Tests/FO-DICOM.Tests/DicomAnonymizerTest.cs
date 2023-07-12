@@ -10,7 +10,7 @@ using FellowOakDicom.IO.Buffer;
 namespace FellowOakDicom.Tests
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomAnonymizerTest
     {
         #region Unit tests

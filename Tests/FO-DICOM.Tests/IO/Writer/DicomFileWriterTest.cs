@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.IO.Writer
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomFileWriterTest
     {
         #region Fields

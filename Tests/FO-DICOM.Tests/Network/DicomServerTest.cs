@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network
 {
-    [Collection("Network"), Trait("Category", "Network"), TestCaseOrderer("FellowOakDicom.Tests.Helpers.PriorityOrderer", "fo-dicom.Tests")]
+    [Collection(TestCollections.Network), Trait(TestTraits.Category, TestCategories.Network), TestCaseOrderer("FellowOakDicom.Tests.Helpers.PriorityOrderer", "fo-dicom.Tests")]
     public class DicomServerTest
     {
         private readonly XUnitDicomLogger _logger;
@@ -92,24 +92,54 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void Create_TwiceOnSamePortWithDisposalInBetween_DoesNotThrow()
+        public async Task Create_TwiceOnSamePortWithDisposalInBetween_DoesNotThrow()
         {
             var port = Ports.GetNext();
 
-            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            Task dicomServerTask;
+            using (var dicomServer = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer1")))
             {
-                /* do nothing here */
+                dicomServerTask = dicomServer.Registration.Task;
+            }
+
+            // Wait for full shutdown with 1 minute timeout
+            var oneMinuteTimeout = Task.Delay(TimeSpan.FromMinutes(1));
+            if (await Task.WhenAny(dicomServerTask, oneMinuteTimeout).ConfigureAwait(false) == oneMinuteTimeout)
+            {
+                throw new InvalidOperationException("DICOM server still hasn't shut down after one minute");
             }
 
             var e = Record.Exception(
                 () =>
+                    {
+                        using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer2")))
+                        {
+                            Assert.NotNull(DicomServerRegistry.Get(port)?.DicomServer);
+                        }
+                    });
+            Assert.Null(e);
+        }
+
+        [Fact]
+        public void Create_TwiceOnSamePortWithoutDisposalInBetween_Throws()
+        {
+            var port = Ports.GetNext();
+
+            Exception e;
+            using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            {
+                e = Record.Exception(
+                    () =>
                     {
                         using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
                         {
                             Assert.NotNull(DicomServerRegistry.Get(port)?.DicomServer);
                         }
                     });
-            Assert.Null(e);
+            }
+
+            Assert.NotNull(e);
+            Assert.IsType<DicomNetworkException>(e);
         }
 
         [Fact]

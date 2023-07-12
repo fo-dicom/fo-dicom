@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace FellowOakDicom.Tests.Network
 {
 
-    [Collection("Network")]
+    [Collection(TestCollections.Network)]
     public class DicomNEventReportResponseTest
     {
         #region Unit tests

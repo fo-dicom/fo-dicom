@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging.LUT
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class ModalitySequenceLUTTest
     {
         #region Unit tests
