@@ -342,7 +342,7 @@ namespace FellowOakDicom.Network.Client
                                 Host = Host,
                                 Port = Port,
                                 TlsInitiator = TlsInitiator,
-                                NoDelay = ServiceOptions.TcpNoDelay,
+                                NoDelay = ClientOptions.TcpNoDelay,
                                 Timeout = TimeSpan.FromMilliseconds(ClientOptions.AssociationRequestTimeoutInMs)
                             },
                             RequestHandlers = new AdvancedDicomClientConnectionRequestHandlers

@@ -33,6 +33,11 @@ namespace FellowOakDicom.Network.Client
         /// Use <see cref="AssociationRequestTimeoutInMs"/> to configure the timeout 
         /// </summary>
         public int MaximumNumberOfConsecutiveTimedOutAssociationRequests { get; set; } = 3;
+        
+        /// <summary>
+        /// Gets or sets whether to enable (true) or disable (false) TCP Nagle algorithm on outgoing TCP connections
+        /// </summary>
+        public bool TcpNoDelay { get; set; } = true;
 
         public DicomClientOptions Clone() =>
             new DicomClientOptions
@@ -41,7 +46,8 @@ namespace FellowOakDicom.Network.Client
                 AssociationReleaseTimeoutInMs = AssociationReleaseTimeoutInMs,
                 AssociationLingerTimeoutInMs = AssociationLingerTimeoutInMs,
                 MaximumNumberOfRequestsPerAssociation = MaximumNumberOfRequestsPerAssociation,
-                MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests
+                MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests,
+                TcpNoDelay = TcpNoDelay
             };
     }
 }

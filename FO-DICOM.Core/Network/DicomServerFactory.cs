@@ -29,7 +29,7 @@ namespace FellowOakDicom.Network
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider;
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
         /// Creates a DICOM server object.
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Network
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider;
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
         /// Creates a DICOM server object.
@@ -72,7 +72,7 @@ namespace FellowOakDicom.Network
             ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>;
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>;
     }
 
     public static class DicomServerFactory
@@ -94,7 +94,7 @@ namespace FellowOakDicom.Network
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T>(port, tlsAcceptor, fallbackEncoding, logger, userState, configure);
 
@@ -117,7 +117,7 @@ namespace FellowOakDicom.Network
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, tlsAcceptor, fallbackEncoding, logger, userState, configure);
 
@@ -141,7 +141,7 @@ namespace FellowOakDicom.Network
             ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T, TServer>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
     }
@@ -151,15 +151,18 @@ namespace FellowOakDicom.Network
         private readonly IServiceScopeFactory  _serviceScopeFactory;
         private readonly IDicomServerRegistry _dicomServerRegistry;
         private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
+        private readonly IOptions<DicomServerOptions> _defaultServerOptions;
 
         public DefaultDicomServerFactory(
             IServiceScopeFactory  serviceScopeFactory,
             IDicomServerRegistry dicomServerRegistry,
-            IOptions<DicomServiceOptions> defaultServiceOptions)
+            IOptions<DicomServiceOptions> defaultServiceOptions, 
+            IOptions<DicomServerOptions> defaultServerOptions)
         {
             _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             _dicomServerRegistry = dicomServerRegistry ?? throw new ArgumentNullException(nameof(dicomServerRegistry));
             _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
+            _defaultServerOptions = defaultServerOptions ?? throw new ArgumentNullException(nameof(defaultServerOptions));
         }
 
         public IDicomServer Create<T>(
@@ -168,7 +171,7 @@ namespace FellowOakDicom.Network
             Encoding fallbackEncoding = null, 
             ILogger logger = null,
             object userState = null,
-            Action<DicomServiceOptions> configure = null)
+            Action<DicomServerOptions> configure = null)
             where T : DicomService, IDicomServiceProvider 
             => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
 
@@ -179,7 +182,7 @@ namespace FellowOakDicom.Network
             Encoding fallbackEncoding = null,
             ILogger logger = null, 
             object userState = null,
-            Action<DicomServiceOptions> configure = null) where T : DicomService, IDicomServiceProvider
+            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
             => Create<T, DicomServer<T>>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
 
         public virtual IDicomServer Create<TServiceProvider, TServer>(
@@ -189,7 +192,7 @@ namespace FellowOakDicom.Network
             ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
-            Action<DicomServiceOptions> configure = null) where TServiceProvider : DicomService, IDicomServiceProvider where TServer : IDicomServer<TServiceProvider>
+            Action<DicomServerOptions> configure = null) where TServiceProvider : DicomService, IDicomServiceProvider where TServer : IDicomServer<TServiceProvider>
         {
             var dicomServerScope = _serviceScopeFactory.CreateScope();
             
@@ -208,13 +211,14 @@ namespace FellowOakDicom.Network
             server.ServiceScope = dicomServerScope;
 
             var serviceOptions = _defaultServiceOptions.Value.Clone();
+            var serverOptions = _defaultServerOptions.Value.Clone();
 
             // if not explicitly set, try to get a tls handler from DI container
             tlsAcceptor ??= dicomServerScope.ServiceProvider.GetService<ITlsAcceptor>();
 
-            configure?.Invoke(serviceOptions);
+            configure?.Invoke(serverOptions);
 
-            var runner = server.StartAsync(ipAddress, port, tlsAcceptor, fallbackEncoding, serviceOptions, userState);
+            var runner = server.StartAsync(ipAddress, port, tlsAcceptor, fallbackEncoding, serviceOptions, userState, serverOptions);
 
             if (server.Exception != null)
             {

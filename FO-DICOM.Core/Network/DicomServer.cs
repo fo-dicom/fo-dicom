@@ -67,6 +67,7 @@ namespace FellowOakDicom.Network
 
         private SemaphoreSlim _maxClientsSemaphore;
         
+        private DicomServerOptions _serverOptions;
 
         #endregion
 
@@ -174,7 +175,7 @@ namespace FellowOakDicom.Network
 
         /// <inheritdoc />
         public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
-            DicomServiceOptions options, object userState)
+            DicomServiceOptions serviceOptions, object userState, DicomServerOptions serverOptions)
         {
             if (_wasStarted)
             {
@@ -185,13 +186,14 @@ namespace FellowOakDicom.Network
             IPAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress;
             Port = port;
 
-            Options = options;
+            _serverOptions = serverOptions;
+            Options = serviceOptions;
 
             _userState = userState;
             _tlsAcceptor = tlsAcceptor;
             _fallbackEncoding = fallbackEncoding;
-            _maxClientsSemaphore = options.MaxClientsAllowed > 0
-                ? new SemaphoreSlim(options.MaxClientsAllowed, options.MaxClientsAllowed)
+            _maxClientsSemaphore = serverOptions.MaxClientsAllowed > 0
+                ? new SemaphoreSlim(serverOptions.MaxClientsAllowed, serverOptions.MaxClientsAllowed)
                 : null;
 
             return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
@@ -281,8 +283,8 @@ namespace FellowOakDicom.Network
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
-                var noDelay = Options.TcpNoDelay;
-                var maxClientsAllowed = Options.MaxClientsAllowed;
+                var noDelay = _serverOptions.TcpNoDelay;
+                var maxClientsAllowed = _serverOptions.MaxClientsAllowed;
                 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
@@ -363,7 +365,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         private async Task RemoveUnusedServicesAsync()
         {
-            int maxClientsAllowed = Options.MaxClientsAllowed;
+            int maxClientsAllowed = _serverOptions.MaxClientsAllowed;
             while (!_cancellationToken.IsCancellationRequested)
             {
                 try
