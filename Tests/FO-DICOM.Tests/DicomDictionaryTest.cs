@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 namespace FellowOakDicom.Tests
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomDictionaryTest
     {
         #region Fields

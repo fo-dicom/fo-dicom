@@ -216,6 +216,12 @@ namespace FellowOakDicom.Network
 
             var runner = server.StartAsync(ipAddress, port, tlsAcceptor, fallbackEncoding, serviceOptions, userState);
 
+            if (server.Exception != null)
+            {
+                server.Dispose();
+                throw new DicomNetworkException("Failed to start DICOM server", server.Exception);
+            }
+
             var registration = _dicomServerRegistry.Register(server, runner);
 
             server.Registration = registration;

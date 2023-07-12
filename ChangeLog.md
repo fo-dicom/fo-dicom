@@ -1,5 +1,7 @@
 ### 5.1.2 (TBD)
 * Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
+* Immediately throw an exception if DICOM server synchronously fails to start (#1562)
+* Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
 
