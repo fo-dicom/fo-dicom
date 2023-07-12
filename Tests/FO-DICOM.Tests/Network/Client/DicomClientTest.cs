@@ -1445,6 +1445,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task SendAsync_CustomTcpBufferSizes_Works()
         {
+            /*
+             * This test simply verifies that setting a custom TCP buffer size does not crash
+             */
             var port = Ports.GetNext();
             var bufferSize = 4 * 1024 * 1024;
             using var server = CreateServer<DicomCEchoProvider>(port);
