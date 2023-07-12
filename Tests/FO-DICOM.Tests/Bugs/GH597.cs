@@ -9,7 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Bugs
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class GH597
     {
         [Fact]

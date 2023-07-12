@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.StructuredReport
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomContentItemTest
     {
         #region Unit tests

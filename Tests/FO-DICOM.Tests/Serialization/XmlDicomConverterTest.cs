@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Serialization
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class XmlDicomConverterTest
     {
         [Fact]

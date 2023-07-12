@@ -9,7 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.IO
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DesktopFileReferenceTest
     {
         #region Unit tests
