@@ -40,6 +40,11 @@ namespace FellowOakDicom.Network
             SingleReader = true
         });
 
+        /// <summary>
+        /// A task that will complete when the server is stopped
+        /// </summary>
+        private readonly TaskCompletionSource<bool> _stopped;
+        
         private string _ipAddress;
 
         private int _port;
@@ -61,6 +66,7 @@ namespace FellowOakDicom.Network
         private bool _disposed;
 
         private SemaphoreSlim _maxClientsSemaphore;
+        
 
         #endregion
 
@@ -76,6 +82,8 @@ namespace FellowOakDicom.Network
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;
+            _stopped = TaskCompletionSourceFactory.Create<bool>();
+            
             _services = new List<RunningDicomService>();
 
             IsListening = false;
@@ -195,6 +203,7 @@ namespace FellowOakDicom.Network
             if (!_cancellationSource.IsCancellationRequested)
             {
                 _cancellationSource.Cancel();
+                _stopped.TrySetResult(true);
             }
         }
 
@@ -363,7 +372,10 @@ namespace FellowOakDicom.Network
                     
                     // First, we wait until at least one service is running
                     // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
-                    var _ = await _servicesChannel.Reader.ReadAsync(_cancellationToken).ConfigureAwait(false);
+                    // It is also possible that the DICOM server is stopped while are waiting here
+                    var serviceIsRunningTask = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
+                    await Task.WhenAny(serviceIsRunningTask, _stopped.Task).ConfigureAwait(false);
+                    _cancellationToken.ThrowIfCancellationRequested();
 
                     // Then, we wait until at least one service completes
                     // We must take into account that more services can start while we wait here
@@ -388,7 +400,7 @@ namespace FellowOakDicom.Network
                         }
 
                         var tasks = new List<Task>(numberOfDicomServices + 1);
-                        var anotherServiceHasStarted = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
+                        var anotherServiceHasStarted = serviceIsRunningTask;
                         tasks.Add(anotherServiceHasStarted);
                         tasks.AddRange(runningDicomServices.Select(s => s.Task));
                         var winner = await Task.WhenAny(tasks).ConfigureAwait(false);
