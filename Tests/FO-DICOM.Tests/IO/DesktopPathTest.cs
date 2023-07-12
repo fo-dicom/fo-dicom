@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.IO
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DesktopPathTest
     {
         #region Unit tests

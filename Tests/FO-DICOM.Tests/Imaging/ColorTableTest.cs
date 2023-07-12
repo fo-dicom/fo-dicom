@@ -9,7 +9,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.Imaging
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class ColorTableTest
     {
         #region Unit tests

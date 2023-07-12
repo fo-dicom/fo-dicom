@@ -12,7 +12,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.IO.Buffer
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class TempFileBufferTest
     {
         #region Unit tests
