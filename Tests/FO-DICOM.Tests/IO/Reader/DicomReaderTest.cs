@@ -14,7 +14,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.IO.Reader
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomReaderTest
     {
         #region Unit tests

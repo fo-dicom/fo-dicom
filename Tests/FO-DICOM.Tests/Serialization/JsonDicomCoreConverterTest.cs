@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests.Serialization
     /// <summary>
     /// The json dicom converter test.
     /// </summary>
-    [Collection("WithHttpClient")]
+    [Collection(TestCollections.WithHttpClient)]
     public class JsonDicomCoreConverterTest
     {
         private readonly ITestOutputHelper _output;

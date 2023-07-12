@@ -11,7 +11,7 @@ namespace FellowOakDicom.Tests
     ///This is a test class for DicomPersonNameTest and is intended
     ///to contain all DicomPersonNameTest Unit Tests
     ///</summary>
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomPersonNameTest
     {
         /// <summary>

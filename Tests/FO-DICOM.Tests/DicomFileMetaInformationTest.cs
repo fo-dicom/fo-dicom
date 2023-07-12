@@ -11,7 +11,7 @@ using Xunit;
 namespace FellowOakDicom.Tests
 {
 
-    [Collection("Validation")]
+    [Collection(TestCollections.Validation)]
     public class DicomFileMetaInformationTest
     {
         #region Unit tests
