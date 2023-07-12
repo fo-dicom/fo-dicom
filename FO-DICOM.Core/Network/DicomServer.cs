@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network.Tls;
+using FellowOakDicom.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -359,7 +360,11 @@ namespace FellowOakDicom.Network
                 {
                     _logger.LogDebug("Waiting for incoming client connections");
                     
-                    await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
+                    // Wait until clients are connected or until DICOM server is disposed
+                    var dicomServerIsDisposed = TaskCompletionSourceFactory.Create<bool>();
+                    using var _ = _cancellationToken.Register(() => dicomServerIsDisposed.SetResult(true));
+                    await Task.WhenAny(_hasServicesFlag.WaitAsync(), dicomServerIsDisposed.Task).ConfigureAwait(false);
+                    _cancellationToken.ThrowIfCancellationRequested();
                     
                     List<Task> runningDicomServiceTasks;
                     lock (_services)
