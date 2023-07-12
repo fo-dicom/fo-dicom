@@ -278,6 +278,8 @@ namespace FellowOakDicom.Network
             INetworkListener listener = null;
             try
             {
+                var receiveBufferSize = Options.TcpReceiveBufferSize;
+                var sendBufferSize = Options.TcpSendBufferSize;
 
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
@@ -311,7 +313,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_tlsAcceptor, noDelay, Logger, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_tlsAcceptor, noDelay, receiveBufferSize, sendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)

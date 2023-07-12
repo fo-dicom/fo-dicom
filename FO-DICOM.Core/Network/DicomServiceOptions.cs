@@ -31,6 +31,20 @@ namespace FellowOakDicom.Network
         /// <summary>Gets or sets maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxDataBuffer { get; set; } = 1 * 1024 * 1024; //1MB
 
+        /// <summary>
+        /// Gets or sets the size of the receive buffer of the underlying TCP connection
+        /// If not configured, the default value of 8192 bytes will be used
+        /// </summary>
+        /// <seealso cref="System.Net.Sockets.TcpClient.ReceiveBufferSize"/>
+        public int? TcpReceiveBufferSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the send buffer of the underlying TCP connection
+        /// If not configured, the default value of 8192 bytes will be used
+        /// </summary>
+        /// <seealso cref="System.Net.Sockets.TcpClient.SendBufferSize"/>
+        public int? TcpSendBufferSize { get; set; }
+
         /// <summary>Gets or sets the maximum number of PDVs per PDU, or unlimited if set to zero.
         /// Setting this to 1 can work around common bugs in other implementations.</summary>
         public int MaxPDVsPerPDU { get; set; } = 0;
@@ -64,7 +78,9 @@ namespace FellowOakDicom.Network
                 RequestTimeout = RequestTimeout,
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
-                MaxPDVsPerPDU = MaxPDVsPerPDU
+                MaxPDVsPerPDU = MaxPDVsPerPDU,
+                TcpReceiveBufferSize = TcpReceiveBufferSize,
+                TcpSendBufferSize = TcpSendBufferSize
             };
     }
 }

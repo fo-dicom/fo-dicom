@@ -8,6 +8,7 @@
 * Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
+* Add the possibility to configure TCP buffer sizes (#1564)
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
