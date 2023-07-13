@@ -34,25 +34,6 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         public int MaximumNumberOfConsecutiveTimedOutAssociationRequests { get; set; } = 3;
         
-        /// <summary>
-        /// Gets or sets whether to enable (true) or disable (false) TCP Nagle algorithm on the underlying outgoing TCP connection
-        /// </summary>
-        public bool TcpNoDelay { get; set; } = true;
-        
-        /// <summary>
-        /// Gets or sets the size of the receive buffer of the underlying outgoing TCP connection
-        /// If not configured, the default value of 8192 bytes will be used
-        /// </summary>
-        /// <seealso cref="System.Net.Sockets.TcpClient.ReceiveBufferSize"/>
-        public int? TcpReceiveBufferSize { get; set; }
-
-        /// <summary>
-        /// Gets or sets the size of the send buffer of the underlying outgoing TCP connection
-        /// If not configured, the default value of 8192 bytes will be used
-        /// </summary>
-        /// <seealso cref="System.Net.Sockets.TcpClient.SendBufferSize"/>
-        public int? TcpSendBufferSize { get; set; }
-
         public DicomClientOptions Clone() =>
             new DicomClientOptions
             {
@@ -60,10 +41,7 @@ namespace FellowOakDicom.Network.Client
                 AssociationReleaseTimeoutInMs = AssociationReleaseTimeoutInMs,
                 AssociationLingerTimeoutInMs = AssociationLingerTimeoutInMs,
                 MaximumNumberOfRequestsPerAssociation = MaximumNumberOfRequestsPerAssociation,
-                MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests,
-                TcpNoDelay = TcpNoDelay,
-                TcpSendBufferSize = TcpSendBufferSize,
-                TcpReceiveBufferSize = TcpReceiveBufferSize
+                MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests
             };
     }
 }

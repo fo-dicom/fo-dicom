@@ -1450,18 +1450,16 @@ namespace FellowOakDicom.Tests.Network.Client
              */
             var port = Ports.GetNext();
             var bufferSize = 4 * 1024 * 1024;
-            using var server = CreateServer<DicomCEchoProvider>(port, o =>
-            {
-                o.TcpReceiveBufferSize = bufferSize;
-                o.TcpSendBufferSize = bufferSize;
-            });
+            using var server = CreateServer<DicomCEchoProvider>(port);
+            server.Options.TcpReceiveBufferSize = bufferSize;
+            server.Options.TcpSendBufferSize = bufferSize;
 
             var counter = 0;
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-            client.ClientOptions.TcpReceiveBufferSize = bufferSize;
-            client.ClientOptions.TcpSendBufferSize = bufferSize;
+            client.ServiceOptions.TcpReceiveBufferSize = bufferSize;
+            client.ServiceOptions.TcpSendBufferSize = bufferSize;
             await client.AddRequestAsync(request).ConfigureAwait(false);
 
             await client.SendAsync().ConfigureAwait(false);

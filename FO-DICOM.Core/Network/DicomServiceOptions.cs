@@ -30,6 +30,11 @@ namespace FellowOakDicom.Network
 
         /// <summary>Gets or sets maximum buffer length for data PDVs when generating P-Data-TF PDUs.</summary>
         public uint MaxDataBuffer { get; set; } = 1 * 1024 * 1024; //1MB
+        
+        /// <summary>
+        /// Gets or sets whether to enable (true) or disable (false) TCP Nagle algorithm on incoming TCP connections
+        /// </summary>
+        public bool TcpNoDelay { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the size of the receive buffer of the underlying TCP connection
@@ -79,6 +84,7 @@ namespace FellowOakDicom.Network
                 IgnoreUnsupportedTransferSyntaxChange = IgnoreUnsupportedTransferSyntaxChange,
                 MaxPDULength = MaxPDULength,
                 MaxPDVsPerPDU = MaxPDVsPerPDU,
+                TcpNoDelay = TcpNoDelay,
                 TcpReceiveBufferSize = TcpReceiveBufferSize,
                 TcpSendBufferSize = TcpSendBufferSize
             };

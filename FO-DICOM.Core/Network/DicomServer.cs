@@ -283,10 +283,7 @@ namespace FellowOakDicom.Network
                 IsListening = true;
 
                 var maxClientsAllowed = _serverOptions.MaxClientsAllowed;
-                var noDelay = _serverOptions.TcpNoDelay;
-                var receiveBufferSize = _serverOptions.TcpReceiveBufferSize;
-                var sendBufferSize = _serverOptions.TcpSendBufferSize;
-                
+
                 while (!_cancellationToken.IsCancellationRequested)
                 {
                     if (maxClientsAllowed > 0)
@@ -312,7 +309,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_tlsAcceptor, noDelay, receiveBufferSize, sendBufferSize, Logger, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_tlsAcceptor, Options.TcpNoDelay, Options.TcpReceiveBufferSize, Options.TcpSendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)
