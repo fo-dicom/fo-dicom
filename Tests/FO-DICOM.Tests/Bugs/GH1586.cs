@@ -6,18 +6,32 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
-    [Collection("WithTranscoder")]
+    [Collection("")]
     public class GH1586
     {
         [Fact]
-        public async Task RenderingPixelDataWhereLastFragmentIs0Bytes()
+        public void RenderingPixelDataWhereEachFragmentIsAFrameAndLastFragmentIs0Bytes_ShouldWork()
         {
             // Arrange
-            var dicomFile = await DicomFile.OpenAsync(@"./Test Data/multiframe.dcm");
+            var dicomFile = new DicomFile();
+            var metaInfo = dicomFile.FileMetaInfo;
             var dataset = dicomFile.Dataset;
-            var pixelData = dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData);
+
+            metaInfo.TransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
+            dataset.AddOrUpdate(DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID());
+            dataset.AddOrUpdate(DicomTag.Rows, (ushort) 2);
+            dataset.AddOrUpdate(DicomTag.Columns, (ushort) 2);
+            dataset.AddOrUpdate(DicomTag.BitsAllocated, (ushort) 8);
+            dataset.AddOrUpdate(DicomTag.HighBit, (ushort) 7);
+            dataset.AddOrUpdate(DicomTag.BitsStored, (ushort) 8);
+            dataset.AddOrUpdate(DicomTag.PixelRepresentation, (ushort) 0);
+            dataset.AddOrUpdate(DicomTag.PhotometricInterpretation, PhotometricInterpretation.Monochrome2.Value);
+            dataset.AddOrUpdate(DicomTag.SamplesPerPixel, (ushort) 1);
+
+            var pixelData = new DicomOtherByteFragment(DicomTag.PixelData);
+            pixelData.Add(new MemoryByteBuffer(new byte[] { 255,0,255,0 }));
+            pixelData.Add(new MemoryByteBuffer(new byte[] { 0,255,0,255 }));
             pixelData.Add(EmptyBuffer.Value);
-            pixelData.OffsetTable.Clear();
             dataset.AddOrUpdate(pixelData);
 
             var dicomImage = new DicomImage(dataset);
