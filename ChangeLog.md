@@ -1,9 +1,14 @@
 ### 5.1.2 (TBD)
 * **Breaking change**: Configuration of `MaxClientsAllowed` must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
 * **Breaking change**: Configuration of `TcpNoDelay` of a server must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
-* **Breaking change**: n Configuration of `TcpNoDelay` of a client must now be done via `DicomClient.ClientOptions` instead of via `DicomClient.ServiceOptions`
+* **Breaking change**: Configuration of `TcpNoDelay` of a client must now be done via `DicomClient.ClientOptions` instead of via `DicomClient.ServiceOptions`
 * **Breaking change**: `IServiceCollection.AddDicomServer(Action<DicomServiceOptions> configure)` was changed to `IServiceCollection.AddDicomServer(Action<DicomServerOptions> configure)`  
+* fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
+* FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
+* Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
 * Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
+* Extension methods `DicomDataset.WriteToLog` and `DicomFile.WriteToLog` now also accept a `Microsoft.Extensions.Logging.ILogger` 
+* Optimize the common case of adding a single `DicomItem` to a `DicomDataset` by adding an overload `DicomDataset.Add(DicomItem item)` (#1604)
 * Immediately throw an exception if DICOM server synchronously fails to start (#1562)
 * Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 * Add the possibility to configure TCP buffer sizes (#1564)
