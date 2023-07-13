@@ -455,8 +455,11 @@ namespace FellowOakDicom.Tests
             }
         }
 
-        [Fact]
-        public async Task SavingAndOpeningAVeryLargeDicomFile_ShouldWork()
+        [Theory]
+        [InlineData(FileReadOption.ReadLargeOnDemand)]
+        [InlineData(FileReadOption.ReadAll)]
+        [InlineData(FileReadOption.SkipLargeTags)]
+        public async Task SavingAndOpeningAVeryLargeDicomFile_ShouldWork(FileReadOption readOption)
         {
             var tempFileName = Path.GetTempFileName();
             var disposables = new List<IDisposable>();
@@ -485,17 +488,21 @@ namespace FellowOakDicom.Tests
                 // Act
                 await originalDicomFile.SaveAsync(tempFileName);
 
-                var openedDicomFileFromFileName = await DicomFile.OpenAsync(tempFileName, FileReadOption.ReadAll);
+                var openedDicomFileFromFileName = await DicomFile.OpenAsync(tempFileName, readOption);
                 using var fileStream = File.OpenRead(tempFileName);
-                var openedDicomFileFromStream = await DicomFile.OpenAsync(fileStream, FileReadOption.ReadAll);
+                var openedDicomFileFromStream = await DicomFile.OpenAsync(fileStream, readOption);
 
                 // Assert
-                foreach (var openedDicomFile in new[] { openedDicomFileFromFileName, openedDicomFileFromStream })
+                if (readOption != FileReadOption.SkipLargeTags)
                 {
-                    var openedPixelData = openedDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData);
-                    Assert.Equal(numberOfFrames, openedPixelData.Fragments.Count);
-                    Assert.Equal(frameLength, openedPixelData.Fragments[0].Size);
-                    Assert.Equal(frameLength, openedPixelData.Fragments[numberOfFrames - 1].Size);
+                    foreach (var openedDicomFile in new[] { openedDicomFileFromFileName, openedDicomFileFromStream })
+                    {
+                        var openedPixelData =
+                            openedDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData);
+                        Assert.Equal(numberOfFrames, openedPixelData.Fragments.Count);
+                        Assert.Equal(frameLength, openedPixelData.Fragments[0].Size);
+                        Assert.Equal(frameLength, openedPixelData.Fragments[numberOfFrames - 1].Size);
+                    }
                 }
             }
             finally
