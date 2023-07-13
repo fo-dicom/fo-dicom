@@ -10,6 +10,8 @@
 * Immediately throw an exception if DICOM server synchronously fails to start (#1562)
 * Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 * Add the possibility to configure TCP buffer sizes (#1564)
+* Fix incorrect values returned from `DicomEncoding.GetCharset()` (#1624)
+* Tolerate `Specific Character Set` values misspelled as "ISO-IR ###" additionally to "ISO IR ###"
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
 
@@ -75,6 +77,7 @@
 * Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
 * Change: DicomAnonymizer private fields and methods changed to protected so they can be used in subclasses, made instance methods virtual so they can be overridden in subclasses
 * Fix VR's SV and UV VR Length field (#1386)
+* Add support for rendering multiframe DICOM files where last fragment is 0 bytes (#1586) 
 
 #### 5.0.2 (2022-01-11)
 * Update to DICOM Standard 2021e
