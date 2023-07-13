@@ -11,6 +11,11 @@ namespace FellowOakDicom.IO.Buffer
     public sealed class MemoryByteBuffer : IByteBuffer
     {
         /// <summary>
+        /// This is the maximum number of bytes C# allows to store in a byte array (note that it is slightly lower than int.MaxValue)
+        /// </summary>
+        public const int MaxArrayLength = 2_147_483_591;
+        
+        /// <summary>
         /// Creates a new MemoryByteBuffer based on a byte-array. This class takes over ownership of the array, so only pass an array that will not be used/manipulated by other classes, or pass a new instance of byte array
         /// </summary>
         /// <param name="data"></param>
