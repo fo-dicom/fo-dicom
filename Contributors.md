@@ -90,3 +90,5 @@
 * [Tars De Jaeger](https://github.com/tarsdejaeger)
 * [Ryan Rozario](https://github.com/ryan-rozario)
 * [celeron533](https://github.com/celeron533)
+* [Pantelis Georgiadis](https://github.com/PantelisGeorgiadis)
+* [Tim Cooke](https://github.com/timothylcooke)

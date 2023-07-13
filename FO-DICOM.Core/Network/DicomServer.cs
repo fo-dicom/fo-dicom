@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network.Tls;
+using FellowOakDicom.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -39,7 +41,7 @@ namespace FellowOakDicom.Network
 
         private object _userState;
 
-        private string _certificateName;
+        private ITlsAcceptor _tlsAcceptor;
 
         private Encoding _fallbackEncoding;
 
@@ -178,7 +180,7 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, string certificateName, Encoding fallbackEncoding,
+        public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
             DicomServiceOptions options, object userState)
         {
             if (_wasStarted)
@@ -193,7 +195,7 @@ namespace FellowOakDicom.Network
             Options = options;
 
             _userState = userState;
-            _certificateName = certificateName;
+            _tlsAcceptor = tlsAcceptor;
             _fallbackEncoding = fallbackEncoding;
 
             return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
@@ -272,6 +274,8 @@ namespace FellowOakDicom.Network
             try
             {
                 var noDelay = Options.TcpNoDelay;
+                var receiveBufferSize = Options.TcpReceiveBufferSize;
+                var sendBufferSize = Options.TcpSendBufferSize;
 
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
@@ -299,7 +303,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_certificateName, noDelay, Logger, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_tlsAcceptor, noDelay, receiveBufferSize, sendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)
@@ -358,7 +362,11 @@ namespace FellowOakDicom.Network
                 {
                     _logger.LogDebug("Waiting for incoming client connections");
                     
-                    await _hasServicesFlag.WaitAsync().ConfigureAwait(false);
+                    // Wait until clients are connected or until DICOM server is disposed
+                    var dicomServerIsDisposed = TaskCompletionSourceFactory.Create<bool>();
+                    using var _ = _cancellationToken.Register(() => dicomServerIsDisposed.SetResult(true));
+                    await Task.WhenAny(_hasServicesFlag.WaitAsync(), dicomServerIsDisposed.Task).ConfigureAwait(false);
+                    _cancellationToken.ThrowIfCancellationRequested();
                     
                     List<Task> runningDicomServiceTasks;
                     lock (_services)

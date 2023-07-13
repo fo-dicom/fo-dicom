@@ -1,14 +1,11 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network.Tls;
 using System;
 using System.IO;
 using System.Net;
-using System.Net.Security;
 using System.Net.Sockets;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
 {
@@ -19,8 +16,6 @@ namespace FellowOakDicom.Network
     public sealed class DesktopNetworkStream : INetworkStream
     {
         #region FIELDS
-
-        private static readonly TimeSpan _sslHandshakeTimeout = TimeSpan.FromMinutes(1);
 
         private bool _disposed = false;
 
@@ -46,49 +41,35 @@ namespace FellowOakDicom.Network
             RemoteHost = options.Host;
             RemotePort = options.Port;
 
-            _tcpClient = new TcpClient { NoDelay = options.NoDelay };
+            _tcpClient = new TcpClient
+            {
+                NoDelay = options.NoDelay
+            };
+            if (options.ReceiveBufferSize.HasValue)
+            {
+                _tcpClient.ReceiveBufferSize = options.ReceiveBufferSize.Value;
+            }
+            if (options.SendBufferSize.HasValue)
+            {
+                _tcpClient.SendBufferSize = options.SendBufferSize.Value;
+            }
             _tcpClient.ConnectAsync(options.Host, options.Port).Wait();
 
             Stream stream = _tcpClient.GetStream();
-            if (options.UseTls)
+            if (options.TlsInitiator != null)
             {
-                var ssl = new SslStream(
-                    stream,
-                    false,
-
-                    (sender, certificate, chain, errors) => errors == SslPolicyErrors.None || options.IgnoreSslPolicyErrors);
-                ssl.ReadTimeout = (int) options.Timeout.TotalMilliseconds;
-                ssl.WriteTimeout = (int) options.Timeout.TotalMilliseconds;
-
-                var authenticationSucceeded = Task.Run(async () => await ssl.AuthenticateAsClientAsync(options.Host).ConfigureAwait(false)).Wait(_sslHandshakeTimeout);
-
-                if (!authenticationSucceeded)
-                {
-                    throw new DicomNetworkException($"SSL client authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
-                }
-
-                stream = ssl;
+                stream = options.TlsInitiator.InitiateTls(stream, RemoteHost, RemotePort);
+            }
+            if (options.Timeout.TotalMilliseconds > 0)
+            {
+                stream.ReadTimeout = (int)options.Timeout.TotalMilliseconds;
+                stream.WriteTimeout = (int)options.Timeout.TotalMilliseconds;
             }
 
             LocalHost = ((IPEndPoint)_tcpClient.Client.LocalEndPoint).Address.ToString();
             LocalPort = ((IPEndPoint)_tcpClient.Client.LocalEndPoint).Port;
 
             _networkStream = stream;
-        }
-
-        /// <summary>
-        /// Initializes a client instance of <see cref="DesktopNetworkStream"/>.
-        /// </summary>
-        /// <param name="host">Network host.</param>
-        /// <param name="port">Network port.</param>
-        /// <param name="useTls">Use TLS layer?</param>
-        /// <param name="noDelay">No delay?</param>
-        /// <param name="ignoreSslPolicyErrors">Ignore SSL policy errors?</param>
-        /// <param name="millisecondsTimeout">Timeout in milliseconds</param>
-        internal DesktopNetworkStream(string host, int port, bool useTls, bool noDelay, bool ignoreSslPolicyErrors, int millisecondsTimeout)
-            : this(new NetworkStreamCreationOptions { Host = host, Port = port, UseTls = useTls, NoDelay = noDelay, IgnoreSslPolicyErrors = ignoreSslPolicyErrors, Timeout = TimeSpan.FromMilliseconds(millisecondsTimeout) })
-        {
-            
         }
 
         /// <summary>
@@ -105,7 +86,7 @@ namespace FellowOakDicom.Network
         ///
         /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
         /// </remarks>
-        internal DesktopNetworkStream(TcpClient tcpClient, X509Certificate certificate, bool ownsTcpClient = false)
+        internal DesktopNetworkStream(TcpClient tcpClient, ITlsAcceptor tlsAcceptor, bool ownsTcpClient = false)
         {
             LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
             LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
@@ -113,20 +94,9 @@ namespace FellowOakDicom.Network
             RemotePort = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
 
             Stream stream = tcpClient.GetStream();
-            if (certificate != null)
+            if (tlsAcceptor != null)
             {
-                var ssl = new SslStream(stream, false);
-
-                var authenticationSucceeded = Task.Run(
-                    async () => await ssl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false).ConfigureAwait(false)
-                    ).Wait(_sslHandshakeTimeout);
-
-                if (!authenticationSucceeded)
-                {
-                    throw new DicomNetworkException($"SSL server authentication took longer than {_sslHandshakeTimeout.TotalSeconds}s");
-                }
-
-                stream = ssl;
+                stream = tlsAcceptor.AcceptTls(stream, RemoteHost, LocalPort);
             }
 
             if (ownsTcpClient)

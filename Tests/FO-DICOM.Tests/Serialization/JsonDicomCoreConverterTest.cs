@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -21,7 +21,7 @@ namespace FellowOakDicom.Tests.Serialization
     /// <summary>
     /// The json dicom converter test.
     /// </summary>
-    [Collection("WithHttpClient")]
+    [Collection(TestCollections.WithHttpClient)]
     public class JsonDicomCoreConverterTest
     {
         private readonly ITestOutputHelper _output;

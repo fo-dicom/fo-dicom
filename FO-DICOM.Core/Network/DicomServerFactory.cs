@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
 using System.Text;
+using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,13 +17,13 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
         /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         IDicomServer Create<T>(
             int port,
-            string certificateName = null,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider;
@@ -33,14 +34,14 @@ namespace FellowOakDicom.Network
         /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
         /// <param name="ipAddress">IP address(es) to listen to. Value <code>null</code> applies default, IPv4Any.</param>
         /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         IDicomServer Create<T>(
             string ipAddress,
             int port,
-            string certificateName = null,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider;
@@ -53,7 +54,7 @@ namespace FellowOakDicom.Network
         /// <param name="ipAddress">IP address(es) to listen to. Value <code>null</code> applies default, IPv4Any.</param>
         /// <param name="port">Port to listen to.</param>
         /// <param name="userState">Optional optional parameters.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
@@ -61,7 +62,7 @@ namespace FellowOakDicom.Network
             string ipAddress,
             int port,
             object userState = null,
-            string certificateName = null,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>;
     }
@@ -73,18 +74,18 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
         /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         public static IDicomServer Create<T>(
             int port,
-            string certificateName = null,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T>(port, certificateName, fallbackEncoding, logger, userState);
+            .GetRequiredService<IDicomServerFactory>().Create<T>(port, tlsAcceptor, fallbackEncoding, logger, userState);
 
         /// <summary>
         /// Creates a DICOM server object out of DI-container.
@@ -92,19 +93,19 @@ namespace FellowOakDicom.Network
         /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
         /// <param name="ipAddress">IP address(es) to listen to. Value <code>null</code> applies default, IPv4Any.</param>
         /// <param name="port">Port to listen to.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         public static IDicomServer Create<T>(
             string ipAddress,
             int port,
-            string certificateName = null,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null,
             object userState = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, certificateName, fallbackEncoding, logger, userState);
+            .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, tlsAcceptor, fallbackEncoding, logger, userState);
 
         /// <summary>
         /// Creates a DICOM server object out of DI-container.
@@ -114,7 +115,7 @@ namespace FellowOakDicom.Network
         /// <param name="ipAddress">IP address(es) to listen to. Value <code>null</code> applies default, IPv4Any.</param>
         /// <param name="port">Port to listen to.</param>
         /// <param name="userState">Optional optional parameters.</param>
-        /// <param name="certificateName">Certificate name for authenticated connections.</param>
+        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="fallbackEncoding">Fallback encoding.</param>
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
@@ -122,11 +123,11 @@ namespace FellowOakDicom.Network
             string ipAddress,
             int port,
             object userState = null,
-            string certificateName = null,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
             ILogger logger = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>
             => Setup.ServiceProvider
-            .GetRequiredService<IDicomServerFactory>().Create<T, TServer>(ipAddress, port, userState, certificateName, fallbackEncoding, logger);
+            .GetRequiredService<IDicomServerFactory>().Create<T, TServer>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger);
     }
 
     public class DefaultDicomServerFactory : IDicomServerFactory
@@ -146,23 +147,23 @@ namespace FellowOakDicom.Network
         }
 
         public IDicomServer Create<T>(
-            int port, 
-            string certificateName = null,
+            int port,
+            ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null, 
             ILogger logger = null,
             object userState = null)
             where T : DicomService, IDicomServiceProvider 
-            => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, certificateName, fallbackEncoding, logger);
+            => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, tlsAcceptor, fallbackEncoding, logger);
 
-        public IDicomServer Create<T>(string ipAddress, int port, string certificateName = null, Encoding fallbackEncoding = null, ILogger logger = null, object userState = null) where T : DicomService, IDicomServiceProvider
-            => Create<T, DicomServer<T>>(ipAddress, port, userState, certificateName, fallbackEncoding, logger);
+        public IDicomServer Create<T>(string ipAddress, int port, ITlsAcceptor tlsAcceptor = null, Encoding fallbackEncoding = null, ILogger logger = null, object userState = null) where T : DicomService, IDicomServiceProvider
+            => Create<T, DicomServer<T>>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger);
 
         public virtual IDicomServer Create<TServiceProvider, TServer>(
-            string ipAddress, 
-            int port, 
-            object userState = null, 
-            string certificateName = null, 
-            Encoding fallbackEncoding = null, 
+            string ipAddress,
+            int port,
+            object userState = null,
+            ITlsAcceptor tlsAcceptor = null,
+            Encoding fallbackEncoding = null,
             ILogger logger = null) where TServiceProvider : DicomService, IDicomServiceProvider where TServer : IDicomServer<TServiceProvider>
         {
             var dicomServerScope = _serviceScopeFactory.CreateScope();
@@ -182,8 +183,17 @@ namespace FellowOakDicom.Network
             server.ServiceScope = dicomServerScope;
 
             var serviceOptions = _defaultServiceOptions.Value.Clone();
+
+            // if not explicitly set, try to get a tls handler from DI container
+            tlsAcceptor ??= dicomServerScope.ServiceProvider.GetService<ITlsAcceptor>();
             
-            var runner = server.StartAsync(ipAddress, port, certificateName, fallbackEncoding, serviceOptions, userState);
+            var runner = server.StartAsync(ipAddress, port, tlsAcceptor, fallbackEncoding, serviceOptions, userState);
+
+            if (server.Exception != null)
+            {
+                server.Dispose();
+                throw new DicomNetworkException("Failed to start DICOM server", server.Exception);
+            }
 
             var registration = _dicomServerRegistry.Register(server, runner);
 

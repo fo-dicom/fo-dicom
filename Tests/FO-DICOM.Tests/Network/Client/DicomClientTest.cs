@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Network;
@@ -25,7 +25,7 @@ using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Network.Client
 {
-    [Collection("Network"), Trait("Category", "Network")]
+    [Collection(TestCollections.Network), Trait(TestTraits.Category, TestCategories.Network)]
     public class DicomClientTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
@@ -182,7 +182,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 // DicomClientFactory cares about the length of AETitles,
                 // but in case some developer registeres a custom Factory or creates DicomClient directly for some other reason.
-                var client = new DicomClient("localhost", port, false, "STORAGECOMMITTEST", "DE__257a276f6d47",
+                var client = new DicomClient("localhost", port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
                     new DicomClientOptions { }, new DicomServiceOptions { },
                     Setup.ServiceProvider.GetRequiredService<ILoggerFactory>(),
                     Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
@@ -1418,6 +1418,53 @@ namespace FellowOakDicom.Tests.Network.Client
             Assert.Null(echoResponse3);
         }
 
+        [Fact]
+        public async Task UnlimitedAsyncOpsInvokedShouldBeSupported()
+        {
+            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("Server"));
+            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.NegotiateAsyncOps(0,0);
+            client.Logger = _logger.IncludePrefix("Client");
+
+            var numberOfRequests = 100;
+            var counter = 0;
+            for (var i = 0; i < numberOfRequests; i++)
+            {
+                var request = new DicomCEchoRequest
+                    { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+                await client.AddRequestAsync(request).ConfigureAwait(false);
+            }
+
+            await client.SendAsync().ConfigureAwait(false);
+
+            Assert.Equal(numberOfRequests, counter);
+        }
+
+
+        [Fact]
+        public async Task SendAsync_CustomTcpBufferSizes_Works()
+        {
+            /*
+             * This test simply verifies that setting a custom TCP buffer size does not crash
+             */
+            var port = Ports.GetNext();
+            var bufferSize = 4 * 1024 * 1024;
+            using var server = CreateServer<DicomCEchoProvider>(port);
+            server.Options.TcpReceiveBufferSize = bufferSize;
+            server.Options.TcpReceiveBufferSize = bufferSize;
+
+            var counter = 0;
+            var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+
+            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            client.ServiceOptions.TcpReceiveBufferSize = bufferSize;
+            client.ServiceOptions.TcpSendBufferSize = bufferSize;
+            await client.AddRequestAsync(request).ConfigureAwait(false);
+
+            await client.SendAsync().ConfigureAwait(false);
+            Assert.Equal(1, counter);
+        }
 
         #region Support classes
 

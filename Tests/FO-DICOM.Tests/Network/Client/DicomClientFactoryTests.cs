@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

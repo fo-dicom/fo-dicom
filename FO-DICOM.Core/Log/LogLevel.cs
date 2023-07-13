@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -14,6 +14,29 @@ namespace FellowOakDicom.Log
         Warning,
         Error,
         Fatal
+    }
+
+    public static class ExtensionsForLogLevel
+    {
+        [Obsolete("Try to use Microsoft.Extensions.Logging.LogLevel directly")]
+        public static Microsoft.Extensions.Logging.LogLevel ToMicrosoftLogLevel(this LogLevel logLevel)
+        {
+            switch (logLevel)
+            {
+                case LogLevel.Debug:
+                    return Microsoft.Extensions.Logging.LogLevel.Debug;
+                case LogLevel.Info:
+                    return Microsoft.Extensions.Logging.LogLevel.Information;
+                case LogLevel.Warning:
+                    return Microsoft.Extensions.Logging.LogLevel.Warning;
+                case LogLevel.Error:
+                    return Microsoft.Extensions.Logging.LogLevel.Error;
+                case LogLevel.Fatal:
+                    return Microsoft.Extensions.Logging.LogLevel.Critical;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+            }
+        }
     }
 
 }

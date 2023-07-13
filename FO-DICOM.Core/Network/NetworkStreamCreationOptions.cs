@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using FellowOakDicom.Network.Tls;
+using System;
 
 namespace FellowOakDicom.Network
 {
@@ -18,9 +22,9 @@ namespace FellowOakDicom.Network
         public int Port { get; set; }
         
         /// <summary>
-        /// Whether or not to use TLS (SSLStream) when opening the TCP connection
+        /// Gets or sets the handler to use TLS (SSLStream) when opening the TCP connection. If this handler is null then no TLS will be used
         /// </summary>
-        public bool UseTls { get; set; }
+        public ITlsInitiator TlsInitiator { get; set; }
         
         /// <summary>
         /// Whether or not to disable the delay when buffers are not full
@@ -29,15 +33,24 @@ namespace FellowOakDicom.Network
         public bool NoDelay { get; set; }
         
         /// <summary>
-        /// Whether or not to ignore any certificate validation errors that occur when authenticating as a client over SSL
-        /// </summary>
-        public bool IgnoreSslPolicyErrors { get; set; }
-        
-        /// <summary>
         /// After how much time a write or read operation over the TCP connection must time out
         /// </summary>
         /// <seealso cref="System.Net.Security.SslStream.ReadTimeout"/>
         /// <seealso cref="System.Net.Security.SslStream.WriteTimeout"/>
         public TimeSpan Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the receive buffer of the underlying TCP connection
+        /// If not configured, the default value of 8192 bytes will be used
+        /// </summary>
+        /// <seealso cref="System.Net.Sockets.TcpClient.ReceiveBufferSize"/>
+        public int? ReceiveBufferSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the send buffer of the underlying TCP connection
+        /// If not configured, the default value of 8192 bytes will be used
+        /// </summary>
+        /// <seealso cref="System.Net.Sockets.TcpClient.SendBufferSize"/>
+        public int? SendBufferSize { get; set; }
     }
 }

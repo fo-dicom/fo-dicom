@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -134,7 +134,7 @@ namespace FellowOakDicom
         {
             get
             {
-                if (_value == null && Buffer != null && (Buffer != EmptyBuffer.Value))
+                if (_value == null && Buffer != null)
                 {
                     _value = Buffer == EmptyBuffer.Value
                         ? string.Empty

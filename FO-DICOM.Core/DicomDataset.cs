@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.IO.Buffer;
@@ -772,6 +772,17 @@ namespace FellowOakDicom
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Adds a DICOM item to the dataset.
+        /// </summary>
+        /// <param name="item">DICOM item to add.</param>
+        /// <returns>The dataset instance.</returns>
+        /// <exception cref="System.ArgumentException">If tag of added item already exists in dataset.</exception>
+        public DicomDataset Add(DicomItem item)
+        {
+            return DoAdd(item, false);
         }
 
         /// <summary>

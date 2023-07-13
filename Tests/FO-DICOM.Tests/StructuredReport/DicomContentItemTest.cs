@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2021 fo-dicom contributors.
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.StructuredReport;
@@ -8,7 +8,7 @@ using Xunit;
 namespace FellowOakDicom.Tests.StructuredReport
 {
 
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomContentItemTest
     {
         #region Unit tests
