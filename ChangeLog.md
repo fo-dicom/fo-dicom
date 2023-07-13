@@ -1,7 +1,5 @@
 ### 5.1.2 (TBD)
 * **Breaking change**: Configuration of `MaxClientsAllowed` must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
-* **Breaking change**: Configuration of `TcpNoDelay` of a server must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
-* **Breaking change**: Configuration of `TcpNoDelay` of a client must now be done via `DicomClient.ClientOptions` instead of via `DicomClient.ServiceOptions`
 * **Breaking change**: `IServiceCollection.AddDicomServer(Action<DicomServiceOptions> configure)` was changed to `IServiceCollection.AddDicomServer(Action<DicomServerOptions> configure)`  
 * fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
 * FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
