@@ -13,7 +13,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests
 {
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomFileTest
     {
         private class UnseekableStream : MemoryStream

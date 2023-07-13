@@ -1,6 +1,17 @@
-#### 5.1.1 (TBD)
-            
+### 5.1.2 (TBD)
+* fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
+* FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
+* Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
+* Fix issue where extracting a string from a DICOM dataset could return null if the tag was present but empty
+* Extension methods `DicomDataset.WriteToLog` and `DicomFile.WriteToLog` now also accept a `Microsoft.Extensions.Logging.ILogger` 
+* Optimize the common case of adding a single `DicomItem` to a `DicomDataset` by adding an overload `DicomDataset.Add(DicomItem item)` (#1604)
+* Immediately throw an exception if DICOM server synchronously fails to start (#1562)
+* Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
+* Add the possibility to configure TCP buffer sizes (#1564)
 * Prevent adding duplicate presentation contexts to an association request (#1596)
+
+#### 5.1.1 (2023-05-29)
+* Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
 
 #### 5.1.0 (2023-05-21)
 * **Breaking change**: Switch to Microsoft.Extensions.Logging, replacing FellowOakDicom.Log.ILogger and FellowOakDicom.Log.ILogManager. These are old interfaces are still supported, but they are now marked as obsolete

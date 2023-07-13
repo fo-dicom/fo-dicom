@@ -12,7 +12,7 @@ namespace FellowOakDicom.Tests
     /// note that Register may leave extra item into internal static dictionary
     /// which may cause unit test to fail.
     /// </summary>
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class DicomTransferSyntaxTest
     {
         #region Unit tests
@@ -165,7 +165,7 @@ namespace FellowOakDicom.Tests
             Assert.False(DicomTransferSyntax.Unregister(uid));
             Assert.Null(DicomTransferSyntax.Query(uid));
         }
-      
+
         /// <summary>
         /// Parse can parse string representation of known UID.
         /// </summary>

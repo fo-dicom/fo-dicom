@@ -28,7 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net6.0 --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet60.xml"
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net6.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet60.xml"
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
@@ -40,7 +40,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net7.0 --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet70.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net7.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet70.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:

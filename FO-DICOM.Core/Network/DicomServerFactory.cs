@@ -7,8 +7,6 @@ using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Text;
 
 namespace FellowOakDicom.Network
 {
@@ -190,6 +188,12 @@ namespace FellowOakDicom.Network
             tlsAcceptor ??= dicomServerScope.ServiceProvider.GetService<ITlsAcceptor>();
             
             var runner = server.StartAsync(ipAddress, port, tlsAcceptor, fallbackEncoding, serviceOptions, userState);
+
+            if (server.Exception != null)
+            {
+                server.Dispose();
+                throw new DicomNetworkException("Failed to start DICOM server", server.Exception);
+            }
 
             var registration = _dicomServerRegistry.Register(server, runner);
 

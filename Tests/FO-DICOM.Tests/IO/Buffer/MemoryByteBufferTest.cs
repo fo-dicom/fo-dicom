@@ -10,7 +10,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.IO.Buffer
 {
-    [Collection("General")]
+    [Collection(TestCollections.General)]
     public class MemoryBufferTest
     {
         [Fact]
