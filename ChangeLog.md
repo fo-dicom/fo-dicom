@@ -8,6 +8,7 @@
 * Immediately throw an exception if DICOM server synchronously fails to start (#1562)
 * Fix issue where stopping a DICOM server left the unused services cleanup task running (#1562)
 * Add the possibility to configure TCP buffer sizes (#1564)
+* Fix issue where reading a DICOM file with large pixel data (> 2 GB) did not work (#1453)
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
