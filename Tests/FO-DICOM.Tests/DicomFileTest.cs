@@ -484,13 +484,19 @@ namespace FellowOakDicom.Tests
 
                 // Act
                 await originalDicomFile.SaveAsync(tempFileName);
-                var openedDicomFile = await DicomFile.OpenAsync(tempFileName, FileReadOption.ReadAll);
+
+                var openedDicomFileFromFileName = await DicomFile.OpenAsync(tempFileName, FileReadOption.ReadAll);
+                using var fileStream = File.OpenRead(tempFileName);
+                var openedDicomFileFromStream = await DicomFile.OpenAsync(fileStream, FileReadOption.ReadAll);
 
                 // Assert
-                var openedPixelData = openedDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData);
-                Assert.Equal(numberOfFrames, openedPixelData.Fragments.Count);
-                Assert.Equal(frameLength, openedPixelData.Fragments[0].Size);
-                Assert.Equal(frameLength, openedPixelData.Fragments[numberOfFrames - 1].Size);
+                foreach (var openedDicomFile in new[] { openedDicomFileFromFileName, openedDicomFileFromStream })
+                {
+                    var openedPixelData = openedDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData);
+                    Assert.Equal(numberOfFrames, openedPixelData.Fragments.Count);
+                    Assert.Equal(frameLength, openedPixelData.Fragments[0].Size);
+                    Assert.Equal(frameLength, openedPixelData.Fragments[numberOfFrames - 1].Size);
+                }
             }
             finally
             {
