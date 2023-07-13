@@ -6,7 +6,7 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
 {
-    [Collection("")]
+    [Collection(TestCollections.Imaging)]
     public class GH1586
     {
         [Fact]
@@ -27,11 +27,12 @@ namespace FellowOakDicom.Tests.Bugs
             dataset.AddOrUpdate(DicomTag.PixelRepresentation, (ushort) 0);
             dataset.AddOrUpdate(DicomTag.PhotometricInterpretation, PhotometricInterpretation.Monochrome2.Value);
             dataset.AddOrUpdate(DicomTag.SamplesPerPixel, (ushort) 1);
+            dataset.AddOrUpdate(DicomTag.NumberOfFrames, 2);
 
             var pixelData = new DicomOtherByteFragment(DicomTag.PixelData);
-            pixelData.Add(new MemoryByteBuffer(new byte[] { 255,0,255,0 }));
-            pixelData.Add(new MemoryByteBuffer(new byte[] { 0,255,0,255 }));
-            pixelData.Add(EmptyBuffer.Value);
+            pixelData.Fragments.Add(new MemoryByteBuffer(new byte[] { 255,0,255,0 }));
+            pixelData.Fragments.Add(new MemoryByteBuffer(new byte[] { 0,255,0,255 }));
+            pixelData.Fragments.Add(EmptyBuffer.Value);
             dataset.AddOrUpdate(pixelData);
 
             var dicomImage = new DicomImage(dataset);
