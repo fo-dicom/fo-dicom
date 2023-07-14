@@ -74,14 +74,11 @@ namespace FellowOakDicom.Tests.Bugs
                 var largeDicomFileSize = new FileInfo(tempFileName).Length;
                 var largeDicomFileSizeInMegaBytes = (int)Math.Ceiling((double)largeDicomFileSize / 1024 / 1024);
 
-                // Assert
-                DicomFile openedDicomFile;
                 // Guard against insufficient memory, don't fail the test if the system cannot load the file due to not enough memory
-                using (new MemoryFailPoint(largeDicomFileSizeInMegaBytes))
-                {
-                    openedDicomFile = await DicomFile.OpenAsync(tempFileName, readOption);
-                }
+                using var _ = new MemoryFailPoint(largeDicomFileSizeInMegaBytes);
+                var openedDicomFile = await DicomFile.OpenAsync(tempFileName, readOption);
 
+                // Assert
                 Assert.Equal(sopInstanceUid, openedDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID));
                 if (readOption != FileReadOption.SkipLargeTags)
                 {
@@ -129,14 +126,12 @@ namespace FellowOakDicom.Tests.Bugs
                 var largeDicomFileSize = new FileInfo(tempFileName).Length;
                 var largeDicomFileSizeInMegaBytes = (int)Math.Ceiling((double)largeDicomFileSize / 1024 / 1024);
 
-                // Assert
-                using var fileStream = File.OpenRead(tempFileName);
-                DicomFile openedDicomFile;
                 // Guard against insufficient memory, don't fail the test if the system cannot load the file due to not enough memory
-                using (new MemoryFailPoint(largeDicomFileSizeInMegaBytes))
-                {
-                    openedDicomFile = await DicomFile.OpenAsync(fileStream, readOption);
-                }
+                using var _ = new MemoryFailPoint(largeDicomFileSizeInMegaBytes);
+                using var fileStream = File.OpenRead(tempFileName);
+                var openedDicomFile = await DicomFile.OpenAsync(fileStream, readOption);
+
+                // Assert
                 Assert.Equal(sopInstanceUid, openedDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID));
                 if (readOption != FileReadOption.SkipLargeTags)
                 {
