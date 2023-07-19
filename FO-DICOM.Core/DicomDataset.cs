@@ -792,9 +792,13 @@ namespace FellowOakDicom
                     }
                     else
                     {
-                        foreach(var item in sequence.Items[0])
+                        // skip empty sequences
+                        if (sequence.Items.Count > 0)
                         {
-                            yield return item;
+                            foreach (var item in sequence.Items[0])
+                            {
+                                yield return item;
+                            }
                         }
                     }
                 }
@@ -811,9 +815,13 @@ namespace FellowOakDicom
                     }
                     else
                     {
-                        foreach (var item in sequence.Items[0])
+                        // skip empty sequences
+                        if (sequence.Items.Count > 0)
                         {
-                            yield return item;
+                            foreach (var item in sequence.Items[0])
+                            {
+                                yield return item;
+                            }
                         }
                     }
                 }
