@@ -56,9 +56,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Helper functions
 
-        private IDicomServer CreateServer<T>(int port) where T : DicomService, IDicomServiceProvider
+        private IDicomServer CreateServer<T>(int port, Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
         {
-            var server = DicomServerFactory.Create<T>(port);
+            var server = DicomServerFactory.Create<T>(port, configure: configure);
             server.Logger = _logger.IncludePrefix(nameof(IDicomServer));
             return server;
         }
@@ -1452,7 +1452,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var bufferSize = 4 * 1024 * 1024;
             using var server = CreateServer<DicomCEchoProvider>(port);
             server.Options.TcpReceiveBufferSize = bufferSize;
-            server.Options.TcpReceiveBufferSize = bufferSize;
+            server.Options.TcpSendBufferSize = bufferSize;
 
             var counter = 0;
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };

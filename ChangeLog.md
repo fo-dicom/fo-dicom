@@ -1,4 +1,6 @@
 ### 5.1.2 (TBD)
+* **Breaking change**: Configuration of `MaxClientsAllowed` must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
+* **Breaking change**: `IServiceCollection.AddDicomServer(Action<DicomServiceOptions> configure)` was changed to `IServiceCollection.AddDicomServer(Action<DicomServerOptions> configure)`  
 * fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
 * FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
 * Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
@@ -11,6 +13,8 @@
 * Fix incorrect values returned from `DicomEncoding.GetCharset()` (#1624)
 * Tolerate `Specific Character Set` values misspelled as "ISO-IR ###" additionally to "ISO IR ###"
 * Fix issue where reading a DICOM file with large pixel data (> 2 GB) did not work (#1453)
+* Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
+* Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)

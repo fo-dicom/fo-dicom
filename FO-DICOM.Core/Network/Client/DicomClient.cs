@@ -459,7 +459,7 @@ namespace FellowOakDicom.Network.Client
                                 throw new DicomNetworkException($"A positive response requested for user identity type {association.Association.UserIdentityNegotiation.UserIdentityType} but server response was null");
                             }
 
-                            _logger.LogWarning($"Successful user identity negotiation with type {association.Association.UserIdentityNegotiation.UserIdentityType} was required but server response was null");
+                            _logger.LogWarning("Successful user identity negotiation with type {UserIdentityType} was required but server response was null", association.Association.UserIdentityNegotiation.UserIdentityType);
                         }
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
@@ -470,7 +470,7 @@ namespace FellowOakDicom.Network.Client
 
                             if (!connection.CanStillProcessPDataTF)
                             {
-                                _logger.LogDebug($"The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
+                                _logger.LogDebug("The current association can no longer accept P-DATA-TF messages, a new association will have to be created for the remaining requests");
                                 requestsToRetry.AddRange(requestsToSend);
                                 break;
                             }
@@ -537,7 +537,7 @@ namespace FellowOakDicom.Network.Client
                                 && ClientOptions.AssociationLingerTimeoutInMs > 0
                                 && connection.CanStillProcessPDataTF)
                             {
-                                _logger.LogDebug($"Lingering on open association for {ClientOptions.AssociationLingerTimeoutInMs}ms");
+                                _logger.LogDebug("Lingering on open association for {AssociationLingerTimeoutInMs}ms", ClientOptions.AssociationLingerTimeoutInMs);
 
                                 SetState(DicomClientLingeringState.Instance);
                                 
