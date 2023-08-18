@@ -7,6 +7,7 @@ using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ namespace FellowOakDicom.Network
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
 
-        protected readonly AsyncManualResetEvent _isDisconnectedFlag;
+        protected readonly TaskCompletionSource<bool> _isDisconnectedFlag;
 
         protected Stream _dimseStream;
 
@@ -93,7 +94,7 @@ namespace FellowOakDicom.Network
             ILogger logger,
             DicomServiceDependencies dependencies)
         {
-            _isDisconnectedFlag = new AsyncManualResetEvent();
+            _isDisconnectedFlag = TaskCompletionSourceFactory.Create<bool>();
             _canStillProcessPDataTF = true;
             _isInitialized = false;
             _network = stream;
@@ -158,7 +159,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets whether or not the service is connected.
         /// </summary>
-        public bool IsConnected => !_isDisconnectedFlag.IsSet;
+        public bool IsConnected => !_isDisconnectedFlag.Task.IsCompleted;
 
         /// <summary>
         /// Gets whether or not both the message queue and the pending queue is empty.
@@ -1533,7 +1534,7 @@ namespace FellowOakDicom.Network
 
             lock (_lock)
             {
-                _isDisconnectedFlag.Set();
+                _isDisconnectedFlag.TrySetResult(true);
                 // Unblock other threads waiting to write another PDU that don't realize the connection is being closed
                 _pduQueueWatcher.Set();
             }

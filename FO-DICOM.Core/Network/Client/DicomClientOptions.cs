@@ -33,7 +33,7 @@ namespace FellowOakDicom.Network.Client
         /// Use <see cref="AssociationRequestTimeoutInMs"/> to configure the timeout 
         /// </summary>
         public int MaximumNumberOfConsecutiveTimedOutAssociationRequests { get; set; } = 3;
-
+        
         public DicomClientOptions Clone() =>
             new DicomClientOptions
             {

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
@@ -33,6 +34,17 @@ namespace FellowOakDicom.Network
 
         private readonly CancellationToken _cancellationToken;
 
+        private readonly Channel<int> _servicesChannel = Channel.CreateUnbounded<int>(new UnboundedChannelOptions
+        {
+            SingleWriter = false,
+            SingleReader = true
+        });
+
+        /// <summary>
+        /// A task that will complete when the server is stopped
+        /// </summary>
+        private readonly TaskCompletionSource<bool> _stopped;
+        
         private string _ipAddress;
 
         private int _port;
@@ -53,8 +65,9 @@ namespace FellowOakDicom.Network
 
         private bool _disposed;
 
-        private readonly AsyncManualResetEvent _hasServicesFlag;
-        private readonly AsyncManualResetEvent _hasNonMaxServicesFlag;
+        private SemaphoreSlim _maxClientsSemaphore;
+        
+        private DicomServerOptions _serverOptions;
 
         #endregion
 
@@ -70,6 +83,8 @@ namespace FellowOakDicom.Network
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;
+            _stopped = TaskCompletionSourceFactory.Create<bool>();
+            
             _services = new List<RunningDicomService>();
 
             IsListening = false;
@@ -80,9 +95,6 @@ namespace FellowOakDicom.Network
             _wasStarted = false;
 
             _disposed = false;
-
-            _hasServicesFlag = new AsyncManualResetEvent(false);
-            _hasNonMaxServicesFlag = new AsyncManualResetEvent(true);
         }
 
         #endregion
@@ -157,31 +169,13 @@ namespace FellowOakDicom.Network
             }
         }
         
-        /// <summary>
-        /// Gets whether the list of services contains the maximum number of services or not.
-        /// </summary>
-        private bool IsServicesAtMax
-        {
-            get
-            {
-                var maxClientsAllowed = Options.MaxClientsAllowed;
-                if (maxClientsAllowed <= 0)
-                    return false;
-
-                lock (_services)
-                {
-                    return _services.Count >= maxClientsAllowed;
-                }
-            }
-        }
-
         #endregion
 
         #region METHODS
 
         /// <inheritdoc />
         public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
-            DicomServiceOptions options, object userState)
+            DicomServiceOptions serviceOptions, object userState, DicomServerOptions serverOptions)
         {
             if (_wasStarted)
             {
@@ -192,11 +186,15 @@ namespace FellowOakDicom.Network
             IPAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress;
             Port = port;
 
-            Options = options;
+            _serverOptions = serverOptions;
+            Options = serviceOptions;
 
             _userState = userState;
             _tlsAcceptor = tlsAcceptor;
             _fallbackEncoding = fallbackEncoding;
+            _maxClientsSemaphore = serverOptions.MaxClientsAllowed > 0
+                ? new SemaphoreSlim(serverOptions.MaxClientsAllowed, serverOptions.MaxClientsAllowed)
+                : null;
 
             return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
         }
@@ -207,11 +205,16 @@ namespace FellowOakDicom.Network
             if (!_cancellationSource.IsCancellationRequested)
             {
                 _cancellationSource.Cancel();
+                _stopped.TrySetResult(true);
             }
         }
 
         /// <inheritdoc />
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// Execute the disposal.
@@ -228,6 +231,8 @@ namespace FellowOakDicom.Network
             {
                 Stop();
                 _cancellationSource.Dispose();
+                _maxClientsSemaphore?.Dispose();
+                _servicesChannel.Writer.TryComplete();
                 Registration?.Dispose();
                 ServiceScope?.Dispose();
             }
@@ -273,37 +278,38 @@ namespace FellowOakDicom.Network
             INetworkListener listener = null;
             try
             {
-                var noDelay = Options.TcpNoDelay;
-                var receiveBufferSize = Options.TcpReceiveBufferSize;
-                var sendBufferSize = Options.TcpSendBufferSize;
-
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
+                var maxClientsAllowed = _serverOptions.MaxClientsAllowed;
+
                 while (!_cancellationToken.IsCancellationRequested)
                 {
-                    // If max clients is configured and the limit is reached
-                    // we need to wait until one of the existing clients closes its connection
-                    while (true)
+                    if (maxClientsAllowed > 0)
                     {
-                        // Instead of simply waiting for the flag
-                        // We use Task.WhenAny with a one minute delay in a while loop
-                        // This allows us to log a warning every minute instead of silently not accepting connections
-                        var hasNonMaxServicesFlag = _hasNonMaxServicesFlag.WaitAsync();
-                        var oneMinuteDelay = Task.Delay(60 * 1000, _cancellationToken);
-                        var winner = await Task.WhenAny(hasNonMaxServicesFlag, oneMinuteDelay).ConfigureAwait(false);
-                        if (winner == hasNonMaxServicesFlag)
+                        // If max clients is configured and the limit is reached
+                        // we need to wait until one of the existing clients closes its connection
+                        while (true)
                         {
-                            break;
+                            // Instead of simply waiting for the semaphore
+                            // We use Task.WhenAny with a one minute delay in a while loop
+                            // This allows us to log a warning every minute instead of silently not accepting connections
+                            var clientSemaphore = _maxClientsSemaphore.WaitAsync(_cancellationToken);
+                            var oneMinuteDelay = Task.Delay(60 * 1000, _cancellationToken);
+                            var winner = await Task.WhenAny(clientSemaphore, oneMinuteDelay).ConfigureAwait(false);
+                            if (winner == clientSemaphore)
+                            {
+                                break;
+                            }
+                            // Allow proper triggering of the OperationCanceledException, if any
+                            await oneMinuteDelay.ConfigureAwait(false);
+                            _logger.LogWarning("Cannot accept another incoming connection because the maximum number of clients ({MaxClientsAllowed}) has been reached", maxClientsAllowed);
                         }
-                        // Allow proper triggering of the OperationCanceledException, if any
-                        await oneMinuteDelay.ConfigureAwait(false);
-                        _logger.LogWarning("Cannot accept another incoming connection because the maximum number of clients ({MaxClientsAllowed}) has been reached", Options.MaxClientsAllowed);
                     }
 
                     var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_tlsAcceptor, noDelay, receiveBufferSize, sendBufferSize, Logger, _cancellationToken)
+                        .AcceptNetworkStreamAsync(_tlsAcceptor, Options.TcpNoDelay, Options.TcpReceiveBufferSize, Options.TcpSendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (networkStream != null)
@@ -324,11 +330,12 @@ namespace FellowOakDicom.Network
                         
                         _logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
                         
-                        _hasServicesFlag.Set();
-                        if (IsServicesAtMax)
+                        // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
+                        await _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
+                        
+                        if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                         {
                             _logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
-                            _hasNonMaxServicesFlag.Reset();
                         }
                     }
                 }
@@ -356,31 +363,74 @@ namespace FellowOakDicom.Network
         /// </summary>
         private async Task RemoveUnusedServicesAsync()
         {
+            int maxClientsAllowed = _serverOptions.MaxClientsAllowed;
             while (!_cancellationToken.IsCancellationRequested)
             {
                 try
                 {
                     _logger.LogDebug("Waiting for incoming client connections");
                     
-                    // Wait until clients are connected or until DICOM server is disposed
-                    var dicomServerIsDisposed = TaskCompletionSourceFactory.Create<bool>();
-                    using var _ = _cancellationToken.Register(() => dicomServerIsDisposed.SetResult(true));
-                    await Task.WhenAny(_hasServicesFlag.WaitAsync(), dicomServerIsDisposed.Task).ConfigureAwait(false);
+                    // First, we wait until at least one service is running
+                    // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
+                    // It is also possible that the DICOM server is stopped while are waiting here
+                    var aServiceHasStarted = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
+                    await Task.WhenAny(aServiceHasStarted, _stopped.Task).ConfigureAwait(false);
                     _cancellationToken.ThrowIfCancellationRequested();
-                    
-                    List<Task> runningDicomServiceTasks;
-                    lock (_services)
-                    {
-                        runningDicomServiceTasks = _services.Select(s => s.Task).ToList();
-                    }
-                    var numberOfDicomServices = runningDicomServiceTasks.Count;
-                    _logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
-                    if (numberOfDicomServices > 0)
-                    {
-                        await Task.WhenAny(runningDicomServiceTasks).ConfigureAwait(false);
-                    }
 
-                    var isHasNonMaxServicesFlagSet = false;
+                    // Then, we wait until at least one service completes
+                    // We must take into account that more services can start while we wait here
+                    while (true)
+                    {
+                        List<RunningDicomService> runningDicomServices;
+                        
+                        while (_servicesChannel.Reader.TryRead(out _))
+                        {
+                            // Discard queued new services, we're only interested in new arrivals after we start waiting                            
+                        }
+                        lock (_services)
+                        {
+                            runningDicomServices = _services.ToList();
+                        }
+                        var numberOfDicomServices = runningDicomServices.Count;
+                        _logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
+                        if (numberOfDicomServices == 0)
+                        {
+                            // No more services at all? Exit early
+                            break;
+                        }
+
+                        var tasks = new List<Task>(numberOfDicomServices + 1);
+                        var anotherServiceHasStarted = _servicesChannel.Reader.ReadAsync(_cancellationToken).AsTask();
+                        tasks.Add(anotherServiceHasStarted);
+                        tasks.AddRange(runningDicomServices.Select(s => s.Task));
+                        var winner = await Task.WhenAny(tasks).ConfigureAwait(false);
+                        if (winner == anotherServiceHasStarted)
+                        {
+                            try
+                            {
+                                await anotherServiceHasStarted;
+                            }
+                            catch(OperationCanceledException)
+                            {
+                                // If the server is disposed while we were waiting, deal with that gracefully
+                                break;
+                            }
+                            catch (ChannelClosedException)
+                            {
+                                // If the server is disposed while we were waiting, deal with that gracefully
+                                break;
+                            }
+                            
+                            // If another service started, we must restart the Task.WhenAny with the new set of running service tasks
+                            _logger.LogDebug("Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
+                        }
+                        else
+                        {
+                            _logger.LogDebug("One or more running DICOM services have completed");
+                            break;
+                        }
+                    }
+                    
                     int numberOfRemainingServices;
                     var servicesToDispose = new List<RunningDicomService>();
                     lock (_services)
@@ -396,17 +446,6 @@ namespace FellowOakDicom.Network
                         }
 
                         numberOfRemainingServices = _services.Count;
-
-                        if (_services.Count == 0)
-                        {
-                            _hasServicesFlag.Reset();
-                        }
-
-                        if (!IsServicesAtMax)
-                        {
-                            _hasNonMaxServicesFlag.Set();
-                            isHasNonMaxServicesFlagSet = true;
-                        }
                     }
                     var numberOfCompletedServices = servicesToDispose.Count;
                     foreach (var service in servicesToDispose)
@@ -421,6 +460,12 @@ namespace FellowOakDicom.Network
                         }
                     }
 
+                    // Avoid object disposed exception if we can
+                    if (!_cancellationToken.IsCancellationRequested)
+                    {
+                        _maxClientsSemaphore?.Release(numberOfCompletedServices);
+                    }
+
                     _logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
                     if (numberOfRemainingServices > 0)
                     {
@@ -430,27 +475,34 @@ namespace FellowOakDicom.Network
                     {
                         _logger.LogDebug("There are no clients connected now");
                     }
-                    
-                    if (isHasNonMaxServicesFlagSet)
+
+                    if (maxClientsAllowed > 0)
                     {
-                        if (Options.MaxClientsAllowed > 0)
+                        if (numberOfRemainingServices == maxClientsAllowed)
                         {
-                            var numberOfExtraClientsAllowed = Options.MaxClientsAllowed - numberOfRemainingServices;
-                            _logger.LogDebug("{NumberOfExtraServicesAllowed} more incoming client connections are allowed", numberOfExtraClientsAllowed);
+                            _logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");
                         }
-                        else
+                        else 
                         {
-                            _logger.LogDebug("Unlimited more incoming client connections are allowed");
+                            var numberOfExtraClientsAllowed = maxClientsAllowed - numberOfRemainingServices;
+                            _logger.LogDebug(
+                                "{NumberOfExtraServicesAllowed} more incoming client connections are allowed",
+                                numberOfExtraClientsAllowed);
                         }
                     }
                     else
                     {
-                        _logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");    
+                        _logger.LogDebug("Unlimited more incoming client connections are allowed");
                     }
+                }
+                catch (ChannelClosedException)
+                {
+                    Logger.LogInformation("Disconnected client cleanup manually terminated");
+                    ClearServices();
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.LogInformation("Disconnected client cleanup manually terminated.");
+                    Logger.LogInformation("Disconnected client cleanup manually terminated");
                     ClearServices();
                 }
                 catch (Exception e)
@@ -480,9 +532,6 @@ namespace FellowOakDicom.Network
                     _logger.LogWarning("An error occurred while trying to dispose a DICOM service: {@Error}", e);
                 }
             }
-            
-            _hasServicesFlag.Reset();
-            _hasNonMaxServicesFlag.Set();
         }
 
         #endregion
