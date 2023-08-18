@@ -12,6 +12,7 @@
 * Add the possibility to configure TCP buffer sizes (#1564)
 * Fix incorrect values returned from `DicomEncoding.GetCharset()` (#1624)
 * Tolerate `Specific Character Set` values misspelled as "ISO-IR ###" additionally to "ISO IR ###"
+* Fix issue where reading a DICOM file with large pixel data (> 2 GB) did not work (#1453)
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
 

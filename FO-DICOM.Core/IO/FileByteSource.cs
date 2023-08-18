@@ -163,7 +163,25 @@ namespace FellowOakDicom.IO
             }
             else // count < LargeObjectSize || _readOption == FileReadOption.ReadAll
             {
-                buffer = new MemoryByteBuffer(GetBytes((int)count));
+                if (count < MemoryByteBuffer.MaxArrayLength)
+                {
+                    buffer = new MemoryByteBuffer(GetBytes((int)count));
+                }
+                else
+                {
+                    var numberOfBuffers = (int) Math.Ceiling((double) count / MemoryByteBuffer.MaxArrayLength);
+                    var buffers = new IByteBuffer[numberOfBuffers];
+                    for (var i = 0; i < numberOfBuffers - 1; i++)
+                    {
+                        var bufferData = new byte[MemoryByteBuffer.MaxArrayLength];
+                        GetBytes(bufferData, 0, bufferData.Length);
+                        buffers[i] = new MemoryByteBuffer(bufferData);
+                    }
+                    var lastBufferData = new byte[count % MemoryByteBuffer.MaxArrayLength];
+                    GetBytes(lastBufferData, 0, lastBufferData.Length);
+                    buffers[numberOfBuffers-1] = new MemoryByteBuffer(lastBufferData);
+                    buffer = new CompositeByteBuffer(buffers);
+                }
             }
             return buffer;
         }
