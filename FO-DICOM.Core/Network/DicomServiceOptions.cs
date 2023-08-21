@@ -73,6 +73,18 @@ namespace FellowOakDicom.Network
         /// </summary>
         public uint MaxPDULength { get; set; } = 262144; // 256 Kb
 
+        /// <summary>
+        /// Optional progress callback invoked whenever a PDV is received.
+        /// The reported value is the size, in bytes, of the received PDV.
+        /// </summary>
+        public IProgress<uint> ReportBytesReceived { get; set; }
+
+        /// <summary>
+        /// Optional progress callback invoked whenever a PDU is sent.
+        /// The reported value is the size, in bytes, of the transmitted PDU.
+        /// </summary>
+        public IProgress<uint> ReportBytesSent { get; set; }
+
         public DicomServiceOptions Clone() =>
             new DicomServiceOptions
             {
@@ -87,7 +99,9 @@ namespace FellowOakDicom.Network
                 MaxPDVsPerPDU = MaxPDVsPerPDU,
                 TcpNoDelay = TcpNoDelay,
                 TcpReceiveBufferSize = TcpReceiveBufferSize,
-                TcpSendBufferSize = TcpSendBufferSize
+                TcpSendBufferSize = TcpSendBufferSize,
+                ReportBytesReceived = ReportBytesReceived,
+                ReportBytesSent = ReportBytesSent,
             };
     }
 }

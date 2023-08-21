@@ -45,7 +45,7 @@ namespace FellowOakDicom.Network
         private bool _isInitialized;
 
         private readonly INetworkStream _network;
-
+        
         private readonly IMemoryProvider _memoryProvider;
 
         private readonly Stream _writeStream;
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Network
         protected IFileReference _dimseStreamFile;
 
         private int _isCheckingForTimeouts = 0;
-
+        
         private bool _canStillProcessPDataTF;
 
         private readonly INetworkMetricsCollector _metricsCollector;
@@ -124,17 +124,17 @@ namespace FellowOakDicom.Network
 
             Options = new DicomServiceOptions();
         }
-
+        
         #endregion
-
+        
         #region FINALIZER 
-
+        
         /// <summary>
         /// The finalizer will be called when this instance is not disposed properly.
         /// </summary>
         /// <remarks>Failing to dispose indicates wrong usage</remarks>
         ~DicomService() => Dispose(false);
-
+        
         #endregion
 
         #region PROPERTIES
@@ -198,7 +198,7 @@ namespace FellowOakDicom.Network
                 }
             }
         }
-
+        
         /// <summary>
         /// Gets whether or not the connection can still process P-DATA-TF
         /// </summary>
@@ -228,7 +228,7 @@ namespace FellowOakDicom.Network
         /// The transcoder manager being used by this DICOM service
         /// </summary>
         private ITranscoderManager TranscoderManager { get; }
-
+        
 
         /// <summary>
         /// Gets whether the DicomService is running as SCP-Server, or else as a service within a client SCU
@@ -240,7 +240,7 @@ namespace FellowOakDicom.Network
         #endregion
 
         #region METHODS
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ThrowIfAlreadyDisposed()
         {
@@ -251,7 +251,7 @@ namespace FellowOakDicom.Network
 
             ThrowDisposedException();
         }
-
+        
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM service is already disposed and can no longer be used");
 
@@ -280,7 +280,7 @@ namespace FellowOakDicom.Network
                 {
                     _writeStream?.Dispose();
                 }
-                catch (IOException)
+                catch(IOException)
                 {
                     // The buffered stream will try to flush its contents upon disposal, which might fail if the underlying network stream is already closed
                     // This can be ignored here
@@ -301,7 +301,7 @@ namespace FellowOakDicom.Network
         public virtual Task SendRequestAsync(DicomRequest request)
         {
             ThrowIfAlreadyDisposed();
-
+            
             return SendMessageAsync(request);
         }
 
@@ -312,7 +312,7 @@ namespace FellowOakDicom.Network
         protected Task SendResponseAsync(DicomResponse response)
         {
             ThrowIfAlreadyDisposed();
-
+            
             return SendMessageAsync(response);
         }
 
@@ -376,7 +376,7 @@ namespace FellowOakDicom.Network
             {
                 throw new DicomNetworkException("Cannot send PDU because the connection to the DICOM server is lost");
             }
-
+            
             try
             {
                 while (IsConnected && !_pduQueueWatcher.Wait(60 * 1000))
@@ -390,7 +390,7 @@ namespace FellowOakDicom.Network
                 // When the DICOM service is disposed, the _pduQueueWatcher is also disposed
                 throw new DicomNetworkException("Cannot send PDU because the association has already been disposed");
             }
-
+            
             if (!IsConnected)
             {
                 throw new DicomNetworkException("Cannot send PDU because the connection to the DICOM server is lost");
@@ -404,7 +404,7 @@ namespace FellowOakDicom.Network
                         "Cannot write P-DATA-TF over current DICOM association because a previous P-DATA-TF timed out before it was sent completely"
                     );
                 }
-
+                
                 _pduQueue.Enqueue(pdu);
                 if (_pduQueue.Count >= MaximumPDUsInQueue)
                 {
@@ -441,7 +441,7 @@ namespace FellowOakDicom.Network
                         _pduQueueWatcher.Set();
                     }
                 }
-
+                
                 if (pdu is PDataTF && !_canStillProcessPDataTF)
                 {
                     throw new DicomNetworkException(
@@ -486,6 +486,7 @@ namespace FellowOakDicom.Network
                     }
                 }
                 _metricsCollector?.DataSent(written, this);
+                Options.ReportBytesSent?.Report(written);
             }
         }
 
@@ -505,7 +506,7 @@ namespace FellowOakDicom.Network
 
                     // This is the (extremely small) buffer we use to read the raw PDU header
                     using var rawPduCommonFieldsBuffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength);
-
+                    
                     var count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes.AsMemory(0, rawPduCommonFieldsBuffer.Length)).ConfigureAwait(false);
 
                     do
@@ -519,14 +520,14 @@ namespace FellowOakDicom.Network
                         }
 
                         _bytesToRead -= count;
-
+                        
                         if (_bytesToRead > 0)
                         {
                             count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes.AsMemory(rawPduCommonFieldsBuffer.Length - _bytesToRead, _bytesToRead)).ConfigureAwait(false);
                         }
                     }
                     while (_bytesToRead > 0);
-
+                    
                     // The first byte contains the PDU type
                     // The second byte is reserved
                     // The remaining four bytes contain the PDU length
@@ -542,10 +543,10 @@ namespace FellowOakDicom.Network
 
                     // Read PDU
                     var rawPduLength = pduLength + RawPDU.CommonFieldsLength;
-
+                    
                     // This is the buffer that will hold the entire Raw PDU at once
                     using var rawPduBuffer = _memoryProvider.Provide(rawPduLength);
-
+                    
                     Array.Copy(rawPduCommonFieldsBuffer.Bytes, 0, rawPduBuffer.Bytes, 0, RawPDU.CommonFieldsLength);
                     int rawPduOffset = RawPDU.CommonFieldsLength;
                     while (_bytesToRead > 0)
@@ -578,7 +579,7 @@ namespace FellowOakDicom.Network
                                 Association = new DicomAssociation
                                 {
                                     RemoteHost = _network.RemoteHost,
-                                    RemotePort = _network.RemotePort,
+                                    RemotePort = _network.RemotePort, 
                                     Options = Options
                                 };
 
@@ -787,6 +788,7 @@ namespace FellowOakDicom.Network
                     }
 
                     await _dimseStream.WriteAsync(pdv.Value.Bytes.AsMemory(0, pdv.Value.Length)).ConfigureAwait(false);
+                    Options.ReportBytesReceived?.Report((uint)pdv.Value.Length);
 
                     if (pdv.IsLastFragment)
                     {
@@ -848,7 +850,7 @@ namespace FellowOakDicom.Network
                                 Association.PresentationContexts.TryGetValue(pdv.PCID, out var pc);
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
-
+                                
                                 var source = new StreamByteSource(_dimseStream, FileReadOption.Default)
                                 {
                                     Endian = pc.AcceptedTransferSyntax.Endian
@@ -889,7 +891,7 @@ namespace FellowOakDicom.Network
                                     string errorComment = e.Message;
                                     if (errorComment.Length > DicomVR.LO.MaximumLength)
                                     {
-                                        errorComment = errorComment.Substring(0, (int)DicomVR.LO.MaximumLength - 2) + "..";
+                                        errorComment = errorComment.Substring(0, (int) DicomVR.LO.MaximumLength - 2) + "..";
                                     }
                                     await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
@@ -935,7 +937,7 @@ namespace FellowOakDicom.Network
                         {
                             req = p;
                             break;
-                        }
+                }
                     }
                 }
 
@@ -963,7 +965,7 @@ namespace FellowOakDicom.Network
                         else
                         {
                             req.LastPendingResponseReceived = DateTime.Now;
-
+                            
                             if (this is IDicomClientConnection connection)
                             {
                                 await connection.OnRequestPendingAsync(req, rsp).ConfigureAwait(false);
@@ -1119,7 +1121,7 @@ namespace FellowOakDicom.Network
         internal async Task SendNextMessageAsync()
         {
             ThrowIfAlreadyDisposed();
-
+            
             var sendQueueEmpty = false;
 
             while (true)
@@ -1162,10 +1164,10 @@ namespace FellowOakDicom.Network
                         // otherwise CheckForTimeouts returns immediately and the thread creation is wasted.
                         if (Options?.RequestTimeout != null)
                         {
-                            // This call should not be awaited because it can only complete when the pending queue is empty
-                            Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
-                        }
+                        // This call should not be awaited because it can only complete when the pending queue is empty
+                        Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
                     }
+                }
                 }
 
                 try
@@ -1219,7 +1221,7 @@ namespace FellowOakDicom.Network
                         {
                             pc = x;
                             break;
-                        }
+            }
                     }
                 }
                 pc ??= firstAccepted;
@@ -1389,12 +1391,12 @@ namespace FellowOakDicom.Network
                     {
 
                         writer = new DicomWriter(
-                            DicomTransferSyntax.ImplicitVRLittleEndian,
-                            DicomWriteOptions.Default,
+                        DicomTransferSyntax.ImplicitVRLittleEndian,
+                        DicomWriteOptions.Default,
                             new StreamByteTarget(pCommandStream));
 
-                        var commandWalker = new DicomDatasetWalker(msg.Command);
-                        await commandWalker.WalkAsync(writer).ConfigureAwait(false);
+                    var commandWalker = new DicomDatasetWalker(msg.Command);
+                    await commandWalker.WalkAsync(writer).ConfigureAwait(false);
 
                         await pCommandStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                     }
@@ -1407,38 +1409,38 @@ namespace FellowOakDicom.Network
                             // When the accepted transfer syntax is deflated, we must deflate the DICOM data set (not the command!)
                             DeflateStream deflateStream = null;
 
-                            Stream outputStream;
-                            if (pc.AcceptedTransferSyntax.IsDeflate)
-                            {
-                                deflateStream = new DeflateStream(pDataStream, CompressionMode.Compress, true);
-                                outputStream = deflateStream;
-                            }
-                            else
-                            {
-                                outputStream = pDataStream;
-                            }
+                        Stream outputStream;
+                        if (pc.AcceptedTransferSyntax.IsDeflate)
+                        {
+                            deflateStream = new DeflateStream(pDataStream, CompressionMode.Compress, true);
+                            outputStream = deflateStream;
+                        }
+                        else
+                        {
+                            outputStream = pDataStream;
+                        }
 
-                            writer = new DicomWriter(
-                                pc.AcceptedTransferSyntax,
-                                DicomWriteOptions.Default,
-                                new StreamByteTarget(outputStream));
+                        writer = new DicomWriter(
+                            pc.AcceptedTransferSyntax,
+                            DicomWriteOptions.Default,
+                            new StreamByteTarget(outputStream));
 
-                            var datasetWalker = new DicomDatasetWalker(msg.Dataset);
-
-                            await datasetWalker.WalkAsync(writer).ConfigureAwait(false);
-
-                            if (deflateStream != null)
-                            {
-                                await deflateStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
-
-                                // Deflate stream in .NET Framework only fully flushes when disposed...
-                                deflateStream.Dispose();
-                            }
-
-                            await pDataStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+                        var datasetWalker = new DicomDatasetWalker(msg.Dataset);
+                        
+                        await datasetWalker.WalkAsync(writer).ConfigureAwait(false);
+                        
+                        if (deflateStream != null)
+                        {
+                            await deflateStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+                            
+                            // Deflate stream in .NET Framework only fully flushes when disposed...
+                            deflateStream.Dispose();
+                        }                    
+                    
+                    await pDataStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                         }
                     }
-
+                    
                     msg.LastPDUSent = DateTime.Now;
                     msg.AllPDUsWereSentSuccessfully();
 
@@ -1453,8 +1455,8 @@ namespace FellowOakDicom.Network
                     Logger.ErrorSendingMessage(e);
                     throw new DicomNetworkException($"Failed to send DICOM message {msg}", e);
                 }
+                }
             }
-        }
 
         private static int CountPendingExcluding(List<DicomRequest> pending)
         {
@@ -1502,7 +1504,7 @@ namespace FellowOakDicom.Network
                             {
                                 timedOutPendingRequests ??= new List<DicomRequest>();
                                 timedOutPendingRequests.Add(p);
-                            }
+                    }
                         }
                     }
 
@@ -1521,7 +1523,7 @@ namespace FellowOakDicom.Network
                                 lock (_lock)
                                 {
                                     _pending.Remove(timedOutPendingRequest);
-
+                                    
                                     if (timedOutPendingRequest.AllPDUsSent.Status != TaskStatus.RanToCompletion)
                                     {
                                         _canStillProcessPDataTF = false;
@@ -1635,7 +1637,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationRequestAsync(DicomAssociation association)
         {
             ThrowIfAlreadyDisposed();
-
+            
             LogID = association.CalledAE;
             if (Options.UseRemoteAEForLogName)
             {
@@ -1655,7 +1657,7 @@ namespace FellowOakDicom.Network
         protected Task SendAssociationAcceptAsync(DicomAssociation association)
         {
             ThrowIfAlreadyDisposed();
-
+            
             Association = association;
 
             // reject all presentation contexts that have not already been accepted or rejected
@@ -1768,9 +1770,9 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
-
+        
         #region INNER TYPES 
-
+        
         internal class PDataTFStream : Stream
         {
             #region Private Members
@@ -1817,7 +1819,7 @@ namespace FellowOakDicom.Network
                 _pdu = new PDataTF(_memoryProvider);
 
                 // Max PDU Size - Current Size - Size of PDV header
-                _memory = ProvideEvenLengthMemory((int)(_max - CurrentPduSize() - RawPDU.CommonFieldsLength));
+                _memory = ProvideEvenLengthMemory((int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength));
             }
 
             #endregion
@@ -1863,17 +1865,17 @@ namespace FellowOakDicom.Network
 
                     var pdv = new PDV(_pcid, memory, _length, _command, last);
                     _pdu.AddPDV(pdv);
-
+                    
                     // reset length in case we recurse into WritePDU()
                     _length = 0;
                     // is the current PDU at its maximum size or do we have room for another PDV?
                     if ((_service.Options.MaxPDVsPerPDU != 0 && _pdu.PDVs.Count >= _service.Options.MaxPDVsPerPDU)
-                        || CurrentPduSize() + RawPDU.CommonFieldsLength >= _max
+                        || CurrentPduSize() + RawPDU.CommonFieldsLength >= _max 
                         || (last))
                     {
                         await WritePDUAsync(last).ConfigureAwait(false);
                     }
-
+                    
                     if (!last)
                     {
                         // Max PDU Size - Current Size - Size of PDV header
@@ -1922,7 +1924,7 @@ namespace FellowOakDicom.Network
                     }
                 }
             }
-
+            
             private IMemory ProvideEvenLengthMemory(int length)
             {
                 // Since these byte arrays will be used to create PDVs
@@ -1994,7 +1996,7 @@ namespace FellowOakDicom.Network
                     if (_memory == null)
                     {
                         // Max PDU Size - Current Size - Size of PDV header
-                        var memoryLength = (int)(_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
+                        var memoryLength = (int) (_max - CurrentPduSize() - RawPDU.CommonFieldsLength);
                         _memory = ProvideEvenLengthMemory(memoryLength);
                     }
 
@@ -2003,7 +2005,7 @@ namespace FellowOakDicom.Network
                         var c = Math.Min(source.Length, _memory.Length - _length);
 
                         source.Span.Slice(0, c).CopyTo(_memory.Span.Slice(_length, c));
-
+                        
                         _length += c;
                         source = source.Slice(c);
 
@@ -2035,9 +2037,9 @@ namespace FellowOakDicom.Network
             }
 
             #endregion
-
+            
             #region Disposable Members
-
+            
             protected override void Dispose(bool disposing)
             {
                 var bytes = Interlocked.Exchange(ref _memory, null);
@@ -2048,12 +2050,12 @@ namespace FellowOakDicom.Network
 
                 base.Dispose(disposing);
             }
-
+            
             #endregion
         }
 
-
-        #endregion
+        
+        #endregion 
     }
 }
 
