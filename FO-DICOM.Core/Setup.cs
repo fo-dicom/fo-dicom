@@ -11,8 +11,11 @@ using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FellowOakDicom
 {
@@ -83,6 +86,7 @@ namespace FellowOakDicom
 
         private static IServiceCollection AddInternals(this IServiceCollection services)
         {
+            services.AddHostedService<DicomSetupService>();
             services.TryAddSingleton<IFileReferenceFactory, FileReferenceFactory>();
             services.TryAddSingleton<IMemoryProvider, ArrayPoolMemoryProvider>();
             return services;
@@ -142,5 +146,27 @@ namespace FellowOakDicom
             services.Replace(ServiceDescriptor.Singleton<ILogManager, TLogManager>());
             return services;
         }
+    }
+
+    /// <summary>
+    /// This service is responsible for registering the root service provider statically at application startup
+    /// This is necessary because Fellow Oak DICOM still resolves dependencies statically in some places
+    /// </summary>
+    internal sealed class DicomSetupService : IHostedService
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+        public DicomSetupService(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        }
+        
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            DicomSetupBuilder.UseServiceProvider(_serviceProvider);
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }
