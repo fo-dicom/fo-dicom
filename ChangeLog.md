@@ -15,6 +15,7 @@
 * Fix issue where reading a DICOM file with large pixel data (> 2 GB) did not work (#1453)
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
+* Fix issue so you longer need to call `DicomSetupBuilder.UseServiceProvider(..)` explicitly in .NET Core applications (#1646) 
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
