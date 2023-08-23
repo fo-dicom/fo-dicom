@@ -16,12 +16,7 @@ namespace FellowOakDicom.AspNetCore
     {
 
         public static IServiceCollection UseFellowOakDicom(this IServiceCollection services)
-            => services.AddFellowOakDicom()
-                .AddTransient<IHostedService, DicomInitializationHelper>(provider => {
-                    DicomSetupBuilder.UseServiceProvider(provider);
-                    return new DicomInitializationHelper();
-                    })
-          ;
+            => services.AddFellowOakDicom();
 
         #region Add DicomServer with own class implementation
 
@@ -65,12 +60,4 @@ namespace FellowOakDicom.AspNetCore
 
         #endregion
     }
-
-
-    public class DicomInitializationHelper : IHostedService
-    {
-        public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-    }
-
 }
