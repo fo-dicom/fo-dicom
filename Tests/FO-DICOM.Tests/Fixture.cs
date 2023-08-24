@@ -16,6 +16,7 @@ namespace FellowOakDicom.Tests
     /// </summary>
     public class GlobalFixture : IDisposable
     {
+        public IServiceProviderHost TestServiceProviderHost { get; }
 
         public GlobalFixture()
         {
@@ -54,8 +55,8 @@ namespace FellowOakDicom.Tests
             serviceProviders.Register(TestCollections.WithTranscoder, noTranscoderServiceProvider);
 
 #endif
-
             DicomSetupBuilder.UseServiceProvider(serviceProviders);
+            TestServiceProviderHost = serviceProviders;
         }
 
         public void Dispose()

@@ -16,12 +16,14 @@ using Xunit;
 
 namespace FellowOakDicom.Tests.Network
 {
+    [Collection(TestCollections.General)]
     public class DependencyInjectionTest
     {
+        private readonly GlobalFixture _globalFixture;
 
-        public DependencyInjectionTest()
+        public DependencyInjectionTest(GlobalFixture globalFixture)
         {
-
+            _globalFixture = globalFixture ?? throw new ArgumentNullException(nameof(globalFixture));
         }
 
 #if NET462
@@ -59,26 +61,34 @@ namespace FellowOakDicom.Tests.Network
         [FactForNetCore]
         public async Task StaticServiceProviderShouldBeSetWithHostedService()
         {
-            // Arrange
-            var services = new ServiceCollection();
-            services.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>();
-            var serviceProvider = services.BuildServiceProvider();
-
-            // Run hosted services like a real .NET application would
-            var hostedServices = serviceProvider.GetRequiredService<IEnumerable<IHostedService>>();
-            foreach (var hostedService in hostedServices)
+            try
             {
-                await hostedService.StartAsync(CancellationToken.None);
+                // Arrange
+                var services = new ServiceCollection();
+                services.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>();
+                var serviceProvider = services.BuildServiceProvider();
+
+                // Run hosted services like a real .NET application would
+                var hostedServices = serviceProvider.GetRequiredService<IEnumerable<IHostedService>>();
+                foreach (var hostedService in hostedServices)
+                {
+                    await hostedService.StartAsync(CancellationToken.None);
+                }
+
+                // Act
+                var dicomFile = await DicomFile.OpenAsync("Test Data/TestPattern_RGB.dcm");
+                var dicomImage = new DicomImage(dicomFile.Dataset);
+                using var image = dicomImage.RenderImage();
+
+                // Assert
+                // The default is RawImage, so if the static Setup.ServiceProvider was not set correctly, this would fail
+                Assert.IsType<ImageSharpImage>(image);
             }
-
-            // Act
-            var dicomFile = await DicomFile.OpenAsync("Test Data/TestPattern_RGB.dcm");
-            var dicomImage = new DicomImage(dicomFile.Dataset);
-            using var image = dicomImage.RenderImage();
-
-            // Assert
-            // The default is RawImage, so if the static Setup.ServiceProvider was not set correctly, this would fail
-            Assert.IsType<ImageSharpImage>(image);
+            finally
+            {
+                // To avoid interference with other tests, we must reset the static service provider host to its original value
+                DicomSetupBuilder.UseServiceProvider(_globalFixture.TestServiceProviderHost);
+            }
         }
 
     }
