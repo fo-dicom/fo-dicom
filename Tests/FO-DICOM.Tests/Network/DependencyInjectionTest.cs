@@ -66,7 +66,7 @@ namespace FellowOakDicom.Tests.Network
                 // Arrange
                 var services = new ServiceCollection();
                 services.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>();
-                var serviceProvider = services.BuildServiceProvider();
+                await using var serviceProvider = services.BuildServiceProvider();
 
                 // Run hosted services like a real .NET application would
                 var hostedServices = serviceProvider.GetRequiredService<IEnumerable<IHostedService>>();
