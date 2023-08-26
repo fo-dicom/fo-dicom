@@ -75,11 +75,29 @@ namespace FellowOakDicom.Serialization
                     WriteDicomAttribute(xmlOutput, sq);
                     for (var i = 0; i < sq.Items.Count; i++)
                     {
-                        xmlOutput.AppendLine($@"<Item number=""{i+1}"">");
+                        xmlOutput.AppendLine($@"<Item number=""{i + 1}"">");
 
                         DicomDatasetToXml(xmlOutput, sq.Items[i]);
 
                         xmlOutput.AppendLine(@"</Item>");
+                    }
+                    xmlOutput.AppendLine(@"</DicomAttribute>");
+                }
+                else if (item is DicomFragmentSequence)
+                {
+                    var sq = item as DicomFragmentSequence;
+
+                    WriteDicomAttribute(xmlOutput, sq);
+                   
+                    for (var i = 0; i < sq.Fragments.Count; i++)
+                    {
+                        xmlOutput.AppendLine($@"<Fragment number=""{i + 1}"">");
+                        if (sq.Fragments[i].Data?.Length > 0)
+                        {
+                            var binaryString = GetBinaryBase64(sq.Fragments[i]);
+                            xmlOutput.AppendLine($@"<InlineBinary>{binaryString}</InlineBinary>");
+                        }
+                        xmlOutput.AppendLine(@"</Fragment>");
                     }
                     xmlOutput.AppendLine(@"</DicomAttribute>");
                 }
@@ -95,7 +113,7 @@ namespace FellowOakDicom.Serialization
             if (vr == DicomVRCode.OB || vr == DicomVRCode.OD || vr == DicomVRCode.OF || vr == DicomVRCode.OW ||
                 vr == DicomVRCode.OL || vr == DicomVRCode.UN)
             {
-                var binaryString = GetBinaryBase64(item);
+                var binaryString = GetBinaryBase64(item.Buffer);
                 xmlOutput.AppendLine($@"<InlineBinary>{binaryString}</InlineBinary>");
             }
             else if (vr == DicomVRCode.PN)
@@ -144,15 +162,14 @@ namespace FellowOakDicom.Serialization
             {
                 xmlOutput.AppendLine($@"<DicomAttribute tag=""{item.Tag.Group:X4}{item.Tag.Element:X4}"" vr=""{item.ValueRepresentation.Code}"" keyword=""{item.Tag.DictionaryEntry.Keyword}"">");
             }
+             
         }
 
-        private static string GetBinaryBase64(DicomElement item)
+        private static string GetBinaryBase64(IByteBuffer buffer)
         {
-            IByteBuffer buffer = item.Buffer;
             if (buffer == null) return string.Empty;
             return Convert.ToBase64String(buffer.Data);
         }
-
         private static string EscapeXml(string text)
         {
             if (text == null)
