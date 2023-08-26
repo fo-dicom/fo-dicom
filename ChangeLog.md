@@ -199,3 +199,10 @@
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
 
 
+#### 5.1.1 (2023-08-27)
+
+##### Changes:
+* Fix the issue of 'DicomAttribute not generated in XML when element is of type DicomFragmentSequence'
+ * Changes made in DiocmXML class to handle DicomFragmentSequence
+ * Signature of GetBinaryBase64 changed to make it generic for dicom elements
+ * Unit test added to make sure new changes are working expected
