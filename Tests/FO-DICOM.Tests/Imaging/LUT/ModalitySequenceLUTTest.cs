@@ -3,8 +3,6 @@
 #nullable disable
 
 using FellowOakDicom.Imaging;
-using FellowOakDicom.Imaging.LUT;
-using System.Linq;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging.LUT
@@ -20,8 +18,8 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         {
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset, 0);
-            var lut = new ModalitySequenceLUT(options.ModalityLUTSequence.First());
-            Assert.Equal(0, lut.MinimumOutputValue);
+            Assert.NotNull(options.ModalityLUT);
+            Assert.Equal(0, options.ModalityLUT.MinimumOutputValue);
         }
 
         [Fact]
@@ -29,8 +27,8 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         {
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset, 0);
-            var lut = new ModalitySequenceLUT(options.ModalityLUTSequence.First());
-            Assert.Equal(1023, lut.MaximumOutputValue);
+            Assert.NotNull(options.ModalityLUT);
+            Assert.Equal(1023, options.ModalityLUT.MaximumOutputValue);
         }
 
         #endregion

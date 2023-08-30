@@ -35,9 +35,9 @@ namespace FellowOakDicom.Imaging.Render
         public GenericGrayscalePipeline(GrayscaleRenderOptions options)
         {
             _options = options;
-            if (options.ModalityLUTSequence != null)
+            if (options.ModalityLUT != null)
             {
-                _modalityLut = new ModalitySequenceLUT(_options.ModalityLUTSequence.First());
+                _modalityLut = options.ModalityLUT;
             }
             else if (_options.RescaleSlope != 1.0 || _options.RescaleIntercept != 0.0)
             {

@@ -2,10 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom.Imaging.LUT;
 using System;
 using System.Linq;
-using FellowOakDicom.Imaging.Codec;
-using FellowOakDicom.Tools;
 
 namespace FellowOakDicom.Imaging
 {
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Modality LUT Sequence
         /// </summary>
-        public DicomSequence ModalityLUTSequence { get; private set; }
+        public IModalityLUT ModalityLUT { get; private set; }
 
         /// <summary>
         /// VOI LUT Sequence
@@ -163,13 +163,13 @@ namespace FellowOakDicom.Imaging
                 It is used to convert stored pixels to X-Ray beam intensity space, but it is NOT APPLIED to stored pixels for the purpose of display 
                 (or more specifically prior to application of the VOI LUT Module attributes to the stored pixel data).
             */
-            if (grayscaleRenderOptions.ModalityLUTSequence != null
+            if (grayscaleRenderOptions.ModalityLUT != null
                 && dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClassUID) 
                 && (sopClassUID == DicomUID.XRayAngiographicImageStorage
                 || sopClassUID == DicomUID.XRayRadiofluoroscopicImageStorage
                 || sopClassUID == DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED))
             {
-                grayscaleRenderOptions.ModalityLUTSequence = null;
+                grayscaleRenderOptions.ModalityLUT = null;
             }
 
             return grayscaleRenderOptions;
@@ -203,7 +203,7 @@ namespace FellowOakDicom.Imaging
 
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
-                options.ModalityLUTSequence = modalityLutSequence;
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
@@ -257,7 +257,7 @@ namespace FellowOakDicom.Imaging
 
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
-                options.ModalityLUTSequence = modalityLutSequence;
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
@@ -306,7 +306,7 @@ namespace FellowOakDicom.Imaging
 
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
-                options.ModalityLUTSequence = modalityLutSequence;
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
@@ -353,16 +353,19 @@ namespace FellowOakDicom.Imaging
             var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
             var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
 
+            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                // if there is a modalityLUT sequence, then the values have to be mapped
+                min = options.ModalityLUT[min];
+                max = options.ModalityLUT[max];
+            }
+
             options.WindowWidth = Math.Max(1, Math.Abs(max - min));
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUTSequence = modalityLutSequence;
-            }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
             {
@@ -398,7 +401,7 @@ namespace FellowOakDicom.Imaging
 
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
-                options.ModalityLUTSequence = modalityLutSequence;
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
@@ -449,7 +452,7 @@ namespace FellowOakDicom.Imaging
 
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
-                options.ModalityLUTSequence = modalityLutSequence;
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))

@@ -209,7 +209,7 @@ namespace FellowOakDicom.Tests.Imaging
             {
                 var options = optionFactory(dataset);
                 Assert.Null(options.VOILUTSequence);
-                Assert.Null(options.ModalityLUTSequence);
+                Assert.Null(options.ModalityLUT);
             }
         }
 
@@ -224,7 +224,7 @@ namespace FellowOakDicom.Tests.Imaging
             {
                 var options = optionFactory(dataset);
                 Assert.Null(options.VOILUTSequence);
-                Assert.Null(options.ModalityLUTSequence);
+                Assert.Null(options.ModalityLUT);
             }
         }
 
@@ -236,15 +236,26 @@ namespace FellowOakDicom.Tests.Imaging
             voiLutSequence.Items.Add(new DicomDataset());
             dataset.Add(voiLutSequence);
             var modalityLutSequence = new DicomSequence(DicomTag.ModalityLUTSequence);
-            modalityLutSequence.Items.Add(new DicomDataset());
+            modalityLutSequence.Items.Add(ValidModalityLutSequenceItem());
             dataset.Add(modalityLutSequence);
 
             foreach (var optionFactory in OptionsFactories())
             {
                 var options = optionFactory(dataset);
                 Assert.Equal(voiLutSequence, options.VOILUTSequence);
-                Assert.Equal(modalityLutSequence, options.ModalityLUTSequence);
+                Assert.NotNull(options.ModalityLUT);
             }
+        }
+
+        private DicomDataset ValidModalityLutSequenceItem()
+        {
+            ushort zeroUS = 0;
+            ushort oneUS = 1;
+            return new DicomDataset()
+            {
+                { DicomTag.LUTDescriptor, oneUS, zeroUS, zeroUS },
+                { DicomTag.LUTData, zeroUS, zeroUS, zeroUS }
+            };
         }
 
         private DicomDataset ValidDataset()

@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests.Bugs
             var grayScaleRenderOptions = GrayscaleRenderOptions.FromDataset(testFile.Dataset, 0);
 
             // Assert
-            Assert.Null(grayScaleRenderOptions.ModalityLUTSequence);
+            Assert.Null(grayScaleRenderOptions.ModalityLUT);
         }
     }
 }
