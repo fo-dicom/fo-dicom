@@ -284,7 +284,7 @@ namespace FellowOakDicom.Tests.Imaging
                 d => GrayscaleRenderOptions.FromDataset(d, 0),
                 GrayscaleRenderOptions.FromBitRange,
                 GrayscaleRenderOptions.FromMinMax,
-                GrayscaleRenderOptions.FromWindowLevel,
+                d => GrayscaleRenderOptions.FromWindowLevel(d, 0),
                 GrayscaleRenderOptions.FromImagePixelValueTags,
                 dataset => GrayscaleRenderOptions.FromHistogram(dataset),
             };

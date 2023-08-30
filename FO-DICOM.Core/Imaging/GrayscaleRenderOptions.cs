@@ -129,7 +129,7 @@ namespace FellowOakDicom.Imaging
                 && dataset.Contains(DicomTag.WindowCenter))
             {
                 // If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
-                grayscaleRenderOptions = FromWindowLevel(dataset);
+                grayscaleRenderOptions = FromWindowLevel(dataset, frame);
             }
             else if (dataset.FunctionalGroupValues(frame).TryGetValue(DicomTag.WindowWidth, 0, out double functionalWindowWidth) && functionalWindowWidth >= 1.0
                 && dataset.FunctionalGroupValues(frame).Contains(DicomTag.WindowCenter))
@@ -180,8 +180,9 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         /// <param name="dataset">DICOM dataset from which render options should be obtained.</param>
         /// <returns>Grayscale render options based on window level data.</returns>
-        public static GrayscaleRenderOptions FromWindowLevel(DicomDataset dataset)
+        public static GrayscaleRenderOptions FromWindowLevel(DicomDataset dataset, int frame = 0)
         {
+            var functional = dataset.FunctionalGroupValues(frame).ToList();
             if (!dataset.Contains(DicomTag.WindowWidth) ||
                 !dataset.Contains(DicomTag.WindowCenter))
             {
@@ -191,13 +192,26 @@ namespace FellowOakDicom.Imaging
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
             {
-                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
-                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0),
+                RescaleSlope = dataset.Contains(DicomTag.RescaleSlope)
+                    ? dataset.GetSingleValue<double>(DicomTag.RescaleSlope)
+                    : functional.Contains(DicomTag.RescaleSlope)
+                    ? functional.GetSingleValue<double>(DicomTag.RescaleSlope)
+                    : 1.0,
+                RescaleIntercept = dataset.Contains(DicomTag.RescaleIntercept)
+                    ? dataset.GetSingleValue<double>(DicomTag.RescaleIntercept)
+                    : functional.Contains(DicomTag.RescaleIntercept)
+                    ? functional.GetSingleValue<double>(DicomTag.RescaleIntercept)
+                    : 0.0,
 
                 WindowWidth = dataset.GetValue<double>(DicomTag.WindowWidth, 0),
                 WindowCenter = dataset.GetValue<double>(DicomTag.WindowCenter, 0),
 
-                VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR"),
+                VOILUTFunction = dataset.Contains(DicomTag.VOILUTFunction)
+                    ? dataset.GetSingleValue<string>(DicomTag.VOILUTFunction)
+                    : functional.Contains(DicomTag.VOILUTFunction)
+                    ? functional.GetSingleValue<string>(DicomTag.VOILUTFunction)
+                    : "LINEAR",
+
                 ColorMap = GetColorMap(dataset)
             };
 
