@@ -73,11 +73,10 @@ namespace FellowOakDicom.Tests.Serialization
             var file = DicomFile.Open(TestData.Resolve("HasFragmentSequence.dcm"));
             var xml = DicomXML.ConvertDicomToXML(file.Dataset);
 
-            var PixelDataStart = new StringBuilder();
-            PixelDataStart.AppendLine(@"<DicomAttribute tag=""7FE00010"" vr=""OB"" keyword=""PixelData"">");
+            var PixelDataStart = @"<DicomAttribute tag=""7FE00010"" vr=""OB"" keyword=""PixelData"">";
 
             Assert.True(!string.IsNullOrEmpty(xml));
-            Assert.Contains(PixelDataStart.ToString(), xml);
+            Assert.Contains(PixelDataStart, xml);
 
             var doc = new XmlDocument();
             doc.LoadXml(xml);

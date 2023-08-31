@@ -15,6 +15,8 @@
 * Fix issue where reading a DICOM file with large pixel data (> 2 GB) did not work (#1453)
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
+* Fix the issue of 'DicomAttribute not generated in XML when element is of type DicomFragmentSequence'
+ 
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
@@ -197,12 +199,3 @@
 * DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
 * DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncodings`, that is applied to all string-based tags.
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
-
-
-#### 5.1.1 (2023-08-27)
-
-##### Changes:
-* Fix the issue of 'DicomAttribute not generated in XML when element is of type DicomFragmentSequence'
- * Changes made in DiocmXML class to handle DicomFragmentSequence
- * Signature of GetBinaryBase64 changed to make it generic for dicom elements
- * Unit test added to make sure new changes are working expected
