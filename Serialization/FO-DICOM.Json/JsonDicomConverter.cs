@@ -611,11 +611,11 @@ namespace FellowOakDicom.Serialization
                 val = val.Substring(i);
             }
 
-            // Re-add negation sign
-            if (negative) { val = "-" + val; }
-
             if (IsValidJsonNumber(val))
             {
+                // Re-add negation sign
+                if (negative) { val = "-" + val; }
+
                 return val;
             }
 
