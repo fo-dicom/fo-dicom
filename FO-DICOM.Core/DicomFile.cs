@@ -219,7 +219,9 @@ namespace FellowOakDicom
             {
                 throw new ArgumentNullException(nameof(fallbackEncoding));
             }
+
             var df = new DicomFile();
+            df.Dataset.SetFallbackEncodings(new[] { fallbackEncoding });
 
             try
             {
