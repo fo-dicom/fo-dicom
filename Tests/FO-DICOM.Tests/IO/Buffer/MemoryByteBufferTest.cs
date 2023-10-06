@@ -73,7 +73,7 @@ namespace FellowOakDicom.Tests.IO.Buffer
             using var ms = new MemoryStream(7);
 
             // Act
-            await memoryBuffer.CopyToStreamAsync(ms, CancellationToken.None).ConfigureAwait(false);
+            await memoryBuffer.CopyToStreamAsync(ms, CancellationToken.None);
             var actual = ms.ToArray();
 
 

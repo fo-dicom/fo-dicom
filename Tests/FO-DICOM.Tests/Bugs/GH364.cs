@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.Bugs
         [InlineData("GH364.dcm")]
         public async Task DicomFileOpenAsync_Contains_TagBeyond00185020(string fileName)
         {
-            var file = await DicomFile.OpenAsync(TestData.Resolve(fileName)).ConfigureAwait(false);
+            var file = await DicomFile.OpenAsync(TestData.Resolve(fileName));
             var actual = file.Dataset.Contains(DicomTag.StudyInstanceUID);
             Assert.True(actual);
         }

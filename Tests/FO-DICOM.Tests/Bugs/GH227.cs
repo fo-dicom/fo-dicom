@@ -28,7 +28,7 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task OpenAsync_DeflatedFile_DatasetReadilyAvailable()
         {
-            var file = await DicomFile.OpenAsync(TestData.Resolve("GH227.dcm")).ConfigureAwait(false);
+            var file = await DicomFile.OpenAsync(TestData.Resolve("GH227.dcm"));
             const int expected = 512;
             var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
             Assert.Equal(expected, actual);
@@ -61,7 +61,7 @@ namespace FellowOakDicom.Tests.Bugs
                     .Clone(DicomTransferSyntax.DeflatedExplicitVRLittleEndian);
 
             using var stream = new MemoryStream();
-            await deflated.SaveAsync(stream).ConfigureAwait(false);
+            await deflated.SaveAsync(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
             var file = DicomFile.Open(stream);

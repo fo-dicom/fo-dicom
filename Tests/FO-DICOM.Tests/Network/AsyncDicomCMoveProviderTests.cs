@@ -45,8 +45,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotEmpty(responses);
                 Assert.Equal(DicomState.Pending, responses[0].Status.State);

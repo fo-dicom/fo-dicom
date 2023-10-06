@@ -375,7 +375,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             using var association = await connection.OpenAssociationAsync(openAssociationRequest, cancellationToken);
             try
             {
-                cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, cancellationToken).ConfigureAwait(false);
+                cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, cancellationToken);
             }
             finally
             {

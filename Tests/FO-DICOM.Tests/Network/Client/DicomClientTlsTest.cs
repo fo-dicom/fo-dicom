@@ -197,11 +197,11 @@ namespace FellowOakDicom.Tests.Network.Client
                     actualResponse = response;
                 }
             };
-            await client.AddRequestAsync(dicomCEchoRequest).ConfigureAwait(false);
+            await client.AddRequestAsync(dicomCEchoRequest);
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
             {
-                await client.SendAsync(cts.Token).ConfigureAwait(false);
+                await client.SendAsync(cts.Token);
             }
 
             AllResponsesShouldHaveSucceeded(new[] { actualResponse });

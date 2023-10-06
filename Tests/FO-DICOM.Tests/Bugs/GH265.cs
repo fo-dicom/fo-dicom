@@ -46,9 +46,9 @@ namespace FellowOakDicom.Tests.Bugs
 
             using (var stream = File.OpenWrite(tempName))
             {
-                var input = await DicomFile.OpenAsync(TestData.Resolve("CT-MONO2-16-ankle")).ConfigureAwait(false);
+                var input = await DicomFile.OpenAsync(TestData.Resolve("CT-MONO2-16-ankle"));
                 expected = input.FileMetaInfo;
-                await input.SaveAsync(stream).ConfigureAwait(false);
+                await input.SaveAsync(stream);
             }
 
             var output = DicomFile.Open(tempName);
@@ -67,11 +67,11 @@ namespace FellowOakDicom.Tests.Bugs
 
             var input = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
             var expected = input.FileMetaInfo;
-            await input.SaveAsync(tempName).ConfigureAwait(false);
+            await input.SaveAsync(tempName);
 
             using (var stream = File.OpenRead(tempName))
             {
-                var output = await DicomFile.OpenAsync(stream).ConfigureAwait(false);
+                var output = await DicomFile.OpenAsync(stream);
                 var actual = output.FileMetaInfo;
 
                 Assert.NotEqual(expected.ImplementationClassUID.UID, actual.ImplementationClassUID.UID);

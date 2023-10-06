@@ -62,9 +62,9 @@ namespace FellowOakDicom.Tests.Bugs
                         },
                         UserState = i
                     }
-                ).ConfigureAwait(false);
+                );
                 testLogger.LogInformation("Sending #{0}", i);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.SendAsync();
                 testLogger.LogInformation("Sent (or timed out) #{0}", i);
             }
 
@@ -106,15 +106,15 @@ namespace FellowOakDicom.Tests.Bugs
                                 Interlocked.Increment(ref actual);
                             }
                         }
-                    ).ConfigureAwait(false);
+                    );
 
                     testLogger.LogInformation("Sending #{0}", requestIndex);
-                    await client.SendAsync().ConfigureAwait(false);
+                    await client.SendAsync();
                     testLogger.LogInformation("Sent (or timed out) #{0}", requestIndex);
                 }
             ).ToArray();
 
-            await Task.WhenAll(requests).ConfigureAwait(false);
+            await Task.WhenAll(requests);
 
             Assert.Equal(expected, actual);
         }

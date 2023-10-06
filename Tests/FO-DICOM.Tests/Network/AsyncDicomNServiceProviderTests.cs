@@ -48,8 +48,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);
@@ -78,8 +78,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);
@@ -108,8 +108,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);
@@ -139,8 +139,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);
@@ -169,8 +169,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);
@@ -199,8 +199,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);

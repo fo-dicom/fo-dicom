@@ -37,8 +37,8 @@ namespace FellowOakDicom.Tests.Bugs
                                 {
                                     lock (locker) actual = rsp.Status;
                                 }
-                        }).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                        });
+                await client.SendAsync();
 
                 Assert.Equal(expected, actual);
             }
@@ -62,11 +62,11 @@ namespace FellowOakDicom.Tests.Bugs
                         {
                             lock (locker) status = rsp.Status;
                         }
-                    }).ConfigureAwait(false);
+                    });
 
                 try
                 {
-                    await client.SendAsync().ConfigureAwait(false);
+                    await client.SendAsync();
                 }
                 catch
                 {

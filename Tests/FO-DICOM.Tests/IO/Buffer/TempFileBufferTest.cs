@@ -78,7 +78,7 @@ namespace FellowOakDicom.Tests.IO.Buffer
             using var ms = new MemoryStream(bytes.Length);
 
             // Act
-            await fileByteBuffer.CopyToStreamAsync(ms, CancellationToken.None).ConfigureAwait(false);
+            await fileByteBuffer.CopyToStreamAsync(ms, CancellationToken.None);
 
             // Assert
             Assert.Equal(bytes, ms.ToArray());

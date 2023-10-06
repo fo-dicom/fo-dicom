@@ -80,7 +80,7 @@ namespace FellowOakDicom.Tests.IO.Buffer
             using var ms = new MemoryStream(new byte[8]);
 
             // Act
-            await evenLengthBuffer.CopyToStreamAsync(ms, CancellationToken.None).ConfigureAwait(false);
+            await evenLengthBuffer.CopyToStreamAsync(ms, CancellationToken.None);
             var actual = ms.ToArray();
 
             // Assert

@@ -46,7 +46,7 @@ namespace FellowOakDicom.Tests.Network
                 handle.Set();
             };
             await client.AddRequestAsync(get);
-            await client.SendAsync().ConfigureAwait(false);
+            await client.SendAsync();
             handle.Wait();
 
             Assert.Equal("RT ANKLE", dataset.GetString(DicomTag.StudyDescription));
@@ -84,7 +84,7 @@ namespace FellowOakDicom.Tests.Network
                 }
             };
             await client.AddRequestAsync(get);
-            await client.SendAsync().ConfigureAwait(false);
+            await client.SendAsync();
             handle.Wait();
 
             Assert.Equal(140, counter);

@@ -104,7 +104,7 @@ namespace FellowOakDicom.Tests.Network
                 };
 
                 dicomClient.ClientOptions.AssociationLingerTimeoutInMs = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                await dicomClient.SendAsync().ConfigureAwait(false);
+                await dicomClient.SendAsync();
 
                 Assert.Equal(DicomStatus.Success, status);
                 Assert.Equal(2, verifiedInstances);

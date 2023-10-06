@@ -46,8 +46,8 @@ namespace FellowOakDicom.Tests.Network
                     value = resp.Dataset.GetSingleValueOrDefault(DicomTag.PatientComments, string.Empty);
                 };
 
-            await client.AddRequestAsync(request).ConfigureAwait(false);
-            await client.SendAsync().ConfigureAwait(false);
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
             Assert.False(string.IsNullOrEmpty(value));
         }
