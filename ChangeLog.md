@@ -15,6 +15,7 @@
 * Fix issue where reading a DICOM file with large pixel data (> 2 GB) did not work (#1453)
 * Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections never close (#1468)
 * Fix issue where a DICOM server could leak memory when one or more connections never close (#1594)
+* Fix the issue of 'DicomAttribute not generated in XML when element is of type DicomFragmentSequence'
 * Prevent adding duplicate presentation contexts to an association request (#1596)
 * Fix issue with missing known DicomTransferSyntax from static DicomTransferSyntax.Entries dictionary (#1644)
 
@@ -199,5 +200,3 @@
 * DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
 * DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncodings`, that is applied to all string-based tags.
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
-
-
