@@ -19,6 +19,11 @@ namespace FellowOakDicom.Network
 
         private readonly SortedDictionary<byte, DicomPresentationContext> _pc;
 
+        /// <summary>
+        /// The set of unique presentation contexts, solely used to avoid duplicates
+        /// </summary>
+        private readonly ISet<DicomPresentationContext> _uniquePcs;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -29,6 +34,7 @@ namespace FellowOakDicom.Network
         public DicomPresentationContextCollection()
         {
             _pc = new SortedDictionary<byte, DicomPresentationContext>();
+            _uniquePcs = new HashSet<DicomPresentationContext>(DuplicateDicomPresentationContextComparer.Instance);
         }
 
         #endregion
@@ -79,13 +85,15 @@ namespace FellowOakDicom.Network
         /// <param name="transferSyntaxes">Supported transfer syntaxes.</param>
         public void Add(DicomUID abstractSyntax, bool? userRole, bool? providerRole, params DicomTransferSyntax[] transferSyntaxes)
         {
+            transferSyntaxes = transferSyntaxes ?? Array.Empty<DicomTransferSyntax>();
+
             var pc = new DicomPresentationContext(GetNextPresentationContextID(), abstractSyntax, userRole, providerRole);
 
             foreach (var tx in transferSyntaxes)
             {
                 pc.AddTransferSyntax(tx);
             }
-
+            
             Add(pc);
         }
 
@@ -96,7 +104,11 @@ namespace FellowOakDicom.Network
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
         public void Add(DicomPresentationContext item)
         {
-            _pc.Add(item.ID, item);
+            // Double-check against duplicate presentation contexts
+            if (_uniquePcs.Add(item))
+            {
+                _pc.Add(item.ID, item);
+            }
         }
 
         /// <summary>
@@ -203,6 +215,7 @@ namespace FellowOakDicom.Network
         public void Clear()
         {
             _pc.Clear();
+            _uniquePcs.Clear();
         }
 
         /// <summary>
@@ -233,6 +246,7 @@ namespace FellowOakDicom.Network
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
         public bool Remove(DicomPresentationContext item)
         {
+            _uniquePcs.Remove(item);
             return _pc.Remove(item.ID);
         }
 
@@ -285,5 +299,83 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Comparer used to guard against duplicate presentation contexts
+    /// </summary>
+    internal class DuplicateDicomPresentationContextComparer : IEqualityComparer<DicomPresentationContext>
+    {
+        public static readonly DuplicateDicomPresentationContextComparer Instance = new DuplicateDicomPresentationContextComparer();
+        
+        public bool Equals(DicomPresentationContext x, DicomPresentationContext y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(x, null))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(y, null))
+            {
+                return false;
+            }
+
+            // All properties must be identical, and the transfer syntaxes must be in identical order
+            if (x.AbstractSyntax != y.AbstractSyntax)
+            {
+                return false;
+            }
+
+            if (x.UserRole != y.UserRole)
+            {
+                return false;
+            }
+
+            if (x.ProviderRole != y.ProviderRole)
+            {
+                return false;
+            }
+
+            var xTransferSyntaxes = x.GetTransferSyntaxes();
+            var yTransferSyntaxes = y.GetTransferSyntaxes();
+            if (xTransferSyntaxes.Count != yTransferSyntaxes.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < xTransferSyntaxes.Count; i++)
+            {
+                var xTransferSyntax = xTransferSyntaxes[i];
+                var yTransferSyntax = yTransferSyntaxes[i];
+
+                if (xTransferSyntax != yTransferSyntax)
+                {
+                    return false;
+                }
+            }
+
+            // At this point, it is confirmed that the SOP class UID, the user & provider role and every transfer syntax is identical
+            return true;
+        }
+
+        public int GetHashCode(DicomPresentationContext presentationContext)
+        {
+            var hash = new HashCode();
+            hash.Add(presentationContext.AbstractSyntax);
+            hash.Add(presentationContext.UserRole);
+            hash.Add(presentationContext.ProviderRole);
+            var transferSyntaxes = presentationContext.GetTransferSyntaxes();
+            hash.Add(transferSyntaxes.Count);
+            foreach (var transferSyntax in transferSyntaxes)
+            {
+                hash.Add(transferSyntax);
+            }
+            return hash.ToHashCode();
+        }
     }
 }
