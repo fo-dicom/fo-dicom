@@ -21,14 +21,9 @@ namespace FellowOakDicom.Tests.Network.Client
     [Collection(TestCollections.Network), Trait(TestTraits.Category, TestCategories.Network)]
     public class DicomClientTlsTest
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-        private readonly XUnitDicomLogger _logger;
-
         #region Fields
 
-        private static string _remoteHost;
-
-        private static int _remotePort;
+        private readonly XUnitDicomLogger _logger;
 
         #endregion
 
@@ -36,13 +31,10 @@ namespace FellowOakDicom.Tests.Network.Client
 
         public DicomClientTlsTest(ITestOutputHelper testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper;
             _logger = new XUnitDicomLogger(testOutputHelper)
                 .IncludeTimestamps()
                 .IncludeThreadId()
                 .WithMinimumLevel(LogLevel.Debug);
-            _remoteHost = null;
-            _remotePort = 0;
         }
 
         #endregion
@@ -85,7 +77,6 @@ namespace FellowOakDicom.Tests.Network.Client
         }
 
         #endregion
-
 
         [Theory]
 #if !NET462
