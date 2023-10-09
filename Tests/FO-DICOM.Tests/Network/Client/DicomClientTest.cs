@@ -174,29 +174,35 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task AutomaticallyFixTooLongAETitles()
         {
-            int port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
+            // Arrange
+            var port = Ports.GetNext();
+            var counter = 0;
+            using var server = CreateServer<ConfigurableDicomCEchoProvider, ConfigurableDicomCEchoProviderServer>(port);
+            var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+            DicomAssociation capturedAssociation = null;
+            server.OnAssociationRequest(association =>
             {
-                var counter = 0;
-                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+                capturedAssociation = association;
+                return Task.FromResult(true);
+            });
 
-                // DicomClientFactory cares about the length of AETitles,
-                // but in case some developer registeres a custom Factory or creates DicomClient directly for some other reason.
-                var client = new DicomClient("localhost", port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
-                    new DicomClientOptions { }, new DicomServiceOptions { },
-                    Setup.ServiceProvider.GetRequiredService<ILoggerFactory>(),
-                    Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
-                await client.AddRequestAsync(request);
+            // DicomClientFactory cares about the length of AETitles,
+            // but in case some developer registers a custom Factory or creates DicomClient directly for some other reason.
+            var client = new DicomClient("localhost", port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
+                new DicomClientOptions { }, new DicomServiceOptions { },
+                Setup.ServiceProvider.GetRequiredService<ILoggerFactory>(),
+                Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
 
-                var task = client.SendAsync();
-                var winning = await Task.WhenAny(task, Task.Delay(10000));
-                if (winning != task)
-                {
-                    throw new TimeoutException();
-                }
+            // Act
+            await client.AddRequestAsync(request);
+            await client.SendAsync().WaitAsync(TimeSpan.FromMinutes(1));
 
-                Assert.Equal(1, counter);
-            }
+            // Assert
+            Assert.Equal(1, counter);
+            // Ensure that the calling AE was automatically truncated to 16 characters
+            Assert.NotNull(capturedAssociation);
+            Assert.Equal("STORAGECOMMITTES", capturedAssociation.CallingAE);
         }
 
         [Theory]
