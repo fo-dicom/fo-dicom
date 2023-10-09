@@ -245,7 +245,7 @@ namespace FellowOakDicom.Tests.Bugs
                 throw new NotSupportedException();
             }
 
-            public ValueTask DisposeAsync()
+            public override ValueTask DisposeAsync()
             {
                 return default;
             }
