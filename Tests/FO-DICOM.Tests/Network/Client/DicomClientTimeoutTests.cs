@@ -1106,25 +1106,29 @@ namespace FellowOakDicom.Tests.Network.Client
 
             public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
             {
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
+                yield return new DicomCFindResponse(request, DicomStatus.Pending);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Success);
             }
 
             public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
+                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Success);
             }
 
