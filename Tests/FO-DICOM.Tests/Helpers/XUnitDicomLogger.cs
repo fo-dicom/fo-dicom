@@ -45,6 +45,11 @@ namespace FellowOakDicom.Tests.Helpers
 
         public void Log<TState>(LogLevel level, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            if (level < _minimumLevel)
+            {
+                return;
+            }
+
             var prefix = _prefixEnrichers.Aggregate(
                 $"{nameof(XUnitDicomLogger), 20} {level.ToString().ToUpper(), 7}",
                 (intermediatePrefix, enrichPrefix) => enrichPrefix(intermediatePrefix));
@@ -62,7 +67,7 @@ namespace FellowOakDicom.Tests.Helpers
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return _minimumLevel >= logLevel;
+            return logLevel >= _minimumLevel;
         }
 
         public IDisposable BeginScope<TState>(TState state)
