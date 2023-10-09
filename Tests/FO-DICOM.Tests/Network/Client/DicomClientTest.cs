@@ -196,9 +196,15 @@ namespace FellowOakDicom.Tests.Network.Client
 
             // Act
             await client.AddRequestAsync(request);
-            await client.SendAsync().WaitAsync(TimeSpan.FromMinutes(1));
+            var task = client.SendAsync();
+            var winning = await Task.WhenAny(task, Task.Delay(TimeSpan.FromMinutes(1)));
 
             // Assert
+            // Ensure that the request was handled
+            if (winning != task)
+            {
+                throw new TimeoutException();
+            }
             Assert.Equal(1, counter);
             // Ensure that the calling AE was automatically truncated to 16 characters
             Assert.NotNull(capturedAssociation);
