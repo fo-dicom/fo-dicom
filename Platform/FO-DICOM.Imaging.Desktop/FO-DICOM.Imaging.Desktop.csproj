@@ -17,7 +17,7 @@
     <Title>Fellow Oak DICOM System.Drawing support</Title>
     <Product>FO-DICOM.Imaging.Desktop</Product>
     <AssemblyTitle>$(Product)</AssemblyTitle>
-    <PackageIconUrl>https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png</PackageIconUrl>
+    <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -26,5 +26,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\FellowOakSquareTransp.png">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
