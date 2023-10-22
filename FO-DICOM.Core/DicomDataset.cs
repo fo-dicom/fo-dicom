@@ -16,7 +16,7 @@ namespace FellowOakDicom
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
     /// </summary>
-    public partial class DicomDataset : IEnumerable<DicomItem>
+    public partial class DicomDataset : IEnumerable<DicomItem>, IEquatable<DicomDataset>
     {
         #region FIELDS
 
@@ -1511,6 +1511,31 @@ namespace FellowOakDicom
         {
             // first evaluate the encoding, and then apply
             SetTargetEncodingsToStringElements(GetEncodingsForSerialization());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (Object.ReferenceEquals(obj, null)) return false;
+            if (Object.ReferenceEquals(this, obj)) return true;
+            if (GetType() != obj.GetType()) return false;
+            return Equals(obj as DicomDataset);
+        }
+
+        public bool Equals(DicomDataset other)
+        {
+            return new DicomDatasetComparer().Equals(this, other);
+        }
+
+        public static bool operator ==(DicomDataset a, DicomDataset b)
+        {
+            if (((object)a == null) && ((object)b == null)) return true;
+            if (((object)a == null) || ((object)b == null)) return false;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(DicomDataset a, DicomDataset b)
+        {
+            return !(a == b);
         }
 
         #endregion
