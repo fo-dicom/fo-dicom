@@ -93,3 +93,4 @@
 * [Pantelis Georgiadis](https://github.com/PantelisGeorgiadis)
 * [Tim Cooke](https://github.com/timothylcooke)
 * [Ashraf Ganie](https://github.com/AshrafGanie)
+* [Viktoria Salociova](https://github.com/ViktoriaSalociova)

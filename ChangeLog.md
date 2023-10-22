@@ -18,6 +18,7 @@
 * Fix the issue of 'DicomAttribute not generated in XML when element is of type DicomFragmentSequence'
 * Prevent adding duplicate presentation contexts to an association request (#1596)
 * Fix issue with missing known DicomTransferSyntax from static DicomTransferSyntax.Entries dictionary (#1644)
+* Enhancement: Added IEquatable implementation and equality operators for DicomDataset class
 
 #### 5.1.1 (2023-05-29)
 * Fix issue where DicomClient did not send requests when Async Ops Invoked was zero (#1597)
