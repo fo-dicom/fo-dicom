@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,13 @@ namespace FellowOakDicom
         {
             if (item1 is DicomElement xElement && item2 is DicomElement yElement)
             {
+                if (xElement.Buffer is BulkDataUriByteBuffer xBulkbuffer && !xBulkbuffer.IsMemory || 
+                    yElement.Buffer is BulkDataUriByteBuffer yBulkbuffer && !yBulkbuffer.IsMemory)
+                {
+                    // skip validation in case of BulkDataUriByteBuffer, where the content has not been downloaded
+                    return item1.Tag == item2.Tag;
+                }
+
                 var xValue = string.Join("\\", xElement.Get<string[]>());
                 var yValue = string.Join("\\", yElement.Get<string[]>());
 
