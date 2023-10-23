@@ -1538,6 +1538,17 @@ namespace FellowOakDicom
             return !(a == b);
         }
 
+        public override int GetHashCode()
+        {
+            var hash = 17;
+            foreach (var element in this)
+            {
+                hash = hash * 23 + element.GetHashCode();
+            }
+
+            return hash;
+        }
+
         #endregion
     }
 
