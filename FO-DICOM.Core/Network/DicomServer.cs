@@ -169,6 +169,8 @@ namespace FellowOakDicom.Network
             }
         }
         
+        internal TimeSpan MaxClientsAllowedWaitInterval { get; set; }
+        
         #endregion
 
         #region METHODS
@@ -195,7 +197,7 @@ namespace FellowOakDicom.Network
             _maxClientsSemaphore = serverOptions.MaxClientsAllowed > 0
                 ? new SemaphoreSlim(serverOptions.MaxClientsAllowed, serverOptions.MaxClientsAllowed)
                 : null;
-
+            MaxClientsAllowedWaitInterval = TimeSpan.FromSeconds(60);
             return Task.WhenAll(ListenForConnectionsAsync(), RemoveUnusedServicesAsync());
         }
 
@@ -296,15 +298,18 @@ namespace FellowOakDicom.Network
                             // We use Task.WhenAny with a one minute delay in a while loop
                             // This allows us to log a warning every minute instead of silently not accepting connections
                             var clientSemaphore = _maxClientsSemaphore.WaitAsync(_cancellationToken);
-                            var oneMinuteDelay = Task.Delay(60 * 1000, _cancellationToken);
-                            var winner = await Task.WhenAny(clientSemaphore, oneMinuteDelay).ConfigureAwait(false);
+                            var waitInterval = Task.Delay(MaxClientsAllowedWaitInterval, _cancellationToken);
+                            var winner = await Task.WhenAny(clientSemaphore, waitInterval).ConfigureAwait(false);
                             if (winner == clientSemaphore)
                             {
                                 break;
                             }
                             // Allow proper triggering of the OperationCanceledException, if any
-                            await oneMinuteDelay.ConfigureAwait(false);
-                            _logger.LogWarning("Cannot accept another incoming connection because the maximum number of clients ({MaxClientsAllowed}) has been reached", maxClientsAllowed);
+                            await waitInterval.ConfigureAwait(false);
+                            _logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
+                                               "but we still cannot accept another incoming connection " +
+                                               "because the maximum number of clients ({MaxClientsAllowed}) has been reached", 
+                                MaxClientsAllowedWaitInterval, maxClientsAllowed);
                         }
                     }
 
