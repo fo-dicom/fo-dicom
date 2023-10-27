@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,7 +9,6 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using FellowOakDicom.Tests.Network;
-using FellowOakDicom.Tests.Network.Client;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,10 +38,10 @@ namespace FellowOakDicom.Tests.Bugs
             var serverDelay = TimeSpan.FromSeconds(1);
             
             var port = Ports.GetNext();
-            using var server = (DicomClientTimeoutTest.ConfigurableDicomCEchoProviderServer)
+            using var server = (ConfigurableDicomCEchoProviderServer)
                 DicomServerFactory.Create<
-                    DicomClientTimeoutTest.ConfigurableDicomCEchoProvider,
-                    DicomClientTimeoutTest.ConfigurableDicomCEchoProviderServer>(
+                    ConfigurableDicomCEchoProvider,
+                    ConfigurableDicomCEchoProviderServer>(
                     NetworkManager.IPv4Any,
                     port,
                     configure: o => o.MaxClientsAllowed = maxClientsAllowed
