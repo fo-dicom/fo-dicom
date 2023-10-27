@@ -292,20 +292,8 @@ namespace FellowOakDicom.Network
                     {
                         // If max clients is configured and the limit is reached
                         // we need to wait until one of the existing clients closes its connection
-                        while (true)
+                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken))
                         {
-                            // Instead of simply waiting for the semaphore
-                            // We use Task.WhenAny with a one minute delay in a while loop
-                            // This allows us to log a warning every minute instead of silently not accepting connections
-                            var clientSemaphore = _maxClientsSemaphore.WaitAsync(_cancellationToken);
-                            var waitInterval = Task.Delay(MaxClientsAllowedWaitInterval, _cancellationToken);
-                            var winner = await Task.WhenAny(clientSemaphore, waitInterval).ConfigureAwait(false);
-                            if (winner == clientSemaphore)
-                            {
-                                break;
-                            }
-                            // Allow proper triggering of the OperationCanceledException, if any
-                            await waitInterval.ConfigureAwait(false);
                             _logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
                                                "but we still cannot accept another incoming connection " +
                                                "because the maximum number of clients ({MaxClientsAllowed}) has been reached", 
