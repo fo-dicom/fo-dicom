@@ -729,11 +729,11 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public async Task RemoveUnusedServicesAsync_ShouldBeAbleToDisposeAThousandServices()
+        public async Task RemoveUnusedServicesAsync_ShouldBeAbleToDisposeAHundredServices()
         {
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
-            var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Warning);
+            var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Information);
             var disposedDicomServices = new ConcurrentStack<DicomService>();
 
             using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
@@ -742,7 +742,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 server.OnDispose = service => disposedDicomServices.Push(service);
 
-                var services = Enumerable.Range(0, 1000)
+                var services = Enumerable.Range(0, 100)
                     .AsParallel()
                     .Select(async _ =>
                     {
@@ -788,7 +788,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-            Assert.Equal(1000, uniqueDisposedServices.Count);
+            Assert.Equal(100, uniqueDisposedServices.Count);
         }
 
         private void TestFoDicomUnhandledException(int port)

@@ -1106,25 +1106,29 @@ namespace FellowOakDicom.Tests.Network.Client
 
             public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
             {
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
+                yield return new DicomCFindResponse(request, DicomStatus.Pending);
+                await Task.Delay(400);
                 yield return new DicomCFindResponse(request, DicomStatus.Success);
             }
 
             public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
             {
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
-                await Task.Delay(1000);
+                await Task.Delay(400);
+                yield return new DicomCMoveResponse(request, DicomStatus.Pending);
+                await Task.Delay(400);
                 yield return new DicomCMoveResponse(request, DicomStatus.Success);
             }
 
@@ -1180,93 +1184,6 @@ namespace FellowOakDicom.Tests.Network.Client
                 yield return new DicomCMoveResponse(request, DicomStatus.Pending);
                 await Task.Delay(Delay);
                 yield return new DicomCMoveResponse(request, DicomStatus.Success);
-            }
-
-        }
-
-        public class ConfigurableDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
-        {
-            private readonly Func<DicomAssociation, Task<bool>> _onAssociationRequest;
-            private readonly Func<DicomCEchoRequest, Task> _onRequest;
-
-            public ConfigurableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dicomServiceDependencies, Func<DicomAssociation, Task<bool>> onAssociationRequest, Func<DicomCEchoRequest, Task> onRequest)
-                : base(stream, fallbackEncoding, log, dicomServiceDependencies)
-            {
-                _onAssociationRequest = onAssociationRequest ?? throw new ArgumentNullException(nameof(onAssociationRequest));
-                _onRequest = onRequest ?? throw new ArgumentNullException(nameof(onRequest));
-            }
-
-            /// <inheritdoc />
-            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
-            {
-                var accept = await _onAssociationRequest(association);
-
-                foreach (var pc in association.PresentationContexts)
-                {
-                    pc.SetResult(accept ? DicomPresentationContextResult.Accept : DicomPresentationContextResult.RejectNoReason);
-                }
-
-                if (accept)
-                {
-                    await SendAssociationAcceptAsync(association).ConfigureAwait(false);
-                }
-                else
-                {
-                    await SendAssociationRejectAsync(DicomRejectResult.Transient, DicomRejectSource.ServiceUser, DicomRejectReason.NoReasonGiven).ConfigureAwait(false);
-                }
-            }
-
-            /// <inheritdoc />
-            public async Task OnReceiveAssociationReleaseRequestAsync()
-            {
-                await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
-            }
-
-            /// <inheritdoc />
-            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
-            {
-            }
-
-            /// <inheritdoc />
-            public void OnConnectionClosed(Exception exception)
-            {
-            }
-
-            public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
-            {
-                await _onRequest(request);
-                return new DicomCEchoResponse(request, DicomStatus.Success);
-            }
-        }
-
-        public class ConfigurableDicomCEchoProviderServer : DicomServer<ConfigurableDicomCEchoProvider>
-        {
-            private readonly DicomServiceDependencies _dicomServiceDependencies;
-            private Func<DicomAssociation, Task<bool>> _onAssociationRequest;
-            private Func<DicomCEchoRequest, Task> _onRequest;
-
-            public ConfigurableDicomCEchoProviderServer(DicomServerDependencies dicomServerDependencies,
-                DicomServiceDependencies dicomServiceDependencies) : base(dicomServerDependencies)
-            {
-                _dicomServiceDependencies = dicomServiceDependencies ?? throw new ArgumentNullException(nameof(dicomServiceDependencies));
-                _onAssociationRequest = _ => Task.FromResult(true);
-                _onRequest = _ => Task.FromResult(0);
-            }
-
-            public void OnAssociationRequest(Func<DicomAssociation, Task<bool>> onAssociationRequest)
-            {
-                _onAssociationRequest = onAssociationRequest;
-            }
-
-            public void OnRequest(Func<DicomCEchoRequest, Task> onRequest)
-            {
-                _onRequest = onRequest;
-            }
-
-            protected sealed override ConfigurableDicomCEchoProvider CreateScp(INetworkStream stream)
-            {
-                var provider = new ConfigurableDicomCEchoProvider(stream, Encoding.UTF8, Logger, _dicomServiceDependencies, _onAssociationRequest, _onRequest);
-                return provider;
             }
         }
 

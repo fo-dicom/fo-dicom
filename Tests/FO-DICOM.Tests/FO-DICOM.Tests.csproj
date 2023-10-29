@@ -10,6 +10,11 @@
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
+    <!-- 
+      Suppress warning CS8002 because Dicom.NativeCodecs is not strong named, 
+      but since .NET Core you can reference unsigned assemblies from signed assemblies without issues
+     --> 
+    <NoWarn>CS8002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
