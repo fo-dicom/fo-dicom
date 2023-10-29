@@ -8,6 +8,7 @@
         <AssemblyVersion>5.1.1</AssemblyVersion>
         <FileVersion>5.1.1.0</FileVersion>
         <InformationalVersion>5.1.1</InformationalVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(GenerateDocumentation)==1">

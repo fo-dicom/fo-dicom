@@ -75,11 +75,29 @@ namespace FellowOakDicom.Serialization
                     WriteDicomAttribute(xmlOutput, sq);
                     for (var i = 0; i < sq.Items.Count; i++)
                     {
-                        xmlOutput.AppendLine($@"<Item number=""{i+1}"">");
+                        xmlOutput.AppendLine($@"<Item number=""{i + 1}"">");
 
                         DicomDatasetToXml(xmlOutput, sq.Items[i]);
 
                         xmlOutput.AppendLine(@"</Item>");
+                    }
+                    xmlOutput.AppendLine(@"</DicomAttribute>");
+                }
+                else if (item is DicomFragmentSequence)
+                {
+                    var sq = item as DicomFragmentSequence;
+
+                    WriteDicomAttribute(xmlOutput, sq);
+
+                    for (var i = 0; i < sq.Fragments.Count; i++)
+                    {
+                        xmlOutput.AppendLine($@"<Fragment number=""{i + 1}"">");
+                        if (sq.Fragments[i].Data?.Length > 0)
+                        {
+                            var binaryString = GetBinaryBase64(sq.Fragments[i]);
+                            xmlOutput.AppendLine($@"<InlineBinary>{binaryString}</InlineBinary>");
+                        }
+                        xmlOutput.AppendLine(@"</Fragment>");
                     }
                     xmlOutput.AppendLine(@"</DicomAttribute>");
                 }
@@ -95,14 +113,14 @@ namespace FellowOakDicom.Serialization
             if (vr == DicomVRCode.OB || vr == DicomVRCode.OD || vr == DicomVRCode.OF || vr == DicomVRCode.OW ||
                 vr == DicomVRCode.OL || vr == DicomVRCode.UN)
             {
-                var binaryString = GetBinaryBase64(item);
+                var binaryString = GetBinaryBase64(item.Buffer);
                 xmlOutput.AppendLine($@"<InlineBinary>{binaryString}</InlineBinary>");
             }
             else if (vr == DicomVRCode.PN)
             {
                 for (int i = 0; i < item.Count; i++)
                 {
-                    xmlOutput.AppendLine($@"<PersonName number=""{i+1}"">");
+                    xmlOutput.AppendLine($@"<PersonName number=""{i + 1}"">");
                     xmlOutput.AppendLine(@"<Alphabetic>");
 
                     var person = new DicomPersonName(item.Tag, item.Get<string>(i));
@@ -127,7 +145,7 @@ namespace FellowOakDicom.Serialization
                 for (int i = 0; i < item.Count; i++)
                 {
                     var valueString = EscapeXml(item.Get<string>(i));
-                    xmlOutput.AppendLine($@"<Value number=""{i+1}"">{valueString}</Value>");
+                    xmlOutput.AppendLine($@"<Value number=""{i + 1}"">{valueString}</Value>");
                 }
             }
 
@@ -138,21 +156,20 @@ namespace FellowOakDicom.Serialization
         {
             if (item.Tag.IsPrivate && item.Tag.PrivateCreator != null)
             {
-                xmlOutput.AppendLine($@"<DicomAttribute tag=""{item.Tag.Group:X4}{item.Tag.Element:X4}"" vr=""{item.ValueRepresentation.Code}"" keyword=""{ item.Tag.DictionaryEntry.Keyword}"" privateCreator=""{item.Tag.PrivateCreator.Creator}"">");
+                xmlOutput.AppendLine($@"<DicomAttribute tag=""{item.Tag.Group:X4}{item.Tag.Element:X4}"" vr=""{item.ValueRepresentation.Code}"" keyword=""{item.Tag.DictionaryEntry.Keyword}"" privateCreator=""{item.Tag.PrivateCreator.Creator}"">");
             }
             else
             {
                 xmlOutput.AppendLine($@"<DicomAttribute tag=""{item.Tag.Group:X4}{item.Tag.Element:X4}"" vr=""{item.ValueRepresentation.Code}"" keyword=""{item.Tag.DictionaryEntry.Keyword}"">");
             }
+
         }
 
-        private static string GetBinaryBase64(DicomElement item)
+        private static string GetBinaryBase64(IByteBuffer buffer)
         {
-            IByteBuffer buffer = item.Buffer;
             if (buffer == null) return string.Empty;
             return Convert.ToBase64String(buffer.Data);
         }
-
         private static string EscapeXml(string text)
         {
             if (text == null)

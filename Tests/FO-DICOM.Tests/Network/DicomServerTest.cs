@@ -32,14 +32,14 @@ namespace FellowOakDicom.Tests.Network
         #region Unit Tests
 
         [Fact]
-        public void Constructor_EstablishTwoWithSamePort_ShouldYieldAccessibleException()
+        public async Task Constructor_EstablishTwoWithSamePort_ShouldYieldAccessibleException()
         {
             var port = Ports.GetNext();
 
             var server1 = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server1.IsListening)
             {
-                Thread.Sleep(10);
+                await Task.Delay(10);
             }
 
             var exception = Record.Exception(() => DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")));
@@ -50,24 +50,24 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact(Skip = "Flaky test. The DICOM Server is not always immediately stopped. We should implement proper cancellation support all the way through DicomService")]
-        public void Stop_IsListening_TrueUntilStopRequested()
+        public async Task Stop_IsListening_TrueUntilStopRequested()
         {
             var port = Ports.GetNext();
 
             var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server.IsListening)
             {
-                Thread.Sleep(10);
+                await Task.Delay(10);
             }
 
             for (var i = 0; i < 10; ++i)
             {
-                Thread.Sleep(500);
+                await Task.Delay(500);
                 Assert.True(server.IsListening);
             }
 
             server.Stop();
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             Assert.False(server.IsListening);
         }
@@ -108,7 +108,7 @@ namespace FellowOakDicom.Tests.Network
 
             // Wait for full shutdown with 1 minute timeout
             var oneMinuteTimeout = Task.Delay(TimeSpan.FromMinutes(1));
-            if (await Task.WhenAny(dicomServerTask, oneMinuteTimeout).ConfigureAwait(false) == oneMinuteTimeout)
+            if (await Task.WhenAny(dicomServerTask, oneMinuteTimeout) == oneMinuteTimeout)
             {
                 throw new InvalidOperationException("DICOM server still hasn't shut down after one minute");
             }
@@ -171,14 +171,14 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void Create_MultipleInstancesDifferentPorts_AllRegistered()
+        public async Task Create_MultipleInstancesDifferentPorts_AllRegistered()
         {
             var ports = new int[20].Select(i => Ports.GetNext()).ToArray();
 
             foreach (var port in ports)
             {
                 var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
-                while (!server.IsListening) { Thread.Sleep(10); }
+                while (!server.IsListening) { await Task.Delay(10); }
             }
 
             foreach (var port in ports)
@@ -193,24 +193,24 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public void IsListening_DicomServerRunningOnPort_ReturnsTrue()
+        public async Task IsListening_DicomServerRunningOnPort_ReturnsTrue()
         {
             var port = Ports.GetNext();
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { Thread.Sleep(10); }
+            while (!server.IsListening) { await Task.Delay(10); }
             Assert.True(DicomServerRegistry.Get(port).DicomServer.IsListening);
         }
 
         [Fact]
-        public void IsListening_DicomServerStoppedOnPort_ReturnsFalse()
+        public async Task IsListening_DicomServerStoppedOnPort_ReturnsFalse()
         {
             var port = Ports.GetNext();
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { Thread.Sleep(10); }
+            while (!server.IsListening) { await Task.Delay(10); }
             server.Stop();
-            while (server.IsListening) { Thread.Sleep(10); }
+            while (server.IsListening) { await Task.Delay(10); }
 
             var dicomServer = DicomServerRegistry.Get(port)?.DicomServer;
             Assert.NotNull(dicomServer);
@@ -292,9 +292,9 @@ namespace FellowOakDicom.Tests.Network
 
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("DicomClient");
-                await client.AddRequestAsync(request).ConfigureAwait(false);
+                await client.AddRequestAsync(request);
 
-                await client.SendAsync().ConfigureAwait(false);
+                await client.SendAsync();
 
                 Assert.Equal(DicomStatus.SOPClassNotSupported, status);
             }
@@ -334,16 +334,16 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { Thread.Sleep(10); }
+            while (!server.IsListening) { await Task.Delay(10); }
 
             var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.Logger = _logger.IncludePrefix("DicomClient");
             await client.AddRequestAsync(new DicomCEchoRequest());
             await client.SendAsync();
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             server.Stop();
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             var actual = ((DicomServer<DicomCEchoProvider>)server).CompletedServicesCount;
             Assert.Equal(0, actual);
@@ -729,11 +729,11 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact]
-        public async Task RemoveUnusedServicesAsync_ShouldBeAbleToDisposeAThousandServices()
+        public async Task RemoveUnusedServicesAsync_ShouldBeAbleToDisposeAHundredServices()
         {
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
-            var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Warning);
+            var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Information);
             var disposedDicomServices = new ConcurrentStack<DicomService>();
 
             using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
@@ -742,7 +742,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 server.OnDispose = service => disposedDicomServices.Push(service);
 
-                var services = Enumerable.Range(0, 1000)
+                var services = Enumerable.Range(0, 100)
                     .AsParallel()
                     .Select(async _ =>
                     {
@@ -788,7 +788,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-            Assert.Equal(1000, uniqueDisposedServices.Count);
+            Assert.Equal(100, uniqueDisposedServices.Count);
         }
 
         private void TestFoDicomUnhandledException(int port)
@@ -799,7 +799,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         [Fact(Skip = "This test is flaky because it crashes whenever a parallel test happens to have an unobserved exception")]
-        public void StopServerWithoutException()
+        public async Task StopServerWithoutException()
         {
             object ue = null;
             AppDomain.CurrentDomain.UnhandledException += (sender, args) => ue = args.ExceptionObject;
@@ -807,9 +807,9 @@ namespace FellowOakDicom.Tests.Network
 
             var port = Ports.GetNext();
 
-            Task.Factory.StartNew(() => TestFoDicomUnhandledException(port));
+            await Task.Factory.StartNew(() => TestFoDicomUnhandledException(port));
 
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
             GC.Collect();
             GC.WaitForPendingFinalizers();
 

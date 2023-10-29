@@ -199,5 +199,3 @@
 * DicomStringElement and derived classes do not have the "encoding" parameter in constructor, that takes a string-value
 * DicomDataset.Add(OrUpdate) does not take an "encoding" parameter any more, instead the DicomDataset has a property `TextEncodings`, that is applied to all string-based tags.
 * in update to DICOM2020e the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
-
-

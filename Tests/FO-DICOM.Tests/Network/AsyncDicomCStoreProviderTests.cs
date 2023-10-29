@@ -46,8 +46,8 @@ namespace FellowOakDicom.Tests.Network
                     OnTimeout = (sender, args) => timeout = args
                 };
 
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.NotNull(response);
                 Assert.Equal(DicomStatus.Success, response.Status);
@@ -75,8 +75,8 @@ namespace FellowOakDicom.Tests.Network
                     numberOfContexts = e.Association.PresentationContexts.Count;
                     accpetedTS = e.Association.PresentationContexts.First().AcceptedTransferSyntax;
                 };
-                await client.AddRequestAsync(request).ConfigureAwait(false);
-                await client.SendAsync().ConfigureAwait(false);
+                await client.AddRequestAsync(request);
+                await client.SendAsync();
 
                 Assert.Equal(2, numberOfContexts); // one for the jpeg2k TS and one for the mandatory ImplicitLittleEndian
                 Assert.Equal(DicomTransferSyntax.JPEG2000Lossy, accpetedTS);

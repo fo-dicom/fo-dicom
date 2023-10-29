@@ -54,8 +54,8 @@ namespace FellowOakDicom.Tests.Bugs
                 };
 
                 var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
-                await client.AddRequestAsync(request1).ConfigureAwait(false);
-                await client.AddRequestAsync(request2).ConfigureAwait(false);
+                await client.AddRequestAsync(request1);
+                await client.AddRequestAsync(request2);
 
                 await client.SendAsync();
                 handle1.Wait(10000);
@@ -91,9 +91,9 @@ namespace FellowOakDicom.Tests.Bugs
                 };
 
                 var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
-                await client.AddRequestAsync(request).ConfigureAwait(false);
+                await client.AddRequestAsync(request);
 
-                await client.SendAsync().ConfigureAwait(false);
+                await client.SendAsync();
                 handle.Wait(10000);
 
                 Assert.True(success);

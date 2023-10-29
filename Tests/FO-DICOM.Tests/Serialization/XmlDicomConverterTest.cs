@@ -2,7 +2,9 @@
 // Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Serialization;
+using System;
 using System.Text;
+using System.Xml;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Serialization
@@ -61,6 +63,27 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.True(!string.IsNullOrEmpty(xml));
             Assert.Contains(finalXml1.ToString(), xml);
             Assert.Contains(finalXml2.ToString(), xml);
+        }
+
+
+        [Fact]
+        public void TestDicomFragmentSequenceXmlSerialization()
+        {
+            // Test File HasFragmentSequence with DicomFragmentSequence (total count is 96)
+            var file = DicomFile.Open(TestData.Resolve("HasFragmentSequence.dcm"));
+            var xml = DicomXML.ConvertDicomToXML(file.Dataset);
+
+            var PixelDataStart = @"<DicomAttribute tag=""7FE00010"" vr=""OB"" keyword=""PixelData"">";
+
+            Assert.True(!string.IsNullOrEmpty(xml));
+            Assert.Contains(PixelDataStart, xml);
+
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            XmlNodeList Fragments = doc.DocumentElement.SelectNodes("DicomAttribute/Fragment");
+
+            Assert.True(Fragments.Count == 96);
         }
     }
 }

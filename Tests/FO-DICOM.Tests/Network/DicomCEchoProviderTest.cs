@@ -33,10 +33,10 @@ namespace FellowOakDicom.Tests.Network
 
             for (var i = 0; i < 10; i++)
             {
-                await client.AddRequestAsync(new DicomCEchoRequest()).ConfigureAwait(false);
+                await client.AddRequestAsync(new DicomCEchoRequest());
             }
 
-            await client.SendAsync().ConfigureAwait(false);
+            await client.SendAsync();
 
             Assert.False(client.IsSendRequired);
         }

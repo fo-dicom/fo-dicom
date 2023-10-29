@@ -129,10 +129,10 @@ namespace FellowOakDicom.Tests.Bugs
             Exception exception = null;
 
             // Act
-            await client.AddRequestsAsync(requests).ConfigureAwait(false);
+            await client.AddRequestsAsync(requests);
             try
             {
-                await client.SendAsync(CancellationToken.None).ConfigureAwait(false);
+                await client.SendAsync(CancellationToken.None);
             }
             catch (Exception e)
             {

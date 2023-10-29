@@ -712,7 +712,7 @@ namespace FellowOakDicom.Tests.Network
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
-                var cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, CancellationToken.None).ConfigureAwait(false);
+                var cEchoResponse = await association.SendCEchoRequestAsync(cEchoRequest, CancellationToken.None);
                 await association.ReleaseAsync(CancellationToken.None);
 
                 Assert.NotNull(cEchoResponse);

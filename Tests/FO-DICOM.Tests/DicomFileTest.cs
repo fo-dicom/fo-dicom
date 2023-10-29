@@ -389,9 +389,9 @@ namespace FellowOakDicom.Tests
             using var stream2 = new MemoryStream();
 
             var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
-            await file.SaveAsync(stream1, options1).ConfigureAwait(false);
+            await file.SaveAsync(stream1, options1);
             var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
-            await file.SaveAsync(stream2, options2).ConfigureAwait(false);
+            await file.SaveAsync(stream2, options2);
 
             Assert.Equal(stream1.ToArray(), stream2.ToArray());
         }
@@ -418,9 +418,9 @@ namespace FellowOakDicom.Tests
             var file = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle"));
 
             var options1 = new DicomWriteOptions { LargeObjectSize = 1024 };
-            await file.SaveAsync("saveasynctofile1", options1).ConfigureAwait(false);
+            await file.SaveAsync("saveasynctofile1", options1);
             var options2 = new DicomWriteOptions { LargeObjectSize = 16 * 1024 * 1024 };
-            await file.SaveAsync("saveasynctofile2", options2).ConfigureAwait(false);
+            await file.SaveAsync("saveasynctofile2", options2);
 
 
             var bytes1 = File.ReadAllBytes("saveasynctofile1");
