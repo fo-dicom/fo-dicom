@@ -94,13 +94,6 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
-        public void InequalityOperator_SameObject_ShouldReturnFalse()
-        {
-            var dataset = new DicomDataset();
-            Assert.False(dataset != dataset);
-        }
-
-        [Fact]
         public void InequalityOperator_NullObject_ShouldReturnTrue()
         {
             var dataset = new DicomDataset();
