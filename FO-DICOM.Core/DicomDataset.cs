@@ -1540,13 +1540,14 @@ namespace FellowOakDicom
 
         public override int GetHashCode()
         {
-            var hash = 17;
+            var hashCode = new HashCode();
+
             foreach (var element in this)
             {
-                hash = hash * 23 + element.GetHashCode();
+                hashCode.Add(element);
             }
 
-            return hash;
+            return hashCode.ToHashCode();
         }
 
         #endregion
