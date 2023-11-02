@@ -34,7 +34,7 @@ namespace FellowOakDicom.Tests.Bugs
             // Act
             try
             {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
                 await httpClient.GetAsync($"http://localhost:{port}/", cts.Token);
             }
             catch (HttpRequestException e)

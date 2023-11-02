@@ -506,14 +506,22 @@ namespace FellowOakDicom.Network
                         }
                     }
                     while (_bytesToRead > 0);
+                    
+                    // The first byte contains the PDU type
+                    // The second byte is reserved
+                    // The remaining four bytes contain the PDU length
+                    var pduTypeByte = rawPduCommonFieldsBuffer.Bytes[0];
+                    if (!Enum.IsDefined(typeof(RawPduType), pduTypeByte) && pduTypeByte != 0xFF)
+                    {
+                        throw new DicomNetworkException("Unknown PDU type: " + pduTypeByte);
+                    }
+                    var pduLength = BitConverter.ToInt32(rawPduCommonFieldsBuffer.Bytes, 2);
+                    pduLength = Endian.Swap(pduLength);
 
-                    var length = BitConverter.ToInt32(rawPduCommonFieldsBuffer.Bytes, 2);
-                    length = Endian.Swap(length);
-
-                    _bytesToRead = length;
+                    _bytesToRead = pduLength;
 
                     // Read PDU
-                    var rawPduLength = length + RawPDU.CommonFieldsLength;
+                    var rawPduLength = pduLength + RawPDU.CommonFieldsLength;
                     
                     // This is the buffer that will hold the entire Raw PDU at once
                     using var rawPduBuffer = _memoryProvider.Provide(rawPduLength);
