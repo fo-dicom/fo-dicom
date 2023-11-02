@@ -543,7 +543,7 @@ namespace FellowOakDicom.Network
 
                     switch (raw.Type)
                     {
-                        case 0x01:
+                        case RawPduType.A_ASSOCIATE_RQ:
                             {
                                 Association = new DicomAssociation
                                 {
@@ -581,7 +581,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x02:
+                        case RawPduType.A_ASSOCIATE_AC:
                             {
                                 var pdu = new AAssociateAC(Association, _memoryProvider);
                                 pdu.Read(raw);
@@ -597,7 +597,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x03:
+                        case RawPduType.A_ASSOCIATE_RJ:
                             {
                                 var pdu = new AAssociateRJ(_memoryProvider);
                                 pdu.Read(raw);
@@ -620,7 +620,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x04:
+                        case RawPduType.P_DATA_TF:
                             {
                                 using var pdu = new PDataTF(_memoryProvider);
                                 pdu.Read(raw);
@@ -632,7 +632,7 @@ namespace FellowOakDicom.Network
                                 await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
                                 break;
                             }
-                        case 0x05:
+                        case RawPduType.A_RELEASE_RQ:
                             {
                                 var pdu = new AReleaseRQ(_memoryProvider);
                                 pdu.Read(raw);
@@ -644,7 +644,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x06:
+                        case RawPduType.A_RELEASE_RP:
                             {
                                 var pdu = new AReleaseRP(_memoryProvider);
                                 pdu.Read(raw);
@@ -661,7 +661,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x07:
+                        case RawPduType.A_ABORT:
                             {
                                 var pdu = new AAbort(_memoryProvider);
                                 pdu.Read(raw);
@@ -686,7 +686,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0xFF:
+                        case (RawPduType) 0xFF:
                             {
                                 break;
                             }

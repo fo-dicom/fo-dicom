@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.IO;
 using FellowOakDicom.Memory;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -52,7 +53,7 @@ namespace FellowOakDicom.Network
         /// <param name="type">Type of PDU</param>
         /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for encoding text</param>
-        public RawPDU(byte type, IMemoryProvider memoryProvider, Encoding encoding = null)
+        public RawPDU(RawPduType type, IMemoryProvider memoryProvider, Encoding encoding = null)
         {
             Type = type;
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
@@ -72,7 +73,7 @@ namespace FellowOakDicom.Network
         /// <param name="encoding">The encoding to use for encoding text</param>
         /// <param name="stream">The stream to write to</param>
         /// <param name="leaveOpen">Whether the stream should be disposed or not when this RawPDU is disposed</param>
-        public RawPDU(byte type, IMemoryProvider memoryProvider, Encoding encoding, Stream stream, bool leaveOpen)
+        public RawPDU(RawPduType type, IMemoryProvider memoryProvider, Encoding encoding, Stream stream, bool leaveOpen)
         {
             Type = type;
             _encoding = encoding ?? DicomEncoding.Default;
@@ -96,7 +97,7 @@ namespace FellowOakDicom.Network
             _leaveOpen = true;
             _encoding = encoding ?? DicomEncoding.Default;
             _br = EndianBinaryReader.Create(_stream, _encoding, Endian.Big, _leaveOpen);
-            Type = _br.ReadByte();
+            Type = (RawPduType) _br.ReadByte();
             _stream.Seek(CommonFieldsLength, SeekOrigin.Begin);
         }
 
@@ -115,7 +116,7 @@ namespace FellowOakDicom.Network
             _leaveOpen = true;
             _stream.Seek(0, SeekOrigin.Begin);
             _br = EndianBinaryReader.Create(_stream, Endian.Big, _leaveOpen);
-            Type = _br.ReadByte();
+            Type = (RawPduType) _br.ReadByte();
             _stream.Seek(CommonFieldsLength, SeekOrigin.Begin);
         }
 
@@ -124,7 +125,7 @@ namespace FellowOakDicom.Network
         #region Public Properties
 
         /// <summary>PDU type</summary>
-        public byte Type { get; }
+        public RawPduType Type { get; }
 
         /// <summary>PDU length</summary>
         public uint Length => (uint)_stream.Length;
@@ -446,7 +447,7 @@ namespace FellowOakDicom.Network
             
             unchecked
             {
-                span[0] = Type;
+                span[0] = (byte) Type;
                 span[1] = 0;
                 span[2] = (byte)((length & 0xff000000U) >> 24);
                 span[3] = (byte)((length & 0x00ff0000U) >> 16);
@@ -454,6 +455,18 @@ namespace FellowOakDicom.Network
                 span[5] = (byte)(length & 0x000000ffU);
             }
         }
+    }
+
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public enum RawPduType : byte
+    {
+        A_ASSOCIATE_RQ = 0x01,
+        A_ASSOCIATE_AC = 0x02,
+        A_ASSOCIATE_RJ = 0x03,
+        P_DATA_TF = 0x04,
+        A_RELEASE_RQ = 0x05,
+        A_RELEASE_RP = 0x06,
+        A_ABORT = 0x07,
     }
 
     #endregion
@@ -522,7 +535,7 @@ namespace FellowOakDicom.Network
             // A-ASSOCIATE-RQ Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
             using IMemory buffer = _memoryProvider.Provide(ushort.MaxValue);
             using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, ushort.MaxValue - RawPDU.CommonFieldsLength);
-            await using var rawPdu = new RawPDU(0x01, _memoryProvider, DicomEncoding.Default, ms, true);
+            await using var rawPdu = new RawPDU(RawPduType.A_ASSOCIATE_RQ, _memoryProvider, DicomEncoding.Default, ms, true);
             Write(rawPdu);
             var length = (ushort) ms.Position;
             rawPdu.GetCommonFields(buffer, length);
@@ -889,7 +902,7 @@ namespace FellowOakDicom.Network
             // A-ASSOCIATE-AC Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
             using IMemory buffer = _memoryProvider.Provide(ushort.MaxValue);
             using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, ushort.MaxValue - RawPDU.CommonFieldsLength);
-            await using var rawPdu = new RawPDU(0x02, _memoryProvider, DicomEncoding.Default, ms, true);
+            await using var rawPdu = new RawPDU(RawPduType.A_ASSOCIATE_AC, _memoryProvider, DicomEncoding.Default, ms, true);
             Write(rawPdu);
             var length = (ushort) ms.Position;
             rawPdu.GetCommonFields(buffer, length);
@@ -1276,7 +1289,7 @@ namespace FellowOakDicom.Network
             const int length = 4;
             using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
             using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
-            await using var rawPdu = new RawPDU(0x03, _memoryProvider, DicomEncoding.Default, ms, true);
+            await using var rawPdu = new RawPDU(RawPduType.A_ASSOCIATE_RJ, _memoryProvider, DicomEncoding.Default, ms, true);
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
@@ -1341,7 +1354,7 @@ namespace FellowOakDicom.Network
             const int length = sizeof(uint);
             using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
             using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
-            await using var rawPdu = new RawPDU(0x05, _memoryProvider, DicomEncoding.Default, ms, true);
+            await using var rawPdu = new RawPDU(RawPduType.A_RELEASE_RQ, _memoryProvider, DicomEncoding.Default, ms, true);
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
@@ -1397,7 +1410,7 @@ namespace FellowOakDicom.Network
             const int length = 4;
             using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
             using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
-            await using var rawPdu = new RawPDU(0x06, _memoryProvider, DicomEncoding.Default, ms, true);
+            await using var rawPdu = new RawPDU(RawPduType.A_RELEASE_RP, _memoryProvider, DicomEncoding.Default, ms, true);
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes,0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
@@ -1508,7 +1521,7 @@ namespace FellowOakDicom.Network
             const int length = 4;
             using IMemory buffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength + length);
             using var ms = new MemoryStream(buffer.Bytes, RawPDU.CommonFieldsLength, length);
-            await using var rawPdu = new RawPDU(0x07, _memoryProvider, DicomEncoding.Default, ms, true);
+            await using var rawPdu = new RawPDU(RawPduType.A_ABORT, _memoryProvider, DicomEncoding.Default, ms, true);
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
@@ -1597,7 +1610,7 @@ namespace FellowOakDicom.Network
         public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // Instead of using rented byte arrays, P-DATA-TF PDVs are written directly to the underlying stream
-            await using var pdu = new RawPDU(0x04, _memoryProvider, DicomEncoding.Default, stream, true);
+            await using var pdu = new RawPDU(RawPduType.P_DATA_TF, _memoryProvider, DicomEncoding.Default, stream, true);
             
             // For P-DATA-TF, we manually compose the preamble because we cannot use the length of the memory stream (because there is no memory stream) 
             using var preamble = _memoryProvider.Provide(RawPDU.CommonFieldsLength);
