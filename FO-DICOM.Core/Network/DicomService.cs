@@ -511,7 +511,7 @@ namespace FellowOakDicom.Network
                     // The second byte is reserved
                     // The remaining four bytes contain the PDU length
                     var pduTypeByte = rawPduCommonFieldsBuffer.Bytes[0];
-                    if (!Enum.IsDefined(typeof(RawPduType), pduTypeByte) && pduTypeByte != 0xFF)
+                    if (!Enum.IsDefined(typeof(RawPduType), pduTypeByte))
                     {
                         throw new DicomNetworkException("Unknown PDU type: " + pduTypeByte);
                     }
@@ -692,10 +692,6 @@ namespace FellowOakDicom.Network
                                     return;
                                 }
 
-                                break;
-                            }
-                        case (RawPduType) 0xFF:
-                            {
                                 break;
                             }
                         default:
