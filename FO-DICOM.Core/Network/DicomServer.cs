@@ -294,7 +294,7 @@ namespace FellowOakDicom.Network
                         // we need to wait until one of the existing clients closes its connection
                         while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken))
                         {
-                            _logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
+                            Logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
                                                "but we still cannot accept another incoming connection " +
                                                "because the maximum number of clients ({MaxClientsAllowed}) has been reached", 
                                 MaxClientsAllowedWaitInterval, maxClientsAllowed);
@@ -321,14 +321,14 @@ namespace FellowOakDicom.Network
                             numberOfServices = _services.Count;
                         }
                         
-                        _logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
+                        Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
                         
                         // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
                         await _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
                         
                         if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                         {
-                            _logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
+                            Logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
                         }
                     }
                 }
@@ -361,7 +361,7 @@ namespace FellowOakDicom.Network
             {
                 try
                 {
-                    _logger.LogDebug("Waiting for incoming client connections");
+                    Logger.LogDebug("Waiting for incoming client connections");
                     
                     // First, we wait until at least one service is running
                     // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
@@ -385,7 +385,7 @@ namespace FellowOakDicom.Network
                             runningDicomServices = _services.ToList();
                         }
                         var numberOfDicomServices = runningDicomServices.Count;
-                        _logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
+                        Logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
                         if (numberOfDicomServices == 0)
                         {
                             // No more services at all? Exit early
@@ -415,11 +415,11 @@ namespace FellowOakDicom.Network
                             }
                             
                             // If another service started, we must restart the Task.WhenAny with the new set of running service tasks
-                            _logger.LogDebug("Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
+                            Logger.LogDebug("Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
                         }
                         else
                         {
-                            _logger.LogDebug("One or more running DICOM services have completed");
+                            Logger.LogDebug("One or more running DICOM services have completed");
                             break;
                         }
                     }
@@ -449,7 +449,7 @@ namespace FellowOakDicom.Network
                         }
                         catch (Exception e)
                         {
-                            _logger.LogWarning("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
+                            Logger.LogWarning("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
                         }
                     }
 
@@ -459,33 +459,33 @@ namespace FellowOakDicom.Network
                         _maxClientsSemaphore?.Release(numberOfCompletedServices);
                     }
 
-                    _logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
+                    Logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
                     if (numberOfRemainingServices > 0)
                     {
-                        _logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
+                        Logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
                     }
                     else
                     {
-                        _logger.LogDebug("There are no clients connected now");
+                        Logger.LogDebug("There are no clients connected now");
                     }
 
                     if (maxClientsAllowed > 0)
                     {
                         if (numberOfRemainingServices == maxClientsAllowed)
                         {
-                            _logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");
+                            Logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");
                         }
                         else 
                         {
                             var numberOfExtraClientsAllowed = maxClientsAllowed - numberOfRemainingServices;
-                            _logger.LogDebug(
+                            Logger.LogDebug(
                                 "{NumberOfExtraServicesAllowed} more incoming client connections are allowed",
                                 numberOfExtraClientsAllowed);
                         }
                     }
                     else
                     {
-                        _logger.LogDebug("Unlimited more incoming client connections are allowed");
+                        Logger.LogDebug("Unlimited more incoming client connections are allowed");
                     }
                 }
                 catch (ChannelClosedException)
@@ -522,7 +522,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning("An error occurred while trying to dispose a DICOM service: {@Error}", e);
+                    Logger.LogWarning("An error occurred while trying to dispose a DICOM service: {@Error}", e);
                 }
             }
         }
