@@ -49,7 +49,7 @@ namespace FellowOakDicom.Tests.Network
             var name = Path.Combine(path, "assoc.pdu");
             if (Directory.Exists(path)) Directory.Delete(path, true);
 
-            var pdu = new RawPDU(0x01, _memoryProvider);
+            var pdu = new RawPDU(RawPduType.A_ASSOCIATE_RQ, _memoryProvider);
             pdu.Save(new FileReference(name));
 
             Assert.True(File.Exists(name));

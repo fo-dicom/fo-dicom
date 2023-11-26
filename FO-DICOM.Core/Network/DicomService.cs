@@ -506,14 +506,22 @@ namespace FellowOakDicom.Network
                         }
                     }
                     while (_bytesToRead > 0);
+                    
+                    // The first byte contains the PDU type
+                    // The second byte is reserved
+                    // The remaining four bytes contain the PDU length
+                    var pduTypeByte = rawPduCommonFieldsBuffer.Bytes[0];
+                    if (!Enum.IsDefined(typeof(RawPduType), pduTypeByte))
+                    {
+                        throw new DicomNetworkException("Unknown PDU type: " + pduTypeByte);
+                    }
+                    var pduLength = BitConverter.ToInt32(rawPduCommonFieldsBuffer.Bytes, 2);
+                    pduLength = Endian.Swap(pduLength);
 
-                    var length = BitConverter.ToInt32(rawPduCommonFieldsBuffer.Bytes, 2);
-                    length = Endian.Swap(length);
-
-                    _bytesToRead = length;
+                    _bytesToRead = pduLength;
 
                     // Read PDU
-                    var rawPduLength = length + RawPDU.CommonFieldsLength;
+                    var rawPduLength = pduLength + RawPDU.CommonFieldsLength;
                     
                     // This is the buffer that will hold the entire Raw PDU at once
                     using var rawPduBuffer = _memoryProvider.Provide(rawPduLength);
@@ -543,7 +551,7 @@ namespace FellowOakDicom.Network
 
                     switch (raw.Type)
                     {
-                        case 0x01:
+                        case RawPduType.A_ASSOCIATE_RQ:
                             {
                                 Association = new DicomAssociation
                                 {
@@ -581,7 +589,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x02:
+                        case RawPduType.A_ASSOCIATE_AC:
                             {
                                 var pdu = new AAssociateAC(Association, _memoryProvider);
                                 pdu.Read(raw);
@@ -597,7 +605,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x03:
+                        case RawPduType.A_ASSOCIATE_RJ:
                             {
                                 var pdu = new AAssociateRJ(_memoryProvider);
                                 pdu.Read(raw);
@@ -620,7 +628,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x04:
+                        case RawPduType.P_DATA_TF:
                             {
                                 using var pdu = new PDataTF(_memoryProvider);
                                 pdu.Read(raw);
@@ -632,7 +640,7 @@ namespace FellowOakDicom.Network
                                 await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
                                 break;
                             }
-                        case 0x05:
+                        case RawPduType.A_RELEASE_RQ:
                             {
                                 var pdu = new AReleaseRQ(_memoryProvider);
                                 pdu.Read(raw);
@@ -644,7 +652,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x06:
+                        case RawPduType.A_RELEASE_RP:
                             {
                                 var pdu = new AReleaseRP(_memoryProvider);
                                 pdu.Read(raw);
@@ -661,7 +669,7 @@ namespace FellowOakDicom.Network
 
                                 break;
                             }
-                        case 0x07:
+                        case RawPduType.A_ABORT:
                             {
                                 var pdu = new AAbort(_memoryProvider);
                                 pdu.Read(raw);
@@ -684,10 +692,6 @@ namespace FellowOakDicom.Network
                                     return;
                                 }
 
-                                break;
-                            }
-                        case 0xFF:
-                            {
                                 break;
                             }
                         default:
