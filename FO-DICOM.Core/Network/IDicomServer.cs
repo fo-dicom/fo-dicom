@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Tls;
 using System;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FellowOakDicom.Network
 {
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the IP address(es) the server listens to.
         /// </summary>
-        string IPAddress { get; }
+        string? IPAddress { get; }
 
         /// <summary>
         /// Gets the port to which the server is listening.
@@ -37,7 +37,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the exception that was thrown if the server failed to listen.
         /// </summary>
-        Exception Exception { get; }
+        Exception? Exception { get; }
 
         /// <summary>
         /// Gets the options to control behavior of <see cref="DicomService"/> base class.
@@ -53,14 +53,14 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the service scope that will live as long as the DICOM server lives. Must be disposed alongside the DicomServer instance.
         /// </summary>
-        IServiceScope ServiceScope { get; set; }
+        [NotNull] IServiceScope? ServiceScope { get; set; }
         
         /// <summary>
         /// Gets the DICOM server registration ticket with the central registry.
         /// The registry prevents multiple DICOM servers from being created for the same IP address and port.
         /// This registration must be disposed alongside the DICOM server itself.
         /// </summary>
-        DicomServerRegistration Registration { get; set; }
+        [NotNull] DicomServerRegistration? Registration { get; set; }
 
         #endregion
 
@@ -77,8 +77,8 @@ namespace FellowOakDicom.Network
         /// <param name="userState">User state to be shared with the connected services.</param>
         /// <param name="serverOptions">Server options</param>
         /// <returns>Awaitable <see cref="System.Threading.Tasks.Task"/>.</returns>
-        Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
-            DicomServiceOptions serviceOptions, object userState, DicomServerOptions serverOptions);
+        Task StartAsync(string ipAddress, int port, ITlsAcceptor? tlsAcceptor, Encoding? fallbackEncoding,
+            DicomServiceOptions serviceOptions, object? userState, DicomServerOptions serverOptions);
 
         /// <summary>
         /// Stop server from further listening.
