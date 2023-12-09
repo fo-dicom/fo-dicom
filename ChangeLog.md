@@ -1,4 +1,5 @@
 ### 5.1.3 (TBD)
+- Add nullability annotations (#1699)
 
 - **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
