@@ -4,11 +4,13 @@
         <Company>fo-dicom</Company>
         <Copyright>Copyright © fo-dicom contributors 2012-2023</Copyright>
         <Description>fo-dicom</Description>
+        <LangVersion>8</LangVersion>
 
         <AssemblyVersion>5.1.1</AssemblyVersion>
         <FileVersion>5.1.1.0</FileVersion>
         <InformationalVersion>5.1.1</InformationalVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(GenerateDocumentation)==1">

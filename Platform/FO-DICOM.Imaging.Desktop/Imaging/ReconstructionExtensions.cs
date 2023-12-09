@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+#nullable disable
 
 using FellowOakDicom.Imaging.Reconstruction;
 using System.Drawing;
@@ -37,7 +38,7 @@ namespace FellowOakDicom.Imaging.Desktop.Imaging
 
             bitmap.UnlockBits(bmpData);
 
-            //// The following code is to modify the index table of generating bitmaps, modified from the pseudoquoity to grayscale  
+            //// The following code is to modify the index table of generating bitmaps, modified from the pseudoquoity to grayscale
             System.Drawing.Imaging.ColorPalette tempPalette;
             using (var tempBmp = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format8bppIndexed))
             {
