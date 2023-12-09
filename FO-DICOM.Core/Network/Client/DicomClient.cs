@@ -1,6 +1,5 @@
 // Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Client.Advanced.Association;
 using FellowOakDicom.Network.Client.Advanced.Connection;
@@ -39,7 +38,7 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// A handler to initiate TLS security, if null then TLS is not enabled.
         /// </summary>
-        ITlsInitiator TlsInitiator { get; }
+        ITlsInitiator? TlsInitiator { get; }
 
         /// <summary>
         /// Calling Application Entity Title.
@@ -84,22 +83,22 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Gets or sets the user identity to negotiate with association.
         /// </summary>
-        DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
+        DicomUserIdentityNegotiation? UserIdentityNegotiation { get; set; }
 
         /// <summary>
         /// Gets or sets the fallback encoding.
         /// </summary>
-        Encoding FallbackEncoding { get; set; }
+        Encoding? FallbackEncoding { get; set; }
 
         /// <summary>
         /// Gets or sets the handler of a client C-STORE request.
         /// </summary>
-        DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
+        DicomClientCStoreRequestHandler? OnCStoreRequest { get; set; }
 
         /// <summary>
         /// Gets or sets the handler of  client N-EVENT-REPORT-RQ
         /// </summary>
-        DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
+        DicomClientNEventReportRequestHandler? OnNEventReportRequest { get; set; }
 
         /// <summary>
         /// Gets whether a new send invocation is required. Send needs to be called if there are requests in queue and client is not connected.
@@ -109,22 +108,22 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Triggers when an association is accepted
         /// </summary>
-        event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
+        event EventHandler<AssociationAcceptedEventArgs>? AssociationAccepted;
 
         /// <summary>
         /// Triggers when an association is rejected.
         /// </summary>
-        event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
+        event EventHandler<AssociationRejectedEventArgs>? AssociationRejected;
 
         /// <summary>
         /// Representation of the DICOM association released event.
         /// </summary>
-        event EventHandler AssociationReleased;
+        event EventHandler? AssociationReleased;
 
         /// <summary>
         /// Representation of the DICOM association request timed out event.
         /// </summary>
-        event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
+        event EventHandler<AssociationRequestTimedOutEventArgs>? AssociationRequestTimedOut;
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
@@ -132,12 +131,12 @@ namespace FellowOakDicom.Network.Client
         /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
         [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
-        event EventHandler<StateChangedEventArgs> StateChanged;
+        event EventHandler<StateChangedEventArgs>? StateChanged;
 
         /// <summary>
         /// Triggered when a DICOM request times out.
         /// </summary>
-        event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
+        event EventHandler<RequestTimedOutEventArgs>? RequestTimedOut;
 
         /// <summary>
         /// Set negotiation asynchronous operations.
@@ -150,7 +149,7 @@ namespace FellowOakDicom.Network.Client
         /// Set negotiation of user identity.
         /// </summary>
         /// <param name="userIdentityNegotiation">User identity negotiation information.</param>
-        void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentityNegotiation);
+        void NegotiateUserIdentity(DicomUserIdentityNegotiation? userIdentityNegotiation);
 
         /// <summary>
         /// Enqueues a new DICOM request for execution.
@@ -163,7 +162,7 @@ namespace FellowOakDicom.Network.Client
         /// When you have many requests, this method is recommended over calling <see cref="AddRequestAsync"/> multiple times.
         /// </summary>
         /// <param name="dicomRequests">The DICOM requests to send</param>
-        Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests);
+        Task AddRequestsAsync(IEnumerable<DicomRequest>? dicomRequests);
 
         /// <summary>
         /// Sends existing requests to DICOM service. Note that subsequent calls, when the DICOM client is already sending its requests, will be completely ignored.
@@ -190,7 +189,7 @@ namespace FellowOakDicom.Network.Client
 
         public string Host { get; }
         public int Port { get; }
-        public ITlsInitiator TlsInitiator { get; }
+        public ITlsInitiator? TlsInitiator { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
         
@@ -207,18 +206,18 @@ namespace FellowOakDicom.Network.Client
         public List<DicomPresentationContext> AdditionalPresentationContexts { get; set; }
         public List<DicomExtendedNegotiation> AdditionalExtendedNegotiations { get; set; }
         public bool RequireSuccessfulUserIdentityNegotiation { get; set; }
-        public DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
-        public Encoding FallbackEncoding { get; set; }
-        public DicomClientCStoreRequestHandler OnCStoreRequest { get; set; }
-        public DicomClientNEventReportRequestHandler OnNEventReportRequest { get; set; }
+        public DicomUserIdentityNegotiation? UserIdentityNegotiation { get; set; }
+        public Encoding? FallbackEncoding { get; set; }
+        public DicomClientCStoreRequestHandler? OnCStoreRequest { get; set; }
+        public DicomClientNEventReportRequestHandler? OnNEventReportRequest { get; set; }
 
-        public event EventHandler<AssociationAcceptedEventArgs> AssociationAccepted;
-        public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
-        public event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
-        public event EventHandler AssociationReleased;
+        public event EventHandler<AssociationAcceptedEventArgs>? AssociationAccepted;
+        public event EventHandler<AssociationRejectedEventArgs>? AssociationRejected;
+        public event EventHandler<AssociationRequestTimedOutEventArgs>? AssociationRequestTimedOut;
+        public event EventHandler? AssociationReleased;
         
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-        public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
+        public event EventHandler<StateChangedEventArgs>? StateChanged;
+        public event EventHandler<RequestTimedOutEventArgs>? RequestTimedOut;
 
         /// <summary>
         /// Initializes an instance of <see cref="DicomClient"/>.
@@ -232,7 +231,7 @@ namespace FellowOakDicom.Network.Client
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="loggerFactory">The log manager that will be used to extract a default logger</param>
         /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
-        public DicomClient(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe,
+        public DicomClient(string host, int port, ITlsInitiator? tlsInitiator, string callingAe, string calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             ILoggerFactory loggerFactory,
@@ -265,7 +264,7 @@ namespace FellowOakDicom.Network.Client
             AsyncPerformed = performed;
         }
 
-        public void NegotiateUserIdentity(DicomUserIdentityNegotiation userIdentity)
+        public void NegotiateUserIdentity(DicomUserIdentityNegotiation? userIdentity)
         {
             if (userIdentity != null)
             {
@@ -284,7 +283,7 @@ namespace FellowOakDicom.Network.Client
             return Task.CompletedTask;
         }
 
-        public Task AddRequestsAsync(IEnumerable<DicomRequest> dicomRequests)
+        public Task AddRequestsAsync(IEnumerable<DicomRequest>? dicomRequests)
         {
             if (dicomRequests == null)
             {
@@ -319,7 +318,7 @@ namespace FellowOakDicom.Network.Client
             
             try
             {
-                var exception = (Exception)null;
+                var exception = (Exception?)null;
                 var maximumNumberOfRequestsPerAssociation = ClientOptions.MaximumNumberOfRequestsPerAssociation ?? int.MaxValue;
                 var maximumNumberOfConsecutiveTimedOutAssociationRequests = ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests;
                 var numberOfConsecutiveTimedOutAssociationRequests = 0;
@@ -329,8 +328,8 @@ namespace FellowOakDicom.Network.Client
                        && !(QueuedRequests.IsEmpty && requestsToRetry.Count == 0)
                        && exception == null)
                 {
-                    IAdvancedDicomClientConnection connection = null;
-                    IAdvancedDicomClientAssociation association = null;
+                    IAdvancedDicomClientConnection? connection = null;
+                    IAdvancedDicomClientAssociation? association = null;
                     try
                     {
                         var connectionRequest = new AdvancedDicomClientConnectionRequest

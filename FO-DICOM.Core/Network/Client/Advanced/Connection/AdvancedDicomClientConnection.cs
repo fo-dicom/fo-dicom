@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Client.Advanced.Association;
 using Microsoft.Extensions.Logging;
@@ -47,14 +46,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         private readonly IAdvancedDicomClientConnectionEventCollector _eventCollector;
         private int _isAssociationOpened;
         public INetworkStream NetworkStream { get; }
-        public Task Listener { get; private set; }
+        public Task? Listener { get; private set; }
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
         IAdvancedDicomClientConnectionEventCollector IAdvancedDicomClientConnection.EventCollector => _eventCollector;
 
         public AdvancedDicomClientConnection(
             IAdvancedDicomClientConnectionEventCollector eventCollector,
             INetworkStream networkStream,
-            Encoding fallbackEncoding,
+            Encoding? fallbackEncoding,
             DicomServiceOptions dicomServiceOptions,
             ILogger logger,
             DicomServiceDependencies dependencies) : base(networkStream, fallbackEncoding, logger, dependencies)

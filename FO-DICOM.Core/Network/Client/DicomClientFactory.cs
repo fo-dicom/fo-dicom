@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
-using FellowOakDicom.Log;
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,10 +27,10 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="tlsInitiator">The handler to initialte TLS security, if null then no TLS is enabled.</param>
+        /// <param name="tlsInitiator">The handler to initiate TLS security, if null then no TLS is enabled.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        IDicomClient Create(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe);
+        IDicomClient Create(string host, int port, ITlsInitiator? tlsInitiator, string callingAe, string calledAe);
 
     }
 
@@ -56,10 +54,10 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="host">DICOM host.</param>
         /// <param name="port">Port.</param>
-        /// <param name="tlsInitiator">The handler to initialte TLS security, if null then no TLS is enabled.</param>
+        /// <param name="tlsInitiator">The handler to initiate TLS security, if null then no TLS is enabled.</param>
         /// <param name="callingAe">Calling Application Entity Title.</param>
         /// <param name="calledAe">Called Application Entity Title.</param>
-        public static IDicomClient Create(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe)
+        public static IDicomClient Create(string host, int port, ITlsInitiator? tlsInitiator, string callingAe, string calledAe)
             => Setup.ServiceProvider
                 .GetRequiredService<IDicomClientFactory>().Create(host, port, tlsInitiator, callingAe, calledAe);
     }
@@ -88,29 +86,39 @@ namespace FellowOakDicom.Network.Client
 
         public virtual IDicomClient Create(string host, int port, bool useTls, string callingAe, string calledAe)
         {
-            ITlsInitiator tlsInitiator= null;
+            ITlsInitiator? tlsInitiator= null;
             if (useTls)
             {
-                // if Tls has to be active, use the initiator from DI, otherwise the DefaulttlsInitialter
+                // if Tls has to be active, use the initiator from DI, otherwise the DefaultTlsInitiator
                 tlsInitiator = _serviceProvider.GetService<ITlsInitiator>() ?? new DefaultTlsInitiator();
             }
             return Create(host, port, tlsInitiator, callingAe, calledAe);
         }
 
-        public virtual IDicomClient Create(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe)
+        public virtual IDicomClient Create(string host, int port, ITlsInitiator? tlsInitiator, string callingAe, string calledAe)
         {
             if (host == null)
             {
                 throw new ArgumentNullException(nameof(host));
             }
 
-            if (callingAe != null && callingAe.Length > DicomVR.AE.MaximumLength)
+            if (callingAe == null)
+            {
+                throw new ArgumentNullException(nameof(callingAe));
+            }
+
+            if (calledAe == null)
+            {
+                throw new ArgumentNullException(nameof(calledAe));
+            }
+
+            if (callingAe.Length > DicomVR.AE.MaximumLength)
             {
                 throw new ArgumentException($"Calling AE '{callingAe}' is {callingAe.Length} characters long, " +
                                             $"which is longer than the maximum allowed length ({DicomVR.AE.MaximumLength} characters)");
             }
 
-            if (calledAe != null && calledAe.Length > DicomVR.AE.MaximumLength)
+            if (calledAe.Length > DicomVR.AE.MaximumLength)
             {
                 throw new ArgumentException($"Called AE '{calledAe}' is {calledAe.Length} characters long, " +
                                             $"which is longer than the maximum allowed length ({DicomVR.AE.MaximumLength} characters)");

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections.Generic;
@@ -109,11 +108,11 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
     internal class AdvancedDicomClientConnectionEventCollector : IAdvancedDicomClientConnectionEventCollector
     {
-        private readonly AdvancedDicomClientConnectionRequestHandlers _requestHandlers;
+        private readonly AdvancedDicomClientConnectionRequestHandlers? _requestHandlers;
         private readonly Channel<IAdvancedDicomClientConnectionEvent> _events;
         private long _isConnectionClosed;
 
-        public AdvancedDicomClientConnectionEventCollector(AdvancedDicomClientConnectionRequestHandlers requestHandlers)
+        public AdvancedDicomClientConnectionEventCollector(AdvancedDicomClientConnectionRequestHandlers? requestHandlers)
         {
             _requestHandlers = requestHandlers;
             _events = Channel.CreateUnbounded<IAdvancedDicomClientConnectionEvent>(new UnboundedChannelOptions
@@ -130,7 +129,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                while (_events.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
+                while (_events.Reader.TryRead(out IAdvancedDicomClientConnectionEvent? @event))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

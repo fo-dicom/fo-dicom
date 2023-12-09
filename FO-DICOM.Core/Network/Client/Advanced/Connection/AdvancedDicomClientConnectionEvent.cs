@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 
@@ -22,7 +21,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// <summary>
         /// (Optional) the exception that occured while trying to read from or write to the connection
         /// </summary>
-        public Exception Exception { get; }
+        public Exception? Exception { get; }
 
         /// <summary>
         /// When the connection closed without an error

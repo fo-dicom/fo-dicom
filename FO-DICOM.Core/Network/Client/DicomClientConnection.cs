@@ -1,6 +1,5 @@
 // Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Threading.Tasks;
@@ -17,7 +16,7 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Gets the long running listener task that waits for incoming DICOM communication from the server.
         /// </summary>
-        Task Listener { get; }
+        Task? Listener { get; }
 
         /// <summary>
         /// Gets whether or not SendNextMessage is required, i.e. if any requests still have to be sent and there is no send loop currently running.
