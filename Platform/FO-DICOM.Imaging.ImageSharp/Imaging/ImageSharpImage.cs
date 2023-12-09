@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+#nullable disable
 
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO;
@@ -128,7 +129,7 @@ namespace FellowOakDicom.Imaging
                     .DrawImage(layer, new Point(graphic.ScaledOffsetX, graphic.ScaledOffsetY), 1));
             }
         }
- 
+
 
         /// <inheritdoc />
         public override IImage Clone()
