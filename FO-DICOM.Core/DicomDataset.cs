@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.StructuredReport;
 using FellowOakDicom.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -23,7 +23,9 @@ namespace FellowOakDicom
 
         private readonly IDictionary<DicomTag, DicomItem> _items;
 
-        private DicomTransferSyntax _syntax;
+        // This field is always set via the setter of InternalTransferSyntax
+        // but there seemingly isn't a way to convince the C# compiler of that fact
+        private DicomTransferSyntax _syntax = null!; 
         private Encoding[] _fallbackEncodings = DicomEncoding.DefaultArray;
 
         #endregion
@@ -70,7 +72,7 @@ namespace FellowOakDicom
         /// Initializes a new instance of the <see cref="DicomDataset"/> class.
         /// </summary>
         /// <param name="items">A collection of DICOM items.</param>
-        internal DicomDataset(IEnumerable<DicomItem> items, bool validate)
+        internal DicomDataset(IEnumerable<DicomItem>? items, bool validate)
             : this()
         {
             ValidateItems = validate;
@@ -178,7 +180,7 @@ namespace FellowOakDicom
         /// <typeparam name="T">Type of the return value. Must inherit from <see cref="DicomItem"/>.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
         /// <returns>Item corresponding to <paramref name="tag"/> or <code>null</code> if the <paramref name="tag"/> is not contained in the instance.</returns>
-        public T GetDicomItem<T>(DicomTag tag) where T : DicomItem
+        public T? GetDicomItem<T>(DicomTag tag) where T : DicomItem
         {
             tag = ValidatePrivate(tag);
             return _items.TryGetValue(tag, out DicomItem dummyItem) ? dummyItem as T : null;
@@ -281,7 +283,7 @@ namespace FellowOakDicom
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="sequence">Sequence of datasets corresponding to <paramref name="tag"/>.</param>
         /// <returns>Returns <code>true</code> if the <paramref name="tag"/> could be returned as sequence, <code>false</code> otherwise.</returns>
-        public bool TryGetSequence(DicomTag tag, out DicomSequence sequence)
+        public bool TryGetSequence(DicomTag tag, [NotNullWhen(true)] out DicomSequence? sequence)
         {
             if (!TryValidatePrivate(ref tag))
             {
@@ -307,9 +309,9 @@ namespace FellowOakDicom
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="sequence">Sequence of datasets corresponding to <paramref name="tag"/>.</param>
         /// <returns>Returns <code>true</code> if the <paramref name="tag"/> exists and is not empty, <code>false</code> otherwise.</returns>
-        public bool TryGetNonEmptySequence(DicomTag tag, out DicomSequence sequence)
+        public bool TryGetNonEmptySequence(DicomTag tag, [NotNullWhen(true)] out DicomSequence? sequence)
         {
-            if (TryGetSequence(tag, out DicomSequence dicomSequence) && dicomSequence.Items.Count > 0)
+            if (TryGetSequence(tag, out DicomSequence? dicomSequence) && dicomSequence.Items.Count > 0)
             {
                 sequence = dicomSequence;
                 return true;
@@ -390,8 +392,8 @@ namespace FellowOakDicom
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="index">Item index (for multi-valued elements).</param>
         /// <param name="elementValue">Element value corresponding to <paramref name="tag"/>.</param>
-        /// <returns>Returns <code>true</code> if the element value could be exctracted, otherwise <code>false</code>.</returns>
-        public bool TryGetValue<T>(DicomTag tag, int index, out T elementValue)
+        /// <returns>Returns <code>true</code> if the element value could be extracted, otherwise <code>false</code>.</returns>
+        public bool TryGetValue<T>(DicomTag tag, int index, [NotNullWhen(true), MaybeNull] out T elementValue)
         {
             if (index < 0 || typeof(T).GetTypeInfo().IsArray)
             {
@@ -414,7 +416,7 @@ namespace FellowOakDicom
             {
                 try
                 {
-                    elementValue = element.Get<T>(index);
+                    elementValue = element.Get<T>(index)!;
                     return true;
                 }
                 catch
@@ -479,7 +481,7 @@ namespace FellowOakDicom
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="values">Element values corresponding to <paramref name="tag"/>.</param>
         /// <returns>Returns <code>true</code> if the element values could be extracted, otherwise <code>false</code>.</returns>
-        public bool TryGetValues<T>(DicomTag tag, out T[] values)
+        public bool TryGetValues<T>(DicomTag tag, [NotNullWhen(true)] out T[]? values)
         {
             if (typeof(T).GetTypeInfo().IsArray)
             {
@@ -555,9 +557,9 @@ namespace FellowOakDicom
         /// </summary>
         /// <typeparam name="T">Type of the return value. This cannot be an array type.</typeparam>
         /// <param name="tag">Requested DICOM tag.</param>
-        /// <param name="elementValue">Element value corresponding to <paramref name="tag"/>.</param>
+        /// <param name="value">Element value corresponding to <paramref name="tag"/>.</param>
         /// <returns>Returns <code>true</code> if the element values could be exctracted, otherwise <code>false</code>.</returns>
-        public bool TryGetSingleValue<T>(DicomTag tag, out T value)
+        public bool TryGetSingleValue<T>(DicomTag tag, [NotNullWhen(true), MaybeNull] out T value)
         {
             if (typeof(T).GetTypeInfo().IsArray)
             {
@@ -580,7 +582,7 @@ namespace FellowOakDicom
             {
                 try
                 {
-                    value = element.Get<T>(0);
+                    value = element.Get<T>(0)!;
                     return true;
                 }
                 catch
@@ -637,7 +639,7 @@ namespace FellowOakDicom
         /// <param name="tag">Requested DICOM tag.</param>
         /// <param name="stringValue">String representing the element value corresponding to <paramref name="tag"/>.</param>
         /// <returns>Returns <code>false</code> if the dataset does not contain the tag.</returns>
-        public bool TryGetString(DicomTag tag, out string stringValue)
+        public bool TryGetString(DicomTag tag, [NotNullWhen(true)] out string? stringValue)
         {
             if (!TryValidatePrivate(ref tag))
             {
@@ -717,7 +719,7 @@ namespace FellowOakDicom
         /// <returns>Private DICOM tag, or null if all groups are already used.</returns>
         public DicomTag GetPrivateTag(DicomTag tag)
         {
-            return GetPrivateTag(tag, true);
+            return GetPrivateTag(tag, true)!;
         }
 
         /// <summary>
@@ -727,7 +729,7 @@ namespace FellowOakDicom
         /// <param name="createTag">Whether the PrivateCreator tag should be created if needed.</param>
         /// <returns>Private DICOM tag, or null if all groups are already used or createTag is false and the
         /// PrivateCreator is not already in the dataset. </returns>
-        internal DicomTag GetPrivateTag(DicomTag tag, bool createTag)
+        internal DicomTag? GetPrivateTag(DicomTag tag, bool createTag)
         {
             // not a private tag
             if (!tag.IsPrivate) return tag;
@@ -753,7 +755,7 @@ namespace FellowOakDicom
                     return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
                 }
 
-                var value = TryGetSingleValue(creator, out string tmpValue) ? tmpValue : string.Empty;
+                var value = TryGetSingleValue(creator, out string? tmpValue) ? tmpValue : string.Empty;
                 if (tag.PrivateCreator.Creator == value) return new DicomTag(tag.Group, (ushort)((group << 8) + (tag.Element & 0xff)), tag.PrivateCreator);
             }
 
@@ -933,7 +935,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="item">DICOM item to add.</param>
         /// <returns>The dataset instance.</returns>
-        public DicomDataset AddOrUpdate(DicomItem item)
+        public DicomDataset AddOrUpdate(DicomItem? item)
         {
             return DoAdd(item, true);
         }
@@ -1041,7 +1043,7 @@ namespace FellowOakDicom
         /// <param name="destination">Destination Dataset</param>
         /// <param name="tags">Tags to copy</param>
         /// <returns>Current Dataset</returns>
-        public DicomDataset CopyTo(DicomDataset destination, params DicomTag[] tags)
+        public DicomDataset CopyTo(DicomDataset? destination, params DicomTag[] tags)
         {
             if (destination != null)
             {
@@ -1108,7 +1110,7 @@ namespace FellowOakDicom
         /// <param name="items">Collection of DICOM items to add.</param>
         /// <param name="allowUpdate">True if existing tag can be updated, false if method should throw when trying to add already existing tag.</param>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd(IEnumerable<DicomItem> items, bool allowUpdate)
+        private DicomDataset DoAdd(IEnumerable<DicomItem>? items, bool allowUpdate)
         {
             if (items != null)
             {
@@ -1154,7 +1156,7 @@ namespace FellowOakDicom
         /// <param name="item">DICOM item to add.</param>
         /// <param name="allowUpdate">True if existing tag can be updated, false if method should throw when trying to add already existing tag.</param>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd(DicomItem item, bool allowUpdate)
+        private DicomDataset DoAdd(DicomItem? item, bool allowUpdate)
         {
             if (item != null)
             {
@@ -1187,7 +1189,7 @@ namespace FellowOakDicom
         /// <param name="values">Values of the added item.</param>
         /// <param name="allowUpdate">True if existing tag can be updated, false if method should throw when trying to add already existing tag.</param>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd<T>(DicomTag tag, IList<T> values, bool allowUpdate)
+        private DicomDataset DoAdd<T>(DicomTag tag, IList<T>? values, bool allowUpdate)
         {
             var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
             if (entry == DicomDictionary.UnknownTag && tag.IsPrivate) {
@@ -1199,7 +1201,7 @@ namespace FellowOakDicom
                 throw new DicomDataException($"Tag {tag} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.");
             }
 
-            DicomVR vr = null;
+            DicomVR? vr = null;
             if (values != null) vr = Array.Find(entry.ValueRepresentations, x => x.ValueType == typeof(T));
             if (vr == null)
             {
@@ -1220,7 +1222,7 @@ namespace FellowOakDicom
         /// This method is useful when adding a private tag and need to explicitly set the VR of the created element.
         /// </remarks>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd<T>(DicomVR vr, DicomTag tag, IList<T> values, bool allowUpdate)
+        private DicomDataset DoAdd<T>(DicomVR vr, DicomTag tag, IList<T>? values, bool allowUpdate)
         {
             if (tag.IsPrivate) tag = GetPrivateTag(tag);
             if (vr == DicomVR.AE)
@@ -1240,7 +1242,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomAttributeTag(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(DicomTag)) return DoAdd(new DicomAttributeTag(tag, values.Cast<DicomTag>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, DicomTag.Parse, out IEnumerable<DicomTag> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, DicomTag.Parse, out IEnumerable<DicomTag>? parsedValues))
                 {
                     return DoAdd(new DicomAttributeTag(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1250,7 +1252,7 @@ namespace FellowOakDicom
             {
                 if (values == null) return DoAdd(new DicomCodeString(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(string)) return DoAdd(new DicomCodeString(tag, values.Cast<string>().ToArray()), allowUpdate);
-                if (typeof(T).GetTypeInfo().IsEnum) return DoAdd(new DicomCodeString(tag, values.Select(x => x.ToString().ToUpperInvariant()).ToArray()), allowUpdate);
+                if (typeof(T).GetTypeInfo().IsEnum) return DoAdd(new DicomCodeString(tag, values.Select(x => x!.ToString().ToUpperInvariant()).ToArray()), allowUpdate);
             }
 
             if (vr == DicomVR.DA)
@@ -1291,7 +1293,7 @@ namespace FellowOakDicom
                 if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<float>().Select(Convert.ToDouble).ToArray()), allowUpdate);
                 if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointDouble(tag, values.Cast<double>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out IEnumerable<double> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, double.Parse, out IEnumerable<double>? parsedValues))
                 {
                     return DoAdd(new DicomFloatingPointDouble(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1303,7 +1305,7 @@ namespace FellowOakDicom
                 if (typeof(T) == typeof(float)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<float>().ToArray()), allowUpdate);
                 if (typeof(T) == typeof(double)) return DoAdd(new DicomFloatingPointSingle(tag, values.Cast<double>().Select(Convert.ToSingle).ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out IEnumerable<float> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, float.Parse, out IEnumerable<float>? parsedValues))
                 {
                     return DoAdd(new DicomFloatingPointSingle(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1335,7 +1337,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomOtherByte(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomOtherByte(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1346,7 +1348,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomOtherDouble(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomOtherDouble(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1357,7 +1359,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomOtherFloat(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomOtherFloat(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1368,7 +1370,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomOtherLong(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomOtherLong(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1379,7 +1381,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomOtherVeryLong(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomOtherVeryLong(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1390,7 +1392,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomOtherWord(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomOtherWord(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1411,7 +1413,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomSignedLong(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(int)) return DoAdd(new DicomSignedLong(tag, values.Cast<int>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, int.Parse, out IEnumerable<int> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, int.Parse, out IEnumerable<int>? parsedValues))
                 {
                     return DoAdd(new DicomSignedLong(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1430,7 +1432,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomSignedShort(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(short)) return DoAdd(new DicomSignedShort(tag, values.Cast<short>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, short.Parse, out IEnumerable<short> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, short.Parse, out IEnumerable<short>? parsedValues))
                 {
                     return DoAdd(new DicomSignedShort(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1447,7 +1449,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomSignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(long)) return DoAdd(new DicomSignedVeryLong(tag, values.Cast<long>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, long.Parse, out IEnumerable<long> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, long.Parse, out IEnumerable<long>? parsedValues))
                 {
                     return DoAdd(new DicomSignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1482,7 +1484,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomUnsignedLong(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(uint)) return DoAdd(new DicomUnsignedLong(tag, values.Cast<uint>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out IEnumerable<uint> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, uint.Parse, out IEnumerable<uint>? parsedValues))
                 {
                     return DoAdd(new DicomUnsignedLong(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1495,7 +1497,7 @@ namespace FellowOakDicom
 
                 if (typeof(T) == typeof(IByteBuffer) && values.Count == 1)
                 {
-                    return DoAdd(new DicomUnknown(tag, (IByteBuffer)values[0]), allowUpdate);
+                    return DoAdd(new DicomUnknown(tag, (IByteBuffer)values[0]!), allowUpdate);
                 }
             }
 
@@ -1510,7 +1512,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomUnsignedShort(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(ushort)) return DoAdd(new DicomUnsignedShort(tag, values.Cast<ushort>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ushort.Parse, out IEnumerable<ushort> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ushort.Parse, out IEnumerable<ushort>? parsedValues))
                 {
                     return DoAdd(new DicomUnsignedShort(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1527,7 +1529,7 @@ namespace FellowOakDicom
                 if (values == null) return DoAdd(new DicomUnsignedVeryLong(tag, EmptyBuffer.Value), allowUpdate);
                 if (typeof(T) == typeof(ulong)) return DoAdd(new DicomUnsignedVeryLong(tag, values.Cast<ulong>().ToArray()), allowUpdate);
 
-                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ulong.Parse, out IEnumerable<ulong> parsedValues))
+                if (ParseVrValueFromString(values, tag.DictionaryEntry.ValueMultiplicity, ulong.Parse, out IEnumerable<ulong>? parsedValues))
                 {
                     return DoAdd(new DicomUnsignedVeryLong(tag, parsedValues.ToArray()), allowUpdate);
                 }
@@ -1543,7 +1545,7 @@ namespace FellowOakDicom
             IEnumerable<T> values,
             DicomVM valueMultiplicity,
             Func<string, TOut> parser,
-            out IEnumerable<TOut> parsedValues)
+            [NotNullWhen(true)] out IEnumerable<TOut>? parsedValues)
         {
             parsedValues = null;
 
@@ -1645,7 +1647,7 @@ namespace FellowOakDicom
                 if (disposing)
                 {
                     _dataset.ValidateItems = _validation;
-                    _dataset = null;
+                    _dataset = null!;
                 }
 
                 _disposedValue = true;
