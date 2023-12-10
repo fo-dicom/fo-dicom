@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FellowOakDicom.Network
 {
@@ -14,7 +14,7 @@ namespace FellowOakDicom.Network
         /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
-        INetworkListener CreateNetworkListener(string ipAddress, int port);
+        INetworkListener CreateNetworkListener(string? ipAddress, int port);
 
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
@@ -30,14 +30,14 @@ namespace FellowOakDicom.Network
         /// <param name="errorCode">Error code, valid if <paramref name="exception"/> is socket exception.</param>
         /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
-        bool IsSocketException(Exception exception, out int errorCode, out string errorDescriptor);
+        bool IsSocketException(Exception exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor);
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
         /// </summary>
         /// <param name="identifier">Unique network identifier, if found.</param>
         /// <returns>True if network identifier could be obtained, false otherwise.</returns>
-        bool TryGetNetworkIdentifier(out DicomUID identifier);
+        bool TryGetNetworkIdentifier([NotNullWhen(true)] out DicomUID? identifier);
 
         /// <summary>
         /// Gets the machine name
@@ -91,7 +91,7 @@ namespace FellowOakDicom.Network
         /// <param name="ipAddress">IP address(es) to listen to.</param>
         /// <param name="port">Network port to listen to.</param>
         /// <returns>Network listener implementation.</returns>
-        protected internal abstract INetworkListener CreateNetworkListenerImpl(string ipAddress, int port);
+        protected internal abstract INetworkListener CreateNetworkListenerImpl(string? ipAddress, int port);
 
         /// <summary>
         /// Platform-specific implementation to create a network stream object.
@@ -107,25 +107,25 @@ namespace FellowOakDicom.Network
         /// <param name="errorCode">Error code, valid if <paramref name="exception"/> is socket exception.</param>
         /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
-        protected internal abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor);
+        protected internal abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor);
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
         /// </summary>
         /// <param name="identifier">Unique network identifier, if found.</param>
         /// <returns>True if network identifier could be obtained, false otherwise.</returns>
-        protected internal abstract bool TryGetNetworkIdentifierImpl(out DicomUID identifier);
+        protected internal abstract bool TryGetNetworkIdentifierImpl([NotNullWhen(true)] out DicomUID? identifier);
 
-        INetworkListener INetworkManager.CreateNetworkListener(string ipAddress, int port) 
+        INetworkListener INetworkManager.CreateNetworkListener(string? ipAddress, int port) 
             => CreateNetworkListenerImpl(ipAddress, port);
 
         INetworkStream INetworkManager.CreateNetworkStream(NetworkStreamCreationOptions options)
             => CreateNetworkStreamImpl(options);
 
-        bool INetworkManager.IsSocketException(Exception exception, out int errorCode, out string errorDescriptor)
+        bool INetworkManager.IsSocketException(Exception exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor)
             => IsSocketExceptionImpl(exception, out errorCode, out errorDescriptor);
 
-        bool INetworkManager.TryGetNetworkIdentifier(out DicomUID identifier)
+        bool INetworkManager.TryGetNetworkIdentifier([NotNullWhen(true)] out DicomUID? identifier)
             => TryGetNetworkIdentifierImpl(out identifier);
 
         string INetworkManager.MachineName => MachineNameImpl;

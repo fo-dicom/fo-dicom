@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -52,7 +52,7 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        protected internal override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
+        protected internal override INetworkListener CreateNetworkListenerImpl(string? ipAddress, int port)
         {
             return new DesktopNetworkListener(ipAddress, port);
         }
@@ -63,7 +63,8 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)
+        protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode,
+            [NotNullWhen(true)] out string? errorDescriptor)
         {
             if (exception is SocketException socketEx)
             {
@@ -78,7 +79,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        protected internal override bool TryGetNetworkIdentifierImpl(out DicomUID identifier)
+        protected internal override bool TryGetNetworkIdentifierImpl([NotNullWhen(true)] out DicomUID? identifier)
         {
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();
             for (var i = 0; i < interfaces.Length; i++)

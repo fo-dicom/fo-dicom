@@ -102,16 +102,6 @@ namespace FellowOakDicom.Network.Client
                 throw new ArgumentNullException(nameof(host));
             }
 
-            if (callingAe == null)
-            {
-                throw new ArgumentNullException(nameof(callingAe));
-            }
-
-            if (calledAe == null)
-            {
-                throw new ArgumentNullException(nameof(calledAe));
-            }
-
             if (callingAe.Length > DicomVR.AE.MaximumLength)
             {
                 throw new ArgumentException($"Calling AE '{callingAe}' is {callingAe.Length} characters long, " +

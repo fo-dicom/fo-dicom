@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections;
@@ -97,7 +96,7 @@ namespace FellowOakDicom.Network
         /// <param name="applicationInfo">Service Class Application Info.</param>
         /// <param name="serviceClassUid">Common Service Class UID.</param>
         /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
-        public void Add(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
+        public void Add(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo, DicomUID? serviceClassUid, params DicomUID[]? relatedGeneralSopClasses)
         {
             Add(new DicomExtendedNegotiation(sopClassUid, applicationInfo, serviceClassUid, relatedGeneralSopClasses));
         }
@@ -167,7 +166,7 @@ namespace FellowOakDicom.Network
         /// <param name="applicationInfo">Service Class Application Info.</param>
         /// <param name="serviceClassUid">Common Service Class UID.</param>
         /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
-        public void AddOrUpdate(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo, DicomUID serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
+        public void AddOrUpdate(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo, DicomUID? serviceClassUid, params DicomUID[]? relatedGeneralSopClasses)
         {
             if (_ec.TryGetValue(sopClassUid, out var en))
             {

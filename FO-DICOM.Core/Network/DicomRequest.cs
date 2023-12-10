@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 
@@ -44,7 +43,7 @@ namespace FellowOakDicom.Network
             Type = type;
             SOPClassUID = requestedClassUid;
             MessageID = GetNextMessageID();
-            Dataset = null;
+            Dataset = null!;
         }
 
         #region PROPERTIES
@@ -66,13 +65,13 @@ namespace FellowOakDicom.Network
         /// Event handler for when this DICOM request times out.
         /// This will be triggered when the server takes too long to respond, or when it takes us too long to send the request in the first place.
         /// </summary>
-        public EventHandler<OnTimeoutEventArgs> OnTimeout;
+        public EventHandler<OnTimeoutEventArgs>? OnTimeout;
 
         /// <summary>
         /// Event handler for when DICOM requests are sent
         /// This will be triggered when the request is fully sent over the wire to the SCP
         /// </summary>
-        public EventHandler<OnRequestSentEventArgs> OnRequestSent;
+        public EventHandler<OnRequestSentEventArgs>? OnRequestSent;
 
         #endregion
 

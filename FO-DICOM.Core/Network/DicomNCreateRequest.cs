@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom.Network
 {
@@ -40,9 +39,9 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the affected SOP instance UID.
         /// </summary>
-        public DicomUID SOPInstanceUID
+        public DicomUID? SOPInstanceUID
         {
-            get => Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
+            get => Command.GetSingleValueOrDefault<DicomUID?>(DicomTag.AffectedSOPInstanceUID, null);
             private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
@@ -60,7 +59,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the handler for the N-CREATE response received event.
         /// </summary>
-        public ResponseDelegate OnResponseReceived;
+        public ResponseDelegate? OnResponseReceived;
 
         #endregion
 

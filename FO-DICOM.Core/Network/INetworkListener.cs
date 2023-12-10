@@ -34,6 +34,6 @@ namespace FellowOakDicom.Network
         /// <param name="logger">The logger</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(ITlsAcceptor? tlsAcceptor, bool noDelay, int? receiveBufferSize, int? sendBufferSize, ILogger logger, CancellationToken token);
+        Task<INetworkStream?> AcceptNetworkStreamAsync(ITlsAcceptor? tlsAcceptor, bool noDelay, int? receiveBufferSize, int? sendBufferSize, ILogger logger, CancellationToken token);
     }
 }

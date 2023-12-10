@@ -957,7 +957,7 @@ namespace FellowOakDicom
         /// <param name="tag">DICOM tag of the added item.</param>
         /// <param name="values">Values of the added item.</param>
         /// <returns>The dataset instance.</returns>
-        public DicomDataset AddOrUpdate<T>(DicomTag tag, params T[] values)
+        public DicomDataset AddOrUpdate<T>(DicomTag tag, params T[]? values)
         {
             return DoAdd(tag, values, true);
         }

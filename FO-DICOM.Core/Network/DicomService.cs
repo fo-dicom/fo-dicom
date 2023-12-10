@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
@@ -91,7 +90,7 @@ namespace FellowOakDicom.Network
         /// <param name="dependencies">The dependencies of this DICOM service</param>
         protected DicomService(
             INetworkStream stream,
-            Encoding fallbackEncoding,
+            Encoding? fallbackEncoding,
             ILogger logger,
             DicomServiceDependencies dependencies)
         {
@@ -150,7 +149,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets a user state associated with the service.
         /// </summary>
-        public object UserState { get; set; }
+        public object? UserState { get; set; }
 
         /// <summary>
         /// Gets the DICOM association.

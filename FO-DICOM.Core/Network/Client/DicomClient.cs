@@ -43,12 +43,12 @@ namespace FellowOakDicom.Network.Client
         /// <summary>
         /// Calling Application Entity Title.
         /// </summary>
-        string CallingAe { get; }
+        string? CallingAe { get; }
 
         /// <summary>
         /// Called Application Entity Title.
         /// </summary>
-        string CalledAe { get; }
+        string? CalledAe { get; }
 
         /// <summary>
         /// Gets or sets the logger that will be used by this DicomClient
@@ -190,8 +190,8 @@ namespace FellowOakDicom.Network.Client
         public string Host { get; }
         public int Port { get; }
         public ITlsInitiator? TlsInitiator { get; }
-        public string CallingAe { get; }
-        public string CalledAe { get; }
+        public string? CallingAe { get; }
+        public string? CalledAe { get; }
         
         public bool IsSendRequired => _isSending == 0 && QueuedRequests.Any();
 
@@ -231,7 +231,7 @@ namespace FellowOakDicom.Network.Client
         /// <param name="serviceOptions">The options that modify the behavior of the base DICOM service</param>
         /// <param name="loggerFactory">The log manager that will be used to extract a default logger</param>
         /// <param name="advancedDicomClientConnectionFactory">The advanced DICOM client factory that will be used to actually send the requests</param>
-        public DicomClient(string host, int port, ITlsInitiator? tlsInitiator, string callingAe, string calledAe,
+        public DicomClient(string host, int port, ITlsInitiator? tlsInitiator, string? callingAe, string? calledAe,
             DicomClientOptions clientOptions,
             DicomServiceOptions serviceOptions,
             ILoggerFactory loggerFactory,
