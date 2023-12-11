@@ -1,5 +1,7 @@
 ### 5.1.3 (TBD)
-- Add nullability annotations (#1699)
+- **Breaking change<sup>1</sup>**: Add nullability annotations (#1699)
+
+**1.** This is a breaking change because it will cause compiler warnings, which can be promoted to errors with [TreatWarningsAsErrors](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#treatwarningsaserrors)
 
 - **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
@@ -25,6 +27,7 @@
 - Update to DICOM Standard 2023e
 - **Breaking change**: Configuration of `MaxClientsAllowed` must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
 - **Breaking change**: `IServiceCollection.AddDicomServer(Action<DicomServiceOptions> configure)` was changed to `IServiceCollection.AddDicomServer(Action<DicomServerOptions> configure)`
+- **Breaking change<sup>1</sup>**: Add nullability annotations (#1699)
 - fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
 - FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
 - Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
