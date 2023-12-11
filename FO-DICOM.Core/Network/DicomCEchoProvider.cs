@@ -17,13 +17,11 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Initializes an instance of the <see cref="DicomCEchoProvider"/> class.
         /// </summary>
-        /// <param name="stream">Network stream on which DICOM communication is establshed.</param>
+        /// <param name="stream">Network stream on which DICOM communication is established.</param>
         /// <param name="fallbackEncoding">Text encoding if not specified within messaging.</param>
         /// <param name="log">DICOM logger.</param>
-        /// <param name="logManager">The log manager</param>
-        /// <param name="networkManager">The network manager</param>
-        /// <param name="transcoderManager">The transcoder manager</param>
-        public DicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
+        /// <param name="dependencies">The DICOM service dependencies</param>
+        public DicomCEchoProvider(INetworkStream stream, Encoding? fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
         {
@@ -52,7 +50,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public virtual void OnConnectionClosed(Exception exception)
+        public virtual void OnConnectionClosed(Exception? exception)
         {
         }
 

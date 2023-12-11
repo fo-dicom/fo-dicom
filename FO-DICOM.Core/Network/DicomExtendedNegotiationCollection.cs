@@ -96,7 +96,7 @@ namespace FellowOakDicom.Network
         /// <param name="applicationInfo">Service Class Application Info.</param>
         /// <param name="serviceClassUid">Common Service Class UID.</param>
         /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
-        public void Add(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo, DicomUID? serviceClassUid, params DicomUID[]? relatedGeneralSopClasses)
+        public void Add(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo, DicomUID? serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
         {
             Add(new DicomExtendedNegotiation(sopClassUid, applicationInfo, serviceClassUid, relatedGeneralSopClasses));
         }
@@ -113,7 +113,7 @@ namespace FellowOakDicom.Network
                 if (cStoreRequest.ApplicationInfo != null || cStoreRequest.CommonServiceClassUid != null)
                 {
                     AddOrUpdate(cStoreRequest.SOPClassUID, cStoreRequest.ApplicationInfo,
-                        cStoreRequest.CommonServiceClassUid, cStoreRequest.RelatedGeneralSopClasses?.ToArray());
+                        cStoreRequest.CommonServiceClassUid, cStoreRequest.RelatedGeneralSopClasses?.ToArray() ?? Array.Empty<DicomUID>());
                 }
             }
             else if (dicomRequest.ApplicationInfo != null)
@@ -166,7 +166,7 @@ namespace FellowOakDicom.Network
         /// <param name="applicationInfo">Service Class Application Info.</param>
         /// <param name="serviceClassUid">Common Service Class UID.</param>
         /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
-        public void AddOrUpdate(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo, DicomUID? serviceClassUid, params DicomUID[]? relatedGeneralSopClasses)
+        public void AddOrUpdate(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo, DicomUID? serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
         {
             if (_ec.TryGetValue(sopClassUid, out var en))
             {

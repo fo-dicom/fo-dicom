@@ -79,7 +79,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// A delegate to be executed when the application info is created.
         /// </summary>
-        public static CreateApplicationInfoDelegate OnCreateApplicationInfo { get; set; }
+        public static CreateApplicationInfoDelegate? OnCreateApplicationInfo { get; set; }
 
         /// <summary>
         /// A factory method to initialize a new application information class based on the provided sop class.

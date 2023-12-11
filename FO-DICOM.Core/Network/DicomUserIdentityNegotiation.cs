@@ -40,19 +40,19 @@ namespace FellowOakDicom.Network
         /// Gets or sets the identity primary field which might consist of the username,
         /// the Kerberos Service ticket or the SAML assertion.
         /// </summary>
-        public string PrimaryField { get; set; }
+        public string? PrimaryField { get; set; }
 
         /// <summary>
         /// Gets or sets the identity secondary field which is only used when the
         /// user identity type is username and pass code.
         /// </summary>
-        public string SecondaryField { get; set; }
+        public string? SecondaryField { get; set; }
 
         /// <summary>
         /// Gets or sets the server response which might consist of the
         /// Kerberos Service ticket, the SAML response or the JSON web token.
         /// </summary>
-        public string ServerResponse { get; set; }
+        public string? ServerResponse { get; set; }
 
         /// <summary>
         /// Performs a validation of the user identity negotiation properties.

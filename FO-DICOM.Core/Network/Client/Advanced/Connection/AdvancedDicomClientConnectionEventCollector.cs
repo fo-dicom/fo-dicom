@@ -52,7 +52,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         /// Callback when connection is closed.
         /// </summary>
         /// <param name="exception">Exception, if any, that forced connection to close.</param>
-        Task OnConnectionClosedAsync(Exception exception);
+        Task OnConnectionClosedAsync(Exception? exception);
 
         /// <summary>
         /// Callback when a request has been completed (a final response was received, causing it to be removed from the pending queue)
@@ -178,7 +178,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             await _events.Writer.WriteAsync(new DicomAbortedEvent(source, reason)).ConfigureAwait(false);
         }
 
-        public async Task OnConnectionClosedAsync(Exception exception)
+        public async Task OnConnectionClosedAsync(Exception? exception)
         {
             if (Interlocked.CompareExchange(ref _isConnectionClosed, 1, 0) != 0)
             {

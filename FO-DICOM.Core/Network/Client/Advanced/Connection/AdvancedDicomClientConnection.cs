@@ -88,7 +88,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         public Task OnReceiveAssociationReleaseResponseAsync() => _eventCollector.OnReceiveAssociationReleaseResponseAsync();
         public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _eventCollector.OnReceiveAbortAsync(source, reason);
-        public Task OnConnectionClosedAsync(Exception exception) => _eventCollector.OnConnectionClosedAsync(exception);
+        public Task OnConnectionClosedAsync(Exception? exception) => _eventCollector.OnConnectionClosedAsync(exception);
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestCompletedAsync(request, response);
         public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestPendingAsync(request, response);
         public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _eventCollector.OnRequestTimedOutAsync(request, timeout);
@@ -172,6 +172,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         private DicomAssociation ToDicomAssociation(AdvancedDicomClientAssociationRequest request)
         {
+            if (request.CallingAE == null)
+            {
+                throw new ArgumentException("Calling AE cannot be null");
+            }
+
+            if (request.CalledAE == null)
+            {
+                throw new ArgumentException("Called AE cannot be null");
+            }
+            
             var dicomAssociation = new DicomAssociation(request.CallingAE, request.CalledAE)
             {
                 RemoteHost = NetworkStream.RemoteHost,

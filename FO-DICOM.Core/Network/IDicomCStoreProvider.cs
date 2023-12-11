@@ -29,6 +29,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="tempFileName">Name of the temporary file, may be null.</param>
         /// <param name="e">Thrown exception.</param>
-        Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e);
+        Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e);
     }
 }

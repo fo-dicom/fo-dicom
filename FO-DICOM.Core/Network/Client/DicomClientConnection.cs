@@ -88,7 +88,7 @@ namespace FellowOakDicom.Network.Client
         /// Callback when connection is closed.
         /// </summary>
         /// <param name="exception">Exception, if any, that forced connection to close.</param>
-        Task OnConnectionClosedAsync(Exception exception);
+        Task OnConnectionClosedAsync(Exception? exception);
 
         /// <summary>
         /// Send request from service.

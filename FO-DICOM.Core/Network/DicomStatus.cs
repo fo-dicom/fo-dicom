@@ -40,7 +40,7 @@ namespace FellowOakDicom.Network
         /// <summary>Description.</summary>
         public readonly string Description;
 
-        public readonly string ErrorComment = null;
+        public readonly string? ErrorComment = null;
 
         private readonly ushort _mask;
 
@@ -146,7 +146,7 @@ namespace FellowOakDicom.Network
         /// <param name="s1">DICOM Status</param>
         /// <param name="s2">DICOM Status</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(DicomStatus s1, DicomStatus s2)
+        public static bool operator ==(DicomStatus? s1, DicomStatus? s2)
         {
             if (s1 is null || s2 is null)
             {
@@ -162,7 +162,7 @@ namespace FellowOakDicom.Network
         /// <param name="s1">DICOM Status</param>
         /// <param name="s2">DICOM Status</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator !=(DicomStatus s1, DicomStatus s2)
+        public static bool operator !=(DicomStatus? s1, DicomStatus? s2)
         {
             if (s1 is null || s2 is null)
             {
@@ -181,7 +181,7 @@ namespace FellowOakDicom.Network
         /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
         /// </returns>
         /// <exception cref="T:System.NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
-        public override bool Equals(object obj) => (DicomStatus)obj == this;
+        public override bool Equals(object? obj) => (DicomStatus?)obj == this;
 
         public override int GetHashCode() => HashCode.Combine(Code, (int)State, Description, ErrorComment, _mask);
 

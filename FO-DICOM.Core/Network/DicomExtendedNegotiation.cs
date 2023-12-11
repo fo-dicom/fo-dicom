@@ -18,7 +18,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="sopClassUid">SOP class UID.</param>
         /// <param name="applicationInfo">Extended negotiation Application Information.</param>
-        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo)
+        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo)
         {
             SopClassUid = sopClassUid;
             RequestedApplicationInfo = applicationInfo;
@@ -46,12 +46,12 @@ namespace FellowOakDicom.Network
         /// <param name="serviceClassUid">Common Service Class UID.</param>
         /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
         public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo,
-            DicomUID? serviceClassUid, params DicomUID[]? relatedGeneralSopClasses)
+            DicomUID? serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
         {
             SopClassUid = sopClassUid;
             RequestedApplicationInfo = applicationInfo;
             ServiceClassUid = serviceClassUid;
-            RelatedGeneralSopClasses = relatedGeneralSopClasses?.ToList() ?? new List<DicomUID>();
+            RelatedGeneralSopClasses = relatedGeneralSopClasses.ToList();
         }
 
         /// <summary>

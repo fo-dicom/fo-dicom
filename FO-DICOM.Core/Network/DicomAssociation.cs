@@ -20,6 +20,10 @@ namespace FellowOakDicom.Network
             ExtendedNegotiations = new DicomExtendedNegotiationCollection();
             MaxAsyncOpsInvoked = 1;
             MaxAsyncOpsPerformed = 1;
+            // This constructor is only used when parsing an incoming DICOM association request
+            // After the parsing, the calling AE and called AE should be present
+            CallingAE = null!;
+            CalledAE = null!;
         }
 
         /// <summary>
@@ -27,7 +31,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="callingAe">The calling Application Entity.</param>
         /// <param name="calledAe">The called Application Entity.</param>
-        public DicomAssociation(string? callingAe, string? calledAe)
+        public DicomAssociation(string callingAe, string calledAe)
             : this()
         {
             CallingAE = callingAe;
@@ -37,12 +41,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the calling application entity.
         /// </summary>
-        public string? CallingAE { get; internal set; }
+        public string CallingAE { get; internal set; }
 
         /// <summary>
         /// Gets the called application entity.
         /// </summary>
-        public string? CalledAE { get; internal set; }
+        public string CalledAE { get; internal set; }
 
         /// <summary>
         /// Gets or sets the supported maximum number of asynchronous operations invoked.
@@ -217,7 +221,7 @@ namespace FellowOakDicom.Network
                     extendedNegotiation.SopClassUid,
                     extendedNegotiation.RequestedApplicationInfo,
                     extendedNegotiation.ServiceClassUid,
-                    extendedNegotiation.RelatedGeneralSopClasses?.ToArray()
+                    extendedNegotiation.RelatedGeneralSopClasses.ToArray()
                 );
             }
 

@@ -21,6 +21,6 @@ namespace FellowOakDicom.Network
         /// Callback when connection is closed.
         /// </summary>
         /// <param name="exception">Exception, if any, that forced connection to close.</param>
-        void OnConnectionClosed(Exception exception);
+        void OnConnectionClosed(Exception? exception);
     }
 }

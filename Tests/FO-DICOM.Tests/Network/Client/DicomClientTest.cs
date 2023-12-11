@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
@@ -34,7 +33,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Fields
 
-        private static string _remoteHost;
+        private static string? _remoteHost;
 
         private static int _remotePort;
 
@@ -57,7 +56,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Helper functions
 
-        private IDicomServer CreateServer<T>(int port, Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
+        private IDicomServer CreateServer<T>(int port, Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider
         {
             var server = DicomServerFactory.Create<T>(port, configure: configure);
             server.Logger = _logger.IncludePrefix(nameof(IDicomServer));
@@ -73,7 +72,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
-            return server as TServer;
+            return (TServer) server;
         }
 
         private IDicomClient CreateClient(string host, int port, bool useTls, string callingAe, string calledAe)
@@ -180,7 +179,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var counter = 0;
             using var server = CreateServer<ConfigurableDicomCEchoProvider, ConfigurableDicomCEchoProviderServer>(port);
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
-            DicomAssociation capturedAssociation = null;
+            DicomAssociation? capturedAssociation = null;
             server.OnAssociationRequest(association =>
             {
                 capturedAssociation = association;
@@ -402,7 +401,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 var requestedNegotiation = new DicomExtendedNegotiation(
                     DicomUID.Verification,
                     new DicomServiceApplicationInfo(new byte[] { 1, 1, 1 }));
-                DicomExtendedNegotiationCollection acceptedNegotiations = null;
+                DicomExtendedNegotiationCollection? acceptedNegotiations = null;
 
                 client.AdditionalExtendedNegotiations.Add(requestedNegotiation);
                 client.AssociationAccepted += (sender, args) => acceptedNegotiations = args.Association.ExtendedNegotiations;
@@ -414,7 +413,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.NotEmpty(acceptedNegotiations);
                 var acceptedNegotiation = acceptedNegotiations.First();
                 Assert.Equal(requestedNegotiation.SopClassUid, acceptedNegotiation.SopClassUid);
-                Assert.Equal(requestedNegotiation.RequestedApplicationInfo.GetValues(), acceptedNegotiation.AcceptedApplicationInfo.GetValues());
+                Assert.Equal(requestedNegotiation.RequestedApplicationInfo?.GetValues(), acceptedNegotiation.AcceptedApplicationInfo?.GetValues());
             }
         }
 
@@ -1254,7 +1253,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
                 var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
 
-                DicomCStoreRequest capturedCStoreRequest = null;
+                DicomCStoreRequest? capturedCStoreRequest = null;
 
                 client.OnCStoreRequest = async request =>
                 {
@@ -1343,7 +1342,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("www.google.com", 4333, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(request);
 
-            Exception capturedException = null;
+            Exception? capturedException = null;
             try
             {
                 await client.SendAsync();
@@ -1362,8 +1361,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("UnitTest");
 
-            RecordingDicomCEchoProviderServer server = null;
-            DicomCEchoResponse echoResponse1 = null, echoResponse2 = null, echoResponse3 = null;
+            RecordingDicomCEchoProviderServer? server = null;
+            DicomCEchoResponse? echoResponse1 = null, echoResponse2 = null, echoResponse3 = null;
             try
             {
                 server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
@@ -1492,7 +1491,10 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 foreach (var exNeg in association.ExtendedNegotiations)
                 {
-                    exNeg.AcceptApplicationInfo(exNeg.RequestedApplicationInfo);
+                    if (exNeg.RequestedApplicationInfo != null)
+                    {
+                        exNeg.AcceptApplicationInfo(exNeg.RequestedApplicationInfo);
+                    }
                 }
 
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
@@ -1514,7 +1516,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
@@ -1560,14 +1562,14 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
             public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
                 => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e) => Task.CompletedTask;
+            public Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e) => Task.CompletedTask;
         }
 
         public class RecordingDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
@@ -1615,7 +1617,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             /// <inheritdoc />
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
@@ -1711,7 +1713,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             /// <inheritdoc />
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 

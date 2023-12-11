@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
@@ -42,7 +41,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         #region Helper functions
 
-        private TServer CreateServer<TProvider, TServer>(string ipAddress, int port, ITlsAcceptor tlsAcceptor = null)
+        private TServer CreateServer<TProvider, TServer>(string ipAddress, int port, ITlsAcceptor? tlsAcceptor = null)
             where TProvider : DicomService, IDicomServiceProvider
             where TServer : class, IDicomServer<TProvider>
         {
@@ -50,7 +49,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger, tlsAcceptor: tlsAcceptor);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
-            return server as TServer;
+            return (TServer) server;
         }
 
         private IDicomClient CreateClient(string host, int port, ITlsInitiator tlsInitiator, string callingAe, string calledAe)
@@ -67,11 +66,12 @@ namespace FellowOakDicom.Tests.Network.Client
             var logger = _logger.IncludePrefix("Responses");
             foreach (var r in responses)
             {
-                logger.LogInformation($"{r.Type} [{r.RequestMessageID}]: " +
-                            $"Status = {r.Status.State}, " +
-                            $"Code = {r.Status.Code}, " +
-                            $"ErrorComment = {r.Status.ErrorComment}, " +
-                            $"Description = {r.Status.Description}");
+                logger.LogInformation("{Type} [{MessageId}]: Status = {State}, " +
+                                      "Code = {Code}, " +
+                                      "ErrorComment = {ErrorComment}, " +
+                                      "Description = {Description}",
+                    r.Type, r.RequestMessageID, r.Status.State,
+                    r.Status.Code, r.Status.ErrorComment, r.Status.Description);
 
                 Assert.Equal(DicomState.Success, r.Status.State);
             }
@@ -160,10 +160,10 @@ namespace FellowOakDicom.Tests.Network.Client
                                 break;
                         }
 
-                        for (var index = 0; index < chain.ChainStatus.Length; index++)
+                        for (var index = 0; index < chain?.ChainStatus.Length; index++)
                         {
                             var chainStatus = chain.ChainStatus[index];
-                            client.Logger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                            client.Logger.LogDebug("SSL Chain status [{Index}]: {ChainStatusStatus} {ChainStatusStatusInformation}", index, chainStatus.Status, chainStatus.StatusInformation);
 
                             // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                             if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
@@ -181,7 +181,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
 
-            DicomCEchoResponse actualResponse = null;
+            DicomCEchoResponse? actualResponse = null;
             var dicomCEchoRequest = new DicomCEchoRequest
             {
                 OnResponseReceived = (request, response) =>
@@ -196,7 +196,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 await client.SendAsync(cts.Token);
             }
 
-            AllResponsesShouldHaveSucceeded(new[] { actualResponse });
+            AllResponsesShouldHaveSucceeded(new[] { actualResponse! });
         }
 
     }

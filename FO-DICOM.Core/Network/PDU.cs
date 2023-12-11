@@ -29,11 +29,17 @@ namespace FellowOakDicom.Network
         
         private readonly bool _leaveOpen;
 
-        private readonly BinaryReader _br;
+        // RawPDU is initialized in read or write mode
+        // The _br and _bw fields will not be null in their respective modes
+        // However, making those fields nullable would require nullability checks in all the usages
+        // But we know that if the RawPDU is initialized in the correct mode, these fields are not null
+        // A good future refactoring would be separate classes for read & write mode
+        
+        private readonly BinaryReader _br = null!; 
 
-        private readonly BinaryWriter _bw;
+        private readonly BinaryWriter _bw = null!;
 
-        private readonly Stack<long> _m16;
+        private readonly Stack<long> _m16 = null!;
         
         private readonly IMemoryProvider _memoryProvider;
 
@@ -53,7 +59,7 @@ namespace FellowOakDicom.Network
         /// <param name="type">Type of PDU</param>
         /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for encoding text</param>
-        public RawPDU(RawPduType type, IMemoryProvider memoryProvider, Encoding encoding = null)
+        public RawPDU(RawPduType type, IMemoryProvider memoryProvider, Encoding? encoding = null)
         {
             Type = type;
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
@@ -90,7 +96,7 @@ namespace FellowOakDicom.Network
         /// <param name="buffer">Buffer</param>
         /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for decoding text</param>
-        public RawPDU(byte[] buffer, IMemoryProvider memoryProvider, Encoding encoding = null)
+        public RawPDU(byte[] buffer, IMemoryProvider memoryProvider, Encoding? encoding = null)
         {
             _stream = new MemoryStream(buffer);
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
@@ -108,7 +114,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">Stream</param>
         /// <param name="memoryProvider">The memory provider that will be used to allocate buffers</param>
         /// <param name="encoding">The encoding to use for decoding text</param>
-        public RawPDU(MemoryStream stream, IMemoryProvider memoryProvider, Encoding encoding = null)
+        public RawPDU(MemoryStream stream, IMemoryProvider memoryProvider, Encoding? encoding = null)
         {
             _encoding = encoding ?? DicomEncoding.Default;
             _stream = stream;
@@ -518,7 +524,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Event to handle unsupported PDU bytes.
         /// </summary>
-        public event PDUBytesHandler HandlePDUBytes;
+        public event PDUBytesHandler? HandlePDUBytes;
 
         #endregion
 
@@ -647,7 +653,7 @@ namespace FellowOakDicom.Network
                 pdu.MarkLength16("SOP Class UID-Length");
                 pdu.Write("SOP Class UID", ex.SopClassUid.UID);
                 pdu.WriteLength16();
-                pdu.Write("Service Class Application Information", ex.RequestedApplicationInfo.GetValues());
+                pdu.Write("Service Class Application Information", ex.RequestedApplicationInfo!.GetValues());
                 pdu.WriteLength16();
             }
 
@@ -661,7 +667,7 @@ namespace FellowOakDicom.Network
                 pdu.Write("SOP Class UID", commonExNeg.SopClassUid.UID);
                 pdu.WriteLength16();
                 pdu.MarkLength16("Service Class UID-Length");
-                pdu.Write("Service Class UID", commonExNeg.ServiceClassUid.UID);
+                pdu.Write("Service Class UID", commonExNeg.ServiceClassUid!.UID);
                 pdu.WriteLength16();
                 pdu.MarkLength16("Related SOP Class Identification-Length");
                 foreach (var relatedSopClass in commonExNeg.RelatedGeneralSopClasses)
@@ -1007,7 +1013,7 @@ namespace FellowOakDicom.Network
                 pdu.MarkLength16("SOP Class UID-Length");
                 pdu.Write("SOP Class UID", ex.SopClassUid.UID);
                 pdu.WriteLength16();
-                pdu.Write("Service Class Application Information", ex.AcceptedApplicationInfo.GetValues());
+                pdu.Write("Service Class Application Information", ex.AcceptedApplicationInfo!.GetValues());
                 pdu.WriteLength16();
             }
 
@@ -1688,7 +1694,7 @@ namespace FellowOakDicom.Network
         /// <param name="valueLength">Length of the PDV data</param>
         /// <param name="command">Is command</param>
         /// <param name="last">Is last fragment of command or data</param>
-        public PDV(byte pcid, IMemory value, int valueLength, bool command, bool last)
+        public PDV(byte pcid, IMemory value, int valueLength, bool command, bool last, IMemoryProvider memoryProvider)
         {
             if (valueLength > value.Length)
             {
@@ -1698,6 +1704,9 @@ namespace FellowOakDicom.Network
             {
                 throw new ArgumentException($"Cannot create a PDV with odd number of bytes (provided length was {valueLength} bytes)");
             }
+
+            _memoryProvider = memoryProvider;
+            
             PCID = pcid;
             Value = value;
             ValueLength = valueLength;
@@ -1711,6 +1720,10 @@ namespace FellowOakDicom.Network
         public PDV(IMemoryProvider memoryProvider)
         {
             _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
+            
+            // This constructor is only used when parsing incoming data over a network connection
+            // Shortly after construction, the Read method is called, which populates the value
+            Value = null!;
         }
 
         /// <summary>

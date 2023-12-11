@@ -30,7 +30,7 @@ namespace FellowOakDicom.Network
         /// <param name="errorCode">Error code, valid if <paramref name="exception"/> is socket exception.</param>
         /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
-        bool IsSocketException(Exception exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor);
+        bool IsSocketException(Exception? exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor);
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
@@ -107,7 +107,7 @@ namespace FellowOakDicom.Network
         /// <param name="errorCode">Error code, valid if <paramref name="exception"/> is socket exception.</param>
         /// <param name="errorDescriptor">Error descriptor, valid if <paramref name="exception"/> is socket exception.</param>
         /// <returns>True if <paramref name="exception"/> is socket exception, false otherwise.</returns>
-        protected internal abstract bool IsSocketExceptionImpl(Exception exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor);
+        protected internal abstract bool IsSocketExceptionImpl(Exception? exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor);
 
         /// <summary>
         /// Platform-specific implementation to attempt to obtain a unique network identifier, e.g. based on a MAC address.
@@ -122,7 +122,7 @@ namespace FellowOakDicom.Network
         INetworkStream INetworkManager.CreateNetworkStream(NetworkStreamCreationOptions options)
             => CreateNetworkStreamImpl(options);
 
-        bool INetworkManager.IsSocketException(Exception exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor)
+        bool INetworkManager.IsSocketException(Exception? exception, out int errorCode, [NotNullWhen(true)] out string? errorDescriptor)
             => IsSocketExceptionImpl(exception, out errorCode, out errorDescriptor);
 
         bool INetworkManager.TryGetNetworkIdentifier([NotNullWhen(true)] out DicomUID? identifier)

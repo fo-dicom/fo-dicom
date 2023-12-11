@@ -63,7 +63,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode,
+        protected internal override bool IsSocketExceptionImpl(Exception? exception, out int errorCode,
             [NotNullWhen(true)] out string? errorDescriptor)
         {
             if (exception is SocketException socketEx)
