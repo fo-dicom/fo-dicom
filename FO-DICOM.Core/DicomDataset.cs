@@ -1583,27 +1583,27 @@ namespace FellowOakDicom
             SetTargetEncodingsToStringElements(GetEncodingsForSerialization());
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (Object.ReferenceEquals(obj, null)) return false;
             if (Object.ReferenceEquals(this, obj)) return true;
             if (GetType() != obj.GetType()) return false;
-            return Equals(obj as DicomDataset);
+            return Equals((DicomDataset) obj);
         }
 
-        public bool Equals(DicomDataset other)
+        public bool Equals(DicomDataset? other)
         {
             return new DicomDatasetComparer().Equals(this, other);
         }
 
-        public static bool operator ==(DicomDataset a, DicomDataset b)
+        public static bool operator ==(DicomDataset? a, DicomDataset? b)
         {
-            if (((object)a == null) && ((object)b == null)) return true;
-            if (((object)a == null) || ((object)b == null)) return false;
+            if (((object?)a == null) && ((object?)b == null)) return true;
+            if (((object?)a == null) || ((object?)b == null)) return false;
             return a.Equals(b);
         }
 
-        public static bool operator !=(DicomDataset a, DicomDataset b)
+        public static bool operator !=(DicomDataset? a, DicomDataset? b)
         {
             return !(a == b);
         }

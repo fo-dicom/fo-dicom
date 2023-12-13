@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.IO.Buffer;
 using System;
@@ -11,7 +10,7 @@ namespace FellowOakDicom
 {
     public class DicomTagComparer : IEqualityComparer<DicomItem>
     {
-        public bool Equals(DicomItem x, DicomItem y) => x?.Tag == y?.Tag;
+        public bool Equals(DicomItem? x, DicomItem? y) => x?.Tag == y?.Tag;
 
         public int GetHashCode(DicomItem obj) => obj.Tag.GetHashCode();
     }
@@ -19,7 +18,7 @@ namespace FellowOakDicom
 
     public class DicomValueComparer : IEqualityComparer<DicomItem>
     {
-        public bool Equals(DicomItem item1, DicomItem item2)
+        public bool Equals(DicomItem? item1, DicomItem? item2)
         {
             if (item1 is DicomElement xElement && item2 is DicomElement yElement)
             {
@@ -77,7 +76,7 @@ namespace FellowOakDicom
 
     public class DicomDatasetComparer : IEqualityComparer<DicomDataset>
     {
-        public bool Equals(DicomDataset dataset1, DicomDataset dataset2)
+        public bool Equals(DicomDataset? dataset1, DicomDataset? dataset2)
         {
             if ((dataset1 == null) != (dataset2 == null))
             {
@@ -90,13 +89,13 @@ namespace FellowOakDicom
             }
 
             var count = dataset1.Count();
-            if (count != dataset2.Count())
+            if (count != dataset2!.Count())
             {
                 return false;
             }
 
             var valueComparer = new DicomValueComparer();
-            foreach (var elements in dataset1.Zip(dataset2, Tuple.Create))
+            foreach (var elements in dataset1.Zip(dataset2!, Tuple.Create))
             {
                 if (!valueComparer.Equals(elements.Item1, elements.Item2))
                 {
