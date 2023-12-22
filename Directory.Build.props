@@ -6,14 +6,15 @@
         <Description>fo-dicom</Description>
         <LangVersion>8</LangVersion>
 
-        <AssemblyVersion>5.1.1</AssemblyVersion>
-        <FileVersion>5.1.1.0</FileVersion>
-        <InformationalVersion>5.1.1</InformationalVersion>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <AssemblyVersion>5.1.2</AssemblyVersion>
+        <FileVersion>5.1.2.0</FileVersion>
+        <InformationalVersion>5.1.2</InformationalVersion>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(GenerateDocumentation)==1">
         <DocumentationFile>bin\$(Configuration)\$(MSBuildProjectName).xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 </Project>

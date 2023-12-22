@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2023 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2023b">
+<dictionary version="2023e">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -958,6 +958,8 @@
     <tag group="0018" element="1201" keyword="TimeOfLastCalibration" vr="TM" vm="1-n">Time of Last Calibration</tag>
     <tag group="0018" element="1202" keyword="DateTimeOfLastCalibration" vr="DT" vm="1">DateTime of Last Calibration</tag>
     <tag group="0018" element="1203" keyword="CalibrationDateTime" vr="DT" vm="1">Calibration DateTime</tag>
+    <tag group="0018" element="1204" keyword="DateOfManufacture" vr="DA" vm="1">Date of Manufacture</tag>
+    <tag group="0018" element="1205" keyword="DateOfInstallation" vr="DA" vm="1">Date of Installation</tag>
     <tag group="0018" element="1210" keyword="ConvolutionKernel" vr="SH" vm="1-n">Convolution Kernel</tag>
     <tag group="0018" element="1240" keyword="UpperLowerPixelValues" vr="IS" vm="1-n" retired="true">Upper/Lower Pixel Values</tag>
     <tag group="0018" element="1242" keyword="ActualFrameDuration" vr="IS" vm="1">Actual Frame Duration</tag>
@@ -1575,6 +1577,27 @@
     <tag group="0018" element="980E" keyword="TransducerBeamSteeringCodeSequence" vr="SQ" vm="1">Transducer Beam Steering Code Sequence</tag>
     <tag group="0018" element="980F" keyword="TransducerApplicationCodeSequence" vr="SQ" vm="1">Transducer Application Code Sequence</tag>
     <tag group="0018" element="9810" keyword="ZeroVelocityPixelValue" vr="US/SS" vm="1">Zero Velocity Pixel Value</tag>
+    <tag group="0018" element="9821" keyword="PhotoacousticExcitationCharacteristicsSequence" vr="SQ" vm="1">Photoacoustic Excitation Characteristics Sequence</tag>
+    <tag group="0018" element="9822" keyword="ExcitationSpectralWidth" vr="FD" vm="1">Excitation Spectral Width</tag>
+    <tag group="0018" element="9823" keyword="ExcitationEnergy" vr="FD" vm="1">Excitation Energy</tag>
+    <tag group="0018" element="9824" keyword="ExcitationPulseDuration" vr="FD" vm="1">Excitation Pulse Duration</tag>
+    <tag group="0018" element="9825" keyword="ExcitationWavelengthSequence" vr="SQ" vm="1">Excitation Wavelength Sequence</tag>
+    <tag group="0018" element="9826" keyword="ExcitationWavelength" vr="FD" vm="1">Excitation Wavelength</tag>
+    <tag group="0018" element="9828" keyword="IlluminationTranslationFlag" vr="CS" vm="1">Illumination Translation Flag</tag>
+    <tag group="0018" element="9829" keyword="AcousticCouplingMediumFlag" vr="CS" vm="1">Acoustic Coupling Medium Flag</tag>
+    <tag group="0018" element="982A" keyword="AcousticCouplingMediumCodeSequence" vr="SQ" vm="1">Acoustic Coupling Medium Code Sequence</tag>
+    <tag group="0018" element="982B" keyword="AcousticCouplingMediumTemperature" vr="FD" vm="1">Acoustic Coupling Medium Temperature</tag>
+    <tag group="0018" element="982C" keyword="TransducerResponseSequence" vr="SQ" vm="1">Transducer Response Sequence</tag>
+    <tag group="0018" element="982D" keyword="CenterFrequency" vr="FD" vm="1">Center Frequency</tag>
+    <tag group="0018" element="982E" keyword="FractionalBandwidth" vr="FD" vm="1">Fractional Bandwidth</tag>
+    <tag group="0018" element="982F" keyword="LowerCutoffFrequency" vr="FD" vm="1">Lower Cutoff Frequency</tag>
+    <tag group="0018" element="9830" keyword="UpperCutoffFrequency" vr="FD" vm="1">Upper Cutoff Frequency</tag>
+    <tag group="0018" element="9831" keyword="TransducerTechnologySequence" vr="SQ" vm="1">Transducer Technology Sequence</tag>
+    <tag group="0018" element="9832" keyword="SoundSpeedCorrectionMechanismCodeSequence" vr="SQ" vm="1">Sound Speed Correction Mechanism Code Sequence</tag>
+    <tag group="0018" element="9833" keyword="ObjectSoundSpeed" vr="FD" vm="1">Object Sound Speed</tag>
+    <tag group="0018" element="9834" keyword="AcousticCouplingMediumSoundSpeed" vr="FD" vm="1">Acoustic Coupling Medium Sound Speed</tag>
+    <tag group="0018" element="9835" keyword="PhotoacousticImageFrameTypeSequence" vr="SQ" vm="1">Photoacoustic Image Frame Type Sequence</tag>
+    <tag group="0018" element="9836" keyword="ImageDataTypeCodeSequence" vr="SQ" vm="1">Image Data Type Code Sequence</tag>
     <tag group="0018" element="9900" keyword="ReferenceLocationLabel" vr="LO" vm="1">Reference Location Label</tag>
     <tag group="0018" element="9901" keyword="ReferenceLocationDescription" vr="UT" vm="1">Reference Location Description</tag>
     <tag group="0018" element="9902" keyword="ReferenceBasisCodeSequence" vr="SQ" vm="1">Reference Basis Code Sequence</tag>
@@ -2324,7 +2347,7 @@
     <tag group="0034" element="000B" keyword="CameraPositionGroupSequence" vr="SQ" vm="1">Camera Position Group Sequence</tag>
     <tag group="0034" element="000C" keyword="IncludesInformation" vr="CS" vm="1">Includes Information</tag>
     <tag group="0034" element="000D" keyword="TimeOfFrameGroupSequence" vr="SQ" vm="1">Time of Frame Group Sequence</tag>
-    <tag group="0038" element="0004" keyword="ReferencedPatientAliasSequence" vr="SQ" vm="1">Referenced Patient Alias Sequence</tag>
+    <tag group="0038" element="0004" keyword="ReferencedPatientAliasSequence" vr="SQ" vm="1" retired="true">Referenced Patient Alias Sequence</tag>
     <tag group="0038" element="0008" keyword="VisitStatusID" vr="CS" vm="1">Visit Status ID</tag>
     <tag group="0038" element="0010" keyword="AdmissionID" vr="LO" vm="1">Admission ID</tag>
     <tag group="0038" element="0011" keyword="IssuerOfAdmissionID" vr="LO" vm="1" retired="true">Issuer of Admission ID</tag>
@@ -2887,6 +2910,10 @@
     <tag group="0048" element="0111" keyword="CondenserLensPower" vr="DS" vm="1">Condenser Lens Power</tag>
     <tag group="0048" element="0112" keyword="ObjectiveLensPower" vr="DS" vm="1">Objective Lens Power</tag>
     <tag group="0048" element="0113" keyword="ObjectiveLensNumericalAperture" vr="DS" vm="1">Objective Lens Numerical Aperture</tag>
+    <tag group="0048" element="0114" keyword="ConfocalMode" vr="CS" vm="1">Confocal Mode</tag>
+    <tag group="0048" element="0115" keyword="TissueLocation" vr="CS" vm="1">Tissue Location</tag>
+    <tag group="0048" element="0116" keyword="ConfocalMicroscopyImageFrameTypeSequence" vr="SQ" vm="1">Confocal Microscopy Image Frame Type Sequence</tag>
+    <tag group="0048" element="0117" keyword="ImageAcquisitionDepth" vr="FD" vm="1">Image Acquisition Depth</tag>
     <tag group="0048" element="0120" keyword="PaletteColorLookupTableSequence" vr="SQ" vm="1">Palette Color Lookup Table Sequence</tag>
     <tag group="0048" element="0200" keyword="ReferencedImageNavigationSequence" vr="SQ" vm="1" retired="true">Referenced Image Navigation Sequence</tag>
     <tag group="0048" element="0201" keyword="TopLeftHandCornerOfLocalizerArea" vr="US" vm="2" retired="true">Top Left Hand Corner of Localizer Area</tag>
@@ -4643,6 +4670,7 @@
     <tag group="300A" element="0688" keyword="RTBeamModifierDefinitionDistance" vr="FD" vm="1">RT Beam Modifier Definition Distance</tag>
     <tag group="300A" element="0689" keyword="BeamAreaLimitSequence" vr="SQ" vm="1">Beam Area Limit Sequence</tag>
     <tag group="300A" element="068A" keyword="ReferencedRTPrescriptionSequence" vr="SQ" vm="1">Referenced RT Prescription Sequence</tag>
+    <tag group="300A" element="068B" keyword="DoseValueInterpretation" vr="CS" vm="1">Dose Value Interpretation</tag>
     <tag group="300A" element="0700" keyword="TreatmentSessionUID" vr="UI" vm="1">Treatment Session UID</tag>
     <tag group="300A" element="0701" keyword="RTRadiationUsage" vr="CS" vm="1">RT Radiation Usage</tag>
     <tag group="300A" element="0702" keyword="ReferencedRTRadiationSetSequence" vr="SQ" vm="1">Referenced RT Radiation Set Sequence</tag>
@@ -4760,6 +4788,7 @@
     <tag group="300C" element="0126" keyword="BeamHoldTransition" vr="CS" vm="1">Beam Hold Transition</tag>
     <tag group="300C" element="0127" keyword="BeamHoldTransitionDateTime" vr="DT" vm="1">Beam Hold Transition DateTime</tag>
     <tag group="300C" element="0128" keyword="BeamHoldOriginatingDeviceSequence" vr="SQ" vm="1">Beam Hold Originating Device Sequence</tag>
+    <tag group="300C" element="0129" keyword="BeamHoldTransitionTriggerSource" vr="CS" vm="1">Beam Hold Transition Trigger Source</tag>
     <tag group="300E" element="0002" keyword="ApprovalStatus" vr="CS" vm="1">Approval Status</tag>
     <tag group="300E" element="0004" keyword="ReviewDate" vr="DA" vm="1">Review Date</tag>
     <tag group="300E" element="0005" keyword="ReviewTime" vr="TM" vm="1">Review Time</tag>
@@ -5056,7 +5085,7 @@
     <tag group="50xx" element="2610" keyword="CurveReferencedOverlayGroup" vr="US" vm="1" retired="true">Curve Referenced Overlay Group</tag>
     <tag group="50xx" element="3000" keyword="CurveData" vr="OB/OW" vm="1" retired="true">Curve Data</tag>
     <tag group="5200" element="9229" keyword="SharedFunctionalGroupsSequence" vr="SQ" vm="1">Shared Functional Groups Sequence</tag>
-    <tag group="5200" element="9230" keyword="PerFrameFunctionalGroupsSequence" vr="SQ" vm="1">Per-frame Functional Groups Sequence</tag>
+    <tag group="5200" element="9230" keyword="PerFrameFunctionalGroupsSequence" vr="SQ" vm="1">Per-Frame Functional Groups Sequence</tag>
     <tag group="5400" element="0100" keyword="WaveformSequence" vr="SQ" vm="1">Waveform Sequence</tag>
     <tag group="5400" element="0110" keyword="ChannelMinimumValue" vr="OB/OW" vm="1">Channel Minimum Value</tag>
     <tag group="5400" element="0112" keyword="ChannelMaximumValue" vr="OB/OW" vm="1">Channel Maximum Value</tag>
@@ -5175,6 +5204,11 @@
     <uid uid="1.2.840.10008.1.2.4.106.1" keyword="MPEG4HP42STEREOF" type="Transfer Syntax">Fragmentable MPEG-4 AVC/H.264 Stereo High Profile / Level 4.2</uid>
     <uid uid="1.2.840.10008.1.2.4.107" keyword="HEVCMP51" type="Transfer Syntax">HEVC/H.265 Main Profile / Level 5.1</uid>
     <uid uid="1.2.840.10008.1.2.4.108" keyword="HEVCM10P51" type="Transfer Syntax">HEVC/H.265 Main 10 Profile / Level 5.1</uid>
+    <uid uid="1.2.840.10008.1.2.4.201" keyword="HTJ2KLossless" type="Transfer Syntax">High-Throughput JPEG 2000 Image Compression (Lossless Only)</uid>
+    <uid uid="1.2.840.10008.1.2.4.202" keyword="HTJ2KLosslessRPCL" type="Transfer Syntax">High-Throughput JPEG 2000 with RPCL Options Image Compression (Lossless Only)</uid>
+    <uid uid="1.2.840.10008.1.2.4.203" keyword="HTJ2K" type="Transfer Syntax">High-Throughput JPEG 2000 Image Compression</uid>
+    <uid uid="1.2.840.10008.1.2.4.204" keyword="JPIPHTJ2KReferenced" type="Transfer Syntax">JPIP HTJ2K Referenced</uid>
+    <uid uid="1.2.840.10008.1.2.4.205" keyword="JPIPHTJ2KReferencedDeflate" type="Transfer Syntax">JPIP HTJ2K Referenced Deflate</uid>
     <uid uid="1.2.840.10008.1.2.5" keyword="RLELossless" type="Transfer Syntax">RLE Lossless</uid>
     <uid uid="1.2.840.10008.1.2.6.1" keyword="RFC2557MIMEEncapsulation" type="Transfer Syntax" retired="true">RFC 2557 MIME encapsulation (Retired)</uid>
     <uid uid="1.2.840.10008.1.2.6.2" keyword="XMLEncoding" type="Transfer Syntax" retired="true">XML Encoding (Retired)</uid>
@@ -5280,6 +5314,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.6" keyword="UltrasoundImageStorageRetired" type="SOP Class" retired="true">Ultrasound Image Storage (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.6.1" keyword="UltrasoundImageStorage" type="SOP Class">Ultrasound Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.6.2" keyword="EnhancedUSVolumeStorage" type="SOP Class">Enhanced US Volume Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.6.3" keyword="PhotoacousticImageStorage" type="SOP Class">Photoacoustic Image Storage </uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.7" keyword="SecondaryCaptureImageStorage" type="SOP Class">Secondary Capture Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.7.1" keyword="MultiFrameSingleBitSecondaryCaptureImageStorage" type="SOP Class">Multi-frame Single Bit Secondary Capture Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.7.2" keyword="MultiFrameGrayscaleByteSecondaryCaptureImageStorage" type="SOP Class">Multi-frame Grayscale Byte Secondary Capture Image Storage</uid>
@@ -5291,6 +5326,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.9.1.1" keyword="TwelveLeadECGWaveformStorage" type="SOP Class">12-lead ECG Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.1.2" keyword="GeneralECGWaveformStorage" type="SOP Class">General ECG Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.1.3" keyword="AmbulatoryECGWaveformStorage" type="SOP Class">Ambulatory ECG Waveform Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.9.1.4" keyword="General32bitECGWaveformStorage" type="SOP Class">General 32-bit ECG Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.2.1" keyword="HemodynamicWaveformStorage" type="SOP Class">Hemodynamic Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.3.1" keyword="CardiacElectrophysiologyWaveformStorage" type="SOP Class">Cardiac Electrophysiology Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.4.1" keyword="BasicVoiceAudioWaveformStorage" type="SOP Class">Basic Voice Audio Waveform Storage</uid>
@@ -5316,7 +5352,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.11.9" keyword="VolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Volume Rendering Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.10" keyword="SegmentedVolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Segmented Volume Rendering Volumetric Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.11" keyword="MultipleVolumeRenderingVolumetricPresentationStateStorage" type="SOP Class">Multiple Volume Rendering Volumetric Presentation State Storage</uid>
-    <uid uid="1.2.840.10008.5.1.4.1.1.11.12" keyword="VariableModalityLUTPresentationStateStorage" type="SOP Class">Variable Modality LUT Softcopy Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.11.12" keyword="VariableModalityLUTSoftcopyPresentationStateStorage" type="SOP Class">Variable Modality LUT Softcopy Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1" keyword="XRayAngiographicImageStorage" type="SOP Class">X-Ray Angiographic Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.1.1" keyword="EnhancedXAImageStorage" type="SOP Class">Enhanced XA Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.12.2" keyword="XRayRadiofluoroscopicImageStorage" type="SOP Class">X-Ray Radiofluoroscopic Image Storage</uid>
@@ -5360,6 +5396,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.5.8" keyword="OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage" type="SOP Class">Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.6" keyword="VLWholeSlideMicroscopyImageStorage" type="SOP Class">VL Whole Slide Microscopy Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.77.1.7" keyword="DermoscopicPhotographyImageStorage" type="SOP Class">Dermoscopic Photography Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.77.1.8" keyword="ConfocalMicroscopyImageStorage" type="SOP Class">Confocal Microscopy Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.77.1.9" keyword="ConfocalMicroscopyTiledPyramidalImageStorage" type="SOP Class">Confocal Microscopy Tiled Pyramidal Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.78.1" keyword="LensometryMeasurementsStorage" type="SOP Class">Lensometry Measurements Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.78.2" keyword="AutorefractionMeasurementsStorage" type="SOP Class">Autorefraction Measurements Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.78.3" keyword="KeratometryMeasurementsStorage" type="SOP Class">Keratometry Measurements Storage</uid>
@@ -5613,11 +5651,11 @@
     <uid uid="1.2.840.10008.6.1.42" keyword="AudioChannelSource3000" type="Context Group Name">Audio Channel Source (3000)</uid>
     <uid uid="1.2.840.10008.6.1.43" keyword="ECGLead3001" type="Context Group Name">ECG Lead (3001)</uid>
     <uid uid="1.2.840.10008.6.1.44" keyword="HemodynamicWaveformSource3003" type="Context Group Name">Hemodynamic Waveform Source (3003)</uid>
-    <uid uid="1.2.840.10008.6.1.45" keyword="CardiovascularAnatomicLocation3010" type="Context Group Name">Cardiovascular Anatomic Location (3010)</uid>
+    <uid uid="1.2.840.10008.6.1.45" keyword="CardiovascularAnatomicStructure3010" type="Context Group Name">Cardiovascular Anatomic Structure (3010)</uid>
     <uid uid="1.2.840.10008.6.1.46" keyword="ElectrophysiologyAnatomicLocation3011" type="Context Group Name">Electrophysiology Anatomic Location (3011)</uid>
     <uid uid="1.2.840.10008.6.1.47" keyword="CoronaryArterySegment3014" type="Context Group Name">Coronary Artery Segment (3014)</uid>
     <uid uid="1.2.840.10008.6.1.48" keyword="CoronaryArtery3015" type="Context Group Name">Coronary Artery (3015)</uid>
-    <uid uid="1.2.840.10008.6.1.49" keyword="CardiovascularAnatomicLocationModifier3019" type="Context Group Name">Cardiovascular Anatomic Location Modifier (3019)</uid>
+    <uid uid="1.2.840.10008.6.1.49" keyword="CardiovascularAnatomicStructureModifier3019" type="Context Group Name">Cardiovascular Anatomic Structure Modifier (3019)</uid>
     <uid uid="1.2.840.10008.6.1.50" keyword="CardiologyMeasurementUnit3082" type="Context Group Name" retired="true">Cardiology Measurement Unit (Retired) (3082)</uid>
     <uid uid="1.2.840.10008.6.1.51" keyword="TimeSynchronizationChannelType3090" type="Context Group Name">Time Synchronization Channel Type (3090)</uid>
     <uid uid="1.2.840.10008.6.1.52" keyword="CardiacProceduralStateValue3101" type="Context Group Name">Cardiac Procedural State Value (3101)</uid>
@@ -5754,7 +5792,7 @@
     <uid uid="1.2.840.10008.6.1.183" keyword="FraminghamScore3667" type="Context Group Name">Framingham Score (3667)</uid>
     <uid uid="1.2.840.10008.6.1.184" keyword="FraminghamTable3668" type="Context Group Name">Framingham Table (3668)</uid>
     <uid uid="1.2.840.10008.6.1.185" keyword="ECGProcedureType3670" type="Context Group Name">ECG Procedure Type (3670)</uid>
-    <uid uid="1.2.840.10008.6.1.186" keyword="ReasonForECGExam3671" type="Context Group Name">Reason for ECG Exam (3671)</uid>
+    <uid uid="1.2.840.10008.6.1.186" keyword="ReasonForECGStudy3671" type="Context Group Name">Reason for ECG Study (3671)</uid>
     <uid uid="1.2.840.10008.6.1.187" keyword="Pacemaker3672" type="Context Group Name">Pacemaker (3672)</uid>
     <uid uid="1.2.840.10008.6.1.188" keyword="Diagnosis3673" type="Context Group Name" retired="true">Diagnosis (Retired) (3673)</uid>
     <uid uid="1.2.840.10008.6.1.189" keyword="OtherFilters3675" type="Context Group Name" retired="true">Other Filters (Retired) (3675)</uid>
@@ -6043,7 +6081,7 @@
     <uid uid="1.2.840.10008.6.1.472" keyword="CorrelationToOtherFinding6158" type="Context Group Name">Correlation to Other Finding (6158)</uid>
     <uid uid="1.2.840.10008.6.1.473" keyword="MalignancyType6159" type="Context Group Name">Malignancy Type (6159)</uid>
     <uid uid="1.2.840.10008.6.1.474" keyword="BreastPrimaryTumorAssessmentFromAJCC6160" type="Context Group Name">Breast Primary Tumor Assessment From AJCC (6160)</uid>
-    <uid uid="1.2.840.10008.6.1.475" keyword="ClinicalRegionalLymphNodeAssessmentForBreast6161" type="Context Group Name">Clinical Regional Lymph Node Assessment for Breast (6161)</uid>
+    <uid uid="1.2.840.10008.6.1.475" keyword="PathologicalRegionalLymphNodeAssessmentForBreast6161" type="Context Group Name">Pathological Regional Lymph Node Assessment for Breast (6161)</uid>
     <uid uid="1.2.840.10008.6.1.476" keyword="AssessmentOfMetastasisForBreast6162" type="Context Group Name">Assessment of Metastasis for Breast (6162)</uid>
     <uid uid="1.2.840.10008.6.1.477" keyword="MenstrualCyclePhase6163" type="Context Group Name">Menstrual Cycle Phase (6163)</uid>
     <uid uid="1.2.840.10008.6.1.478" keyword="TimeInterval6164" type="Context Group Name">Time Interval (6164)</uid>
@@ -6124,10 +6162,10 @@
     <uid uid="1.2.840.10008.6.1.553" keyword="FetalBiometryRatio12004" type="Context Group Name">Fetal Biometry Ratio (12004)</uid>
     <uid uid="1.2.840.10008.6.1.554" keyword="FetalBiometryMeasurement12005" type="Context Group Name">Fetal Biometry Measurement (12005)</uid>
     <uid uid="1.2.840.10008.6.1.555" keyword="FetalLongBonesBiometryMeasurement12006" type="Context Group Name">Fetal Long Bones Biometry Measurement (12006)</uid>
-    <uid uid="1.2.840.10008.6.1.556" keyword="FetalCranium12007" type="Context Group Name">Fetal Cranium (12007)</uid>
-    <uid uid="1.2.840.10008.6.1.557" keyword="OBGYNAmnioticSac12008" type="Context Group Name">OB-GYN Amniotic Sac (12008)</uid>
+    <uid uid="1.2.840.10008.6.1.556" keyword="FetalCraniumMeasurement12007" type="Context Group Name">Fetal Cranium Measurement (12007)</uid>
+    <uid uid="1.2.840.10008.6.1.557" keyword="OBGYNAmnioticSacMeasurement12008" type="Context Group Name">OB-GYN Amniotic Sac Measurement (12008)</uid>
     <uid uid="1.2.840.10008.6.1.558" keyword="EarlyGestationBiometryMeasurement12009" type="Context Group Name">Early Gestation Biometry Measurement (12009)</uid>
-    <uid uid="1.2.840.10008.6.1.559" keyword="UltrasoundPelvisAndUterus12011" type="Context Group Name">Ultrasound Pelvis and Uterus (12011)</uid>
+    <uid uid="1.2.840.10008.6.1.559" keyword="UltrasoundPelvisAndUterusMeasurement12011" type="Context Group Name">Ultrasound Pelvis and Uterus Measurement (12011)</uid>
     <uid uid="1.2.840.10008.6.1.560" keyword="OBEquationTable12012" type="Context Group Name">OB Equation/Table (12012)</uid>
     <uid uid="1.2.840.10008.6.1.561" keyword="GestationalAgeEquationTable12013" type="Context Group Name">Gestational Age Equation/Table (12013)</uid>
     <uid uid="1.2.840.10008.6.1.562" keyword="OBFetalBodyWeightEquationTable12014" type="Context Group Name">OB Fetal Body Weight Equation/Table (12014)</uid>
@@ -6161,24 +6199,24 @@
     <uid uid="1.2.840.10008.6.1.590" keyword="RenalRatio12124" type="Context Group Name">Renal Ratio (12124)</uid>
     <uid uid="1.2.840.10008.6.1.591" keyword="PelvicVasculatureAnatomicalLocation12140" type="Context Group Name">Pelvic Vasculature Anatomical Location (12140)</uid>
     <uid uid="1.2.840.10008.6.1.592" keyword="FetalVasculatureAnatomicalLocation12141" type="Context Group Name">Fetal Vasculature Anatomical Location (12141)</uid>
-    <uid uid="1.2.840.10008.6.1.593" keyword="EchocardiographyLeftVentricle12200" type="Context Group Name">Echocardiography Left Ventricle (12200)</uid>
-    <uid uid="1.2.840.10008.6.1.594" keyword="LeftVentricleLinear12201" type="Context Group Name">Left Ventricle Linear (12201)</uid>
-    <uid uid="1.2.840.10008.6.1.595" keyword="LeftVentricleVolume12202" type="Context Group Name">Left Ventricle Volume (12202)</uid>
-    <uid uid="1.2.840.10008.6.1.596" keyword="LeftVentricleOther12203" type="Context Group Name">Left Ventricle Other (12203)</uid>
-    <uid uid="1.2.840.10008.6.1.597" keyword="EchocardiographyRightVentricle12204" type="Context Group Name">Echocardiography Right Ventricle (12204)</uid>
-    <uid uid="1.2.840.10008.6.1.598" keyword="EchocardiographyLeftAtrium12205" type="Context Group Name">Echocardiography Left Atrium (12205)</uid>
-    <uid uid="1.2.840.10008.6.1.599" keyword="EchocardiographyRightAtrium12206" type="Context Group Name">Echocardiography Right Atrium (12206)</uid>
-    <uid uid="1.2.840.10008.6.1.600" keyword="EchocardiographyMitralValve12207" type="Context Group Name">Echocardiography Mitral Valve (12207)</uid>
-    <uid uid="1.2.840.10008.6.1.601" keyword="EchocardiographyTricuspidValve12208" type="Context Group Name">Echocardiography Tricuspid Valve (12208)</uid>
-    <uid uid="1.2.840.10008.6.1.602" keyword="EchocardiographyPulmonicValve12209" type="Context Group Name">Echocardiography Pulmonic Valve (12209)</uid>
-    <uid uid="1.2.840.10008.6.1.603" keyword="EchocardiographyPulmonaryArtery12210" type="Context Group Name">Echocardiography Pulmonary Artery (12210)</uid>
-    <uid uid="1.2.840.10008.6.1.604" keyword="EchocardiographyAorticValve12211" type="Context Group Name">Echocardiography Aortic Valve (12211)</uid>
-    <uid uid="1.2.840.10008.6.1.605" keyword="EchocardiographyAorta12212" type="Context Group Name">Echocardiography Aorta (12212)</uid>
-    <uid uid="1.2.840.10008.6.1.606" keyword="EchocardiographyPulmonaryVein12214" type="Context Group Name">Echocardiography Pulmonary Vein (12214)</uid>
-    <uid uid="1.2.840.10008.6.1.607" keyword="EchocardiographyVenaCava12215" type="Context Group Name">Echocardiography Vena Cava (12215)</uid>
-    <uid uid="1.2.840.10008.6.1.608" keyword="EchocardiographyHepaticVein12216" type="Context Group Name">Echocardiography Hepatic Vein (12216)</uid>
-    <uid uid="1.2.840.10008.6.1.609" keyword="EchocardiographyCardiacShunt12217" type="Context Group Name">Echocardiography Cardiac Shunt (12217)</uid>
-    <uid uid="1.2.840.10008.6.1.610" keyword="EchocardiographyCongenital12218" type="Context Group Name">Echocardiography Congenital (12218)</uid>
+    <uid uid="1.2.840.10008.6.1.593" keyword="EchocardiographyLeftVentricleMeasurement12200" type="Context Group Name">Echocardiography Left Ventricle Measurement (12200)</uid>
+    <uid uid="1.2.840.10008.6.1.594" keyword="LeftVentricleLinearMeasurement12201" type="Context Group Name">Left Ventricle Linear Measurement (12201)</uid>
+    <uid uid="1.2.840.10008.6.1.595" keyword="LeftVentricleVolumeMeasurement12202" type="Context Group Name">Left Ventricle Volume Measurement (12202)</uid>
+    <uid uid="1.2.840.10008.6.1.596" keyword="LeftVentricleOtherMeasurement12203" type="Context Group Name">Left Ventricle Other Measurement (12203)</uid>
+    <uid uid="1.2.840.10008.6.1.597" keyword="EchocardiographyRightVentricleMeasurement12204" type="Context Group Name">Echocardiography Right Ventricle Measurement (12204)</uid>
+    <uid uid="1.2.840.10008.6.1.598" keyword="EchocardiographyLeftAtriumMeasurement12205" type="Context Group Name">Echocardiography Left Atrium Measurement (12205)</uid>
+    <uid uid="1.2.840.10008.6.1.599" keyword="EchocardiographyRightAtriumMeasurement12206" type="Context Group Name">Echocardiography Right Atrium Measurement (12206)</uid>
+    <uid uid="1.2.840.10008.6.1.600" keyword="EchocardiographyMitralValveMeasurement12207" type="Context Group Name">Echocardiography Mitral Valve Measurement (12207)</uid>
+    <uid uid="1.2.840.10008.6.1.601" keyword="EchocardiographyTricuspidValveMeasurement12208" type="Context Group Name">Echocardiography Tricuspid Valve Measurement (12208)</uid>
+    <uid uid="1.2.840.10008.6.1.602" keyword="EchocardiographyPulmonicValveMeasurement12209" type="Context Group Name">Echocardiography Pulmonic Valve Measurement (12209)</uid>
+    <uid uid="1.2.840.10008.6.1.603" keyword="EchocardiographyPulmonaryArteryMeasurement12210" type="Context Group Name">Echocardiography Pulmonary Artery Measurement (12210)</uid>
+    <uid uid="1.2.840.10008.6.1.604" keyword="EchocardiographyAorticValveMeasurement12211" type="Context Group Name">Echocardiography Aortic Valve Measurement (12211)</uid>
+    <uid uid="1.2.840.10008.6.1.605" keyword="EchocardiographyAortaMeasurement12212" type="Context Group Name">Echocardiography Aorta Measurement (12212)</uid>
+    <uid uid="1.2.840.10008.6.1.606" keyword="EchocardiographyPulmonaryVeinMeasurement12214" type="Context Group Name">Echocardiography Pulmonary Vein Measurement (12214)</uid>
+    <uid uid="1.2.840.10008.6.1.607" keyword="EchocardiographyVenaCavaMeasurement12215" type="Context Group Name">Echocardiography Vena Cava Measurement (12215)</uid>
+    <uid uid="1.2.840.10008.6.1.608" keyword="EchocardiographyHepaticVeinMeasurement12216" type="Context Group Name">Echocardiography Hepatic Vein Measurement (12216)</uid>
+    <uid uid="1.2.840.10008.6.1.609" keyword="EchocardiographyCardiacShuntMeasurement12217" type="Context Group Name">Echocardiography Cardiac Shunt Measurement (12217)</uid>
+    <uid uid="1.2.840.10008.6.1.610" keyword="EchocardiographyCongenitalAnomalyMeasurement12218" type="Context Group Name">Echocardiography Congenital Anomaly Measurement (12218)</uid>
     <uid uid="1.2.840.10008.6.1.611" keyword="PulmonaryVeinModifier12219" type="Context Group Name">Pulmonary Vein Modifier (12219)</uid>
     <uid uid="1.2.840.10008.6.1.612" keyword="EchocardiographyCommonMeasurement12220" type="Context Group Name">Echocardiography Common Measurement (12220)</uid>
     <uid uid="1.2.840.10008.6.1.613" keyword="FlowDirection12221" type="Context Group Name">Flow Direction (12221)</uid>
@@ -6199,7 +6237,7 @@
     <uid uid="1.2.840.10008.6.1.628" keyword="EchocardiographyAnatomicSiteModifier12237" type="Context Group Name">Echocardiography Anatomic Site Modifier (12237)</uid>
     <uid uid="1.2.840.10008.6.1.629" keyword="WallMotionScoringScheme12238" type="Context Group Name">Wall Motion Scoring Scheme (12238)</uid>
     <uid uid="1.2.840.10008.6.1.630" keyword="CardiacOutputProperty12239" type="Context Group Name">Cardiac Output Property (12239)</uid>
-    <uid uid="1.2.840.10008.6.1.631" keyword="LeftVentricleArea12240" type="Context Group Name">Left Ventricle Area (12240)</uid>
+    <uid uid="1.2.840.10008.6.1.631" keyword="LeftVentricleAreaMeasurement12240" type="Context Group Name">Left Ventricle Area Measurement (12240)</uid>
     <uid uid="1.2.840.10008.6.1.632" keyword="TricuspidValveFindingSite12241" type="Context Group Name">Tricuspid Valve Finding Site (12241)</uid>
     <uid uid="1.2.840.10008.6.1.633" keyword="AorticValveFindingSite12242" type="Context Group Name">Aortic Valve Finding Site (12242)</uid>
     <uid uid="1.2.840.10008.6.1.634" keyword="LeftVentricleFindingSite12243" type="Context Group Name">Left Ventricle Finding Site (12243)</uid>
@@ -6308,20 +6346,20 @@
     <uid uid="1.2.840.10008.6.1.834" keyword="CardiacUltrasoundAreaMeasurement12253" type="Context Group Name">Cardiac Ultrasound Area Measurement (12253)</uid>
     <uid uid="1.2.840.10008.6.1.835" keyword="CardiacUltrasoundHemodynamicMeasurement12254" type="Context Group Name">Cardiac Ultrasound Hemodynamic Measurement (12254)</uid>
     <uid uid="1.2.840.10008.6.1.836" keyword="CardiacUltrasoundMyocardiumMeasurement12255" type="Context Group Name">Cardiac Ultrasound Myocardium Measurement (12255)</uid>
-    <uid uid="1.2.840.10008.6.1.838" keyword="CardiacUltrasoundLeftVentricle12257" type="Context Group Name">Cardiac Ultrasound Left Ventricle (12257)</uid>
-    <uid uid="1.2.840.10008.6.1.839" keyword="CardiacUltrasoundRightVentricle12258" type="Context Group Name">Cardiac Ultrasound Right Ventricle (12258)</uid>
+    <uid uid="1.2.840.10008.6.1.838" keyword="CardiacUltrasoundLeftVentricleMeasurement12257" type="Context Group Name">Cardiac Ultrasound Left Ventricle Measurement (12257)</uid>
+    <uid uid="1.2.840.10008.6.1.839" keyword="CardiacUltrasoundRightVentricleMeasurement12258" type="Context Group Name">Cardiac Ultrasound Right Ventricle Measurement (12258)</uid>
     <uid uid="1.2.840.10008.6.1.840" keyword="CardiacUltrasoundVentriclesMeasurement12259" type="Context Group Name">Cardiac Ultrasound Ventricles Measurement (12259)</uid>
-    <uid uid="1.2.840.10008.6.1.841" keyword="CardiacUltrasoundPulmonaryArtery12260" type="Context Group Name">Cardiac Ultrasound Pulmonary Artery (12260)</uid>
+    <uid uid="1.2.840.10008.6.1.841" keyword="CardiacUltrasoundPulmonaryArteryMeasurement12260" type="Context Group Name">Cardiac Ultrasound Pulmonary Artery Measurement (12260)</uid>
     <uid uid="1.2.840.10008.6.1.842" keyword="CardiacUltrasoundPulmonaryVein12261" type="Context Group Name">Cardiac Ultrasound Pulmonary Vein (12261)</uid>
-    <uid uid="1.2.840.10008.6.1.843" keyword="CardiacUltrasoundPulmonaryValve12262" type="Context Group Name">Cardiac Ultrasound Pulmonary Valve (12262)</uid>
+    <uid uid="1.2.840.10008.6.1.843" keyword="CardiacUltrasoundPulmonaryValveMeasurement12262" type="Context Group Name">Cardiac Ultrasound Pulmonary Valve Measurement (12262)</uid>
     <uid uid="1.2.840.10008.6.1.844" keyword="CardiacUltrasoundVenousReturnPulmonaryMeasurement12263" type="Context Group Name">Cardiac Ultrasound Venous Return Pulmonary Measurement (12263)</uid>
     <uid uid="1.2.840.10008.6.1.845" keyword="CardiacUltrasoundVenousReturnSystemicMeasurement12264" type="Context Group Name">Cardiac Ultrasound Venous Return Systemic Measurement (12264)</uid>
     <uid uid="1.2.840.10008.6.1.846" keyword="CardiacUltrasoundAtriaAndAtrialSeptumMeasurement12265" type="Context Group Name">Cardiac Ultrasound Atria and Atrial Septum Measurement (12265)</uid>
-    <uid uid="1.2.840.10008.6.1.847" keyword="CardiacUltrasoundMitralValve12266" type="Context Group Name">Cardiac Ultrasound Mitral Valve (12266)</uid>
-    <uid uid="1.2.840.10008.6.1.848" keyword="CardiacUltrasoundTricuspidValve12267" type="Context Group Name">Cardiac Ultrasound Tricuspid Valve (12267)</uid>
+    <uid uid="1.2.840.10008.6.1.847" keyword="CardiacUltrasoundMitralValveMeasurement12266" type="Context Group Name">Cardiac Ultrasound Mitral Valve Measurement (12266)</uid>
+    <uid uid="1.2.840.10008.6.1.848" keyword="CardiacUltrasoundTricuspidValveMeasurement12267" type="Context Group Name">Cardiac Ultrasound Tricuspid Valve Measurement (12267)</uid>
     <uid uid="1.2.840.10008.6.1.849" keyword="CardiacUltrasoundAtrioventricularValveMeasurement12268" type="Context Group Name">Cardiac Ultrasound Atrioventricular Valve Measurement (12268)</uid>
     <uid uid="1.2.840.10008.6.1.850" keyword="CardiacUltrasoundInterventricularSeptumMeasurement12269" type="Context Group Name">Cardiac Ultrasound Interventricular Septum Measurement (12269)</uid>
-    <uid uid="1.2.840.10008.6.1.851" keyword="CardiacUltrasoundAorticValve12270" type="Context Group Name">Cardiac Ultrasound Aortic Valve (12270)</uid>
+    <uid uid="1.2.840.10008.6.1.851" keyword="CardiacUltrasoundAorticValveMeasurement12270" type="Context Group Name">Cardiac Ultrasound Aortic Valve Measurement (12270)</uid>
     <uid uid="1.2.840.10008.6.1.852" keyword="CardiacUltrasoundOutflowTractMeasurement12271" type="Context Group Name">Cardiac Ultrasound Outflow Tract Measurement (12271)</uid>
     <uid uid="1.2.840.10008.6.1.853" keyword="CardiacUltrasoundSemilunarValveAnnulateAndSinusMeasurement12272" type="Context Group Name">Cardiac Ultrasound Semilunar Valve, Annulate and Sinus Measurement (12272)</uid>
     <uid uid="1.2.840.10008.6.1.854" keyword="CardiacUltrasoundAorticSinotubularJunctionMeasurement12273" type="Context Group Name">Cardiac Ultrasound Aortic Sinotubular Junction Measurement (12273)</uid>
@@ -6812,11 +6850,11 @@
     <uid uid="1.2.840.10008.6.1.1347" keyword="HistoryOfMalignantMelanoma4402" type="Context Group Name">History of Malignant Melanoma (4402)</uid>
     <uid uid="1.2.840.10008.6.1.1348" keyword="HistoryOfMelanomaInSitu4403" type="Context Group Name">History of Melanoma in Situ (4403)</uid>
     <uid uid="1.2.840.10008.6.1.1349" keyword="HistoryOfNonMelanomaSkinCancer4404" type="Context Group Name">History of Non-Melanoma Skin Cancer (4404)</uid>
-    <uid uid="1.2.840.10008.6.1.1350" keyword="SkinDisorders4405" type="Context Group Name">Skin Disorders (4405)</uid>
+    <uid uid="1.2.840.10008.6.1.1350" keyword="SkinDisorder4405" type="Context Group Name">Skin Disorder (4405)</uid>
     <uid uid="1.2.840.10008.6.1.1351" keyword="PatientReportedLesionCharacteristic4406" type="Context Group Name">Patient Reported Lesion Characteristic (4406)</uid>
     <uid uid="1.2.840.10008.6.1.1352" keyword="LesionPalpationFinding4407" type="Context Group Name">Lesion Palpation Finding (4407)</uid>
     <uid uid="1.2.840.10008.6.1.1353" keyword="LesionVisualFinding4408" type="Context Group Name">Lesion Visual Finding (4408)</uid>
-    <uid uid="1.2.840.10008.6.1.1354" keyword="SkinProcedures4409" type="Context Group Name">Skin Procedures (4409)</uid>
+    <uid uid="1.2.840.10008.6.1.1354" keyword="SkinProcedure4409" type="Context Group Name">Skin Procedure (4409)</uid>
     <uid uid="1.2.840.10008.6.1.1355" keyword="AbdominopelvicVessel12125" type="Context Group Name">Abdominopelvic Vessel (12125)</uid>
     <uid uid="1.2.840.10008.6.1.1356" keyword="NumericValueFailureQualifier43" type="Context Group Name">Numeric Value Failure Qualifier (43)</uid>
     <uid uid="1.2.840.10008.6.1.1357" keyword="NumericValueUnknownQualifier44" type="Context Group Name">Numeric Value Unknown Qualifier (44)</uid>
@@ -6839,7 +6877,7 @@
     <uid uid="1.2.840.10008.6.1.1374" keyword="ProstateDCEMRIQualityFinding6317" type="Context Group Name">Prostate DCE MRI Quality Finding (6317)</uid>
     <uid uid="1.2.840.10008.6.1.1375" keyword="ProstateDWIMRIQualityFinding6318" type="Context Group Name">Prostate DWI MRI Quality Finding (6318)</uid>
     <uid uid="1.2.840.10008.6.1.1376" keyword="AbdominalInterventionType6319" type="Context Group Name">Abdominal Intervention Type (6319)</uid>
-    <uid uid="1.2.840.10008.6.1.1377" keyword="AbdominalIntervention6320" type="Context Group Name">Abdominal Intervention (6320)</uid>
+    <uid uid="1.2.840.10008.6.1.1377" keyword="AbdominopelvicIntervention6320" type="Context Group Name">Abdominopelvic Intervention (6320)</uid>
     <uid uid="1.2.840.10008.6.1.1378" keyword="ProstateCancerDiagnosticProcedure6321" type="Context Group Name">Prostate Cancer Diagnostic Procedure (6321)</uid>
     <uid uid="1.2.840.10008.6.1.1379" keyword="ProstateCancerFamilyHistory6322" type="Context Group Name">Prostate Cancer Family History (6322)</uid>
     <uid uid="1.2.840.10008.6.1.1380" keyword="ProstateCancerTherapy6323" type="Context Group Name">Prostate Cancer Therapy (6323)</uid>
@@ -6874,7 +6912,7 @@
     <uid uid="1.2.840.10008.6.1.1409" keyword="ProstateCancerDiagnosticBloodLabMeasurement6352" type="Context Group Name">Prostate Cancer Diagnostic Blood Lab Measurement (6352)</uid>
     <uid uid="1.2.840.10008.6.1.1410" keyword="ProstateImagingTypesOfQualityControlStandard6353" type="Context Group Name">Prostate Imaging Types of Quality Control Standard (6353)</uid>
     <uid uid="1.2.840.10008.6.1.1411" keyword="UltrasoundShearWaveMeasurement12308" type="Context Group Name">Ultrasound Shear Wave Measurement (12308)</uid>
-    <uid uid="1.2.840.10008.6.1.1412" keyword="LeftVentricleMyocardialWall16SegmentModel3780" type="Context Group Name">Left Ventricle Myocardial Wall 16 Segment Model (3780)</uid>
+    <uid uid="1.2.840.10008.6.1.1412" keyword="LeftVentricleMyocardialWall16SegmentModel3780" type="Context Group Name" retired="true">Left Ventricle Myocardial Wall 16 Segment Model (Retired) (3780)</uid>
     <uid uid="1.2.840.10008.6.1.1413" keyword="LeftVentricleMyocardialWall18SegmentModel3781" type="Context Group Name">Left Ventricle Myocardial Wall 18 Segment Model (3781)</uid>
     <uid uid="1.2.840.10008.6.1.1414" keyword="LeftVentricleBasalWall6Segments3782" type="Context Group Name">Left Ventricle Basal Wall 6 Segments (3782)</uid>
     <uid uid="1.2.840.10008.6.1.1415" keyword="LeftVentricleMidlevelWall6Segments3783" type="Context Group Name">Left Ventricle Midlevel Wall 6 Segments (3783)</uid>
@@ -6933,4 +6971,14 @@
     <uid uid="1.2.840.10008.6.1.1468" keyword="RTRadiationMetersetUnits9269" type="Context Group Name">RT Radiation Meterset Units (9269)</uid>
     <uid uid="1.2.840.10008.6.1.1469" keyword="AcquisitionInitiationTypes9270" type="Context Group Name">Acquisition Initiation Types (9270)</uid>
     <uid uid="1.2.840.10008.6.1.1470" keyword="RTImagePatientPositionAcquisitionDevices9271" type="Context Group Name">RT Image Patient Position Acquisition Devices (9271)</uid>
+    <uid uid="1.2.840.10008.6.1.1471" keyword="PhotoacousticIlluminationMethod11001" type="Context Group Name">Photoacoustic Illumination Method (11001)</uid>
+    <uid uid="1.2.840.10008.6.1.1472" keyword="AcousticCouplingMedium11002" type="Context Group Name">Acoustic Coupling Medium (11002)</uid>
+    <uid uid="1.2.840.10008.6.1.1473" keyword="UltrasoundTransducerTechnology11003" type="Context Group Name">Ultrasound Transducer Technology (11003)</uid>
+    <uid uid="1.2.840.10008.6.1.1474" keyword="SpeedOfSoundCorrectionMechanisms11004" type="Context Group Name">Speed of Sound Correction Mechanisms (11004)</uid>
+    <uid uid="1.2.840.10008.6.1.1475" keyword="PhotoacousticReconstructionAlgorithmFamily11005" type="Context Group Name">Photoacoustic Reconstruction Algorithm Family (11005)</uid>
+    <uid uid="1.2.840.10008.6.1.1476" keyword="PhotoacousticImagedProperty11006" type="Context Group Name">Photoacoustic Imaged Property (11006)</uid>
+    <uid uid="1.2.840.10008.6.1.1477" keyword="XRayRadiationDoseProcedureTypeReported10005" type="Context Group Name">X-Ray Radiation Dose Procedure Type Reported (10005)</uid>
+    <uid uid="1.2.840.10008.6.1.1478" keyword="TopicalTreatment4410" type="Context Group Name">Topical Treatment (4410)</uid>
+    <uid uid="1.2.840.10008.6.1.1479" keyword="LesionColor4411" type="Context Group Name">Lesion Color (4411)</uid>
+    <uid uid="1.2.840.10008.6.1.1480" keyword="SpecimenStainForConfocalMicroscopy4412" type="Context Group Name">Specimen Stain for Confocal Microscopy (4412)</uid>
 </dictionary>

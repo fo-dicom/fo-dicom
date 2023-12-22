@@ -1,7 +1,6 @@
 ﻿
 // Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom
 {
@@ -2871,6 +2870,12 @@ namespace FellowOakDicom
         ///<summary>(0018,1203) VR=DT VM=1 Calibration DateTime</summary>
         public readonly static DicomTag CalibrationDateTime = new DicomTag(0x0018, 0x1203);
 
+        ///<summary>(0018,1204) VR=DA VM=1 Date of Manufacture</summary>
+        public readonly static DicomTag DateOfManufacture = new DicomTag(0x0018, 0x1204);
+
+        ///<summary>(0018,1205) VR=DA VM=1 Date of Installation</summary>
+        public readonly static DicomTag DateOfInstallation = new DicomTag(0x0018, 0x1205);
+
         ///<summary>(0018,1210) VR=SH VM=1-n Convolution Kernel</summary>
         public readonly static DicomTag ConvolutionKernel = new DicomTag(0x0018, 0x1210);
 
@@ -4721,6 +4726,69 @@ namespace FellowOakDicom
 
         ///<summary>(0018,9810) VR=US/SS VM=1 Zero Velocity Pixel Value</summary>
         public readonly static DicomTag ZeroVelocityPixelValue = new DicomTag(0x0018, 0x9810);
+
+        ///<summary>(0018,9821) VR=SQ VM=1 Photoacoustic Excitation Characteristics Sequence</summary>
+        public readonly static DicomTag PhotoacousticExcitationCharacteristicsSequence = new DicomTag(0x0018, 0x9821);
+
+        ///<summary>(0018,9822) VR=FD VM=1 Excitation Spectral Width</summary>
+        public readonly static DicomTag ExcitationSpectralWidth = new DicomTag(0x0018, 0x9822);
+
+        ///<summary>(0018,9823) VR=FD VM=1 Excitation Energy</summary>
+        public readonly static DicomTag ExcitationEnergy = new DicomTag(0x0018, 0x9823);
+
+        ///<summary>(0018,9824) VR=FD VM=1 Excitation Pulse Duration</summary>
+        public readonly static DicomTag ExcitationPulseDuration = new DicomTag(0x0018, 0x9824);
+
+        ///<summary>(0018,9825) VR=SQ VM=1 Excitation Wavelength Sequence</summary>
+        public readonly static DicomTag ExcitationWavelengthSequence = new DicomTag(0x0018, 0x9825);
+
+        ///<summary>(0018,9826) VR=FD VM=1 Excitation Wavelength</summary>
+        public readonly static DicomTag ExcitationWavelength = new DicomTag(0x0018, 0x9826);
+
+        ///<summary>(0018,9828) VR=CS VM=1 Illumination Translation Flag</summary>
+        public readonly static DicomTag IlluminationTranslationFlag = new DicomTag(0x0018, 0x9828);
+
+        ///<summary>(0018,9829) VR=CS VM=1 Acoustic Coupling Medium Flag</summary>
+        public readonly static DicomTag AcousticCouplingMediumFlag = new DicomTag(0x0018, 0x9829);
+
+        ///<summary>(0018,982A) VR=SQ VM=1 Acoustic Coupling Medium Code Sequence</summary>
+        public readonly static DicomTag AcousticCouplingMediumCodeSequence = new DicomTag(0x0018, 0x982A);
+
+        ///<summary>(0018,982B) VR=FD VM=1 Acoustic Coupling Medium Temperature</summary>
+        public readonly static DicomTag AcousticCouplingMediumTemperature = new DicomTag(0x0018, 0x982B);
+
+        ///<summary>(0018,982C) VR=SQ VM=1 Transducer Response Sequence</summary>
+        public readonly static DicomTag TransducerResponseSequence = new DicomTag(0x0018, 0x982C);
+
+        ///<summary>(0018,982D) VR=FD VM=1 Center Frequency</summary>
+        public readonly static DicomTag CenterFrequency = new DicomTag(0x0018, 0x982D);
+
+        ///<summary>(0018,982E) VR=FD VM=1 Fractional Bandwidth</summary>
+        public readonly static DicomTag FractionalBandwidth = new DicomTag(0x0018, 0x982E);
+
+        ///<summary>(0018,982F) VR=FD VM=1 Lower Cutoff Frequency</summary>
+        public readonly static DicomTag LowerCutoffFrequency = new DicomTag(0x0018, 0x982F);
+
+        ///<summary>(0018,9830) VR=FD VM=1 Upper Cutoff Frequency</summary>
+        public readonly static DicomTag UpperCutoffFrequency = new DicomTag(0x0018, 0x9830);
+
+        ///<summary>(0018,9831) VR=SQ VM=1 Transducer Technology Sequence</summary>
+        public readonly static DicomTag TransducerTechnologySequence = new DicomTag(0x0018, 0x9831);
+
+        ///<summary>(0018,9832) VR=SQ VM=1 Sound Speed Correction Mechanism Code Sequence</summary>
+        public readonly static DicomTag SoundSpeedCorrectionMechanismCodeSequence = new DicomTag(0x0018, 0x9832);
+
+        ///<summary>(0018,9833) VR=FD VM=1 Object Sound Speed</summary>
+        public readonly static DicomTag ObjectSoundSpeed = new DicomTag(0x0018, 0x9833);
+
+        ///<summary>(0018,9834) VR=FD VM=1 Acoustic Coupling Medium Sound Speed</summary>
+        public readonly static DicomTag AcousticCouplingMediumSoundSpeed = new DicomTag(0x0018, 0x9834);
+
+        ///<summary>(0018,9835) VR=SQ VM=1 Photoacoustic Image Frame Type Sequence</summary>
+        public readonly static DicomTag PhotoacousticImageFrameTypeSequence = new DicomTag(0x0018, 0x9835);
+
+        ///<summary>(0018,9836) VR=SQ VM=1 Image Data Type Code Sequence</summary>
+        public readonly static DicomTag ImageDataTypeCodeSequence = new DicomTag(0x0018, 0x9836);
 
         ///<summary>(0018,9900) VR=LO VM=1 Reference Location Label</summary>
         public readonly static DicomTag ReferenceLocationLabel = new DicomTag(0x0018, 0x9900);
@@ -6969,8 +7037,8 @@ namespace FellowOakDicom
         ///<summary>(0034,000D) VR=SQ VM=1 Time of Frame Group Sequence</summary>
         public readonly static DicomTag TimeOfFrameGroupSequence = new DicomTag(0x0034, 0x000D);
 
-        ///<summary>(0038,0004) VR=SQ VM=1 Referenced Patient Alias Sequence</summary>
-        public readonly static DicomTag ReferencedPatientAliasSequence = new DicomTag(0x0038, 0x0004);
+        ///<summary>(0038,0004) VR=SQ VM=1 Referenced Patient Alias Sequence (RETIRED)</summary>
+        public readonly static DicomTag ReferencedPatientAliasSequenceRETIRED = new DicomTag(0x0038, 0x0004);
 
         ///<summary>(0038,0008) VR=CS VM=1 Visit Status ID</summary>
         public readonly static DicomTag VisitStatusID = new DicomTag(0x0038, 0x0008);
@@ -8657,6 +8725,18 @@ namespace FellowOakDicom
 
         ///<summary>(0048,0113) VR=DS VM=1 Objective Lens Numerical Aperture</summary>
         public readonly static DicomTag ObjectiveLensNumericalAperture = new DicomTag(0x0048, 0x0113);
+
+        ///<summary>(0048,0114) VR=CS VM=1 Confocal Mode</summary>
+        public readonly static DicomTag ConfocalMode = new DicomTag(0x0048, 0x0114);
+
+        ///<summary>(0048,0115) VR=CS VM=1 Tissue Location</summary>
+        public readonly static DicomTag TissueLocation = new DicomTag(0x0048, 0x0115);
+
+        ///<summary>(0048,0116) VR=SQ VM=1 Confocal Microscopy Image Frame Type Sequence</summary>
+        public readonly static DicomTag ConfocalMicroscopyImageFrameTypeSequence = new DicomTag(0x0048, 0x0116);
+
+        ///<summary>(0048,0117) VR=FD VM=1 Image Acquisition Depth</summary>
+        public readonly static DicomTag ImageAcquisitionDepth = new DicomTag(0x0048, 0x0117);
 
         ///<summary>(0048,0120) VR=SQ VM=1 Palette Color Lookup Table Sequence</summary>
         public readonly static DicomTag PaletteColorLookupTableSequence = new DicomTag(0x0048, 0x0120);
@@ -13926,6 +14006,9 @@ namespace FellowOakDicom
         ///<summary>(300A,068A) VR=SQ VM=1 Referenced RT Prescription Sequence</summary>
         public readonly static DicomTag ReferencedRTPrescriptionSequence = new DicomTag(0x300A, 0x068A);
 
+        ///<summary>(300A,068B) VR=CS VM=1 Dose Value Interpretation</summary>
+        public readonly static DicomTag DoseValueInterpretation = new DicomTag(0x300A, 0x068B);
+
         ///<summary>(300A,0700) VR=UI VM=1 Treatment Session UID</summary>
         public readonly static DicomTag TreatmentSessionUID = new DicomTag(0x300A, 0x0700);
 
@@ -14276,6 +14359,9 @@ namespace FellowOakDicom
 
         ///<summary>(300C,0128) VR=SQ VM=1 Beam Hold Originating Device Sequence</summary>
         public readonly static DicomTag BeamHoldOriginatingDeviceSequence = new DicomTag(0x300C, 0x0128);
+
+        ///<summary>(300C,0129) VR=CS VM=1 Beam Hold Transition Trigger Source</summary>
+        public readonly static DicomTag BeamHoldTransitionTriggerSource = new DicomTag(0x300C, 0x0129);
 
         ///<summary>(300E,0002) VR=CS VM=1 Approval Status</summary>
         public readonly static DicomTag ApprovalStatus = new DicomTag(0x300E, 0x0002);
@@ -15165,7 +15251,7 @@ namespace FellowOakDicom
         ///<summary>(5200,9229) VR=SQ VM=1 Shared Functional Groups Sequence</summary>
         public readonly static DicomTag SharedFunctionalGroupsSequence = new DicomTag(0x5200, 0x9229);
 
-        ///<summary>(5200,9230) VR=SQ VM=1 Per-frame Functional Groups Sequence</summary>
+        ///<summary>(5200,9230) VR=SQ VM=1 Per-Frame Functional Groups Sequence</summary>
         public readonly static DicomTag PerFrameFunctionalGroupsSequence = new DicomTag(0x5200, 0x9230);
 
         ///<summary>(5400,0100) VR=SQ VM=1 Waveform Sequence</summary>

@@ -1,5 +1,8 @@
-### 5.1.2 (TBD)
+### 5.1.3 (TBD)
 
+### 5.1.2 (2023-12-21)
+
+- Update to DICOM Standard 2023e
 - **Breaking change**: Configuration of `MaxClientsAllowed` must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
 - **Breaking change**: `IServiceCollection.AddDicomServer(Action<DicomServiceOptions> configure)` was changed to `IServiceCollection.AddDicomServer(Action<DicomServerOptions> configure)`
 - fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
