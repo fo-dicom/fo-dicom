@@ -27,7 +27,6 @@
 - Update to DICOM Standard 2023e
 - **Breaking change**: Configuration of `MaxClientsAllowed` must now be done via the `configure` parameter of `IDicomServerFactory.Create(..)` instead of using the `Options` property of a `DicomServer`.
 - **Breaking change**: `IServiceCollection.AddDicomServer(Action<DicomServiceOptions> configure)` was changed to `IServiceCollection.AddDicomServer(Action<DicomServerOptions> configure)`
-- **Breaking change<sup>1</sup>**: Add nullability annotations (#1699)
 - fo-dicom.Imaging.Desktop supports net6.0-windows and net7.0-windows targets (#1318)
 - FO-DICOM.Tests target net6.0-windows and net7.0-windows and test WPF/WinForms images.
 - Added private tags mentioned in RayStation 11A DICOM Conformance Statement (#1612)
