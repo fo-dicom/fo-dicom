@@ -495,6 +495,7 @@ namespace FellowOakDicom.Tests
             new object[] { DicomUID.ImplicitVRLittleEndian, DicomTransferSyntax.ImplicitVRLittleEndian },
             new object[] { DicomUID.JPEGExtended12Bit, DicomTransferSyntax.JPEGProcess2_4 },
             new object[] { DicomUID.JPEG2000Lossless, DicomTransferSyntax.JPEG2000Lossless },
+            new object[] { DicomUID.HTJ2KLossless, DicomTransferSyntax.HTJ2KLossless },
             new object[] { DicomUID.ExplicitVRBigEndianRETIRED, DicomTransferSyntax.ExplicitVRBigEndian },
             new object[] { DicomUID.GEPrivateImplicitVRBigEndian, DicomTransferSyntax.GEPrivateImplicitVRBigEndian },
             new object[] { DicomUID.MPEG2MPML, DicomTransferSyntax.MPEG2 }

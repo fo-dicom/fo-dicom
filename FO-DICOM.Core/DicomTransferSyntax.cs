@@ -636,6 +636,53 @@ namespace FellowOakDicom
                 Endian = Endian.Little
             };
 
+        /// <summary>High-Throughput JPEG 2000 Image Compression (Lossless Only)</summary>
+        public static readonly DicomTransferSyntax HTJ2KLossless =
+            new DicomTransferSyntax(DicomUID.HTJ2KLossless)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        /// <summary>High-Throughput JPEG 2000 with RPCL Options Image Compression (Lossless Only)</summary>
+        public static readonly DicomTransferSyntax HTJ2KLosslessRPCL =
+            new DicomTransferSyntax(DicomUID.HTJ2KLosslessRPCL)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>High-Throughput JPEG 2000 Image Compression</summary>
+        public static readonly DicomTransferSyntax HTJ2K =
+            new DicomTransferSyntax(DicomUID.HTJ2K)
+            {
+                IsExplicitVR = true,
+                IsEncapsulated = true,
+                IsLossy = true,
+                LossyCompressionMethod = "ISO_15444_15",
+                Endian = Endian.Little
+            };
+
+        ///<summary>JPIP HTJ2K Referenced</summary>
+        public static readonly DicomTransferSyntax JPIPHTJ2KReferenced =
+            new DicomTransferSyntax(DicomUID.JPIPHTJ2KReferenced)
+            {
+                IsExplicitVR = true,
+                Endian = Endian.Little
+            };
+
+        ///<summary>JPIP HTJ2K Referenced Deflate</summary>
+        public static readonly DicomTransferSyntax JPIPHTJ2KReferencedDeflate =
+            new DicomTransferSyntax(DicomUID.JPIPHTJ2KReferencedDeflate)
+            {
+                IsExplicitVR = true,
+                IsDeflate = true,
+                Endian = Endian.Little
+            };
+
+
         /// <summary>RLE Lossless</summary>
         public static readonly DicomTransferSyntax RLELossless =
             new DicomTransferSyntax(DicomUID.RLELossless)
@@ -729,6 +776,11 @@ namespace FellowOakDicom
             Entries.Add(FragmentableMPEG4AVCH264StereoHighProfileLevel42.UID, FragmentableMPEG4AVCH264StereoHighProfileLevel42);
             Entries.Add(HEVCH265MainProfileLevel51.UID, HEVCH265MainProfileLevel51);
             Entries.Add(HEVCH265Main10ProfileLevel51.UID, HEVCH265Main10ProfileLevel51);
+            Entries.Add(HTJ2KLossless.UID, HTJ2KLossless);
+            Entries.Add(HTJ2KLosslessRPCL.UID, HTJ2KLosslessRPCL);
+            Entries.Add(HTJ2K.UID, HTJ2K);
+            Entries.Add(JPIPHTJ2KReferenced.UID, JPIPHTJ2KReferenced);
+            Entries.Add(JPIPHTJ2KReferencedDeflate.UID, JPIPHTJ2KReferencedDeflate);
             Entries.Add(RLELossless.UID, RLELossless);
             Entries.Add(RFC2557MIMEEncapsulation.UID, RFC2557MIMEEncapsulation);
             Entries.Add(XMLEncoding.UID, XMLEncoding);

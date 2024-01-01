@@ -25,7 +25,7 @@ RLE Lossless | 1.2.840.10008.1.2.5 | ✔️  | ✔️  | ✔️ | ✔️ | ✔�
 
 # Custom Transfer Syntaxes
 
-Since **version 4.0.1** and highter fo-dicom supports custom Transfer Syntaxes. If a DICOM image with a custom / unknown Transfer Syntax is received or opened then fo-dicom assumes that it is 
+Since **version 4.0.1** and higher fo-dicom supports custom Transfer Syntaxes. If a DICOM image with a custom / unknown Transfer Syntax is received or opened then fo-dicom assumes that it is 
 * Little Endian
 * Explicit VR
 * Encapsulated

@@ -99,6 +99,7 @@ namespace FellowOakDicom.Tests.Network
         {
             new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.DeflatedExplicitVRLittleEndian },
            new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.JPEG2000Lossless },
+           new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.HTJ2KLossless },
            new object[] { DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, DicomTransferSyntax.ExplicitVRLittleEndian },
            new object[] { DicomPresentationContextResult.RejectNoReason, null },
            new object[] { DicomPresentationContextResult.RejectTransferSyntaxesNotSupported, null },

@@ -13,7 +13,7 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 * Targets .NET Standard 2.0
 * DICOM dictionary version 2023b
 * High-performance, fully asynchronous `async`/`await` API
-* JPEG (including lossless), JPEG-LS, JPEG2000, and RLE image compression (via additional package)
+* JPEG (including lossless), JPEG-LS, JPEG2000, HTJPEG2000, and RLE image compression (via additional package)
 * Supports very large datasets with content loading on demand
 * Image rendering to System.Drawing.Bitmap or SixLabors.ImageSharp
 * JSON and XML export/import

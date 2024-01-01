@@ -25,6 +25,7 @@
 - Improve robustness of DicomService when presented with HTTP requests. Bail early if the PDU type is not recognized (#1678)
 - Enhancement: Added IEquatable implementation and equality operators for DicomDataset class
 - Fix issue where a DICOM server could stop accepting incoming connections if MaxClientsAllowed is configured and one or more connections take longer than one minute to close (#1670)
+- Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
 
 #### 5.1.1 (2023-05-29)
 
