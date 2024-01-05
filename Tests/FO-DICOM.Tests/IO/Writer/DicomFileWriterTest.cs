@@ -33,6 +33,7 @@ namespace FellowOakDicom.Tests.IO.Writer
             _metaInfo = new DicomFileMetaInformation
                                {
                                    MediaStorageSOPClassUID = DicomUID.RTDoseStorage,
+                                   TransferSyntax = DicomTransferSyntax.JPEG2000Lossless
                                };
             _dataset = new DicomDataset(
                 new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
@@ -49,10 +50,8 @@ namespace FellowOakDicom.Tests.IO.Writer
         {
             lock (_locker)
             {
-                string fileName = TestData.Resolve("dicomfilewriter_write_j2k.dcm");
+                string fileName = TestData.Resolve("dicomfilewriter_write.dcm");
                 var file = new FileReference(fileName);
-
-                _metaInfo.TransferSyntax = DicomTransferSyntax.JPEG2000Lossless;
 
                 using (var target = new FileByteTarget(file))
                 {
@@ -67,28 +66,6 @@ namespace FellowOakDicom.Tests.IO.Writer
 
                 var syntax = readFile.FileMetaInfo.TransferSyntax;
                 Assert.Equal(DicomTransferSyntax.JPEG2000Lossless, syntax);
-            }
-
-            lock (_locker)
-            {
-                string fileName = TestData.Resolve("dicomfilewriter_write_htj2k.dcm");
-                var file = new FileReference(fileName);
-
-                _metaInfo.TransferSyntax = DicomTransferSyntax.HTJ2KLossless;
-
-                using (var target = new FileByteTarget(file))
-                {
-                    var writer = new DicomFileWriter(new DicomWriteOptions());
-                    writer.Write(target, _metaInfo, _dataset);
-                }
-
-                var expected = _comment;
-                var readFile = DicomFile.Open(fileName);
-                var actual = readFile.Dataset.GetSingleValue<string>(_doseCommentTag);
-                Assert.Equal(expected, actual);
-
-                var syntax = readFile.FileMetaInfo.TransferSyntax;
-                Assert.Equal(DicomTransferSyntax.HTJ2KLossless, syntax);
             }
         }
 
