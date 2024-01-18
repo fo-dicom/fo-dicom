@@ -14,6 +14,9 @@ JPEG-LS Lossless Image Compression | 1.2.840.10008.1.2.4.80 | ✔️  | ✔️  
 JPEG-LS Lossy (Near-Lossless) Image Compression | 1.2.840.10008.1.2.4.81 | ✔️  | ✔️  |   |   |   |   |   | JPEG-LS Lossy (Near-Lossless) Image Compression
 JPEG 2000 Image Compression (Lossless Only) | 1.2.840.10008.1.2.4.90 | ✔️  | ✔️ | 8&#8209;bit | 8&#8209;bit | 8&#8209;bit | 8&#8209;bit |   | JPEG 2000 Image Compression (Lossless Only)
 JPEG 2000 Image Compression | 1.2.840.10008.1.2.4.91 | ✔️  | ✔️ | 8&#8209;bit | 8&#8209;bit | 8&#8209;bit | 8&#8209;bit |   | JPEG 2000 Image Compression
+High-Throughput JPEG 2000 Image Compression (Lossless Only)<sup>7</sup> | 1.2.840.10008.1.2.4.201 |   |   |   |   |   |   |   | High-Throughput JPEG 2000 Image Compression (Lossless Only)
+High-Throughput JPEG 2000 with RPCL Options Image Compression (Lossless Only)<sup>7</sup> | 1.2.840.10008.1.2.4.202 |   |   |    |   |   |   |   | High-Throughput JPEG 2000 with RPCL Options Image Compression (Lossless Only)
+High-Throughput JPEG 2000 Image Compression<sup>7</sup> | 1.2.840.10008.1.2.4.203 |   |   |    |   |   |   |   | High-Throughput JPEG 2000 Image Compression
 RLE Lossless | 1.2.840.10008.1.2.5 | ✔️  | ✔️  | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | RLE Lossless
 
 <sup>1</sup>*.NET Framework* package  
@@ -22,10 +25,11 @@ RLE Lossless | 1.2.840.10008.1.2.5 | ✔️  | ✔️  | ✔️ | ✔️ | ✔�
 <sup>4</sup>Default Transfer Syntax for Lossy JPEG 8-bit Image Compression  
 <sup>5</sup>Default Transfer Syntax for Lossy JPEG 12-bit Image Compression (Process 4 only)  
 <sup>6</sup>SV1 = Selection Value 1; Default Transfer Syntax for Lossless JPEG Image Compression  
+<sup>7</sup>Actual codec support to be implemented in the fo-dicom.Codecs package.
 
 # Custom Transfer Syntaxes
 
-Since **version 4.0.1** and highter fo-dicom supports custom Transfer Syntaxes. If a DICOM image with a custom / unknown Transfer Syntax is received or opened then fo-dicom assumes that it is 
+Since **version 4.0.1** and higher fo-dicom supports custom Transfer Syntaxes. If a DICOM image with a custom / unknown Transfer Syntax is received or opened then fo-dicom assumes that it is 
 * Little Endian
 * Explicit VR
 * Encapsulated

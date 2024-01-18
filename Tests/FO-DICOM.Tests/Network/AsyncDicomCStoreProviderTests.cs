@@ -108,6 +108,8 @@ namespace FellowOakDicom.Tests.Network
                // Lossless
                DicomTransferSyntax.JPEGLSLossless,
                DicomTransferSyntax.JPEG2000Lossless,
+               DicomTransferSyntax.HTJ2KLossless,
+               DicomTransferSyntax.HTJ2KLosslessRPCL,
                DicomTransferSyntax.JPEGProcess14SV1,
                DicomTransferSyntax.JPEGProcess14,
                DicomTransferSyntax.RLELossless,

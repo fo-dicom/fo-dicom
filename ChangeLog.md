@@ -1,5 +1,7 @@
 ### 5.1.3 (TBD)
 
+- Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
+
 ### 5.1.2 (2023-12-21)
 
 - Update to DICOM Standard 2023e
