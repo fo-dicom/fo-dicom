@@ -1,6 +1,7 @@
 ### 5.1.3 (TBD)
 
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
+- Add support for parsing DICOM files where the pixel data is not properly closed with a SequenceDelimitationItem (#1339)
 
 ### 5.1.2 (2023-12-21)
 
