@@ -616,6 +616,14 @@ namespace FellowOakDicom.Serialization
                     {
                         writer.WriteStringValue("NaN");
                     }
+                    else if ((val is double dp && double.IsPositiveInfinity(dp)) || (val is float fp && float.IsPositiveInfinity(fp)))
+                    {
+                        writer.WriteStringValue("Infinity");
+                    }
+                    else if ((val is double dn && double.IsNegativeInfinity(dn)) || (val is float fn && float.IsNegativeInfinity(fn)))
+                    {
+                        writer.WriteStringValue("-Infinity");
+                    }
                     else
                     {
                         writeValue(writer, val);
@@ -903,6 +911,28 @@ namespace FellowOakDicom.Serialization
                 {
                     childValues.Add((T)(float.NaN as object));
                 }
+                else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "Infinity")
+                {
+                    if (typeof(T) == typeof(double))
+                    {
+                        childValues.Add((T)(double.PositiveInfinity as object));
+                    }
+                    else
+                    {
+                        childValues.Add((T)(float.PositiveInfinity as object));
+                    }
+                }
+                else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "-Infinity")
+                {
+                    if (typeof(T) == typeof(double))
+                    {
+                        childValues.Add((T)(double.NegativeInfinity as object));
+                    }
+                    else
+                    {
+                        childValues.Add((T)(float.NegativeInfinity as object));
+                    }
+                }
                 else if (reader.TokenType == JsonTokenType.String && tryParse(reader.GetString(), out T parsed))
                 {
                     childValues.Add(parsed);
@@ -957,6 +987,28 @@ namespace FellowOakDicom.Serialization
                 else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "NaN")
                 {
                     childValues.Add((T)(float.NaN as object));
+                }
+                else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "Infinity")
+                {
+                    if (typeof(T) == typeof(double))
+                    {
+                        childValues.Add((T)(double.PositiveInfinity as object));
+                    }
+                    else
+                    {
+                        childValues.Add((T)(float.PositiveInfinity as object));
+                    }
+                }
+                else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "-Infinity")
+                {
+                    if (typeof(T) == typeof(double))
+                    {
+                        childValues.Add((T)(double.NegativeInfinity as object));
+                    }
+                    else
+                    {
+                        childValues.Add((T)(float.NegativeInfinity as object));
+                    }
                 }
                 else
                 {
