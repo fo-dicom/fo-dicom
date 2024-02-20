@@ -1164,6 +1164,7 @@ namespace FellowOakDicom.Tests.Serialization
         [Theory]
         [InlineData(double.PositiveInfinity)]
         [InlineData(double.NegativeInfinity)]
+        [InlineData(double.NaN)]
         public static void GivenDatasetWithInfinityNumberForValueRepresentationFD_WhenSerialized_IsDeserializedCorrectly(double overflowNumber)
         {
             var dicomDataset = new DicomDataset().NotValidated();
@@ -1184,6 +1185,7 @@ namespace FellowOakDicom.Tests.Serialization
         [Theory]
         [InlineData(float.PositiveInfinity)]
         [InlineData(float.NegativeInfinity)]
+        [InlineData(float.NaN)]
         public static void GivenDatasetWithInfinityNumberForValueRepresentationFL_WhenSerialized_IsDeserializedCorrectly(float overflowNumber)
         {
             var dicomDataset = new DicomDataset().NotValidated();

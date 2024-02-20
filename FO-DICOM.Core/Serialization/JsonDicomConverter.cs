@@ -612,7 +612,7 @@ namespace FellowOakDicom.Serialization
                     {
                         writer.WriteNullValue();
                     }
-                    else if (val is float f && float.IsNaN(f))
+                    else if ((val is float f && float.IsNaN(f)) || (val is double d && double.IsNaN(d)))
                     {
                         writer.WriteStringValue("NaN");
                     }
@@ -909,7 +909,14 @@ namespace FellowOakDicom.Serialization
                 }
                 else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "NaN")
                 {
-                    childValues.Add((T)(float.NaN as object));
+                    if (typeof(T) == typeof(double))
+                    {
+                        childValues.Add((T)(double.NaN as object));
+                    }
+                    else
+                    {
+                        childValues.Add((T)(float.NaN as object));
+                    }
                 }
                 else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "Infinity")
                 {
@@ -986,7 +993,14 @@ namespace FellowOakDicom.Serialization
                 }
                 else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "NaN")
                 {
-                    childValues.Add((T)(float.NaN as object));
+                    if (typeof(T) == typeof(double))
+                    {
+                        childValues.Add((T)(double.NaN as object));
+                    }
+                    else
+                    {
+                        childValues.Add((T)(float.NaN as object));
+                    }
                 }
                 else if (reader.TokenType == JsonTokenType.String && reader.GetString() == "Infinity")
                 {
