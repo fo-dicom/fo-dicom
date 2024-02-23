@@ -1162,6 +1162,48 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Theory]
+        [InlineData(double.PositiveInfinity)]
+        [InlineData(double.NegativeInfinity)]
+        [InlineData(double.NaN)]
+        public static void GivenDatasetWithInfinityNumberForValueRepresentationFD_WhenSerialized_IsDeserializedCorrectly(double overflowNumber)
+        {
+            var dicomDataset = new DicomDataset().NotValidated();
+            dicomDataset.Add(new DicomFloatingPointDouble(DicomTag.PatientSupportAdjustedAngle, overflowNumber));
+
+            var converter = new DicomJsonConverter(autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
+
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.Converters.Add(converter);
+
+            var json = JsonSerializer.Serialize(dicomDataset, serializerOptions);
+            JsonDocument.Parse(json);
+            DicomDataset deserializedDataset = JsonSerializer.Deserialize<DicomDataset>(json, serializerOptions);
+            var recoveredValue = deserializedDataset.GetValue<double>(DicomTag.PatientSupportAdjustedAngle, 0);
+            Assert.Equal(overflowNumber, recoveredValue);
+        }
+
+        [Theory]
+        [InlineData(float.PositiveInfinity)]
+        [InlineData(float.NegativeInfinity)]
+        [InlineData(float.NaN)]
+        public static void GivenDatasetWithInfinityNumberForValueRepresentationFL_WhenSerialized_IsDeserializedCorrectly(float overflowNumber)
+        {
+            var dicomDataset = new DicomDataset().NotValidated();
+            dicomDataset.Add(new DicomFloatingPointSingle(DicomTag.PhysicalDetectorSize, overflowNumber));
+
+            var converter = new DicomJsonConverter(autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
+
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.Converters.Add(converter);
+
+            var json = JsonSerializer.Serialize(dicomDataset, serializerOptions);
+            JsonDocument.Parse(json);
+            DicomDataset deserializedDataset = JsonSerializer.Deserialize<DicomDataset>(json, serializerOptions);
+            var recoveredValue = deserializedDataset.GetValue<float>(DicomTag.PhysicalDetectorSize, 0);
+            Assert.Equal(overflowNumber, recoveredValue);
+        }
+
+        [Theory]
         [InlineData(false)]
         [InlineData(true)]
         public static void GivenNestedNullJsonTokens_WhenDeserialization_ThenReturnsNull(bool useLegacyConverter)
