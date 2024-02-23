@@ -69,7 +69,7 @@ namespace FellowOakDicom.Imaging
         /// <param name="frame">An optional frame number. if not provided, then frame 0 is taken. I case of EnhancedCT or EnhancedMR the geometrydata will be different for each frame</param>
         public FrameGeometry(DicomDataset image, int frame = 0)
         {
-            var functionalItems = image.FunctionalGroupValues(frame).ToList();
+            var functionalItems = image.FunctionalGroupValues(frame);
 
             FrameOfReferenceUid = image.GetSingleValueOrDefault(DicomTag.FrameOfReferenceUID, string.Empty);
 

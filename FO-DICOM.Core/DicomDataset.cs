@@ -778,8 +778,9 @@ namespace FellowOakDicom
 
 
 
-        public IEnumerable<DicomItem> FunctionalGroupValues(int frame)
+        public DicomDataset FunctionalGroupValues(int frame)
         {
+            var functionalDs = new DicomDataset();
             // gets all items from SharedfunctionalGroup 
             if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence))
             {
@@ -788,7 +789,7 @@ namespace FellowOakDicom
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
                     {
-                        yield return sequence;
+                        functionalDs.Add(sequence);
                     }
                     else
                     {
@@ -797,13 +798,13 @@ namespace FellowOakDicom
                         {
                             foreach (var item in sequence.Items[0])
                             {
-                                yield return item;
+                                functionalDs.Add(item);
                             }
                         }
                     }
                 }
             }
-            if (this.TryGetSequence(DicomTag.PerFrameFunctionalGroupsSequence, out var perFrameFunctionalGroupsSequence)
+            if (TryGetSequence(DicomTag.PerFrameFunctionalGroupsSequence, out var perFrameFunctionalGroupsSequence)
                 && perFrameFunctionalGroupsSequence.Items.Count > frame)
             {
                 var frameFunctionGroupItem = perFrameFunctionalGroupsSequence.Items[frame];
@@ -811,7 +812,7 @@ namespace FellowOakDicom
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
                     {
-                        yield return sequence;
+                        functionalDs.Add(sequence);
                     }
                     else
                     {
@@ -820,13 +821,14 @@ namespace FellowOakDicom
                         {
                             foreach (var item in sequence.Items[0])
                             {
-                                yield return item;
+                                functionalDs.Add(item);
                             }
                         }
                     }
                 }
 
             }
+            return functionalDs;
         }
 
 

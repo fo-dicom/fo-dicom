@@ -182,7 +182,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Grayscale render options based on window level data.</returns>
         public static GrayscaleRenderOptions FromWindowLevel(DicomDataset dataset, int frame = 0)
         {
-            var functional = dataset.FunctionalGroupValues(frame).ToList();
+            var functional = dataset.FunctionalGroupValues(frame);
             if (!dataset.Contains(DicomTag.WindowWidth) ||
                 !dataset.Contains(DicomTag.WindowCenter))
             {
@@ -237,7 +237,7 @@ namespace FellowOakDicom.Imaging
         /// <returns>Grayscale render options based on window level data.</returns>
         public static GrayscaleRenderOptions FromFunctionalWindowLevel(DicomDataset dataset, int frame)
         {
-            var functional = dataset.FunctionalGroupValues(frame).ToList();
+            var functional = dataset.FunctionalGroupValues(frame);
             if (!functional.Any() || !functional.Contains(DicomTag.WindowWidth) ||
                !functional.Contains(DicomTag.WindowCenter))
             {
