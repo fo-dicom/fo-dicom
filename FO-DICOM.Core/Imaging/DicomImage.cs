@@ -394,40 +394,6 @@ namespace FellowOakDicom.Imaging
 
             var pixelData = DicomPixelData.Create(clone, true);
 
-            //// TODO: can this temporary fixes be removed now?
-
-            //// temporary fix for JPEG compressed YBR images, according to enforcement above
-            //if ((inputTransferSyntax == DicomTransferSyntax.JPEGProcess1
-            //     || inputTransferSyntax == DicomTransferSyntax.JPEGProcess2_4) && pixelData.SamplesPerPixel == 3)
-            //{
-            //    // When converting to RGB in Dicom.Imaging.Codec.Jpeg.i, PlanarConfiguration is set to Interleaved
-            //    pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
-            //    pixelData.PlanarConfiguration = PlanarConfiguration.Interleaved;
-            //}
-
-            //// temporary fix for JPEG 2000 Lossy images
-            //if ((inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossy
-            //     && pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrIct)
-            //    || (inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
-            //        && pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrRct))
-            //{
-            //    // Converted to RGB in Dicom.Imaging.Codec.Jpeg2000.cpp
-            //    pixelData.PhotometricInterpretation = PhotometricInterpretation.Rgb;
-            //}
-
-            //// temporary fix for JPEG2000 compressed YBR images
-            //if ((inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossless
-            //     || inputTransferSyntax == DicomTransferSyntax.JPEG2000Lossy)
-            //    && (pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull
-            //        || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrFull422
-            //        || pixelData.PhotometricInterpretation == PhotometricInterpretation.YbrPartial422))
-            //{
-            //    // For JPEG2000 YBR type images in Dicom.Imaging.Codec.Jpeg2000.cpp, 
-            //    // YBR_FULL is applied and PlanarConfiguration is set to Planar
-            //    pixelData.PhotometricInterpretation = PhotometricInterpretation.YbrFull;
-            //    pixelData.PlanarConfiguration = PlanarConfiguration.Planar;
-            //}
-
             return pixelData;
         }
 
