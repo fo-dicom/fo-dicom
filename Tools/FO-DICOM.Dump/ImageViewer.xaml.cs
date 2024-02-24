@@ -1,8 +1,10 @@
-﻿using FellowOakDicom.Imaging;
-using System.IO;
+﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+#nullable disable
+
+using FellowOakDicom.Imaging;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace FellowOakDicom.Dump
 {
