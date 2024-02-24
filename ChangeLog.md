@@ -1,5 +1,6 @@
 ### 5.1.3 (TBD)
 
+- **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
 - Add support for parsing DICOM files where the pixel data is not properly closed with a SequenceDelimitationItem (#1339)
 - Update Dicom json converter to handle Infinity values for FL and FD VRs (#1725)
