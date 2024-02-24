@@ -756,6 +756,10 @@ namespace FellowOakDicom.Network
                                 var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 
                                 var file = new DicomFile();
+                                if (_fallbackEncoding != null)
+                                {
+                                    file.Dataset.SetFallbackEncodings(new[] { _fallbackEncoding });
+                                }
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
                                 file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
                                 file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
@@ -784,7 +788,8 @@ namespace FellowOakDicom.Network
                             var command = new DicomDataset().NotValidated();
 
                             var reader = new DicomReader(_memoryProvider) { IsExplicitVR = false };
-                            reader.Read(StreamByteSourceFactory.Create(_dimseStream, FileReadOption.Default), new DicomDatasetReaderObserver(command));
+                            reader.Read(StreamByteSourceFactory.Create(_dimseStream, FileReadOption.Default),
+                                new DicomDatasetReaderObserver(command, _fallbackEncoding ?? DicomEncoding.Default));
 
                             _dimseStream = null;
                             _dimseStreamFile = null;
@@ -844,7 +849,7 @@ namespace FellowOakDicom.Network
 
                                 // when receiving data via network, accept it and dont validate
                                 using var unvalidated = new UnvalidatedScope(_dimse.Dataset);
-                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset));
+                                reader.Read(source, new DicomDatasetReaderObserver(_dimse.Dataset, _fallbackEncoding ?? DicomEncoding.Default));
 
                                 _dimseStream = null;
                                 _dimseStreamFile = null;

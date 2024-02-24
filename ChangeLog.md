@@ -9,6 +9,7 @@
 - Fix rendering of compressed data where the photometric interpretation changed while decompressing data.
 - DicomImage can cache decompressed pixel data, render-LUT or rendered image.
 - New properties CacheMode and AutoAplyLUTToAllFrames in DicomImage.
+- Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
 
 ### 5.1.2 (2023-12-21)
 
