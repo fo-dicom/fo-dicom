@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
+#nullable disable
 
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO;
@@ -28,6 +29,7 @@ namespace FellowOakDicom.Imaging
         }
 
     }
+
 
     /// <summary>
     /// <see cref="IImage"/> implementation of a <see cref="Image"/> in the <code>SixLabors.ImageSharp</code> namespace.
