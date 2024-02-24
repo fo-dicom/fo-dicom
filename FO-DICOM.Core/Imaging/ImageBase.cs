@@ -19,15 +19,15 @@ namespace FellowOakDicom.Imaging
     {
         #region FIELDS
 
-        protected readonly int width;
+        protected readonly int _width;
 
-        protected readonly int height;
+        protected readonly int _height;
 
-        protected PinnedIntArray pixels;
+        protected PinnedIntArray _pixels;
 
-        protected TImage image;
+        protected TImage _image;
 
-        protected bool disposed;
+        protected bool _disposed;
 
         #endregion
 
@@ -42,11 +42,11 @@ namespace FellowOakDicom.Imaging
         /// <param name="image">Image object.</param>
         protected ImageBase(int width, int height, PinnedIntArray pixels, TImage image)
         {
-            this.width = width;
-            this.height = height;
-            this.pixels = pixels;
-            this.image = image;
-            disposed = false;
+            _width = width;
+            _height = height;
+            _pixels = pixels;
+            _image = image;
+            _disposed = false;
         }
 
 		/// <summary>
@@ -64,11 +64,11 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets the array of pixels associated with the image.
         /// </summary>
-        public PinnedIntArray Pixels => pixels;
+        public PinnedIntArray Pixels => _pixels;
 
-        public int Height => height;
+        public int Height => _height;
 
-        public int Width => width;
+        public int Width => _width;
 
         #endregion
 
@@ -81,7 +81,7 @@ namespace FellowOakDicom.Imaging
         /// <returns><see cref="IImage"/> object as specific (real image) type.</returns>
         public virtual T As<T>()
         {
-            if (image == null)
+            if (_image == null)
             {
                 throw new DicomImagingException("Image has not yet been rendered.");
             }
@@ -91,7 +91,7 @@ namespace FellowOakDicom.Imaging
                 throw new DicomImagingException($"Cannot cast to '{typeof(T).Name}'; type must be assignable from '{typeof(TImage).Name}'");
             }
 
-            return (T)(object)image;
+            return (T)(object)_image;
         }
 
         /// <summary>
@@ -131,27 +131,23 @@ namespace FellowOakDicom.Imaging
         /// <param name="disposing">Dispose mode?</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed) return;
-
-            image = null;
-
-            if (pixels != null)
+            if (_disposed)
             {
-                pixels.Dispose();
-                pixels = null;
+                return;
             }
 
-            disposed = true;
+            _image = null;
+
+            if (_pixels != null)
+            {
+                _pixels.Dispose();
+                _pixels = null;
+            }
+
+            _disposed = true;
         }
 
-        protected static byte[] ToBytes(
-            ref int width,
-            ref int height,
-            int components,
-            bool flipX,
-            bool flipY,
-            int rotation,
-            int[] data)
+        protected static byte[] ToBytes(ref int width, ref int height, int components, bool flipX, bool flipY, int rotation, int[] data)
         {
             var processed = Rotate(ref width, ref height, rotation, data);
             processed = Flip(width, height, flipX, flipY, processed);
@@ -166,9 +162,9 @@ namespace FellowOakDicom.Imaging
 
         public Color32 GetPixel(int x, int y)
         {
-            if (x >= 0 && x < width && y >= 0 && y < height)
+            if (x >= 0 && x < _width && y >= 0 && y < _height)
             {
-                return new Color32(pixels.Data[x + y * width]);
+                return new Color32(_pixels.Data[x + y * _width]);
             }
             return Color32.Black;
         }
@@ -189,9 +185,7 @@ namespace FellowOakDicom.Imaging
                         result[i] = data[y * width + x];
                     }
                 }
-                var tmp = width;
-                width = height;
-                height = tmp;
+                (height, width) = (width, height);
             }
             else if (angle > 90 && angle <= 180)
             {
@@ -214,9 +208,7 @@ namespace FellowOakDicom.Imaging
                         result[i] = data[y * width + x];
                     }
                 }
-                var tmp = width;
-                width = height;
-                height = tmp;
+                (height, width) = (width, height);
             }
             else
             {

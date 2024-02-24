@@ -21,25 +21,41 @@ namespace FellowOakDicom.Imaging
 
         public static bool operator ==(ColorSpace a, ColorSpace b)
         {
-            if ((object)a == null || (object)b == null) return false;
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
             return a.Name == b.Name;
         }
 
         public static bool operator !=(ColorSpace a, ColorSpace b)
         {
-            if ((object)a == null || (object)b == null) return true;
+            if ((object)a == null || (object)b == null)
+            {
+                return true;
+            }
+
             return a.Name != b.Name;
         }
 
         protected bool Equals(ColorSpace other)
         {
-            return String.Equals(Name, other.Name);
+            return string.Equals(Name, other.Name);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (obj is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
             var other = obj as ColorSpace;
             return other != null && Equals(other);
         }

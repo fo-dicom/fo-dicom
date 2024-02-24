@@ -77,7 +77,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
             _slices.Sort((a, b) => a.SortingValue.CompareTo(b.SortingValue));
 
             // calcualate values
-            _slicesNormal = _slices.First().Geometry.DirectionNormal;
+            _slicesNormal = _slices[0].Geometry.DirectionNormal;
             var sliceDistances = _slices.Diff((a, b) => b.SortingValue - a.SortingValue);
             _minSliceSpace = sliceDistances.Min();
             _maxSliceSpace = sliceDistances.Max();
@@ -108,7 +108,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
             {
                 if (_lut == null)
                 {
-                    var option = GrayscaleRenderOptions.FromDataset(_slices.First().Dataset);
+                    var option = GrayscaleRenderOptions.FromDataset(_slices[0].Dataset, 0);
                     var pipelie = new GenericGrayscalePipeline(option);
                     _lut = pipelie.LUT;
                     _lut.Recalculate();

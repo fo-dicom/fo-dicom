@@ -16,10 +16,10 @@ namespace FellowOakDicom.Tests.Bugs
             var testFile = DicomFile.Open("./Test Data/GH1442.dcm");
 
             // Act
-            var grayScaleRenderOptions = GrayscaleRenderOptions.FromDataset(testFile.Dataset);
+            var grayScaleRenderOptions = GrayscaleRenderOptions.FromDataset(testFile.Dataset, 0);
 
             // Assert
-            Assert.Null(grayScaleRenderOptions.ModalityLUTSequence);
+            Assert.Null(grayScaleRenderOptions.ModalityLUT);
         }
     }
 }

@@ -211,7 +211,7 @@ namespace FellowOakDicom.Imaging
             if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2)
             {
                 //Monochrome1 or Monochrome2 for grayscale image
-                renderOptions = GrayscaleRenderOptions.FromDataset(dataset);
+                renderOptions = GrayscaleRenderOptions.FromDataset(dataset, 0);
                 pipeline = new GenericGrayscalePipeline(renderOptions);
             }
             else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull

@@ -25,53 +25,29 @@ namespace FellowOakDicom.Imaging
         /// <summary>Alpha</summary>
         public byte A
         {
-            get
-            {
-                return (byte)unchecked((Value & 0xff000000) >> 24);
-            }
-            set
-            {
-                Value = (int)unchecked((Value & 0x00ffffff) | ((int)value << 24));
-            }
+            get => (byte)unchecked((Value & 0xff000000) >> 24);
+            set => Value = unchecked((Value & 0x00ffffff) | ((int)value << 24));
         }
 
         /// <summary>Red</summary>
         public byte R
         {
-            get
-            {
-                return (byte)unchecked((Value & 0x00ff0000) >> 16);
-            }
-            set
-            {
-                Value = (int)unchecked((Value & 0xff00ffff) | ((uint)value << 16));
-            }
+            get => (byte)unchecked((Value & 0x00ff0000) >> 16);
+            set => Value = (int)unchecked((Value & 0xff00ffff) | ((uint)value << 16));
         }
 
         /// <summary>Green</summary>
         public byte G
         {
-            get
-            {
-                return (byte)unchecked((Value & 0x0000ff00) >> 8);
-            }
-            set
-            {
-                Value = (int)unchecked((Value & 0xffff00ff) | ((uint)value << 8));
-            }
+            get => (byte)unchecked((Value & 0x0000ff00) >> 8);
+            set => Value = (int)unchecked((Value & 0xffff00ff) | ((uint)value << 8));
         }
 
         /// <summary>Blue</summary>
         public byte B
         {
-            get
-            {
-                return (byte)unchecked(Value & 0x000000ff);
-            }
-            set
-            {
-                Value = (int)unchecked((Value & 0xffffff00) | value);
-            }
+            get => (byte)unchecked(Value & 0x000000ff);
+            set => Value = (int)unchecked((Value & 0xffffff00) | value);
         }
 
         /// <summary>ARGB</summary>

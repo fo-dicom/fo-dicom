@@ -12,20 +12,15 @@ namespace FellowOakDicom.Imaging
     /// </summary>
     public class SpatialTransform
     {
-        #region Private Members
-
-        private Point2 _pan;
-
-        #endregion
 
         #region Public Constructors
-        
+
         /// <summary>
         /// Initializes an instance of <see cref="SpatialTransform"/>.
         /// </summary>
         public SpatialTransform()
         {
-            _pan = new Point2(0, 0);
+            Pan = new Point2(0, 0);
             Reset();
         }
 
@@ -56,28 +51,12 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets or sets the pan of the transform.
         /// </summary>
-        public Point2 Pan
-        {
-            get
-            {
-                return _pan;
-            }
-            set
-            {
-                _pan = value;
-            }
-        }
+        public Point2 Pan { get; set; }
 
         /// <summary>
         /// Gets whether the transform is set or reset.
         /// </summary>
-        public bool IsTransformed
-        {
-            get
-            {
-                return this.Scale != 1.0 || this.Rotation != 0 || !this.Pan.Equals(Point2.Origin);
-            }
-        }
+        public bool IsTransformed => Scale != 1.0 || Rotation != 0 || !Pan.Equals(Point2.Origin);
 
         #endregion
 
@@ -89,7 +68,7 @@ namespace FellowOakDicom.Imaging
         /// <param name="angle">Angle with which to rotate.</param>
         public void Rotate(int angle)
         {
-            this.Rotation += angle;
+            Rotation += angle;
         }
 
         /// <summary>
@@ -97,12 +76,12 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public void Reset()
         {
-            this.Scale = 1.0;
-            this.Rotation = 0;
-            this.FlipX = false;
-            this.FlipY = false;
-            _pan.X = 0;
-            _pan.Y = 0;
+            Scale = 1.0;
+            Rotation = 0;
+            FlipX = false;
+            FlipY = false;
+            Pan.X = 0;
+            Pan.Y = 0;
         }
 
         #endregion

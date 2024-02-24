@@ -13,6 +13,9 @@ namespace FellowOakDicom.Imaging.Render
     public class PaletteColorPipeline : IPipeline
     {
 
+        private readonly DicomPixelData _pixelData;
+        private ILUT _cachedLUT;
+
         /// <summary>
         /// Initialize new instance of <see cref="PaletteColorPipeline"/> containing palette color LUT extracted from
         /// <paramref name="pixelData"/>
@@ -20,15 +23,27 @@ namespace FellowOakDicom.Imaging.Render
         /// <param name="pixelData">Dicom Pixel Data containing paletter color LUT</param>
         public PaletteColorPipeline(DicomPixelData pixelData)
         {
-            var lut = pixelData.PaletteColorLUT;
-            var first = pixelData.Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
-
-            LUT = new PaletteColorLUT(first, lut);
+            _pixelData = pixelData;
         }
 
         /// <summary>
         /// Get the <see cref="FellowOakDicom.Imaging.LUT.PaletteColorLUT"/>
         /// </summary>
-        public ILUT LUT { get; private set; }
+        public ILUT LUT => _cachedLUT ??= BuildColorLUT();
+
+        /// <inheritdoc />
+        public void ClearCache()
+        {
+            _cachedLUT = null;
+        }
+
+        private ILUT BuildColorLUT()
+        {
+            var lut = _pixelData.PaletteColorLUT;
+            var first = _pixelData.Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
+
+           return new PaletteColorLUT(first, lut);
+        }
+
     }
 }

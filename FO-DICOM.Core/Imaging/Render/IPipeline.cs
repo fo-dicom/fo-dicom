@@ -16,5 +16,11 @@ namespace FellowOakDicom.Imaging.Render
         /// Get the LUT of the pipeline 
         /// </summary>
         ILUT LUT { get; }
+
+
+        /// <summary>
+        /// Remove all cached data and only keep configuration data, to reduce memory consumption
+        /// </summary>
+        void ClearCache();
     }
 }

@@ -3,6 +3,12 @@
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
 - Add support for parsing DICOM files where the pixel data is not properly closed with a SequenceDelimitationItem (#1339)
 - Update Dicom json converter to handle Infinity values for FL and FD VRs (#1725)
+- Add support for rendering multiframe DICOM files where last fragment is 0 bytes (#1586)
+- Fix rendering multiframe image when rendering several frames in parallel
+- Use information from Functional Group Sequences when rendering EnhancedCT, EnhancedMR or BTO objects
+- Fix rendering of compressed data where the photometric interpretation changed while decompressing data.
+- DicomImage can cache decompressed pixel data, render-LUT or rendered image.
+- New properties CacheMode and AutoAplyLUTToAllFrames in DicomImage.
 
 ### 5.1.2 (2023-12-21)
 
@@ -95,7 +101,6 @@
 - Improve handling of WSI creation: faster offset table calucation and a naming of temp files to allow more than 64.000.
 - Change: DicomAnonymizer private fields and methods changed to protected so they can be used in subclasses, made instance methods virtual so they can be overridden in subclasses
 - Fix VR's SV and UV VR Length field (#1386)
-- Add support for rendering multiframe DICOM files where last fragment is 0 bytes (#1586)
 
 #### 5.0.2 (2022-01-11)
 

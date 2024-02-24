@@ -77,21 +77,21 @@ namespace FellowOakDicom.Imaging
         public override void Render(int components, bool flipX, bool flipY, int rotation)
         {
             var format = components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
-            var stride = GetStride(width, format);
+            var stride = GetStride(_width, format);
 
-            image = new Bitmap(width, height, stride, format, pixels.Pointer);
+            _image = new Bitmap(_width, _height, stride, format, _pixels.Pointer);
 
             var rotateFlipType = GetRotateFlipType(flipX, flipY, rotation);
             if (rotateFlipType != RotateFlipType.RotateNoneFlipNone)
             {
-                image.RotateFlip(rotateFlipType);
+                _image.RotateFlip(rotateFlipType);
             }
         }
 
         /// <inheritdoc />
         public override void DrawGraphics(IEnumerable<IGraphic> graphics)
         {
-            using var g = Graphics.FromImage(image);
+            using var g = Graphics.FromImage(_image);
             foreach (var graphic in graphics)
             {
                 var layer = graphic.RenderImage(null).As<Image>();
@@ -103,10 +103,10 @@ namespace FellowOakDicom.Imaging
         public override IImage Clone()
         {
             return new WinFormsImage(
-                width,
-                height,
-                new PinnedIntArray(pixels.Data),
-                image == null ? null : new Bitmap(image));
+                _width,
+                _height,
+                new PinnedIntArray(_pixels.Data),
+                _image == null ? null : new Bitmap(_image));
         }
 
         private static int GetStride(int width, PixelFormat format)

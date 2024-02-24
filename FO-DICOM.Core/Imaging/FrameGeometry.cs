@@ -5,6 +5,7 @@
 using FellowOakDicom.Imaging.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FellowOakDicom.Imaging
 {
@@ -61,8 +62,15 @@ namespace FellowOakDicom.Imaging
         #region Constructor
 
 
-        public FrameGeometry(DicomDataset image)
+        /// <summary>
+        /// A convenience class that extracts all data from a DicomDataset, that is relevant for geometry calculations.
+        /// </summary>
+        /// <param name="image">The DicomDataset where the information is extracted from</param>
+        /// <param name="frame">An optional frame number. if not provided, then frame 0 is taken. I case of EnhancedCT or EnhancedMR the geometrydata will be different for each frame</param>
+        public FrameGeometry(DicomDataset image, int frame = 0)
         {
+            var functionalItems = image.FunctionalGroupValues(frame);
+
             FrameOfReferenceUid = image.GetSingleValueOrDefault(DicomTag.FrameOfReferenceUID, string.Empty);
 
             FrameSize = new Point2(image.GetSingleValueOrDefault<int>(DicomTag.Columns, 0), image.GetSingleValueOrDefault<int>(DicomTag.Rows, 0));
@@ -85,12 +93,37 @@ namespace FellowOakDicom.Imaging
                 PixelSpacingBetweenRows = nominalPixelSpacing[0];
                 PixelSpacingBetweenColumns = nominalPixelSpacing[1];
             }
+            else if (functionalItems.Contains(DicomTag.PixelSpacing))
+            {
+                var functionalPixelSpacing = functionalItems.GetValues<double>(DicomTag.PixelSpacing);
+                PixelSpacingBetweenRows = functionalPixelSpacing[0];
+                PixelSpacingBetweenColumns = functionalPixelSpacing[1];
+            }
+            else if (functionalItems.Contains(DicomTag.ImagerPixelSpacing))
+            {
+                var functionalImagerPixelSpacing = functionalItems.GetValues<double>(DicomTag.ImagerPixelSpacing);
+                PixelSpacingBetweenRows = functionalImagerPixelSpacing[0];
+                PixelSpacingBetweenColumns = functionalImagerPixelSpacing[1];
+            }
 
-            var patientPosition = image.TryGetValues<double>(DicomTag.ImagePositionPatient, out var pos) ? pos : Array.Empty<double>();
-            var patientOrientation = image.TryGetValues<double>(DicomTag.ImageOrientationPatient, out var orient) ? orient : Array.Empty<double>();
+            var patientPosition = FindInDatasetOrFunctional(DicomTag.ImagePositionPatient);
+            var patientOrientation = FindInDatasetOrFunctional(DicomTag.ImageOrientationPatient);
             InitializeCalcualtedVolumeData(patientPosition, patientOrientation);
 
             InitializeTranformationMatrizes();
+
+            double[] FindInDatasetOrFunctional(DicomTag tag)
+            {
+                if (image.TryGetValues<double>(tag, out var result))
+                {
+                    return result;
+                }
+                if (functionalItems.TryGetValues<double>(tag, out var functionalResult))
+                {
+                    return functionalResult;
+                }
+                return Array.Empty<double>();
+            }
         }
 
 

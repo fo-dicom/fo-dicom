@@ -10,7 +10,7 @@ namespace FellowOakDicom.Imaging.LUT
 
     public class VOISequenceLUT : ILUT
     {
-        private readonly GrayscaleRenderOptions _renderOptions;
+        private readonly DicomDataset _voiLUTItem;
 
         private int _nrOfEntries;
 
@@ -26,9 +26,9 @@ namespace FellowOakDicom.Imaging.LUT
         /// Initialize new instance of <see cref="VOISequenceLUT"/> using the specified VOI LUT Descriptor and Data
         /// </summary>
         /// <param name="options">Render options</param>
-        public VOISequenceLUT(GrayscaleRenderOptions options)
+        public VOISequenceLUT(DicomDataset voiLUTSequenceItem)
         {
-            _renderOptions = options;
+            _voiLUTItem = voiLUTSequenceItem;
             Recalculate();
         }
 
@@ -77,24 +77,24 @@ namespace FellowOakDicom.Imaging.LUT
         {
             GetLUTDescriptor();
 
-            var LUTDataElement = _renderOptions.VOILUTSequence.Items[0].GetDicomItem<DicomElement>(DicomTag.LUTData);
-            switch (LUTDataElement.ValueRepresentation.Code)
+            var lutDataElement = _voiLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTData);
+            switch (lutDataElement.ValueRepresentation.Code)
             {
                 case "OW":
                 {
-                    var LUTData = LUTDataElement as DicomOtherWord;
+                    var LUTData = lutDataElement as DicomOtherWord;
                     _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "US":
                 {
-                    var LUTData = LUTDataElement as DicomUnsignedShort;
+                    var LUTData = lutDataElement as DicomUnsignedShort;
                     _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
                     break;
                 }
                 case "SS":
                 {
-                    var LUTData = LUTDataElement as DicomSignedShort;
+                    var LUTData = lutDataElement as DicomSignedShort;
                     _LUTDataArray = ConvertAll(ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
                     break;
                 }
@@ -111,7 +111,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         private void GetLUTDescriptor()
         {
-            var lutDescriptorElement = _renderOptions.VOILUTSequence.Items[0].GetDicomItem<DicomElement>(DicomTag.LUTDescriptor);
+            var lutDescriptorElement = _voiLUTItem.GetDicomItem<DicomElement>(DicomTag.LUTDescriptor);
             if (lutDescriptorElement.ValueRepresentation.Code == "SS")
             {
                 var LUTDescriptor = lutDescriptorElement as DicomSignedShort;
