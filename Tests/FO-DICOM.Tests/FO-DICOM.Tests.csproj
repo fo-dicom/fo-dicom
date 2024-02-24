@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net462;net6.0-windows;net7.0-windows</TargetFrameworks>
@@ -58,7 +58,6 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
     <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.ImageSharp.NetStandard\FO-DICOM.Imaging.ImageSharp.NetStandard.csproj" />
   </ItemGroup>
 
@@ -67,8 +66,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
-    <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
+	<ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
+	<ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
     <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj" />
   </ItemGroup>
 
