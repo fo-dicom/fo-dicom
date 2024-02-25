@@ -27,6 +27,20 @@ namespace FellowOakDicom.Tests.Imaging.Render
             Assert.True(col1.R>0);
         }
 
+        [Fact]
+        public void RenderJpeg2000_YBR_RCT()
+        {
+            var myDicomFile = DicomFile.Open(TestData.Resolve("VL5_J2KI.dcm"));
+
+            myDicomFile.Dataset.AddOrUpdate(DicomTag.VOILUTFunction, "LINEAR_EXACT");
+
+            var myDicomImage = new DicomImage(myDicomFile.Dataset);
+            IImage myImg = myDicomImage.RenderImage(0);
+
+            var col1 = myImg.GetPixel(myImg.Width / 2, myImg.Height / 2);
+
+            Assert.True(col1.R > 0);
+        }
 
     }
 }
