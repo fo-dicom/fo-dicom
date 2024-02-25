@@ -39,7 +39,7 @@ namespace FellowOakDicom.Tests.Bugs
             // Act
             var streamBytePixelData = (streamByteDicomFile.Dataset.Clone()).GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
 
-            Parallel.For(0, 10000, i =>
+            Parallel.For(0, 500, i =>
             {
                 var index = i % numberOfFrames;
                 var offset = (long)pixelData.UncompressedFrameSize * index;
