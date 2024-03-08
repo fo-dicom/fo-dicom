@@ -112,7 +112,7 @@ namespace FellowOakDicom.Serialization
     }
 
     /// <summary>
-    /// Converts a DicomDataset object to and from JSON using the NewtonSoft Json.NET library
+    /// Converts a DicomDataset object to and from JSON using the System.Text.Json library
     /// </summary>
     public class DicomJsonConverter : JsonConverter<DicomDataset>
     {
