@@ -14,7 +14,7 @@ namespace FellowOakDicom.IO.Buffer
     public sealed class StreamByteBuffer : IByteBuffer
     {
         private readonly IMemoryProvider _memoryProvider;
-        private readonly object _lock = new object();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
 
         public StreamByteBuffer(Stream stream, long position, long length) : this(stream, position, length, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>())
@@ -92,7 +92,8 @@ namespace FellowOakDicom.IO.Buffer
             int bufferSize = 1024 * 1024;
             using IMemory buffer = _memoryProvider.Provide(bufferSize);
 
-            lock (_lock)
+            _semaphore.Wait();
+            try
             {
                 Stream.Position = Position;
 
@@ -106,6 +107,10 @@ namespace FellowOakDicom.IO.Buffer
                     totalNumberOfBytesRead += numberOfBytesRead;
                     numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, bufferSize);
                 }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -129,7 +134,7 @@ namespace FellowOakDicom.IO.Buffer
             int bufferSize = 1024 * 1024;
             using IMemory buffer = _memoryProvider.Provide(bufferSize);
 
-            Monitor.Enter(_lock);
+            await _semaphore.WaitAsync(cancellationToken);
             try
             {
                 Stream.Position = Position;
@@ -138,6 +143,7 @@ namespace FellowOakDicom.IO.Buffer
                 int numberOfBytesToRead = (int)Math.Min(Size, bufferSize);
                 int numberOfBytesRead;
                 while (numberOfBytesToRead > 0
+                    && !cancellationToken.IsCancellationRequested
                     && (numberOfBytesRead = await Stream.ReadAsync(buffer.Bytes, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
                 {
                     await stream.WriteAsync(buffer.Bytes, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
@@ -147,13 +153,14 @@ namespace FellowOakDicom.IO.Buffer
             }
             finally
             {
-                Monitor.Exit(_lock);
+                _semaphore.Release();
             }
         }
 
         private void ReadStream(byte[] buffer, long offset, long count)
         {
-            lock (_lock)
+            _semaphore.Wait();
+            try
             {
                 Stream.Position = Position + offset;
 
@@ -167,6 +174,11 @@ namespace FellowOakDicom.IO.Buffer
                     bytesRemaining = (int)Math.Min(Size - totalBytesRead, count - totalBytesRead);
                 }
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
+
     }
 }
