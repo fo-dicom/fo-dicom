@@ -350,9 +350,9 @@ namespace FellowOakDicom.Imaging
 
             if (bits.BitsStored == 1)
             {
-                options.WindowWidth = 0.5;
-                options.WindowCenter = 0.5;
-                options.VOILUTFunction = "LINEAR_EXACT";
+                options.WindowWidth = 1;
+                options.WindowCenter = 1;
+                options.VOILUTFunction = "LINEAR";
             }
             else
             {
