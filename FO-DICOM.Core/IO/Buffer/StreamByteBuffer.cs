@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO.Buffer
 {
-    public sealed class StreamByteBuffer : IByteBuffer
+    public sealed class StreamByteBuffer : IByteBuffer, IDisposable
     {
         private readonly IMemoryProvider _memoryProvider;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
+        private bool _disposedValue;
 
         public StreamByteBuffer(Stream stream, long position, long length) : this(stream, position, length, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>())
         {
@@ -179,6 +179,29 @@ namespace FellowOakDicom.IO.Buffer
                 _semaphore.Release();
             }
         }
+
+        #region IDisposable
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _semaphore.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
 
     }
 }
