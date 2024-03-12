@@ -51,14 +51,14 @@ namespace FellowOakDicom.Tests.Network
             await client.SendAsync();
 
             // Verify received instance correctly shows Swedish characters
-            var patientName = CStoreScp.LastReceivedSopInstance.GetSingleValue<string>(DicomTag.PatientName);
+            var patientName = CStoreScp.LastReceivedSopInstance?.GetSingleValue<string>(DicomTag.PatientName);
             Assert.Equal("Efternamn^Förnamn^Mellannamn^^", patientName);
         }
 
 
         private class CStoreScp : DicomService, IDicomCStoreProvider, IDicomServiceProvider
         {
-            public static DicomDataset LastReceivedSopInstance;
+            public static DicomDataset? LastReceivedSopInstance;
 
             private readonly DicomTransferSyntax[] _acceptedImageTransferSyntaxes =
             {
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Tests.Network
                 return Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
             }
 
-            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            public Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e)
                 => Task.CompletedTask;
 
             public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
@@ -99,7 +99,7 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
         }
