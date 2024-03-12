@@ -12,6 +12,7 @@
 - DicomImage can cache decompressed pixel data, render-LUT or rendered image.
 - New properties CacheMode and AutoAplyLUTToAllFrames in DicomImage.
 - Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
+- Add resiliency against WindowCenter or WindowWidth containing gibberish (#1756)
 
 ### 5.1.2 (2023-12-21)
 
