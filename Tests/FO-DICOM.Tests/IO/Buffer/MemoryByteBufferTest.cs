@@ -17,7 +17,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         [Fact]
         public void Data_CompareWithInitializer_ExactMatch()
         {
-            var expected = Enumerable.Range(0, 254).Select(i => (byte)i).ToArray();
+            var expected = new byte[254];
+            for (int i = 0; i < expected.Length; i++)
+            {
+                expected[i] = (byte)i;
+            }
             var buffer = new MemoryByteBuffer(expected);
 
             var actual = buffer.Data;
