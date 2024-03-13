@@ -1,8 +1,10 @@
 ### 5.1.3 (TBD)
 
+- **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
 - Add support for parsing DICOM files where the pixel data is not properly closed with a SequenceDelimitationItem (#1339)
 - Update Dicom json converter to handle Infinity values for FL and FD VRs (#1725)
+- Fix rendering of files with photometric interpretation YBR_RCT or YBR_ICT (#1734)
 - Add support for rendering multiframe DICOM files where last fragment is 0 bytes (#1586)
 - Fix rendering multiframe image when rendering several frames in parallel
 - Use information from Functional Group Sequences when rendering EnhancedCT, EnhancedMR or BTO objects

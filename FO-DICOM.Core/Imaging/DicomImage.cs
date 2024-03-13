@@ -422,7 +422,8 @@ namespace FellowOakDicom.Imaging
                 pipeline = new GenericGrayscalePipeline(renderOptions);
             }
             else if (_pi == PhotometricInterpretation.Rgb || _pi == PhotometricInterpretation.YbrFull
-                || _pi == PhotometricInterpretation.YbrFull422 || _pi == PhotometricInterpretation.YbrPartial422)
+                || _pi == PhotometricInterpretation.YbrFull422 || _pi == PhotometricInterpretation.YbrPartial422
+                || _pi == PhotometricInterpretation.YbrIct || _pi == PhotometricInterpretation.YbrRct)
             {
                 // RGB for color image
                 pipeline = new RgbColorPipeline();

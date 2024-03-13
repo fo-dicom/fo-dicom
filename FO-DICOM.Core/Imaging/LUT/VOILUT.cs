@@ -184,7 +184,7 @@ namespace FellowOakDicom.Imaging.LUT
                     {
                         return Math.Min(MaximumOutputValue,
                             Math.Max(MinimumOutputValue,
-                            (value - WindowCenter) / WindowWidth * OutputRange + MinimumOutputValue
+                            ((value - WindowCenter) / WindowWidth + 0.5) * OutputRange + MinimumOutputValue
                             ));
                     }
                 }
