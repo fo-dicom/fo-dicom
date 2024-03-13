@@ -14,8 +14,14 @@ namespace FellowOakDicom.IO.Buffer
     public sealed class StreamByteBuffer : IByteBuffer
     {
         private readonly IMemoryProvider _memoryProvider;
+            
+        /// <summary>
+        /// Since <see cref="SemaphoreSlim"/> implements <see cref="IDisposable"/> and <see cref="StreamByteBuffer"/> doesn't,
+        /// this SemaphoreSlim can't be disposed at the right time
+        /// However, <a href="https://stackoverflow.com/questions/32033416/do-i-need-to-dispose-a-semaphoreslim">this excerpt from Stack Overflow</a>
+        /// suggests that not disposing of SemaphoreSlim is okay as long as <see cref="SemaphoreSlim.AvailableWaitHandle"/> is never used
+        /// </summary>
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
 
         public StreamByteBuffer(Stream stream, long position, long length) : this(stream, position, length, Setup.ServiceProvider.GetRequiredService<IMemoryProvider>())
         {
