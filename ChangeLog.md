@@ -1,5 +1,7 @@
 ### 5.1.4 (TBD)
 
+- Fix issue where the main TCP listener loop could be blocked by frozen TLS handshakes (#1766)
+
 ### 5.1.3 (2024-06-27)
 
 - Update to DICOM Standard 2024c
