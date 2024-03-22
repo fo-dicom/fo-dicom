@@ -62,7 +62,6 @@ namespace FellowOakDicom.Network
 
         /// <inheritdoc />
         public async Task<TcpClient> AcceptTcpClientAsync(
-            ITlsAcceptor tlsAcceptor,
             bool noDelay,
             int? receiveBufferSize,
             int? sendBufferSize,

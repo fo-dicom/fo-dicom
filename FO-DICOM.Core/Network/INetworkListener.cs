@@ -29,13 +29,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Wait until a TCP client is trying to connect, and return the accepted TCP client.
         /// </summary>
-        /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
         /// <param name="receiveBufferSize">The size of the receive buffer of the underlying TCP connection</param>
         /// <param name="sendBufferSize">The size of the send buffer of the underlying TCP connection</param>
         /// <param name="logger">The logger</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<TcpClient> AcceptTcpClientAsync(ITlsAcceptor tlsAcceptor, bool noDelay, int? receiveBufferSize, int? sendBufferSize, ILogger logger, CancellationToken token);
+        Task<TcpClient> AcceptTcpClientAsync(bool noDelay, int? receiveBufferSize, int? sendBufferSize, ILogger logger, CancellationToken token);
     }
 }

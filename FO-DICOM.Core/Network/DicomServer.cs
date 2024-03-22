@@ -321,7 +321,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var tcpClient = await listener
-                        .AcceptTcpClientAsync(_tlsAcceptor, Options.TcpNoDelay, Options.TcpReceiveBufferSize, Options.TcpSendBufferSize, Logger, _cancellationToken)
+                        .AcceptTcpClientAsync(Options.TcpNoDelay, Options.TcpReceiveBufferSize, Options.TcpSendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
                     if (tcpClient != null)
