@@ -4,6 +4,7 @@
 
 using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.Logging;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace FellowOakDicom.Network
         void Stop();
 
         /// <summary>
-        /// Wait until a network stream is trying to connect, and return the accepted stream.
+        /// Wait until a TCP client is trying to connect, and return the accepted TCP client.
         /// </summary>
         /// <param name="tlsAcceptor">Handler to accept authenticated connections.</param>
         /// <param name="noDelay">No delay?</param>
@@ -35,6 +36,6 @@ namespace FellowOakDicom.Network
         /// <param name="logger">The logger</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Connected network stream.</returns>
-        Task<INetworkStream> AcceptNetworkStreamAsync(ITlsAcceptor tlsAcceptor, bool noDelay, int? receiveBufferSize, int? sendBufferSize, ILogger logger, CancellationToken token);
+        Task<TcpClient> AcceptTcpClientAsync(ITlsAcceptor tlsAcceptor, bool noDelay, int? receiveBufferSize, int? sendBufferSize, ILogger logger, CancellationToken token);
     }
 }
