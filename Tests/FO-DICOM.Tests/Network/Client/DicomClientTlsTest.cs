@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -180,6 +181,140 @@ namespace FellowOakDicom.Tests.Network.Client
                 tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate(TestData.Resolve("testclienteku.contoso.com.pfx"), "PLACEHOLDER") };
             }
 
+
+            DicomCEchoResponse actualResponse = null;
+            var dicomCEchoRequest = new DicomCEchoRequest
+            {
+                OnResponseReceived = (request, response) =>
+                {
+                    actualResponse = response;
+                }
+            };
+            await client.AddRequestAsync(dicomCEchoRequest);
+
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+            {
+                await client.SendAsync(cts.Token);
+            }
+
+            AllResponsesShouldHaveSucceeded(new[] { actualResponse });
+        }
+        
+        [Fact]
+        public async Task SendAsync_WithFrozenSslHandshake_ShouldAcceptMoreConnections()
+        {
+            // Arrange
+            var port = Ports.GetNext();
+            var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
+
+            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
+            {
+                RequireMutualAuthentication = false,
+                CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+                {
+                    if (errors != SslPolicyErrors.None)
+                    {
+                        switch (errors)
+                        {
+                            case SslPolicyErrors.RemoteCertificateNotAvailable:
+                                serverLogger.LogDebug("SSL policy errors: client certificate is missing");
+                                // No remote certificate needed if mutual authentication is disabled
+                                return true;
+                            case SslPolicyErrors.RemoteCertificateNameMismatch:
+                                serverLogger.LogDebug("SSL policy errors: client certificate name mismatch");
+                                break;
+                            case SslPolicyErrors.RemoteCertificateChainErrors:
+                                serverLogger.LogDebug("SSL policy errors: validation error somewhere in the chain validation of the certificate");
+                                break;
+                        }
+
+                        if (chain != null)
+                        {
+                            for (var index = 0; index < chain.ChainStatus.Length; index++)
+                            {
+                                var chainStatus = chain.ChainStatus[index];
+                                serverLogger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+
+                                // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                                if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
+                                    return true;
+                                // since we're using a generated client from an unknown CA, the chain will not be checked successfully.
+                                if (chainStatus.Status.HasFlag(X509ChainStatusFlags.PartialChain))
+                                    return true;
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    return true;
+                }
+            };
+
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", port, tlsAcceptor: tlsAcceptor);
+
+            // Step 1: Manually start a TCP session and start an SSL handshake with the server, and then freeze the handshake
+            using var tcpClient = new TcpClient("127.0.0.1", server.Port);
+            using var tcpStream = tcpClient.GetStream();
+            
+            // Send TLS 1.2 Client Hello but never complete it
+            byte[] helloTls12 = {
+                0x16, // Content Type: Handshake
+                0x03, 0x03, // TLS version (TLS 1.2)
+                0x00, 0x2d, // Length
+                0x01, // Handshake Type: Client Hello
+                0x00, 0x00, 0x29, // Length
+                0x03, 0x03, // TLS version (TLS 1.2)
+                // Random (32 bytes): We'll just use zeros for simplicity
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, // Session ID length
+                0x00, 0x02, // Cipher Suites length
+                0x00, 0x3c, // Cipher Suite: TLS_RSA_WITH_AES_128_CBC_SHA
+                0x01, // Compression Methods length
+                0x00 // Compression Method: null
+            };
+            tcpStream.Write(helloTls12, 0, helloTls12.Length);
+            // At this point, you would need to read the server's response to resume and complete the handshake
+            // However, we won't do that, since we want to test that the server accepts more connections while the handshake is frozen
+            
+            // Step 2: Check that, while the SSL handshake is frozen, the server accepts more connections
+            var tlsInitiator = new DefaultTlsInitiator();
+            var client = CreateClient("127.0.0.1", port, tlsInitiator, "SCU", "ANY-SCP");
+            tlsInitiator.CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+                {
+                    if (errors != SslPolicyErrors.None)
+                    {
+                        switch (errors)
+                        {
+                            case SslPolicyErrors.RemoteCertificateNotAvailable:
+                                client.Logger.LogDebug("SSL policy errors: server certificate is missing");
+                                break;
+                            case SslPolicyErrors.RemoteCertificateNameMismatch:
+                                client.Logger.LogDebug("SSL policy errors: server certificate name mismatch");
+                                break;
+                            case SslPolicyErrors.RemoteCertificateChainErrors:
+                                client.Logger.LogDebug("SSL policy errors: validation error somewhere in the chain validation of the server certificate");
+                                break;
+                        }
+
+                        for (var index = 0; index < chain.ChainStatus.Length; index++)
+                        {
+                            var chainStatus = chain.ChainStatus[index];
+                            client.Logger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+
+                            // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
+                            if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
+                                return true;
+                        }
+
+                        return false;
+                    }
+
+                    return true;
+                };
 
             DicomCEchoResponse actualResponse = null;
             var dicomCEchoRequest = new DicomCEchoRequest

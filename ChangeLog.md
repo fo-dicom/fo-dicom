@@ -13,6 +13,7 @@
 - New properties CacheMode and AutoAplyLUTToAllFrames in DicomImage.
 - Fix bug where reading parallel from the a stream file returned wrong data (#1653)
 - Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
+- Fix issue where the main TCP listener loop could be blocked by frozen TLS handshakes (#1766)
 
 ### 5.1.2 (2023-12-21)
 
