@@ -9,15 +9,15 @@ namespace FellowOakDicom.Imaging.LUT
     {
         #region Private Members
 
-        private ILUT _lut;
+        private readonly ILUT _lut;
 
-        private int _minValue;
+        private readonly int _minValue;
 
-        private int _maxValue;
+        private readonly int _maxValue;
 
-        private int[] _table;
+        private readonly int[] _table;
 
-        private int _offset;
+        private readonly int _offset;
 
         #endregion
 

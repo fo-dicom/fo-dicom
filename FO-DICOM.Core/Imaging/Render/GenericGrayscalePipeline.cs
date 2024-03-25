@@ -15,6 +15,8 @@ namespace FellowOakDicom.Imaging.Render
     {
         #region Private Members
 
+        private readonly object _lutLock = new object();
+
         private CompositeLUT _lut;
 
         private readonly IModalityLUT _modalityLut;
@@ -124,42 +126,47 @@ namespace FellowOakDicom.Imaging.Render
         {
             get
             {
-                if (_lut == null)
+                lock (_lutLock)
                 {
-                    var composite = new CompositeLUT();
-                    if (_modalityLut != null)
+                    if (_lut == null)
                     {
-                        composite.Add(_modalityLut);
-                    }
+                        var composite = new CompositeLUT();
+                        if (_modalityLut != null)
+                        {
+                            composite.Add(_modalityLut);
+                        }
 
-                    if (_voiSequenceLut != null)
-                    {
-                        composite.Add(_voiSequenceLut);
-                    }
+                        if (_voiSequenceLut != null)
+                        {
+                            composite.Add(_voiSequenceLut);
+                        }
 
-                    if (_options.UseVOILUT && _voiSequenceLut != null)
-                    {
-                        var voiLut = new VOILinearLUT(GrayscaleRenderOptions.CreateLinearOption(_options.BitDepth, _voiSequenceLut.MinimumOutputValue, _voiSequenceLut.MaximumOutputValue));
-                        composite.Add(voiLut);
-                    }
-                    else
-                    {
-                        var voiLut = VOILUT.Create(_options);
-                        composite.Add(voiLut);
-                    }
+                        if (_options.UseVOILUT && _voiSequenceLut != null)
+                        {
+                            var voiLut = new VOILinearLUT(GrayscaleRenderOptions.CreateLinearOption(_options.BitDepth,
+                                _voiSequenceLut.MinimumOutputValue, _voiSequenceLut.MaximumOutputValue));
+                            composite.Add(voiLut);
+                        }
+                        else
+                        {
+                            var voiLut = VOILUT.Create(_options);
+                            composite.Add(voiLut);
+                        }
 
-                    var outputLut = new OutputLUT(_options);
-                    composite.Add(outputLut);
+                        var outputLut = new OutputLUT(_options);
+                        composite.Add(outputLut);
 
-                    if (_options.Invert)
-                    {
-                        var invertLut = new InvertLUT(outputLut.MinimumOutputValue, outputLut.MaximumOutputValue);
-                        composite.Add(invertLut);
+                        if (_options.Invert)
+                        {
+                            var invertLut = new InvertLUT(outputLut.MinimumOutputValue, outputLut.MaximumOutputValue);
+                            composite.Add(invertLut);
+                        }
+
+                        _lut = composite;
                     }
-
-                    _lut = composite;
+                    
+                    return new PrecalculatedLUT(_lut, _options.BitDepth.MinimumValue, _options.BitDepth.MaximumValue);
                 }
-                return new PrecalculatedLUT(_lut, _options.BitDepth.MinimumValue, _options.BitDepth.MaximumValue);
             }
         }
 
@@ -175,8 +182,11 @@ namespace FellowOakDicom.Imaging.Render
         #region Private Methods
 
         private void ResetLut()
-        { 
-            _lut = null;
+        {
+            lock (_lutLock)
+            {
+                _lut = null;
+            }
         }
 
         #endregion
