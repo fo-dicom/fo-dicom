@@ -269,12 +269,18 @@ namespace FellowOakDicom.Imaging
             var pipeline = GetOrCreateCachedFramePipeline(frame);
 
             var graphic = new ImageGraphic(pixels);
-
+            
             if (ShowOverlays)
             {
                 foreach (var overlay in _overlays.Value)
                 {
                     if (overlay.Data is EmptyBuffer) // fixed overlay.data is null, exception thrown
+                    {
+                        continue;
+                    }
+                    
+                    // #1728 ignore overlay data that is too small
+                    if (overlay.Data.Size * 8 < overlay.Rows * overlay.Columns)
                     {
                         continue;
                     }
