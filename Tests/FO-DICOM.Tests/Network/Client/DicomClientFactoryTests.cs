@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using FellowOakDicom.Network.Client;
@@ -31,7 +30,7 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public void ShouldThrowWhenHostIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => _factory.Create(null, _port, _useTls, _callingAe, _calledAe));
+            Assert.Throws<ArgumentNullException>(() => _factory.Create(null!, _port, _useTls, _callingAe, _calledAe));
         }
 
         [Fact]

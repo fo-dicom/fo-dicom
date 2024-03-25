@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.IO;
@@ -46,7 +45,7 @@ namespace FellowOakDicom.Network.Tls
         /// <summary>
         /// The callback that will be invoked after validating the certificate of an incoming client connection
         /// </summary>
-        public RemoteCertificateValidationCallback CertificateValidationCallback { get; set; } = null;
+        public RemoteCertificateValidationCallback? CertificateValidationCallback { get; set; } = null;
 
 
         public DefaultTlsAcceptor(string certificateName)

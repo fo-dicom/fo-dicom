@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom.Network
 {
@@ -27,7 +26,7 @@ namespace FellowOakDicom.Network
 
         public delegate void ResponseDelegate(DicomNSetRequest request, DicomNSetResponse response);
 
-        public ResponseDelegate OnResponseReceived;
+        public ResponseDelegate? OnResponseReceived;
 
         protected internal override void PostResponse(DicomService service, DicomResponse response)
         {

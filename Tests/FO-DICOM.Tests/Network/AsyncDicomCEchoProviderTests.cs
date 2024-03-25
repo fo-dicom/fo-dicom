@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Text;
@@ -38,8 +37,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomCEchoResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomCEchoResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomCEchoRequest
                 {
                     OnResponseReceived = (req, res) => response = res,
@@ -88,7 +87,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
             // do nothing here
         }

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using System;
@@ -29,7 +28,7 @@ namespace FellowOakDicom.Tests.Network
             var contents = new byte[] { 1, 2, 3, 4, 5, 6 };
             contents.CopyTo(value.Span);
 
-            using var pdv = new PDV(1, value, 6, true, true);
+            using var pdv = new PDV(1, value, 6, true, true, _memoryProvider);
             var actual = pdv.Value.Span.ToArray();
 
             Assert.Equal(contents, actual);
@@ -42,7 +41,7 @@ namespace FellowOakDicom.Tests.Network
             var contents = new byte[] { 1, 2, 3, 4, 5 };
             contents.CopyTo(value.Span);
 
-            Assert.Throws<ArgumentException>(() => new PDV(1, value, 5, true, true));
+            Assert.Throws<ArgumentException>(() => new PDV(1, value, 5, true, true, _memoryProvider));
         }
 
         #endregion

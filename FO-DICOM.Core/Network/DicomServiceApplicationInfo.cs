@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections;
@@ -80,7 +79,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// A delegate to be executed when the application info is created.
         /// </summary>
-        public static CreateApplicationInfoDelegate OnCreateApplicationInfo { get; set; }
+        public static CreateApplicationInfoDelegate? OnCreateApplicationInfo { get; set; }
 
         /// <summary>
         /// A factory method to initialize a new application information class based on the provided sop class.

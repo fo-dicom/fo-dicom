@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +38,7 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
 
                 var responses = new List<DicomCMoveResponse>();
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomCMoveRequest("OTHER-SCP", "123")
                 {
                     OnResponseReceived = (req, res) => responses.Add(res),
@@ -90,7 +89,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
             // do nothing here
         }

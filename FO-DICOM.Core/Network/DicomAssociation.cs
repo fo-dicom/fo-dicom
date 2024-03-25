@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System.Linq;
 using System.Text;
@@ -21,6 +20,10 @@ namespace FellowOakDicom.Network
             ExtendedNegotiations = new DicomExtendedNegotiationCollection();
             MaxAsyncOpsInvoked = 1;
             MaxAsyncOpsPerformed = 1;
+            // This constructor is only used when parsing an incoming DICOM association request
+            // After the parsing, the calling AE and called AE should be present
+            CallingAE = null!;
+            CalledAE = null!;
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the remote host.
         /// </summary>
-        public string RemoteHost { get; internal set; }
+        public string? RemoteHost { get; internal set; }
 
         /// <summary>
         /// Gets the remote port.
@@ -68,12 +71,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the remote implementation class UID.
         /// </summary>
-        public DicomUID RemoteImplementationClassUID { get; internal set; }
+        public DicomUID? RemoteImplementationClassUID { get; internal set; }
 
         /// <summary>
         /// Gets the remote implementation version.
         /// </summary>
-        public string RemoteImplementationVersion { get; internal set; }
+        public string? RemoteImplementationVersion { get; internal set; }
 
         /// <summary>
         /// Gets the maximum PDU length that the remote service accepts.
@@ -93,12 +96,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets options to control behavior of <see cref="DicomService"/> base class.
         /// </summary>
-        public DicomServiceOptions Options { get; internal set; }
+        public DicomServiceOptions? Options { get; internal set; }
 
         /// <summary>
         /// Gets or sets the user identity negotiation information
         /// </summary>
-        public DicomUserIdentityNegotiation UserIdentityNegotiation { get; internal set; }
+        public DicomUserIdentityNegotiation? UserIdentityNegotiation { get; internal set; }
 
         /// <summary>
         /// Returns a string that represents the current object.

@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
-
 using FellowOakDicom.Imaging.Mathematics;
 using System;
 using System.Globalization;
@@ -27,7 +25,7 @@ namespace FellowOakDicom
         {
         }
 
-        public DicomTag(ushort group, ushort element, DicomPrivateCreator privateCreator)
+        public DicomTag(ushort group, ushort element, DicomPrivateCreator? privateCreator)
         {
             Group = group;
             Element = element;
@@ -50,7 +48,7 @@ namespace FellowOakDicom
 
         public bool IsPrivate => Group.IsOdd();
 
-        public DicomPrivateCreator PrivateCreator { get; set; }
+        public DicomPrivateCreator? PrivateCreator { get; set; }
 
         public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
 
@@ -64,7 +62,7 @@ namespace FellowOakDicom
         /// - "X": returns for example "(0028,0010)" for public and "(0029,xx01:MYPRIVATE)" for private tags
         /// - "J": returns for example "00280010" for public and "00291001" for private tags
         /// </summary>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string format, IFormatProvider? formatProvider)
         {
             if (formatProvider?.GetFormat(GetType()) is ICustomFormatter fmt)
             {
@@ -117,14 +115,14 @@ namespace FellowOakDicom
             return 0;
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (!(obj is DicomTag)) throw new ArgumentException("Passed non-DicomTag to comparer", nameof(obj));
-            return CompareTo(obj as DicomTag);
+            if (!(obj is DicomTag tag)) throw new ArgumentException("Passed non-DicomTag to comparer", nameof(obj));
+            return CompareTo(tag);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(obj, null)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -132,7 +130,7 @@ namespace FellowOakDicom
             return Equals(obj as DicomTag);
         }
 
-        public bool Equals(DicomTag other)
+        public bool Equals(DicomTag? other)
         {
             if (ReferenceEquals(other, null)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -151,14 +149,14 @@ namespace FellowOakDicom
             return Element == other.Element;
         }
 
-        public static bool operator ==(DicomTag a, DicomTag b)
+        public static bool operator ==(DicomTag? a, DicomTag? b)
         {
-            if (((object)a == null) && ((object)b == null)) return true;
-            if (((object)a == null) || ((object)b == null)) return false;
+            if (((object?)a == null) && ((object?)b == null)) return true;
+            if (((object?)a == null) || ((object?)b == null)) return false;
             return a.Equals(b);
         }
 
-        public static bool operator !=(DicomTag a, DicomTag b)
+        public static bool operator !=(DicomTag? a, DicomTag? b)
         {
             return !(a == b);
         }
@@ -196,12 +194,12 @@ namespace FellowOakDicom
                 ushort element = ushort.Parse(s.Substring(pos, 4), NumberStyles.HexNumber);
                 pos += 4;
 
-                DicomPrivateCreator creator = null;
+                DicomPrivateCreator? creator = null;
                 if (s.Length > pos && s[pos] == ':')
                 {
                     pos++;
 
-                    string c = null;
+                    string? c = null;
                     if (s[s.Length - 1] == ')')
                     {
                         c = s.Substring(pos, s.Length - pos - 1);

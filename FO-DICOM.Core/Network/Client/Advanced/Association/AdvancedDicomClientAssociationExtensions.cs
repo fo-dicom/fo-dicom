@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -25,7 +24,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         {
             await foreach (var response in association.SendRequestAsync(request, cancellationToken).ConfigureAwait(false))
             {
-                return response as DicomCEchoResponse;
+                return (DicomCEchoResponse) response;
             }
 
             throw new DicomNetworkException($"C-ECHO request {request} failed: not a single DICOM response received");
@@ -45,7 +44,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         {
             await foreach (var response in association.SendRequestAsync(request, cancellationToken).ConfigureAwait(false))
             {
-                return response as DicomCStoreResponse;
+                return (DicomCStoreResponse) response;
             }
 
             throw new DicomNetworkException($"C-STORE request {request} failed: not a single DICOM response received");
@@ -65,7 +64,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         {
             await foreach (var response in association.SendRequestAsync(request, cancellationToken).ConfigureAwait(false))
             {
-                yield return response as DicomCFindResponse;
+                yield return (DicomCFindResponse) response;
             }
         }
         
@@ -83,7 +82,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         {
             await foreach (var response in association.SendRequestAsync(request, cancellationToken).ConfigureAwait(false))
             {
-                yield return response as DicomCMoveResponse;
+                yield return (DicomCMoveResponse) response;
             }
         }
     }

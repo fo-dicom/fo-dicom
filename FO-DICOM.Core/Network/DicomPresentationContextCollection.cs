@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections;
@@ -156,7 +155,7 @@ namespace FellowOakDicom.Network
                         {
                             // This should only be allowed when the original
                             // data is using a lossy compression
-                            if (!cstore.TransferSyntax.IsLossy)
+                            if (cstore.TransferSyntax?.IsLossy == false)
                                 throw new InvalidOperationException("It is only permissable to omit default transfer syntax with lossy encapsulated data");
                         }
                         else

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
@@ -27,7 +26,7 @@ namespace FellowOakDicom.Network
         /// <param name="port">The port</param>
         /// <param name="ipAddress">The IP address</param>
         /// <returns>A DICOM server registration or null</returns>
-        DicomServerRegistration Get(int port, string ipAddress = NetworkManager.IPv4Any);
+        DicomServerRegistration? Get(int port, string ipAddress = NetworkManager.IPv4Any);
 
         /// <summary>
         /// Register a new DICOM server
@@ -63,7 +62,7 @@ namespace FellowOakDicom.Network
         /// <param name="port">The port</param>
         /// <param name="ipAddress">The IP address</param>
         /// <returns>A DICOM server registration or null</returns>
-        public static DicomServerRegistration Get(int port, string ipAddress = NetworkManager.IPv4Any)
+        public static DicomServerRegistration? Get(int port, string ipAddress = NetworkManager.IPv4Any)
             => Setup.ServiceProvider.GetRequiredService<IDicomServerRegistry>().Get(port, ipAddress);
 
         /// <summary>
@@ -94,13 +93,13 @@ namespace FellowOakDicom.Network
         public bool IsAvailable(int port, string ipAddress = NetworkManager.IPv4Any)
             => !_servers.ContainsKey((port, ipAddress));
 
-        public DicomServerRegistration Get(int port, string ipAddress = NetworkManager.IPv4Any)
+        public DicomServerRegistration? Get(int port, string ipAddress = NetworkManager.IPv4Any)
             => _servers.TryGetValue((port, ipAddress), out var registration) ? registration : null;
 
         public DicomServerRegistration Register(IDicomServer dicomServer, Task task)
         {
             var registration = new DicomServerRegistration(this, dicomServer, task);
-            if (!_servers.TryAdd((dicomServer.Port, dicomServer.IPAddress), registration))
+            if (!_servers.TryAdd((dicomServer.Port, dicomServer.IPAddress!), registration))
             {
                 throw new DicomNetworkException($"Could not register DICOM server on port {dicomServer.Port}, probably because another server just registered to the same port.");
             }
@@ -109,7 +108,7 @@ namespace FellowOakDicom.Network
         }
 
         public void Unregister(DicomServerRegistration registration)
-            => _servers.TryRemove((registration.DicomServer.Port, registration.DicomServer.IPAddress), out _);
+            => _servers.TryRemove((registration.DicomServer.Port, registration.DicomServer.IPAddress!), out _);
 
     }
     

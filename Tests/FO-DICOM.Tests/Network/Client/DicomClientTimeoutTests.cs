@@ -1,6 +1,5 @@
 // Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
@@ -105,9 +104,9 @@ namespace FellowOakDicom.Tests.Network.Client
                     OnResponseReceived = (req, res) => throw new Exception("Did not expect a response"),
                 };
 
-                DicomRequest.OnTimeoutEventArgs eventArgsFromRequestTimeout = null;
+                DicomRequest.OnTimeoutEventArgs? eventArgsFromRequestTimeout = null;
                 request.OnTimeout += (sender, args) => eventArgsFromRequestTimeout = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                RequestTimedOutEventArgs? eventArgsFromDicomClientRequestTimedOut = null;
                 client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request);
@@ -144,9 +143,9 @@ namespace FellowOakDicom.Tests.Network.Client
                     OnResponseReceived = (req, res) => throw new Exception("Did not expect a response")
                 };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                DicomRequest.OnTimeoutEventArgs? onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                RequestTimedOutEventArgs? eventArgsFromDicomClientRequestTimedOut = null;
                 client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request);
@@ -178,7 +177,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
-                DicomCFindResponse lastResponse = null;
+                DicomCFindResponse? lastResponse = null;
                 var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
                 {
                     Dataset = new DicomDataset
@@ -188,7 +187,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     OnResponseReceived = (req, res) => lastResponse = res
                 };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                DicomRequest.OnTimeoutEventArgs? onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
 
                 await client.AddRequestAsync(request);
@@ -219,13 +218,13 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
-                DicomCMoveResponse lastResponse = null;
+                DicomCMoveResponse? lastResponse = null;
                 var request = new DicomCMoveRequest("another-AE", "study123")
                 {
                     OnResponseReceived = (req, res) => lastResponse = res
                 };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                DicomRequest.OnTimeoutEventArgs? onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
 
                 await client.AddRequestAsync(request);
@@ -264,9 +263,9 @@ namespace FellowOakDicom.Tests.Network.Client
                     }
                 };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                DicomRequest.OnTimeoutEventArgs? onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                RequestTimedOutEventArgs? eventArgsFromDicomClientRequestTimedOut = null;
                 client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request);
@@ -300,9 +299,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 var request = new DicomCMoveRequest("another-AE", "study123");
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                DicomRequest.OnTimeoutEventArgs? onTimeoutEventArgs = null;
                 request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                RequestTimedOutEventArgs? eventArgsFromDicomClientRequestTimedOut = null;
                 client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
                 await client.AddRequestAsync(request);
@@ -337,7 +336,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
                 client.ServiceOptions.MaxPDULength = 16 * 1024; // 16 KB
 
-                DicomResponse response = null;
+                DicomResponse? response = null;
 
                 // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
                 // If stream timeout = 50ms, then total time to send will be 3s 250ms
@@ -377,8 +376,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
                 client.ServiceOptions.MaxPDULength = 16 * 1024;
 
-                DicomResponse response = null;
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+                DicomResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? onTimeoutEventArgs = null;
 
                 // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
                 // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
@@ -388,7 +387,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     OnTimeout = (sender, args) => onTimeoutEventArgs = args
                 };
 
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+                RequestTimedOutEventArgs? eventArgsFromDicomClientRequestTimedOut = null;
                 client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
                 await client.AddRequestAsync(request);
 
@@ -435,7 +434,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
 
                 var testLogger = _logger.IncludePrefix("Test");
-                testLogger.LogInformation($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
+                testLogger.LogInformation("Beginning {Requests} parallel requests with {MaxRequestsPerAssoc} requests / association", options.Requests, options.MaxRequestsPerAssoc);
 
                 var requests = new List<DicomRequest>();
                 for (var i = 1; i <= options.Requests; i++)
@@ -447,9 +446,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
                     if (i < options.Requests)
                     {
-                        testLogger.LogInformation($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
+                        testLogger.LogInformation("Waiting {TotalMilliseconds}ms between requests", options.TimeBetweenRequests.TotalMilliseconds);
                         await Task.Delay(options.TimeBetweenRequests);
-                        testLogger.LogInformation($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
+                        testLogger.LogInformation("Waited {TotalMilliseconds}ms, moving on to next request", options.TimeBetweenRequests.TotalMilliseconds);
                     }
                 }
 
@@ -477,8 +476,8 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var port = Ports.GetNext();
 
-            DicomCStoreResponse response1 = null, response2 = null, response3 = null;
-            DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
+            DicomCStoreResponse? response1 = null, response2 = null, response3 = null;
+            DicomRequest.OnTimeoutEventArgs? timeout1 = null, timeout2 = null, timeout3 = null;
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
 
@@ -521,7 +520,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-                Exception exception = null;
+                Exception? exception = null;
                 try
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation);
@@ -548,10 +547,9 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithGenericStreamException_ShouldNotLoopInfinitely()
         {
             var port = Ports.GetNext();
-            var logger = _logger.IncludePrefix("UnitTest");
 
-            DicomCStoreResponse response1 = null, response2 = null, response3 = null;
-            DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
+            DicomCStoreResponse? response1 = null, response2 = null, response3 = null;
+            DicomRequest.OnTimeoutEventArgs? timeout1 = null, timeout2 = null, timeout3 = null;
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var request1HasArrived = false;
@@ -594,7 +592,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
-                Exception exception = null;
+                Exception? exception = null;
                 try
                 {
                     await client.SendAsync(cancellation.Token, DicomClientCancellationMode.ImmediatelyAbortAssociation);
@@ -640,7 +638,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 };
                 await client.AddRequestAsync(new DicomCEchoRequest());
 
-                Exception exception = null;
+                Exception? exception = null;
                 try
                 {
                     await client.SendAsync();
@@ -689,7 +687,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     eventFired++;
                 };
 
-                Exception exception1 = null;
+                Exception? exception1 = null;
                 try
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest());
@@ -702,7 +700,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 client.Logger.LogInformation("Second request + SendAsync");
 
-                Exception exception2 = null;
+                Exception? exception2 = null;
                 try
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest());
@@ -752,8 +750,8 @@ namespace FellowOakDicom.Tests.Network.Client
                     eventFired++;
                 };
 
-                Exception timeoutException1 = null;
-                Exception rejectException1 = null;
+                Exception? timeoutException1 = null;
+                Exception? rejectException1 = null;
                 try
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest());
@@ -770,8 +768,8 @@ namespace FellowOakDicom.Tests.Network.Client
 
                 client.Logger.LogInformation("Second request + SendAsync");
 
-                Exception timeoutException2 = null;
-                Exception rejectException2 = null;
+                Exception? timeoutException2 = null;
+                Exception? rejectException2 = null;
                 try
                 {
                     await client.AddRequestAsync(new DicomCEchoRequest());
@@ -907,7 +905,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 return _inner.FlushAsync(cancellationToken);
             }
 
-            public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+            public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             {
                 return _inner.BeginRead(buffer, offset, count, callback, state);
             }
@@ -922,7 +920,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 return _inner.ReadAsync(buffer, offset, count, cancellationToken);
             }
 
-            public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+            public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             {
                 return _inner.BeginWrite(buffer, offset, count, callback, state);
             }
@@ -958,12 +956,12 @@ namespace FellowOakDicom.Tests.Network.Client
                 set => _inner.WriteTimeout = value;
             }
 
-            public override string ToString()
+            public override string? ToString()
             {
                 return _inner.ToString();
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return _inner.Equals(obj);
             }
@@ -985,7 +983,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
@@ -1011,7 +1009,7 @@ namespace FellowOakDicom.Tests.Network.Client
             public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
                 => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            public Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e)
                 => Task.CompletedTask;
 
         }
@@ -1032,7 +1030,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
@@ -1082,7 +1080,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
@@ -1150,7 +1148,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using System;
@@ -70,7 +69,7 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
             _storedFiles.Each(tempFile => File.Delete(tempFile));
             _storedFiles.Clear();
@@ -82,7 +81,7 @@ namespace FellowOakDicom.Tests.Network
             Logger.LogInformation(tempName);
 
             // as the incoming file could be not-valid
-            request.File.Dataset.ValidateItems = false;
+            request.File!.Dataset.ValidateItems = false;
             request.File.FileMetaInfo.ValidateItems = false;
 
             await request.File.SaveAsync(tempName).ConfigureAwait(false);
@@ -95,7 +94,7 @@ namespace FellowOakDicom.Tests.Network
             };
         }
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e)
             => Task.CompletedTask;
     }
 }

@@ -5,7 +5,6 @@
 using FellowOakDicom.IO.Buffer;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,7 +20,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         [Fact]
         public void Data_CompareWithInitializer_ExactMatch()
         {
-            var expected = Enumerable.Range(0, 254).Select(i => (byte)i).ToArray();
+            var expected = new byte[254];
+            for (int i = 0; i < expected.Length; i++)
+            {
+                expected[i] = (byte)i;
+            }
             var buffer = new TempFileBuffer(expected);
 
             var actual = buffer.Data;
@@ -36,7 +39,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         [InlineData(12, 0)]
         public void GetByteRange_CompareWithInitializer_ExactMatch(int offset, int count)
         {
-            var data = Enumerable.Range(0, 254).Select(i => (byte)i).ToArray();
+            var data = new byte[255];
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = (byte)i;
+            }
             var buffer = new TempFileBuffer(data);
 
             var expected = new ArraySegment<byte>(data, offset, count);

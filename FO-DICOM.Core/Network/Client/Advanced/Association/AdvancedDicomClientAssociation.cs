@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Client.Advanced.Connection;
 using Microsoft.Extensions.Logging;
@@ -86,7 +85,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         private readonly IAdvancedDicomClientConnection _connection;
 
         private long _isDisposed;
-        private ConnectionClosedEvent _connectionClosedEvent;
+        private ConnectionClosedEvent? _connectionClosedEvent;
 
         public bool IsDisposed => Interlocked.Read(ref _isDisposed) > 0;
 
@@ -312,7 +311,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    while (requestChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
+                    while (requestChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent? @event))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -419,7 +418,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                while (_associationChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent @event))
+                while (_associationChannel.Reader.TryRead(out IAdvancedDicomClientConnectionEvent? @event))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

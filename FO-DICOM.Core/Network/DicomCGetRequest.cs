@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom.Network
 {
@@ -142,7 +141,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Delegate to be executed when the response for the DIMSE C-GET request is received.
         /// </summary>
-        public ResponseDelegate OnResponseReceived;
+        public ResponseDelegate? OnResponseReceived;
 
         #endregion
 

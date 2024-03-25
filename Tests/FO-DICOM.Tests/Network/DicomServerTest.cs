@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections.Concurrent;
@@ -81,6 +80,7 @@ namespace FellowOakDicom.Tests.Network
             using (DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
                 var server = DicomServerRegistry.Get(port)?.DicomServer;
+                Assert.NotNull(server);
                 Assert.Equal(port, server.Port);
             }
         }
@@ -200,7 +200,7 @@ namespace FellowOakDicom.Tests.Network
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server.IsListening) { await Task.Delay(10); }
-            Assert.True(DicomServerRegistry.Get(port).DicomServer.IsListening);
+            Assert.True(DicomServerRegistry.Get(port)!.DicomServer.IsListening);
         }
 
         [Fact]
@@ -259,7 +259,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServerFactory.Create<SimpleCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                DicomStatus status = null;
+                DicomStatus? status = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
                 {
                     OnResponseReceived = (req, res) => status = res.Status
@@ -285,7 +285,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServerFactory.Create<SimpleCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                DicomStatus status = null;
+                DicomStatus? status = null;
                 var request = new DicomCStoreRequest(new DicomFile(ds))
                 {
                     OnResponseReceived = (req, res) => status = res.Status
@@ -313,7 +313,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServerFactory.Create<SimpleCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                DicomStatus status = null;
+                DicomStatus? status = null;
                 var request = new DicomCStoreRequest(new DicomFile(ds))
                 {
                     OnResponseReceived = (req, res) => status = res.Status
@@ -356,7 +356,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServerFactory.Create<SimpleCStoreProvider>(NetworkManager.IPv4Loopback, port, logger: _logger.IncludePrefix("DicomServer")))
             {
-                DicomStatus status = null;
+                DicomStatus? status = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
                 {
                     OnResponseReceived = (req, res) => status = res.Status
@@ -480,9 +480,9 @@ namespace FellowOakDicom.Tests.Network
             };
             associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            IAdvancedDicomClientConnection connection1 = null, connection2 = null;
-            IAdvancedDicomClientAssociation association1 = null, association2 = null;
-            Exception exception1 = null, exception2 = null;
+            IAdvancedDicomClientConnection? connection1 = null, connection2 = null;
+            IAdvancedDicomClientAssociation? association1 = null, association2 = null;
+            Exception? exception1 = null, exception2 = null;
             try
             {
                 connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, CancellationToken.None);
@@ -546,9 +546,9 @@ namespace FellowOakDicom.Tests.Network
             };
             associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            IAdvancedDicomClientConnection connection1 = null, connection2 = null;
-            IAdvancedDicomClientAssociation association1 = null, association2 = null;
-            Exception exception1 = null, exception2 = null;
+            IAdvancedDicomClientConnection? connection1 = null, connection2 = null;
+            IAdvancedDicomClientAssociation? association1 = null, association2 = null;
+            Exception? exception1 = null, exception2 = null;
             try
             {
                 connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, CancellationToken.None);
@@ -802,7 +802,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact(Skip = "This test is flaky because it crashes whenever a parallel test happens to have an unobserved exception")]
         public async Task StopServerWithoutException()
         {
-            object ue = null;
+            object? ue = null;
             AppDomain.CurrentDomain.UnhandledException += (sender, args) => ue = args.ExceptionObject;
             TaskScheduler.UnobservedTaskException += (sender, args) => ue = args.Exception;
 
@@ -860,7 +860,7 @@ namespace FellowOakDicom.Tests.Network
         {
             private readonly Action<DicomService> _onDispose;
 
-            public DisposableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Microsoft.Extensions.Logging.ILogger log,
+            public DisposableDicomCEchoProvider(INetworkStream stream, Encoding? fallbackEncoding, ILogger log,
                 DicomServiceDependencies dicomServiceDependencies, Action<DicomService> onDispose)
                 : base(stream, fallbackEncoding, log, dicomServiceDependencies)
             {
@@ -890,7 +890,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             /// <inheritdoc />
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 

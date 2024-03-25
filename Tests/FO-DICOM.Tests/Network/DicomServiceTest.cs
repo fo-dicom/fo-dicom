@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System.Threading.Tasks;
 using FellowOakDicom.Network;
@@ -22,7 +21,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using var _ = DicomServerFactory.Create<SimpleCStoreProvider>(port);
 
-            DicomDataset command = null, requestDataset = null, responseDataset = null;
+            DicomDataset? command = null, requestDataset = null, responseDataset = null;
             var request = new DicomCStoreRequest(new DicomDataset
                 {
                     { DicomTag.CommandField, (ushort)DicomCommandField.CStoreRequest },
@@ -56,15 +55,15 @@ namespace FellowOakDicom.Tests.Network
 
             await client.SendAsync();
 
-            Assert.Equal((ushort)1, command.GetSingleValue<ushort>(DicomTag.CommandField));
+            Assert.Equal((ushort)1, command!.GetSingleValue<ushort>(DicomTag.CommandField));
 
-            Assert.Equal("CT", requestDataset.GetString(DicomTag.Modality));
-            Assert.Equal("TESTB", requestDataset.GetSingleValueOrDefault<string>(privTag2, null));
-            Assert.Equal("TESTA", requestDataset.GetSingleValueOrDefault<string>(privTag1, null));
+            Assert.Equal("CT", requestDataset!.GetString(DicomTag.Modality));
+            Assert.Equal("TESTB", requestDataset.GetSingleValueOrDefault<string?>(privTag2, null));
+            Assert.Equal("TESTA", requestDataset.GetSingleValueOrDefault<string?>(privTag1, null));
 
-            Assert.Equal("CT", responseDataset.GetSingleValue<string>(DicomTag.Modality));
-            Assert.Equal("TESTB", responseDataset.GetValueOrDefault<string>(privTag2, 0, null));
-            Assert.Equal("TESTA", responseDataset.GetSingleValueOrDefault<string>(privTag1, null));
+            Assert.Equal("CT", responseDataset!.GetSingleValue<string>(DicomTag.Modality));
+            Assert.Equal("TESTB", responseDataset.GetValueOrDefault<string?>(privTag2, 0, null));
+            Assert.Equal("TESTA", responseDataset.GetSingleValueOrDefault<string?>(privTag1, null));
         }
 
 
@@ -74,7 +73,7 @@ namespace FellowOakDicom.Tests.Network
             int port = Ports.GetNext();
             using var _ = DicomServerFactory.Create<SimpleCStoreProvider>(port);
 
-            DicomDataset command = null, dataset = null;
+            DicomDataset? command = null, dataset = null;
             var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
             request.OnResponseReceived = (req, res) =>
             {
@@ -87,10 +86,10 @@ namespace FellowOakDicom.Tests.Network
 
             await client.SendAsync();
 
-            var commandField = command.GetSingleValue<ushort>(DicomTag.CommandField);
+            var commandField = command!.GetSingleValue<ushort>(DicomTag.CommandField);
             Assert.Equal((ushort)1, commandField);
 
-            var modality = dataset.GetSingleValue<string>(DicomTag.Modality);
+            var modality = dataset!.GetSingleValue<string>(DicomTag.Modality);
             Assert.Equal("CT", modality);
         }
 

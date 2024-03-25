@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom.Network
 {
@@ -39,9 +38,9 @@ namespace FellowOakDicom.Network
         /// Gets the affected SOP instance UID.
         /// </summary>
         /// <remarks>In the N-CREATE response, Affected SOP Instance UID is optional, and <code>null</code> can thus be returned.</remarks>
-        public DicomUID SOPInstanceUID
+        public DicomUID? SOPInstanceUID
         {
-            get => Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
+            get => Command.GetSingleValueOrDefault<DicomUID?>(DicomTag.AffectedSOPInstanceUID, null);
             private set
             {
                 if (value == null)

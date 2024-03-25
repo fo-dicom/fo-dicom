@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.IO;
@@ -31,7 +30,7 @@ namespace FellowOakDicom.Network.Tls
         /// <summary>
         /// The certificates that will be used to authenticate the client itself
         /// </summary>
-        public X509CertificateCollection Certificates { get; set; }
+        public X509CertificateCollection? Certificates { get; set; }
 
         /// <summary>
         /// The protocols that should be supported
@@ -46,7 +45,7 @@ namespace FellowOakDicom.Network.Tls
         /// <summary>
         /// The callback that will be invoked after validating the certificate of the server
         /// </summary>
-        public RemoteCertificateValidationCallback CertificateValidationCallback { get; set; }
+        public RemoteCertificateValidationCallback? CertificateValidationCallback { get; set; }
 
         public DefaultTlsInitiator() { }
 

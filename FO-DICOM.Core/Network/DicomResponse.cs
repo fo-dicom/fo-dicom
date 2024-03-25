@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Text;
@@ -59,7 +58,7 @@ namespace FellowOakDicom.Network
             get
             {
                 var status = DicomStatus.Lookup(Command.GetSingleValue<ushort>(DicomTag.Status));
-                if ( Command.TryGetSingleValue(DicomTag.ErrorComment, out string comment))
+                if ( Command.TryGetSingleValue(DicomTag.ErrorComment, out string? comment))
                 {
                     return new DicomStatus(status, comment);
                 }

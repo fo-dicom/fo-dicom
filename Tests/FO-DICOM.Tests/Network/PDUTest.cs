@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using System.Collections.Generic;
@@ -172,9 +171,9 @@ namespace FellowOakDicom.Tests.Network
 
         #region Test data
 
-        public static readonly IEnumerable<object[]> ExtendedNegotiationTestData = new[]
+        public static readonly IEnumerable<object?[]> ExtendedNegotiationTestData = new[]
         {
-            new object[]
+            new object?[]
             {
                 DicomUID.ProcedureLogStorage,
                 new DicomCStoreApplicationInfo(DicomLevelOfSupport.Level2, DicomLevelOfDigitalSignatureSupport.Level3,
@@ -182,7 +181,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomUID.Storage,
                 new[] {DicomUID.EnhancedSRStorage}
             },
-            new object[]
+            new object?[]
             {
                 DicomUID.StudyRootQueryRetrieveInformationModelFind,
                 new DicomCFindApplicationInfo(DicomCFindOption.RelationalQueries | DicomCFindOption.DateTimeMatching),
@@ -251,9 +250,9 @@ namespace FellowOakDicom.Tests.Network
             }
         };
 
-        public static readonly IEnumerable<object[]> AssociateACTestData = new[]
+        public static readonly IEnumerable<object?[]> AssociateACTestData = new[]
         {
-            new object[]
+            new object?[]
             {
                 new byte[]
                 {
@@ -266,7 +265,7 @@ namespace FellowOakDicom.Tests.Network
                     0x31, 0x30, 0x30, 0x30, 0x38, 0x2e, 0x31, 0x2e, 0x32, 0x2e, 0x34, 0x2e, 0x35, 0x30
                 }, (byte)1, DicomPresentationContextResult.Accept, DicomTransferSyntax.JPEGProcess1
             },
-            new object[]
+            new object?[]
             {
                 new byte[]
                 {

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Threading;
@@ -66,8 +65,8 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            IAdvancedDicomClientConnection connection = null;
-            Exception exception = null;
+            IAdvancedDicomClientConnection? connection = null;
+            Exception? exception = null;
             try
             {
                 connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
@@ -104,8 +103,8 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = null
             };
 
-            IAdvancedDicomClientConnection connection = null;
-            Exception exception = null;
+            IAdvancedDicomClientConnection? connection = null;
+            Exception? exception = null;
             try
             {
                 connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
@@ -142,8 +141,8 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            IAdvancedDicomClientConnection connection = null;
-            Exception exception = null;
+            IAdvancedDicomClientConnection? connection = null;
+            Exception? exception = null;
             try
             {
                 connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
@@ -176,8 +175,8 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            IAdvancedDicomClientConnection connection = null;
-            Exception exception = null;
+            IAdvancedDicomClientConnection? connection = null;
+            Exception? exception = null;
             try
             {
                 connection = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);
@@ -214,10 +213,10 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
                 DicomServiceOptions = new DicomServiceOptions()
             };
 
-            IAdvancedDicomClientConnection connection1 = null;
-            IAdvancedDicomClientConnection connection2 = null;
-            IAdvancedDicomClientConnection connection3 = null;
-            Exception exception = null;
+            IAdvancedDicomClientConnection? connection1 = null;
+            IAdvancedDicomClientConnection? connection2 = null;
+            IAdvancedDicomClientConnection? connection3 = null;
+            Exception? exception = null;
             try
             {
                 connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken);

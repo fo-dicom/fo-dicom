@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="sopClassUid">SOP class UID.</param>
         /// <param name="applicationInfo">Extended negotiation Application Information.</param>
-        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo)
+        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo)
         {
             SopClassUid = sopClassUid;
             RequestedApplicationInfo = applicationInfo;
@@ -46,8 +45,8 @@ namespace FellowOakDicom.Network
         /// <param name="applicationInfo">Extended negotiation Application Information.</param>
         /// <param name="serviceClassUid">Common Service Class UID.</param>
         /// <param name="relatedGeneralSopClasses">Related General SOP Classes.</param>
-        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo applicationInfo,
-            DicomUID serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
+        public DicomExtendedNegotiation(DicomUID sopClassUid, DicomServiceApplicationInfo? applicationInfo,
+            DicomUID? serviceClassUid, params DicomUID[] relatedGeneralSopClasses)
         {
             SopClassUid = sopClassUid;
             RequestedApplicationInfo = applicationInfo;
@@ -63,17 +62,17 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the Requested Service Class Application Information.
         /// </summary>
-        public DicomServiceApplicationInfo RequestedApplicationInfo { get; internal set; }
+        public DicomServiceApplicationInfo? RequestedApplicationInfo { get; internal set; }
 
         /// <summary>
         /// Gets the Accepted Service Class Application Information.
         /// </summary>
-        public DicomServiceApplicationInfo AcceptedApplicationInfo { get; private set; }
+        public DicomServiceApplicationInfo? AcceptedApplicationInfo { get; private set; }
 
         /// <summary>
         /// Gets the (optional) Service Class UID.
         /// </summary>
-        public DicomUID ServiceClassUid { get; internal set; }
+        public DicomUID? ServiceClassUid { get; internal set; }
 
         /// <summary>
         /// Gets the (optional) Related General SOP Class Identification

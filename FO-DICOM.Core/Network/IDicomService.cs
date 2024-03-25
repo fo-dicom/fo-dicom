@@ -1,6 +1,5 @@
 // Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 
@@ -22,6 +21,6 @@ namespace FellowOakDicom.Network
         /// Callback when connection is closed.
         /// </summary>
         /// <param name="exception">Exception, if any, that forced connection to close.</param>
-        void OnConnectionClosed(Exception exception);
+        void OnConnectionClosed(Exception? exception);
     }
 }

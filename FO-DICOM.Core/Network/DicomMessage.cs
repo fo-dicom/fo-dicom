@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Log;
 using FellowOakDicom.Tools;
@@ -18,7 +17,7 @@ namespace FellowOakDicom.Network
     {
         #region FIELDS
 
-        private DicomDataset _dataset;
+        private DicomDataset? _dataset;
         private readonly TaskCompletionSource<bool> _allPDUsSentTCS = TaskCompletionSourceFactory.Create<bool>();
 
         #endregion
@@ -29,7 +28,7 @@ namespace FellowOakDicom.Network
         public DicomMessage()
         {
             Command = new DicomDataset();
-            Dataset = null;
+            Dataset = null!;
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace FellowOakDicom.Network
                     case DicomCommandField.NCreateRequest:
                         return Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPClassUID);
                     default:
-                        return Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPClassUID, null);
+                        return Command.GetSingleValueOrDefault<DicomUID?>(DicomTag.AffectedSOPClassUID, null)!;
                 }
             }
             protected set
@@ -103,12 +102,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the presentation Context.
         /// </summary>
-        public DicomPresentationContext PresentationContext { get; set; }
+        public DicomPresentationContext? PresentationContext { get; set; }
 
         /// <summary>
         /// Gets or sets the SOP Class Extended Negotiation Service Class Application Information.
         /// </summary>
-        public DicomServiceApplicationInfo ApplicationInfo { get; set; }
+        public DicomServiceApplicationInfo? ApplicationInfo { get; set; }
 
         /// <summary>
         /// Gets or sets the associated DICOM command.
@@ -120,7 +119,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomDataset Dataset
         {
-            get => _dataset;
+            get => _dataset!;
             set
             {
                 _dataset = value;
@@ -131,7 +130,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the state object that will be passed from request to response objects.
         /// </summary>
-        public object UserState { get; set; }
+        public object? UserState { get; set; }
 
         /// <summary>
         /// Gets or sets the timestamp when the message was taken from the message queue and added to the pending list (i.e. the DICOM request is being sent or already waiting for a response)

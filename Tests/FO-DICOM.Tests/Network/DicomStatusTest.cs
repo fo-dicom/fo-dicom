@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using Xunit;
@@ -79,10 +78,10 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void NullComparison()
         {
-            Assert.True(DicomStatus.Success != null);
-            Assert.True(((DicomStatus)null) == null);
-            Assert.False(DicomStatus.Success == null);
-            Assert.False(((DicomStatus)null) != null);
+            Assert.True(DicomStatus.Success != null!);
+            Assert.True(((DicomStatus?)null) == null);
+            Assert.False(DicomStatus.Success == null!);
+            Assert.False(((DicomStatus?)null) != null!);
         }
 
         [Fact]

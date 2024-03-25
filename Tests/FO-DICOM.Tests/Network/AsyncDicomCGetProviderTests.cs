@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections.Concurrent;
@@ -40,8 +39,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomCGetResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomCGetResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var studyInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID().ToString();
                 var request = new DicomCGetRequest(studyInstanceUID)
                 {
@@ -70,7 +69,7 @@ namespace FellowOakDicom.Tests.Network
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
                 var responses = new ConcurrentQueue<DicomCGetResponse>();
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var studyInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID().ToString();
                 var request = new DicomCGetRequest(studyInstanceUID)
                 {
@@ -124,7 +123,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
             // do nothing here
         }
@@ -168,7 +167,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
             // do nothing here
         }

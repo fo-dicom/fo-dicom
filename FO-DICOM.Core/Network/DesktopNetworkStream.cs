@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Tls;
 using System;
@@ -18,9 +17,9 @@ namespace FellowOakDicom.Network
     {
         #region FIELDS
 
-        private bool _disposed = false;
+        private bool _disposed;
 
-        private readonly TcpClient _tcpClient;
+        private readonly TcpClient? _tcpClient;
 
         private readonly Stream _networkStream;
 
@@ -39,7 +38,7 @@ namespace FellowOakDicom.Network
                 throw new ArgumentNullException(nameof(options));
             }
 
-            RemoteHost = options.Host;
+            RemoteHost = options.Host ?? throw new ArgumentException("Remote host cannot be null");
             RemotePort = options.Port;
 
             _tcpClient = new TcpClient
@@ -77,7 +76,7 @@ namespace FellowOakDicom.Network
         /// Initializes a server instance of <see cref="DesktopNetworkStream"/>.
         /// </summary>
         /// <param name="tcpClient">TCP client.</param>
-        /// <param name="certificate">Certificate for authenticated connection.</param>
+        /// <param name="tlsAcceptor">TLS acceptor for incoming connections</param>
         /// <param name="ownsTcpClient">dispose tcpClient on Dispose</param>
         /// <remarks>
         /// Ownership of <paramref name="tcpClient"/> is controlled by <paramref name="ownsTcpClient"/>.
@@ -87,7 +86,7 @@ namespace FellowOakDicom.Network
         ///
         /// if <paramref name="ownsTcpClient"/> is true, <paramref name="tcpClient"/> will be disposed altogether on DesktopNetworkStream's disposal.
         /// </remarks>
-        internal DesktopNetworkStream(TcpClient tcpClient, ITlsAcceptor tlsAcceptor, bool ownsTcpClient = false)
+        internal DesktopNetworkStream(TcpClient tcpClient, ITlsAcceptor? tlsAcceptor, bool ownsTcpClient = false)
         {
             LocalHost = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Address.ToString();
             LocalPort = ((IPEndPoint)tcpClient.Client.LocalEndPoint).Port;
