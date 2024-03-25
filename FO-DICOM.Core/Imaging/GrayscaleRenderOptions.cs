@@ -126,13 +126,14 @@ namespace FellowOakDicom.Imaging
         {
             GrayscaleRenderOptions grayscaleRenderOptions;
             if (dataset.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) && windowWidth >= 1.0
-                && dataset.Contains(DicomTag.WindowCenter))
+                && dataset.TryGetValue(DicomTag.WindowCenter, 0, out double _))
             {
                 // If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
                 grayscaleRenderOptions = FromWindowLevel(dataset, frame);
             }
-            else if (dataset.FunctionalGroupValues(frame).TryGetValue(DicomTag.WindowWidth, 0, out double functionalWindowWidth) && functionalWindowWidth >= 1.0
-                && dataset.FunctionalGroupValues(frame).Contains(DicomTag.WindowCenter))
+            else if (dataset.FunctionalGroupValues(frame) is { } functionalGroupValues 
+                     && functionalGroupValues.TryGetValue(DicomTag.WindowWidth, 0, out double functionalWindowWidth) && functionalWindowWidth >= 1.0
+                     && functionalGroupValues.TryGetValue(DicomTag.WindowCenter, 0, out double _))
             {
                 grayscaleRenderOptions = FromFunctionalWindowLevel(dataset, frame);
             }
@@ -182,13 +183,13 @@ namespace FellowOakDicom.Imaging
         /// <returns>Grayscale render options based on window level data.</returns>
         public static GrayscaleRenderOptions FromWindowLevel(DicomDataset dataset, int frame = 0)
         {
-            var functional = dataset.FunctionalGroupValues(frame);
-            if (!dataset.Contains(DicomTag.WindowWidth) ||
-                !dataset.Contains(DicomTag.WindowCenter))
+            if (!dataset.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) ||
+                !dataset.TryGetValue(DicomTag.WindowCenter, 0, out double windowCenter))
             {
                 return null;
             }
 
+            var functional = dataset.FunctionalGroupValues(frame);
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
             {
@@ -203,8 +204,8 @@ namespace FellowOakDicom.Imaging
                     ? functional.GetSingleValue<double>(DicomTag.RescaleIntercept)
                     : 0.0,
 
-                WindowWidth = dataset.GetValue<double>(DicomTag.WindowWidth, 0),
-                WindowCenter = dataset.GetValue<double>(DicomTag.WindowCenter, 0),
+                WindowWidth = windowWidth,
+                WindowCenter = windowCenter,
 
                 VOILUTFunction = dataset.Contains(DicomTag.VOILUTFunction)
                     ? dataset.GetSingleValue<string>(DicomTag.VOILUTFunction)
@@ -243,6 +244,12 @@ namespace FellowOakDicom.Imaging
             {
                 return null;
             }
+            
+            if (!functional.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) ||
+                !functional.TryGetValue(DicomTag.WindowCenter, 0, out double windowCenter))
+            {
+                return null;
+            }
 
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
@@ -258,8 +265,8 @@ namespace FellowOakDicom.Imaging
                     ? functional.GetSingleValue<double>(DicomTag.RescaleIntercept)
                     : 0.0,
 
-                WindowWidth = functional.GetValue<double>(DicomTag.WindowWidth, 0),
-                WindowCenter = functional.GetValue<double>(DicomTag.WindowCenter, 0),
+                WindowWidth = windowWidth,
+                WindowCenter = windowCenter,
 
                 VOILUTFunction = dataset.Contains(DicomTag.VOILUTFunction)
                     ? dataset.GetSingleValue<string>(DicomTag.VOILUTFunction)

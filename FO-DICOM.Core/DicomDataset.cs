@@ -780,8 +780,12 @@ namespace FellowOakDicom
 
         public DicomDataset FunctionalGroupValues(int frame)
         {
-            var functionalDs = new DicomDataset();
-            // gets all items from SharedfunctionalGroup 
+            // If validation is disabled on the current data set
+            // it should also be disabled on the new dataset we create here
+            // because we will be copying data over from one to the other
+            var functionalDs = new DicomDataset { ValidateItems = ValidateItems };
+            
+            // gets all items from SharedFunctionalGroups
             if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence))
             {
                 var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.Items[0] ?? throw new DicomDataException("unexpected empty SharedFunctionalGroupsSequence");
