@@ -793,7 +793,7 @@ namespace FellowOakDicom
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
                     {
-                        functionalDs.Add(sequence);
+                        functionalDs.AddOrUpdate(sequence);
                     }
                     else
                     {
@@ -802,7 +802,7 @@ namespace FellowOakDicom
                         {
                             foreach (var item in sequence.Items[0])
                             {
-                                functionalDs.Add(item);
+                                functionalDs.AddOrUpdate(item);
                             }
                         }
                     }
@@ -816,7 +816,7 @@ namespace FellowOakDicom
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
                     {
-                        functionalDs.Add(sequence);
+                        functionalDs.AddOrUpdate(sequence);
                     }
                     else
                     {
@@ -825,7 +825,7 @@ namespace FellowOakDicom
                         {
                             foreach (var item in sequence.Items[0])
                             {
-                                functionalDs.Add(item);
+                                functionalDs.AddOrUpdate(item);
                             }
                         }
                     }
