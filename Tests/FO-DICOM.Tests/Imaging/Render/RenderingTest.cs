@@ -27,7 +27,7 @@ namespace FellowOakDicom.Tests.Imaging.Render
             Assert.True(col1.R>0);
         }
 
-        [Fact]
+        [FactForNetCore]
         public void RenderJpeg2000_YBR_RCT()
         {
             var myDicomFile = DicomFile.Open(TestData.Resolve("VL5_J2KI.dcm"));
