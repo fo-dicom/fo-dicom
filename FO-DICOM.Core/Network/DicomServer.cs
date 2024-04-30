@@ -293,7 +293,7 @@ namespace FellowOakDicom.Network
                     {
                         // If max clients is configured and the limit is reached
                         // we need to wait until one of the existing clients closes its connection
-                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken))
+                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken).ConfigureAwait(false))
                         {
                             Logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
                                                "but we still cannot accept another incoming connection " +
@@ -325,7 +325,8 @@ namespace FellowOakDicom.Network
                         Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
                         
                         // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
-                        await _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
+                        // Fire and forget
+                        _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
                         
                         if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                         {
