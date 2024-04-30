@@ -321,9 +321,9 @@ namespace FellowOakDicom.Network
                             _services.Add(new RunningDicomService(scp, serviceTask));
                             numberOfServices = _services.Count;
                         }
-                        
+
                         Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
-                        
+
                         // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
                         // Fire and forget
                         _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
@@ -542,6 +542,7 @@ namespace FellowOakDicom.Network
             {
                 Service = service ?? throw new ArgumentNullException(nameof(service));
                 Task = task ?? throw new ArgumentNullException(nameof(task));
+                Task.ContinueWith((t) => Service.Dispose());
             }
 
             public void Dispose() => Service.Dispose();
