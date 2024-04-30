@@ -140,7 +140,7 @@ namespace FellowOakDicom.IO.Buffer
             int bufferSize = 1024 * 1024;
             using IMemory buffer = _memoryProvider.Provide(bufferSize);
 
-            await _semaphore.WaitAsync(cancellationToken);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 Stream.Position = Position;

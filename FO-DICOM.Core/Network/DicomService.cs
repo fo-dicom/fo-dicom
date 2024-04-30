@@ -1390,14 +1390,14 @@ namespace FellowOakDicom.Network
                         
                         if (deflateStream != null)
                         {
-                            await deflateStream.FlushAsync(CancellationToken.None);
+                            await deflateStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                             
                             // Deflate stream in .NET Framework only fully flushes when disposed...
                             deflateStream.Dispose();
                         }                    
                     }
                     
-                    await pDataStream.FlushAsync(CancellationToken.None);
+                    await pDataStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                     
                     msg.LastPDUSent = DateTime.Now;
                     msg.AllPDUsWereSentSuccessfully();

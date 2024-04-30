@@ -701,7 +701,7 @@ namespace FellowOakDicom.Network.Client
             {
                 try
                 {
-                    await association.ReleaseAsync(cts.Token);
+                    await association.ReleaseAsync(cts.Token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
@@ -724,7 +724,7 @@ namespace FellowOakDicom.Network.Client
             {
                 try
                 {
-                    await association.AbortAsync(cts.Token);
+                    await association.AbortAsync(cts.Token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
