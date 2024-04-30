@@ -101,7 +101,7 @@ namespace FellowOakDicom.IO.Buffer
 
                 GetByteRange(offset, count, buffer.Bytes);
 
-                await stream.WriteAsync(buffer.Bytes, 0, count, cancellationToken);
+                await stream.WriteAsync(buffer.Bytes, 0, count, cancellationToken).ConfigureAwait(false);
 
                 offset += count;
             }

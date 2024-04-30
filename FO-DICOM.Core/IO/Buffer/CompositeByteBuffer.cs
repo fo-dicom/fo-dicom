@@ -185,7 +185,7 @@ namespace FellowOakDicom.IO.Buffer
             
             foreach (var buffer in Buffers)
             {
-                await buffer.CopyToStreamAsync(stream, cancellationToken);
+                await buffer.CopyToStreamAsync(stream, cancellationToken).ConfigureAwait(false);
             }
         }
 

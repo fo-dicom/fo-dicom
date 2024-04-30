@@ -83,7 +83,7 @@ namespace FellowOakDicom.Network
                 cancelSource.Cancel();
                 if (awaiter == acceptTcpClientTask)
                 {
-                    var tcpClient = await acceptTcpClientTask;
+                    var tcpClient = await acceptTcpClientTask.ConfigureAwait(false);
                     tcpClient.NoDelay = noDelay;
                     if (receiveBufferSize.HasValue)
                     {

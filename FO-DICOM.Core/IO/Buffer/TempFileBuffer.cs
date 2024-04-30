@@ -116,7 +116,7 @@ namespace FellowOakDicom.IO.Buffer
 
             using var fs = _file.OpenRead();
 
-            await fs.CopyToAsync(stream);
+            await fs.CopyToAsync(stream).ConfigureAwait(false);
         }
 
         #endregion
