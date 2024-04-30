@@ -714,7 +714,7 @@ namespace FellowOakDicom.Tests.Network
                 await Task.Delay(1000);
 
                 // Verify that the 2 services were that already disconnected are disposed
-                numberOfDisposedDicomServices = disposedDicomServices.Count;
+                numberOfDisposedDicomServices = disposedDicomServices.Distinct().Count();
                 Assert.True(numberOfDisposedDicomServices >= 2);
 
                 // Stop the server
@@ -725,7 +725,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             // Verify that, after the server is disposed, all 3 services were disposed (even the one that never dropped its connection)
-            numberOfDisposedDicomServices = disposedDicomServices.Count;
+            numberOfDisposedDicomServices = disposedDicomServices.Distinct().Count();
             Assert.Equal(3, numberOfDisposedDicomServices);
         }
 
