@@ -11,6 +11,7 @@
 - Fix rendering of compressed data where the photometric interpretation changed while decompressing data.
 - DicomImage can cache decompressed pixel data, render-LUT or rendered image.
 - New properties CacheMode and AutoAplyLUTToAllFrames in DicomImage.
+- Fix performance regression in DicomServer (#1776)
 - Fix bug where reading parallel from the a stream file returned wrong data (#1653)
 - Fix rendering of images with 1 bit stored, where the image does not povide windowing values (#1432)
 - Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
