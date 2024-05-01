@@ -60,6 +60,22 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(windowCenter, actual.WindowCenter);
         }
 
+        [Fact]
+        public void FromDataset_WindowCenterWidth_Monochrome()
+        {
+            var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME2"),
+                new DicomUnsignedShort(DicomTag.BitsAllocated, 1),
+                new DicomUnsignedShort(DicomTag.BitsStored, 1),
+                new DicomUnsignedShort(DicomTag.PixelRepresentation, 0));
+
+            var actual = GrayscaleRenderOptions.FromDataset(dataset, 0);
+
+            Assert.Equal(1, actual.WindowWidth);
+            Assert.Equal(1, actual.WindowCenter);
+            Assert.Equal("LINEAR", actual.VOILUTFunction);
+        }
+
         [Theory]
         [InlineData((ushort)16, (ushort)12, (ushort)0, 1.0, 0.0, 500.0, 20.0, "LINEAR")]
         public void FromDataset_WindowCenterWidth_ReturnsSameAsFromWindowLevel(
