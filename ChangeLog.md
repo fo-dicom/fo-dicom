@@ -14,6 +14,7 @@
 - Fix bug where reading parallel from the a stream file returned wrong data (#1653)
 - Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
 - Add resiliency against WindowCenter or WindowWidth containing gibberish (#1756)
+- Ignore overlay data that is too small (#1728)
 
 ### 5.1.2 (2023-12-21)
 
