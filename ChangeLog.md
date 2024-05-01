@@ -13,6 +13,7 @@
 - New properties CacheMode and AutoAplyLUTToAllFrames in DicomImage.
 - Fix bug where reading parallel from the a stream file returned wrong data (#1653)
 - Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
+- Fix race condition in GenericGrayscalePipeline that could trigger a NullReferenceException (#1759)
 - Add resiliency against WindowCenter or WindowWidth containing gibberish (#1756)
 - Ignore overlay data that is too small (#1728)
 
