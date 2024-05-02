@@ -36,7 +36,7 @@ namespace FellowOakDicom.Tests.Helpers
             return new XUnitDicomLogger(_testOutputHelper, _minimumLevel, prefixEnrichers);
         }
 
-        public XUnitDicomLogger IncludeThreadId() => WithPrefixEnricher(prefix => $"{prefix} #{System.Threading.Thread.CurrentThread.ManagedThreadId,3}");
+        public XUnitDicomLogger IncludeThreadId() => WithPrefixEnricher(prefix => $"{prefix} #{Environment.CurrentManagedThreadId,3}");
 
         public XUnitDicomLogger IncludeTimestamps() => WithPrefixEnricher(prefix => $"{prefix} {DateTime.Now: HH:mm:ss.fff}");
 

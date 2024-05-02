@@ -19,6 +19,10 @@
       CS8002;
       <!-- Non-constant fields should not be visible, but xUnit requires member data to be public -->
       CA2211;
+      <!-- Making types sealed is not relevant for test code -->
+      CA1852;
+      <!-- xUnit does not require ConfigureAwait -->
+      CA2007;
     </NoWarn>
   </PropertyGroup>
 

@@ -7,6 +7,7 @@
     <AssemblyName>FO-DICOM.Benchmark</AssemblyName>
     <LangVersion>Latest</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
+    <NoWarn>CA2007;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
