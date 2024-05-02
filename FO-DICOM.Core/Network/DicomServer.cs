@@ -329,9 +329,9 @@ namespace FellowOakDicom.Network
                         // Process incoming TcpClient in a background task to not block the main listener
                         _incomingTcpConnectionProcessorTasks.Add(Task.Run(async () =>
                         {
-                            // let DesktopNetworkStream dispose the TcpClient
-                            var networkStream = new DesktopNetworkStream(tcpClient, _tlsAcceptor, true);
-                            
+                            // let the INetworkStream dispose the TcpClient
+                            var networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
+
                             var scp = CreateScp(networkStream);
                             if (Options != null)
                             {
