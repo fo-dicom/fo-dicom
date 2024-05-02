@@ -13,9 +13,8 @@
         <Nullable>enable</Nullable>
 
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <AnalysisLevel>5</AnalysisLevel>
+        <AnalysisLevel>8</AnalysisLevel>
         <AnalysisMode>Minimum</AnalysisMode>
-        
         <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904;</WarningsNotAsErrors>
     </PropertyGroup>
 
