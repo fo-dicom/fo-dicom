@@ -460,7 +460,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM association is already disposed and can no longer be used");
+        private static void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM association is already disposed and can no longer be used");
 
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.Dispose"/>
         public void Dispose()

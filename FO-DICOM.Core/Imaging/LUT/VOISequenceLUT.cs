@@ -135,7 +135,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         //Implementation of Array.ConvertAll()
         //Since .NET Core doesn't know Array.ConvertAll
-        private TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Func<TInput, TOutput> converter)
+        private static TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Func<TInput, TOutput> converter)
         {
             if (array == null)
             {

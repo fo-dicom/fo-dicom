@@ -309,7 +309,7 @@ namespace FellowOakDicom.IO.Reader
             }
 
 
-            private IByteSource Decompress(IByteSource source)
+            private static IByteSource Decompress(IByteSource source)
             {
                 var compressed = source.GetStream();
 
@@ -1266,7 +1266,7 @@ namespace FellowOakDicom.IO.Reader
                 return false;
             }
 
-            private bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR, IMemory vrMemory)
+            private static bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR, IMemory vrMemory)
             {
                 source.Mark();
 

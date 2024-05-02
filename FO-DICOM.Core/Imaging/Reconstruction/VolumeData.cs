@@ -59,7 +59,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private void ValidateInput(Func<bool> validation, string message = "")
+        private static void ValidateInput(Func<bool> validation, string message = "")
         {
             if (!validation())
             {
@@ -68,7 +68,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private void ValidateInput(bool validated, string message = "") => ValidateInput(() => validated, message);
+        private static void ValidateInput(bool validated, string message = "") => ValidateInput(() => validated, message);
 
 
         private void BuildVolumeData()
@@ -201,7 +201,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private double? Interpolate(IPixelData pixels, Point2D imgSpace)
+        private static double? Interpolate(IPixelData pixels, Point2D imgSpace)
         {
             if ((imgSpace.X >= 0.0) && (imgSpace.X < pixels.Width - 1) && (imgSpace.Y >= 0.0) && (imgSpace.Y < pixels.Height - 1))
             {

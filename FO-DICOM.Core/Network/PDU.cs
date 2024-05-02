@@ -1361,7 +1361,7 @@ namespace FellowOakDicom.Network
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
         }
 
-        private void Write(RawPDU pdu)
+        private static void Write(RawPDU pdu)
         {
             pdu.Write("Reserved", (uint)0x00000000);
         }
@@ -1417,7 +1417,7 @@ namespace FellowOakDicom.Network
             await stream.WriteAsync(buffer.Bytes,0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
         }
 
-        private void Write(RawPDU pdu)
+        private static void Write(RawPDU pdu)
         {
             pdu.Write("Reserved", (uint)0x00000000);
         }

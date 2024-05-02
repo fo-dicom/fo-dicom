@@ -238,7 +238,7 @@ namespace FellowOakDicom.Network
         }
         
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM service is already disposed and can no longer be used");
+        private static void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM service is already disposed and can no longer be used");
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

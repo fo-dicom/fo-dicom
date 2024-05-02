@@ -1037,7 +1037,7 @@ namespace FellowOakDicom.Serialization
         }
 
 
-        private string[] ReadJsonPersonName(ref Utf8JsonReader reader)
+        private static string[] ReadJsonPersonName(ref Utf8JsonReader reader)
         {
             if (reader.TokenType == JsonTokenType.EndObject)
             {
@@ -1259,7 +1259,7 @@ namespace FellowOakDicom.Serialization
             return null;
         }
 
-        private string FindValue(Utf8JsonReader reader, string property, string defaultValue)
+        private static string FindValue(Utf8JsonReader reader, string property, string defaultValue)
         {
             var currentDepth = reader.CurrentDepth;
             while (reader.CurrentDepth >= currentDepth)
