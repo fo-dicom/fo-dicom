@@ -24,7 +24,7 @@ namespace FellowOakDicom
         private readonly IDictionary<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
-        private Encoding[] _fallbackEncodings = DicomEncoding.DefaultArray;
+        internal Encoding[] _fallbackEncodings = DicomEncoding.DefaultArray;
 
         #endregion
 
