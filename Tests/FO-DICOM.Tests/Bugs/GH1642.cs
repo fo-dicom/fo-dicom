@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Bugs
             var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
             var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Information);
 
-            using (var server = DicomServerFactory.Create<CFindProvider>("127.0.0.1", port, logger: serverLogger))
+            using (var server = DicomServerFactory.Create<CFindProvider>("127.0.0.1", port, logger: serverLogger, fallbackEncoding: DicomEncoding.GetEncoding("ISO_IR 100")))
             {
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "CLIENT", "SERVER");
                 client.FallbackEncoding = DicomEncoding.GetEncoding("ISO_IR 100");
