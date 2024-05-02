@@ -10,11 +10,16 @@
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
-    <!-- 
+     
+    <NoWarn>
+      <!-- 
       Suppress warning CS8002 because Dicom.NativeCodecs is not strong named, 
       but since .NET Core you can reference unsigned assemblies from signed assemblies without issues
-     --> 
-    <NoWarn>CS8002</NoWarn>
+     -->
+      CS8002;
+      <!-- Non-constant fields should not be visible, but xUnit requires member data to be public -->
+      CA2211;
+    </NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
