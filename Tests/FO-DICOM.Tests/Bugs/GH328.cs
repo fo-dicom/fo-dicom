@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Bugs
         public void DicomDateTime_FractionalSecondsAndTimezone_SupportedFormat()
         {
             var dt = DateTime.Now.ToString("yyyyMMddHHmmss.ffffffzzz");
-            if (dt.Contains('-'))
+            if (dt.Contains("-"))
             {
                 // the test is currently executed in a time zone with negative offset.
                 // negative time offset are not allowed in DateTimeRange since the "-" is
