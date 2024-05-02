@@ -839,7 +839,7 @@ namespace FellowOakDicom.Network
                                 var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
-
+                                
                                 var source = new StreamByteSource(_dimseStream, FileReadOption.Default)
                                 {
                                     Endian = pc.AcceptedTransferSyntax.Endian
@@ -1299,6 +1299,11 @@ namespace FellowOakDicom.Network
             else
             {
                 // force calculation of command group length as required by standard
+                if (_fallbackEncoding != null && msg.HasDataset)
+                {
+                    msg.Dataset.SetFallbackEncodings(new[] { _fallbackEncoding });
+                }
+                msg.Command.OnBeforeSerializing();
                 msg.Command.RecalculateGroupLengths();
 
                 if (msg.HasDataset)
