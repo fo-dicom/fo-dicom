@@ -90,7 +90,7 @@ namespace FellowOakDicom.Printing
         /// </summary>
         public ushort[] LutDescriptor
         {
-            get => LutSequence.TryGetValues(DicomTag.LUTDescriptor, out ushort[] dummy) ? dummy : new ushort[0];
+            get => LutSequence.TryGetValues(DicomTag.LUTDescriptor, out ushort[] dummy) ? dummy : Array.Empty<ushort>();
             set => LutSequence.AddOrUpdate(DicomTag.LUTDescriptor, value);
         }
 
@@ -108,7 +108,7 @@ namespace FellowOakDicom.Printing
         /// </summary>
         public ushort[] LutData
         {
-            get => LutSequence.TryGetValues(DicomTag.LUTData, out ushort[] dummy) ? dummy : new ushort[0];
+            get => LutSequence.TryGetValues(DicomTag.LUTData, out ushort[] dummy) ? dummy : Array.Empty<ushort>();
             set => LutSequence.AddOrUpdate(DicomTag.LUTData, value);
         }
 
