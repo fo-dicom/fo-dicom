@@ -9,8 +9,12 @@
         <AssemblyVersion>5.1.2</AssemblyVersion>
         <FileVersion>5.1.2.0</FileVersion>
         <InformationalVersion>5.1.2</InformationalVersion>
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
+
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>5</AnalysisLevel>
+        <AnalysisMode>Minimum</AnalysisMode>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(GenerateDocumentation)==1">
