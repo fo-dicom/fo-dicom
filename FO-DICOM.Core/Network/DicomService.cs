@@ -106,7 +106,7 @@ namespace FellowOakDicom.Network
             _pduQueueWatcher = new ManualResetEventSlim(true);
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
+            _fallbackEncoding = fallbackEncoding;
 
             MaximumPDUsInQueue = 16;
 
@@ -338,13 +338,13 @@ namespace FellowOakDicom.Network
                     _dimseStream.Dispose();
                 }
 
-                return DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
+                return DicomFile.Open(_dimseStreamFile, _fallbackEncoding ?? DicomEncoding.Default);
             }
 
             if (_dimseStream != null && _dimseStream.CanSeek)
             {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
-                return DicomFile.Open(_dimseStream, _fallbackEncoding);
+                return DicomFile.Open(_dimseStream, _fallbackEncoding ?? DicomEncoding.Default);
             }
 
             return null;
