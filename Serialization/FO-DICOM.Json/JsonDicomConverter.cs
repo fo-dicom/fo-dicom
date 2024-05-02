@@ -504,7 +504,7 @@ namespace FellowOakDicom.Serialization
             }
         }
 
-        private void WriteJsonDecimalString(JsonWriter writer, DicomElement elem)
+        private static void WriteJsonDecimalString(JsonWriter writer, DicomElement elem)
         {
             if (elem.Count == 0) return;
 
@@ -888,7 +888,7 @@ namespace FellowOakDicom.Serialization
             return data;
         }
 
-        private string[] ReadJsonPersonName(JToken itemObject)
+        private static string[] ReadJsonPersonName(JToken itemObject)
         {
             if (itemObject["Value"] is JArray tokens)
             {

@@ -84,7 +84,7 @@ namespace FellowOakDicom.Imaging
             }
         }
 
-        private (FlipMode, RotateMode) GetFlipAndRotateMode(bool flipX, bool flipY, int rotation)
+        private static (FlipMode, RotateMode) GetFlipAndRotateMode(bool flipX, bool flipY, int rotation)
         {
             FlipMode flipMode;
             if (flipX && flipY)

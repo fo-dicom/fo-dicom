@@ -43,7 +43,7 @@ namespace FO_DICOM.AspNetCoreTest
             );
         }
 
-        private Task<bool> HandleInstanceReceivedAsync(InstanceReceivedEventArgs e)
+        private static Task<bool> HandleInstanceReceivedAsync(InstanceReceivedEventArgs e)
         {
             // todo: store the file
 
