@@ -28,6 +28,10 @@ namespace FellowOakDicom.Memory
         public Span<byte> Span => _memoryOwner.Span;
         public Memory<byte> Memory => _memoryOwner.Memory;
         
-        public void Dispose() => _memoryOwner.Dispose();
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            _memoryOwner.Dispose();
+        }
     }
 }

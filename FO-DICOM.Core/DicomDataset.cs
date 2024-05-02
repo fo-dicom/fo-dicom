@@ -1654,6 +1654,7 @@ namespace FellowOakDicom
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Dispose(true);
         }
 

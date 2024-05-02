@@ -414,6 +414,7 @@ namespace FellowOakDicom.Network
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _br?.Dispose();
             _bw?.Dispose();
             if (!_leaveOpen)
@@ -424,6 +425,7 @@ namespace FellowOakDicom.Network
 
         public ValueTask DisposeAsync()
         {
+            GC.SuppressFinalize(this);
             _br?.Dispose();
             _bw?.Dispose();
             if(!_leaveOpen)
@@ -1654,7 +1656,11 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Disposes and clears the PDVs 
         /// </summary>
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Dispose(true);
+        }
 
         private void Dispose(bool disposing)
         {
@@ -1778,7 +1784,11 @@ namespace FellowOakDicom.Network
 
         #endregion
 
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Dispose(true);
+        }
 
         private void Dispose(bool disposing)
         {
