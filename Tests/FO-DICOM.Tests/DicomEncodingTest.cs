@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests
             var actual = DicomEncoding.GetEncoding("Invalid").CodePage;
             Assert.Equal(expected, actual);
             Assert.Equal(1, logCollector.NumberOfWarnings);
-            var expectedWarning = "'Invalid' is not a valid DICOM encoding - using ASCII encoding instead.";
+            var expectedWarning = "'Invalid' is not a valid DICOM encoding - using ASCII encoding instead";
             Assert.Equal(expectedWarning, logCollector.WarningAt(0));
         }
 
