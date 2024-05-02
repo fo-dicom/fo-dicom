@@ -649,9 +649,11 @@ namespace FellowOakDicom.Network.Client
             
             _logger.LogDebug("{Request} is being sent", request.ToString());
 
+            IAsyncEnumerator<DicomResponse> enumerator = null;
             try
             {
-                await using var enumerator = association.SendRequestAsync(request, cancellationToken).GetAsyncEnumerator(cancellationToken);
+                enumerator = association.SendRequestAsync(request, cancellationToken)
+                    .GetAsyncEnumerator(cancellationToken);
 
                 while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                 {
@@ -665,6 +667,13 @@ namespace FellowOakDicom.Network.Client
                 RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
 
                 _logger.LogDebug("{Request} has timed out", request.ToString());
+            }
+            finally
+            {
+                if (enumerator != null)
+                {
+                    await enumerator.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
         
