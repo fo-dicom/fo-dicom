@@ -28,7 +28,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 sb.Append("0\\");
             }
-            sb.Append("0");
+            sb.Append('0');
             var expectedValue = sb.ToString();
             dataset.Add(DicomTag.ContourData, expectedValue);
 
