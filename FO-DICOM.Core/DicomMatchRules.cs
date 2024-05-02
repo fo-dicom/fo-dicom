@@ -95,8 +95,8 @@ namespace FellowOakDicom
             var sb = new StringBuilder();
             foreach (IDicomMatchRule rule in _rules)
             {
-                if (sb.Length > 0) sb.Append("  ").Append(Operator.ToString().ToUpper()).Append(" ");
-                if (rule is DicomMatchRuleSet) sb.Append("(").AppendLine(rule.ToString()).AppendLine(")");
+                if (sb.Length > 0) sb.Append("  ").Append(Operator.ToString().ToUpper()).Append(' ');
+                if (rule is DicomMatchRuleSet) sb.Append('(').AppendLine(rule.ToString()).AppendLine(")");
                 else sb.Append(rule.ToString());
             }
             return sb.ToString();

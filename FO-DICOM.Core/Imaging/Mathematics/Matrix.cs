@@ -245,17 +245,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
                 if (r > 0) sb.Append("; ");
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0) sb.Append(',');
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
@@ -769,17 +769,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
                 if (r > 0) sb.Append("; ");
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0) sb.Append(',');
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
@@ -1310,17 +1310,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
                 if (r > 0) sb.Append("; ");
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0) sb.Append(',');
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
