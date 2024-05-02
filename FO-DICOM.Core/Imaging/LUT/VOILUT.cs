@@ -52,7 +52,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         public double MaximumOutputValue => 255;
 
-        public int OutputRange => 255;
+        public static int OutputRange => 255;
 
         public bool IsValid => false; // always recalculate
 
