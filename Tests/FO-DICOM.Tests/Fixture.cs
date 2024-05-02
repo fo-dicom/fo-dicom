@@ -59,9 +59,7 @@ namespace FellowOakDicom.Tests
             DicomSetupBuilder.UseServiceProvider(serviceProviders);
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() => GC.SuppressFinalize(this);
     }
 
     public class HttpClientFixture : IDisposable
@@ -75,6 +73,7 @@ namespace FellowOakDicom.Tests
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             HttpClient.Dispose();
         }
     }
