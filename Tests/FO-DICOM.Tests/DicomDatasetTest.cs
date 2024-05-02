@@ -960,7 +960,7 @@ namespace FellowOakDicom.Tests
                 { element.Tag, element.Buffer }
             };
 
-            for (int index = 0; index < testValues.Count(); index++)
+            for (int index = 0; index < testValues.Length; index++)
             {
                 Assert.Equal(testValues[index], ds.GetValue<T>(element.Tag, index));
             }
