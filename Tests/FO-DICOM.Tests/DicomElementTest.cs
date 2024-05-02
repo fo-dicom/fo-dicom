@@ -281,107 +281,107 @@ namespace FellowOakDicom.Tests
 
         [Fact]
         public void DicomDecimalString_GetDecimal_ReturnsValue()
-            => TestDicomDecimalStringGetItem<decimal>();
+            => DicomElementTest.TestDicomDecimalStringGetItem<decimal>();
 
         [Fact]
         public void DicomDecimalString_GetDouble_ReturnsValue()
-            => TestDicomDecimalStringGetItem<double>();
+            => DicomElementTest.TestDicomDecimalStringGetItem<double>();
 
         [Fact]
         public void DicomDecimalString_GetSingle_ReturnsValue()
-            => TestDicomDecimalStringGetItem<float>();
+            => DicomElementTest.TestDicomDecimalStringGetItem<float>();
 
         [Fact]
         public void DicomDecimalString_GetLong_ReturnsValue()
-            => TestDicomDecimalStringGetItem<long>();
+            => DicomElementTest.TestDicomDecimalStringGetItem<long>();
 
         [Fact]
         public void DicomDecimalString_GetString_ReturnsValue()
-            => TestDicomDecimalStringGetItem<string>();
+            => DicomElementTest.TestDicomDecimalStringGetItem<string>();
 
         [Fact]
         public void DicomDecimalString_GetObject_ReturnsValue()
-            => TestDicomDecimalStringGetItem<object>();
+            => DicomElementTest.TestDicomDecimalStringGetItem<object>();
 
         [Fact]
         public void DicomDecimalString_GetDecimalArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<decimal>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<decimal>();
 
         [Fact]
         public void DicomDecimalString_GetDoubleArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<double>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<double>();
 
         [Fact]
         public void DicomDecimalString_GetSingleArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<float>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<float>();
 
         [Fact]
         public void DicomDecimalString_GetLongArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<long>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<long>();
 
         [Fact]
         public void DicomDecimalString_GetNullableLongArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<long?>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<long?>();
 
         [Fact]
         public void DicomDecimalString_GetStringArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<string>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<string>();
 
         [Fact]
         public void DicomDecimalString_GetObjectArray_ReturnsArray()
-            => TestDicomDecimalStringGetArray<object>();
+            => DicomElementTest.TestDicomDecimalStringGetArray<object>();
 
         [Fact]
         public void DicomIntegerString_GetDecimal_ReturnsValue()
-            => TestDicomIntegerStringGetItem<decimal>();
+            => DicomElementTest.TestDicomIntegerStringGetItem<decimal>();
 
         [Fact]
         public void DicomIntegerString_GetString_ReturnsValue()
-            => TestDicomIntegerStringGetItem<string>();
+            => DicomElementTest.TestDicomIntegerStringGetItem<string>();
 
         [Fact]
         public void DicomIntegerString_GetNullableUnsignedLong_ReturnsValue()
-            => TestDicomIntegerStringGetItem<ulong?>();
+            => DicomElementTest.TestDicomIntegerStringGetItem<ulong?>();
 
         [Fact]
         public void DicomIntegerString_GetSingle_ReturnsValue()
-            => TestDicomIntegerStringGetItem<float>();
+            => DicomElementTest.TestDicomIntegerStringGetItem<float>();
 
         [Fact]
         public void DicomIntegerString_GetObject_ReturnsValue()
-            => TestDicomIntegerStringGetItem<object>();
+            => DicomElementTest.TestDicomIntegerStringGetItem<object>();
 
         [Fact]
         public void DicomIntegerString_GetIntArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<int>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<int>();
 
         [Fact]
         public void DicomIntegerString_GetIntArrayFromString_ReturnsArray()
-            => TestDicomIntegerStringGetArrayFromString<int>();
+            => DicomElementTest.TestDicomIntegerStringGetArrayFromString<int>();
 
         [Fact]
         public void DicomIntegerString_GetLongArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<long>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<long>();
 
         [Fact]
         public void DicomIntegerString_GetUnsignedShortArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<ushort>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<ushort>();
 
         [Fact]
         public void DicomIntegerString_GetNullableDoubleArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<double?>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<double?>();
 
         [Fact]
         public void DicomIntegerString_GetSingleArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<float>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<float>();
 
         [Fact]
         public void DicomIntegerString_GetDecimalArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<decimal>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<decimal>();
 
         [Fact]
         public void DicomIntegerString_GetObjectArray_ReturnsArray()
-            => TestDicomIntegerStringGetArray<object>();
+            => DicomElementTest.TestDicomIntegerStringGetArray<object>();
 
         [Theory]
         [MemberData(nameof(KnownTransferSyntaxes))]
@@ -434,7 +434,7 @@ namespace FellowOakDicom.Tests
 
         #region Support methods
 
-        internal void TestDicomDecimalStringGetItem<T>()
+        internal static void TestDicomDecimalStringGetItem<T>()
         {
             var expected = 45.0m;
             var element = new DicomDecimalString(DicomTag.MaterialThickness, 35.0m, expected, 55.0m);
@@ -442,7 +442,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture), actual);
         }
 
-        internal void TestDicomDecimalStringGetArray<T>()
+        internal static void TestDicomDecimalStringGetArray<T>()
         {
             var expected = new[] { 35.0m, 45.0m, 55.0m };
             var element = new DicomDecimalString(DicomTag.MaterialThickness, expected);
@@ -450,7 +450,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture)), actual);
         }
 
-        internal void TestDicomIntegerStringGetItem<T>()
+        internal static void TestDicomIntegerStringGetItem<T>()
         {
             var expected = 45;
             var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, 35, expected, 55);
@@ -458,7 +458,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal((T)Convert.ChangeType(expected, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T)), actual);
         }
 
-        internal void TestDicomIntegerStringGetArray<T>()
+        internal static void TestDicomIntegerStringGetArray<T>()
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, expected);
@@ -466,7 +466,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected.Select(i => (T)Convert.ChangeType(i, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T))), actual);
         }
 
-        internal void TestDicomIntegerStringGetArrayFromString<T>()
+        internal static void TestDicomIntegerStringGetArrayFromString<T>()
         {
             var expected = new[] { 35, 45, 55 };
             var element = new DicomIntegerString(DicomTag.AttachedContoursRETIRED, new[] { "35.0", "45.0000", "55" });

@@ -34,7 +34,7 @@ namespace FellowOakDicom.Tests.Bugs
             _logger = new XUnitDicomLogger(testOutputHelper);
         }
 
-        private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
+        private static IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
             var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();

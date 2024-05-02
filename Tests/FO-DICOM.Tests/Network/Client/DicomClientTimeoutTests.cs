@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Network.Client
             return client;
         }
 
-        private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
+        private static IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
             var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
@@ -331,7 +331,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var streamWriteTimeout = TimeSpan.FromMilliseconds(10);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
@@ -371,7 +371,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
@@ -483,7 +483,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
 
                 var request1HasArrived = false;
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() =>
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() =>
                 {
                     if (request1HasArrived)
                     {
@@ -555,7 +555,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var request1HasArrived = false;
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() =>
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() =>
                 {
                     if (request1HasArrived)
                     {

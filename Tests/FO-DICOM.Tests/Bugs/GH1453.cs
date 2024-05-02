@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Bugs
             _output = output ?? throw new ArgumentNullException(nameof(output));
         }
 
-        private DicomFile PrepareLargeDicomFile(List<IDisposable> disposables)
+        private static DicomFile PrepareLargeDicomFile(List<IDisposable> disposables)
         {
             var frameLength = PixelDataLength / NumberOfFrames;
             var pixelData = new DicomOtherByteFragment(DicomTag.PixelData);
@@ -64,7 +64,7 @@ namespace FellowOakDicom.Tests.Bugs
             try
             {
                 // Arrange
-                var largeDicomFile = PrepareLargeDicomFile(disposables);
+                var largeDicomFile = GH1453.PrepareLargeDicomFile(disposables);
                 var sopInstanceUid = largeDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
                 var fragments = largeDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData).Fragments;
                 var firstFragmentLength = fragments[0].Size;
@@ -116,7 +116,7 @@ namespace FellowOakDicom.Tests.Bugs
             try
             {
                 // Arrange
-                var largeDicomFile = PrepareLargeDicomFile(disposables);
+                var largeDicomFile = GH1453.PrepareLargeDicomFile(disposables);
                 var sopInstanceUid = largeDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
                 var fragments = largeDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData).Fragments;
                 var firstFragmentLength = fragments[0].Size;

@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected, actual);
         }
 
-        private double TimeCall(int numCalls, Action call)
+        private static double TimeCall(int numCalls, Action call)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
