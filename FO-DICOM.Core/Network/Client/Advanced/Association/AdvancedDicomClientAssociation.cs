@@ -360,7 +360,10 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 if (!_requestChannels.TryRemove(messageId, out _))
                 {
+#pragma warning disable CA2219
+                    // This should be unreachable
                     throw new DicomNetworkException($"The response channel {dicomRequest} has already been cleaned up, this should never happen");
+#pragma warning restore CA2219
                 }
             }
 

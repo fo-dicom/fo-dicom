@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FellowOakDicom
 {
@@ -46,6 +47,7 @@ namespace FellowOakDicom
             }
         }
 
+        [SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "Not introducing a breaking change just for this")]
         public static EventHandler<DicomExceptionEventArgs> OnException;
     }
 }

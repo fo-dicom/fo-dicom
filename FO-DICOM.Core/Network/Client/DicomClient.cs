@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 // DICOM client still provides some obsolete APIs that should not be removed yet, but should also not provide obsolete compiler warnings
 #pragma warning disable CS0618
@@ -171,6 +172,7 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
         /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
+        [SuppressMessage("Design", "CA1068:CancellationToken parameters must come last", Justification = "Not introducing a breaking change for this")]
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation);
     }      
