@@ -1443,7 +1443,7 @@ namespace FellowOakDicom
             }
 
             s = s[0].Split('^');
-            if (s.Count() < index + 1)
+            if (s.Length < index + 1)
             {
                 return "";
             }

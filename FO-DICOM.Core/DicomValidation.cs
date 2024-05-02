@@ -595,7 +595,7 @@ namespace FellowOakDicom
              */
 
             var queryComponents = content.Split('-');
-            if (queryComponents.Count() > 2)
+            if (queryComponents.Length > 2)
             {
                 throw new DicomValidationException(content, DicomVR.TM, "value contains too many range separators '-'");
             }
