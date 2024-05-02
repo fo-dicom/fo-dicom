@@ -267,7 +267,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             }
                             else
                             {
-                                _logger.LogDebug($"Request [{{MessageID}}]: Connection closed {_responseChannelIsGoneNote}", messageId);
+                                _logger.LogDebug("Request [{MessageID}]: Connection closed {ResponseChannelIsGoneNote}", messageId, _responseChannelIsGoneNote);
                             }
                         }
                         break;

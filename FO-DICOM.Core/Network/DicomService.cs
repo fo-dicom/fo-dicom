@@ -885,7 +885,7 @@ namespace FellowOakDicom.Network
                                     await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
                                     Logger.LogError(e, "Error parsing C-Store dataset");
-                                    await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
+                                    await ((this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e)).ConfigureAwait(false);
                                     return;
                                 }
                             }
