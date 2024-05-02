@@ -79,7 +79,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
-            Logger.LogInformation(tempName);
+            Logger.LogInformation("C-STORE request: {TempFileName}", tempName);
 
             // as the incoming file could be not-valid
             request.File.Dataset.ValidateItems = false;

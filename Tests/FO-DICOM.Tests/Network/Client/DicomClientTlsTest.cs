@@ -67,11 +67,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var logger = _logger.IncludePrefix("Responses");
             foreach (var r in responses)
             {
-                logger.LogInformation($"{r.Type} [{r.RequestMessageID}]: " +
-                            $"Status = {r.Status.State}, " +
-                            $"Code = {r.Status.Code}, " +
-                            $"ErrorComment = {r.Status.ErrorComment}, " +
-                            $"Description = {r.Status.Description}");
+                logger.LogInformation("{Type} [{RequestMessageId}]: Status = {StatusState}, Code = {StatusCode}, ErrorComment = {StatusErrorComment}, Description = {StatusDescription}", r.Type, r.RequestMessageID, r.Status.State, r.Status.Code, r.Status.ErrorComment, r.Status.Description);
 
                 Assert.Equal(DicomState.Success, r.Status.State);
             }
@@ -120,7 +116,7 @@ namespace FellowOakDicom.Tests.Network.Client
                             for (var index = 0; index < chain.ChainStatus.Length; index++)
                             {
                                 var chainStatus = chain.ChainStatus[index];
-                                serverLogger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                                serverLogger.LogDebug("SSL Chain status [{Index}]: {ChainStatusStatus} {ChainStatusStatusInformation}", index, chainStatus.Status, chainStatus.StatusInformation);
 
                                 // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                                 if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
@@ -163,7 +159,7 @@ namespace FellowOakDicom.Tests.Network.Client
                         for (var index = 0; index < chain.ChainStatus.Length; index++)
                         {
                             var chainStatus = chain.ChainStatus[index];
-                            client.Logger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                            client.Logger.LogDebug("SSL Chain status [{Index}]: {ChainStatusStatus} {ChainStatusStatusInformation}", index, chainStatus.Status, chainStatus.StatusInformation);
 
                             // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                             if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))

@@ -220,7 +220,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             }
                             else
                             {
-                                _logger.LogDebug($"Request [{{MessageID}}]: Aborted {_responseChannelIsGoneNote}", messageId);
+                                _logger.LogDebug("Request [{MessageID}]: Aborted {ResponseChannelIsGoneNote}", messageId, _responseChannelIsGoneNote);
                             }
                         }
 

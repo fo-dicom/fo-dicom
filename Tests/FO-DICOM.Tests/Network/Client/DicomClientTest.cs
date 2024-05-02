@@ -1024,11 +1024,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var logger = _logger.IncludePrefix("Responses");
             foreach (var r in responses)
             {
-                logger.LogInformation($"{r.Type} [{r.RequestMessageID}]: " +
-                            $"Status = {r.Status.State}, " +
-                            $"Code = {r.Status.Code}, " +
-                            $"ErrorComment = {r.Status.ErrorComment}, " +
-                            $"Description = {r.Status.Description}");
+                logger.LogInformation("{Type} [{RequestMessageId}]: Status = {StatusState}, Code = {StatusCode}, ErrorComment = {StatusErrorComment}, Description = {StatusDescription}", r.Type, r.RequestMessageID, r.Status.State, r.Status.Code, r.Status.ErrorComment, r.Status.Description);
 
                 Assert.Equal(DicomState.Success, r.Status.State);
             }
@@ -1047,7 +1043,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
+            logger.LogInformation("Beginning {NumberOfRequests} parallel requests with {SecondsBetweenEachRequest}s between each request", numberOfRequests, secondsBetweenEachRequest);
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
             var sendTasks = new List<Task>();
@@ -1066,7 +1062,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     sendTasks.Add(client.SendAsync());
                 }
 
-                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation("Waiting {SecondsBetweenEachRequest} seconds between requests", secondsBetweenEachRequest);
                 await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest));
             }
 
@@ -1097,7 +1093,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
+            logger.LogInformation("Beginning {NumberOfRequests} parallel requests with {SecondsBetweenEachRequest}s between each request", numberOfRequests, secondsBetweenEachRequest);
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
 
@@ -1117,7 +1113,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     sendTasks.Add(client.SendAsync());
                 }
 
-                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation("Waiting {SecondsBetweenEachRequest} seconds between requests", secondsBetweenEachRequest);
                 await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest));
             }
             await Task.WhenAll(sendTasks);
@@ -1149,7 +1145,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
+            logger.LogInformation("Beginning {NumberOfRequests} parallel requests with {SecondsBetweenEachRequest}s between each request", numberOfRequests, secondsBetweenEachRequest);
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
 
@@ -1169,7 +1165,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     sendTasks.Add(client.SendAsync());
                 }
 
-                logger.LogInformation($"Waiting {secondsBetweenEachRequest} seconds between requests");
+                logger.LogInformation("Waiting {SecondsBetweenEachRequest} seconds between requests", secondsBetweenEachRequest);
                 await Task.Delay(TimeSpan.FromSeconds(secondsBetweenEachRequest));
             }
             await Task.WhenAll(sendTasks);
@@ -1204,7 +1200,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
-            logger.LogInformation($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
+            logger.LogInformation("Beginning {NumberOfRequests} parallel requests with variable wait times between each request", numberOfRequests);
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
 
@@ -1216,7 +1212,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (req, res) => responses.Add(res)
                 };
-                logger.LogInformation($"Adding request {i}");
+                logger.LogInformation("Adding request {Index}", i);
                 await client.AddRequestAsync(request);
 
                 if (client.IsSendRequired)
@@ -1226,7 +1222,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
 
                 var secondsToWait = secondsBetweenEachRequest[i];
-                logger.LogInformation($"Waiting {secondsToWait} seconds between requests");
+                logger.LogInformation("Waiting {SecondsToWait} seconds between requests", secondsToWait);
                 await Task.Delay(TimeSpan.FromSeconds(secondsToWait));
             }
             await Task.WhenAll(sendTasks);
@@ -1301,7 +1297,7 @@ namespace FellowOakDicom.Tests.Network.Client
             client.ClientOptions.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
             client.NegotiateAsyncOps(10, 10);
 
-            logger.LogInformation($"Beginning {numberOfRequests} requests with max {maxRequestsPerAssoc} requests / association");
+            logger.LogInformation("Beginning {NumberOfRequests} requests with max {MaxRequestsPerAssoc} requests / association", numberOfRequests, maxRequestsPerAssoc);
 
             var responses = new ConcurrentBag<DicomCEchoResponse>();
             for (var i = 1; i <= numberOfRequests; i++)
@@ -1311,7 +1307,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 {
                     OnResponseReceived = (request, response) =>
                     {
-                        logger.LogDebug($"Request completed: {iLocal}");
+                        logger.LogDebug("Request completed: {Index}", iLocal);
                         responses.Add(response);
                     }
                 };
@@ -1350,7 +1346,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
             catch (Exception exception)
             {
-                _logger.LogError("Error occurred during send {e}", exception);
+                _logger.LogError(exception, "Error occurred during send");
                 capturedException = exception;
             }
             Assert.NotNull(capturedException);
@@ -1733,7 +1729,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("Could not send file via C-Store request: {error}", e);
+                    Logger.LogError(e, "Could not send file via C-Store request");
                     result = new DicomCGetResponse(request, DicomStatus.ProcessingFailure);
                 }
 

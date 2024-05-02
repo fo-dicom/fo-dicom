@@ -282,7 +282,7 @@ namespace FellowOakDicom.Network
             try
             {
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
-                await listener.StartAsync().ConfigureAwait(false);
+                await listener.StartAsync();
                 IsListening = true;
 
                 var maxClientsAllowed = _serverOptions.MaxClientsAllowed;

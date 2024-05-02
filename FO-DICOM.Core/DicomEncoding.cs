@@ -77,7 +77,7 @@ namespace FellowOakDicom
                 return encoding;
             }
 
-            Logger.LogWarning($"'{charset}' is not a valid DICOM encoding - using ASCII encoding instead.");
+            Logger.LogWarning("'{Charset}' is not a valid DICOM encoding - using ASCII encoding instead", charset);
 
             return Default;
         }

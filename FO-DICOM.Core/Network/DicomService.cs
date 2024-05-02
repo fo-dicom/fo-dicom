@@ -1457,7 +1457,7 @@ namespace FellowOakDicom.Network
                             DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
                             try
                             {
-                                Logger.LogWarning($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
+                                Logger.LogWarning("Request [{MessageId}] timed out, removing from pending queue and triggering timeout callbacks", timedOutPendingRequest.MessageID);
                                 timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
                             }
                             finally
@@ -1695,8 +1695,8 @@ namespace FellowOakDicom.Network
         {
             if (NetworkManager.IsSocketException(e.InnerException, out int errorCode, out string errorDescriptor))
             {
-                logger.LogInformation(
-                    $"Socket error while {(reading ? "reading" : "writing")} PDU: {{socketError}} [{{errorCode}}]",
+                logger.LogInformation("Socket error while {ReadingOrWriting} PDU: {SocketError} [{ErrorCode}]",
+                    (reading ? "reading" : "writing"),
                     errorDescriptor,
                     errorCode);
                 return true;
@@ -1704,11 +1704,11 @@ namespace FellowOakDicom.Network
 
             if (e.InnerException is ObjectDisposedException)
             {
-                logger.LogInformation($"Object disposed while {(reading ? "reading" : "writing")} PDU");
+                logger.LogInformation("Object disposed while {ReadingOrWriting} PDU", (reading ? "reading" : "writing"));
             }
             else
             {
-                logger.LogError(e, $"I/O exception while {(reading ? "reading" : "writing")} PDU");
+                logger.LogError(e, "I/O exception while {ReadingOrWriting} PDU", (reading ? "reading" : "writing"));
             }
 
             return false;

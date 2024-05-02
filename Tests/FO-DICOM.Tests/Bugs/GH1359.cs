@@ -146,8 +146,8 @@ namespace FellowOakDicom.Tests.Bugs
             var numberOfRequestsThatSucceeded = responses.Count(r => r.Status.State == DicomState.Success);
             var numberOfRequestsThatFailed = requests.Count - numberOfRequestsThatSucceeded;
 
-            _logger.LogInformation($"Succeeded: {numberOfRequestsThatSucceeded}");
-            _logger.LogInformation($"Failed: {numberOfRequestsThatFailed}");
+            _logger.LogInformation("Succeeded: {NumberOfRequestsThatSucceeded}", numberOfRequestsThatSucceeded);
+            _logger.LogInformation("Failed: {NumberOfRequestsThatFailed}", numberOfRequestsThatFailed);
 
             var idsThatSucceeded = requestsThatSucceeded.ToList().Select(r => r.MessageID.ToString()).ToList();
             var idsThatFailed = requestsThatFailed.ToList().Select(r => r.MessageID.ToString()).ToList();
@@ -170,7 +170,7 @@ namespace FellowOakDicom.Tests.Bugs
             Parallel.For((long)0, receivedRequestsThatSucceeded.Count, i =>
             {
                 var request = receivedRequestsThatSucceeded[(int) i];
-                _logger.LogInformation($"Verifying pixel data of request [{request.MessageID}]");
+                _logger.LogInformation("Verifying pixel data of request [{RequestMessageId}]", request.MessageID);
 
                 var actualPixelData = DicomPixelData.Create(request.File.Dataset);
 

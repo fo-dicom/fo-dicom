@@ -435,7 +435,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
 
                 var testLogger = _logger.IncludePrefix("Test");
-                testLogger.LogInformation($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
+                testLogger.LogInformation("Beginning {Requests} parallel requests with {MaxRequestsPerAssoc} requests / association", options.Requests, options.MaxRequestsPerAssoc);
 
                 var requests = new List<DicomRequest>();
                 for (var i = 1; i <= options.Requests; i++)
@@ -447,9 +447,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
                     if (i < options.Requests)
                     {
-                        testLogger.LogInformation($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
+                        testLogger.LogInformation("Waiting {TotalMilliseconds}ms between requests", options.TimeBetweenRequests.TotalMilliseconds);
                         await Task.Delay(options.TimeBetweenRequests);
-                        testLogger.LogInformation($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
+                        testLogger.LogInformation("Waited {TotalMilliseconds}ms, moving on to next request", options.TimeBetweenRequests.TotalMilliseconds);
                     }
                 }
 
@@ -548,7 +548,6 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithGenericStreamException_ShouldNotLoopInfinitely()
         {
             var port = Ports.GetNext();
-            var logger = _logger.IncludePrefix("UnitTest");
 
             DicomCStoreResponse response1 = null, response2 = null, response3 = null;
             DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;

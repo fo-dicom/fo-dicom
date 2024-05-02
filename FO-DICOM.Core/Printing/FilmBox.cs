@@ -485,7 +485,7 @@ namespace FellowOakDicom.Printing
                     return false;
                 }
 
-                Logger.LogInformation($"Applying display format {ImageDisplayFormat} for film box {SOPInstanceUID}");
+                Logger.LogInformation("Applying display format {ImageDisplayFormat} for film box {SopInstanceUid}", ImageDisplayFormat, SOPInstanceUID);
 
                 var parts = ImageDisplayFormat.Split('\\');
 
