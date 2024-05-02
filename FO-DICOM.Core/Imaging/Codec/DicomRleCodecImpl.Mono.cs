@@ -401,7 +401,7 @@ namespace FellowOakDicom.Imaging.Codec
             {
                 if (segment < 0 || segment >= NumberOfSegments)
                 {
-                    throw new ArgumentOutOfRangeException("Segment number out of range");
+                    throw new ArgumentOutOfRangeException(nameof(segment), "Segment number out of range");
                 }
 
                 var offset = GetSegmentOffset(segment);

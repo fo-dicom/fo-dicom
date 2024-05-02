@@ -79,8 +79,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomServer(DicomServerDependencies dependencies)
         {
-            _networkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
-            _loggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
+            _networkManager = dependencies.NetworkManager;
+            _loggerFactory = dependencies.LoggerFactory;
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;

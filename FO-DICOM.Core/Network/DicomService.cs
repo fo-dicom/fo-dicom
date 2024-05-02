@@ -111,9 +111,9 @@ namespace FellowOakDicom.Network
             MaximumPDUsInQueue = 16;
 
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            LoggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
-            NetworkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
-            TranscoderManager = dependencies.TranscoderManager ?? throw new ArgumentNullException(nameof(dependencies.TranscoderManager));
+            LoggerFactory = dependencies.LoggerFactory;
+            NetworkManager = dependencies.NetworkManager;
+            TranscoderManager = dependencies.TranscoderManager;
 
             Options = new DicomServiceOptions();
         }
