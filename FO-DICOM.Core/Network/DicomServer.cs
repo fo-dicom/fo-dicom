@@ -42,8 +42,6 @@ namespace FellowOakDicom.Network
             SingleReader = true
         });
 
-        private readonly List<Task> _incomingTcpConnectionProcessorTasks = new List<Task>();
-
         /// <summary>
         /// A task that will complete when the server is stopped
         /// </summary>
@@ -292,21 +290,6 @@ namespace FellowOakDicom.Network
 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
-                    // Cleanup processing tasks and propagate exceptions, if any
-                    for (int i = _incomingTcpConnectionProcessorTasks.Count - 1; i >= 0; i--)
-                    {
-                        var task = _incomingTcpConnectionProcessorTasks[i];
-                        if (task.IsFaulted && task.Exception != null)                                
-                        {
-                            ExceptionDispatchInfo.Capture(task.Exception).Throw();
-                        }
-
-                        if (task.IsCompleted)
-                        {
-                            _incomingTcpConnectionProcessorTasks.RemoveAt(i);
-                        }
-                    }
-                    
                     if (maxClientsAllowed > 0)
                     {
                         // If max clients is configured and the limit is reached
@@ -327,36 +310,51 @@ namespace FellowOakDicom.Network
                     if (tcpClient != null)
                     {
                         // Process incoming TcpClient in a background task to not block the main listener
-                        _incomingTcpConnectionProcessorTasks.Add(Task.Run(async () =>
+                        _ = Task.Run(async () =>
                         {
-                            // let the INetworkStream dispose the TcpClient
-                            var networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
-
-                            var scp = CreateScp(networkStream);
-                            if (Options != null)
+                            try
                             {
-                                scp.Options = Options;
-                            }
+                                // let the INetworkStream dispose the TcpClient
+                                var networkStream =
+                                    _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
 
-                            var serviceTask = scp.RunAsync();
-                            int numberOfServices;
-                            lock (_services)
-                            {
-                                _services.Add(new RunningDicomService(scp, serviceTask));
-                                numberOfServices = _services.Count;
-                            }
-                        
-                            Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
-                        
-                            // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
-                            // Fire and forget
+                                var scp = CreateScp(networkStream);
+                                if (Options != null)
+                                {
+                                    scp.Options = Options;
+                                }
+
+                                var serviceTask = scp.RunAsync();
+                                int numberOfServices;
+                                lock (_services)
+                                {
+                                    _services.Add(new RunningDicomService(scp, serviceTask));
+                                    numberOfServices = _services.Count;
+                                }
+
+                                Logger.LogDebug(
+                                    "Accepted an incoming client connection, there are now {NumberOfServices} connected clients",
+                                    numberOfServices);
+
+                                // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
+                                // Fire and forget
                         _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
-                        
-                            if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
+
+                                if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
+                                {
+                                    Logger.LogWarning(
+                                        "Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
+                                }
+                            }
+                            catch (OperationCanceledException)
                             {
-                                Logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
-                            }    
-                        }, _cancellationToken));
+                                Logger.LogWarning("Cancellation occurred while accepting an incoming client connection");
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.LogError(e, "An exception occurred while accepting an incoming client connection");
+                            }
+                        }, _cancellationToken);
                     }
                 }
             }
