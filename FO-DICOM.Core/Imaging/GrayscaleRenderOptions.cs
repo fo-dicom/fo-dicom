@@ -355,37 +355,47 @@ namespace FellowOakDicom.Imaging
 
             int padding = dataset.GetValueOrDefault(DicomTag.PixelPaddingValue, 0, int.MinValue);
 
-            var transcoder = new DicomTranscoder(
-                dataset.InternalTransferSyntax,
-                DicomTransferSyntax.ExplicitVRLittleEndian);
-
-            var pixels = transcoder.DecodePixelData(dataset, 0);
-            var range = pixels.GetMinMax(padding);
-
-            if (range.Minimum < bits.MinimumValue || range.Minimum == double.MaxValue)
+            if (bits.BitsStored == 1)
             {
-                range.Minimum = bits.MinimumValue;
+                options.WindowWidth = 1;
+                options.WindowCenter = 1;
+                options.VOILUTFunction = "LINEAR";
             }
-            if (range.Maximum > bits.MaximumValue || range.Maximum == double.MinValue)
+            else
             {
-                range.Maximum = bits.MaximumValue;
+                var transcoder = new DicomTranscoder(
+                    dataset.InternalTransferSyntax,
+                    DicomTransferSyntax.ExplicitVRLittleEndian);
+
+                var pixels = transcoder.DecodePixelData(dataset, 0);
+                var range = pixels.GetMinMax(padding);
+
+                if (range.Minimum < bits.MinimumValue || range.Minimum == double.MaxValue)
+                {
+                    range.Minimum = bits.MinimumValue;
+                }
+                if (range.Maximum > bits.MaximumValue || range.Maximum == double.MinValue)
+                {
+                    range.Maximum = bits.MaximumValue;
+                }
+
+                var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
+                var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
+
+                if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+                {
+                    options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                    // if there is a modalityLUT sequence, then the values have to be mapped
+                    min = options.ModalityLUT[min];
+                    max = options.ModalityLUT[max];
+                }
+
+                options.WindowWidth = Math.Max(1, Math.Abs(max - min));
+                options.WindowCenter = (max + min) / 2.0;
+
+                options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             }
 
-            var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
-            var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-                // if there is a modalityLUT sequence, then the values have to be mapped
-                min = options.ModalityLUT[min];
-                max = options.ModalityLUT[max];
-            }
-
-            options.WindowWidth = Math.Max(1, Math.Abs(max - min));
-            options.WindowCenter = (max + min) / 2.0;
-
-            options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
