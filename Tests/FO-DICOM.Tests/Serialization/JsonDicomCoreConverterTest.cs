@@ -1002,14 +1002,15 @@ namespace FellowOakDicom.Tests.Serialization
         {
             var target = new DicomDataset
                            {
-                             new DicomPersonName(DicomTag.PatientName, new[] { "Anna^Pelle", null, "Olle^Jöns^Pyjamas" }),
+                             new DicomPersonName(DicomTag.PatientName, new[] { "Doe^John" }),
+                             new DicomPersonName(DicomTag.OtherPatientNames, new[] { "Anna^Pelle", null, "Olle^Jöns^Pyjamas" }),
                              { DicomTag.SOPClassUID, DicomUID.RTPlanStorage },
                              { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
                              { DicomTag.SeriesInstanceUID, Array.Empty<DicomUID>() },
                              { DicomTag.DoseType, new[] { "HEJ" } },
+                             { DicomTag.ControlPointSequence, (DicomSequence[])null }
                            };
 
-            target.Add(DicomTag.ControlPointSequence, (DicomSequence[])null);
             var beams = new[] { 1, 2, 3 }.Select(beamNumber =>
             {
                 var beam = new DicomDataset

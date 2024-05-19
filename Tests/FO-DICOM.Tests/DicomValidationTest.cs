@@ -259,6 +259,22 @@ namespace FellowOakDicom.Tests
             Assert.Throws<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.ScheduledProcedureStepStartDateTime, $"20081-200812{zone}"));
         }
 
+        [Fact]
+        public void DicomValidation_ValidatePN()
+        {
+            var ds = new DicomDataset { { DicomTag.PatientName, "Doe^John=Doe^John=Doe^John" } };
+            // PatientName has VM 1
+            Assert.Throws<DicomValidationException>(() => 
+                ds.AddOrUpdate(DicomTag.PatientName, "Doe^John", "Doe^John"));
+            // OtherPatientNames has VM 1-n
+            ds.AddOrUpdate(DicomTag.OtherPatientNames, "Doe^John", "Doe^John");
+            // more than 3 component groups
+            Assert.Throws<DicomValidationException>(() => 
+                ds.AddOrUpdate(DicomTag.ReferringPhysicianName, "Doe^Jane=Doe^Jane=Doe^Jane=Doe^Jane"));
+            // more than 5 components
+            Assert.Throws<DicomValidationException>(() => 
+                ds.AddOrUpdate(DicomTag.ReferringPhysicianName, "Doe^John^^^Ph.D.^Junior"));
+        }
 
         #endregion
 
