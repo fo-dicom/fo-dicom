@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+﻿// Copyright (c) 2012-2024 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
@@ -185,9 +185,11 @@ namespace FellowOakDicom
                 return Array.Empty<byte>();
             }
 
-            // TODO: handle multi-charset
-            byte[] bytes = TargetEncoding.GetBytes(_value);
-
+            // the target encoding shall only be used for encoded strings;
+            // other strings must be encoded with the default encoding (ASCII)
+            var bytes = ValueRepresentation.IsStringEncoded
+                ? DicomEncoding.EncodeString(_value, TargetEncodings, ValueRepresentation == DicomVR.PN)
+                : DicomEncoding.Default.GetBytes(_value);
             if (bytes.Length.IsOdd())
             {
                 Array.Resize(ref bytes, bytes.Length + 1);
