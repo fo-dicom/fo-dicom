@@ -18,6 +18,7 @@
 - Fix race condition in GenericGrayscalePipeline that could trigger a NullReferenceException (#1759)
 - Add resiliency against WindowCenter or WindowWidth containing gibberish (#1756)
 - Ignore overlay data that is too small (#1728)
+- Allow leading zeros in DS values (#1793)
 
 ### 5.1.2 (2023-12-21)
 
