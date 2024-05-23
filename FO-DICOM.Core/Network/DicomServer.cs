@@ -326,7 +326,7 @@ namespace FellowOakDicom.Network
 
                         // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
                         // Fire and forget
-                        _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken).ConfigureAwait(false);
+                        _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken).AsTask().ConfigureAwait(false);
                         
                         if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                         {
