@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -292,11 +293,11 @@ namespace FellowOakDicom.Network
 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
-                    if (maxClientsAllowed > 0)
+                    if (_maxClientsSemaphore != null)
                     {
                         // If max clients is configured and the limit is reached
                         // we need to wait until one of the existing clients closes its connection
-                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken).ConfigureAwait(false))
+                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken))
                         {
                             Logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
                                                "but we still cannot accept another incoming connection " +
@@ -321,12 +322,11 @@ namespace FellowOakDicom.Network
                             _services.Add(new RunningDicomService(scp, serviceTask));
                             numberOfServices = _services.Count;
                         }
-
+                        
                         Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
-
+                        
                         // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
-                        // Fire and forget
-                        _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
+                        await _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
                         
                         if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                         {
@@ -542,7 +542,6 @@ namespace FellowOakDicom.Network
             {
                 Service = service ?? throw new ArgumentNullException(nameof(service));
                 Task = task ?? throw new ArgumentNullException(nameof(task));
-                Task.ContinueWith((t) => Service.Dispose());
             }
 
             public void Dispose() => Service.Dispose();
