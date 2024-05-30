@@ -48,7 +48,7 @@ jobs:
           name: test-v5-net-70.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet70.xml
     - name: Upload code coverage 
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v4
 
   benchmarks:
     runs-on: windows-2022
