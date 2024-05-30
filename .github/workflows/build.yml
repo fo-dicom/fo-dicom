@@ -19,7 +19,7 @@ jobs:
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml"
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
           name: test-v5-net-462.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
@@ -31,7 +31,7 @@ jobs:
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net6.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet60.xml"
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
           name: test-v5-net-60.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet60.xml
@@ -43,7 +43,7 @@ jobs:
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net7.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet70.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
           name: test-v5-net-70.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet70.xml
@@ -59,7 +59,7 @@ jobs:
     - name: run benchmarks
       run: ./Tests/FO-DICOM.Benchmark/bin/Release/net7.0/fo-dicom.Benchmark.exe
     - name: Upload benchmark log
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: benchmark
         path: |
