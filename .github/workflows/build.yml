@@ -13,7 +13,7 @@ jobs:
   net-462:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
@@ -27,7 +27,7 @@ jobs:
   net-60:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net6.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet60.xml"
     - name: Upload test results
@@ -39,7 +39,7 @@ jobs:
   net-70:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net7.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet70.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
@@ -53,7 +53,7 @@ jobs:
   benchmarks:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net7.0
     - name: run benchmarks
