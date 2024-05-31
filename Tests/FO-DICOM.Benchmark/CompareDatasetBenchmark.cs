@@ -17,14 +17,18 @@ namespace FellowOakDicom.Benchmark
         private DicomDataset _ctDataset;
         private DicomDataset _ctDataset1;
         private DicomDataset _ctDataset2;
+        private DicomDataset _ctDatasetClone;
         private MemoryStream _mrData;
         private DicomDataset _mrDataset;
         private DicomDataset _mrDataset1;
         private DicomDataset _mrDataset2;
+        private DicomDataset _mrDatasetClone;
+
         private MemoryStream _mgData;
         private DicomDataset _mgDataset;
         private DicomDataset _mgDataset1;
         private DicomDataset _mgDataset2;
+        private DicomDataset _mgDatasetClone;
 
         private MemoryStream _dicomdirData;
 
@@ -55,6 +59,9 @@ namespace FellowOakDicom.Benchmark
             _ctDataset2 = DicomFile.Open(Path.Combine(_rootpath, "Data\\ct.dcm")).Dataset;
             _mrDataset2 = DicomFile.Open(Path.Combine(_rootpath, "Data\\mr.dcm")).Dataset;
             _mgDataset2 = DicomFile.Open(Path.Combine(_rootpath, "Data\\mg.dcm")).Dataset;
+            _ctDatasetClone = _ctDataset.Clone();
+            _mrDatasetClone = _mrDataset.Clone();
+            _mgDatasetClone = _mgDataset.Clone();
         }
 
         [Benchmark]
@@ -76,13 +83,13 @@ namespace FellowOakDicom.Benchmark
         public object HashMg() => _mgDataset.GetHashCode();
 
         [Benchmark]
-        public object CompareCloneCt() => _ctDataset == _ctDataset.Clone();
+        public object CompareCloneCt() => _ctDataset == _ctDatasetClone;
 
         [Benchmark]
-        public object CompareCloneMR() => _mrDataset == _mrDataset.Clone();
+        public object CompareCloneMR() => _mrDataset == _mrDatasetClone;
 
         [Benchmark]
-        public object CompareCloneMg() => _mgDataset == _mgDataset.Clone();
+        public object CompareCloneMg() => _mgDataset == _mgDatasetClone;
 
     }
 }
