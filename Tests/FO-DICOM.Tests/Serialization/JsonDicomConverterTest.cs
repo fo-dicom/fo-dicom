@@ -45,6 +45,21 @@ namespace FellowOakDicom.Tests.Serialization
             VerifyJsonTripleTrip(target);
         }
 
+        [Theory()]
+        [InlineData("CT1_J2KI")]
+        [InlineData("DICOMDIR")]
+        [InlineData("mr_brucker.dcm")]
+        [InlineData("TestPattern_RGB.dcm")]
+        [InlineData("TestPattern_Palette_16.dcm")]
+        [InlineData("TestPattern_Palette.dcm")]
+        public void SerializeFile(string filename)
+        {
+            var fullname = TestData.Resolve(filename);
+            var file = DicomFile.Open(fullname);
+
+            VerifyJsonTripleTrip(file.Dataset);
+        }
+
         private double TimeCall(int numCalls, Action call)
         {
             var stopWatch = new Stopwatch();
