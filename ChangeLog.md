@@ -19,6 +19,7 @@
 - Add resiliency against WindowCenter or WindowWidth containing gibberish (#1756)
 - Ignore overlay data that is too small (#1728)
 - Allow leading zeros in DS values (#1793)
+- Correctly handle gb2312 (ISO 2022 IR 58) character encoding (#1805)
 
 ### 5.1.2 (2023-12-21)
 
