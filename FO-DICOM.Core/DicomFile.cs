@@ -222,7 +222,7 @@ namespace FellowOakDicom
             }
 
             var df = new DicomFile();
-            df.Dataset.SetFallbackEncodings(new[] { fallbackEncoding });
+            df.Dataset.FallbackEncodings = new[] { fallbackEncoding };
 
             try
             {
