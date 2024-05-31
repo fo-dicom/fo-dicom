@@ -731,9 +731,9 @@ namespace FellowOakDicom
         {
             if (other is DicomAttributeTag otherAttribute)
             {
-                return (this._values == null && otherAttribute._values == null)
-                    || (this._values != null && otherAttribute._values != null && 
-                        this._values.SequenceEqual(otherAttribute._values));
+                return (this.Values == null && otherAttribute.Values == null)
+                    || (this.Values != null && otherAttribute.Values != null && 
+                        this.Values.SequenceEqual(otherAttribute.Values));
             }
             return false;
         }
@@ -1260,6 +1260,16 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomOtherByte otherByte)
+            {
+                return this.Count == otherByte.Count;
+            }
+            return false;
+        }
+
         #endregion
 
         protected override void ValidateVM()
@@ -1289,6 +1299,15 @@ namespace FellowOakDicom
         #region Public Properties
 
         public override DicomVR ValueRepresentation => DicomVR.OW;
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomOtherWord otherByte)
+            {
+                return this.Count == otherByte.Count;
+            }
+            return false;
+        }
 
         #endregion
 
