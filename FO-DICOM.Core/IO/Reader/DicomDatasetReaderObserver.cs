@@ -115,7 +115,7 @@ namespace FellowOakDicom.IO.Reader
             _datasets.Push(item);
 
             var encoding = _encodings.Peek();
-            item.SetFallbackEncodings(encoding);
+            item.FallbackEncodings = encoding;
             _encodings.Push(encoding);
         }
 

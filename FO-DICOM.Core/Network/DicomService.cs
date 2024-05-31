@@ -758,7 +758,7 @@ namespace FellowOakDicom.Network
                                 var file = new DicomFile();
                                 if (_fallbackEncoding != null)
                                 {
-                                    file.Dataset.SetFallbackEncodings(new[] { _fallbackEncoding });
+                                    file.Dataset.FallbackEncodings = new[] { _fallbackEncoding };
                                 }
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
                                 file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
@@ -1301,7 +1301,7 @@ namespace FellowOakDicom.Network
                 // force calculation of command group length as required by standard
                 if (_fallbackEncoding != null && msg.HasDataset)
                 {
-                    msg.Dataset.SetFallbackEncodings(new[] { _fallbackEncoding });
+                    msg.Dataset.FallbackEncodings = new[] { _fallbackEncoding };
                 }
                 msg.Command.OnBeforeSerializing();
                 msg.Command.RecalculateGroupLengths();

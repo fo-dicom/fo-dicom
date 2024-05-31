@@ -24,9 +24,9 @@ namespace FellowOakDicom
         {
             var clone = new DicomDataset(dataset, false)
             {
-                InternalTransferSyntax = dataset.InternalTransferSyntax
+                InternalTransferSyntax = dataset.InternalTransferSyntax,
+                FallbackEncodings = dataset.FallbackEncodings
             };
-            clone.SetFallbackEncodings(dataset._fallbackEncodings);
             return clone;
         }
 
