@@ -21,6 +21,11 @@ namespace FellowOakDicom
     {
         public bool Equals(DicomItem item1, DicomItem item2)
         {
+            if (ReferenceEquals(item1, item2))
+            {
+                // short circuit comparing the same item
+                return true;
+            }
             if (item1 is DicomElement xElement && item2 is DicomElement yElement)
             {
                 if (xElement.Buffer is BulkDataUriByteBuffer xBulkbuffer && !xBulkbuffer.IsMemory || 
@@ -30,10 +35,10 @@ namespace FellowOakDicom
                     return item1.Tag == item2.Tag;
                 }
 
-                var xValue = string.Join("\\", xElement.Get<string[]>());
-                var yValue = string.Join("\\", yElement.Get<string[]>());
+                //var xValue = string.Join("\\", xElement.Get<string[]>());
+                //var yValue = string.Join("\\", yElement.Get<string[]>());
 
-                return item1.Tag == item2.Tag && xValue == yValue;
+                return xElement.Tag == yElement.Tag && xElement.Equals(yElement);
             }
 
             if (item1 is DicomSequence xSequence && item2 is DicomSequence ySequence)
@@ -96,9 +101,10 @@ namespace FellowOakDicom
             }
 
             var valueComparer = new DicomValueComparer();
-            foreach (var elements in dataset1.Zip(dataset2, Tuple.Create))
+            foreach (var element in dataset1)
             {
-                if (!valueComparer.Equals(elements.Item1, elements.Item2))
+                var element2 = dataset2.GetDicomItem<DicomItem>(element.Tag);
+                if (!valueComparer.Equals(element, element2))
                 {
                     return false;
                 }

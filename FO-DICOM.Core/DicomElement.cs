@@ -61,6 +61,7 @@ namespace FellowOakDicom
 
         protected virtual void ValidateString() { }
 
+        public abstract bool Equals(DicomElement other);
     }
 
     /// <summary>
@@ -200,6 +201,15 @@ namespace FellowOakDicom
         {
             ValueRepresentation?.ValidateString(_value);
         }
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomStringElement otherStringElement)
+            {
+                return this.StringValue == otherStringElement.StringValue;
+            }
+            return false;
+        }
     }
 
     public abstract class DicomMultiStringElement : DicomStringElement
@@ -302,6 +312,15 @@ namespace FellowOakDicom
             }
 
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
+        }
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomMultiStringElement otherMultiString)
+            {
+                return otherMultiString.Count == this.Count && otherMultiString.StringValue == this.StringValue;
+            }
+            return false;
         }
 
         #endregion
@@ -559,6 +578,15 @@ namespace FellowOakDicom
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomValueElement<Tv> otherValue)
+            {
+                return this.Buffer.Data.SequenceEqual(otherValue.Buffer.Data);
+            }
+            return false;
+        }
+
         #endregion
 
     }
@@ -697,6 +725,17 @@ namespace FellowOakDicom
 
             throw new InvalidCastException(
                 $"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
+        }
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomAttributeTag otherAttribute)
+            {
+                return (this._values == null && otherAttribute._values == null)
+                    || (this._values != null && otherAttribute._values != null && 
+                        this._values.SequenceEqual(otherAttribute._values));
+            }
+            return false;
         }
 
         #endregion
