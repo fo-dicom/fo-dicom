@@ -52,8 +52,177 @@ Documentation, including API documentation, is available via GitHub pages:
 - documentation for the development version for [fo-dicom 4](https://fo-dicom.github.io/dev/v4/index.html) and
   [fo-dicom 5](https://fo-dicom.github.io/dev/v5/index.html)
 
-
 ### Usage Notes
+
+#### Getting started in modern .NET
+
+If you are using the web application builder, you can do this:
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddFellowOakDicom();
+var app = builder.Build();
+// This is still necessary for now until fo-dicom has first-class AspNetCore integration
+DicomSetupBuilder.UseServiceProvider(app.Services);
+```
+
+If you are using the host builder, you can do this:
+
+```csharp
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices(services =>
+    {
+        services.AddFellowOakDicom();
+    })
+    .Build();
+
+// This is still necessary for now until fo-dicom has first-class AspNetCore integration
+DicomSetupBuilder.UseServiceProvider(host.Services);
+
+host.Run();
+```
+
+If you are not using the host builder, you'll need to make your own service collection:
+
+```csharp
+var services = new ServiceCollection();
+services.AddFellowOakDicom();
+var serviceProvider = services.BuildServiceProvider();
+DicomSetupBuilder.UseServiceProvider(serviceProvider);
+```
+
+#### Getting started in .NET Framework
+
+Use `DicomSetupBuilder` to configure the internals of Fellow Oak DICOM:
+
+```csharp
+new DicomSetupBuilder()
+    .RegisterServices(s => s.AddFellowOakDicom())
+.Build();
+```
+
+#### Dependency injection support
+
+Whenever you use APIs of Fellow Oak DICOM such as `DicomFile.Open`, `DicomServerFactory.Create`, the global statically registered service provider (`DicomSetupBuilder.UseServiceProvider`) will be used to resolve dependencies.  
+It is also possible to inject custom dependencies into your DICOM services, but with one important constraint: **you must have these exact three constructor parameters: INetworkStream stream, Encoding fallbackEncoding, ILogger logger**. (The names and their order don't matter, but the types do) 
+Yes, `ILogger` is a non-generic typed logger. If you want a `Logger<T>`, you can **add** an extra constructor parameter and use it however you see fit.
+
+Here is a fully standalone working example:
+
+```csharp
+using System.Text;
+using FellowOakDicom;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureLogging(logging =>
+    {
+        logging.ClearProviders();
+        logging.AddConsole();
+        logging.SetMinimumLevel(LogLevel.Information);
+    })
+    .ConfigureServices(services =>
+    {
+        services.AddFellowOakDicom();
+        services.AddHostedService<Worker>();
+        // This will be injected into the DICOM service
+        services.AddSingleton<CustomDependency>();
+    })
+    .Build();
+
+DicomSetupBuilder.UseServiceProvider(host.Services);
+
+host.Run();
+
+public class CustomDependency
+{
+    
+}
+
+public class Worker : IHostedService
+{
+    private readonly ILogger<Worker> _logger;
+    private readonly IDicomServerFactory _dicomServerFactory;
+    private readonly IDicomClientFactory _dicomClientFactory;
+    private IDicomServer? _server;
+
+    public Worker(ILogger<Worker> logger, IDicomServerFactory dicomServerFactory, IDicomClientFactory dicomClientFactory)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _dicomServerFactory = dicomServerFactory ?? throw new ArgumentNullException(nameof(dicomServerFactory));
+        _dicomClientFactory = dicomClientFactory ?? throw new ArgumentNullException(nameof(dicomClientFactory));
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Starting DICOM server");
+        _server = _dicomServerFactory.Create<EchoService>(104);
+        _logger.LogInformation("DICOM server is running");
+
+        var client = _dicomClientFactory.Create("127.0.0.1", 104, false, "AnySCU", "AnySCP");
+
+        _logger.LogInformation("Sending C-ECHO request");
+        DicomCEchoResponse? response = null;
+        await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (_, r) => response = r});
+        await client.SendAsync(cancellationToken);
+        if (response != null)
+        {
+            _logger.LogInformation("C-ECHO response received");
+        }
+        else
+        {
+            _logger.LogError("No C-ECHO response received");
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_server != null)
+        {
+            _server.Stop();
+            _server.Dispose();
+            _server = null;
+        }
+        return Task.CompletedTask;
+    }
+}
+
+public class EchoService : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+{
+    private readonly ILogger _logger;
+    private readonly CustomDependency _customDependency;
+
+    public EchoService(INetworkStream stream,
+        Encoding fallbackEncoding, 
+        ILogger logger,
+        DicomServiceDependencies dependencies,
+        CustomDependency customDependency) : base(stream, fallbackEncoding, logger, dependencies)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _customDependency = customDependency ?? throw new ArgumentNullException(nameof(customDependency));
+    }
+
+    public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) => _logger.LogInformation("Received abort");
+    public void OnConnectionClosed(Exception exception) => _logger.LogInformation("Connection closed");
+
+    public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+    {
+        foreach (DicomPresentationContext presentationContext in association.PresentationContexts)
+            presentationContext.SetResult(DicomPresentationContextResult.Accept);
+        return SendAssociationAcceptAsync(association);
+    }
+
+    public Task OnReceiveAssociationReleaseRequestAsync()
+    {
+        _logger.LogInformation("Received association release");
+        return Task.CompletedTask;
+    }
+
+    public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request) => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
+}
+```
+
 
 #### Image rendering configuration
 Out-of-the-box, *fo-dicom* defaults to an internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget package you desire and then call:
