@@ -13,13 +13,13 @@ jobs:
   net-462:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Build FO-DICOM.Core
       run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml"
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
           name: test-v5-net-462.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
@@ -27,11 +27,11 @@ jobs:
   net-60:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net6.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet60.xml"
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
           name: test-v5-net-60.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet60.xml
@@ -39,27 +39,29 @@ jobs:
   net-70:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net7.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet70.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
           name: test-v5-net-70.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet70.xml
     - name: Upload code coverage 
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   benchmarks:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net7.0
     - name: run benchmarks
       run: ./Tests/FO-DICOM.Benchmark/bin/Release/net7.0/fo-dicom.Benchmark.exe
     - name: Upload benchmark log
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: benchmark
         path: |

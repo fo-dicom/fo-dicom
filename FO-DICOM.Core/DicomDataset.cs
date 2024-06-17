@@ -26,7 +26,7 @@ namespace FellowOakDicom
         // This field is always set via the setter of InternalTransferSyntax
         // but there seemingly isn't a way to convince the C# compiler of that fact
         private DicomTransferSyntax _syntax = null!; 
-        private Encoding[] _fallbackEncodings = DicomEncoding.DefaultArray;
+        
 
         #endregion
 
@@ -130,13 +130,10 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Sets the fallback encodings that are used for string-based values if the dataset does not contain an explicit SpecificCharacterSet entry.
+        /// Gets or sets the fallback encodings that are used for string-based values if the dataset does not contain an explicit SpecificCharacterSet entry.
         /// This value is set before serializing the Dataset into a stream and when some encodings are inherited from parent datasets.
         /// </summary>
-        internal void SetFallbackEncodings(Encoding[] value)
-        {
-            _fallbackEncodings = value;
-        }
+        internal Encoding[] FallbackEncodings { get; set; } = DicomEncoding.DefaultArray;
 
         /// <summary>
         /// Gets the encodings used for string-based values by evaluating SpecificCharacterSet value or by using the fallback-encoding if there is no explicit Tag.
@@ -147,7 +144,7 @@ namespace FellowOakDicom
         {
             return TryGetValues<string>(DicomTag.SpecificCharacterSet, out var charsets)
                 ? DicomEncoding.GetEncodings(charsets)
-                : _fallbackEncodings;
+                : FallbackEncodings;
         }
 
 
