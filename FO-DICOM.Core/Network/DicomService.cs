@@ -67,8 +67,8 @@ namespace FellowOakDicom.Network
         private readonly Encoding _fallbackEncoding;
 
         private readonly ManualResetEventSlim _pduQueueWatcher;
-
-        protected readonly TaskCompletionSource<bool> _isDisconnectedFlag;
+        
+        private readonly CancellationTokenSource _isDisconnectedCancellationTokenSource;
 
         protected Stream _dimseStream;
 
@@ -95,7 +95,7 @@ namespace FellowOakDicom.Network
             ILogger logger,
             DicomServiceDependencies dependencies)
         {
-            _isDisconnectedFlag = TaskCompletionSourceFactory.Create<bool>();
+            _isDisconnectedCancellationTokenSource = new CancellationTokenSource();
             _canStillProcessPDataTF = true;
             _isInitialized = false;
             _network = stream;
@@ -160,7 +160,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets whether or not the service is connected.
         /// </summary>
-        public bool IsConnected => !_isDisconnectedFlag.Task.IsCompleted;
+        public bool IsConnected => !_isDisconnectedCancellationTokenSource.IsCancellationRequested;
 
         /// <summary>
         /// Gets whether or not both the message queue and the pending queue is empty.
@@ -201,6 +201,11 @@ namespace FellowOakDicom.Network
         /// Gets or sets the maximum number of PDUs in queue.
         /// </summary>
         public int MaximumPDUsInQueue { get; set; }
+        
+        /// <summary>
+        /// Gets a cancellation token that will trigger when the connection is closed
+        /// </summary>
+        protected CancellationToken IsDisconnectedToken => _isDisconnectedCancellationTokenSource.Token;
 
         /// <summary>
         /// Gets or sets an event handler to handle unsupported PDU bytes.
@@ -272,6 +277,7 @@ namespace FellowOakDicom.Network
                 }
                 _network?.Dispose();
                 _pduQueueWatcher?.Dispose();
+                _isDisconnectedCancellationTokenSource.Dispose();
             }
             else
             {
@@ -286,8 +292,8 @@ namespace FellowOakDicom.Network
         public virtual Task SendRequestAsync(DicomRequest request)
         {
             ThrowIfAlreadyDisposed();
-            
-            return SendMessageAsync(request);
+            var cancellationToken = _isDisconnectedCancellationTokenSource.Token;
+            return SendMessageAsync(request, cancellationToken);
         }
 
         /// <summary>
@@ -297,8 +303,8 @@ namespace FellowOakDicom.Network
         protected Task SendResponseAsync(DicomResponse response)
         {
             ThrowIfAlreadyDisposed();
-            
-            return SendMessageAsync(response);
+            var cancellationToken = _isDisconnectedCancellationTokenSource.Token;
+            return SendMessageAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -473,7 +479,7 @@ namespace FellowOakDicom.Network
             }
         }
 
-        private async Task ListenAndProcessPDUAsync()
+        private async Task ListenAndProcessPDUAsync(CancellationToken cancellationToken)
         {
             while (IsConnected)
             {
@@ -585,7 +591,7 @@ namespace FellowOakDicom.Network
                                     Association);
                                 if (this is IDicomServiceProvider provider)
                                 {
-                                    await provider.OnReceiveAssociationRequestAsync(Association).ConfigureAwait(false);
+                                    await provider.OnReceiveAssociationRequestAsync(Association, cancellationToken).ConfigureAwait(false);
                                 }
 
                                 break;
@@ -601,7 +607,7 @@ namespace FellowOakDicom.Network
                                     Association);
                                 if (this is IDicomClientConnection connection)
                                 {
-                                    await connection.OnReceiveAssociationAcceptAsync(Association).ConfigureAwait(false);
+                                    await connection.OnReceiveAssociationAcceptAsync(Association, cancellationToken).ConfigureAwait(false);
                                 }
 
                                 break;
@@ -619,7 +625,7 @@ namespace FellowOakDicom.Network
 
                                 if (this is IDicomClientConnection connection)
                                 {
-                                    await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason).ConfigureAwait(false);
+                                    await connection.OnReceiveAssociationRejectAsync(pdu.Result, pdu.Source, pdu.Reason, cancellationToken).ConfigureAwait(false);
                                 }
 
                                 if (await TryCloseConnectionAsync().ConfigureAwait(false))
@@ -638,7 +644,7 @@ namespace FellowOakDicom.Network
                                     Logger.LogInformation("{logId} <- {@pdu}", LogID, pdu);
                                 }
 
-                                await ProcessPDataTFAsync(pdu).ConfigureAwait(false);
+                                await ProcessPDataTFAsync(pdu, cancellationToken).ConfigureAwait(false);
                                 break;
                             }
                         case RawPduType.A_RELEASE_RQ:
@@ -648,7 +654,7 @@ namespace FellowOakDicom.Network
                                 Logger.LogInformation("{logId} <- Association release request", LogID);
                                 if (this is IDicomServiceProvider provider)
                                 {
-                                    await provider.OnReceiveAssociationReleaseRequestAsync().ConfigureAwait(false);
+                                    await provider.OnReceiveAssociationReleaseRequestAsync(cancellationToken).ConfigureAwait(false);
                                 }
 
                                 break;
@@ -660,7 +666,7 @@ namespace FellowOakDicom.Network
                                 Logger.LogInformation("{logId} <- Association release response", LogID);
                                 if (this is IDicomClientConnection connection)
                                 {
-                                    await connection.OnReceiveAssociationReleaseResponseAsync().ConfigureAwait(false);
+                                    await connection.OnReceiveAssociationReleaseResponseAsync(cancellationToken).ConfigureAwait(false);
                                 }
 
                                 if (await TryCloseConnectionAsync().ConfigureAwait(false))
@@ -685,7 +691,7 @@ namespace FellowOakDicom.Network
                                 }
                                 else if (this is IDicomClientConnection connection)
                                 {
-                                    await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
+                                    await connection.OnReceiveAbortAsync(pdu.Source, pdu.Reason, cancellationToken).ConfigureAwait(false);
                                 }
 
                                 if (await TryCloseConnectionAsync().ConfigureAwait(false))
@@ -731,7 +737,8 @@ namespace FellowOakDicom.Network
         /// Process P-DATA-TF PDUs.
         /// </summary>
         /// <param name="pdu">PDU to process.</param>
-        private async Task ProcessPDataTFAsync(PDataTF pdu)
+        /// <param name="cancellationToken">The token that cancels the processing</param>
+        private async Task ProcessPDataTFAsync(PDataTF pdu, CancellationToken cancellationToken)
         {
             try
             {
@@ -777,7 +784,7 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    await _dimseStream.WriteAsync(pdv.Value.Bytes, 0, pdv.Value.Length).ConfigureAwait(false);
+                    await _dimseStream.WriteAsync(pdv.Value.Bytes, 0, pdv.Value.Length, cancellationToken).ConfigureAwait(false);
 
                     if (pdv.IsLastFragment)
                     {
@@ -825,7 +832,7 @@ namespace FellowOakDicom.Network
                                 Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
                             if (!_dimse.HasDataset)
                             {
-                                await PerformDimseAsync(_dimse).ConfigureAwait(false);
+                                await PerformDimseAsync(_dimse, cancellationToken).ConfigureAwait(false);
                                 _dimse = null;
                                 return;
                             }
@@ -885,12 +892,12 @@ namespace FellowOakDicom.Network
                                     await SendResponseAsync(new DicomCStoreResponse(request, new DicomStatus(DicomStatus.ProcessingFailure, errorComment))).ConfigureAwait(false);
 
                                     Logger.LogError(e, "Error parsing C-Store dataset");
-                                    await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e);
+                                    await (this as IDicomCStoreProvider)?.OnCStoreRequestExceptionAsync(_dimseStreamFile?.Name, e, cancellationToken);
                                     return;
                                 }
                             }
 
-                            await PerformDimseAsync(_dimse).ConfigureAwait(false);
+                            await PerformDimseAsync(_dimse, cancellationToken).ConfigureAwait(false);
                             _dimse = null;
                         }
                     }
@@ -903,11 +910,11 @@ namespace FellowOakDicom.Network
             }
             finally
             {
-                await SendNextMessageAsync().ConfigureAwait(false);
+                await SendNextMessageAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private async Task PerformDimseAsync(DicomMessage dimse)
+        private async Task PerformDimseAsync(DicomMessage dimse, CancellationToken cancellationToken)
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
@@ -940,7 +947,7 @@ namespace FellowOakDicom.Network
 
                             if (this is IDicomClientConnection connection)
                             {
-                                await connection.OnRequestCompletedAsync(req, rsp).ConfigureAwait(false);
+                                await connection.OnRequestCompletedAsync(req, rsp, cancellationToken).ConfigureAwait(false);
                             }
                         }
                         else
@@ -949,7 +956,7 @@ namespace FellowOakDicom.Network
                             
                             if (this is IDicomClientConnection connection)
                             {
-                                await connection.OnRequestPendingAsync(req, rsp).ConfigureAwait(false);
+                                await connection.OnRequestPendingAsync(req, rsp, cancellationToken).ConfigureAwait(false);
                             }
                         }
                     }
@@ -962,14 +969,14 @@ namespace FellowOakDicom.Network
             {
                 if (this is IDicomCStoreProvider thisDicomCStoreProvider)
                 {
-                    var response = await thisDicomCStoreProvider.OnCStoreRequestAsync(dimse as DicomCStoreRequest).ConfigureAwait(false);
+                    var response = await thisDicomCStoreProvider.OnCStoreRequestAsync(dimse as DicomCStoreRequest, cancellationToken).ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
 
                 if (this is IDicomClientConnection connection)
                 {
-                    var response = await connection.OnCStoreRequestAsync(dimse as DicomCStoreRequest).ConfigureAwait(false);
+                    var response = await connection.OnCStoreRequestAsync(dimse as DicomCStoreRequest, cancellationToken).ConfigureAwait(false);
                     await SendResponseAsync(response).ConfigureAwait(false);
                     return;
                 }
@@ -981,7 +988,7 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCFindProvider = this as IDicomCFindProvider ?? throw new DicomNetworkException("C-Find SCP not implemented");
 
-                var asyncResponses = thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest);
+                var asyncResponses = thisAsCFindProvider.OnCFindRequestAsync(dimse as DicomCFindRequest, cancellationToken);
                 await foreach (var response in asyncResponses.ConfigureAwait(false))
                 {
                     await SendResponseAsync(response).ConfigureAwait(false);
@@ -994,7 +1001,7 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCGetProvider = this as IDicomCGetProvider ?? throw new DicomNetworkException("C-GET SCP not implemented");
 
-                var asyncResponses = thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest);
+                var asyncResponses = thisAsCGetProvider.OnCGetRequestAsync(dimse as DicomCGetRequest, cancellationToken);
                 await foreach (var response in asyncResponses.ConfigureAwait(false))
                 {
                     await SendResponseAsync(response).ConfigureAwait(false);
@@ -1007,7 +1014,7 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCMoveProvider = this as IDicomCMoveProvider ?? throw new DicomNetworkException("C-Move SCP not implemented");
 
-                var asyncResponses = thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest);
+                var asyncResponses = thisAsCMoveProvider.OnCMoveRequestAsync(dimse as DicomCMoveRequest, cancellationToken);
                 await foreach (var response in asyncResponses.ConfigureAwait(false))
                 {
                     await SendResponseAsync(response).ConfigureAwait(false);
@@ -1020,7 +1027,7 @@ namespace FellowOakDicom.Network
             {
                 var thisAsCEchoProvider = this as IDicomCEchoProvider ?? throw new DicomNetworkException("C-Echo SCP not implemented");
 
-                var response = await thisAsCEchoProvider.OnCEchoRequestAsync(dimse as DicomCEchoRequest).ConfigureAwait(false);
+                var response = await thisAsCEchoProvider.OnCEchoRequestAsync(dimse as DicomCEchoRequest, cancellationToken).ConfigureAwait(false);
                 await SendResponseAsync(response).ConfigureAwait(false);
                 return;
             }
@@ -1036,22 +1043,22 @@ namespace FellowOakDicom.Network
                     switch (dimse.Type)
                     {
                         case DicomCommandField.NActionRequest:
-                            response = await thisAsNServiceProvider.OnNActionRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
+                            response = await thisAsNServiceProvider.OnNActionRequestAsync(dimse as DicomNActionRequest, cancellationToken).ConfigureAwait(false);
                             break;
                         case DicomCommandField.NCreateRequest:
-                            response = await thisAsNServiceProvider.OnNCreateRequestAsync(dimse as DicomNCreateRequest).ConfigureAwait(false);
+                            response = await thisAsNServiceProvider.OnNCreateRequestAsync(dimse as DicomNCreateRequest, cancellationToken).ConfigureAwait(false);
                             break;
                         case DicomCommandField.NDeleteRequest:
-                            response = await thisAsNServiceProvider.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest).ConfigureAwait(false);
+                            response = await thisAsNServiceProvider.OnNDeleteRequestAsync(dimse as DicomNDeleteRequest, cancellationToken).ConfigureAwait(false);
                             break;
                         case DicomCommandField.NEventReportRequest:
-                            response = await thisAsNServiceProvider.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
+                            response = await thisAsNServiceProvider.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest, cancellationToken).ConfigureAwait(false);
                             break;
                         case DicomCommandField.NGetRequest:
-                            response = await thisAsNServiceProvider.OnNGetRequestAsync(dimse as DicomNGetRequest).ConfigureAwait(false);
+                            response = await thisAsNServiceProvider.OnNGetRequestAsync(dimse as DicomNGetRequest, cancellationToken).ConfigureAwait(false);
                             break;
                         case DicomCommandField.NSetRequest:
-                            response = await thisAsNServiceProvider.OnNSetRequestAsync(dimse as DicomNSetRequest).ConfigureAwait(false);
+                            response = await thisAsNServiceProvider.OnNSetRequestAsync(dimse as DicomNSetRequest, cancellationToken).ConfigureAwait(false);
                             break;
                     }
 
@@ -1060,7 +1067,7 @@ namespace FellowOakDicom.Network
                     if ((dimse.Type == DicomCommandField.NActionRequest) &&
                         (this is IDicomNEventReportRequestProvider thisAsAsyncNEventReportRequestProvider))
                     {
-                        await thisAsAsyncNEventReportRequestProvider.OnSendNEventReportRequestAsync(dimse as DicomNActionRequest).ConfigureAwait(false);
+                        await thisAsAsyncNEventReportRequestProvider.OnSendNEventReportRequestAsync(dimse as DicomNActionRequest, cancellationToken).ConfigureAwait(false);
                     }
 
                     return;
@@ -1071,7 +1078,7 @@ namespace FellowOakDicom.Network
                     switch (dimse.Type)
                     {
                         case DicomCommandField.NEventReportRequest:
-                            var response = await thisAsConnection.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest).ConfigureAwait(false);
+                            var response = await thisAsConnection.OnNEventReportRequestAsync(dimse as DicomNEventReportRequest, cancellationToken).ConfigureAwait(false);
                             await SendResponseAsync(response).ConfigureAwait(false);
                             break;
                     }
@@ -1084,7 +1091,7 @@ namespace FellowOakDicom.Network
             throw new DicomNetworkException("Operation not implemented");
         }
 
-        private Task SendMessageAsync(DicomMessage message)
+        private Task SendMessageAsync(DicomMessage message, CancellationToken cancellationToken)
         {
             if (message == null)
             {
@@ -1096,10 +1103,10 @@ namespace FellowOakDicom.Network
                 _msgQueue.Enqueue(message);
             }
 
-            return SendNextMessageAsync();
+            return SendNextMessageAsync(cancellationToken);
         }
-
-        internal async Task SendNextMessageAsync()
+        
+        internal async Task SendNextMessageAsync(CancellationToken cancellationToken)
         {
             ThrowIfAlreadyDisposed();
             
@@ -1107,6 +1114,8 @@ namespace FellowOakDicom.Network
 
             while (true)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 DicomMessage msg;
                 lock (_lock)
                 {
@@ -1144,14 +1153,14 @@ namespace FellowOakDicom.Network
 
                         // This call should not be awaited because it can only complete when the pending queue is empty
 #pragma warning disable 4014 
-                        Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
+                        Task.Factory.StartNew(async () => await CheckForTimeouts(cancellationToken), TaskCreationOptions.LongRunning).ConfigureAwait(false);
 #pragma warning restore 4014
                     }
                 }
 
                 try
                 {
-                    await DoSendMessageAsync(msg).ConfigureAwait(false);
+                    await DoSendMessageAsync(msg, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -1180,30 +1189,30 @@ namespace FellowOakDicom.Network
 
             if (sendQueueEmpty)
             {
-                await OnSendQueueEmptyAsync().ConfigureAwait(false);
+                await OnSendQueueEmptyAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private async Task DoSendMessageAsync(DicomMessage msg)
+        private async Task DoSendMessageAsync(DicomMessage msg, CancellationToken cancellationToken)
         {
             DicomPresentationContext pc;
             if (msg is DicomCStoreRequest dicomCStoreRequest)
             {
-                var accpetedPcs = Association.PresentationContexts
+                var acceptedPcs = Association.PresentationContexts
                     .Where(x =>
                         x.Result == DicomPresentationContextResult.Accept &&
                         x.AbstractSyntax == msg.SOPClassUID
                     );
 
-                pc = accpetedPcs.FirstOrDefault(x => x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax)
-                    ?? accpetedPcs.FirstOrDefault();
+                pc = acceptedPcs.FirstOrDefault(x => x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax)
+                    ?? acceptedPcs.FirstOrDefault();
             }
             else if (msg is DicomResponse)
             {
                 //the presentation context should be set already from the request object
                 pc = msg.PresentationContext;
 
-                //fail safe if no presentation context is already assigned to the response (is this going to happen)
+                //fail-safe if no presentation context is already assigned to the response (is this going to happen)
                 if (pc == null)
                 {
                     pc = Association.PresentationContexts.FirstOrDefault(
@@ -1284,7 +1293,7 @@ namespace FellowOakDicom.Network
 
                     if (this is IDicomClientConnection connection)
                     {
-                        await connection.OnRequestCompletedAsync(request, response).ConfigureAwait(false);
+                        await connection.OnRequestCompletedAsync(request, response, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)
@@ -1395,14 +1404,14 @@ namespace FellowOakDicom.Network
                         
                         if (deflateStream != null)
                         {
-                            await deflateStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+                            await deflateStream.FlushAsync(cancellationToken).ConfigureAwait(false);
                             
                             // Deflate stream in .NET Framework only fully flushes when disposed...
                             deflateStream.Dispose();
                         }                    
                     }
                     
-                    await pDataStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+                    await pDataStream.FlushAsync(cancellationToken).ConfigureAwait(false);
                     
                     msg.LastPDUSent = DateTime.Now;
                     msg.AllPDUsWereSentSuccessfully();
@@ -1426,9 +1435,9 @@ namespace FellowOakDicom.Network
             }
         }
 
-        private async Task CheckForTimeouts()
+        private async Task CheckForTimeouts(CancellationToken cancellationToken)
         {
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 if (Options?.RequestTimeout == null)
                 {
@@ -1462,15 +1471,17 @@ namespace FellowOakDicom.Network
                             DicomRequest timedOutPendingRequest = timedOutPendingRequests[i];
                             try
                             {
-                                Logger.LogWarning($"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
-                                timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest, new DicomRequest.OnTimeoutEventArgs(requestTimeout));
+                                Logger.LogWarning(
+                                    $"Request [{timedOutPendingRequest.MessageID}] timed out, removing from pending queue and triggering timeout callbacks");
+                                timedOutPendingRequest.OnTimeout?.Invoke(timedOutPendingRequest,
+                                    new DicomRequest.OnTimeoutEventArgs(requestTimeout));
                             }
                             finally
                             {
                                 lock (_lock)
                                 {
                                     _pending.Remove(timedOutPendingRequest);
-                                    
+
                                     if (timedOutPendingRequest.AllPDUsSent.Status != TaskStatus.RanToCompletion)
                                     {
                                         _canStillProcessPDataTF = false;
@@ -1480,13 +1491,18 @@ namespace FellowOakDicom.Network
 
                                 if (this is IDicomClientConnection connection)
                                 {
-                                    await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout).ConfigureAwait(false);
+                                    await connection.OnRequestTimedOutAsync(timedOutPendingRequest, requestTimeout, cancellationToken)
+                                        .ConfigureAwait(false);
                                 }
                             }
                         }
                     }
 
-                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
                 }
                 catch (Exception e)
                 {
@@ -1549,7 +1565,7 @@ namespace FellowOakDicom.Network
 
             lock (_lock)
             {
-                _isDisconnectedFlag.TrySetResult(true);
+                _isDisconnectedCancellationTokenSource.Cancel();
                 // Unblock other threads waiting to write another PDU that don't realize the connection is being closed
                 _pduQueueWatcher.Set();
             }
@@ -1682,14 +1698,15 @@ namespace FellowOakDicom.Network
             }
 
             _isInitialized = true;
-
-            return ListenAndProcessPDUAsync();
+            var cancellationToken = _isDisconnectedCancellationTokenSource.Token;
+            return ListenAndProcessPDUAsync(cancellationToken);
         }
 
         /// <summary>
         /// Action to perform when send queue is empty.
         /// </summary>
-        protected virtual Task OnSendQueueEmptyAsync()
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        protected virtual Task OnSendQueueEmptyAsync(CancellationToken cancellationToken)
             => Task.CompletedTask;
 
         #endregion

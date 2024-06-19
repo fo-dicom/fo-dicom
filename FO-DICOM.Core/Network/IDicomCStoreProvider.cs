@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
@@ -20,8 +21,9 @@ namespace FellowOakDicom.Network
         /// behavior (e.g. writing to your own custom stream and avoiding the temporary file)
         /// </summary>
         /// <param name="request">C-STORE request.</param>
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
         /// <returns>C-STORE response.</returns>
-        Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
+        Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback for exceptions raised during the parsing of the received SopInstance.  Note that
@@ -29,7 +31,8 @@ namespace FellowOakDicom.Network
         /// desired.
         /// </summary>
         /// <param name="tempFileName">Name of the temporary file, may be null.</param>
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
         /// <param name="e">Thrown exception.</param>
-        Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e);
+        Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken);
     }
 }
