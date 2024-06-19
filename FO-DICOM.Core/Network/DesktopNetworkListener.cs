@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.Logging;
@@ -35,9 +34,9 @@ namespace FellowOakDicom.Network
         /// <param name="port">
         /// TCP/IP port to listen to.
         /// </param>
-        internal DesktopNetworkListener(string ipAddress, int port)
+        internal DesktopNetworkListener(string? ipAddress, int port)
         {
-            if (!IPAddress.TryParse(ipAddress, out IPAddress addr))
+            if (!IPAddress.TryParse(ipAddress!, out IPAddress addr))
             {
                 addr = IPAddress.Any;
             }
@@ -61,8 +60,8 @@ namespace FellowOakDicom.Network
         public void Stop() => _listener.Stop();
 
         /// <inheritdoc />
-        public async Task<INetworkStream> AcceptNetworkStreamAsync(
-            ITlsAcceptor tlsAcceptor,
+        public async Task<INetworkStream?> AcceptNetworkStreamAsync(
+            ITlsAcceptor? tlsAcceptor,
             bool noDelay,
             int? receiveBufferSize,
             int? sendBufferSize,

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections.Generic;
@@ -56,7 +55,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             var server = DicomServerFactory.Create<TProvider, TServer>(ipAddress, port, logger: logger);
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
-            return server as TServer;
+            return (TServer)server;
         }
 
         #endregion
@@ -96,8 +95,8 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
             openAssociationRequest.ExtendedNegotiations.AddFromRequest(cEchoRequest);
 
-            IAdvancedDicomClientAssociation association = null;
-            DicomAssociationRejectedException exception = null;
+            IAdvancedDicomClientAssociation? association = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 association = await connection.OpenAssociationAsync(openAssociationRequest, cancellationToken);
@@ -570,7 +569,10 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
 
                 foreach (var exNeg in association.ExtendedNegotiations)
                 {
-                    exNeg.AcceptApplicationInfo(exNeg.RequestedApplicationInfo);
+                    if (exNeg.RequestedApplicationInfo != null)
+                    {
+                        exNeg.AcceptApplicationInfo(exNeg.RequestedApplicationInfo);
+                    }
                 }
 
                 if (association.CalledAE.Equals("ANY-SCP", StringComparison.OrdinalIgnoreCase))
@@ -589,7 +591,7 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 

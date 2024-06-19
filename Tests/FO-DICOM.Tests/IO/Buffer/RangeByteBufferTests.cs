@@ -4,7 +4,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom.IO.Buffer;
@@ -24,7 +23,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         public void Data_CompareWithInitializer_ExactMatch(int offset, int count)
         {
             // Arrange
-            var bytes = Enumerable.Range(0, 255).Select(i => (byte)i).ToArray();
+            var bytes = new byte[255];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte)i;
+            }
             var expected = new ArraySegment<byte>(bytes, offset, count);
             var buffer = new RangeByteBuffer(new MemoryByteBuffer(bytes), offset, count);
 
@@ -48,7 +51,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         public void GetByteRange_CompareWithInitializer_ExactMatch(int ctorOffset, int ctorCount, int byteRangeOffset, int byteRangeCount)
         {
             // Arrange
-            var bytes = Enumerable.Range(0, 255).Select(i => (byte)i).ToArray();
+            var bytes = new byte[255];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte)i;
+            }
             var buffer = new RangeByteBuffer(new MemoryByteBuffer(bytes), ctorOffset, ctorCount);
             var expected = new ArraySegment<byte>(bytes, ctorOffset + byteRangeOffset, Math.Min(ctorCount, byteRangeCount));
 
@@ -65,7 +72,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         public void GetByteRange_WhenBufferIsSmallerThanRequestedCount_Throws()
         {
             // Arrange
-            var bytes = Enumerable.Range(0, 255).Select(i => (byte)i).ToArray();
+            var bytes = new byte[255];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte)i;
+            }
             var rangeByteBuffer = new RangeByteBuffer(new MemoryByteBuffer(bytes), 0, 255);
 
             // Act + Assert
@@ -85,7 +96,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         public void CopyToStream_ShouldWorkCorrectly(int total, int offset, int count)
         {
             // Arrange
-            var bytes = Enumerable.Range(0, total).Select(i => (byte)i).ToArray();
+            var bytes = new byte[total];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte)i;
+            }
             using var outputMs = new MemoryStream(bytes.Length);
             var buffer = new RangeByteBuffer(new MemoryByteBuffer(bytes), offset, count);
             var expected = new ArraySegment<byte>(bytes, offset, count);
@@ -111,7 +126,11 @@ namespace FellowOakDicom.Tests.IO.Buffer
         public async Task CopyToStreamAsync_ShouldWorkCorrectly(int total, int offset, int count)
         {
             // Arrange
-            var bytes = Enumerable.Range(0, total).Select(i => (byte)i).ToArray();
+            var bytes = new byte[total];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte)i;
+            }
             using var inputMs = new MemoryStream(bytes);
             using var outputMs = new MemoryStream(bytes.Length);
             var buffer = new RangeByteBuffer(new MemoryByteBuffer(bytes), offset, count);

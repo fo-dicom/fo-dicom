@@ -57,7 +57,7 @@ namespace FellowOakDicom.Tests.Helpers
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) { }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception) { }
+        public void OnConnectionClosed(Exception? exception) { }
 
         public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
         {

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Threading.Tasks;
@@ -30,6 +29,6 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="tempFileName">Name of the temporary file, may be null.</param>
         /// <param name="e">Thrown exception.</param>
-        Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e);
+        Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e);
     }
 }

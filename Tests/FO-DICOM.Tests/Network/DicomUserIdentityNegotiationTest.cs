@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
@@ -79,7 +78,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void DicomUserIdentityNegotiation_ShouldCorrectlyValidate()
         {
-            ArgumentNullException nullUserIdentityTypeException = null;
+            ArgumentNullException? nullUserIdentityTypeException = null;
             try
             {
                 var userIdentity = new DicomUserIdentityNegotiation();
@@ -90,7 +89,7 @@ namespace FellowOakDicom.Tests.Network
                 nullUserIdentityTypeException = e;
             }
 
-            ArgumentException populatedSecondaryFieldException = null;
+            ArgumentException? populatedSecondaryFieldException = null;
             try
             {
                 var userIdentity = new DicomUserIdentityNegotiation
@@ -107,7 +106,7 @@ namespace FellowOakDicom.Tests.Network
                 populatedSecondaryFieldException = e;
             }
 
-            ArgumentException validException = null;
+            ArgumentException? validException = null;
             try
             {
                 var userIdentity = new DicomUserIdentityNegotiation
@@ -160,7 +159,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            ArgumentException exception = null;
+            ArgumentException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -199,7 +198,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -219,7 +218,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
 
-            ArgumentException exception = null;
+            ArgumentException? exception = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -243,7 +242,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using var server = CreateServer<MockUserIdentityUnawareCEchoProvider>(port);
 
-            DicomNetworkException nonSuccessfulException = null;
+            DicomNetworkException? nonSuccessfulException = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -264,7 +263,7 @@ namespace FellowOakDicom.Tests.Network
                 nonSuccessfulException = e;
             }
 
-            DicomNetworkException successfulExceptionPositiveResponseRequested = null;
+            DicomNetworkException? successfulExceptionPositiveResponseRequested = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -285,7 +284,7 @@ namespace FellowOakDicom.Tests.Network
                 successfulExceptionPositiveResponseRequested = e;
             }
 
-            DicomNetworkException successfulExceptionRequireSuccessfulUserIdentityNegotiation = null;
+            DicomNetworkException? successfulExceptionRequireSuccessfulUserIdentityNegotiation = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -317,7 +316,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -364,7 +363,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -384,8 +383,8 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
 
-            DicomAssociationRejectedException exception = null;
-            DicomAssociation association = null;
+            DicomAssociationRejectedException? exception = null;
+            DicomAssociation? association = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -414,7 +413,7 @@ namespace FellowOakDicom.Tests.Network
             Assert.NotNull(association);
             Assert.NotNull(association.UserIdentityNegotiation);
             Assert.Equal(DicomUserIdentityType.Username, association.UserIdentityNegotiation.UserIdentityType);
-            Assert.Empty(association.UserIdentityNegotiation.ServerResponse);
+            Assert.Empty(association.UserIdentityNegotiation.ServerResponse!);
         }
 
         [Fact]
@@ -448,7 +447,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -458,7 +457,7 @@ namespace FellowOakDicom.Tests.Network
                 Assert.NotNull(association.Association);
                 Assert.NotNull(association.Association.UserIdentityNegotiation);
                 Assert.Equal(DicomUserIdentityType.Username, association.Association.UserIdentityNegotiation.UserIdentityType);
-                Assert.Empty(association.Association.UserIdentityNegotiation.ServerResponse);
+                Assert.Empty(association.Association.UserIdentityNegotiation.ServerResponse!);
             }
             catch (DicomAssociationRejectedException e)
             {
@@ -500,7 +499,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -510,7 +509,7 @@ namespace FellowOakDicom.Tests.Network
                 Assert.NotNull(association.Association);
                 Assert.NotNull(association.Association.UserIdentityNegotiation);
                 Assert.Equal(DicomUserIdentityType.UsernameAndPasscode, association.Association.UserIdentityNegotiation.UserIdentityType);
-                Assert.Empty(association.Association.UserIdentityNegotiation.ServerResponse);
+                Assert.Empty(association.Association.UserIdentityNegotiation.ServerResponse!);
             }
             catch (DicomAssociationRejectedException e)
             {
@@ -551,7 +550,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -602,7 +601,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -653,7 +652,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -709,7 +708,7 @@ namespace FellowOakDicom.Tests.Network
 
             openAssociationRequest.PresentationContexts.AddFromRequest(cEchoRequest);
 
-            DicomAssociationRejectedException exception = null;
+            DicomAssociationRejectedException? exception = null;
             try
             {
                 using var association = await connection.OpenAssociationAsync(openAssociationRequest, CancellationToken.None);
@@ -733,8 +732,8 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
 
-            DicomAssociationRejectedException exception = null;
-            DicomCEchoResponse echoResponse = null;
+            DicomAssociationRejectedException? exception = null;
+            DicomCEchoResponse? echoResponse = null;
             try
             {
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
@@ -942,7 +941,7 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 
@@ -978,7 +977,7 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public void OnConnectionClosed(Exception exception)
+            public void OnConnectionClosed(Exception? exception)
             {
             }
 

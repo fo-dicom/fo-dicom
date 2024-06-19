@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Client;
 using System.Collections.Generic;
@@ -51,7 +50,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>Gets the DICOM file associated with this DICOM C-Store request.</summary>
-        public DicomFile File { get; internal set; }
+        public DicomFile? File { get; internal set; }
 
         /// <summary>Gets the SOP Instance UID of the DICOM file associated with this DICOM C-Store request.</summary>
         public DicomUID SOPInstanceUID
@@ -61,7 +60,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <summary>Gets the transfer syntax of the DICOM file associated with this DICOM C-Store request.</summary>
-        public DicomTransferSyntax TransferSyntax
+        public DicomTransferSyntax? TransferSyntax
             =>
                 File != null
                     ? (File.FileMetaInfo.Contains(DicomTag.TransferSyntaxUID)
@@ -74,7 +73,7 @@ namespace FellowOakDicom.Network
         ///
         /// DICOM dataset will be transcoded on the fly if necessary.
         /// </summary>
-        public DicomTransferSyntax[] AdditionalTransferSyntaxes { get; set; }
+        public DicomTransferSyntax[]? AdditionalTransferSyntaxes { get; set; }
 
         /// <summary>
         /// If set, the default transfer syntax (Implicit VR Little Endian) will
@@ -86,12 +85,12 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the (optional) Common Extended Negotiation Service Class UID.
         /// </summary>
-        public DicomUID CommonServiceClassUid { get; set; }
+        public DicomUID? CommonServiceClassUid { get; set; }
 
         /// <summary>
         /// Gets or sets the (optional) Common Extended Negotiation Related General SOP Class Identification
         /// </summary>
-        public List<DicomUID> RelatedGeneralSopClasses { get; set; }
+        public List<DicomUID>? RelatedGeneralSopClasses { get; set; }
 
         /// <summary>
         /// Represents a callback method to be executed when the response for the DICOM C-Store request is received.
@@ -101,7 +100,7 @@ namespace FellowOakDicom.Network
         public delegate void ResponseDelegate(DicomCStoreRequest request, DicomCStoreResponse response);
 
         /// <summary>Delegate to be executed when the response for the DICOM C-Store request is received.</summary>
-        public ResponseDelegate OnResponseReceived;
+        public ResponseDelegate? OnResponseReceived;
 
         /// <summary>
         /// Internal. Executes the DICOM C-Store response callback.

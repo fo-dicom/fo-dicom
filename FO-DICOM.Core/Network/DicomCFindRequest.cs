@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 
@@ -105,7 +104,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the response received event handler.
         /// </summary>
-        public ResponseDelegate OnResponseReceived;
+        public ResponseDelegate? OnResponseReceived;
 
         #endregion
 
@@ -132,7 +131,7 @@ namespace FellowOakDicom.Network
         /// <param name="patientId">Patient ID</param>
         /// <param name="patientName">Patient name.</param>
         /// <returns>C-FIND patient query object.</returns>
-        public static DicomCFindRequest CreatePatientQuery(string patientId = null, string patientName = null)
+        public static DicomCFindRequest CreatePatientQuery(string? patientId = null, string? patientName = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
@@ -155,13 +154,13 @@ namespace FellowOakDicom.Network
         /// <param name="studyInstanceUid">Study instance UID.</param>
         /// <returns>C-FIND study query object.</returns>
         public static DicomCFindRequest CreateStudyQuery(
-            string patientId = null,
-            string patientName = null,
-            DicomDateRange studyDateTime = null,
-            string accession = null,
-            string studyId = null,
-            string modalitiesInStudy = null,
-            string studyInstanceUid = null)
+            string? patientId = null,
+            string? patientName = null,
+            DicomDateRange? studyDateTime = null,
+            string? accession = null,
+            string? studyId = null,
+            string? modalitiesInStudy = null,
+            string? studyInstanceUid = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);
@@ -187,7 +186,7 @@ namespace FellowOakDicom.Network
         /// <param name="studyInstanceUid">Study instance UID.</param>
         /// <param name="modality">Modality.</param>
         /// <returns>C-FIND series query object.</returns>
-        public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid, string modality = null)
+        public static DicomCFindRequest CreateSeriesQuery(string studyInstanceUid, string? modality = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Series);
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
@@ -211,7 +210,7 @@ namespace FellowOakDicom.Network
         public static DicomCFindRequest CreateImageQuery(
             string studyInstanceUid,
             string seriesInstanceUid,
-            string modality = null)
+            string? modality = null)
         {
             var dimse = new DicomCFindRequest(DicomQueryRetrieveLevel.Image);
             dimse.Dataset.Add(DicomTag.StudyInstanceUID, studyInstanceUid);
@@ -233,12 +232,12 @@ namespace FellowOakDicom.Network
         /// <param name="scheduledDateTime">Scheduled procedure step start time.</param>
         /// <returns>C-FIND modality worklist query object.</returns>
         public static DicomCFindRequest CreateWorklistQuery(
-            string patientId = null,
-            string patientName = null,
-            string stationAE = null,
-            string stationName = null,
-            string modality = null,
-            DicomDateRange scheduledDateTime = null)
+            string? patientId = null,
+            string? patientName = null,
+            string? stationAE = null,
+            string? stationName = null,
+            string? modality = null,
+            DicomDateRange? scheduledDateTime = null)
         {
             var dimse = new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFind);
             dimse.Dataset.Add(DicomTag.PatientID, patientId);

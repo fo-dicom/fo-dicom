@@ -1,4 +1,7 @@
 ### 5.1.3 (TBD)
+- **Breaking change<sup>1</sup>**: Add nullability annotations (#1699)
+
+**1.** This is a breaking change because it will cause compiler warnings, which can be promoted to errors with [TreatWarningsAsErrors](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#treatwarningsaserrors)
 
 - **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)

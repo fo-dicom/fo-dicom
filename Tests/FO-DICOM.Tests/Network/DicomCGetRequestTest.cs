@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System.Collections.Generic;
 using System.Threading;
@@ -30,7 +29,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomTransferSyntax.ImplicitVRBigEndian);
             client.AdditionalPresentationContexts.AddRange(pcs);
 
-            DicomDataset dataset = null;
+            DicomDataset? dataset = null;
             client.OnCStoreRequest = request =>
                 {
                     dataset = request.Dataset;
@@ -50,7 +49,7 @@ namespace FellowOakDicom.Tests.Network
             await client.SendAsync();
             handle.Wait();
 
-            Assert.Equal("RT ANKLE", dataset.GetString(DicomTag.StudyDescription));
+            Assert.Equal("RT ANKLE", dataset!.GetString(DicomTag.StudyDescription));
         }
 
 

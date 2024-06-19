@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Log;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,7 +85,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             cancellationToken.ThrowIfCancellationRequested();
             
-            INetworkStream networkStream = null;
+            INetworkStream? networkStream = null;
 
             try
             {

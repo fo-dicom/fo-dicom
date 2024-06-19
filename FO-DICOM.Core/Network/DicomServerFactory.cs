@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Text;
@@ -26,11 +25,11 @@ namespace FellowOakDicom.Network
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         IDicomServer Create<T>(
             int port,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            object userState = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider;
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            object? userState = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
         /// Creates a DICOM server object.
@@ -45,13 +44,13 @@ namespace FellowOakDicom.Network
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         IDicomServer Create<T>(
-            string ipAddress,
+            string? ipAddress,
             int port,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            object userState = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider;
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            object? userState = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider;
         
         /// <summary>
         /// Creates a DICOM server object.
@@ -67,13 +66,13 @@ namespace FellowOakDicom.Network
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
         IDicomServer Create<T, TServer>(
-            string ipAddress,
+            string? ipAddress,
             int port,
-            object userState = null,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>;
+            object? userState = null,
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>;
     }
 
     public static class DicomServerFactory
@@ -91,11 +90,11 @@ namespace FellowOakDicom.Network
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         public static IDicomServer Create<T>(
             int port,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            object userState = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            object? userState = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T>(port, tlsAcceptor, fallbackEncoding, logger, userState, configure);
 
@@ -112,13 +111,13 @@ namespace FellowOakDicom.Network
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
         public static IDicomServer Create<T>(
-            string ipAddress,
+            string? ipAddress,
             int port,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            object userState = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            object? userState = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T>(ipAddress, port, tlsAcceptor, fallbackEncoding, logger, userState, configure);
 
@@ -136,13 +135,13 @@ namespace FellowOakDicom.Network
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
         public static IDicomServer Create<T, TServer>(
-            string ipAddress,
+            string? ipAddress,
             int port,
-            object userState = null,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>
+            object? userState = null,
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider where TServer : IDicomServer<T>
             => Setup.ServiceProvider
             .GetRequiredService<IDicomServerFactory>().Create<T, TServer>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
     }
@@ -168,34 +167,36 @@ namespace FellowOakDicom.Network
 
         public IDicomServer Create<T>(
             int port,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null, 
-            ILogger logger = null,
-            object userState = null,
-            Action<DicomServerOptions> configure = null)
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null, 
+            ILogger? logger = null,
+            object? userState = null,
+            Action<DicomServerOptions>? configure = null)
             where T : DicomService, IDicomServiceProvider 
             => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
 
         public IDicomServer Create<T>(
-            string ipAddress,
+            string? ipAddress,
             int port, 
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null, 
-            object userState = null,
-            Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null, 
+            object? userState = null,
+            Action<DicomServerOptions>? configure = null) where T : DicomService, IDicomServiceProvider
             => Create<T, DicomServer<T>>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
 
         public virtual IDicomServer Create<TServiceProvider, TServer>(
-            string ipAddress,
+            string? ipAddress,
             int port,
-            object userState = null,
-            ITlsAcceptor tlsAcceptor = null,
-            Encoding fallbackEncoding = null,
-            ILogger logger = null,
-            Action<DicomServerOptions> configure = null) where TServiceProvider : DicomService, IDicomServiceProvider where TServer : IDicomServer<TServiceProvider>
+            object? userState = null,
+            ITlsAcceptor? tlsAcceptor = null,
+            Encoding? fallbackEncoding = null,
+            ILogger? logger = null,
+            Action<DicomServerOptions>? configure = null) where TServiceProvider : DicomService, IDicomServiceProvider where TServer : IDicomServer<TServiceProvider>
         {
             var dicomServerScope = _serviceScopeFactory.CreateScope();
+
+            ipAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress!;
             
             if (!_dicomServerRegistry.IsAvailable(port, ipAddress))
             {

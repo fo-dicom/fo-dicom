@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom.Network.Client.Advanced.Association
 {
@@ -12,12 +11,12 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// <summary>
         /// Gets the calling application entity.
         /// </summary>
-        public string CallingAE { get; set; }
+        public string? CallingAE { get; set; }
 
         /// <summary>
         /// Gets the called application entity.
         /// </summary>
-        public string CalledAE { get; set; }
+        public string? CalledAE { get; set; }
 
         /// <summary>
         /// Gets or sets the supported maximum number of asynchronous operations invoked.
@@ -42,7 +41,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         /// <summary>
         /// Gets or sets the user identity negotiation information
         /// </summary>
-        public DicomUserIdentityNegotiation UserIdentityNegotiation { get; set; }
+        public DicomUserIdentityNegotiation? UserIdentityNegotiation { get; set; }
 
         public AdvancedDicomClientAssociationRequest()
         {

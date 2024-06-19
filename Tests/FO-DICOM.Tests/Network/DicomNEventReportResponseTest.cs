@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using Xunit;
@@ -56,7 +55,7 @@ namespace FellowOakDicom.Tests.Network
             var port = Ports.GetNext();
             using (DicomServerFactory.Create<SimpleStorageComitmentProvider>(port))
             {
-                DicomStatus status = null;
+                DicomStatus? status = null;
                 int verifiedInstances = 0;
                 DateTime stampNActionResponse = DateTime.MinValue;
                 DateTime stampNEventReportRequest = DateTime.MinValue;
@@ -147,7 +146,7 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
         }
 

@@ -1,6 +1,5 @@
 // Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Tls;
 using FellowOakDicom.Tools;
@@ -8,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -46,17 +47,17 @@ namespace FellowOakDicom.Network
         /// </summary>
         private readonly TaskCompletionSource<bool> _stopped;
         
-        private string _ipAddress;
+        private string? _ipAddress;
 
         private int _port;
 
-        private ILogger _logger;
+        private ILogger? _logger;
 
-        private object _userState;
+        private object? _userState;
 
-        private ITlsAcceptor _tlsAcceptor;
+        private ITlsAcceptor? _tlsAcceptor;
 
-        private Encoding _fallbackEncoding;
+        private Encoding? _fallbackEncoding;
 
         private bool _isIpAddressSet;
 
@@ -66,9 +67,9 @@ namespace FellowOakDicom.Network
 
         private bool _disposed;
 
-        private SemaphoreSlim _maxClientsSemaphore;
+        private SemaphoreSlim? _maxClientsSemaphore;
         
-        private DicomServerOptions _serverOptions;
+        private DicomServerOptions? _serverOptions;
 
         #endregion
 
@@ -103,7 +104,7 @@ namespace FellowOakDicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        public virtual string IPAddress
+        public virtual string? IPAddress
         {
             get => _ipAddress;
             protected set
@@ -138,9 +139,10 @@ namespace FellowOakDicom.Network
         public bool IsListening { get; protected set; }
 
         /// <inheritdoc />
-        public Exception Exception { get; protected set; }
+        public Exception? Exception { get; protected set; }
 
-        public DicomServiceOptions Options { get; private set; }
+        [NotNull]
+        public DicomServiceOptions? Options { get; private set; }
 
         /// <inheritdoc />
         public ILogger Logger
@@ -150,10 +152,12 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public IServiceScope ServiceScope { get; set; }
+        [NotNull] 
+        public  IServiceScope? ServiceScope { get; set; }
 
         /// <inheritdoc />
-        public DicomServerRegistration Registration { get; set; }
+        [NotNull]
+        public DicomServerRegistration? Registration { get; set; }
 
         /// <summary>
         /// Gets the number of clients currently connected to the server.
@@ -177,8 +181,8 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
-            DicomServiceOptions serviceOptions, object userState, DicomServerOptions serverOptions)
+        public virtual Task StartAsync(string? ipAddress, int port, ITlsAcceptor? tlsAcceptor, Encoding? fallbackEncoding,
+            DicomServiceOptions serviceOptions, object? userState, DicomServerOptions serverOptions)
         {
             if (_wasStarted)
             {
@@ -186,7 +190,7 @@ namespace FellowOakDicom.Network
             }
             _wasStarted = true;
 
-            IPAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress;
+            IPAddress = string.IsNullOrEmpty(ipAddress?.Trim()) ? NetworkManager.IPv4Any : ipAddress!;
             Port = port;
 
             _serverOptions = serverOptions;
@@ -253,7 +257,7 @@ namespace FellowOakDicom.Network
         protected virtual T CreateScp(INetworkStream stream)
         {
             var creator = ActivatorUtilities.CreateFactory(typeof(T), new[] { typeof(INetworkStream), typeof(Encoding), typeof(ILogger) });
-            var instance = (T)creator(ServiceScope.ServiceProvider, new object[] { stream, _fallbackEncoding, Logger });
+            var instance = (T)creator(ServiceScope.ServiceProvider, new object?[] { stream, _fallbackEncoding, Logger });
             
             // Please do not use property injection. See https://stackoverflow.com/a/39853478/563070
             /*foreach (var propertyInfo in typeof(T).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
@@ -278,22 +282,22 @@ namespace FellowOakDicom.Network
         /// </summary>
         private async Task ListenForConnectionsAsync()
         {
-            INetworkListener listener = null;
+            INetworkListener? listener = null;
             try
             {
                 listener = _networkManager.CreateNetworkListener(IPAddress, Port);
                 await listener.StartAsync().ConfigureAwait(false);
                 IsListening = true;
 
-                var maxClientsAllowed = _serverOptions.MaxClientsAllowed;
+                var maxClientsAllowed = _serverOptions!.MaxClientsAllowed;
 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
-                    if (maxClientsAllowed > 0)
+                    if (_maxClientsSemaphore != null)
                     {
                         // If max clients is configured and the limit is reached
                         // we need to wait until one of the existing clients closes its connection
-                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken).ConfigureAwait(false))
+                        while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken))
                         {
                             Logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
                                                "but we still cannot accept another incoming connection " +
@@ -309,10 +313,7 @@ namespace FellowOakDicom.Network
                     if (networkStream != null)
                     {
                         var scp = CreateScp(networkStream);
-                        if (Options != null)
-                        {
-                            scp.Options = Options;
-                        }
+                        scp.Options = Options;
 
                         var serviceTask = scp.RunAsync();
                         int numberOfServices;
@@ -321,12 +322,11 @@ namespace FellowOakDicom.Network
                             _services.Add(new RunningDicomService(scp, serviceTask));
                             numberOfServices = _services.Count;
                         }
-
+                        
                         Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
-
+                        
                         // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
-                        // Fire and forget
-                        _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
+                        await _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
                         
                         if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                         {
@@ -358,7 +358,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         private async Task RemoveUnusedServicesAsync()
         {
-            int maxClientsAllowed = _serverOptions.MaxClientsAllowed;
+            int maxClientsAllowed = _serverOptions!.MaxClientsAllowed;
             while (!_cancellationToken.IsCancellationRequested)
             {
                 try
@@ -542,7 +542,6 @@ namespace FellowOakDicom.Network
             {
                 Service = service ?? throw new ArgumentNullException(nameof(service));
                 Task = task ?? throw new ArgumentNullException(nameof(task));
-                Task.ContinueWith((t) => Service.Dispose());
             }
 
             public void Dispose() => Service.Dispose();

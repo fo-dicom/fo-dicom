@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Collections.Generic;
@@ -195,14 +194,14 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
         }
 
         public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
             => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success) { Dataset = request.Dataset });
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string? tempFileName, Exception e)
             => Task.CompletedTask;
 
         public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)

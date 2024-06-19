@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 namespace FellowOakDicom.Network
 {
@@ -49,9 +48,9 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the list of attribute identifiers.
         /// </summary>
-        public DicomTag[] Attributes
+        public DicomTag[]? Attributes
         {
-            get => Command.TryGetValues<DicomTag>(DicomTag.AttributeIdentifierList, out DicomTag[] dummy) ? dummy : null;
+            get => Command.TryGetValues<DicomTag>(DicomTag.AttributeIdentifierList, out DicomTag[]? dummy) ? dummy : null;
             private set => Command.AddOrUpdate(DicomTag.AttributeIdentifierList, value);
         }
 
@@ -69,7 +68,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the handler for the N-GET response received event.
         /// </summary>
-        public ResponseDelegate OnResponseReceived;
+        public ResponseDelegate? OnResponseReceived;
 
         #endregion
 

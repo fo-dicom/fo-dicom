@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using System.Collections.Generic;
@@ -53,7 +52,7 @@ namespace FellowOakDicom.Tests.Network
         public void SetResult_TwoArgumentAcceptTransferSyntaxNull_Throws()
         {
             var context = new DicomPresentationContext(0x03, DicomUID.RTPlanStorage);
-            var exception = Record.Exception(() => context.SetResult(DicomPresentationContextResult.Accept, null));
+            var exception = Record.Exception(() => context.SetResult(DicomPresentationContextResult.Accept, null!));
             Assert.IsType<DicomNetworkException>(exception);
         }
 
@@ -69,7 +68,7 @@ namespace FellowOakDicom.Tests.Network
         public void SetResult_TwoArgumentNotAcceptTransferSyntaxNull_DoesNotThrow()
         {
             var context = new DicomPresentationContext(0x03, DicomUID.RTPlanStorage);
-            var exception = Record.Exception(() => context.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, null));
+            var exception = Record.Exception(() => context.SetResult(DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, null!));
             Assert.Null(exception);
         }
 
@@ -95,15 +94,15 @@ namespace FellowOakDicom.Tests.Network
 
         #region Support Data
 
-        public static readonly IEnumerable<object[]> ResultsAcceptedTransferSyntaxes = new object[][]
+        public static readonly IEnumerable<object?[]> ResultsAcceptedTransferSyntaxes = new object?[][]
         {
-            new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.DeflatedExplicitVRLittleEndian },
-           new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.JPEG2000Lossless },
-           new object[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.HTJ2KLossless },
+           new object?[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.DeflatedExplicitVRLittleEndian },
+           new object?[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.JPEG2000Lossless },
+           new object?[] { DicomPresentationContextResult.Accept, DicomTransferSyntax.HTJ2KLossless },
            new object[] { DicomPresentationContextResult.RejectAbstractSyntaxNotSupported, DicomTransferSyntax.ExplicitVRLittleEndian },
-           new object[] { DicomPresentationContextResult.RejectNoReason, null },
-           new object[] { DicomPresentationContextResult.RejectTransferSyntaxesNotSupported, null },
-           new object[] { DicomPresentationContextResult.RejectUser, DicomTransferSyntax.ExplicitVRLittleEndian }
+           new object?[] { DicomPresentationContextResult.RejectNoReason, null },
+           new object?[] { DicomPresentationContextResult.RejectTransferSyntaxesNotSupported, null },
+           new object?[] { DicomPresentationContextResult.RejectUser, DicomTransferSyntax.ExplicitVRLittleEndian }
         };
 
         #endregion

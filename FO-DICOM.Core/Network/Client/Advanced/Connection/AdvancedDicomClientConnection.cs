@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Client.Advanced.Association;
 using Microsoft.Extensions.Logging;
@@ -47,14 +46,14 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         private readonly IAdvancedDicomClientConnectionEventCollector _eventCollector;
         private int _isAssociationOpened;
         public INetworkStream NetworkStream { get; }
-        public Task Listener { get; private set; }
+        public Task? Listener { get; private set; }
         public new bool IsSendNextMessageRequired => base.IsSendNextMessageRequired;
         IAdvancedDicomClientConnectionEventCollector IAdvancedDicomClientConnection.EventCollector => _eventCollector;
 
         public AdvancedDicomClientConnection(
             IAdvancedDicomClientConnectionEventCollector eventCollector,
             INetworkStream networkStream,
-            Encoding fallbackEncoding,
+            Encoding? fallbackEncoding,
             DicomServiceOptions dicomServiceOptions,
             ILogger logger,
             DicomServiceDependencies dependencies) : base(networkStream, fallbackEncoding, logger, dependencies)
@@ -89,7 +88,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         public Task OnReceiveAssociationReleaseResponseAsync() => _eventCollector.OnReceiveAssociationReleaseResponseAsync();
         public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _eventCollector.OnReceiveAbortAsync(source, reason);
-        public Task OnConnectionClosedAsync(Exception exception) => _eventCollector.OnConnectionClosedAsync(exception);
+        public Task OnConnectionClosedAsync(Exception? exception) => _eventCollector.OnConnectionClosedAsync(exception);
         public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestCompletedAsync(request, response);
         public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestPendingAsync(request, response);
         public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _eventCollector.OnRequestTimedOutAsync(request, timeout);
@@ -173,6 +172,16 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
         private DicomAssociation ToDicomAssociation(AdvancedDicomClientAssociationRequest request)
         {
+            if (request.CallingAE == null)
+            {
+                throw new ArgumentException("Calling AE cannot be null");
+            }
+
+            if (request.CalledAE == null)
+            {
+                throw new ArgumentException("Called AE cannot be null");
+            }
+            
             var dicomAssociation = new DicomAssociation(request.CallingAE, request.CalledAE)
             {
                 RemoteHost = NetworkStream.RemoteHost,

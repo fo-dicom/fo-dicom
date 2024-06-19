@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -151,7 +150,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets the accepted transfer syntax, if defined, otherwise <code>null</code>.
         /// </summary>
-        public DicomTransferSyntax AcceptedTransferSyntax { get; private set; }
+        public DicomTransferSyntax? AcceptedTransferSyntax { get; private set; }
 
         /// <summary>
         /// Gets an indicator whether presentation context supports an SCU role. If undefined, default value is assumed.
@@ -176,7 +175,7 @@ namespace FellowOakDicom.Network
         /// <returns>Presentation context valid for C-GET requests for the specified <paramref name="abstractSyntax"/>.</returns>
         public static DicomPresentationContext GetScpRolePresentationContext(
             DicomUID abstractSyntax,
-            params DicomTransferSyntax[] transferSyntaxes)
+            params DicomTransferSyntax[]? transferSyntaxes)
         {
             var pc = new DicomPresentationContext(0, abstractSyntax, false, true);
 
@@ -202,11 +201,11 @@ namespace FellowOakDicom.Network
         /// <param name="transferSyntaxes">Supported transfer syntaxes.</param>
         /// <returns>Collection of presentation contexts valid for C-GET requests.</returns>
         public static IEnumerable<DicomPresentationContext> GetScpRolePresentationContextsFromStorageUids(
-            string filter,
-            params DicomTransferSyntax[] transferSyntaxes)
+            string? filter,
+            params DicomTransferSyntax[]? transferSyntaxes)
         {
             var noFilter = string.IsNullOrEmpty(filter?.Trim());
-            var capsFilter = noFilter ? string.Empty : filter.ToUpperInvariant();
+            var capsFilter = noFilter ? string.Empty : filter!.ToUpperInvariant();
 
             return
                 DicomUID.Enumerate()
@@ -225,7 +224,7 @@ namespace FellowOakDicom.Network
         /// <returns>Collection of presentation contexts valid for C-GET requests.</returns>
         public static IEnumerable<DicomPresentationContext> GetScpRolePresentationContextsFromStorageUids(
             DicomStorageCategory storageCategory,
-            params DicomTransferSyntax[] transferSyntaxes)
+            params DicomTransferSyntax[]? transferSyntaxes)
         {
             return
                 DicomUID.Enumerate()
@@ -377,9 +376,9 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="ts">Transfer syntax to check.</param>
         /// <returns><code>true</code> if <paramref name="ts">transfer syntax</paramref> is supported, <code>false</code> otherwise.</returns>
-        public bool HasTransferSyntax(DicomTransferSyntax ts)
+        public bool HasTransferSyntax(DicomTransferSyntax? ts)
         {
-            return _transferSyntaxes.Contains(ts);
+            return ts != null && _transferSyntaxes.Contains(ts);
         }
 
         /// <summary>

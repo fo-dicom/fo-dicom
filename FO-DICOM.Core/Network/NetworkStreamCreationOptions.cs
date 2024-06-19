@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network.Tls;
 using System;
@@ -15,7 +14,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// The IP address or host name of the SCP
         /// </summary>
-        public string Host { get; set; }
+        public string? Host { get; set; }
         
         /// <summary>
         /// The port on which the SCP is listening
@@ -25,7 +24,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Gets or sets the handler to use TLS (SSLStream) when opening the TCP connection. If this handler is null then no TLS will be used
         /// </summary>
-        public ITlsInitiator TlsInitiator { get; set; }
+        public ITlsInitiator? TlsInitiator { get; set; }
         
         /// <summary>
         /// Whether or not to disable the delay when buffers are not full

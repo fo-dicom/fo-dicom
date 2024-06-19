@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using FellowOakDicom.Network;
 using System;
@@ -18,7 +17,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public void AcceptApplicationInfo_WhenNotRequested_ApplicationInfoIsNotSet()
         {
-            var negotiation = new DicomExtendedNegotiation(DicomUID.Verification, (DicomServiceApplicationInfo)null);
+            var negotiation = new DicomExtendedNegotiation(DicomUID.Verification, (DicomServiceApplicationInfo?)null);
             negotiation.AcceptApplicationInfo(new DicomCFindApplicationInfo(DicomCFindOption.DateTimeMatching | DicomCFindOption.FuzzySemanticMatching));
             Assert.Null(negotiation.RequestedApplicationInfo);
             Assert.Null(negotiation.AcceptedApplicationInfo);
@@ -46,7 +45,7 @@ namespace FellowOakDicom.Tests.Network
             var sopClass = DicomUID.PatientRootQueryRetrieveInformationModelFind;
             var negotiation = new DicomExtendedNegotiation(sopClass, appInfo);
 
-            Assert.Equal(expectedByteOrder, negotiation.RequestedApplicationInfo.GetValues());
+            Assert.Equal(expectedByteOrder, negotiation.RequestedApplicationInfo!.GetValues());
             foreach (var neg in negotiation.RequestedApplicationInfo)
             {
                 Assert.Equal(expectedByteOrder[neg.Key - 1], neg.Value);
@@ -63,7 +62,7 @@ namespace FellowOakDicom.Tests.Network
             var negotiation = new DicomExtendedNegotiation(sopClass, appInfo);
 
             Assert.Equal(sopClass, negotiation.SopClassUid);
-            Assert.Equal(appInfoType, negotiation.RequestedApplicationInfo.GetType());
+            Assert.Equal(appInfoType, negotiation.RequestedApplicationInfo!.GetType());
         }
 
         [Fact]
@@ -75,16 +74,16 @@ namespace FellowOakDicom.Tests.Network
             DicomServiceApplicationInfo.OnCreateApplicationInfo = (sop, info) =>
             {
                 if (sop == sopClass)
-                    return Activator.CreateInstance(appInfoType, info) as DicomServiceApplicationInfo;
+                    return (DicomServiceApplicationInfo) Activator.CreateInstance(appInfoType, info)!;
 
-                return null;
+                return null!;
             };
 
             var appInfo = DicomServiceApplicationInfo.Create(sopClass, new byte[] { 1 });
             var negotiation = new DicomExtendedNegotiation(sopClass, appInfo);
 
             Assert.Equal(sopClass, negotiation.SopClassUid);
-            Assert.Equal(appInfoType, negotiation.RequestedApplicationInfo.GetType());
+            Assert.Equal(appInfoType, negotiation.RequestedApplicationInfo!.GetType());
             DicomServiceApplicationInfo.OnCreateApplicationInfo = null;
         }
 

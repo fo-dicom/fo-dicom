@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2012-2023 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
-#nullable disable
 
 using System;
 using System.Text;
@@ -38,8 +37,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomNActionResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomNActionResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomNActionRequest(
                     DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
@@ -69,8 +68,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomNCreateResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomNCreateResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomNCreateRequest(
                     DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
@@ -99,8 +98,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomNDeleteResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomNDeleteResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomNDeleteRequest(
                     DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
@@ -129,8 +128,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(nameof(DicomClient));
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomNEventReportResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomNEventReportResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomNEventReportRequest(
                     DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
@@ -160,8 +159,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomNGetResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomNGetResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomNGetRequest(
                     DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
@@ -190,8 +189,8 @@ namespace FellowOakDicom.Tests.Network
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
 
-                DicomNSetResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
+                DicomNSetResponse? response = null;
+                DicomRequest.OnTimeoutEventArgs? timeout = null;
                 var request = new DicomNSetRequest(
                     DicomUID.BasicFilmSession,
                     new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
@@ -242,7 +241,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public void OnConnectionClosed(Exception exception)
+        public void OnConnectionClosed(Exception? exception)
         {
             // do nothing here
         }
