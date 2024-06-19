@@ -106,7 +106,7 @@ namespace FellowOakDicom.Network
             _pduQueueWatcher = new ManualResetEventSlim(true);
             _msgQueue = new Queue<DicomMessage>();
             _pending = new List<DicomRequest>();
-            _fallbackEncoding = fallbackEncoding ?? DicomEncoding.Default;
+            _fallbackEncoding = fallbackEncoding;
 
             MaximumPDUsInQueue = 16;
 
@@ -338,13 +338,13 @@ namespace FellowOakDicom.Network
                     _dimseStream.Dispose();
                 }
 
-                return DicomFile.Open(_dimseStreamFile, _fallbackEncoding);
+                return DicomFile.Open(_dimseStreamFile, _fallbackEncoding ?? DicomEncoding.Default);
             }
 
             if (_dimseStream != null && _dimseStream.CanSeek)
             {
                 _dimseStream.Seek(0, SeekOrigin.Begin);
-                return DicomFile.Open(_dimseStream, _fallbackEncoding);
+                return DicomFile.Open(_dimseStream, _fallbackEncoding ?? DicomEncoding.Default);
             }
 
             return null;
@@ -758,7 +758,7 @@ namespace FellowOakDicom.Network
                                 var file = new DicomFile();
                                 if (_fallbackEncoding != null)
                                 {
-                                    file.Dataset.SetFallbackEncodings(new[] { _fallbackEncoding });
+                                    file.Dataset.FallbackEncodings = new[] { _fallbackEncoding };
                                 }
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
                                 file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
@@ -839,7 +839,7 @@ namespace FellowOakDicom.Network
                                 var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
-
+                                
                                 var source = new StreamByteSource(_dimseStream, FileReadOption.Default)
                                 {
                                     Endian = pc.AcceptedTransferSyntax.Endian
@@ -1299,6 +1299,11 @@ namespace FellowOakDicom.Network
             else
             {
                 // force calculation of command group length as required by standard
+                if (_fallbackEncoding != null && msg.HasDataset)
+                {
+                    msg.Dataset.FallbackEncodings = new[] { _fallbackEncoding };
+                }
+                msg.Command.OnBeforeSerializing();
                 msg.Command.RecalculateGroupLengths();
 
                 if (msg.HasDataset)

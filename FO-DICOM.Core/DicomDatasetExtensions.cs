@@ -21,10 +21,14 @@ namespace FellowOakDicom
         /// <param name="dataset">Dataset to be cloned.</param>
         /// <returns>Clone of dataset.</returns>
         public static DicomDataset Clone(this DicomDataset dataset)
-            => new DicomDataset(dataset, false)
+        {
+            var clone = new DicomDataset(dataset, false)
             {
-                InternalTransferSyntax = dataset.InternalTransferSyntax
+                InternalTransferSyntax = dataset.InternalTransferSyntax,
+                FallbackEncodings = dataset.FallbackEncodings
             };
+            return clone;
+        }
 
         /// <summary>
         /// Get a composite <see cref="System.DateTime"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.

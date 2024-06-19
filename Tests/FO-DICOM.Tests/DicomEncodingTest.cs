@@ -317,12 +317,15 @@ namespace FellowOakDicom.Tests
             new[] { "chrRuss", "Люкceмбypг" },
             new[] { "chrX1", "Wang^XiaoDong=王^小東=" },
             new[] { "chrX2", "Wang^XiaoDong=王^小东=" },
+            new[] { "chrGB2312", "Zhang^XiaoDong=张^小东=" },
         };
 
         public static readonly IEnumerable<object[]> EncodedNames = new[]
         {
             new object[] { "ISO 2022 IR 13", "ﾔﾏﾀﾞ^ﾀﾛｳ",
                 new byte[] { 0x1b, 0x29, 0x49, 0xd4, 0xcf, 0xc0, 0xde, 0x5e, 0x1b, 0x29, 0x49, 0xc0, 0xdb, 0xb3 } },
+            new object[] { "ISO 2022 IR 58", "张^小东",
+                new byte[] { 0x1B, 0x24, 0x29, 0x41, 0xD5, 0xC5, 0x5E, 0x1B, 0x24, 0x29, 0x41, 0xD0, 0xA1, 0xB6, 0xAB } },
             new object[] { "ISO 2022 IR 100", "Buc^Jérôme",
                 new byte[] { 0x1b, 0x2d, 0x41, 0x42, 0x75, 0x63, 0x5e, 0x1b, 0x2d, 0x41, 0x4a, 0xe9, 0x72, 0xf4, 0x6d, 0x65 } },
             new object[] { "ISO 2022 IR 101", "Wałęsa",

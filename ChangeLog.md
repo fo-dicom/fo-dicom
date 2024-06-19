@@ -15,9 +15,12 @@
 - Fix bug where reading parallel from the a stream file returned wrong data (#1653)
 - Fix rendering of images with 1 bit stored, where the image does not povide windowing values (#1432)
 - Fix issue with applying FallbackEncoding when SpecificCharacterSet tag is missing (#1159)
+- Apply FallbackEncoding of DicomServices to the DicomDatasets that are sent through this DicomService (#1642)
 - Fix race condition in GenericGrayscalePipeline that could trigger a NullReferenceException (#1759)
 - Add resiliency against WindowCenter or WindowWidth containing gibberish (#1756)
 - Ignore overlay data that is too small (#1728)
+- Allow leading zeros in DS values (#1793)
+- Correctly handle gb2312 (ISO 2022 IR 58) character encoding (#1805)
 
 ### 5.1.2 (2023-12-21)
 

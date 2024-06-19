@@ -1467,14 +1467,6 @@ namespace FellowOakDicom
 
         #endregion
 
-        protected override void ValidateVM()
-        {
-            if (Tag == DicomTag.PatientName && Count > 3)
-            {
-                throw new DicomValidationException(ToString(), DicomVR.PN, $"Number of items {Count} does not match ValueMultiplicity 1-3");
-            }
-        }
-
         #region Public Functions
 
         public static bool HaveSameContent(DicomPersonName nameA, DicomPersonName nameB)

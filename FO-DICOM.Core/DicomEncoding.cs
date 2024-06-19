@@ -299,7 +299,6 @@ namespace FellowOakDicom
         private static readonly int[] _codePagesForHandledEncodings =
         {
             50220, // iso-2022-jp
-            936 // gb2312
         };
 
         private static string DecodeFragment(byte[] fragment, int fragmentLength, Encoding[] encodings, byte[] delimiters)

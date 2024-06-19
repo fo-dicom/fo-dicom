@@ -121,7 +121,7 @@ namespace FellowOakDicom
 
             content=content.Trim();
             // This is not very inefficient - uses .NET regex caching
-            if (!Regex.IsMatch(content, "^[+-]?((0|[1-9][0-9]*)([.][0-9]*)?|[.][0-9]+)([eE][-+]?[0-9]+)?$"))
+            if (!Regex.IsMatch(content, @"^[+-]?((\d+(\.\d*)?)|(\.\d+))([eE][-+]?\d+)?$"))
             {
                 throw new DicomValidationException(content, DicomVR.DS, "value is no decimal string");
             }
