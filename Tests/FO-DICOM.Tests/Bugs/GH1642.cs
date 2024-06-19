@@ -5,7 +5,9 @@ using FellowOakDicom.Tests.Network;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -60,7 +62,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
         }
 
-        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
+        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             yield return new DicomCFindResponse(request, DicomStatus.Pending)
             {
@@ -79,7 +81,7 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -90,7 +92,7 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
         {
             await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
         }

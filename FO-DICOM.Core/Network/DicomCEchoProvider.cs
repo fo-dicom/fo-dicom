@@ -6,6 +6,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.Network
 {
@@ -31,7 +32,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public virtual Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public virtual Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -44,7 +45,7 @@ namespace FellowOakDicom.Network
         }
 
         /// <inheritdoc />
-        public virtual Task OnReceiveAssociationReleaseRequestAsync()
+        public virtual Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => SendAssociationReleaseResponseAsync();
 
         /// <inheritdoc />
@@ -62,7 +63,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="request">C-ECHO request.</param>
         /// <returns>C-ECHO response with Success status.</returns>
-        public virtual Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+        public virtual Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
     }
 }

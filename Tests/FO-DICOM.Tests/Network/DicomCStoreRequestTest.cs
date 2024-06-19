@@ -7,6 +7,7 @@ using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -72,16 +73,16 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
             {
                 LastReceivedSopInstance = request.Dataset;
                 return Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
             }
 
-            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken)
                 => Task.CompletedTask;
 
-            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -91,7 +92,7 @@ namespace FellowOakDicom.Tests.Network
                 return SendAssociationAcceptAsync(association);
             }
 
-            public Task OnReceiveAssociationReleaseRequestAsync()
+            public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             {
                 return SendAssociationReleaseResponseAsync();
             }

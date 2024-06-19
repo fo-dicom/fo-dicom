@@ -250,7 +250,7 @@ namespace FellowOakDicom.Tests.Bugs
 
         public void OnConnectionClosed(Exception exception) { }
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             if (_onAssociationRequest != null)
             {
@@ -269,17 +269,17 @@ namespace FellowOakDicom.Tests.Bugs
             return SendAssociationAcceptAsync(association);
         }
 
-        public Task OnReceiveAssociationReleaseRequestAsync()
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
         {
             return SendAssociationReleaseResponseAsync();
         }
 
-        public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
         {
             return Task.FromResult(_onCStoreRequest(Association, request));
         }
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

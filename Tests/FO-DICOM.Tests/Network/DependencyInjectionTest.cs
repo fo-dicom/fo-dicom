@@ -9,6 +9,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -68,7 +69,7 @@ namespace FellowOakDicom.Tests.Network
             _someInterface = someInterface ?? throw new ArgumentNullException(nameof(someInterface));
         }
 
-        public override Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+        public override Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
         {
             var response = new DicomCEchoResponse(request, DicomStatus.Success)
             {

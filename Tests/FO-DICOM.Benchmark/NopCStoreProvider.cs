@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.Benchmark
 {
@@ -25,7 +26,7 @@ namespace FellowOakDicom.Benchmark
         {
         }
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var presentationContext in association.PresentationContexts)
             {
@@ -39,15 +40,15 @@ namespace FellowOakDicom.Benchmark
             return SendAssociationAcceptAsync(association);
         }
 
-        public Task OnReceiveAssociationReleaseRequestAsync()
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
         {
             return SendAssociationReleaseResponseAsync();
         }
 
-        public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken)
             => Task.CompletedTask;
 
     }

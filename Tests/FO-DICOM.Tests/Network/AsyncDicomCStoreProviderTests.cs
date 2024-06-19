@@ -10,6 +10,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -124,7 +125,7 @@ namespace FellowOakDicom.Tests.Network
             : base(stream, fallbackEncoding, log, dependencies)
         { }
 
-        public override Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public override Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -153,7 +154,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public virtual async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public virtual async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -164,7 +165,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -179,13 +180,13 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
         {
             await Task.Yield();
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken)
             => throw new NotImplementedException();
     }
 

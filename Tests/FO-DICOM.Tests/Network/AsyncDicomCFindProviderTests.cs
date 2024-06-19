@@ -11,6 +11,8 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -101,7 +103,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -112,7 +114,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -127,7 +129,7 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
+        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await Task.Yield();
             yield return new DicomCFindResponse(request, DicomStatus.Success);
@@ -145,7 +147,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -156,7 +158,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -171,7 +173,7 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
+        public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await Task.Yield();
             yield return new DicomCFindResponse(request, DicomStatus.Pending);

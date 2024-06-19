@@ -15,6 +15,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1483,7 +1484,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -1507,7 +1508,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     DicomRejectReason.CalledAENotRecognized);
             }
 
-            public Task OnReceiveAssociationReleaseRequestAsync()
+            public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
                 => SendAssociationReleaseResponseAsync();
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -1518,7 +1519,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
                 => Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
         }
 
@@ -1539,7 +1540,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -1553,7 +1554,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 return SendAssociationAcceptAsync(association);
             }
 
-            public Task OnReceiveAssociationReleaseRequestAsync()
+            public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
                 => SendAssociationReleaseResponseAsync();
 
             public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -1564,10 +1565,10 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+            public Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
                 => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
 
-            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e) => Task.CompletedTask;
+            public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
         public class RecordingDicomCEchoProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider
@@ -1591,7 +1592,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             /// <inheritdoc />
-            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -1604,7 +1605,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             /// <inheritdoc />
-            public async Task OnReceiveAssociationReleaseRequestAsync()
+            public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             {
                 await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
             }
@@ -1619,7 +1620,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+            public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
             {
                 _requests.Add(request);
 
@@ -1687,7 +1688,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             /// <inheritdoc />
-            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -1700,7 +1701,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             /// <inheritdoc />
-            public async Task OnReceiveAssociationReleaseRequestAsync()
+            public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             {
                 await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
             }
@@ -1715,7 +1716,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
             }
 
-            public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request)
+            public async IAsyncEnumerable<DicomCGetResponse> OnCGetRequestAsync(DicomCGetRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
                 _requests.Add(request);
                 yield return new DicomCGetResponse(request, DicomStatus.Pending);

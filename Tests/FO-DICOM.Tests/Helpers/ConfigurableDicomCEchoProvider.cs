@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.Tests.Helpers
 {
@@ -25,7 +26,7 @@ namespace FellowOakDicom.Tests.Helpers
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             var accept = await _onAssociationRequest(association);
 
@@ -48,7 +49,7 @@ namespace FellowOakDicom.Tests.Helpers
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
         {
             await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
         }
@@ -59,7 +60,7 @@ namespace FellowOakDicom.Tests.Helpers
         /// <inheritdoc />
         public void OnConnectionClosed(Exception exception) { }
 
-        public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+        public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
         {
             await _onRequest(request);
             return new DicomCEchoResponse(request, DicomStatus.Success);

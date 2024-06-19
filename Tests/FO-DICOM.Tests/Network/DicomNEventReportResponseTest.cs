@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -131,7 +132,7 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -141,7 +142,7 @@ namespace FellowOakDicom.Tests.Network
             return SendAssociationAcceptAsync(association);
         }
 
-        public Task OnReceiveAssociationReleaseRequestAsync() => SendAssociationReleaseResponseAsync();
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken) => SendAssociationReleaseResponseAsync();
 
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         {
@@ -151,7 +152,7 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)
+        public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request, CancellationToken cancellationToken)
         {
             /*
             // first return the success-response
@@ -188,7 +189,7 @@ namespace FellowOakDicom.Tests.Network
             return Task.FromResult(new DicomNActionResponse(request, DicomStatus.Success));
         }
 
-        public async Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
+        public async Task OnSendNEventReportRequestAsync(DicomNActionRequest request, CancellationToken cancellationToken)
         {
             // synchronously send NEvents
             if (request.Dataset.Contains(DicomTag.ReferencedSOPSequence))
@@ -212,11 +213,11 @@ namespace FellowOakDicom.Tests.Network
             }
         }
 
-        public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request) => throw new NotImplementedException();
-        public Task<DicomNDeleteResponse> OnNDeleteRequestAsync(DicomNDeleteRequest request) => throw new NotImplementedException();
-        public Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => throw new NotImplementedException();
-        public Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request) => throw new NotImplementedException();
-        public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request) => throw new NotImplementedException();
+        public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task<DicomNDeleteResponse> OnNDeleteRequestAsync(DicomNDeleteRequest request, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request, CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request, CancellationToken cancellationToken) => throw new NotImplementedException();
 
     }
 }
