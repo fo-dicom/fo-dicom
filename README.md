@@ -56,7 +56,7 @@ Documentation, including API documentation, is available via GitHub pages:
 
 #### Getting started in modern .NET
 
-If you are using the web application builder, you can do this:
+If you are using the web application builder:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -66,7 +66,7 @@ var app = builder.Build();
 DicomSetupBuilder.UseServiceProvider(app.Services);
 ```
 
-If you are using the host builder, you can do this:
+If you are using the host builder:
 
 ```csharp
 var host = Host.CreateDefaultBuilder(args)
@@ -102,23 +102,23 @@ new DicomSetupBuilder()
 #### Dependency injection support
 
 Whenever you use APIs of Fellow Oak DICOM such as `DicomFile.Open`, `DicomServerFactory.Create`, the global statically registered service provider (`DicomSetupBuilder.UseServiceProvider`) will be used to resolve dependencies.  
-Please note that using dependency injection is generally preferred over the static APIs, if they are available.
+Please note that using dependency injection is generally preferred over the static APIs, if it is available.
 
-| Use case                                      | Static API                                                | Can use dependency injection ?                   |
-| --------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------ |
-| Creating a DICOM server                       | DicomServerFactory.Create                                 | Yes, use `IDicomServerFactory`                   |
-| Creating a DICOM client                       | DicomClientFactory.Create                                 | Yes, use `IDicomClientFactory`                   |
-| Creating an advanced DICOM client connection  | AdvancedDicomClientConnectionFactory.OpenConnectionAsync  | Yes, use `IAdvancedDicomClientConnectionFactory` |
-| Opening a DICOM file                          | DicomFile.Open(..)                                        | No                                               |
-| Rendering a DICOM file                        | new DicomImage(..).RenderImage(..)                        | No                                               |
+| Use case                                      | Static API                                                 | Can use dependency injection ?                   |
+| --------------------------------------------- |------------------------------------------------------------| ------------------------------------------------ |
+| Creating a DICOM server                       | `DicomServerFactory.Create`                                | Yes, use `IDicomServerFactory`                   |
+| Creating a DICOM client                       | `DicomClientFactory.Create`                                | Yes, use `IDicomClientFactory`                   |
+| Creating an advanced DICOM client connection  | `AdvancedDicomClientConnectionFactory.OpenConnectionAsync` | Yes, use `IAdvancedDicomClientConnectionFactory` |
+| Opening a DICOM file                          | `DicomFile.OpenAsync(..)`                                  | No                                               |
+| Rendering a DICOM file                        | `new DicomImage(..).RenderImage(..)`                       | No                                               |
 
 #### Injecting custom dependencies into DICOM services
 
-It is possible to inject custom dependencies into your DICOM services, but with one important requirement: **you must have these exact three constructor parameters: INetworkStream stream, Encoding fallbackEncoding, ILogger logger**. 
+It is possible to inject custom dependencies into your DICOM services, but with one important requirement: **you must have these exact three constructor parameters: `INetworkStream stream, Encoding fallbackEncoding, ILogger logger`**. 
 The names and their order don't matter, but the types do.
 Yes, `ILogger` is a non-generic typed logger. If you want a `Logger<T>`, you can **add** an extra constructor parameter and use it however you see fit.
 
-Here is a fully standalone working example:
+Here is a full standalone example:
 
 ```csharp
 using System.Text;
