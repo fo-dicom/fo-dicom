@@ -19,6 +19,17 @@ namespace FellowOakDicom
     /// </summary>
     public partial class DicomDataset : IEnumerable<DicomItem>, IEquatable<DicomDataset>
     {
+        #region Static Properties
+
+        /// <summary>
+        /// Gets or sets how two DicomDatasets are compared if dataset1 == dataset2 is called
+        /// If this property is true, then all items are iterated and the content is compared. Then two DicomDatasets are equal if the content is equal.
+        /// If this property is false, then the equalitycheck tests if the DicomDatasets are the same instance.
+        /// </summary>
+        public static bool CompareInstancesByContent { get; set; } = true;
+
+        #endregion
+
         #region FIELDS
 
         private readonly IDictionary<DicomTag, DicomItem> _items;
@@ -1587,7 +1598,10 @@ namespace FellowOakDicom
 
         public bool Equals(DicomDataset other)
         {
-            return new DicomDatasetComparer().Equals(this, other);
+            return
+                CompareInstancesByContent
+                ? DicomDatasetComparer.DefaultInstance.Equals(this, other)
+                : ReferenceEquals(this, other);
         }
 
         public static bool operator ==(DicomDataset a, DicomDataset b)
