@@ -1604,7 +1604,7 @@ namespace FellowOakDicom
         {
             return
                 CompareInstancesByContent
-                ? new DicomDatasetComparer().Equals(this, other)
+                ? DicomDatasetComparer.DefaultInstance.Equals(this, other)
                 : ReferenceEquals(this, other);
         }
 

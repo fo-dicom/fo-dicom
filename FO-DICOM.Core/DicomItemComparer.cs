@@ -3,7 +3,6 @@
 #nullable disable
 
 using FellowOakDicom.IO.Buffer;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +18,8 @@ namespace FellowOakDicom
 
     public class DicomValueComparer : IEqualityComparer<DicomItem>
     {
+        public static DicomValueComparer DefaultInstance { get; set; } = new DicomValueComparer();
+
         public bool Equals(DicomItem item1, DicomItem item2)
         {
             if (ReferenceEquals(item1, item2))
@@ -35,9 +36,6 @@ namespace FellowOakDicom
                     return item1.Tag == item2.Tag;
                 }
 
-                //var xValue = string.Join("\\", xElement.Get<string[]>());
-                //var yValue = string.Join("\\", yElement.Get<string[]>());
-
                 return xElement.Tag == yElement.Tag && xElement.Equals(yElement);
             }
 
@@ -49,12 +47,11 @@ namespace FellowOakDicom
                     return false;
                 }
 
-                var datasetComparer = new DicomDatasetComparer();
                 for (var i = 0; i < itemsCount; i++)
                 {
                     var dataset1 = xSequence.Items[i];
                     var dataset2 = ySequence.Items[i];
-                    if (!datasetComparer.Equals(dataset1, dataset2))
+                    if (!DicomDatasetComparer.DefaultInstance.Equals(dataset1, dataset2))
                     {
                         return false;
                     }
@@ -82,6 +79,9 @@ namespace FellowOakDicom
 
     public class DicomDatasetComparer : IEqualityComparer<DicomDataset>
     {
+
+        public static DicomDatasetComparer DefaultInstance { get; set; } = new DicomDatasetComparer();
+
         public bool Equals(DicomDataset dataset1, DicomDataset dataset2)
         {
             if ((dataset1 == null) != (dataset2 == null))
@@ -100,11 +100,10 @@ namespace FellowOakDicom
                 return false;
             }
 
-            var valueComparer = new DicomValueComparer();
             foreach (var element in dataset1)
             {
                 var element2 = dataset2.GetDicomItem<DicomItem>(element.Tag);
-                if (!valueComparer.Equals(element, element2))
+                if (!DicomValueComparer.DefaultInstance.Equals(element, element2))
                 {
                     return false;
                 }
