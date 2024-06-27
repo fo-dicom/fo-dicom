@@ -2,13 +2,13 @@
     <PropertyGroup>
         <Product>fo-dicom</Product>
         <Company>fo-dicom</Company>
-        <Copyright>Copyright © fo-dicom contributors 2012-2023</Copyright>
+        <Copyright>Copyright © fo-dicom contributors 2012-2024</Copyright>
         <Description>fo-dicom</Description>
         <LangVersion>8</LangVersion>
 
-        <AssemblyVersion>5.1.2</AssemblyVersion>
-        <FileVersion>5.1.2.0</FileVersion>
-        <InformationalVersion>5.1.2</InformationalVersion>
+        <AssemblyVersion>5.1.3</AssemblyVersion>
+        <FileVersion>5.1.3.0</FileVersion>
+        <InformationalVersion>5.1.3</InformationalVersion>
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
     </PropertyGroup>

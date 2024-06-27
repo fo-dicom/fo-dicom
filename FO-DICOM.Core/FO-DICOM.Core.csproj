@@ -6,7 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.core</AssemblyName>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2023</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2024</Copyright>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
     <Product>Fellow Oak DICOM</Product>
     <Authors>fo-dicom contributors</Authors>
@@ -14,7 +14,7 @@
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <Description>A NetStandard DICOM library.
 If you find some breaking changes when updating, read here for more information how to migrate: https://github.com/fo-dicom/fo-dicom/wiki/Upgrade-from-version-4-to-version-5</Description>
-    <Version>5.1.2</Version>
+    <Version>5.1.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>fo-dicom</PackageId>
     <LangVersion>8.0</LangVersion>

@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2023 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2023e">
+<dictionary version="2024c">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -106,6 +106,7 @@
     <tag group="0008" element="0019" keyword="PyramidUID" vr="UI" vm="1">Pyramid UID</tag>
     <tag group="0008" element="001A" keyword="RelatedGeneralSOPClassUID" vr="UI" vm="1-n">Related General SOP Class UID</tag>
     <tag group="0008" element="001B" keyword="OriginalSpecializedSOPClassUID" vr="UI" vm="1">Original Specialized SOP Class UID</tag>
+    <tag group="0008" element="001C" keyword="SyntheticData" vr="CS" vm="1">Synthetic Data</tag>
     <tag group="0008" element="0020" keyword="StudyDate" vr="DA" vm="1">Study Date</tag>
     <tag group="0008" element="0021" keyword="SeriesDate" vr="DA" vm="1">Series Date</tag>
     <tag group="0008" element="0022" keyword="AcquisitionDate" vr="DA" vm="1">Acquisition Date</tag>
@@ -261,6 +262,7 @@
     <tag group="0008" element="1100" keyword="ReferencedResultsSequence" vr="SQ" vm="1" retired="true">Referenced Results Sequence</tag>
     <tag group="0008" element="1110" keyword="ReferencedStudySequence" vr="SQ" vm="1">Referenced Study Sequence</tag>
     <tag group="0008" element="1111" keyword="ReferencedPerformedProcedureStepSequence" vr="SQ" vm="1">Referenced Performed Procedure Step Sequence</tag>
+    <tag group="0008" element="1112" keyword="ReferencedInstancesBySOPClassSequence" vr="SQ" vm="1">Referenced Instances by SOP Class Sequence</tag>
     <tag group="0008" element="1115" keyword="ReferencedSeriesSequence" vr="SQ" vm="1">Referenced Series Sequence</tag>
     <tag group="0008" element="1120" keyword="ReferencedPatientSequence" vr="SQ" vm="1">Referenced Patient Sequence</tag>
     <tag group="0008" element="1125" keyword="ReferencedVisitSequence" vr="SQ" vm="1">Referenced Visit Sequence</tag>
@@ -288,6 +290,7 @@
     <tag group="0008" element="1198" keyword="FailedSOPSequence" vr="SQ" vm="1">Failed SOP Sequence</tag>
     <tag group="0008" element="1199" keyword="ReferencedSOPSequence" vr="SQ" vm="1">Referenced SOP Sequence</tag>
     <tag group="0008" element="119A" keyword="OtherFailuresSequence" vr="SQ" vm="1">Other Failures Sequence</tag>
+    <tag group="0008" element="119B" keyword="FailedStudySequence" vr="SQ" vm="1">Failed Study Sequence</tag>
     <tag group="0008" element="1200" keyword="StudiesContainingOtherReferencedInstancesSequence" vr="SQ" vm="1">Studies Containing Other Referenced Instances Sequence</tag>
     <tag group="0008" element="1250" keyword="RelatedSeriesSequence" vr="SQ" vm="1">Related Series Sequence</tag>
     <tag group="0008" element="2110" keyword="LossyImageCompressionRetired" vr="CS" vm="1" retired="true">Lossy Image Compression (Retired)</tag>
@@ -408,6 +411,7 @@
     <tag group="0010" element="2154" keyword="PatientTelephoneNumbers" vr="SH" vm="1-n">Patient's Telephone Numbers</tag>
     <tag group="0010" element="2155" keyword="PatientTelecomInformation" vr="LT" vm="1">Patient's Telecom Information</tag>
     <tag group="0010" element="2160" keyword="EthnicGroup" vr="SH" vm="1">Ethnic Group</tag>
+    <tag group="0010" element="2161" keyword="EthnicGroupCodeSequence" vr="SQ" vm="1">Ethnic Group Code Sequence</tag>
     <tag group="0010" element="2180" keyword="Occupation" vr="SH" vm="1">Occupation</tag>
     <tag group="0010" element="21A0" keyword="SmokingStatus" vr="CS" vm="1">Smoking Status</tag>
     <tag group="0010" element="21B0" keyword="AdditionalPatientHistory" vr="LT" vm="1">Additional Patient History</tag>
@@ -431,21 +435,28 @@
     <tag group="0012" element="0010" keyword="ClinicalTrialSponsorName" vr="LO" vm="1">Clinical Trial Sponsor Name</tag>
     <tag group="0012" element="0020" keyword="ClinicalTrialProtocolID" vr="LO" vm="1">Clinical Trial Protocol ID</tag>
     <tag group="0012" element="0021" keyword="ClinicalTrialProtocolName" vr="LO" vm="1">Clinical Trial Protocol Name</tag>
+    <tag group="0012" element="0022" keyword="IssuerOfClinicalTrialProtocolID" vr="LO" vm="1">Issuer of Clinical Trial Protocol ID</tag>
+    <tag group="0012" element="0023" keyword="OtherClinicalTrialProtocolIDsSequence" vr="SQ" vm="1">Other Clinical Trial Protocol IDs Sequence</tag>
     <tag group="0012" element="0030" keyword="ClinicalTrialSiteID" vr="LO" vm="1">Clinical Trial Site ID</tag>
     <tag group="0012" element="0031" keyword="ClinicalTrialSiteName" vr="LO" vm="1">Clinical Trial Site Name</tag>
+    <tag group="0012" element="0032" keyword="IssuerOfClinicalTrialSiteID" vr="LO" vm="1">Issuer of Clinical Trial Site ID</tag>
     <tag group="0012" element="0040" keyword="ClinicalTrialSubjectID" vr="LO" vm="1">Clinical Trial Subject ID</tag>
+    <tag group="0012" element="0041" keyword="IssuerOfClinicalTrialSubjectID" vr="LO" vm="1">Issuer of Clinical Trial Subject ID</tag>
     <tag group="0012" element="0042" keyword="ClinicalTrialSubjectReadingID" vr="LO" vm="1">Clinical Trial Subject Reading ID</tag>
+    <tag group="0012" element="0043" keyword="IssuerOfClinicalTrialSubjectReadingID" vr="LO" vm="1">Issuer of Clinical Trial Subject Reading ID</tag>
     <tag group="0012" element="0050" keyword="ClinicalTrialTimePointID" vr="LO" vm="1">Clinical Trial Time Point ID</tag>
     <tag group="0012" element="0051" keyword="ClinicalTrialTimePointDescription" vr="ST" vm="1">Clinical Trial Time Point Description</tag>
     <tag group="0012" element="0052" keyword="LongitudinalTemporalOffsetFromEvent" vr="FD" vm="1">Longitudinal Temporal Offset from Event</tag>
     <tag group="0012" element="0053" keyword="LongitudinalTemporalEventType" vr="CS" vm="1">Longitudinal Temporal Event Type</tag>
     <tag group="0012" element="0054" keyword="ClinicalTrialTimePointTypeCodeSequence" vr="SQ" vm="1">Clinical Trial Time Point Type Code Sequence</tag>
+    <tag group="0012" element="0055" keyword="IssuerOfClinicalTrialTimePointID" vr="LO" vm="1">Issuer of Clinical Trial Time Point ID</tag>
     <tag group="0012" element="0060" keyword="ClinicalTrialCoordinatingCenterName" vr="LO" vm="1">Clinical Trial Coordinating Center Name</tag>
     <tag group="0012" element="0062" keyword="PatientIdentityRemoved" vr="CS" vm="1">Patient Identity Removed</tag>
     <tag group="0012" element="0063" keyword="DeidentificationMethod" vr="LO" vm="1-n">De-identification Method</tag>
     <tag group="0012" element="0064" keyword="DeidentificationMethodCodeSequence" vr="SQ" vm="1">De-identification Method Code Sequence</tag>
     <tag group="0012" element="0071" keyword="ClinicalTrialSeriesID" vr="LO" vm="1">Clinical Trial Series ID</tag>
     <tag group="0012" element="0072" keyword="ClinicalTrialSeriesDescription" vr="LO" vm="1">Clinical Trial Series Description</tag>
+    <tag group="0012" element="0073" keyword="IssuerOfClinicalTrialSeriesID" vr="LO" vm="1">Issuer of Clinical Trial Series ID</tag>
     <tag group="0012" element="0081" keyword="ClinicalTrialProtocolEthicsCommitteeName" vr="LO" vm="1">Clinical Trial Protocol Ethics Committee Name</tag>
     <tag group="0012" element="0082" keyword="ClinicalTrialProtocolEthicsCommitteeApprovalNumber" vr="LO" vm="1">Clinical Trial Protocol Ethics Committee Approval Number</tag>
     <tag group="0012" element="0083" keyword="ConsentForClinicalTrialUseSequence" vr="SQ" vm="1">Consent for Clinical Trial Use Sequence</tag>
@@ -1797,6 +1808,7 @@
     <tag group="0022" element="000C" keyword="HorizontalFieldOfView" vr="FL" vm="1">Horizontal Field of View</tag>
     <tag group="0022" element="000D" keyword="PupilDilated" vr="CS" vm="1">Pupil Dilated</tag>
     <tag group="0022" element="000E" keyword="DegreeOfDilation" vr="FL" vm="1">Degree of Dilation</tag>
+    <tag group="0022" element="000F" keyword="VertexDistance" vr="FD" vm="1">Vertex Distance</tag>
     <tag group="0022" element="0010" keyword="StereoBaselineAngle" vr="FL" vm="1">Stereo Baseline Angle</tag>
     <tag group="0022" element="0011" keyword="StereoBaselineDisplacement" vr="FL" vm="1">Stereo Baseline Displacement</tag>
     <tag group="0022" element="0012" keyword="StereoHorizontalPixelOffset" vr="FL" vm="1">Stereo Horizontal Pixel Offset</tag>
@@ -3406,8 +3418,8 @@
     <tag group="0070" element="1804" keyword="VolumetricPresentationInputIndex" vr="US" vm="1">Volumetric Presentation Input Index</tag>
     <tag group="0070" element="1805" keyword="PresentationStateCompositorComponentSequence" vr="SQ" vm="1">Presentation State Compositor Component Sequence</tag>
     <tag group="0070" element="1806" keyword="WeightingTransferFunctionSequence" vr="SQ" vm="1">Weighting Transfer Function Sequence</tag>
-    <tag group="0070" element="1807" keyword="WeightingLookupTableDescriptor" vr="US" vm="3">Weighting Lookup Table Descriptor</tag>
-    <tag group="0070" element="1808" keyword="WeightingLookupTableData" vr="OB" vm="1">Weighting Lookup Table Data</tag>
+    <tag group="0070" element="1807" keyword="WeightingLookupTableDescriptor" vr="US" vm="3" retired="true">Weighting Lookup Table Descriptor</tag>
+    <tag group="0070" element="1808" keyword="WeightingLookupTableData" vr="OB" vm="1" retired="true">Weighting Lookup Table Data</tag>
     <tag group="0070" element="1901" keyword="VolumetricAnnotationSequence" vr="SQ" vm="1">Volumetric Annotation Sequence</tag>
     <tag group="0070" element="1903" keyword="ReferencedStructuredContextSequence" vr="SQ" vm="1">Referenced Structured Context Sequence</tag>
     <tag group="0070" element="1904" keyword="ReferencedContentItem" vr="UI" vm="1">Referenced Content Item</tag>
@@ -3990,6 +4002,8 @@
     <tag group="3006" element="0028" keyword="ROIDescription" vr="ST" vm="1">ROI Description</tag>
     <tag group="3006" element="002A" keyword="ROIDisplayColor" vr="IS" vm="3">ROI Display Color</tag>
     <tag group="3006" element="002C" keyword="ROIVolume" vr="DS" vm="1">ROI Volume</tag>
+    <tag group="3006" element="002D" keyword="ROIDateTime" vr="DT" vm="1">ROI DateTime</tag>
+    <tag group="3006" element="002E" keyword="ROIObservationDateTime" vr="DT" vm="1">ROI Observation DateTime</tag>
     <tag group="3006" element="0030" keyword="RTRelatedROISequence" vr="SQ" vm="1">RT Related ROI Sequence</tag>
     <tag group="3006" element="0033" keyword="RTROIRelationship" vr="CS" vm="1">RT ROI Relationship</tag>
     <tag group="3006" element="0036" keyword="ROIGenerationAlgorithm" vr="CS" vm="1">ROI Generation Algorithm</tag>
@@ -4004,6 +4018,11 @@
     <tag group="3006" element="0048" keyword="ContourNumber" vr="IS" vm="1">Contour Number</tag>
     <tag group="3006" element="0049" keyword="AttachedContours" vr="IS" vm="1-n" retired="true">Attached Contours</tag>
     <tag group="3006" element="004A" keyword="SourcePixelPlanesCharacteristicsSequence" vr="SQ" vm="1">Source Pixel Planes Characteristics Sequence</tag>
+    <tag group="3006" element="004B" keyword="SourceSeriesSequence" vr="SQ" vm="1">Source Series Sequence</tag>
+    <tag group="3006" element="004C" keyword="SourceSeriesInformationSequence" vr="SQ" vm="1">Source Series Information Sequence</tag>
+    <tag group="3006" element="004D" keyword="ROICreatorSequence" vr="SQ" vm="1">ROI Creator Sequence</tag>
+    <tag group="3006" element="004E" keyword="ROIInterpreterSequence" vr="SQ" vm="1">ROI Interpreter Sequence</tag>
+    <tag group="3006" element="004F" keyword="ROIObservationContextCodeSequence" vr="SQ" vm="1">ROI Observation Context Code Sequence</tag>
     <tag group="3006" element="0050" keyword="ContourData" vr="DS" vm="3-3n">Contour Data</tag>
     <tag group="3006" element="0080" keyword="RTROIObservationsSequence" vr="SQ" vm="1">RT ROI Observations Sequence</tag>
     <tag group="3006" element="0082" keyword="ObservationNumber" vr="IS" vm="1">Observation Number</tag>
@@ -4174,6 +4193,7 @@
     <tag group="300A" element="0051" keyword="TableTopVerticalPositionTolerance" vr="DS" vm="1">Table Top Vertical Position Tolerance</tag>
     <tag group="300A" element="0052" keyword="TableTopLongitudinalPositionTolerance" vr="DS" vm="1">Table Top Longitudinal Position Tolerance</tag>
     <tag group="300A" element="0053" keyword="TableTopLateralPositionTolerance" vr="DS" vm="1">Table Top Lateral Position Tolerance</tag>
+    <tag group="300A" element="0054" keyword="TableTopPositionAlignmentUID" vr="UI" vm="1">Table Top Position Alignment UID</tag>
     <tag group="300A" element="0055" keyword="RTPlanRelationship" vr="CS" vm="1">RT Plan Relationship</tag>
     <tag group="300A" element="0070" keyword="FractionGroupSequence" vr="SQ" vm="1">Fraction Group Sequence</tag>
     <tag group="300A" element="0071" keyword="FractionGroupNumber" vr="IS" vm="1">Fraction Group Number</tag>
@@ -4739,6 +4759,9 @@
     <tag group="300A" element="079C" keyword="PatientSupportDisplacementSequence" vr="SQ" vm="1">Patient Support Displacement Sequence</tag>
     <tag group="300A" element="079D" keyword="DisplacementReferenceLocationCodeSequence" vr="SQ" vm="1">Displacement Reference Location Code Sequence</tag>
     <tag group="300A" element="079E" keyword="RTRadiationSetDeliveryUsage" vr="CS" vm="1">RT Radiation Set Delivery Usage</tag>
+    <tag group="300A" element="079F" keyword="PatientTreatmentPreparationSequence" vr="SQ" vm="1">Patient Treatment Preparation Sequence</tag>
+    <tag group="300A" element="07A0" keyword="PatientToEquipmentRelationshipSequence" vr="SQ" vm="1">Patient to Equipment Relationship Sequence</tag>
+    <tag group="300A" element="07A1" keyword="ImagingEquipmentToTreatmentDeliveryDeviceRelationshipSequence" vr="SQ" vm="1">Imaging Equipment to Treatment Delivery Device Relationship Sequence</tag>
     <tag group="300C" element="0002" keyword="ReferencedRTPlanSequence" vr="SQ" vm="1">Referenced RT Plan Sequence</tag>
     <tag group="300C" element="0004" keyword="ReferencedBeamSequence" vr="SQ" vm="1">Referenced Beam Sequence</tag>
     <tag group="300C" element="0006" keyword="ReferencedBeamNumber" vr="IS" vm="1">Referenced Beam Number</tag>
@@ -5433,6 +5456,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.88.74" keyword="PlannedImagingAgentAdministrationSRStorage" type="SOP Class">Planned Imaging Agent Administration SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.75" keyword="PerformedImagingAgentAdministrationSRStorage" type="SOP Class">Performed Imaging Agent Administration SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.88.76" keyword="EnhancedXRayRadiationDoseSRStorage" type="SOP Class">Enhanced X-Ray Radiation Dose SR Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.88.77" keyword="WaveformAnnotationSRStorage" type="SOP Class">Waveform Annotation SR Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.90.1" keyword="ContentAssessmentResultsStorage" type="SOP Class">Content Assessment Results Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.91.1" keyword="MicroscopyBulkSimpleAnnotationsStorage" type="SOP Class">Microscopy Bulk Simple Annotations Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.104.1" keyword="EncapsulatedPDFStorage" type="SOP Class">Encapsulated PDF Storage</uid>
@@ -6598,7 +6622,7 @@
     <uid uid="1.2.840.10008.6.1.1095" keyword="LocalAnestheticsForSmallAnimalAnesthesia630" type="Context Group Name">Local Anesthetics for Small Animal Anesthesia (630)</uid>
     <uid uid="1.2.840.10008.6.1.1096" keyword="ProcedurePhaseRequiringAnesthesia631" type="Context Group Name">Procedure Phase Requiring Anesthesia (631)</uid>
     <uid uid="1.2.840.10008.6.1.1097" keyword="SurgicalProcedurePhaseRequiringAnesthesia632" type="Context Group Name">Surgical Procedure Phase Requiring Anesthesia (632)</uid>
-    <uid uid="1.2.840.10008.6.1.1098" keyword="PhaseOfImagingProcedureRequiringAnesthesia633" type="Context Group Name">Phase of Imaging Procedure Requiring Anesthesia (633)</uid>
+    <uid uid="1.2.840.10008.6.1.1098" keyword="PhaseOfImagingProcedureRequiringAnesthesia633" type="Context Group Name" retired="true">Phase of Imaging Procedure Requiring Anesthesia (Retired) (633)</uid>
     <uid uid="1.2.840.10008.6.1.1099" keyword="AnimalHandlingPhase634" type="Context Group Name">Animal Handling Phase (634)</uid>
     <uid uid="1.2.840.10008.6.1.1100" keyword="HeatingMethod635" type="Context Group Name">Heating Method (635)</uid>
     <uid uid="1.2.840.10008.6.1.1101" keyword="TemperatureSensorDeviceComponentTypeForSmallAnimalProcedure636" type="Context Group Name">Temperature Sensor Device Component Type for Small Animal Procedure (636)</uid>
@@ -6663,7 +6687,7 @@
     <uid uid="1.2.840.10008.6.1.1160" keyword="AttenuatorCategory10066" type="Context Group Name">Attenuator Category (10066)</uid>
     <uid uid="1.2.840.10008.6.1.1161" keyword="RadiationAttenuatorMaterial10067" type="Context Group Name">Radiation Attenuator Material (10067)</uid>
     <uid uid="1.2.840.10008.6.1.1162" keyword="EstimateMethodType10068" type="Context Group Name">Estimate Method Type (10068)</uid>
-    <uid uid="1.2.840.10008.6.1.1163" keyword="RadiationDoseEstimationParameter10069" type="Context Group Name">Radiation Dose Estimation Parameter (10069)</uid>
+    <uid uid="1.2.840.10008.6.1.1163" keyword="RadiationDoseEstimateParameter10069" type="Context Group Name">Radiation Dose Estimate Parameter (10069)</uid>
     <uid uid="1.2.840.10008.6.1.1164" keyword="RadiationDoseType10070" type="Context Group Name">Radiation Dose Type (10070)</uid>
     <uid uid="1.2.840.10008.6.1.1165" keyword="MRDiffusionComponentSemantic7270" type="Context Group Name">MR Diffusion Component Semantic (7270)</uid>
     <uid uid="1.2.840.10008.6.1.1166" keyword="MRDiffusionAnisotropyIndex7271" type="Context Group Name">MR Diffusion Anisotropy Index (7271)</uid>
@@ -6751,7 +6775,7 @@
     <uid uid="1.2.840.10008.6.1.1248" keyword="RadiationTransportBasedEffectiveDoseMethodModifier9538" type="Context Group Name">Radiation Transport-based Effective Dose Method Modifier (9538)</uid>
     <uid uid="1.2.840.10008.6.1.1249" keyword="FractionationBasedEffectiveDoseMethodModifier9539" type="Context Group Name">Fractionation-based Effective Dose Method Modifier (9539)</uid>
     <uid uid="1.2.840.10008.6.1.1250" keyword="ImagingAgentAdministrationAdverseEvent60" type="Context Group Name">Imaging Agent Administration Adverse Event (60)</uid>
-    <uid uid="1.2.840.10008.6.1.1251" keyword="TimeRelativeToProcedure61" type="Context Group Name">Time Relative to Procedure (61)</uid>
+    <uid uid="1.2.840.10008.6.1.1251" keyword="TimeRelativeToProcedure61" type="Context Group Name" retired="true">Time Relative to Procedure (Retired) (61)</uid>
     <uid uid="1.2.840.10008.6.1.1252" keyword="ImagingAgentAdministrationPhaseType62" type="Context Group Name">Imaging Agent Administration Phase Type (62)</uid>
     <uid uid="1.2.840.10008.6.1.1253" keyword="ImagingAgentAdministrationMode63" type="Context Group Name">Imaging Agent Administration Mode (63)</uid>
     <uid uid="1.2.840.10008.6.1.1254" keyword="ImagingAgentAdministrationPatientState64" type="Context Group Name">Imaging Agent Administration Patient State (64)</uid>
@@ -6981,4 +7005,14 @@
     <uid uid="1.2.840.10008.6.1.1478" keyword="TopicalTreatment4410" type="Context Group Name">Topical Treatment (4410)</uid>
     <uid uid="1.2.840.10008.6.1.1479" keyword="LesionColor4411" type="Context Group Name">Lesion Color (4411)</uid>
     <uid uid="1.2.840.10008.6.1.1480" keyword="SpecimenStainForConfocalMicroscopy4412" type="Context Group Name">Specimen Stain for Confocal Microscopy (4412)</uid>
+    <uid uid="1.2.840.10008.6.1.1481" keyword="RTROIImageAcquisitionContext9272" type="Context Group Name">RT ROI Image Acquisition Context (9272)</uid>
+    <uid uid="1.2.840.10008.6.1.1482" keyword="LobeOfLung6170" type="Context Group Name">Lobe of Lung (6170)</uid>
+    <uid uid="1.2.840.10008.6.1.1483" keyword="ZoneOfLung6171" type="Context Group Name">Zone of Lung (6171)</uid>
+    <uid uid="1.2.840.10008.6.1.1484" keyword="SleepStage3046" type="Context Group Name">Sleep Stage (3046)</uid>
+    <uid uid="1.2.840.10008.6.1.1485" keyword="PatientPositionAcquisitionMRTechniques9273" type="Context Group Name">Patient Position Acquisition – MR Techniques (9273)</uid>
+    <uid uid="1.2.840.10008.6.1.1486" keyword="RTPlanRadiotherapyProcedureTechnique9583" type="Context Group Name">RT Plan Radiotherapy Procedure Technique (9583)</uid>
+    <uid uid="1.2.840.10008.6.1.1487" keyword="WaveformAnnotationClassification3047" type="Context Group Name">Waveform Annotation Classification (3047)</uid>
+    <uid uid="1.2.840.10008.6.1.1488" keyword="WaveformAnnotationsDocumentTitle3048" type="Context Group Name">Waveform Annotations Document Title  (3048)</uid>
+    <uid uid="1.2.840.10008.6.1.1489" keyword="EEGProcedure3049" type="Context Group Name">EEG Procedure  (3049)</uid>
+    <uid uid="1.2.840.10008.6.1.1490" keyword="PatientConsciousness3050" type="Context Group Name">Patient Consciousness  (3050)</uid>
 </dictionary>

@@ -5,9 +5,9 @@
     <RootNamespace>FellowOakDicom</RootNamespace>
     <AssemblyName>fo-dicom.Imaging.ImageSharp</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.1.2</Version>
+    <Version>5.1.3</Version>
     <Authors>fo-dicom contributors</Authors>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2023</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2024</Copyright>
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
     <Description>A modern .NET imaging library for fo-dicom</Description>

@@ -4,9 +4,9 @@
     <RootNamespace>FellowOakDicom.Imaging.Desktop</RootNamespace>
     <AssemblyName>fo-dicom.Imaging.Desktop</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.1.2</Version>
+    <Version>5.1.3</Version>
     <Authors>fo-dicom contributors</Authors>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-$([System.DateTime]::Now.ToString(`yyyy`))</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2024</Copyright>
     
     <OutputType>Library</OutputType>
     <UseWPF>true</UseWPF>

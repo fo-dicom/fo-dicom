@@ -1,5 +1,8 @@
-### 5.1.3 (TBD)
+### 5.1.4 (TBD)
 
+### 5.1.3 (2024-06-27)
+
+- Update to DICOM Standard 2024c
 - **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
 - Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
 - Reduce the memory impact of the DicomDatasetComparer. By a static property DicomDataset.CompareInstancesByContent the usage of DicomDatasetComparer in DicomDataset.Equals can be disabled globally. (#1807)

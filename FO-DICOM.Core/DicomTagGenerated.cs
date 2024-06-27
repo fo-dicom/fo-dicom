@@ -314,6 +314,9 @@ namespace FellowOakDicom
         ///<summary>(0008,001B) VR=UI VM=1 Original Specialized SOP Class UID</summary>
         public readonly static DicomTag OriginalSpecializedSOPClassUID = new DicomTag(0x0008, 0x001B);
 
+        ///<summary>(0008,001C) VR=CS VM=1 Synthetic Data</summary>
+        public readonly static DicomTag SyntheticData = new DicomTag(0x0008, 0x001C);
+
         ///<summary>(0008,0020) VR=DA VM=1 Study Date</summary>
         public readonly static DicomTag StudyDate = new DicomTag(0x0008, 0x0020);
 
@@ -779,6 +782,9 @@ namespace FellowOakDicom
         ///<summary>(0008,1111) VR=SQ VM=1 Referenced Performed Procedure Step Sequence</summary>
         public readonly static DicomTag ReferencedPerformedProcedureStepSequence = new DicomTag(0x0008, 0x1111);
 
+        ///<summary>(0008,1112) VR=SQ VM=1 Referenced Instances by SOP Class Sequence</summary>
+        public readonly static DicomTag ReferencedInstancesBySOPClassSequence = new DicomTag(0x0008, 0x1112);
+
         ///<summary>(0008,1115) VR=SQ VM=1 Referenced Series Sequence</summary>
         public readonly static DicomTag ReferencedSeriesSequence = new DicomTag(0x0008, 0x1115);
 
@@ -859,6 +865,9 @@ namespace FellowOakDicom
 
         ///<summary>(0008,119A) VR=SQ VM=1 Other Failures Sequence</summary>
         public readonly static DicomTag OtherFailuresSequence = new DicomTag(0x0008, 0x119A);
+
+        ///<summary>(0008,119B) VR=SQ VM=1 Failed Study Sequence</summary>
+        public readonly static DicomTag FailedStudySequence = new DicomTag(0x0008, 0x119B);
 
         ///<summary>(0008,1200) VR=SQ VM=1 Studies Containing Other Referenced Instances Sequence</summary>
         public readonly static DicomTag StudiesContainingOtherReferencedInstancesSequence = new DicomTag(0x0008, 0x1200);
@@ -1220,6 +1229,9 @@ namespace FellowOakDicom
         ///<summary>(0010,2160) VR=SH VM=1 Ethnic Group</summary>
         public readonly static DicomTag EthnicGroup = new DicomTag(0x0010, 0x2160);
 
+        ///<summary>(0010,2161) VR=SQ VM=1 Ethnic Group Code Sequence</summary>
+        public readonly static DicomTag EthnicGroupCodeSequence = new DicomTag(0x0010, 0x2161);
+
         ///<summary>(0010,2180) VR=SH VM=1 Occupation</summary>
         public readonly static DicomTag Occupation = new DicomTag(0x0010, 0x2180);
 
@@ -1289,17 +1301,32 @@ namespace FellowOakDicom
         ///<summary>(0012,0021) VR=LO VM=1 Clinical Trial Protocol Name</summary>
         public readonly static DicomTag ClinicalTrialProtocolName = new DicomTag(0x0012, 0x0021);
 
+        ///<summary>(0012,0022) VR=LO VM=1 Issuer of Clinical Trial Protocol ID</summary>
+        public readonly static DicomTag IssuerOfClinicalTrialProtocolID = new DicomTag(0x0012, 0x0022);
+
+        ///<summary>(0012,0023) VR=SQ VM=1 Other Clinical Trial Protocol IDs Sequence</summary>
+        public readonly static DicomTag OtherClinicalTrialProtocolIDsSequence = new DicomTag(0x0012, 0x0023);
+
         ///<summary>(0012,0030) VR=LO VM=1 Clinical Trial Site ID</summary>
         public readonly static DicomTag ClinicalTrialSiteID = new DicomTag(0x0012, 0x0030);
 
         ///<summary>(0012,0031) VR=LO VM=1 Clinical Trial Site Name</summary>
         public readonly static DicomTag ClinicalTrialSiteName = new DicomTag(0x0012, 0x0031);
 
+        ///<summary>(0012,0032) VR=LO VM=1 Issuer of Clinical Trial Site ID</summary>
+        public readonly static DicomTag IssuerOfClinicalTrialSiteID = new DicomTag(0x0012, 0x0032);
+
         ///<summary>(0012,0040) VR=LO VM=1 Clinical Trial Subject ID</summary>
         public readonly static DicomTag ClinicalTrialSubjectID = new DicomTag(0x0012, 0x0040);
 
+        ///<summary>(0012,0041) VR=LO VM=1 Issuer of Clinical Trial Subject ID</summary>
+        public readonly static DicomTag IssuerOfClinicalTrialSubjectID = new DicomTag(0x0012, 0x0041);
+
         ///<summary>(0012,0042) VR=LO VM=1 Clinical Trial Subject Reading ID</summary>
         public readonly static DicomTag ClinicalTrialSubjectReadingID = new DicomTag(0x0012, 0x0042);
+
+        ///<summary>(0012,0043) VR=LO VM=1 Issuer of Clinical Trial Subject Reading ID</summary>
+        public readonly static DicomTag IssuerOfClinicalTrialSubjectReadingID = new DicomTag(0x0012, 0x0043);
 
         ///<summary>(0012,0050) VR=LO VM=1 Clinical Trial Time Point ID</summary>
         public readonly static DicomTag ClinicalTrialTimePointID = new DicomTag(0x0012, 0x0050);
@@ -1315,6 +1342,9 @@ namespace FellowOakDicom
 
         ///<summary>(0012,0054) VR=SQ VM=1 Clinical Trial Time Point Type Code Sequence</summary>
         public readonly static DicomTag ClinicalTrialTimePointTypeCodeSequence = new DicomTag(0x0012, 0x0054);
+
+        ///<summary>(0012,0055) VR=LO VM=1 Issuer of Clinical Trial Time Point ID</summary>
+        public readonly static DicomTag IssuerOfClinicalTrialTimePointID = new DicomTag(0x0012, 0x0055);
 
         ///<summary>(0012,0060) VR=LO VM=1 Clinical Trial Coordinating Center Name</summary>
         public readonly static DicomTag ClinicalTrialCoordinatingCenterName = new DicomTag(0x0012, 0x0060);
@@ -1333,6 +1363,9 @@ namespace FellowOakDicom
 
         ///<summary>(0012,0072) VR=LO VM=1 Clinical Trial Series Description</summary>
         public readonly static DicomTag ClinicalTrialSeriesDescription = new DicomTag(0x0012, 0x0072);
+
+        ///<summary>(0012,0073) VR=LO VM=1 Issuer of Clinical Trial Series ID</summary>
+        public readonly static DicomTag IssuerOfClinicalTrialSeriesID = new DicomTag(0x0012, 0x0073);
 
         ///<summary>(0012,0081) VR=LO VM=1 Clinical Trial Protocol Ethics Committee Name</summary>
         public readonly static DicomTag ClinicalTrialProtocolEthicsCommitteeName = new DicomTag(0x0012, 0x0081);
@@ -5386,6 +5419,9 @@ namespace FellowOakDicom
 
         ///<summary>(0022,000E) VR=FL VM=1 Degree of Dilation</summary>
         public readonly static DicomTag DegreeOfDilation = new DicomTag(0x0022, 0x000E);
+
+        ///<summary>(0022,000F) VR=FD VM=1 Vertex Distance</summary>
+        public readonly static DicomTag VertexDistance = new DicomTag(0x0022, 0x000F);
 
         ///<summary>(0022,0010) VR=FL VM=1 Stereo Baseline Angle</summary>
         public readonly static DicomTag StereoBaselineAngle = new DicomTag(0x0022, 0x0010);
@@ -10214,11 +10250,11 @@ namespace FellowOakDicom
         ///<summary>(0070,1806) VR=SQ VM=1 Weighting Transfer Function Sequence</summary>
         public readonly static DicomTag WeightingTransferFunctionSequence = new DicomTag(0x0070, 0x1806);
 
-        ///<summary>(0070,1807) VR=US VM=3 Weighting Lookup Table Descriptor</summary>
-        public readonly static DicomTag WeightingLookupTableDescriptor = new DicomTag(0x0070, 0x1807);
+        ///<summary>(0070,1807) VR=US VM=3 Weighting Lookup Table Descriptor (RETIRED)</summary>
+        public readonly static DicomTag WeightingLookupTableDescriptorRETIRED = new DicomTag(0x0070, 0x1807);
 
-        ///<summary>(0070,1808) VR=OB VM=1 Weighting Lookup Table Data</summary>
-        public readonly static DicomTag WeightingLookupTableData = new DicomTag(0x0070, 0x1808);
+        ///<summary>(0070,1808) VR=OB VM=1 Weighting Lookup Table Data (RETIRED)</summary>
+        public readonly static DicomTag WeightingLookupTableDataRETIRED = new DicomTag(0x0070, 0x1808);
 
         ///<summary>(0070,1901) VR=SQ VM=1 Volumetric Annotation Sequence</summary>
         public readonly static DicomTag VolumetricAnnotationSequence = new DicomTag(0x0070, 0x1901);
@@ -11966,6 +12002,12 @@ namespace FellowOakDicom
         ///<summary>(3006,002C) VR=DS VM=1 ROI Volume</summary>
         public readonly static DicomTag ROIVolume = new DicomTag(0x3006, 0x002C);
 
+        ///<summary>(3006,002D) VR=DT VM=1 ROI DateTime</summary>
+        public readonly static DicomTag ROIDateTime = new DicomTag(0x3006, 0x002D);
+
+        ///<summary>(3006,002E) VR=DT VM=1 ROI Observation DateTime</summary>
+        public readonly static DicomTag ROIObservationDateTime = new DicomTag(0x3006, 0x002E);
+
         ///<summary>(3006,0030) VR=SQ VM=1 RT Related ROI Sequence</summary>
         public readonly static DicomTag RTRelatedROISequence = new DicomTag(0x3006, 0x0030);
 
@@ -12007,6 +12049,21 @@ namespace FellowOakDicom
 
         ///<summary>(3006,004A) VR=SQ VM=1 Source Pixel Planes Characteristics Sequence</summary>
         public readonly static DicomTag SourcePixelPlanesCharacteristicsSequence = new DicomTag(0x3006, 0x004A);
+
+        ///<summary>(3006,004B) VR=SQ VM=1 Source Series Sequence</summary>
+        public readonly static DicomTag SourceSeriesSequence = new DicomTag(0x3006, 0x004B);
+
+        ///<summary>(3006,004C) VR=SQ VM=1 Source Series Information Sequence</summary>
+        public readonly static DicomTag SourceSeriesInformationSequence = new DicomTag(0x3006, 0x004C);
+
+        ///<summary>(3006,004D) VR=SQ VM=1 ROI Creator Sequence</summary>
+        public readonly static DicomTag ROICreatorSequence = new DicomTag(0x3006, 0x004D);
+
+        ///<summary>(3006,004E) VR=SQ VM=1 ROI Interpreter Sequence</summary>
+        public readonly static DicomTag ROIInterpreterSequence = new DicomTag(0x3006, 0x004E);
+
+        ///<summary>(3006,004F) VR=SQ VM=1 ROI Observation Context Code Sequence</summary>
+        public readonly static DicomTag ROIObservationContextCodeSequence = new DicomTag(0x3006, 0x004F);
 
         ///<summary>(3006,0050) VR=DS VM=3-3n Contour Data</summary>
         public readonly static DicomTag ContourData = new DicomTag(0x3006, 0x0050);
@@ -12517,6 +12574,9 @@ namespace FellowOakDicom
 
         ///<summary>(300A,0053) VR=DS VM=1 Table Top Lateral Position Tolerance</summary>
         public readonly static DicomTag TableTopLateralPositionTolerance = new DicomTag(0x300A, 0x0053);
+
+        ///<summary>(300A,0054) VR=UI VM=1 Table Top Position Alignment UID</summary>
+        public readonly static DicomTag TableTopPositionAlignmentUID = new DicomTag(0x300A, 0x0054);
 
         ///<summary>(300A,0055) VR=CS VM=1 RT Plan Relationship</summary>
         public readonly static DicomTag RTPlanRelationship = new DicomTag(0x300A, 0x0055);
@@ -14212,6 +14272,15 @@ namespace FellowOakDicom
 
         ///<summary>(300A,079E) VR=CS VM=1 RT Radiation Set Delivery Usage</summary>
         public readonly static DicomTag RTRadiationSetDeliveryUsage = new DicomTag(0x300A, 0x079E);
+
+        ///<summary>(300A,079F) VR=SQ VM=1 Patient Treatment Preparation Sequence</summary>
+        public readonly static DicomTag PatientTreatmentPreparationSequence = new DicomTag(0x300A, 0x079F);
+
+        ///<summary>(300A,07A0) VR=SQ VM=1 Patient to Equipment Relationship Sequence</summary>
+        public readonly static DicomTag PatientToEquipmentRelationshipSequence = new DicomTag(0x300A, 0x07A0);
+
+        ///<summary>(300A,07A1) VR=SQ VM=1 Imaging Equipment to Treatment Delivery Device Relationship Sequence</summary>
+        public readonly static DicomTag ImagingEquipmentToTreatmentDeliveryDeviceRelationshipSequence = new DicomTag(0x300A, 0x07A1);
 
         ///<summary>(300C,0002) VR=SQ VM=1 Referenced RT Plan Sequence</summary>
         public readonly static DicomTag ReferencedRTPlanSequence = new DicomTag(0x300C, 0x0002);
