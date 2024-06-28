@@ -11,6 +11,7 @@
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
     <Description>A .NET Standard 2.0 imaging library for fo-dicom</Description>
+    <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
@@ -32,6 +33,7 @@
       <PackagePath></PackagePath>
       <Link>FellowOakSquareTransp.png</Link>
     </None>
+    <None Include="..\..\READMENuget.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

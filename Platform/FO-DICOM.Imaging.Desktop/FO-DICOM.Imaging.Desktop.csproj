@@ -21,8 +21,9 @@
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>System.Drawing support</Description>
-	<Platforms>AnyCPU;x64</Platforms>
+    <Description>System.Drawing support for fo-dicom</Description>
+    <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -63,5 +64,6 @@
       <Pack>True</Pack>
       <PackagePath>.</PackagePath>
     </None>
+    <None Include="..\..\READMENuget.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
