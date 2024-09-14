@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -199,7 +200,59 @@ namespace FellowOakDicom.Tests.Network.Client
 
             AllResponsesShouldHaveSucceeded(new[] { actualResponse });
         }
-        
+
+        [Fact]
+        public async Task SendAsync_WithInvalidCertificate_ShouldFail()
+        {
+            // Arrange
+            var port = Ports.GetNext();
+            var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
+
+            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
+            {
+                RequireMutualAuthentication = false,
+                CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+                {
+                    return false;
+                }
+            };
+
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", port, tlsAcceptor: tlsAcceptor);
+
+            var tlsInitiator = new DefaultTlsInitiator();
+            var client = CreateClient("127.0.0.1", port, tlsInitiator, "SCU", "ANY-SCP");
+
+            DicomCEchoResponse actualResponse = null;
+            var dicomCEchoRequest = new DicomCEchoRequest
+            {
+                OnResponseReceived = (request, response) =>
+                {
+                    actualResponse = response;
+                }
+            };
+            await client.AddRequestAsync(dicomCEchoRequest);
+
+            Exception exception = null;
+            try
+            {
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+                {
+                    await client.SendAsync(cts.Token);
+                }
+            }
+            catch(AggregateException aggEx)
+            {
+                exception = aggEx.InnerException;
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
+            Assert.NotNull(exception);
+            Assert.IsType<AuthenticationException>(exception);
+        }
+
         [Fact]
         public async Task SendAsync_WithFrozenSslHandshake_ShouldAcceptMoreConnections()
         {
