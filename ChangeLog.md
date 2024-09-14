@@ -1,6 +1,7 @@
 ### 5.1.4 (TBD)
 
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
+- FO-DICOM.Tests target net8.0-windows instead of net7.0-windows
 
 ### 5.1.3 (2024-06-27)
 
