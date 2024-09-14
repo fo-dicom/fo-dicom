@@ -1,12 +1,13 @@
 ### 5.1.4 (TBD)
 
 - Fix issue where the main TCP listener loop could be blocked by frozen TLS handshakes (#1766)
+- Add support for saving new strings with multi-valued Specific Character Set (#1789)
 
 ### 5.1.3 (2024-06-27)
 
 - Update to DICOM Standard 2024c
 - **Breaking change**: Calculation of VOI LUT function LINEAR_EXACT changed as defined since DICOM Standard 2019d
-- Added core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
+- Add core support for HTJ2K-based transfer syntaxes (not actual codec) (#1687)
 - Reduce the memory impact of the DicomDatasetComparer. By a static property DicomDataset.CompareInstancesByContent the usage of DicomDatasetComparer in DicomDataset.Equals can be disabled globally. (#1807)
 - Add support for parsing DICOM files where the pixel data is not properly closed with a SequenceDelimitationItem (#1339)
 - Update Dicom json converter to handle Infinity values for FL and FD VRs (#1725)

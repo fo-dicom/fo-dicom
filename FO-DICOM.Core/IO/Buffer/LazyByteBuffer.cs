@@ -12,13 +12,15 @@ namespace FellowOakDicom.IO.Buffer
     public sealed class LazyByteBuffer : IByteBuffer
     {
         private readonly Func<byte[]> _bytes;
+        private byte[] _byteData;
+
 
         public LazyByteBuffer(Func<byte[]> bytes)
         {
             _bytes = bytes ?? throw new ArgumentNullException(nameof(bytes));
         }
 
-        private byte[] Bytes => _bytes();
+        private byte[] Bytes =>  _byteData ??= _bytes();
         
         public bool IsMemory => true;
 
