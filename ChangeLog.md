@@ -1,6 +1,7 @@
 ### 5.1.4 (TBD)
 
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
+- Fix bug where DicomDataset.GetDicomTag thew an exception if the private tag does not exist in dataset (#1840)
 
 ### 5.1.3 (2024-06-27)
 
