@@ -765,7 +765,7 @@ namespace FellowOakDicom.Printing
             var filmBox = new FilmBox(filmSession, file.FileMetaInfo.MediaStorageSOPInstanceUID, file.Dataset);
 
             var imagesFolder = new DirectoryReference(Path.Combine(filmBoxFolder, "Images"));
-            foreach (var image in imagesFolder.EnumerateFileNames("*.dcm"))
+            foreach (var image in imagesFolder.EnumerateFileNames("*.dcm").OrderBy(i => i))
             {
                 var imageBox = ImageBox.Load(filmBox, image);
 
