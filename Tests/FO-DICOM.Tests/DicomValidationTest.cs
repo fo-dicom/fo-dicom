@@ -292,6 +292,20 @@ namespace FellowOakDicom.Tests
                 ds.AddOrUpdate(DicomTag.ReferringPhysicianName, "Doe^John^^^Ph.D.^Junior"));
         }
 
+        [Fact]
+        public void DicomValidation_ValidatePNLength()
+        {
+            // normal Length
+            var ds = new DicomDataset { { DicomTag.PatientName, "Doe^John=Doe^John=Doe^John" } };
+
+            // Length of one component group increases 64 characters
+            Assert.Throws<DicomValidationException>(() =>
+                ds.AddOrUpdate(DicomTag.PatientName, "VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery^Long"));
+
+            // 2 component groups, each of them shorter than 64 characters, but together more than 64 characters
+            ds.AddOrUpdate(DicomTag.OtherPatientNames, "VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery^Long=VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery^Long");
+        }
+
         #endregion
 
     }
