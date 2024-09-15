@@ -1,6 +1,7 @@
 ### 5.1.4 (TBD)
 
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
+- Fix bug where under some circumstances (transcode a 8 bit image with odd row or column length from explicit to implicit TS) a odd length pixeldata is written (#1403)
 
 ### 5.1.3 (2024-06-27)
 
