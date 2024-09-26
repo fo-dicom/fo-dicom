@@ -1,6 +1,7 @@
 ### 5.1.4 (TBD)
 
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
+- Fix issue with retrieving correct VR when the DICOM element's length is a blank character (e.g., 0x200A) by modifying the empty string check to specifically handle 0x2020 (#1847)
 
 ### 5.1.3 (2024-06-27)
 
