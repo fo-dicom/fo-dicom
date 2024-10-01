@@ -37,7 +37,7 @@ namespace FellowOakDicom.Imaging.Render
             _cachedLUT = null;
         }
 
-        private ILUT BuildColorLUT()
+        private PaletteColorLUT BuildColorLUT()
         {
             var lut = _pixelData.PaletteColorLUT;
             var first = _pixelData.Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 1);
