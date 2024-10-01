@@ -29,21 +29,21 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomSignedShortAsDicomElement_Array_GetDefaultValue()
         {
-            DicomElement element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            var element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.Equal((short)5, element.Get<short>());
         }
 
         [Fact]
         public void DicomSignedShortAsDicomElement_Array_GetObjectValue()
         {
-            DicomElement element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            var element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.Equal((short)5, element.Get<object>());
         }
 
         [Fact]
         public void DicomSignedShortAsDicomElement_Array_GetObjectArrayValue()
         {
-            DicomElement element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            var element = new DicomSignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.Equal(new object[] { (short)5, (short)8 }, element.Get<object[]>());
         }
 
@@ -51,7 +51,7 @@ namespace FellowOakDicom.Tests
         public void AttributeTagAsDicomElement_Array_GetDefaultValue()
         {
             var expected = DicomTag.ALinePixelSpacing;
-            DicomElement element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, DicomTag.ALinePixelSpacing);
+            var element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, DicomTag.ALinePixelSpacing);
             var actual = element.Get<DicomTag>();
             Assert.Equal(expected, actual);
         }
@@ -59,14 +59,14 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void DicomUnsignedShortAsDicomElement_Array_GetObjectValue()
         {
-            DicomElement element = new DicomUnsignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            var element = new DicomUnsignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.Equal((ushort)5, element.Get<object>());
         }
 
         [Fact]
         public void DicomUnsignedShortAsDicomElement_Array_GetObjectArrayValue()
         {
-            DicomElement element = new DicomUnsignedShort(DicomTag.SynchronizationChannel, 5, 8);
+            var element = new DicomUnsignedShort(DicomTag.SynchronizationChannel, 5, 8);
             Assert.Equal(new object[] { (ushort)5, (ushort)8 }, element.Get<object[]>());
         }
 

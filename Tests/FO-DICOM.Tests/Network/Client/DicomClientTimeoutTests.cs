@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Network.Client
             return client;
         }
 
-        private static IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
+        private static DefaultDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
             var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
