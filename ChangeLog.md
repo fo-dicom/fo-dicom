@@ -2,6 +2,7 @@
 
 - Fix issue where the main TCP listener loop could be blocked by frozen TLS handshakes (#1766)
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
+- Fix bug where DicomDataset.GetDicomTag thew an exception if the private tag does not exist in dataset (#1840)
 - FO-DICOM.Tests target net8.0-windows instead of net7.0-windows
 
 ### 5.1.3 (2024-06-27)
