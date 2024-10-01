@@ -526,7 +526,7 @@ namespace FellowOakDicom.Printing
             }
             catch (Exception ex)
             {
-                Logger.LogError("FilmBox.Initialize, exception message: {0}", ex.Message);
+                Logger.LogError(ex, "FilmBox.Initialize, exception message");
             }
 
             return false;
