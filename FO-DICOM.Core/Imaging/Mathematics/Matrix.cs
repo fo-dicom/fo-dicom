@@ -139,7 +139,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Row(int row, params int[] values)
         {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Columns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), $"The number of values ({values.Length}) must match the number of columns ({Columns})");
+            }
 
             for (int col = 0, cols = Columns; col < cols; col++)
             {
@@ -161,7 +164,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Column(int col, params int[] values)
         {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Rows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), $"The number of values ({values.Length}) must match the number of rows ({Rows})");
+            }
 
             for (int row = 0, rows = Rows; row < rows; row++)
             {
@@ -245,17 +251,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
                 if (r > 0) sb.Append("; ");
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0) sb.Append(',');
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
@@ -577,7 +583,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Row(int row, params float[] values)
         {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Columns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), $"The number of values ({values.Length}) must match the number of columns ({Columns})");
+            }
 
             for (int col = 0, cols = Columns; col < cols; col++)
             {
@@ -599,7 +608,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Column(int col, params float[] values)
         {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Rows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), $"The number of values ({values.Length}) must match the number of rows ({Rows})");
+            }
 
             for (int row = 0, rows = Rows; row < rows; row++)
             {
@@ -769,17 +781,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
                 if (r > 0) sb.Append("; ");
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0) sb.Append(',');
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
@@ -1120,7 +1132,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Row(int row, params double[] values)
         {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Columns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), $"The number of values ({values.Length}) must match the number of columns ({Columns})");
+            }
 
             for (int col = 0, cols = Columns; col < cols; col++)
             {
@@ -1142,7 +1157,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Column(int col, params double[] values)
         {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Rows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values), $"The number of values ({values.Length}) must match the number of rows ({Rows})");
+            }
 
             for (int row = 0, rows = Rows; row < rows; row++)
             {
@@ -1310,17 +1328,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
                 if (r > 0) sb.Append("; ");
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0) sb.Append(',');
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 

@@ -105,7 +105,8 @@ namespace FellowOakDicom
 
                     string group = xentry.Attribute("group").Value;
                     string element = xentry.Attribute("element").Value;
-                    if (group.ToLower().Contains("x") || element.ToLower().Contains("x"))
+                    if (group.IndexOf("x", StringComparison.CurrentCultureIgnoreCase) != -1 
+                        || element.IndexOf("x", StringComparison.CurrentCultureIgnoreCase) != -1)
                     {
                         var tag = DicomMaskedTag.Parse(group, element);
                         tag.Tag.PrivateCreator = dict.PrivateCreator;

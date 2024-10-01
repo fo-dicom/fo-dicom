@@ -100,7 +100,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         }
 
 
-        private void EnhanceQuantizationTable(int[] qtab, int[] table)
+        private static void EnhanceQuantizationTable(int[] qtab, int[] table)
         {
             for (int i = 0; i < 8; i++)
             {

@@ -222,7 +222,7 @@ namespace FellowOakDicom.Tests.Media
         }
 
 
-        private static IList<DicomFile> GetDicomFilesFromZip(string fileName)
+        private static List<DicomFile> GetDicomFilesFromZip(string fileName)
         {
             var dicomFiles = new List<DicomFile>();
 

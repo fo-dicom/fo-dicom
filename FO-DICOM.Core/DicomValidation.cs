@@ -13,6 +13,8 @@ namespace FellowOakDicom
     {
         internal static bool PerformValidation { get; set; } = true;
 
+        private static readonly char[] _separator = { '+', '-' };
+
         public static void ValidateAE(string content)
         {
             // may not be longer than 16 characters
@@ -244,7 +246,7 @@ namespace FellowOakDicom
                 }
 
                 // Split by optional suffix for UTC +/-ZZXX
-                string[] splittedDateTime = trimmedComponent.Split(new char[] { '+', '-' }, StringSplitOptions.None);
+                string[] splittedDateTime = trimmedComponent.Split(_separator, StringSplitOptions.None);
                 if (splittedDateTime.Length > 2)
                 {
                     throw new DicomValidationException(content, DicomVR.DT, "value contains too many UTC separators '+' or '-'");
@@ -595,7 +597,7 @@ namespace FellowOakDicom
              */
 
             var queryComponents = content.Split('-');
-            if (queryComponents.Count() > 2)
+            if (queryComponents.Length > 2)
             {
                 throw new DicomValidationException(content, DicomVR.TM, "value contains too many range separators '-'");
             }

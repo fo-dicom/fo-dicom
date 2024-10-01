@@ -1037,7 +1037,7 @@ namespace FellowOakDicom.Serialization
         }
 
 
-        private string[] ReadJsonPersonName(ref Utf8JsonReader reader)
+        private static string[] ReadJsonPersonName(ref Utf8JsonReader reader)
         {
             if (reader.TokenType == JsonTokenType.EndObject)
             {
@@ -1186,12 +1186,12 @@ namespace FellowOakDicom.Serialization
         }
 
 
-        private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader) 
+        private static MemoryByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader) 
             => reader.TokenType == JsonTokenType.StartArray
                 ? ReadJsonInlineBinaryArray(ref reader)
                 : ReadJsonInlineBinaryString(ref reader);
 
-        private static IByteBuffer ReadJsonInlineBinaryArray(ref Utf8JsonReader reader)
+        private static MemoryByteBuffer ReadJsonInlineBinaryArray(ref Utf8JsonReader reader)
         {
             reader.Read(); // caller already checked for StartArray
             var data = ReadJsonInlineBinaryString(ref reader);
@@ -1199,7 +1199,7 @@ namespace FellowOakDicom.Serialization
             return data;            
         }
 
-        private static IByteBuffer ReadJsonInlineBinaryString(ref Utf8JsonReader reader)
+        private static MemoryByteBuffer ReadJsonInlineBinaryString(ref Utf8JsonReader reader)
         {
             if (reader.TokenType != JsonTokenType.String)
             {
@@ -1259,7 +1259,7 @@ namespace FellowOakDicom.Serialization
             return null;
         }
 
-        private string FindValue(Utf8JsonReader reader, string property, string defaultValue)
+        private static string FindValue(Utf8JsonReader reader, string property, string defaultValue)
         {
             var currentDepth = reader.CurrentDepth;
             while (reader.CurrentDepth >= currentDepth)

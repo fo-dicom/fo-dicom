@@ -97,7 +97,7 @@ namespace FellowOakDicom.AspNetCore.Server
             if (builder.InstanceReceivedHandlerAsync != null)
             {
                 var instanceReceivedEventArgs = new InstanceReceivedEventArgs(Association, request.File);
-                var result = await builder.InstanceReceivedHandlerAsync.Invoke(instanceReceivedEventArgs);
+                var result = await builder.InstanceReceivedHandlerAsync.Invoke(instanceReceivedEventArgs).ConfigureAwait(false);
                 if (!result)
                 {
                     resultStatus = instanceReceivedEventArgs.ResultStatus;

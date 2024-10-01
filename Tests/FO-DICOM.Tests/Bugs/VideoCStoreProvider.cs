@@ -60,7 +60,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
         {
             var tempName = Path.GetTempFileName();
-            Logger.LogInformation(tempName);
+            Logger.LogInformation("C-STORE request: {TempFileName}", tempName);
             await request.File.SaveAsync(tempName);
 
             _storedFiles.Add(tempName);

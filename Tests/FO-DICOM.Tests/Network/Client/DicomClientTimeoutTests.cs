@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Network.Client
             return client;
         }
 
-        private IDicomClientFactory CreateClientFactory(INetworkManager networkManager)
+        private static DefaultDicomClientFactory CreateClientFactory(INetworkManager networkManager)
         {
             var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
@@ -331,7 +331,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var streamWriteTimeout = TimeSpan.FromMilliseconds(10);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
@@ -371,7 +371,7 @@ namespace FellowOakDicom.Tests.Network.Client
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
                 var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
@@ -435,7 +435,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
 
                 var testLogger = _logger.IncludePrefix("Test");
-                testLogger.LogInformation($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
+                testLogger.LogInformation("Beginning {Requests} parallel requests with {MaxRequestsPerAssoc} requests / association", options.Requests, options.MaxRequestsPerAssoc);
 
                 var requests = new List<DicomRequest>();
                 for (var i = 1; i <= options.Requests; i++)
@@ -447,9 +447,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
                     if (i < options.Requests)
                     {
-                        testLogger.LogInformation($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
+                        testLogger.LogInformation("Waiting {TotalMilliseconds}ms between requests", options.TimeBetweenRequests.TotalMilliseconds);
                         await Task.Delay(options.TimeBetweenRequests);
-                        testLogger.LogInformation($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
+                        testLogger.LogInformation("Waited {TotalMilliseconds}ms, moving on to next request", options.TimeBetweenRequests.TotalMilliseconds);
                     }
                 }
 
@@ -483,7 +483,7 @@ namespace FellowOakDicom.Tests.Network.Client
             {
 
                 var request1HasArrived = false;
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() =>
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() =>
                 {
                     if (request1HasArrived)
                     {
@@ -548,14 +548,13 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithGenericStreamException_ShouldNotLoopInfinitely()
         {
             var port = Ports.GetNext();
-            var logger = _logger.IncludePrefix("UnitTest");
 
             DicomCStoreResponse response1 = null, response2 = null, response3 = null;
             DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
             using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
                 var request1HasArrived = false;
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() =>
+                var clientFactory = DicomClientTimeoutTest.CreateClientFactory(new ConfigurableNetworkManager(() =>
                 {
                     if (request1HasArrived)
                     {

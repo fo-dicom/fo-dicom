@@ -132,8 +132,8 @@ namespace FellowOakDicom.Tests.Network
             new object[]
             {
                 new byte[]{ 0, 0, 1 },
-                new byte[]{ },
-                new byte[]{ }
+                Array.Empty<byte>(),
+                Array.Empty<byte>()
             },
             new object[]
             {

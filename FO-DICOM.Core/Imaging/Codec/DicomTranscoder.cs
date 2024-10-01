@@ -217,7 +217,7 @@ namespace FellowOakDicom.Imaging.Codec
                 : null;
         }
 
-        private static DicomCodecParams DefaultInputCodecParams(DicomTransferSyntax inputSyntax)
+        private static DicomJpegParams DefaultInputCodecParams(DicomTransferSyntax inputSyntax)
         {
             return inputSyntax == DicomTransferSyntax.JPEGProcess1 || inputSyntax == DicomTransferSyntax.JPEGProcess2_4
                 ? new DicomJpegParams { ConvertColorspaceToRGB = true }

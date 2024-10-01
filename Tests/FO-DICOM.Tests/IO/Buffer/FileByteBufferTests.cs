@@ -150,6 +150,7 @@ namespace FellowOakDicom.Tests.IO.Buffer
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             TemporaryFileRemover.Delete(_fileReference);
         }
     }

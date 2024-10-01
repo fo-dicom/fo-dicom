@@ -39,7 +39,7 @@ namespace FellowOakDicom.Tests.Helpers
             }
         }
 
-        static TValue GetOrCreate<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key) where TValue : new()
+        static TValue GetOrCreate<TKey, TValue>(SortedDictionary<TKey, TValue> dictionary, TKey key) where TValue : new()
         {
             if (dictionary.TryGetValue(key, out TValue result))
             {

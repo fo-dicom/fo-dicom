@@ -792,7 +792,7 @@ namespace FellowOakDicom.Tests.Network
             Assert.Equal(100, uniqueDisposedServices.Count);
         }
 
-        private void TestFoDicomUnhandledException(int port)
+        private static void TestFoDicomUnhandledException(int port)
         {
             var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
             Thread.Sleep(500);
@@ -808,7 +808,7 @@ namespace FellowOakDicom.Tests.Network
 
             var port = Ports.GetNext();
 
-            await Task.Factory.StartNew(() => TestFoDicomUnhandledException(port));
+            await Task.Factory.StartNew(() => DicomServerTest.TestFoDicomUnhandledException(port));
 
             await Task.Delay(2000);
             GC.Collect();

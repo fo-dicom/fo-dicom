@@ -220,7 +220,7 @@ namespace FellowOakDicom.Tests.Media
                     child.Sequence.AddOrUpdate(DicomTag.SOPInstanceUID, id.ToString());
                     child.Sequence.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, 0u);
                     child.Sequence.AddOrUpdate(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0u);
-                    if (Children.Any())
+                    if (Children.Count != 0)
                     {
                         Children.Last().Sequence.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, offset);
                     }

@@ -436,7 +436,7 @@ namespace FellowOakDicom.Tests
             new object[] { "windows-874", "ISO 2022 IR 166" },
         };
 
-        private CollectingLoggerSession NewLogCollector()
+        private static CollectingLoggerSession NewLogCollector()
         {
             var logger = CollectingLoggerProvider.Instance.CollectingLogger;
             return new CollectingLoggerSession(logger);

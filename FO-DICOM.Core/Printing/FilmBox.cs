@@ -485,7 +485,7 @@ namespace FellowOakDicom.Printing
                     return false;
                 }
 
-                Logger.LogInformation($"Applying display format {ImageDisplayFormat} for film box {SOPInstanceUID}");
+                Logger.LogInformation("Applying display format {ImageDisplayFormat} for film box {SopInstanceUid}", ImageDisplayFormat, SOPInstanceUID);
 
                 var parts = ImageDisplayFormat.Split('\\');
 
@@ -526,7 +526,7 @@ namespace FellowOakDicom.Printing
             }
             catch (Exception ex)
             {
-                Logger.LogError("FilmBox.Initialize, exception message: {0}", ex.Message);
+                Logger.LogError(ex, "FilmBox.Initialize, exception message");
             }
 
             return false;

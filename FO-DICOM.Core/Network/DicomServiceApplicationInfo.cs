@@ -267,7 +267,7 @@ namespace FellowOakDicom.Network
         /// <param name="defaultValue">The value to fill in the empty gaps</param>
         private void FillInTheGaps(byte defaultValue = 0)
         {
-            if (!_fields.Any())
+            if (_fields.Count == 0)
             {
                 return;
             }

@@ -38,6 +38,7 @@ namespace FellowOakDicom.IO.Buffer
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _data = null;
         }
 

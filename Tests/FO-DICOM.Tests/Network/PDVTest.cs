@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Network
     [Collection(TestCollections.Network)]
     public class PDVTest
     {
-        private readonly IMemoryProvider _memoryProvider;
+        private readonly ArrayPoolMemoryProvider _memoryProvider;
 
         #region Unit tests
 

@@ -19,6 +19,7 @@ namespace FellowOakDicom.Tests
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Logger.StopCollecting();
         }
 

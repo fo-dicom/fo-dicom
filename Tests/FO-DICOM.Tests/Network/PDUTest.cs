@@ -187,7 +187,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomUID.StudyRootQueryRetrieveInformationModelFind,
                 new DicomCFindApplicationInfo(DicomCFindOption.RelationalQueries | DicomCFindOption.DateTimeMatching),
                 null,
-                new DicomUID[] {}
+                global::System.Array.Empty<global::FellowOakDicom.DicomUID>()
             },
         };
 

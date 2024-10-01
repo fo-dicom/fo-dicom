@@ -107,7 +107,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         //	            V[i][j] Huffman Value (length=i)
         //	Effect:
         //	    build up HuffTab[t][c] using L and V.
-        private void BuildHuffTable(int[] tab, int[] L, int[,] V)
+        private static void BuildHuffTable(int[] tab, int[] L, int[,] V)
         {
             int currentTable, temp;
             int k;

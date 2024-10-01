@@ -10,7 +10,7 @@ namespace FellowOakDicom
 
     public class DicomVM
     {
-        private static IDictionary<string, DicomVM> _vm = new Dictionary<string, DicomVM>();
+        private static Dictionary<string, DicomVM> _vm = new Dictionary<string, DicomVM>();
 
         public static readonly DicomVM VM_1 = DicomVM.Parse("1");
 
@@ -64,6 +64,8 @@ namespace FellowOakDicom
 
         public int Multiplicity { get; private set; }
 
+        private static readonly string[] _separator = { "-", " ", "or" };
+
         public override string ToString()
         {
             if (Minimum == Maximum) return Minimum.ToString();
@@ -84,7 +86,7 @@ namespace FellowOakDicom
                 DicomVM vm = null;
                 if (_vm.TryGetValue(s, out vm)) return vm;
 
-                string[] parts = s.Split(new[] { "-", " ", "or" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] parts = s.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
                 if (parts.Length == 1)
                 {

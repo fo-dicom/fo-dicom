@@ -258,12 +258,12 @@ namespace FellowOakDicom.Tests
             short[] values = new short[] { 5 }; //single Value element
             var element = new DicomSignedShort(DicomTag.TagAngleSecondAxis, values);
 
-            TestAddElementToDatasetAsString(element, values);
+            DicomDatasetTest.TestAddElementToDatasetAsString(element, values);
 
             values = new short[] { 5, 8 }; //multi-value element
             element = new DicomSignedShort(DicomTag.CenterOfCircularExposureControlSensingRegion, values);
 
-            Assert.True(TestAddElementToDatasetAsString(element, values));
+            Assert.True(DicomDatasetTest.TestAddElementToDatasetAsString(element, values));
         }
 
         [Fact]
@@ -272,12 +272,12 @@ namespace FellowOakDicom.Tests
             var expected = new DicomTag[] { DicomTag.ALinePixelSpacing }; //single value
             DicomElement element = new DicomAttributeTag(DicomTag.DimensionIndexPointer, expected);
 
-            TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray());
+            DicomDatasetTest.TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray());
 
             expected = new DicomTag[] { DicomTag.ALinePixelSpacing, DicomTag.AccessionNumber }; //multi-value
             element = new DicomAttributeTag(DicomTag.FrameIncrementPointer, expected);
 
-            Assert.True(TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray()));
+            Assert.True(DicomDatasetTest.TestAddElementToDatasetAsString(element, expected.Select(n => n.ToString("J", null)).ToArray()));
         }
 
         [Fact]
@@ -287,7 +287,7 @@ namespace FellowOakDicom.Tests
 
             var element = new DicomUnsignedShort(DicomTag.ReferencedFrameNumber, testValues);
 
-            Assert.True(TestAddElementToDatasetAsString(element, testValues));
+            Assert.True(DicomDatasetTest.TestAddElementToDatasetAsString(element, testValues));
         }
 
         [Fact]
@@ -296,7 +296,7 @@ namespace FellowOakDicom.Tests
             var testValues = new int[] { 1, 2, 3 };
             var element = new DicomSignedLong(DicomTag.RationalNumeratorValue, testValues);
 
-            Assert.True(TestAddElementToDatasetAsString(element, testValues));
+            Assert.True(DicomDatasetTest.TestAddElementToDatasetAsString(element, testValues));
         }
 
         [Fact]
@@ -906,7 +906,7 @@ namespace FellowOakDicom.Tests
 
         #region Support methods
 
-        private bool TestAddElementToDatasetAsString<T>(DicomElement element, T[] testValues)
+        private static bool TestAddElementToDatasetAsString<T>(DicomElement element, T[] testValues)
         {
             var ds = new DicomDataset();
             string[] stringValues = typeof(T) == typeof(string)
@@ -942,7 +942,7 @@ namespace FellowOakDicom.Tests
             return true;
         }
 
-        private string GetStringValue(DicomElement element, DicomDataset ds, int index)
+        private static string GetStringValue(DicomElement element, DicomDataset ds, int index)
         {
             string val;
 
@@ -975,7 +975,7 @@ namespace FellowOakDicom.Tests
                 { element.Tag, element.Buffer }
             };
 
-            for (int index = 0; index < testValues.Count(); index++)
+            for (int index = 0; index < testValues.Length; index++)
             {
                 Assert.Equal(testValues[index], ds.GetValue<T>(element.Tag, index));
             }

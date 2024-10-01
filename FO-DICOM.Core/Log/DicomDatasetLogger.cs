@@ -56,6 +56,7 @@ namespace FellowOakDicom.Log
         /// </summary>
         /// <param name="element">Element to traverse.</param>
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
+        [SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Message template cannot be static here")]
         public bool OnElement(DicomElement element)
         {
             var sb = new StringBuilder();
@@ -148,7 +149,7 @@ namespace FellowOakDicom.Log
         /// <returns>true if traversing completed without issues, false otherwise.</returns>
         public bool OnBeginSequenceItem(DicomDataset dataset)
         {
-            _log.Log(_level, _pad + "Item:");
+            _log.Log(_level, "{Pad}Item:", _pad);
             IncreaseDepth();
             return true;
         }

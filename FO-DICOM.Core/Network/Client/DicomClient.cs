@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 // DICOM client still provides some obsolete APIs that should not be removed yet, but should also not provide obsolete compiler warnings
 #pragma warning disable CS0618
@@ -171,6 +172,7 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="cancellationToken">The cancellation token that can abort the send process if necessary</param>
         /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
+        [SuppressMessage("Design", "CA1068:CancellationToken parameters must come last", Justification = "Not introducing a breaking change for this")]
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation);
     }      
@@ -194,7 +196,7 @@ namespace FellowOakDicom.Network.Client
         public string CallingAe { get; }
         public string CalledAe { get; }
         
-        public bool IsSendRequired => _isSending == 0 && QueuedRequests.Any();
+        public bool IsSendRequired => _isSending == 0 && !QueuedRequests.IsEmpty;
 
         public ILogger Logger
         {
@@ -647,9 +649,11 @@ namespace FellowOakDicom.Network.Client
             
             _logger.LogDebug("{Request} is being sent", request.ToString());
 
+            IAsyncEnumerator<DicomResponse> enumerator = null;
             try
             {
-                await using var enumerator = association.SendRequestAsync(request, cancellationToken).GetAsyncEnumerator(cancellationToken);
+                enumerator = association.SendRequestAsync(request, cancellationToken)
+                    .GetAsyncEnumerator(cancellationToken);
 
                 while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                 {
@@ -663,6 +667,13 @@ namespace FellowOakDicom.Network.Client
                 RequestTimedOut?.Invoke(this, new RequestTimedOutEventArgs(e.Request, e.TimeOut));
 
                 _logger.LogDebug("{Request} has timed out", request.ToString());
+            }
+            finally
+            {
+                if (enumerator != null)
+                {
+                    await enumerator.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
         

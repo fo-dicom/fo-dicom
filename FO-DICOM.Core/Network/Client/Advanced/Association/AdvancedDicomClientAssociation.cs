@@ -220,7 +220,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             }
                             else
                             {
-                                _logger.LogDebug($"Request [{{MessageID}}]: Aborted {_responseChannelIsGoneNote}", messageId);
+                                _logger.LogDebug("Request [{MessageID}]: Aborted {ResponseChannelIsGoneNote}", messageId, _responseChannelIsGoneNote);
                             }
                         }
 
@@ -267,7 +267,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             }
                             else
                             {
-                                _logger.LogDebug($"Request [{{MessageID}}]: Connection closed {_responseChannelIsGoneNote}", messageId);
+                                _logger.LogDebug("Request [{MessageID}]: Connection closed {ResponseChannelIsGoneNote}", messageId, _responseChannelIsGoneNote);
                             }
                         }
                         break;
@@ -360,7 +360,10 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
             {
                 if (!_requestChannels.TryRemove(messageId, out _))
                 {
+#pragma warning disable CA2219
+                    // This should be unreachable
                     throw new DicomNetworkException($"The response channel {dicomRequest} has already been cleaned up, this should never happen");
+#pragma warning restore CA2219
                 }
             }
 
@@ -460,7 +463,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM association is already disposed and can no longer be used");
+        private static void ThrowDisposedException() => throw new ObjectDisposedException("This DICOM association is already disposed and can no longer be used");
 
         /// <inheritdoc cref="IAdvancedDicomClientAssociation.Dispose"/>
         public void Dispose()
@@ -495,7 +498,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             if (!disposing)
             {
-                _logger.LogWarning($"DICOM association {AssociationToString(Association)} was not disposed correctly, but was garbage collected instead");
+                _logger.LogWarning("DICOM association {Association} was not disposed correctly, but was garbage collected instead", AssociationToString(Association));
             }
         }
 

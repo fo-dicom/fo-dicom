@@ -1491,19 +1491,19 @@ namespace FellowOakDicom
         private string GetComponent(int index)
         {
             string[] s = Get<string>()?.Split('\\');
-            if (s == null || !s.Any())
+            if (s == null || s.Length == 0)
             {
                 return "";
             }
 
             s = s[0].Split('=');
-            if (!s.Any())
+            if (s.Length == 0)
             {
                 return "";
             }
 
             s = s[0].Split('^');
-            if (s.Count() < index + 1)
+            if (s.Length < index + 1)
             {
                 return "";
             }

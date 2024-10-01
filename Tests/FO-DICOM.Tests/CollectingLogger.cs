@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests
     /// </summary>
     public class CollectingLogger : ILogger
     {
-        private readonly IList<(LogLevel, string)> _logEntries = new List<(LogLevel, string)>();
+        private readonly List<(LogLevel, string)> _logEntries = new List<(LogLevel, string)>();
 
         private bool _collecting;
 

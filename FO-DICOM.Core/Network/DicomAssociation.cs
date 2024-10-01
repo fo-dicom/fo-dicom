@@ -167,7 +167,7 @@ namespace FellowOakDicom.Network
                         sb.AppendFormat("         Service Class:  {0}\n", ex.ServiceClassUid);
                     }
 
-                    if (ex.RelatedGeneralSopClasses.Any())
+                    if (ex.RelatedGeneralSopClasses.Count != 0)
                     {
                         sb.AppendFormat("   Related SOP Classes:  {0}\n", ex.RelatedGeneralSopClasses.Count);
                         foreach (var rel in ex.RelatedGeneralSopClasses)

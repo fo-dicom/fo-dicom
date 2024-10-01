@@ -14,6 +14,8 @@ namespace FellowOakDicom.Printing
     /// </summary>
     public static class FilmBoxExtensions
     {
+        private static readonly string[] _inSeparator = { "IN" };
+        private static readonly string[] _cmSeparator = { "CM" };
         #region METHODS
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace FellowOakDicom.Printing
 
             if (filmSizeId.Contains("IN"))
             {
-                var parts = filmSizeId.Split(new[] { "IN" }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = filmSizeId.Split(_inSeparator, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
                     var width = parts[0].Replace('_', '.');
@@ -40,7 +42,7 @@ namespace FellowOakDicom.Printing
             }
             else if (filmSizeId.Contains("CM"))
             {
-                var parts = filmSizeId.Split(new[] { "CM" }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = filmSizeId.Split(_cmSeparator, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
                     var width = parts[0].Replace('_', '.');

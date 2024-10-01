@@ -221,7 +221,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = ValidDataset();
 
-            foreach (var optionFactory in OptionsFactories())
+            foreach (var optionFactory in GrayscaleRenderOptionsTest.OptionsFactories())
             {
                 var options = optionFactory(dataset);
                 Assert.Null(options.VOILUTSequence);
@@ -236,7 +236,7 @@ namespace FellowOakDicom.Tests.Imaging
             dataset.Add(new DicomSequence(DicomTag.VOILUTSequence));
             dataset.Add(new DicomSequence(DicomTag.ModalityLUTSequence));
 
-            foreach (var optionFactory in OptionsFactories())
+            foreach (var optionFactory in GrayscaleRenderOptionsTest.OptionsFactories())
             {
                 var options = optionFactory(dataset);
                 Assert.Null(options.VOILUTSequence);
@@ -252,10 +252,10 @@ namespace FellowOakDicom.Tests.Imaging
             voiLutSequence.Items.Add(new DicomDataset());
             dataset.Add(voiLutSequence);
             var modalityLutSequence = new DicomSequence(DicomTag.ModalityLUTSequence);
-            modalityLutSequence.Items.Add(ValidModalityLutSequenceItem());
+            modalityLutSequence.Items.Add(GrayscaleRenderOptionsTest.ValidModalityLutSequenceItem());
             dataset.Add(modalityLutSequence);
 
-            foreach (var optionFactory in OptionsFactories())
+            foreach (var optionFactory in GrayscaleRenderOptionsTest.OptionsFactories())
             {
                 var options = optionFactory(dataset);
                 Assert.Equal(voiLutSequence, options.VOILUTSequence);
@@ -263,7 +263,7 @@ namespace FellowOakDicom.Tests.Imaging
             }
         }
 
-        private DicomDataset ValidModalityLutSequenceItem()
+        private static DicomDataset ValidModalityLutSequenceItem()
         {
             ushort zeroUS = 0;
             ushort oneUS = 1;
@@ -274,7 +274,7 @@ namespace FellowOakDicom.Tests.Imaging
             };
         }
 
-        private DicomDataset ValidDataset()
+        private static DicomDataset ValidDataset()
         {
             var testValues = new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
             return new DicomDataset(
@@ -293,7 +293,7 @@ namespace FellowOakDicom.Tests.Imaging
             );
         }
 
-        private List<Func<DicomDataset, GrayscaleRenderOptions>> OptionsFactories()
+        private static List<Func<DicomDataset, GrayscaleRenderOptions>> OptionsFactories()
         {
             return new List<Func<DicomDataset, GrayscaleRenderOptions>>
             {

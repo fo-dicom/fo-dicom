@@ -45,7 +45,7 @@ namespace FellowOakDicom.Tests.Serialization
             VerifyJsonTripleTrip(target);
         }
 
-        private double TimeCall(int numCalls, Action call)
+        private static double TimeCall(int numCalls, Action call)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -139,7 +139,7 @@ namespace FellowOakDicom.Tests.Serialization
         [Fact]
         public void TimeParseTag()
         {
-            var millisecondsPerCallA = TimeCall(100, () =>
+            var millisecondsPerCallA = JsonDicomConverterTest.TimeCall(100, () =>
             {
                 foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
                 {
@@ -148,7 +148,7 @@ namespace FellowOakDicom.Tests.Serialization
                 }
             });
 
-            var millisecondsPerCallB = TimeCall(3, () =>
+            var millisecondsPerCallB = JsonDicomConverterTest.TimeCall(3, () =>
             {
                 foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
                 {
@@ -157,7 +157,7 @@ namespace FellowOakDicom.Tests.Serialization
                 }
             });
 
-            var millisecondsPerCallC = TimeCall(100, () =>
+            var millisecondsPerCallC = JsonDicomConverterTest.TimeCall(100, () =>
             {
                 var dict = DicomDictionary.Default.ToDictionary(dde => dde.Keyword, dde => dde.Tag);
                 foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
@@ -167,7 +167,7 @@ namespace FellowOakDicom.Tests.Serialization
                 }
             });
 
-            var millisecondsPerCallD = TimeCall(100, () =>
+            var millisecondsPerCallD = JsonDicomConverterTest.TimeCall(100, () =>
             {
                 foreach (var kw in DicomDictionary.Default.Select(dde => dde.Keyword))
                 {

@@ -80,8 +80,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomServer(DicomServerDependencies dependencies)
         {
-            _networkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
-            _loggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
+            _networkManager = dependencies.NetworkManager;
+            _loggerFactory = dependencies.LoggerFactory;
 
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;
@@ -337,7 +337,7 @@ namespace FellowOakDicom.Network
 
                                 // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
                                 // Fire and forget
-                                _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
+                                _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken).AsTask().ConfigureAwait(false);
 
                                 if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                                 {
@@ -425,7 +425,7 @@ namespace FellowOakDicom.Network
                         {
                             try
                             {
-                                await anotherServiceHasStarted;
+                                await anotherServiceHasStarted.ConfigureAwait(false);
                             }
                             catch (OperationCanceledException)
                             {

@@ -3,6 +3,7 @@
 #nullable disable
 
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace FellowOakDicom.Tests
 {
@@ -19,7 +20,7 @@ namespace FellowOakDicom.Tests
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
 
         public ILogger CreateLogger(string categoryName)

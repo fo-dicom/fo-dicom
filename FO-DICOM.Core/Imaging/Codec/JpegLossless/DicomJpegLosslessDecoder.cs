@@ -47,7 +47,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         /// <param name="data">ByteBuffer which contains a jpeg lossess</param>
         /// <returns>if successfully a MemoryStream contained the codeded data is returned</returns>
         /// <exception cref="System.IO.IOException"></exception>
-        private MemoryStream ReadImage(IByteBuffer data)
+        private static MemoryStream ReadImage(IByteBuffer data)
         {
             using var decoder = new DicomJpegLosslessDecoderImpl(data);
             int[][] decoded = decoder.Decode();
@@ -84,7 +84,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         }
 
 
-        private MemoryStream Read16Bit1ComponentGrayScale(int[][] decoded, int width, int height)
+        private static MemoryStream Read16Bit1ComponentGrayScale(int[][] decoded, int width, int height)
         {
             var resultBuffer = new MemoryStream();
             var resultWriter = new BinaryWriter(resultBuffer);
@@ -101,7 +101,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         }
 
 
-        private MemoryStream Read8Bit1ComponentGrayScale(int[][] decoded, int width, int height)
+        private static MemoryStream Read8Bit1ComponentGrayScale(int[][] decoded, int width, int height)
         {
             var resultBuffer = new MemoryStream();
             var resultWriter = new BinaryWriter(resultBuffer);
@@ -118,7 +118,7 @@ namespace FellowOakDicom.Imaging.Codec.JpegLossless
         }
 
 
-        private MemoryStream Read24Bit3ComponentRGB(int[][] decoded, int width, int height)
+        private static MemoryStream Read24Bit3ComponentRGB(int[][] decoded, int width, int height)
         {
             var resultBuffer = new MemoryStream();
             var resultWriter = new BinaryWriter(resultBuffer);
