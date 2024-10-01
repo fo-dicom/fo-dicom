@@ -441,7 +441,7 @@ namespace FellowOakDicom.Media
             _fileOffset += 4 + 4; // Sequence Delimitation Item
         }
 
-        private void SetOffsets(DicomDirectoryRecord record)
+        private static void SetOffsets(DicomDirectoryRecord record)
         {
             if (record.NextDirectoryRecord != null)
             {
