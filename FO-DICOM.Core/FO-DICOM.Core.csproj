@@ -81,7 +81,7 @@ If you find some breaking changes when updating, read here for more information 
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.3.0" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.3.2" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
