@@ -1447,7 +1447,7 @@ namespace FellowOakDicom.Network
                     List<DicomRequest> timedOutPendingRequests;
                     lock (_lock)
                     {
-                        if (!_pending.Any())
+                        if (_pending.Count == 0)
                         {
                             return;
                         }
@@ -1455,7 +1455,7 @@ namespace FellowOakDicom.Network
                         timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
                     }
 
-                    if (timedOutPendingRequests.Any())
+                    if (timedOutPendingRequests.Count != 0)
                     {
                         for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
                         {
