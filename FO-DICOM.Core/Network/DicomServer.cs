@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -24,14 +25,14 @@ namespace FellowOakDicom.Network
     public class DicomServer<T> : IDicomServer<T> where T : DicomService, IDicomServiceProvider
     {
         #region FIELDS
-        
+
         private readonly INetworkManager _networkManager;
-        
+
         private readonly ILoggerFactory _loggerFactory;
 
         private readonly List<RunningDicomService> _services;
 
-        private readonly CancellationTokenSource _cancellationSource;       
+        private readonly CancellationTokenSource _cancellationSource;
 
         private readonly CancellationToken _cancellationToken;
 
@@ -45,7 +46,7 @@ namespace FellowOakDicom.Network
         /// A task that will complete when the server is stopped
         /// </summary>
         private readonly TaskCompletionSource<bool> _stopped;
-        
+
         private string _ipAddress;
 
         private int _port;
@@ -67,7 +68,7 @@ namespace FellowOakDicom.Network
         private bool _disposed;
 
         private SemaphoreSlim _maxClientsSemaphore;
-        
+
         private DicomServerOptions _serverOptions;
 
         #endregion
@@ -85,7 +86,7 @@ namespace FellowOakDicom.Network
             _cancellationSource = new CancellationTokenSource();
             _cancellationToken = _cancellationSource.Token;
             _stopped = TaskCompletionSourceFactory.Create<bool>();
-            
+
             _services = new List<RunningDicomService>();
 
             IsListening = false;
@@ -146,7 +147,7 @@ namespace FellowOakDicom.Network
         public ILogger Logger
         {
             get => _logger ??= _loggerFactory.CreateLogger(Log.LogCategories.Network);
-            set => _logger  = value;
+            set => _logger = value;
         }
 
         /// <inheritdoc />
@@ -169,9 +170,9 @@ namespace FellowOakDicom.Network
                 }
             }
         }
-        
+
         internal TimeSpan MaxClientsAllowedWaitInterval { get; set; }
-        
+
         #endregion
 
         #region METHODS
@@ -254,7 +255,7 @@ namespace FellowOakDicom.Network
         {
             var creator = ActivatorUtilities.CreateFactory(typeof(T), new[] { typeof(INetworkStream), typeof(Encoding), typeof(ILogger) });
             var instance = (T)creator(ServiceScope.ServiceProvider, new object[] { stream, _fallbackEncoding, Logger });
-            
+
             // Please do not use property injection. See https://stackoverflow.com/a/39853478/563070
             /*foreach (var propertyInfo in typeof(T).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
                 .Where(p => p.CanWrite))
@@ -268,7 +269,7 @@ namespace FellowOakDicom.Network
                     }
                 }
             }*/
-            
+
             instance.UserState = _userState;
             return instance;
         }
@@ -297,41 +298,62 @@ namespace FellowOakDicom.Network
                         {
                             Logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
                                                "but we still cannot accept another incoming connection " +
-                                               "because the maximum number of clients ({MaxClientsAllowed}) has been reached", 
+                                               "because the maximum number of clients ({MaxClientsAllowed}) has been reached",
                                 MaxClientsAllowedWaitInterval, maxClientsAllowed);
                         }
                     }
 
-                    var networkStream = await listener
-                        .AcceptNetworkStreamAsync(_tlsAcceptor, Options.TcpNoDelay, Options.TcpReceiveBufferSize, Options.TcpSendBufferSize, Logger, _cancellationToken)
+                    var tcpClient = await listener
+                        .AcceptTcpClientAsync(Options.TcpNoDelay, Options.TcpReceiveBufferSize, Options.TcpSendBufferSize, Logger, _cancellationToken)
                         .ConfigureAwait(false);
 
-                    if (networkStream != null)
+                    if (tcpClient != null)
                     {
-                        var scp = CreateScp(networkStream);
-                        if (Options != null)
+                        // Process incoming TcpClient in a background task to not block the main listener
+                        _ = Task.Run(() =>
                         {
-                            scp.Options = Options;
-                        }
+                            try
+                            {
+                                // let the INetworkStream dispose the TcpClient
+                                var networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
 
-                        var serviceTask = scp.RunAsync();
-                        int numberOfServices;
-                        lock (_services)
-                        {
-                            _services.Add(new RunningDicomService(scp, serviceTask));
-                            numberOfServices = _services.Count;
-                        }
+                                var scp = CreateScp(networkStream);
+                                if (Options != null)
+                                {
+                                    scp.Options = Options;
+                                }
 
-                        Logger.LogDebug("Accepted an incoming client connection, there are now {NumberOfServices} connected clients", numberOfServices);
+                                var serviceTask = scp.RunAsync();
+                                int numberOfServices;
+                                lock (_services)
+                                {
+                                    _services.Add(new RunningDicomService(scp, serviceTask));
+                                    numberOfServices = _services.Count;
+                                }
 
-                        // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
-                        // Fire and forget
-                        _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
-                        
-                        if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
-                        {
-                            Logger.LogWarning("Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
-                        }
+                                Logger.LogDebug(
+                                    "Accepted an incoming client connection, there are now {NumberOfServices} connected clients",
+                                    numberOfServices);
+
+                                // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
+                                // Fire and forget
+                                _ = _servicesChannel.Writer.WriteAsync(numberOfServices, _cancellationToken);
+
+                                if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
+                                {
+                                    Logger.LogWarning(
+                                        "Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
+                                }
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                Logger.LogWarning("Cancellation occurred while accepting an incoming client connection");
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.LogError(e, "An exception occurred while accepting an incoming client connection");
+                            }
+                        }, _cancellationToken);
                     }
                 }
             }
@@ -364,7 +386,7 @@ namespace FellowOakDicom.Network
                 try
                 {
                     Logger.LogDebug("Waiting for incoming client connections");
-                    
+
                     // First, we wait until at least one service is running
                     // We don't actually care about the values inside the channel, they just serve as a notification that a service has connected
                     // It is also possible that the DICOM server is stopped while are waiting here
@@ -377,7 +399,7 @@ namespace FellowOakDicom.Network
                     while (true)
                     {
                         List<RunningDicomService> runningDicomServices;
-                        
+
                         while (_servicesChannel.Reader.TryRead(out _))
                         {
                             // Discard queued new services, we're only interested in new arrivals after we start waiting                            
@@ -405,7 +427,7 @@ namespace FellowOakDicom.Network
                             {
                                 await anotherServiceHasStarted;
                             }
-                            catch(OperationCanceledException)
+                            catch (OperationCanceledException)
                             {
                                 // If the server is disposed while we were waiting, deal with that gracefully
                                 break;
@@ -415,7 +437,7 @@ namespace FellowOakDicom.Network
                                 // If the server is disposed while we were waiting, deal with that gracefully
                                 break;
                             }
-                            
+
                             // If another service started, we must restart the Task.WhenAny with the new set of running service tasks
                             Logger.LogDebug("Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
                         }
@@ -425,7 +447,7 @@ namespace FellowOakDicom.Network
                             break;
                         }
                     }
-                    
+
                     int numberOfRemainingServices;
                     var servicesToDispose = new List<RunningDicomService>();
                     lock (_services)
@@ -464,7 +486,7 @@ namespace FellowOakDicom.Network
                     Logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
                     if (numberOfRemainingServices > 0)
                     {
-                        Logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);    
+                        Logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);
                     }
                     else
                     {
@@ -477,7 +499,7 @@ namespace FellowOakDicom.Network
                         {
                             Logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");
                         }
-                        else 
+                        else
                         {
                             var numberOfExtraClientsAllowed = maxClientsAllowed - numberOfRemainingServices;
                             Logger.LogDebug(
@@ -515,7 +537,7 @@ namespace FellowOakDicom.Network
                 servicesToDispose.AddRange(_services);
                 _services.Clear();
             }
-            
+
             foreach (var service in servicesToDispose)
             {
                 try
@@ -530,7 +552,7 @@ namespace FellowOakDicom.Network
         }
 
         #endregion
-        
+
         #region INNER TYPES
 
         class RunningDicomService : IDisposable
