@@ -309,7 +309,7 @@ namespace FellowOakDicom.IO.Reader
             }
 
 
-            private static IByteSource Decompress(IByteSource source)
+            private static StreamByteSource Decompress(IByteSource source)
             {
                 var compressed = source.GetStream();
 
