@@ -61,8 +61,7 @@ namespace FellowOakDicom.Network
         public void Stop() => _listener.Stop();
 
         /// <inheritdoc />
-        public async Task<INetworkStream> AcceptNetworkStreamAsync(
-            ITlsAcceptor tlsAcceptor,
+        public async Task<TcpClient> AcceptTcpClientAsync(
             bool noDelay,
             int? receiveBufferSize,
             int? sendBufferSize,
@@ -99,8 +98,7 @@ namespace FellowOakDicom.Network
                         logger.LogDebug("Client connected to {IPAddress}:{Port}", _endpoint.Address.ToString(), _endpoint.Port);                
                     }
 
-                    // let DesktopNetworkStream dispose the TcpClient
-                    return new DesktopNetworkStream(tcpClient, tlsAcceptor, true);
+                    return tcpClient;
                 }
 
                 Stop();

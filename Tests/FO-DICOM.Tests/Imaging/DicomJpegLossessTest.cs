@@ -37,5 +37,17 @@ namespace FellowOakDicom.Tests.Imaging
         }
 
 
+        [Fact]
+        void ExplicitByteToImplicitWord()
+        {
+            var file = DicomFile.Open(TestData.Resolve("1403-OB.dcm"));
+            var dicomTranscoder = new DicomTranscoder(file.Dataset.InternalTransferSyntax,
+                DicomTransferSyntax.ImplicitVRLittleEndian);
+            var newFile = dicomTranscoder.Transcode(file);
+            var dicomOtherWord = newFile.Dataset.GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
+            var length = dicomOtherWord.Length;
+            Assert.True(length % 2 == 0);
+        }
+
     }
 }
