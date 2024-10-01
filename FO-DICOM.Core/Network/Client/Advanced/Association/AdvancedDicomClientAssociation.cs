@@ -498,7 +498,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             if (!disposing)
             {
-                _logger.LogWarning($"DICOM association {AssociationToString(Association)} was not disposed correctly, but was garbage collected instead");
+                _logger.LogWarning("DICOM association {Association} was not disposed correctly, but was garbage collected instead", AssociationToString(Association));
             }
         }
 
