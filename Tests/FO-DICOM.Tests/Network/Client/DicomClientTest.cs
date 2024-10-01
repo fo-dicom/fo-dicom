@@ -458,7 +458,7 @@ namespace FellowOakDicom.Tests.Network.Client
             catch (Exception ex)
             {
                 result = false;
-                client.Logger.LogError("Send failed, exception: {0}", ex);
+                client.Logger.LogError(ex, "Send failed");
                 awaiter.Set();
             }
 

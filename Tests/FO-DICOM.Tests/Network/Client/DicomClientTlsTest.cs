@@ -282,7 +282,7 @@ namespace FellowOakDicom.Tests.Network.Client
                             for (var index = 0; index < chain.ChainStatus.Length; index++)
                             {
                                 var chainStatus = chain.ChainStatus[index];
-                                serverLogger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                                serverLogger.LogDebug("SSL Chain status [{Index}]: {Status} {StatusInformation}", index, chainStatus.Status, chainStatus.StatusInformation);
 
                                 // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                                 if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))
@@ -352,7 +352,7 @@ namespace FellowOakDicom.Tests.Network.Client
                         for (var index = 0; index < chain.ChainStatus.Length; index++)
                         {
                             var chainStatus = chain.ChainStatus[index];
-                            client.Logger.LogDebug($"SSL Chain status [{index}]: {chainStatus.Status} {chainStatus.StatusInformation}");
+                            client.Logger.LogDebug("SSL Chain status [{Index}]: {Status} {StatusInformation}", index, chainStatus.Status, chainStatus.StatusInformation);
 
                             // Since we're using a self signed certificate, it's obvious the root will be untrusted. That's okay for this test
                             if (chainStatus.Status.HasFlag(X509ChainStatusFlags.UntrustedRoot))

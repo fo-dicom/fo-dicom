@@ -57,16 +57,16 @@ namespace FellowOakDicom.Tests.Bugs
                     {
                         OnResponseReceived = (req, res) =>
                         {
-                            testLogger.LogInformation("Response #{0} / expected #{1}", actual, req.UserState);
+                            testLogger.LogInformation("Response #{Actual} / expected #{Expected}", actual, req.UserState);
                             Interlocked.Increment(ref actual);
-                            testLogger.LogInformation("         #{0} / expected #{1}", actual - 1, req.UserState);
+                            testLogger.LogInformation("         #{Actual} / expected #{Expected}", actual - 1, req.UserState);
                         },
                         UserState = i
                     }
                 );
-                testLogger.LogInformation("Sending #{0}", i);
+                testLogger.LogInformation("Sending #{Index}", i);
                 await client.SendAsync();
-                testLogger.LogInformation("Sent (or timed out) #{0}", i);
+                testLogger.LogInformation("Sent (or timed out) #{Index}", i);
             }
 
             Assert.Equal(expected, actual);
@@ -103,15 +103,15 @@ namespace FellowOakDicom.Tests.Bugs
                         {
                             OnResponseReceived = (req, res) =>
                             {
-                                testLogger.LogInformation("Response #{0}", requestIndex);
+                                testLogger.LogInformation("Response #{Index}", requestIndex);
                                 Interlocked.Increment(ref actual);
                             }
                         }
                     );
 
-                    testLogger.LogInformation("Sending #{0}", requestIndex);
+                    testLogger.LogInformation("Sending #{Index}", requestIndex);
                     await client.SendAsync();
-                    testLogger.LogInformation("Sent (or timed out) #{0}", requestIndex);
+                    testLogger.LogInformation("Sent (or timed out) #{Index}", requestIndex);
                 }
             ).ToArray();
 
