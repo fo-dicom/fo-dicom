@@ -14,7 +14,7 @@ namespace FellowOakDicom.IO.Reader
 
         private readonly Stack<DicomReaderEventArgs> _stack;
 
-        private readonly IDictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;
+        private readonly Dictionary<DicomTag, EventHandler<DicomReaderEventArgs>> _callbacks;
 
         public DicomReaderCallbackObserver()
         {
