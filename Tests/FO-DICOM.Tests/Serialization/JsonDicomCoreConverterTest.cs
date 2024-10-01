@@ -6,6 +6,7 @@ using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Serialization;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -710,6 +711,7 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
 
+        [SuppressMessage("Performance", "CA1869:Cache and reuse \'JsonSerializerOptions\' instances", Justification = "This is a unit test, keep things simple")]
         private static DicomDataset[] LegacyConvertJsonToDicomArray(string json)
         {
             var options = new JsonSerializerOptions();
@@ -1430,6 +1432,7 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        [SuppressMessage("Performance", "CA1869:Cache and reuse \'JsonSerializerOptions\' instances", Justification = "This is a unit test")]
         public static void AddKeywordAndName_WhenSerializing()
         {
             var dataset = new DicomDataset();
