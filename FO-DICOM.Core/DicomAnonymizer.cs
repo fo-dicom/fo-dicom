@@ -302,9 +302,9 @@ namespace FellowOakDicom
                 return;
             }
 
-            if (ReplacedUIDs.ContainsKey(old))
+            if (ReplacedUIDs.TryGetValue(old, out string value))
             {
-                rep = ReplacedUIDs[old];
+                rep = value;
                 uid = new DicomUID(rep, "Anonymized UID", DicomUidType.Unknown);
             }
             else
