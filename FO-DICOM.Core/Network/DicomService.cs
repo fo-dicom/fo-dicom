@@ -46,7 +46,7 @@ namespace FellowOakDicom.Network
         
         private readonly IMemoryProvider _memoryProvider;
 
-        private readonly Stream _writeStream;
+        private readonly BufferedStream _writeStream;
 
         private readonly object _lock;
 
