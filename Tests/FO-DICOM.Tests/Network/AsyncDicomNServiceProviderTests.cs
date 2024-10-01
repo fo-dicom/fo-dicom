@@ -9,6 +9,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -212,7 +213,7 @@ namespace FellowOakDicom.Tests.Network
 
     #region helper classes
 
-    public class AsyncDicomNServiceProvider : DicomService, IDicomServiceProvider, IDicomNServiceProvider
+    public class AsyncDicomNServiceProvider : DicomService, IDicomServiceProvider, IDicomNServiceProvider, IDicomNEventReportRequestProvider
     {
         public AsyncDicomNServiceProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
@@ -221,7 +222,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -232,7 +233,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -247,25 +248,25 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request)
+        public Task<DicomNActionResponse> OnNActionRequestAsync(DicomNActionRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomNActionResponse(request, DicomStatus.Success));
 
-        public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request)
+        public Task<DicomNCreateResponse> OnNCreateRequestAsync(DicomNCreateRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomNCreateResponse(request, DicomStatus.Success));
 
-        public Task<DicomNDeleteResponse> OnNDeleteRequestAsync(DicomNDeleteRequest request)
+        public Task<DicomNDeleteResponse> OnNDeleteRequestAsync(DicomNDeleteRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomNDeleteResponse(request, DicomStatus.Success));
 
-        public Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request)
+        public Task<DicomNEventReportResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomNEventReportResponse(request, DicomStatus.Success));
 
-        public Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request)
+        public Task<DicomNGetResponse> OnNGetRequestAsync(DicomNGetRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomNGetResponse(request, DicomStatus.Success));
 
-        public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request)
+        public Task<DicomNSetResponse> OnNSetRequestAsync(DicomNSetRequest request, CancellationToken cancellationToken)
             => Task.FromResult(new DicomNSetResponse(request, DicomStatus.Success));
 
-        public Task OnSendNEventReportRequestAsync(DicomNActionRequest request)
+        public Task OnSendNEventReportRequestAsync(DicomNActionRequest request, CancellationToken cancellationToken)
             => SendRequestAsync(new DicomNEventReportRequest(DicomUID.StorageCommitmentPushModel, DicomUID.StorageCommitmentPushModel, 2)
             {
                 Dataset = request.Dataset

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.AspNetCore.Server
 {
@@ -33,7 +34,7 @@ namespace FellowOakDicom.AspNetCore.Server
         }
 
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             var builder = UserState as DicomServiceBuilder;
 
@@ -66,7 +67,7 @@ namespace FellowOakDicom.AspNetCore.Server
         }
 
 
-        public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+        public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
         {
             var builder = UserState as DicomServiceBuilder;
             if (builder?.EchoHandler == null)
@@ -85,11 +86,11 @@ namespace FellowOakDicom.AspNetCore.Server
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
         { }
 
-        public Task OnReceiveAssociationReleaseRequestAsync()
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
            => SendAssociationReleaseResponseAsync();
 
 
-        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
         {
             var builder = UserState as DicomServiceBuilder;
             var resultStatus = DicomStatus.Success;
@@ -107,7 +108,7 @@ namespace FellowOakDicom.AspNetCore.Server
         }
 
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e) => throw new NotImplementedException();
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken) => throw new NotImplementedException();
 
 
     }

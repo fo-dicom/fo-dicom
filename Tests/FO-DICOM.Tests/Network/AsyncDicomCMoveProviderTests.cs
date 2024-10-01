@@ -10,6 +10,8 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -69,7 +71,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public virtual async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public virtual async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -80,7 +82,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -95,7 +97,7 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request)
+        public async IAsyncEnumerable<DicomCMoveResponse> OnCMoveRequestAsync(DicomCMoveRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await Task.Yield();
             yield return new DicomCMoveResponse(request, DicomStatus.Pending);

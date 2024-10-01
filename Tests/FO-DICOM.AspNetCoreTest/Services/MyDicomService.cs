@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FO_DICOM.AspNetCoreTest.Services
 {
@@ -20,7 +21,7 @@ namespace FO_DICOM.AspNetCoreTest.Services
         }
 
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach(var context in association.PresentationContexts)
             {
@@ -30,7 +31,7 @@ namespace FO_DICOM.AspNetCoreTest.Services
         }
 
 
-        public Task OnReceiveAssociationReleaseRequestAsync()
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => SendAssociationReleaseResponseAsync();
 
 

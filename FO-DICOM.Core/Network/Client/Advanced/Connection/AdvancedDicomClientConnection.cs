@@ -76,25 +76,37 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
         }
 
         public new Task SendAssociationRequestAsync(DicomAssociation association) => base.SendAssociationRequestAsync(association);
+        
         public new Task SendAssociationReleaseRequestAsync() => base.SendAssociationReleaseRequestAsync();
+        
         public new Task SendAbortAsync(DicomAbortSource source, DicomAbortReason reason) => base.SendAbortAsync(source, reason);
+        
         public new Task SendRequestAsync(DicomRequest request) => base.SendRequestAsync(request);
-        public new Task SendNextMessageAsync() => base.SendNextMessageAsync();
+        
+        public Task SendNextMessageAsync() => base.SendNextMessageAsync(IsDisconnectedToken);
 
-        protected override Task OnSendQueueEmptyAsync() => _eventCollector.OnSendQueueEmptyAsync();
-        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association) => _eventCollector.OnReceiveAssociationAcceptAsync(association);
+        protected override Task OnSendQueueEmptyAsync(CancellationToken cancellationToken) => _eventCollector.OnSendQueueEmptyAsync();
 
-        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason) =>
+        public Task OnReceiveAssociationAcceptAsync(DicomAssociation association, CancellationToken cancellationToken) => _eventCollector.OnReceiveAssociationAcceptAsync(association);
+        
+        public Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason, CancellationToken cancellationToken) =>
             _eventCollector.OnReceiveAssociationRejectAsync(result, source, reason);
-
-        public Task OnReceiveAssociationReleaseResponseAsync() => _eventCollector.OnReceiveAssociationReleaseResponseAsync();
-        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason) => _eventCollector.OnReceiveAbortAsync(source, reason);
+        
+        public Task OnReceiveAssociationReleaseResponseAsync(CancellationToken cancellationToken) => _eventCollector.OnReceiveAssociationReleaseResponseAsync();
+        
+        public Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason, CancellationToken cancellationToken) => _eventCollector.OnReceiveAbortAsync(source, reason);
+        
         public Task OnConnectionClosedAsync(Exception exception) => _eventCollector.OnConnectionClosedAsync(exception);
-        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestCompletedAsync(request, response);
-        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response) => _eventCollector.OnRequestPendingAsync(request, response);
-        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout) => _eventCollector.OnRequestTimedOutAsync(request, timeout);
-        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request) => _eventCollector.OnCStoreRequestAsync(request);
-        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request) => _eventCollector.OnNEventReportRequestAsync(request);
+        
+        public Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response, CancellationToken cancellationToken) => _eventCollector.OnRequestCompletedAsync(request, response);
+        
+        public Task OnRequestPendingAsync(DicomRequest request, DicomResponse response, CancellationToken cancellationToken) => _eventCollector.OnRequestPendingAsync(request, response);
+        
+        public Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout, CancellationToken cancellationToken) => _eventCollector.OnRequestTimedOutAsync(request, timeout);
+        
+        public Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken) => _eventCollector.OnCStoreRequestAsync(request);
+        
+        public Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request, CancellationToken cancellationToken) => _eventCollector.OnNEventReportRequestAsync(request);
 
         public async Task<IAdvancedDicomClientAssociation> OpenAssociationAsync(AdvancedDicomClientAssociationRequest request, CancellationToken cancellationToken)
         {

@@ -868,7 +868,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             /// <inheritdoc />
-            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+            public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
             {
                 foreach (var pc in association.PresentationContexts)
                 {
@@ -879,7 +879,7 @@ namespace FellowOakDicom.Tests.Network
             }
 
             /// <inheritdoc />
-            public async Task OnReceiveAssociationReleaseRequestAsync()
+            public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             {
                 await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
             }
@@ -894,7 +894,7 @@ namespace FellowOakDicom.Tests.Network
             {
             }
 
-            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
             {
                 return Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
             }

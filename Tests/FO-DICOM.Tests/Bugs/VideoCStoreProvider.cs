@@ -11,6 +11,7 @@ using FellowOakDicom.Imaging.Codec;
 using Xunit;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.Tests.Bugs
 {
@@ -32,7 +33,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
         }
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -42,7 +43,7 @@ namespace FellowOakDicom.Tests.Bugs
             return SendAssociationAcceptAsync(association);
         }
 
-        public Task OnReceiveAssociationReleaseRequestAsync()
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
         {
             return SendAssociationReleaseResponseAsync();
         }
@@ -57,7 +58,7 @@ namespace FellowOakDicom.Tests.Bugs
             _storedFiles.Clear();
         }
 
-        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
         {
             var tempName = Path.GetTempFileName();
             Logger.LogInformation(tempName);
@@ -68,7 +69,7 @@ namespace FellowOakDicom.Tests.Bugs
             return new DicomCStoreResponse(request, DicomStatus.Success);
         }
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken)
             => Task.CompletedTask;
 
     }

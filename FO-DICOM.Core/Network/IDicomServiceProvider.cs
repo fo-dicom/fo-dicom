@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
@@ -16,11 +17,13 @@ namespace FellowOakDicom.Network
         /// Callback to invoke when receiving an association request.
         /// </summary>
         /// <param name="association">DICOM association corresponding to the request.</param>
-        Task OnReceiveAssociationRequestAsync(DicomAssociation association);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback to invoke when receiving an association release request.
         /// </summary>
-        Task OnReceiveAssociationReleaseRequestAsync();
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken);
     }
 }

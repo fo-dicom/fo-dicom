@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace FellowOakDicom.Tests.Network
 {
@@ -52,7 +53,7 @@ namespace FellowOakDicom.Tests.Network
         {
         }
 
-        public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -63,7 +64,7 @@ namespace FellowOakDicom.Tests.Network
             return SendAssociationAcceptAsync(association);
         }
 
-        public Task OnReceiveAssociationReleaseRequestAsync()
+        public Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => SendAssociationReleaseResponseAsync();
 
         public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
@@ -76,7 +77,7 @@ namespace FellowOakDicom.Tests.Network
             _storedFiles.Clear();
         }
 
-        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
+        public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken)
         {
             var tempName = Path.GetTempFileName();
             Logger.LogInformation(tempName);
@@ -95,7 +96,7 @@ namespace FellowOakDicom.Tests.Network
             };
         }
 
-        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e)
+        public Task OnCStoreRequestExceptionAsync(string tempFileName, Exception e, CancellationToken cancellationToken)
             => Task.CompletedTask;
     }
 }

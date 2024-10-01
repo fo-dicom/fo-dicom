@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network
@@ -16,7 +17,8 @@ namespace FellowOakDicom.Network
         /// It requires N-ACTION as the context
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
         /// <returns></returns>
-        Task OnSendNEventReportRequestAsync(DicomNActionRequest request);
+        Task OnSendNEventReportRequestAsync(DicomNActionRequest request, CancellationToken cancellationToken);
     }
 }

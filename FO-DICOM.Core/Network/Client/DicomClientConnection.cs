@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Network.Client
@@ -63,7 +64,8 @@ namespace FellowOakDicom.Network.Client
         /// Callback for handling association accept scenarios.
         /// </summary>
         /// <param name="association">Accepted association.</param>
-        Task OnReceiveAssociationAcceptAsync(DicomAssociation association);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnReceiveAssociationAcceptAsync(DicomAssociation association, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback for handling association reject scenarios.
@@ -71,19 +73,22 @@ namespace FellowOakDicom.Network.Client
         /// <param name="result">Specification of rejection result.</param>
         /// <param name="source">Source of rejection.</param>
         /// <param name="reason">Detailed reason for rejection.</param>
-        Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnReceiveAssociationRejectAsync(DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback on response from an association release.
         /// </summary>
-        Task OnReceiveAssociationReleaseResponseAsync();
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnReceiveAssociationReleaseResponseAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback on receiving an abort message.
         /// </summary>
         /// <param name="source">Abort source.</param>
         /// <param name="reason">Detailed reason for abort.</param>
-        Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnReceiveAbortAsync(DicomAbortSource source, DicomAbortReason reason, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback when connection is closed.
@@ -110,7 +115,8 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="request">The original request that was sent, which has now been fulfilled</param>
         /// <param name="response">The final response from the DICOM server</param>
-        Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnRequestCompletedAsync(DicomRequest request, DicomResponse response, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback when a request has received a pending response (this is not the final response, the request is still in the pending queue)
@@ -118,35 +124,35 @@ namespace FellowOakDicom.Network.Client
         /// </summary>
         /// <param name="request">The original request that was sent</param>
         /// <param name="response">A pending response from the DICOM server</param>
-        Task OnRequestPendingAsync(DicomRequest request, DicomResponse response);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnRequestPendingAsync(DicomRequest request, DicomResponse response, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback when a request has timed out (no final response was received, but the timeout was exceeded and the request has been removed from the pending queue)
         /// </summary>
         /// <param name="request">The original request that was sent, which could not be fulfilled</param>
         /// <param name="timeout">The timeout duration that has been exceeded</param>
-        Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout);
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
+        Task OnRequestTimedOutAsync(DicomRequest request, TimeSpan timeout, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback for handling a client related C-STORE request, typically emanating from the client's C-GET request.
         /// </summary>
-        /// <param name="request">
-        /// C-STORE request.
-        /// </param>
+        /// <param name="request">C-STORE request</param>
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
         /// <returns>
         /// The <see cref="DicomCStoreResponse"/> related to the C-STORE <paramref name="request"/>.
         /// </returns>
-        Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request);
+        Task<DicomResponse> OnCStoreRequestAsync(DicomCStoreRequest request, CancellationToken cancellationToken);
 
         /// <summary>
         /// Callback for handling a client related N-EVENT-REPORT-RQ request, typically emanating from the client's N-ACTION request.
         /// </summary>
-        /// <param name="request">
-        /// N-EVENT-REPORT-RQ request.
-        /// </param>
+        /// <param name="request">N-EVENT-REPORT-RQ request</param>
+        /// <param name="cancellationToken">A cancellation token that will trigger when the connection is lost</param>
         /// <returns>
         /// The <see cref="DicomNEventReportResponse"/> related to the N-EVENT-REPORT-RQ <paramref name="request"/>.
         /// </returns>
-        Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request);
+        Task<DicomResponse> OnNEventReportRequestAsync(DicomNEventReportRequest request, CancellationToken cancellationToken);
     }
 }

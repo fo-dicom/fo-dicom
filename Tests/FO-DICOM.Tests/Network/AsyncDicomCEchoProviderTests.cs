@@ -9,6 +9,7 @@ using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -67,7 +68,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association)
+        public async Task OnReceiveAssociationRequestAsync(DicomAssociation association, CancellationToken cancellationToken)
         {
             foreach (var pc in association.PresentationContexts)
             {
@@ -78,7 +79,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
         /// <inheritdoc />
-        public async Task OnReceiveAssociationReleaseRequestAsync()
+        public async Task OnReceiveAssociationReleaseRequestAsync(CancellationToken cancellationToken)
             => await SendAssociationReleaseResponseAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -93,7 +94,7 @@ namespace FellowOakDicom.Tests.Network
             // do nothing here
         }
 
-        public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
+        public async Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request, CancellationToken cancellationToken)
         {
             await Task.Yield();
             return new DicomCEchoResponse(request, DicomStatus.Success);
