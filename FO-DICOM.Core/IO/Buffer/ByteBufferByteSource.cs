@@ -453,7 +453,7 @@ namespace FellowOakDicom.IO.Buffer
         {
             lock (_lock)
             {
-                Stream stream = new MemoryStream();
+                var stream = new MemoryStream();
                 foreach (var item in _buffers)
                 {
                     byte[] data = item.Data;
