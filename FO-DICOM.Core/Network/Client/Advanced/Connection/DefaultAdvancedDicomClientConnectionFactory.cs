@@ -94,7 +94,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
                 var eventCollector = new AdvancedDicomClientConnectionEventCollector(request.RequestHandlers);
 
-                IAdvancedDicomClientConnection connection = new AdvancedDicomClientConnection(eventCollector, networkStream, 
+                var connection = new AdvancedDicomClientConnection(eventCollector, networkStream, 
                     request.FallbackEncoding, request.DicomServiceOptions,
                     request.Logger, _dicomServiceDependencies);
 
