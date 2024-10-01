@@ -973,7 +973,7 @@ namespace FellowOakDicom.Serialization
             return EmptyBuffer.Value;
         }
 
-        private static IByteBuffer ReadJsonInlineBinary(JToken token)
+        private static MemoryByteBuffer ReadJsonInlineBinary(JToken token)
         {
             if (token is JArray array)
             {
