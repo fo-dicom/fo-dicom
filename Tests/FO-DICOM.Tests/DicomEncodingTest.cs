@@ -94,7 +94,7 @@ namespace FellowOakDicom.Tests
             // a warning is issued on accessing the incorrectly decoded value
             Assert.Equal(1, logCollector.NumberOfWarnings);
             var expectedWarning =
-                "Could not decode string 'H?lzl^G?nther' with given encoding, using replacement characters.";
+                "Could not decode string 'H?lzl^G?nther' with given encoding, using replacement characters";
             Assert.Equal(1, logCollector.NumberOfWarnings);
             Assert.Equal(expectedWarning, logCollector.WarningAt(0));
 
@@ -246,7 +246,7 @@ namespace FellowOakDicom.Tests
             Assert.Equal("���������", ds.GetString(DicomTag.PatientName));
             Assert.Equal(1, logCollector.NumberOfWarnings);
             var expectedMessage =
-                "Could not decode string '���������' with given encoding, using replacement characters.";
+                "Could not decode string '���������' with given encoding, using replacement characters";
             Assert.Equal(expectedMessage, logCollector.WarningAt(0));
         }
 
@@ -272,7 +272,7 @@ namespace FellowOakDicom.Tests
                 "Found escape sequence for 'shift_jis', which is not defined";
             Assert.StartsWith(expectedMessage, logCollector.WarningAt(0));
             expectedMessage =
-                "Could not decode string 'J?r?me' with given encoding, using replacement characters.";
+                "Could not decode string 'J?r?me' with given encoding, using replacement characters";
             Assert.Equal(expectedMessage, logCollector.WarningAt(1));
         }
 
@@ -293,12 +293,55 @@ namespace FellowOakDicom.Tests
             ds.Add(patientName);
             Assert.Equal("Buc^J?r?me", ds.GetString(DicomTag.PatientName));
             Assert.Equal(2, logCollector.NumberOfWarnings);
+
             var expectedMessage =
-                "Unknown escape sequence found in string, using ASCII encoding.";
+                "Unknown escape sequence found in string, using ASCII encoding";
             Assert.Equal(expectedMessage, logCollector.WarningAt(0));
             expectedMessage =
-                "Could not decode string 'J?r?me' with given encoding, using replacement characters.";
+                "Could not decode string 'J?r?me' with given encoding, using replacement characters";
             Assert.Equal(expectedMessage, logCollector.WarningAt(1));
+        }
+
+        [Theory]
+        [MemberData(nameof(MultiEncodingNames))]
+        public void SavePatientNameWithMultiEncoding(string characterSet, string patientName)
+        {
+            var dataset = new DicomDataset
+            {
+                { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
+                { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
+                { DicomTag.SpecificCharacterSet, characterSet },
+                { DicomTag.PatientName, patientName}
+            };
+            var dicomFile = new DicomFile(dataset);
+            var stream = new MemoryStream();
+            dicomFile.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var inFile = DicomFile.Open(stream);
+            Assert.Equal(patientName, inFile.Dataset.GetString(DicomTag.PatientName));
+        }
+
+        [Fact]
+        public void SavePatientNameWithWrongEncoding()
+        {
+            using var logCollector = NewLogCollector();
+            var patientName = "Yamada^Tarou=山田^太郎=やまだ^たろう";
+            var dataset = new DicomDataset
+            {
+                { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
+                { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
+                { DicomTag.SpecificCharacterSet, "ISO_IR 100" },
+                { DicomTag.PatientName, patientName}
+            };
+            var dicomFile = new DicomFile(dataset);
+            var stream = new MemoryStream();
+            dicomFile.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var inFile = DicomFile.Open(stream);
+            Assert.Equal("Yamada^Tarou=??^??=???^???", inFile.Dataset.GetString(DicomTag.PatientName));
+            var expectedWarning = "Could not encode string '山田' with given encodings, " +
+                                  "using replacement characters for encoding";
+            Assert.Equal(expectedWarning, logCollector.WarningAt(0));
         }
 
         public static readonly IEnumerable<object[]> FileNames = new[]
@@ -346,6 +389,22 @@ namespace FellowOakDicom.Tests
                 new byte[] { 0x1b, 0x2d, 0x4d, 0xc7, 0x61, 0x76, 0x75, 0xfe, 0x6f, 0xf0, 0x6c, 0x75 } },
             new object[] { "ISO 2022 IR 166", "นามสกุล",
                 new byte[] { 0x1b, 0x2d, 0x54, 0xb9, 0xd2, 0xc1, 0xca, 0xa1, 0xd8, 0xc5 } }
+        };
+
+        public static IEnumerable<object[]> MultiEncodingNames = new[]
+        {
+            new object[] { @"\ISO 2022 IR 87", "Yamada^Tarou=山田^太郎=やまだ^たろう" },
+            new object[] { @"\ISO 2022 IR 100\ISO 2022 IR 87", "Yamada^Tarou=山田^太郎=やまだ^たろう" },
+            new object[] { @"ISO 2022 IR 13\ISO 2022 IR 87", "ﾔﾏﾀﾞ^ﾀﾛｳ=山田^太郎=やまだ^たろう" },
+            new object[] { @"\ISO 2022 IR 101", "Wałęsa" },
+            new object[] { @"\ISO 2022 IR 109", "antaŭnomo" },
+            new object[] { @"\ISO 2022 IR 127", "قباني^لنزار" },
+            new object[] { @"\ISO 2022 IR 126", "Διονυσιος" },
+            new object[] { @"\ISO 2022 IR 138", "שרון^דבורה" },
+            new object[] { @"\ISO 2022 IR 144", "Люкceмбypг" },
+            new object[] { @"\ISO 2022 IR 148", "Çavuşoğlu" },
+            new object[] { @"\ISO 2022 IR 149", "김희중" },
+            new object[] { @"\ISO 2022 IR 166", "นามสก\u0e38ล" }
         };
 
         public static readonly IEnumerable<object[]> EncodingNames = new[]

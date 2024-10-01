@@ -1,16 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FellowOakDicom.Json</RootNamespace>
     <AssemblyName>fo-dicom.json</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.1.2</Version>
+    <Version>5.1.3</Version>
     <Authors>fo-dicom contributors</Authors>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2023</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2024</Copyright>
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
     <Description>A library to make fo-dicom use Newtonsoft.Json</Description>
+    <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
@@ -24,6 +25,7 @@
       <PackagePath></PackagePath>
       <Pack>True</Pack>
     </None>
+    <None Include="..\..\READMENuget.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

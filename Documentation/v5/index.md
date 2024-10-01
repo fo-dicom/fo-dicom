@@ -29,5 +29,4 @@ Package | Description
 [fo-dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with referencte to System.Drawing, required for rendering into Bitmaps
 [fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Imaging.ImageSharp/) | Library with reference to ImageSharp, can be used for platform independent rendering
 [fo-dicom.NLog](https://www.nuget.org/packages/fo-dicom.NLog/) | .NET connector to enable `fo-dicom` logging with NLog
-[fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform DICOM codecs for `fo-dicom`, developed by [Efferent Health] (https://github.com/Efferent-Health/fo-dicom.Codecs)
-
+[fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform DICOM codecs for `fo-dicom`, developed by [Efferent Health](https://github.com/Efferent-Health/fo-dicom.Codecs)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+﻿// Copyright (c) 2012-2024 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
@@ -61,6 +61,7 @@ namespace FellowOakDicom
 
         protected virtual void ValidateString() { }
 
+        public abstract bool Equals(DicomElement other);
     }
 
     /// <summary>
@@ -184,9 +185,11 @@ namespace FellowOakDicom
                 return Array.Empty<byte>();
             }
 
-            // TODO: handle multi-charset
-            byte[] bytes = TargetEncoding.GetBytes(_value);
-
+            // the target encoding shall only be used for encoded strings;
+            // other strings must be encoded with the default encoding (ASCII)
+            var bytes = ValueRepresentation.IsStringEncoded
+                ? DicomEncoding.EncodeString(_value, TargetEncodings, ValueRepresentation == DicomVR.PN)
+                : DicomEncoding.Default.GetBytes(_value);
             if (bytes.Length.IsOdd())
             {
                 Array.Resize(ref bytes, bytes.Length + 1);
@@ -199,6 +202,15 @@ namespace FellowOakDicom
         protected override void ValidateString()
         {
             ValueRepresentation?.ValidateString(_value);
+        }
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomStringElement otherStringElement)
+            {
+                return this.StringValue == otherStringElement.StringValue;
+            }
+            return false;
         }
     }
 
@@ -302,6 +314,15 @@ namespace FellowOakDicom
             }
 
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
+        }
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomMultiStringElement otherMultiString)
+            {
+                return otherMultiString.Count == this.Count && otherMultiString.StringValue == this.StringValue;
+            }
+            return false;
         }
 
         #endregion
@@ -559,6 +580,15 @@ namespace FellowOakDicom
             throw new InvalidCastException($"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
         }
 
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomValueElement<Tv> otherValue)
+            {
+                return this.Buffer.Data.SequenceEqual(otherValue.Buffer.Data);
+            }
+            return false;
+        }
+
         #endregion
 
     }
@@ -697,6 +727,17 @@ namespace FellowOakDicom
 
             throw new InvalidCastException(
                 $"Unable to convert DICOM {ValueRepresentation.Code} value to '{typeof(T).Name}'");
+        }
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomAttributeTag otherAttribute)
+            {
+                return (this.Values == null && otherAttribute.Values == null)
+                    || (this.Values != null && otherAttribute.Values != null && 
+                        this.Values.SequenceEqual(otherAttribute.Values));
+            }
+            return false;
         }
 
         #endregion
@@ -1221,6 +1262,16 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomOtherByte otherByte)
+            {
+                return this.Count == otherByte.Count;
+            }
+            return false;
+        }
+
         #endregion
 
         protected override void ValidateVM()
@@ -1250,6 +1301,15 @@ namespace FellowOakDicom
         #region Public Properties
 
         public override DicomVR ValueRepresentation => DicomVR.OW;
+
+        public override bool Equals(DicomElement other)
+        {
+            if (other is DicomOtherWord otherByte)
+            {
+                return this.Count == otherByte.Count;
+            }
+            return false;
+        }
 
         #endregion
 

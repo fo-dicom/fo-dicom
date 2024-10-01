@@ -292,6 +292,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.PlannedImagingAgentAdministrationSRStorage.UID, DicomUID.PlannedImagingAgentAdministrationSRStorage);
             _uids.Add(DicomUID.PerformedImagingAgentAdministrationSRStorage.UID, DicomUID.PerformedImagingAgentAdministrationSRStorage);
             _uids.Add(DicomUID.EnhancedXRayRadiationDoseSRStorage.UID, DicomUID.EnhancedXRayRadiationDoseSRStorage);
+            _uids.Add(DicomUID.WaveformAnnotationSRStorage.UID, DicomUID.WaveformAnnotationSRStorage);
             _uids.Add(DicomUID.ContentAssessmentResultsStorage.UID, DicomUID.ContentAssessmentResultsStorage);
             _uids.Add(DicomUID.MicroscopyBulkSimpleAnnotationsStorage.UID, DicomUID.MicroscopyBulkSimpleAnnotationsStorage);
             _uids.Add(DicomUID.EncapsulatedPDFStorage.UID, DicomUID.EncapsulatedPDFStorage);
@@ -1457,7 +1458,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.LocalAnestheticsForSmallAnimalAnesthesia630.UID, DicomUID.LocalAnestheticsForSmallAnimalAnesthesia630);
             _uids.Add(DicomUID.ProcedurePhaseRequiringAnesthesia631.UID, DicomUID.ProcedurePhaseRequiringAnesthesia631);
             _uids.Add(DicomUID.SurgicalProcedurePhaseRequiringAnesthesia632.UID, DicomUID.SurgicalProcedurePhaseRequiringAnesthesia632);
-            _uids.Add(DicomUID.PhaseOfImagingProcedureRequiringAnesthesia633.UID, DicomUID.PhaseOfImagingProcedureRequiringAnesthesia633);
+            _uids.Add(DicomUID.PhaseOfImagingProcedureRequiringAnesthesia633RETIRED.UID, DicomUID.PhaseOfImagingProcedureRequiringAnesthesia633RETIRED);
             _uids.Add(DicomUID.AnimalHandlingPhase634.UID, DicomUID.AnimalHandlingPhase634);
             _uids.Add(DicomUID.HeatingMethod635.UID, DicomUID.HeatingMethod635);
             _uids.Add(DicomUID.TemperatureSensorDeviceComponentTypeForSmallAnimalProcedure636.UID, DicomUID.TemperatureSensorDeviceComponentTypeForSmallAnimalProcedure636);
@@ -1522,7 +1523,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.AttenuatorCategory10066.UID, DicomUID.AttenuatorCategory10066);
             _uids.Add(DicomUID.RadiationAttenuatorMaterial10067.UID, DicomUID.RadiationAttenuatorMaterial10067);
             _uids.Add(DicomUID.EstimateMethodType10068.UID, DicomUID.EstimateMethodType10068);
-            _uids.Add(DicomUID.RadiationDoseEstimationParameter10069.UID, DicomUID.RadiationDoseEstimationParameter10069);
+            _uids.Add(DicomUID.RadiationDoseEstimateParameter10069.UID, DicomUID.RadiationDoseEstimateParameter10069);
             _uids.Add(DicomUID.RadiationDoseType10070.UID, DicomUID.RadiationDoseType10070);
             _uids.Add(DicomUID.MRDiffusionComponentSemantic7270.UID, DicomUID.MRDiffusionComponentSemantic7270);
             _uids.Add(DicomUID.MRDiffusionAnisotropyIndex7271.UID, DicomUID.MRDiffusionAnisotropyIndex7271);
@@ -1610,7 +1611,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.RadiationTransportBasedEffectiveDoseMethodModifier9538.UID, DicomUID.RadiationTransportBasedEffectiveDoseMethodModifier9538);
             _uids.Add(DicomUID.FractionationBasedEffectiveDoseMethodModifier9539.UID, DicomUID.FractionationBasedEffectiveDoseMethodModifier9539);
             _uids.Add(DicomUID.ImagingAgentAdministrationAdverseEvent60.UID, DicomUID.ImagingAgentAdministrationAdverseEvent60);
-            _uids.Add(DicomUID.TimeRelativeToProcedure61.UID, DicomUID.TimeRelativeToProcedure61);
+            _uids.Add(DicomUID.TimeRelativeToProcedure61RETIRED.UID, DicomUID.TimeRelativeToProcedure61RETIRED);
             _uids.Add(DicomUID.ImagingAgentAdministrationPhaseType62.UID, DicomUID.ImagingAgentAdministrationPhaseType62);
             _uids.Add(DicomUID.ImagingAgentAdministrationMode63.UID, DicomUID.ImagingAgentAdministrationMode63);
             _uids.Add(DicomUID.ImagingAgentAdministrationPatientState64.UID, DicomUID.ImagingAgentAdministrationPatientState64);
@@ -1840,6 +1841,16 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.TopicalTreatment4410.UID, DicomUID.TopicalTreatment4410);
             _uids.Add(DicomUID.LesionColor4411.UID, DicomUID.LesionColor4411);
             _uids.Add(DicomUID.SpecimenStainForConfocalMicroscopy4412.UID, DicomUID.SpecimenStainForConfocalMicroscopy4412);
+            _uids.Add(DicomUID.RTROIImageAcquisitionContext9272.UID, DicomUID.RTROIImageAcquisitionContext9272);
+            _uids.Add(DicomUID.LobeOfLung6170.UID, DicomUID.LobeOfLung6170);
+            _uids.Add(DicomUID.ZoneOfLung6171.UID, DicomUID.ZoneOfLung6171);
+            _uids.Add(DicomUID.SleepStage3046.UID, DicomUID.SleepStage3046);
+            _uids.Add(DicomUID.PatientPositionAcquisitionMRTechniques9273.UID, DicomUID.PatientPositionAcquisitionMRTechniques9273);
+            _uids.Add(DicomUID.RTPlanRadiotherapyProcedureTechnique9583.UID, DicomUID.RTPlanRadiotherapyProcedureTechnique9583);
+            _uids.Add(DicomUID.WaveformAnnotationClassification3047.UID, DicomUID.WaveformAnnotationClassification3047);
+            _uids.Add(DicomUID.WaveformAnnotationsDocumentTitle3048.UID, DicomUID.WaveformAnnotationsDocumentTitle3048);
+            _uids.Add(DicomUID.EEGProcedure3049.UID, DicomUID.EEGProcedure3049);
+            _uids.Add(DicomUID.PatientConsciousness3050.UID, DicomUID.PatientConsciousness3050);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2672,6 +2683,9 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Enhanced X-Ray Radiation Dose SR Storage</summary>
         public static readonly DicomUID EnhancedXRayRadiationDoseSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.76", "Enhanced X-Ray Radiation Dose SR Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Waveform Annotation SR Storage</summary>
+        public static readonly DicomUID WaveformAnnotationSRStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.88.77", "Waveform Annotation SR Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Content Assessment Results Storage</summary>
         public static readonly DicomUID ContentAssessmentResultsStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.90.1", "Content Assessment Results Storage", DicomUidType.SOPClass, false);
@@ -6168,8 +6182,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Surgical Procedure Phase Requiring Anesthesia (632)</summary>
         public static readonly DicomUID SurgicalProcedurePhaseRequiringAnesthesia632 = new DicomUID("1.2.840.10008.6.1.1097", "Surgical Procedure Phase Requiring Anesthesia (632)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Phase of Imaging Procedure Requiring Anesthesia (633)</summary>
-        public static readonly DicomUID PhaseOfImagingProcedureRequiringAnesthesia633 = new DicomUID("1.2.840.10008.6.1.1098", "Phase of Imaging Procedure Requiring Anesthesia (633)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Phase of Imaging Procedure Requiring Anesthesia (Retired) (633)</summary>
+        public static readonly DicomUID PhaseOfImagingProcedureRequiringAnesthesia633RETIRED = new DicomUID("1.2.840.10008.6.1.1098", "Phase of Imaging Procedure Requiring Anesthesia (Retired) (633)", DicomUidType.ContextGroupName, true);
 
         ///<summary>Context Group Name: Animal Handling Phase (634)</summary>
         public static readonly DicomUID AnimalHandlingPhase634 = new DicomUID("1.2.840.10008.6.1.1099", "Animal Handling Phase (634)", DicomUidType.ContextGroupName, false);
@@ -6363,8 +6377,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Estimate Method Type (10068)</summary>
         public static readonly DicomUID EstimateMethodType10068 = new DicomUID("1.2.840.10008.6.1.1162", "Estimate Method Type (10068)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Radiation Dose Estimation Parameter (10069)</summary>
-        public static readonly DicomUID RadiationDoseEstimationParameter10069 = new DicomUID("1.2.840.10008.6.1.1163", "Radiation Dose Estimation Parameter (10069)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Radiation Dose Estimate Parameter (10069)</summary>
+        public static readonly DicomUID RadiationDoseEstimateParameter10069 = new DicomUID("1.2.840.10008.6.1.1163", "Radiation Dose Estimate Parameter (10069)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Radiation Dose Type (10070)</summary>
         public static readonly DicomUID RadiationDoseType10070 = new DicomUID("1.2.840.10008.6.1.1164", "Radiation Dose Type (10070)", DicomUidType.ContextGroupName, false);
@@ -6627,8 +6641,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Imaging Agent Administration Adverse Event (60)</summary>
         public static readonly DicomUID ImagingAgentAdministrationAdverseEvent60 = new DicomUID("1.2.840.10008.6.1.1250", "Imaging Agent Administration Adverse Event (60)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Time Relative to Procedure (61)</summary>
-        public static readonly DicomUID TimeRelativeToProcedure61 = new DicomUID("1.2.840.10008.6.1.1251", "Time Relative to Procedure (61)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Time Relative to Procedure (Retired) (61)</summary>
+        public static readonly DicomUID TimeRelativeToProcedure61RETIRED = new DicomUID("1.2.840.10008.6.1.1251", "Time Relative to Procedure (Retired) (61)", DicomUidType.ContextGroupName, true);
 
         ///<summary>Context Group Name: Imaging Agent Administration Phase Type (62)</summary>
         public static readonly DicomUID ImagingAgentAdministrationPhaseType62 = new DicomUID("1.2.840.10008.6.1.1252", "Imaging Agent Administration Phase Type (62)", DicomUidType.ContextGroupName, false);
@@ -7316,6 +7330,36 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Specimen Stain for Confocal Microscopy (4412)</summary>
         public static readonly DicomUID SpecimenStainForConfocalMicroscopy4412 = new DicomUID("1.2.840.10008.6.1.1480", "Specimen Stain for Confocal Microscopy (4412)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT ROI Image Acquisition Context (9272)</summary>
+        public static readonly DicomUID RTROIImageAcquisitionContext9272 = new DicomUID("1.2.840.10008.6.1.1481", "RT ROI Image Acquisition Context (9272)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Lobe of Lung (6170)</summary>
+        public static readonly DicomUID LobeOfLung6170 = new DicomUID("1.2.840.10008.6.1.1482", "Lobe of Lung (6170)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Zone of Lung (6171)</summary>
+        public static readonly DicomUID ZoneOfLung6171 = new DicomUID("1.2.840.10008.6.1.1483", "Zone of Lung (6171)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Sleep Stage (3046)</summary>
+        public static readonly DicomUID SleepStage3046 = new DicomUID("1.2.840.10008.6.1.1484", "Sleep Stage (3046)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Position Acquisition – MR Techniques (9273)</summary>
+        public static readonly DicomUID PatientPositionAcquisitionMRTechniques9273 = new DicomUID("1.2.840.10008.6.1.1485", "Patient Position Acquisition – MR Techniques (9273)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Plan Radiotherapy Procedure Technique (9583)</summary>
+        public static readonly DicomUID RTPlanRadiotherapyProcedureTechnique9583 = new DicomUID("1.2.840.10008.6.1.1486", "RT Plan Radiotherapy Procedure Technique (9583)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Waveform Annotation Classification (3047)</summary>
+        public static readonly DicomUID WaveformAnnotationClassification3047 = new DicomUID("1.2.840.10008.6.1.1487", "Waveform Annotation Classification (3047)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Waveform Annotations Document Title  (3048)</summary>
+        public static readonly DicomUID WaveformAnnotationsDocumentTitle3048 = new DicomUID("1.2.840.10008.6.1.1488", "Waveform Annotations Document Title  (3048)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: EEG Procedure  (3049)</summary>
+        public static readonly DicomUID EEGProcedure3049 = new DicomUID("1.2.840.10008.6.1.1489", "EEG Procedure  (3049)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Patient Consciousness  (3050)</summary>
+        public static readonly DicomUID PatientConsciousness3050 = new DicomUID("1.2.840.10008.6.1.1490", "Patient Consciousness  (3050)", DicomUidType.ContextGroupName, false);
 
     }
 }

@@ -19,6 +19,17 @@ namespace FellowOakDicom
     /// </summary>
     public partial class DicomDataset : IEnumerable<DicomItem>, IEquatable<DicomDataset>
     {
+        #region Static Properties
+
+        /// <summary>
+        /// Gets or sets how two DicomDatasets are compared if dataset1 == dataset2 is called
+        /// If this property is true, then all items are iterated and the content is compared. Then two DicomDatasets are equal if the content is equal.
+        /// If this property is false, then the equalitycheck tests if the DicomDatasets are the same instance.
+        /// </summary>
+        public static bool CompareInstancesByContent { get; set; } = true;
+
+        #endregion
+
         #region FIELDS
 
         private readonly IDictionary<DicomTag, DicomItem> _items;
@@ -176,8 +187,9 @@ namespace FellowOakDicom
         /// <returns>Item corresponding to <paramref name="tag"/> or <code>null</code> if the <paramref name="tag"/> is not contained in the instance.</returns>
         public T GetDicomItem<T>(DicomTag tag) where T : DicomItem
         {
-            tag = ValidatePrivate(tag);
-            return _items.TryGetValue(tag, out DicomItem dummyItem) ? dummyItem as T : null;
+            return (TryValidatePrivate(ref tag) && _items.TryGetValue(tag, out DicomItem dummyItem))
+              ? dummyItem as T
+              : null;
         }
 
 
@@ -780,12 +792,12 @@ namespace FellowOakDicom
             // it should also be disabled on the new dataset we create here
             // because we will be copying data over from one to the other
             var functionalDs = new DicomDataset { ValidateItems = ValidateItems };
-            
+
             // gets all items from SharedFunctionalGroups
             if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence))
             {
                 var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.Items[0] ?? throw new DicomDataException("unexpected empty SharedFunctionalGroupsSequence");
-                foreach(var sequence in sharedFunctionGroupItem.OfType<DicomSequence>())
+                foreach (var sequence in sharedFunctionGroupItem.OfType<DicomSequence>())
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
                     {
@@ -844,7 +856,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomValidationException">A exception is thrown if one of the items does not pass the valiation</exception>
         public void Validate()
         {
-            foreach(var item in this)
+            foreach (var item in this)
             {
                 item.Validate();
             }
@@ -1097,7 +1109,7 @@ namespace FellowOakDicom
         protected virtual void ValidateTag(DicomTag tag)
         {
         }
-        
+
         /// <summary>
         /// Add a collection of DICOM items to the dataset.
         /// </summary>
@@ -1186,12 +1198,14 @@ namespace FellowOakDicom
         private DicomDataset DoAdd<T>(DicomTag tag, IList<T> values, bool allowUpdate)
         {
             var entry = DicomDictionary.Default[tag.IsPrivate ? GetPrivateTag(tag) : tag];
-            if (entry == DicomDictionary.UnknownTag && tag.IsPrivate) {
+            if (entry == DicomDictionary.UnknownTag && tag.IsPrivate)
+            {
                 string groupNumber = tag.Group.ToString("X4");
                 string elementNumber = tag.Element.ToString("X4");
                 throw new DicomDataException($"Unknown private tag <{tag.PrivateCreator}> ({groupNumber}, {elementNumber}) has no VR defined.");
             }
-            if (entry == DicomDictionary.UnknownTag && !tag.IsPrivate) {
+            if (entry == DicomDictionary.UnknownTag && !tag.IsPrivate)
+            {
                 throw new DicomDataException($"Tag {tag} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.");
             }
 
@@ -1564,7 +1578,7 @@ namespace FellowOakDicom
         private void SetTargetEncodingsToStringElements(Encoding[] values)
         {
 
-            foreach(var txt in this.FilterByType<DicomStringElement>())
+            foreach (var txt in this.FilterByType<DicomStringElement>())
             {
                 txt.TargetEncodings = values;
             }
@@ -1587,7 +1601,10 @@ namespace FellowOakDicom
 
         public bool Equals(DicomDataset other)
         {
-            return new DicomDatasetComparer().Equals(this, other);
+            return
+                CompareInstancesByContent
+                ? DicomDatasetComparer.DefaultInstance.Equals(this, other)
+                : ReferenceEquals(this, other);
         }
 
         public static bool operator ==(DicomDataset a, DicomDataset b)

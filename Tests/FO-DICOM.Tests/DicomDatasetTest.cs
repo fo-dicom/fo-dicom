@@ -634,9 +634,9 @@ namespace FellowOakDicom.Tests
             var dataset = new DicomDataset();
 
             // <tag group="0019" element="100d" vr="DS" vm="1">AP Offcenter</tag> is known private tag
-            var privateTag = new DicomTag(0x0019, 0x100a,"PHILIPS MR/PART");
+            var privateTag = new DicomTag(0x0019, 0x100a, "PHILIPS MR/PART");
 
-            dataset.Add<int>(privateTag,1);
+            dataset.Add<int>(privateTag, 1);
 
             Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
         }
@@ -670,13 +670,28 @@ namespace FellowOakDicom.Tests
             var dataset = new DicomDataset();
 
             // <tag group="0019" element="100d" vr="DS" vm="1">AP Offcenter</tag> is known private tag
-            var privateTag = new DicomTag(0x0019, 0x100a,"PHILIPS MR/PART");
+            var privateTag = new DicomTag(0x0019, 0x100a, "PHILIPS MR/PART");
 
-            dataset.AddOrUpdate<int>(privateTag,1);
+            dataset.AddOrUpdate<int>(privateTag, 1);
 
             Assert.Equal(privateTag, dataset.GetDicomItem<DicomItem>(privateTag).Tag);
         }
 
+        [Fact]
+        public void Get_NonExistingPrivateTag_ShouldNotThrow()
+        {
+            var dataset = new DicomDataset();
+
+            // <tag group="0019" element="100d" vr="DS" vm="1">AP Offcenter</tag> is known private tag
+            var privateTagWithExplicitElement = new DicomTag(0x0019, 0x100a);
+            var privateTagWithPrivateCreator = new DicomTag(0x0019, 0x000a, "PHILIPS MR/PART");
+
+            var item = dataset.GetDicomItem<DicomItem>(privateTagWithExplicitElement);
+            Assert.Null(item);
+
+            item = dataset.GetDicomItem<DicomItem>(privateTagWithPrivateCreator);
+            Assert.Null(item);
+        }
 
         [Fact]
         public void Get_ByteArrayFromStringElement_ReturnsValidArray()

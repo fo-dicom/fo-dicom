@@ -1,10 +1,9 @@
-<img src="https://lh3.googleusercontent.com/-Fq3nigRUo7U/VfaIPuJMjfI/AAAAAAAAALo/7oaLrrTBhnw/s1600/Fellow%2BOak%2BSquare%2BTransp.png" alt="fo-dicom logo" height="80" />
+
+![Fellow Oak DICOM Logo](https://raw.githubusercontent.com/fo-dicom/fo-dicom/6089255b6af35a04259b1219351fc40119ac5295/FellowOakSquareTransp.png)
 
 # Fellow Oak DICOM
 
-[![NuGet](https://img.shields.io/nuget/v/fo-dicom.svg)](https://www.nuget.org/packages/fo-dicom/)
-![build development](https://github.com/fo-dicom/fo-dicom/workflows/build/badge.svg?branch=development)
-[![codecov](https://codecov.io/gh/fo-dicom/fo-dicom/branch/development/graph/badge.svg)](https://codecov.io/gh/fo-dicom/fo-dicom)
+Fellow Oak DICOM is a DICOM toolkit in C# for all .NET Standard 2.0 compatible frameworks.
 
 ### License
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
@@ -41,7 +40,7 @@ Package | Description
 ------- | -----------
 [fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Core package containing parser, services and tools.
 [fo-dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with referencte to System.Drawing, required for rendering into Bitmaps
-[fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Imaging.ImageSharp/) | Library with reference to ImageSharp, can be used for platform independent rendering
+[fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Desktop/) | Library with reference to ImageSharp, can be used for platform independent rendering
 [fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform Dicom codecs for fo-dicom, developed by Efferent Health (https://github.com/Efferent-Health/fo-dicom.Codecs)
 
 
@@ -454,9 +453,3 @@ finally
     await association.ReleaseAsync(cancellationToken);
 }
 ```
-
-### New to DICOM?
-
-If you are new to DICOM, then take a look at the DICOM tutorial of Saravanan Subramanian:
-https://saravanansubramanian.com/dicomtutorials/
-The author is also using fo-dicom in some code samples.

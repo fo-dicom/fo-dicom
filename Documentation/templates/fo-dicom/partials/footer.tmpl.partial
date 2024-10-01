@@ -8,7 +8,7 @@
         <a href="#top">Back to top</a>
       </span>
       {{{_appFooter}}}
-      {{^_appFooter}}<span>Copyright (c) 2012-2023 fo-dicom contributors</span>{{/_appFooter}}
+      {{^_appFooter}}<span>Copyright (c) 2012-2024 fo-dicom contributors</span>{{/_appFooter}}
     </div>
   </div>
 </footer>
