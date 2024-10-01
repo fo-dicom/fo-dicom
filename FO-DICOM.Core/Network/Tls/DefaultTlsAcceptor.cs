@@ -101,7 +101,7 @@ namespace FellowOakDicom.Network.Tls
         /// </summary>
         /// <param name="certificateName">Certificate name.</param>
         /// <returns>Certificate with the specified name.</returns>
-        private static X509Certificate GetX509Certificate(string certificateName)
+        private static X509Certificate2 GetX509Certificate(string certificateName)
         {
             var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
 
