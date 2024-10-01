@@ -213,7 +213,7 @@ namespace FellowOakDicom.Network
                     .Where(
                         uid =>
                         uid.StorageCategory != DicomStorageCategory.None && !uid.IsRetired
-                        && (noFilter || uid.Name.ToUpperInvariant().Contains(capsFilter)))
+                        && (noFilter || uid.Name.IndexOf(capsFilter, System.StringComparison.InvariantCultureIgnoreCase) != -1))
                     .Select(uid => GetScpRolePresentationContext(uid, transferSyntaxes));
         }
 
