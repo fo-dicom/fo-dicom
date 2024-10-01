@@ -200,7 +200,7 @@ namespace FellowOakDicom.Imaging.Codec
                 _disposed = true;
             }
 
-            internal IByteBuffer GetBuffer()
+            internal MemoryByteBuffer GetBuffer()
             {
                 Flush();
 
