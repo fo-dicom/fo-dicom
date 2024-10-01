@@ -360,7 +360,7 @@ namespace FellowOakDicom.Imaging
             /// The pixel data other byte (OB) element
             /// </summary>
             private readonly DicomOtherByte _element;
-            private readonly IByteBuffer _padingByteBuffer = new MemoryByteBuffer(new byte[1] { DicomVR.OB.PaddingValue });
+            private readonly IByteBuffer _paddingByteBuffer = new MemoryByteBuffer(new byte[1] { DicomVR.OB.PaddingValue });
 
             #endregion
 
@@ -408,11 +408,11 @@ namespace FellowOakDicom.Imaging
                 var buffer = _element.Buffer as CompositeByteBuffer ??
                     throw new DicomImagingException("Expected pixel data element to have a CompositeByteBuffer");
 
-                buffer.Buffers.Remove(_padingByteBuffer);
+                buffer.Buffers.Remove(_paddingByteBuffer);
                 buffer.Buffers.Add(data);
                 if (buffer.Size % 2 == 1)
                 {
-                    buffer.Buffers.Add(_padingByteBuffer);
+                    buffer.Buffers.Add(_paddingByteBuffer);
                 }
 
                 NumberOfFrames++;
@@ -432,6 +432,7 @@ namespace FellowOakDicom.Imaging
             /// The pixel data other word (OW) element
             /// </summary>
             private readonly DicomOtherWord _element;
+            private readonly IByteBuffer _paddingByteBuffer = new MemoryByteBuffer(new byte[1] { DicomVR.OW.PaddingValue });
 
             #endregion
 
@@ -489,7 +490,13 @@ namespace FellowOakDicom.Imaging
                     data = new SwapByteBuffer(data, 2);
                 }
 
+                buffer.Buffers.Remove(_paddingByteBuffer);
                 buffer.Buffers.Add(data);
+                if (buffer.Size % 2 == 1)
+                {
+                    buffer.Buffers.Add(_paddingByteBuffer);
+                }
+
                 NumberOfFrames++;
             }
 
