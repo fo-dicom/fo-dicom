@@ -32,7 +32,7 @@ namespace FellowOakDicom
 
         #region FIELDS
 
-        private readonly IDictionary<DicomTag, DicomItem> _items;
+        private readonly SortedList<DicomTag, DicomItem> _items;
 
         private DicomTransferSyntax _syntax;
 

@@ -202,14 +202,14 @@ namespace FellowOakDicom
         /// <summary>
         /// The known encodings with character replacement fallback handlers.
         /// </summary>
-        private static readonly IDictionary<string, Encoding> _knownEncodings =
+        private static readonly Dictionary<string, Encoding> _knownEncodings =
             new Dictionary<string, Encoding>();
 
         /// <summary>
         /// The known encodings with exception fallback handlers.
         /// Used to detect encoding/decoding errors.
         /// </summary>
-        private static readonly IDictionary<int, Encoding> _strictEncodings =
+        private static readonly Dictionary<int, Encoding> _strictEncodings =
             new Dictionary<int, Encoding>();
 
         private static Encoding GetEncodingForEscapeSequence(byte code1, byte code2, byte code3) =>

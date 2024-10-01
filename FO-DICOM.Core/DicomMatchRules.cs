@@ -31,7 +31,7 @@ namespace FellowOakDicom
 
         private readonly DicomMatchOperator _operator;
 
-        private readonly IList<IDicomMatchRule> _rules;
+        private readonly List<IDicomMatchRule> _rules;
 
         #endregion
 

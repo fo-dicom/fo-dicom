@@ -721,7 +721,7 @@ namespace FellowOakDicom
 
         #region Static Methods
 
-        private static readonly IDictionary<DicomUID, DicomTransferSyntax> Entries = new Dictionary<DicomUID, DicomTransferSyntax>();
+        private static readonly Dictionary<DicomUID, DicomTransferSyntax> Entries = new Dictionary<DicomUID, DicomTransferSyntax>();
 
         public static IEnumerable<DicomTransferSyntax> KnownEntries => Entries.Values;
 

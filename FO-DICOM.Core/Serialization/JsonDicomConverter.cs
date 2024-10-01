@@ -1186,12 +1186,12 @@ namespace FellowOakDicom.Serialization
         }
 
 
-        private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader) 
+        private static MemoryByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader) 
             => reader.TokenType == JsonTokenType.StartArray
                 ? ReadJsonInlineBinaryArray(ref reader)
                 : ReadJsonInlineBinaryString(ref reader);
 
-        private static IByteBuffer ReadJsonInlineBinaryArray(ref Utf8JsonReader reader)
+        private static MemoryByteBuffer ReadJsonInlineBinaryArray(ref Utf8JsonReader reader)
         {
             reader.Read(); // caller already checked for StartArray
             var data = ReadJsonInlineBinaryString(ref reader);
@@ -1199,7 +1199,7 @@ namespace FellowOakDicom.Serialization
             return data;            
         }
 
-        private static IByteBuffer ReadJsonInlineBinaryString(ref Utf8JsonReader reader)
+        private static MemoryByteBuffer ReadJsonInlineBinaryString(ref Utf8JsonReader reader)
         {
             if (reader.TokenType != JsonTokenType.String)
             {
