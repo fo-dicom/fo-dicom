@@ -23,7 +23,7 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// The set of unique presentation contexts, solely used to avoid duplicates
         /// </summary>
-        private readonly ISet<DicomPresentationContext> _uniquePcs;
+        private readonly HashSet<DicomPresentationContext> _uniquePcs;
 
         #endregion
 
@@ -165,7 +165,7 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    if (tx.Any())
+                    if (tx.Count != 0)
                     {
                         Add(cstore.SOPClassUID, tx.ToArray());
                     }
@@ -184,7 +184,7 @@ namespace FellowOakDicom.Network
                     if (pc == null)
                     {
                         var transferSyntaxes = request.PresentationContext.GetTransferSyntaxes().ToArray();
-                        if (!transferSyntaxes.Any())
+                        if (transferSyntaxes.Length == 0)
                         {
                             transferSyntaxes = new[] { DicomTransferSyntax.ImplicitVRLittleEndian };
                         }
