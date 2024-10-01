@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Network.Tls;
 using System;
 using System.Globalization;
 using System.Net.NetworkInformation;
@@ -39,13 +40,7 @@ namespace FellowOakDicom.Network
         #region PROPERTIES
 
         /// <inheritdoc />
-        protected internal override string MachineNameImpl
-        {
-            get
-            {
-                return Environment.GetEnvironmentVariable("COMPUTERNAME");
-            }
-        }
+        protected internal override string MachineNameImpl => Environment.GetEnvironmentVariable("COMPUTERNAME");
 
         #endregion
 
@@ -53,14 +48,13 @@ namespace FellowOakDicom.Network
 
         /// <inheritdoc />
         protected internal override INetworkListener CreateNetworkListenerImpl(string ipAddress, int port)
-        {
-            return new DesktopNetworkListener(ipAddress, port);
-        }
+            => new DesktopNetworkListener(ipAddress, port);
 
         protected internal override INetworkStream CreateNetworkStreamImpl(NetworkStreamCreationOptions options)
-        {
-            return new DesktopNetworkStream(options);
-        }
+            => new DesktopNetworkStream(options);
+
+        protected internal override INetworkStream CreateNetworkStreamImpl(TcpClient tcpClient, ITlsAcceptor tlsAcceptor, bool ownsTcpClient)
+            => new DesktopNetworkStream(tcpClient, tlsAcceptor, ownsTcpClient);
 
         /// <inheritdoc />
         protected internal override bool IsSocketExceptionImpl(Exception exception, out int errorCode, out string errorDescriptor)

@@ -1,5 +1,6 @@
 ### 5.1.4 (TBD)
 
+- Fix issue where the main TCP listener loop could be blocked by frozen TLS handshakes (#1766)
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
 
 ### 5.1.3 (2024-06-27)
