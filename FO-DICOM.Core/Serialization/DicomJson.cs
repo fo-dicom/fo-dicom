@@ -12,7 +12,7 @@ namespace FellowOakDicom.Serialization
 {
     public static class DicomJson
     {
-        private static ConcurrentDictionary<JsonSerializerOptionsKey, JsonSerializerOptions> _cachedOptions =
+        private static readonly ConcurrentDictionary<JsonSerializerOptionsKey, JsonSerializerOptions> _cachedOptions =
             new ConcurrentDictionary<JsonSerializerOptionsKey, JsonSerializerOptions>();
 
         private static JsonSerializerOptions GetOrCreateJsonSerializerOptions(
