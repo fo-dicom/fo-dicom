@@ -10,7 +10,7 @@ namespace FellowOakDicom
 
     public class DicomVM
     {
-        private static IDictionary<string, DicomVM> _vm = new Dictionary<string, DicomVM>();
+        private static Dictionary<string, DicomVM> _vm = new Dictionary<string, DicomVM>();
 
         public static readonly DicomVM VM_1 = DicomVM.Parse("1");
 
