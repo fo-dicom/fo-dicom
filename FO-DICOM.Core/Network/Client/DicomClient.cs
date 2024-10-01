@@ -196,7 +196,7 @@ namespace FellowOakDicom.Network.Client
         public string CallingAe { get; }
         public string CalledAe { get; }
         
-        public bool IsSendRequired => _isSending == 0 && QueuedRequests.Any();
+        public bool IsSendRequired => _isSending == 0 && !QueuedRequests.IsEmpty;
 
         public ILogger Logger
         {
