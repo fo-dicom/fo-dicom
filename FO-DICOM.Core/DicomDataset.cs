@@ -788,10 +788,10 @@ namespace FellowOakDicom
 
         public DicomDataset FunctionalGroupValues(int frame)
         {
-            // If validation is disabled on the current data set
-            // it should also be disabled on the new dataset we create here
-            // because we will be copying data over from one to the other
-            var functionalDs = new DicomDataset { ValidateItems = ValidateItems };
+            // Validation should be disabled, because we will be copying data over from another dataset.
+            // that means, these values are either loaded from a source, or they have already been
+            // validated.
+            var functionalDs = new DicomDataset { ValidateItems = false };
 
             // gets all items from SharedFunctionalGroups
             if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence))

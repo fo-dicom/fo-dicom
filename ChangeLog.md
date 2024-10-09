@@ -5,6 +5,7 @@
 - Fix bug where under some circumstances (transcode a 8 bit image with odd row or column length from explicit to implicit TS) a odd length pixeldata is written (#1403)
 - Fix bug where DicomDataset.GetDicomTag thew an exception if the private tag does not exist in dataset (#1840)
 - FO-DICOM.Tests target net8.0-windows instead of net7.0-windows
+- Fix rendering of EnhancedMR or EnhancedCT images, that contain any invalid value in any item within the Functional Groups (#1862)
 
 ### 5.1.3 (2024-06-27)
 
