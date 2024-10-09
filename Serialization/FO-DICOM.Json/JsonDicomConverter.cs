@@ -431,7 +431,7 @@ namespace FellowOakDicom.Serialization
                 case "OV":
                 case "OW":
                 case "UN":
-                    WriteJsonOther(writer, (DicomElement)item);
+                    WriteJsonOther(writer, item);
                     break;
                 case "FL":
                     WriteJsonElement<float>(writer, (DicomElement)item);
@@ -660,17 +660,25 @@ namespace FellowOakDicom.Serialization
             }
         }
 
-        private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
+        private static void WriteJsonOther(JsonWriter writer, DicomItem item)
         {
-            if (elem.Buffer is IBulkDataUriByteBuffer buffer)
+            if (item is DicomElement elem)
             {
-                writer.WritePropertyName("BulkDataURI");
-                writer.WriteValue(buffer.BulkDataUri);
+                if (elem.Buffer is IBulkDataUriByteBuffer buffer)
+                {
+                    writer.WritePropertyName("BulkDataURI");
+                    writer.WriteValue(buffer.BulkDataUri);
+                }
+                else if (elem.Count != 0)
+                {
+                    writer.WritePropertyName("InlineBinary");
+                    writer.WriteValue(Convert.ToBase64String(elem.Buffer.Data));
+                }
             }
-            else if (elem.Count != 0)
+            else if (item is DicomFragmentSequence)
             {
-                writer.WritePropertyName("InlineBinary");
-                writer.WriteValue(Convert.ToBase64String(elem.Buffer.Data));
+                // serializing fragmented data to json is not defined in DICOM standard
+                throw new JsonException("Serializing fragmented data is not supported. Consider converting the DicomDataset to another transfer syntax before serializing to DicomJson");
             }
         }
 
