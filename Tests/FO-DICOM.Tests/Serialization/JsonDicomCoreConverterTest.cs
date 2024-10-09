@@ -1451,6 +1451,24 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         [Fact]
+        public void Serializing_FragmentedData_Should_Fail()
+        {
+            var ds = new DicomDataset(new DicomOtherByteFragment(DicomTag.PixelData));
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Converters = { new DicomJsonConverter() }
+            };
+            var exception = Record.Exception(() =>
+                JsonSerializer.Serialize(ds, jsonOptions)
+            );
+            Assert.NotNull(exception);
+            Assert.IsType<JsonException>(exception);
+            Assert.Contains("fragmented data is not supported", exception.Message);
+
+        }
+
+        [Fact]
         public static void GivenJsonWithOptionalAttributes_WhenDeserialized_IsDeserializedCorrectly()
         {
             string json = @"{ ""00080050"": {
