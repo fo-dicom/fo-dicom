@@ -388,7 +388,7 @@ namespace FellowOakDicom.Serialization
                 case "OV":
                 case "OW":
                 case "UN":
-                    WriteJsonOther(writer, (DicomElement)item);
+                    WriteJsonOther(writer, item);
                     break;
                 case "FL":
                     WriteJsonElement<float>(writer, (DicomElement)item, (w, v) => writer.WriteNumberValue(v));
@@ -648,17 +648,25 @@ namespace FellowOakDicom.Serialization
             }
         }
 
-        private static void WriteJsonOther(Utf8JsonWriter writer, DicomElement elem)
+        private static void WriteJsonOther(Utf8JsonWriter writer, DicomItem item)
         {
-            if (elem.Buffer is IBulkDataUriByteBuffer buffer)
+            if (item is DicomElement elem)
             {
-                writer.WritePropertyName("BulkDataURI");
-                writer.WriteStringValue(buffer.BulkDataUri);
+                if (elem.Buffer is IBulkDataUriByteBuffer buffer)
+                {
+                    writer.WritePropertyName("BulkDataURI");
+                    writer.WriteStringValue(buffer.BulkDataUri);
+                }
+                else if (elem.Count != 0)
+                {
+                    writer.WritePropertyName("InlineBinary");
+                    writer.WriteBase64StringValue(elem.Buffer.Data);
+                }
             }
-            else if (elem.Count != 0)
+            else if (item is DicomFragmentSequence)
             {
-                writer.WritePropertyName("InlineBinary");
-                writer.WriteBase64StringValue(elem.Buffer.Data);
+                // serializing fragmented data to json is not defined in DICOM standard
+                throw new JsonException("Serializing fragmented data is not supported. Consider converting the DicomDataset to another transfer syntax before serializing to DicomJson");
             }
         }
 
@@ -1186,7 +1194,7 @@ namespace FellowOakDicom.Serialization
         }
 
 
-        private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader) 
+        private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader)
             => reader.TokenType == JsonTokenType.StartArray
                 ? ReadJsonInlineBinaryArray(ref reader)
                 : ReadJsonInlineBinaryString(ref reader);
@@ -1196,7 +1204,7 @@ namespace FellowOakDicom.Serialization
             reader.Read(); // caller already checked for StartArray
             var data = ReadJsonInlineBinaryString(ref reader);
             reader.AssumeAndSkip(JsonTokenType.EndArray);
-            return data;            
+            return data;
         }
 
         private static IByteBuffer ReadJsonInlineBinaryString(ref Utf8JsonReader reader)

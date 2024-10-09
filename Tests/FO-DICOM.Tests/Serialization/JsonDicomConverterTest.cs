@@ -10,9 +10,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -1291,6 +1291,19 @@ namespace FellowOakDicom.Tests.Serialization
             // make sure below serialization does not throw
             var ds = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter(autoValidate: false));
             Assert.NotNull(ds);
+        }
+
+        [Fact]
+        public void Serializing_FragmentedData_Should_Fail()
+        {
+            var ds = new DicomDataset(new DicomOtherByteFragment(DicomTag.PixelData));
+
+            var exception = Record.Exception(() =>
+                JsonConvert.SerializeObject(ds, new JsonDicomConverter())
+            );
+            Assert.NotNull(exception);
+            Assert.IsType<Newtonsoft.Json.JsonException>(exception);
+            Assert.Contains("fragmented data is not supported", exception.Message);
         }
 
         #region Sample Data
