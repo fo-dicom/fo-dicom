@@ -405,11 +405,10 @@ namespace FellowOakDicom.IO.Reader
 
                         if (source.GetBytes(vrMemory.Bytes, 0, 2) != 2 || !DicomVR.TryParse(vrMemory.Bytes, out _vr))
                         {
-                            // If the VR is an empty string, try to use the first known VR of the tag
-                            string vr = Encoding.UTF8.GetString(vrMemory.Bytes, 0, 2).Trim();
-                            if(_entry != null && string.IsNullOrEmpty(vr))
+                            // If the VR is 0x2020, try to use the first known VR of the tag (issue #179)
+                            if(_entry != null && (vrMemory.Bytes[0] == 0x20 && vrMemory.Bytes[1] == 0x20))
                             {
-                                _vr = _entry.ValueRepresentations.FirstOrDefault();    
+                                _vr = _entry.ValueRepresentations.FirstOrDefault();
                             }
                             else
                             {

@@ -3,9 +3,11 @@
 - Fix issue where the main TCP listener loop could be blocked by frozen TLS handshakes (#1766)
 - Add support for saving new strings with multi-valued Specific Character Set (#1789)
 - Throw a meaningful and explaining JsonException when trying to serialize not supported fragmented data (#1792)
+- Fix issue with retrieving correct VR when the DICOM element's length is a blank character (e.g., 0x200A) by modifying the empty string check to specifically handle 0x2020 (#1847)
 - Fix bug where under some circumstances (transcode a 8 bit image with odd row or column length from explicit to implicit TS) a odd length pixeldata is written (#1403)
 - Fix bug where DicomDataset.GetDicomTag thew an exception if the private tag does not exist in dataset (#1840)
 - FO-DICOM.Tests target net8.0-windows instead of net7.0-windows
+- Fix rendering of EnhancedMR or EnhancedCT images, that contain any invalid value in any item within the Functional Groups (#1862)
 
 ### 5.1.3 (2024-06-27)
 

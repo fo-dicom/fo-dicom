@@ -42,7 +42,7 @@ namespace FellowOakDicom.Tests.IO.Buffer
             var expected = new ArraySegment<byte>(data, offset, count);
             var actual = new byte[count];
             buffer.GetByteRange(offset, count, actual);
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.ToArray(), actual);
         }
 
         [Fact]

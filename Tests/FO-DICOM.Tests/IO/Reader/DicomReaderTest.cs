@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Memory;
 using Xunit;
+using System.Linq;
 
 namespace FellowOakDicom.Tests.IO.Reader
 {
@@ -106,6 +107,23 @@ namespace FellowOakDicom.Tests.IO.Reader
             imageComment = customFile.Dataset.GetDicomItem<DicomLongText>(DicomTag.ImageComments);
 
             Assert.IsType<StreamByteBuffer>(imageComment.Buffer);
+        }
+
+        [Fact]
+        public async Task ReadWithElementLengthWithBlankChars()
+        {
+            // This is for regression bug https://github.com/fo-dicom/fo-dicom/issues/1847
+            string filename = TestData.Resolve("test_1847.dcm");
+
+            DicomFile dcmFile = await DicomFile.OpenAsync(filename);
+
+            DicomSequence seq = dcmFile.Dataset.GetSequence(new DicomTag(0x0029, 0x1240, "SIEMENS MEDCOM HEADER"));
+
+            bool exist = seq.Items.Any(ds => ds.Contains(new DicomTag(0x0029, 0x1044, "SIEMENS MEDCOM HEADER")));
+
+            Assert.True(exist);
+
+            Assert.True(dcmFile.Dataset.Contains(DicomTag.PixelData));
         }
 
         #endregion
