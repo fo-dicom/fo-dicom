@@ -105,6 +105,19 @@ namespace FellowOakDicom.Tests
             // if reading with middle european encoding as fallback default the "ö" and "ü" should be recognized
             Assert.Equal("Hölzl^Günther", thirdFile.Dataset.GetString(DicomTag.PatientName));
             Assert.Equal(0, logCollector.NumberOfWarnings);
+
+            // a dataset with an empty character set shall behave the same way
+            ds.Add( new DicomCodeString(DicomTag.SpecificCharacterSet, ""));
+            filestream = new MemoryStream();
+            new DicomFile(ds).Save(filestream);
+            filestream.Flush();
+            filestream.Position = 0;
+            secondFile = DicomFile.Open(filestream);
+            Assert.Equal("H?lzl^G?nther", secondFile.Dataset.GetString(DicomTag.PatientName));
+
+            filestream.Position = 0;
+            thirdFile = DicomFile.Open(filestream, DicomEncoding.GetEncoding("ISO_IR 100"));
+            Assert.Equal("Hölzl^Günther", thirdFile.Dataset.GetString(DicomTag.PatientName));
         }
 
         [Theory]
@@ -302,6 +315,44 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expectedMessage, logCollector.WarningAt(1));
         }
 
+        [Fact]
+        public void AsciiUsedIfWritingWithEmptySpecificCharacterSet()
+        {
+            // regression test for #1879
+            var ds = new DicomDataset
+            {
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
+                new DicomCodeString(DicomTag.SpecificCharacterSet, ""),
+                new DicomPersonName(DicomTag.PatientName, "Doe", "John")
+            };
+            var df = new DicomFile(ds);
+            Stream stream = new MemoryStream();
+            df.Save(stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var dsNew = DicomFile.Open(stream).Dataset;
+            Assert.Equal("Doe^John", dsNew.GetString(DicomTag.PatientName));
+        }
+
+        [Fact]
+        public void AsciiUsedIfWritingWithoutSpecificCharacterSet()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomUniqueIdentifier(DicomTag.SOPClassUID, DicomUID.RTDoseStorage),
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, "1.2.3"),
+                new DicomPersonName(DicomTag.PatientName, "Doe", "John")
+            };
+            var df = new DicomFile(ds);
+            Stream stream = new MemoryStream();
+            df.Save(stream);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            var dsNew = DicomFile.Open(stream).Dataset;
+            Assert.Equal("Doe^John", dsNew.GetString(DicomTag.PatientName));
+        }
+
         [Theory]
         [MemberData(nameof(MultiEncodingNames))]
         public void SavePatientNameWithMultiEncoding(string characterSet, string patientName)
@@ -321,17 +372,19 @@ namespace FellowOakDicom.Tests
             Assert.Equal(patientName, inFile.Dataset.GetString(DicomTag.PatientName));
         }
 
-        [Fact]
-        public void SavePatientNameWithWrongEncoding()
+        [Theory]
+        [InlineData("ISO_IR 100")]
+        [InlineData("")]
+        public void SavePatientNameWithWrongEncoding(string charSet)
         {
             using var logCollector = NewLogCollector();
-            var patientName = "Yamada^Tarou=山田^太郎=やまだ^たろう";
+            const string patientName = "Yamada^Tarou=山田^太郎=やまだ^たろう";
             var dataset = new DicomDataset
             {
                 { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
                 { DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID() },
-                { DicomTag.SpecificCharacterSet, "ISO_IR 100" },
-                { DicomTag.PatientName, patientName}
+                { DicomTag.SpecificCharacterSet, charSet },
+                { DicomTag.PatientName, patientName }
             };
             var dicomFile = new DicomFile(dataset);
             var stream = new MemoryStream();
@@ -339,8 +392,8 @@ namespace FellowOakDicom.Tests
             stream.Seek(0, SeekOrigin.Begin);
             var inFile = DicomFile.Open(stream);
             Assert.Equal("Yamada^Tarou=??^??=???^???", inFile.Dataset.GetString(DicomTag.PatientName));
-            var expectedWarning = "Could not encode string '山田' with given encodings, " +
-                                  "using replacement characters for encoding";
+            const string expectedWarning = "Could not encode string '山田' with given encodings, " +
+                                           "using replacement characters for encoding";
             Assert.Equal(expectedWarning, logCollector.WarningAt(0));
         }
 

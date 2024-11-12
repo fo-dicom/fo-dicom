@@ -1,4 +1,5 @@
 ### 5.1.5 (TBD)
+  - Fix regression which caused an exception if writing with an empty SpecificCharacterSet tag (#1879)
 
 
 ### 5.1.4 (2024-10-27)

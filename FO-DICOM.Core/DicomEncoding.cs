@@ -50,7 +50,7 @@ namespace FellowOakDicom
         /// <param name="charsets">List of character sets.</param>
         /// <returns>String encodings.</returns>
         public static Encoding[] GetEncodings(string[] charsets) =>
-            charsets.Select(GetEncoding).ToArray();
+            charsets.Length > 0 ? charsets.Select(GetEncoding).ToArray() : DefaultArray;
 
         /// <summary>
         /// Get encoding from Specific Character Set attribute value.
@@ -110,7 +110,7 @@ namespace FellowOakDicom
         /// <param name="encodings">The list of non-strict encodings.</param>
         /// <returns>Array of string encoding.</returns>
         private static Encoding[] GetStrictEncodings(Encoding[] encodings) =>
-            encodings.Select(StrictEncoding).ToArray();
+            encodings.Length > 0 ? encodings.Select(StrictEncoding).ToArray() : DefaultArray;
 
         private static Encoding StrictEncoding(Encoding encoding)
         {
