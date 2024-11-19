@@ -794,7 +794,8 @@ namespace FellowOakDicom
             var functionalDs = new DicomDataset { ValidateItems = false };
 
             // gets all items from SharedFunctionalGroups
-            if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence))
+            if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence)
+                && sharedFunctionalGroupsSequence.Items.Count > 0)
             {
                 var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.Items[0] ?? throw new DicomDataException("unexpected empty SharedFunctionalGroupsSequence");
                 foreach (var sequence in sharedFunctionGroupItem.OfType<DicomSequence>())
@@ -806,16 +807,20 @@ namespace FellowOakDicom
                     else
                     {
                         // skip empty sequences
-                        if (sequence.Items.Count > 0)
+                        if (sequence.Items.Count <= 0)
                         {
-                            foreach (var item in sequence.Items[0])
-                            {
-                                functionalDs.AddOrUpdate(item);
-                            }
+                            continue;
+                        }
+
+                        foreach (var item in sequence.Items[0])
+                        {
+                            functionalDs.AddOrUpdate(item);
                         }
                     }
                 }
             }
+            
+            // gets the specific items from PerFrameFunctionalGroups for this frame
             if (TryGetSequence(DicomTag.PerFrameFunctionalGroupsSequence, out var perFrameFunctionalGroupsSequence)
                 && perFrameFunctionalGroupsSequence.Items.Count > frame)
             {
@@ -829,17 +834,20 @@ namespace FellowOakDicom
                     else
                     {
                         // skip empty sequences
-                        if (sequence.Items.Count > 0)
+                        if (sequence.Items.Count <= 0)
                         {
-                            foreach (var item in sequence.Items[0])
-                            {
-                                functionalDs.AddOrUpdate(item);
-                            }
+                            continue;
+                        }
+
+                        foreach (var item in sequence.Items[0])
+                        {
+                            functionalDs.AddOrUpdate(item);
                         }
                     }
                 }
 
             }
+            
             return functionalDs;
         }
 

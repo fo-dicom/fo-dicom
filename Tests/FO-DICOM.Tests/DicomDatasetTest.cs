@@ -901,6 +901,21 @@ namespace FellowOakDicom.Tests
             );
             Assert.False(dataset.TryGetSingleValue(DicomTag.SeriesNumber, out int _));
         }
+        
+        [Fact]
+        public void FunctionalGroupValues_ShouldNotCrashWithEmptySharedFunctionalGroupsSequence()
+        {
+            //Arrange
+            var dataset = new DicomDataset();
+            var sequence = new DicomSequence(DicomTag.SharedFunctionalGroupsSequence);
+            dataset.Add(sequence);
+            
+            //Act
+            var result = dataset.FunctionalGroupValues(0);
+            
+            //Assert
+            Assert.Empty(result);
+        }
 
         #endregion
 
