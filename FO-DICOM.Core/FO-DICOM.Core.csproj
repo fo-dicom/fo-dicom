@@ -30,7 +30,7 @@ If you find some breaking changes when updating, read here for more information 
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\READMENuget.md" Pack="true" PackagePath="\"/>
+    <None Include="..\READMENuget.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
