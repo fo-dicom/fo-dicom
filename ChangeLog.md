@@ -1,5 +1,5 @@
 ### 5.1.6 (TBD)
-
+- VOI LUT Function with empty value causes a crash (#1891)
 
 ### 5.1.5 (2024-11-25)
 

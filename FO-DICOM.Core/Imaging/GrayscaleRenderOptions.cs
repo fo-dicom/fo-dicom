@@ -189,8 +189,11 @@ namespace FellowOakDicom.Imaging
                 return null;
             }
 
+            bool hasLut = dataset.TryGetValue(DicomTag.VOILUTFunction, 0, out string voiLutFunction);
             var functional = dataset.FunctionalGroupValues(frame);
+            bool hasLutF = functional.TryGetValue(DicomTag.VOILUTFunction, 0, out string voiLutFunctionF);
             var bits = BitDepth.FromDataset(dataset);
+
             var options = new GrayscaleRenderOptions(bits)
             {
                 RescaleSlope = dataset.Contains(DicomTag.RescaleSlope)
@@ -207,11 +210,12 @@ namespace FellowOakDicom.Imaging
                 WindowWidth = windowWidth,
                 WindowCenter = windowCenter,
 
-                VOILUTFunction = dataset.Contains(DicomTag.VOILUTFunction)
-                    ? dataset.GetSingleValue<string>(DicomTag.VOILUTFunction)
-                    : functional.Contains(DicomTag.VOILUTFunction)
-                    ? functional.GetSingleValue<string>(DicomTag.VOILUTFunction)
-                    : "LINEAR",
+                // #1891 VOI LUT Function with empty value causes a crash
+                VOILUTFunction = hasLut
+                    ? voiLutFunction
+                    : (hasLutF
+                    ? voiLutFunctionF
+                    : "LINEAR"),
 
                 ColorMap = GetColorMap(dataset)
             };
