@@ -199,10 +199,7 @@ namespace FellowOakDicom
             return bytes;
         }
 
-        protected override void ValidateString()
-        {
-            ValueRepresentation?.ValidateString(_value);
-        }
+        protected override void ValidateString() => ValueRepresentation?.ValidateString(StringValue);
 
         public override bool Equals(DicomElement other)
         {

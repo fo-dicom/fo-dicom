@@ -1,5 +1,6 @@
 ### 5.1.6 (TBD)
 - VOI LUT Function with empty value causes a crash (#1891)
+- DicomElement.ValueRepresentation.ValidateString() now throws a DicomValidationException if a null value is passed (#1590)
 
 ### 5.1.5 (2024-11-25)
 
