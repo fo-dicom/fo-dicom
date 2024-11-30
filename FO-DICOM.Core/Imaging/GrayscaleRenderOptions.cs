@@ -189,10 +189,15 @@ namespace FellowOakDicom.Imaging
                 return null;
             }
 
-            bool hasLut = dataset.TryGetValue(DicomTag.VOILUTFunction, 0, out string voiLutFunction);
             var functional = dataset.FunctionalGroupValues(frame);
-            bool hasLutF = functional.TryGetValue(DicomTag.VOILUTFunction, 0, out string voiLutFunctionF);
             var bits = BitDepth.FromDataset(dataset);
+
+            // #1891 VOI LUT Function with empty value causes a crash
+            if (!functional.TryGetValue(DicomTag.VOILUTFunction, 0, out string voiLutFunction)
+            && !dataset.TryGetValue(DicomTag.VOILUTFunction, 0, out voiLutFunction))
+            {
+                voiLutFunction = "LINEAR";
+            }
 
             var options = new GrayscaleRenderOptions(bits)
             {
@@ -209,14 +214,7 @@ namespace FellowOakDicom.Imaging
 
                 WindowWidth = windowWidth,
                 WindowCenter = windowCenter,
-
-                // #1891 VOI LUT Function with empty value causes a crash
-                VOILUTFunction = hasLut
-                    ? voiLutFunction
-                    : (hasLutF
-                    ? voiLutFunctionF
-                    : "LINEAR"),
-
+                VOILUTFunction = voiLutFunction,
                 ColorMap = GetColorMap(dataset)
             };
 
@@ -255,6 +253,13 @@ namespace FellowOakDicom.Imaging
                 return null;
             }
 
+            // #1891 VOI LUT Function with empty value causes a crash
+            if (!functional.TryGetValue(DicomTag.VOILUTFunction, 0, out string voiLutFunction)
+            && !dataset.TryGetValue(DicomTag.VOILUTFunction, 0, out voiLutFunction))
+            {
+                voiLutFunction = "LINEAR";
+            }
+
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
             {
@@ -271,12 +276,7 @@ namespace FellowOakDicom.Imaging
 
                 WindowWidth = windowWidth,
                 WindowCenter = windowCenter,
-
-                VOILUTFunction = dataset.Contains(DicomTag.VOILUTFunction)
-                    ? dataset.GetSingleValue<string>(DicomTag.VOILUTFunction)
-                    : functional.Contains(DicomTag.VOILUTFunction)
-                    ? functional.GetSingleValue<string>(DicomTag.VOILUTFunction)
-                    : "LINEAR",
+                VOILUTFunction = voiLutFunction,
                 ColorMap = GetColorMap(dataset)
             };
 
