@@ -48,7 +48,7 @@ jobs:
           name: test-v5-net-80.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet80.xml
     - name: Upload code coverage 
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
