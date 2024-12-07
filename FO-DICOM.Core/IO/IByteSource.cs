@@ -136,6 +136,8 @@ namespace FellowOakDicom.IO
         /// <returns>Awaitable byte buffer containing the read bytes.</returns>
         Task<IByteBuffer> GetBufferAsync(uint count);
 
+        void GoTo(long position);
+
         /// <summary>
         /// Skip position <paramref name="count"/> number of bytes.
         /// </summary>

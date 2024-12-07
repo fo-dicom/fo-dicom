@@ -398,7 +398,8 @@ namespace FellowOakDicom.IO.Reader
                         return false;
                     }
 
-                    source.Mark();
+                    // source.Mark();
+                    var markedPosition = source.Position;
 
                     if (source.GetBytes(vrMemory.Bytes, 0, 2) != 2 || !DicomVR.TryParse(vrMemory.Bytes, out vr))
                     {
@@ -411,7 +412,7 @@ namespace FellowOakDicom.IO.Reader
                         {
                             // unable to parse VR; rewind VR bytes for continued attempt to interpret the data.
                             vr = DicomVR.Implicit;
-                            source.Rewind();
+                            source.GoTo(markedPosition);
                         }
                     }
                 }
@@ -613,7 +614,7 @@ namespace FellowOakDicom.IO.Reader
                     }
                 }
 
-                var curIndex = source.Position;
+                var curPos = source.Position;
                 // Fix to handle sequence items not associated with any sequence (#364)
                 if (tag.Equals(DicomTag.Item))
                 {
@@ -628,7 +629,7 @@ namespace FellowOakDicom.IO.Reader
                     if (length == 0)
                     {
                         _implicit = false;
-                        source.PushMilestone((uint)(source.Position - curIndex));
+                        source.PushMilestone((uint)(source.Position - curPos));
                     }
                     else if (length != _undefinedLength)
                     {
@@ -759,7 +760,7 @@ namespace FellowOakDicom.IO.Reader
                     }
                 }
 
-                var curIndex = source.Position;
+                var curPos = source.Position;
                 // Fix to handle sequence items not associated with any sequence (#364)
                 if (tag.Equals(DicomTag.Item))
                 {
@@ -774,7 +775,7 @@ namespace FellowOakDicom.IO.Reader
                     if (length == 0)
                     {
                         _implicit = false;
-                        source.PushMilestone((uint)(source.Position - curIndex));
+                        source.PushMilestone((uint)(source.Position - curPos));
                     }
                     else if (length != _undefinedLength)
                     {
@@ -890,6 +891,9 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
+                    // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
+                    if (tag == DicomTag.SequenceDelimitationItem) continue;
+
                     if (!await ParseItemSequenceValueAsync(source, tag, length, sequenceDepth).ConfigureAwait(false))
                     {
                         return;
@@ -942,6 +946,7 @@ namespace FellowOakDicom.IO.Reader
                     // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
                     if (source.HasReachedMilestone() && source.MilestonesCount > sequenceDepth)
                     {
+                        source.PopMilestone();
                         return true;
                     }
 
