@@ -94,18 +94,8 @@ namespace FellowOakDicom.IO.Reader
         /// <summary>
         /// Support class performing the actual reading.
         /// </summary>
-        private class DicomReaderWorker
+        private sealed class DicomReaderWorker
         {
-            /// <summary>
-            /// Available parse stages.
-            /// </summary>
-            private enum ParseStage
-            {
-                Tag,
-                VR,
-                Length,
-                Value
-            }
 
             #region FIELDS
 
@@ -232,7 +222,8 @@ namespace FellowOakDicom.IO.Reader
                 using var vrMemory = _memoryProvider.Provide(2);
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
                 {
-                    if (!ParseTag(source, out tag, out var entry, sequenceDepth))
+                    var positionElement = source.Position;
+                    if (!ParseTag(source, out tag, out var entry, sequenceDepth, positionElement))
                     {
                         return;
                     }
@@ -244,7 +235,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
-                    if (!ParseValue(source, vrMemory, tag, vr, length, sequenceDepth))
+                    if (!ParseValue(source, vrMemory, tag, vr, length, sequenceDepth, positionElement))
                     {
                         return;
                     }
@@ -273,7 +264,8 @@ namespace FellowOakDicom.IO.Reader
                 using var vrMemory = _memoryProvider.Provide(2);
                 while (!source.IsEOF && !source.HasReachedMilestone() && _result == DicomReaderResult.Processing)
                 {
-                    if (!ParseTag(source, out var tag, out var entry, sequenceDepth))
+                    var positionElement = source.Position;
+                    if (!ParseTag(source, out var tag, out var entry, sequenceDepth, positionElement))
                     {
                         return tag;
                     }
@@ -285,7 +277,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return tag;
                     }
-                    if (!await ParseValueAsync(source, vrMemory, tag, vr, length, sequenceDepth).ConfigureAwait(false))
+                    if (!await ParseValueAsync(source, vrMemory, tag, vr, length, sequenceDepth, positionElement).ConfigureAwait(false))
                     {
                         return tag;
                     }
@@ -324,10 +316,11 @@ namespace FellowOakDicom.IO.Reader
             }
 
 
-            private bool ParseTag(IByteSource source, out DicomTag tag, out DicomDictionaryEntry entry, int sequenceDepth)
+            private bool ParseTag(IByteSource source, out DicomTag tag, out DicomDictionaryEntry entry, int sequenceDepth, long positionElement)
             {
                 tag = null;
                 entry = null;
+                // todo: remove
                 source.Mark();
 
                 if (!source.Require(4))
@@ -370,7 +363,9 @@ namespace FellowOakDicom.IO.Reader
                 if (_stop != null
                     && _stop(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }))
                 {
+                    // if a stop is requested, then move back to the beginning of the tag.
                     _result = DicomReaderResult.Stopped;
+                    source.GoTo(positionElement);
                     return false;
                 }
 
@@ -398,7 +393,7 @@ namespace FellowOakDicom.IO.Reader
                         return false;
                     }
 
-                    // source.Mark();
+                    source.Mark();
                     var markedPosition = source.Position;
 
                     if (source.GetBytes(vrMemory.Bytes, 0, 2) != 2 || !DicomVR.TryParse(vrMemory.Bytes, out vr))
@@ -570,7 +565,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseValue(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth)
+            private bool ParseValue(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth, long positionElement)
             {
                 // check dictionary for VR after reading length to handle 16-bit lengths
                 // check before reading value to handle SQ elements
@@ -618,7 +613,7 @@ namespace FellowOakDicom.IO.Reader
                 // Fix to handle sequence items not associated with any sequence (#364)
                 if (tag.Equals(DicomTag.Item))
                 {
-                    source.Rewind();
+                    source.GoTo(positionElement);
                     vr = DicomVR.SQ;
                 }
 
@@ -716,7 +711,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private async Task<bool> ParseValueAsync(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth)
+            private async Task<bool> ParseValueAsync(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth, long positionElement)
             {
                 // check dictionary for VR after reading length to handle 16-bit lengths
                 // check before reading value to handle SQ elements
@@ -764,7 +759,7 @@ namespace FellowOakDicom.IO.Reader
                 // Fix to handle sequence items not associated with any sequence (#364)
                 if (tag.Equals(DicomTag.Item))
                 {
-                    source.Rewind();
+                    source.GoTo(positionElement);
                     vr = DicomVR.SQ;
                 }
 
@@ -907,7 +902,9 @@ namespace FellowOakDicom.IO.Reader
             {
                 tag = null;
                 length = 0;
+                // todo: remove
                 source.Mark();
+                long positionItemSequence = source.Position;
 
                 if (!source.Require(8))
                 {
@@ -923,7 +920,7 @@ namespace FellowOakDicom.IO.Reader
                 if (tag != DicomTag.Item && tag != DicomTag.SequenceDelimitationItem)
                 {
                     // assume invalid sequence
-                    source.Rewind();
+                    source.GoTo(positionItemSequence);
                     if (!_implicit)
                     {
                         source.PopMilestone();
@@ -946,7 +943,7 @@ namespace FellowOakDicom.IO.Reader
                     // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
                     if (source.HasReachedMilestone() && source.MilestonesCount > sequenceDepth)
                     {
-                        source.PopMilestone();
+                        // source.PopMilestone();
                         return true;
                     }
 
@@ -1118,6 +1115,7 @@ namespace FellowOakDicom.IO.Reader
             private bool ParseFragmentSequenceTag(IByteSource source, out uint length)
             {
                 length = 0;
+                // todo: remove
                 source.Mark();
 
                 if (!source.Require(8))
@@ -1183,12 +1181,13 @@ namespace FellowOakDicom.IO.Reader
 
             private static bool IsPrivateSequence(IByteSource source)
             {
-                source.Mark();
-
+                // TODO: peek
+                var positionCurrent = source.Position;
                 try
                 {
                     var group = source.GetUInt16();
                     var element = source.GetUInt16();
+                    // TODO: do not initialte a DicomTag, but just 
                     var tag = new DicomTag(group, element);
 
                     if (tag == DicomTag.Item || tag == DicomTag.SequenceDelimitationItem)
@@ -1198,7 +1197,7 @@ namespace FellowOakDicom.IO.Reader
                 }
                 finally
                 {
-                    source.Rewind();
+                    source.GoTo(positionCurrent);
                 }
 
                 return false;
@@ -1206,8 +1205,7 @@ namespace FellowOakDicom.IO.Reader
 
             private bool IsPrivateSequenceBad(IByteSource source, uint count, bool isExplicitVR, IMemory vrMemory)
             {
-                source.Mark();
-
+                var positionCurrent = source.Position;
                 try
                 {
                     // Skip "item" tags; continue skipping until length is non-zero (#223)
@@ -1246,7 +1244,7 @@ namespace FellowOakDicom.IO.Reader
                 }
                 finally
                 {
-                    source.Rewind();
+                    source.GoTo(positionCurrent);
                 }
 
                 return false;

@@ -305,6 +305,15 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
+        public void GoTo(long position)
+        {
+            lock (_lock)
+            {
+                _position = position;
+                SwapBuffers();
+            }
+        }
+
         /// <inheritdoc />
         public void PushMilestone(uint count)
         {

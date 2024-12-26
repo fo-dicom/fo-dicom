@@ -334,9 +334,9 @@ namespace FellowOakDicom.IO.Reader
 
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
 
-                // rewind to last marker (start of previous tag)... ugly because 
-                // it requires knowledge of how the parser is implemented
-                source.Rewind();
+                //// rewind to last marker (start of previous tag)... ugly because 
+                //// it requires knowledge of how the parser is implemented
+                //source.Rewind();
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
@@ -410,9 +410,9 @@ namespace FellowOakDicom.IO.Reader
 
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
 
-                // rewind to last marker (start of previous tag)... ugly because 
-                // it requires knowledge of how the parser is implemented
-                source.Rewind();
+                //// rewind to last marker (start of previous tag)... ugly because 
+                //// it requires knowledge of how the parser is implemented
+                //source.Rewind();
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;

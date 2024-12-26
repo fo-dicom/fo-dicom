@@ -371,6 +371,8 @@ namespace FellowOakDicom.IO.Reader
                         && _stop(new ParseState { PreviousTag = _previousTag, Tag = _tag, SequenceDepth = _sequenceDepth }))
                     {
                         _result = DicomReaderResult.Stopped;
+                        // if a stop is requested, rewind to the start of the current tag.
+                        source.Rewind();
                         return false;
                     }
                     

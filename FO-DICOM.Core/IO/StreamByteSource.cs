@@ -192,6 +192,9 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public void Rewind() => _stream.Position = _mark;
 
+        public void GoTo(long position) => _stream.Position = position;
+
+
         /// <inheritdoc />
         public void PushMilestone(uint count)
         {

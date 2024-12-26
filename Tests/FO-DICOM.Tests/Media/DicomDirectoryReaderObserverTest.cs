@@ -178,6 +178,8 @@ namespace FellowOakDicom.Tests.Media
         public bool Require(uint count) => throw new NotImplementedException();
         public bool Require(uint count, ByteSourceCallback callback, object state) => throw new NotImplementedException();
         public void Rewind() => throw new NotImplementedException();
+
+        public void GoTo(long position) => throw new NotImplementedException();
         public Stream GetStream() => throw new NotImplementedException();
     }
 

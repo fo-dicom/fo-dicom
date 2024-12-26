@@ -91,7 +91,11 @@ namespace FellowOakDicom.IO
         public long Position => _stream.Position;
 
         /// <inheritdoc />
-        public long Marker { get; private set; }
+        public long Marker 
+        { 
+            get; 
+            private set; 
+        }
 
         /// <inheritdoc />
         public bool IsEOF => _stream.Position >= _length;
@@ -199,6 +203,8 @@ namespace FellowOakDicom.IO
 
         /// <inheritdoc />
         public void Rewind() => _stream.Position = Marker;
+
+        public void GoTo(long position) => _stream.Position = position;
 
         /// <inheritdoc />
         public void PushMilestone(uint count)

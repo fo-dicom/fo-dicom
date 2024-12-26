@@ -333,6 +333,13 @@ namespace FellowOakDicom.IO
             }
         }
 
+        public void GoTo(long position)
+        {
+            // TODO:
+            throw new NotImplementedException();
+        }
+
+
         /// <inheritdoc />
         public void PushMilestone(uint count) => _milestones.Push(Position + count);
 
