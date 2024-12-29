@@ -33,12 +33,12 @@ namespace FellowOakDicom.Tests.Media
 
             var byteSource = new TestByteSource();
             var observer = new DicomDirectoryReaderObserver(root.Sequence);
-            observer.OnBeginSequence(byteSource, DicomTag.DirectoryRecordSequence, 0);
+            observer.OnBeginSequence(byteSource, 0, DicomTag.DirectoryRecordSequence, 0);
             foreach (var container in allChildren)
             {
                 sequence.Items.Add(container.Sequence);
                 byteSource.Position = container.Offset + 10;
-                observer.OnBeginSequenceItem(byteSource, 0);
+                observer.OnBeginSequenceItem(byteSource, 0, 0);
                 observer.OnEndSequenceItem();
             }
             observer.OnEndSequence();
@@ -69,7 +69,7 @@ namespace FellowOakDicom.Tests.Media
 
             var byteSource = new TestByteSource();
             var observer = new DicomDirectoryReaderObserver(root.Sequence);
-            observer.OnBeginSequence(byteSource, DicomTag.DirectoryRecordSequence, 0);
+            observer.OnBeginSequence(byteSource, 0, DicomTag.DirectoryRecordSequence, 0);
             uint lastPosition = 0;
             foreach (var container in allChildren)
             {
@@ -83,7 +83,7 @@ namespace FellowOakDicom.Tests.Media
                 lastPosition = position;
 
                 byteSource.Position = position;
-                observer.OnBeginSequenceItem(byteSource, 0);
+                observer.OnBeginSequenceItem(byteSource, 0, 0);
                 observer.OnEndSequenceItem();
             }
             observer.OnEndSequence();
@@ -111,12 +111,12 @@ namespace FellowOakDicom.Tests.Media
 
             var byteSource = new TestByteSource();
             var observer = new DicomDirectoryReaderObserver(root.Sequence);
-            observer.OnBeginSequence(byteSource, DicomTag.DirectoryRecordSequence, 0);
+            observer.OnBeginSequence(byteSource, 0, DicomTag.DirectoryRecordSequence, 0);
             foreach (var container in allChildren)
             {
                 sequence.Items.Add(container.Sequence);
                 byteSource.Position = container.Offset + 8;
-                observer.OnBeginSequenceItem(byteSource, 0);
+                observer.OnBeginSequenceItem(byteSource, 0, 0);
                 observer.OnEndSequenceItem();
             }
             observer.OnEndSequence();

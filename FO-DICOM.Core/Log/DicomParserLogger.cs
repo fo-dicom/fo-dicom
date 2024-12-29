@@ -26,23 +26,23 @@ namespace FellowOakDicom.Log
             _pad = string.Empty;
         }
 
-        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data) =>
+        public void OnElement(IByteSource source, long position, DicomTag tag, DicomVR vr, IByteBuffer data) =>
             _log.Log(
                 _level,
                 "{Marker:x8}: {Padding}{Tag} {VrCode} {TagDictionaryEntryName} [{Size}]",
-                source.Marker,
+                position,
                 _pad,
                 tag,
                 vr.Code,
                 tag.DictionaryEntry.Name,
                 data.Size);
 
-        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        public void OnBeginSequence(IByteSource source, long position, DicomTag tag, uint length)
         {
             _log.Log(
                 _level,
                 "{Marker:x8}: {Padding}{Tag} {TagDictionaryEntryName} SQ {Length}",
-                source.Marker,
+                position,
                 _pad,
                 tag,
                 tag.DictionaryEntry.Name,
@@ -50,9 +50,9 @@ namespace FellowOakDicom.Log
             IncreaseDepth();
         }
 
-        public void OnBeginSequenceItem(IByteSource source, uint length)
+        public void OnBeginSequenceItem(IByteSource source, long position, uint length)
         {
-            _log.Log(_level, "{Marker:x8}: {Padding}Item:", source.Marker, _pad);
+            _log.Log(_level, "{Marker:x8}: {Padding}Item:", position, _pad);
             IncreaseDepth();
         }
 
@@ -60,12 +60,12 @@ namespace FellowOakDicom.Log
 
         public void OnEndSequence() => DecreaseDepth();
 
-        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
+        public void OnBeginFragmentSequence(IByteSource source, long position, DicomTag tag, DicomVR vr)
         {
             _log.Log(
                 _level,
                 "{Marker:x8}: {Padding}{Tag} {VrCode} {TagDictionaryEntryName}",
-                source.Marker,
+                position,
                 _pad,
                 tag,
                 vr.Code,
@@ -73,7 +73,7 @@ namespace FellowOakDicom.Log
             IncreaseDepth();
         }
 
-        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data) => _log.Log(_level, "{Marker:x8}: {Padding}Fragment [{Size}]", source.Marker, _pad, data?.Size ?? 0);
+        public void OnFragmentSequenceItem(IByteSource source, long position, IByteBuffer data) => _log.Log(_level, "{Marker:x8}: {Padding}Fragment [{Size}]", position, _pad, data?.Size ?? 0);
 
         public void OnEndFragmentSequence() => DecreaseDepth();
 

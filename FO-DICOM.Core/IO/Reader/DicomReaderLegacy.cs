@@ -642,7 +642,7 @@ namespace FellowOakDicom.IO.Reader
                     if (_vr == DicomVR.SQ)
                     {
                         // start of sequence
-                        _observer.OnBeginSequence(source, _tag, _length);
+                        _observer.OnBeginSequence(source, source.Marker, _tag, _length);
                         _parseStage = ParseStage.Tag;
                         if (_length == 0)
                         {
@@ -692,7 +692,7 @@ namespace FellowOakDicom.IO.Reader
 
                     if (_length == _undefinedLength)
                     {
-                        _observer.OnBeginFragmentSequence(source, _tag, _vr);
+                        _observer.OnBeginFragmentSequence(source, source.Marker, _tag, _vr);
                         _parseStage = ParseStage.Tag;
                         ParseFragmentSequence(source);
                         return true;
@@ -712,7 +712,7 @@ namespace FellowOakDicom.IO.Reader
                         {
                             buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
                         }
-                        _observer.OnElement(source, _tag, _vr, buffer);
+                        _observer.OnElement(source, source.Marker, _tag, _vr, buffer);
                     }
 
                     // parse private creator value and add to lookup table
@@ -798,7 +798,7 @@ namespace FellowOakDicom.IO.Reader
                     if (_vr == DicomVR.SQ)
                     {
                         // start of sequence
-                        _observer.OnBeginSequence(source, _tag, _length);
+                        _observer.OnBeginSequence(source, source.Marker, _tag, _length);
                         _parseStage = ParseStage.Tag;
                         if (_length == 0)
                         {
@@ -848,7 +848,7 @@ namespace FellowOakDicom.IO.Reader
 
                     if (_length == _undefinedLength)
                     {
-                        _observer.OnBeginFragmentSequence(source, _tag, _vr);
+                        _observer.OnBeginFragmentSequence(source, source.Marker, _tag, _vr);
                         _parseStage = ParseStage.Tag;
                         await ParseFragmentSequenceAsync(source).ConfigureAwait(false);
                         return true;
@@ -866,7 +866,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         buffer = EndianByteBuffer.Create(buffer, source.Endian, _vr.UnitSize);
                     }
-                    _observer.OnElement(source, _tag, _vr, buffer);
+                    _observer.OnElement(source, source.Marker, _tag, _vr, buffer);
 
                     // parse private creator value and add to lookup table
                     // according to
@@ -1009,7 +1009,7 @@ namespace FellowOakDicom.IO.Reader
                         source.PushMilestone(_length);
                     }
 
-                    _observer.OnBeginSequenceItem(source, _length);
+                    _observer.OnBeginSequenceItem(source, source.Marker, _length);
 
                     ResetState();
                     ++_sequenceDepth;
@@ -1054,7 +1054,7 @@ namespace FellowOakDicom.IO.Reader
                         source.PushMilestone(_length);
                     }
 
-                    _observer.OnBeginSequenceItem(source, _length);
+                    _observer.OnBeginSequenceItem(source, source.Marker, _length);
 
                     ResetState();
                     ++_sequenceDepth;
@@ -1209,7 +1209,7 @@ namespace FellowOakDicom.IO.Reader
 
                     var buffer = source.GetBuffer(_length);
                     buffer = EndianByteBuffer.Create(buffer, source.Endian, _fragmentItem == 1 ? 4 : _vr.UnitSize);
-                    _observer.OnFragmentSequenceItem(source, buffer);
+                    _observer.OnFragmentSequenceItem(source, source.Marker, buffer);
 
                     _parseStage = ParseStage.Tag;
                 }
@@ -1228,7 +1228,7 @@ namespace FellowOakDicom.IO.Reader
 
                     var buffer = await source.GetBufferAsync(_length).ConfigureAwait(false);
                     buffer = EndianByteBuffer.Create(buffer, source.Endian, _fragmentItem == 1 ? 4 : _vr.UnitSize);
-                    _observer.OnFragmentSequenceItem(source, buffer);
+                    _observer.OnFragmentSequenceItem(source, source.Marker, buffer);
 
                     _parseStage = ParseStage.Tag;
                 }

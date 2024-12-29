@@ -320,8 +320,6 @@ namespace FellowOakDicom.IO.Reader
             {
                 tag = null;
                 entry = null;
-                // todo: remove
-                source.Mark();
 
                 if (!source.Require(4))
                 {
@@ -393,7 +391,6 @@ namespace FellowOakDicom.IO.Reader
                         return false;
                     }
 
-                    source.Mark();
                     var markedPosition = source.Position;
 
                     if (source.GetBytes(vrMemory.Bytes, 0, 2) != 2 || !DicomVR.TryParse(vrMemory.Bytes, out vr))
@@ -620,7 +617,7 @@ namespace FellowOakDicom.IO.Reader
                 if (vr == DicomVR.SQ)
                 {
                     // start of sequence
-                    _observer.OnBeginSequence(source, tag, length);
+                    _observer.OnBeginSequence(source, positionElement, tag, length);
                     if (length == 0)
                     {
                         _implicit = false;
@@ -668,7 +665,7 @@ namespace FellowOakDicom.IO.Reader
 
                 if (length == _undefinedLength)
                 {
-                    _observer.OnBeginFragmentSequence(source, tag, vr);
+                    _observer.OnBeginFragmentSequence(source, positionElement, tag, vr);
                     ParseFragmentSequence(source, vr);
                     return true;
                 }
@@ -687,7 +684,7 @@ namespace FellowOakDicom.IO.Reader
                     {
                         buffer = EndianByteBuffer.Create(buffer, source.Endian, vr.UnitSize);
                     }
-                    _observer.OnElement(source, tag, vr, buffer);
+                    _observer.OnElement(source, positionElement, tag, vr, buffer);
                 }
 
                 // parse private creator value and add to lookup table
@@ -766,7 +763,7 @@ namespace FellowOakDicom.IO.Reader
                 if (vr == DicomVR.SQ)
                 {
                     // start of sequence
-                    _observer.OnBeginSequence(source, tag, length);
+                    _observer.OnBeginSequence(source, positionElement, tag, length);
                     if (length == 0)
                     {
                         _implicit = false;
@@ -814,7 +811,7 @@ namespace FellowOakDicom.IO.Reader
 
                 if (length == _undefinedLength)
                 {
-                    _observer.OnBeginFragmentSequence(source, tag, vr);
+                    _observer.OnBeginFragmentSequence(source, positionElement, tag, vr);
                     await ParseFragmentSequenceAsync(source, vr).ConfigureAwait(false);
                     return true;
                 }
@@ -831,7 +828,7 @@ namespace FellowOakDicom.IO.Reader
                 {
                     buffer = EndianByteBuffer.Create(buffer, source.Endian, vr.UnitSize);
                 }
-                _observer.OnElement(source, tag, vr, buffer);
+                _observer.OnElement(source, positionElement, tag, vr, buffer);
 
                 // parse private creator value and add to lookup table
                 // according to
@@ -860,6 +857,7 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF && !source.HasReachedMilestone())
                 {
+                    var positionItem = source.Position;
                     if (!ParseItemSequenceTag(source, out var tag, out var length, sequenceDepth))
                     {
                         return;
@@ -867,7 +865,7 @@ namespace FellowOakDicom.IO.Reader
                     // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
                     if (tag == DicomTag.SequenceDelimitationItem) continue;
 
-                    if (!ParseItemSequenceValue(source, tag, length, sequenceDepth))
+                    if (!ParseItemSequenceValue(source, tag, length, sequenceDepth, positionItem))
                     {
                         return;
                     }
@@ -882,6 +880,7 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF && !source.HasReachedMilestone())
                 {
+                    var positionItem = source.Position;
                     if (!ParseItemSequenceTag(source, out var tag, out var length, sequenceDepth))
                     {
                         return;
@@ -889,7 +888,7 @@ namespace FellowOakDicom.IO.Reader
                     // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
                     if (tag == DicomTag.SequenceDelimitationItem) continue;
 
-                    if (!await ParseItemSequenceValueAsync(source, tag, length, sequenceDepth).ConfigureAwait(false))
+                    if (!await ParseItemSequenceValueAsync(source, tag, length, sequenceDepth, positionItem).ConfigureAwait(false))
                     {
                         return;
                     }
@@ -902,8 +901,6 @@ namespace FellowOakDicom.IO.Reader
             {
                 tag = null;
                 length = 0;
-                // todo: remove
-                source.Mark();
                 long positionItemSequence = source.Position;
 
                 if (!source.Require(8))
@@ -962,7 +959,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseItemSequenceValue(IByteSource source, DicomTag tag, uint length, int sequenceDepth)
+            private bool ParseItemSequenceValue(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem)
             {
                 if (length != _undefinedLength)
                 {
@@ -975,7 +972,7 @@ namespace FellowOakDicom.IO.Reader
                     source.PushMilestone(length);
                 }
 
-                _observer.OnBeginSequenceItem(source, length);
+                _observer.OnBeginSequenceItem(source, positionItem, length);
 
                 ParseDataset(source, out _, sequenceDepth + 1);
                 // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
@@ -1000,7 +997,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private async Task<bool> ParseItemSequenceValueAsync(IByteSource source, DicomTag tag, uint length, int sequenceDepth)
+            private async Task<bool> ParseItemSequenceValueAsync(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem)
             {
                 if (length != _undefinedLength)
                 {
@@ -1013,7 +1010,7 @@ namespace FellowOakDicom.IO.Reader
                     source.PushMilestone(length);
                 }
 
-                _observer.OnBeginSequenceItem(source, length);
+                _observer.OnBeginSequenceItem(source, positionItem, length);
 
                 await ParseDatasetAsync(source, sequenceDepth +1).ConfigureAwait(false);
                 // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
@@ -1062,11 +1059,12 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF)
                 {
+                    var positionFragment = source.Position;
                     if (!ParseFragmentSequenceTag(source, out var length))
                     {
                         return;
                     }
-                    if (!ParseFragmentSequenceValue(source, vr, length))
+                    if (!ParseFragmentSequenceValue(source, vr, length, positionFragment))
                     {
                         return;
                     }
@@ -1090,11 +1088,12 @@ namespace FellowOakDicom.IO.Reader
 
                 while (!source.IsEOF)
                 {
+                    var positionFragment = source.Position;
                     if (!ParseFragmentSequenceTag(source, out var length))
                     {
                         return;
                     }
-                    if (!await ParseFragmentSequenceValueAsync(source, vr, length).ConfigureAwait(false))
+                    if (!await ParseFragmentSequenceValueAsync(source, vr, length, positionFragment).ConfigureAwait(false))
                     {
                         return;
                     }
@@ -1115,8 +1114,6 @@ namespace FellowOakDicom.IO.Reader
             private bool ParseFragmentSequenceTag(IByteSource source, out uint length)
             {
                 length = 0;
-                // todo: remove
-                source.Mark();
 
                 if (!source.Require(8))
                 {
@@ -1148,7 +1145,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseFragmentSequenceValue(IByteSource source, DicomVR vr, uint length)
+            private bool ParseFragmentSequenceValue(IByteSource source, DicomVR vr, uint length, long positionFragment)
             {
                 if (!source.Require(length))
                 {
@@ -1158,12 +1155,12 @@ namespace FellowOakDicom.IO.Reader
 
                 var buffer = source.GetBuffer(length);
                 buffer = EndianByteBuffer.Create(buffer, source.Endian, _fragmentItem == 1 ? 4 : vr.UnitSize);
-                _observer.OnFragmentSequenceItem(source, buffer);
+                _observer.OnFragmentSequenceItem(source, positionFragment, buffer);
 
                 return true;
             }
 
-            private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source, DicomVR vr, uint length)
+            private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source, DicomVR vr, uint length, long positionFragment)
             {
                 if (!source.Require(length))
                 {
@@ -1173,7 +1170,7 @@ namespace FellowOakDicom.IO.Reader
 
                 var buffer = await source.GetBufferAsync(length).ConfigureAwait(false);
                 buffer = EndianByteBuffer.Create(buffer, source.Endian, _fragmentItem == 1 ? 4 : vr.UnitSize);
-                _observer.OnFragmentSequenceItem(source, buffer);
+                _observer.OnFragmentSequenceItem(source, positionFragment, buffer);
 
                 return true;
             }

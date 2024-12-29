@@ -17,14 +17,14 @@ namespace FellowOakDicom.IO.Reader
             _observers = observers;
         }
 
-        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
-            => _observers.Each(observer => observer.OnElement(source, tag, vr, data));
+        public void OnElement(IByteSource source, long position, DicomTag tag, DicomVR vr, IByteBuffer data)
+            => _observers.Each(observer => observer.OnElement(source, position, tag, vr, data));
 
-        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
-            => _observers.Each(observer => observer.OnBeginSequence(source, tag, length));
+        public void OnBeginSequence(IByteSource source, long position, DicomTag tag, uint length)
+            => _observers.Each(observer => observer.OnBeginSequence(source, position, tag, length));
 
-        public void OnBeginSequenceItem(IByteSource source, uint length)
-            => _observers.Each(observer => observer.OnBeginSequenceItem(source, length));
+        public void OnBeginSequenceItem(IByteSource source, long position, uint length)
+            => _observers.Each(observer => observer.OnBeginSequenceItem(source, position, length));
 
         public void OnEndSequenceItem()
             => _observers.Each(observer => observer.OnEndSequenceItem());
@@ -32,11 +32,11 @@ namespace FellowOakDicom.IO.Reader
         public void OnEndSequence()
             => _observers.Each(observer => observer.OnEndSequence());
 
-        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
-            => _observers.Each(observer => observer.OnBeginFragmentSequence(source, tag, vr));
+        public void OnBeginFragmentSequence(IByteSource source, long position, DicomTag tag, DicomVR vr)
+            => _observers.Each(observer => observer.OnBeginFragmentSequence(source, position, tag, vr));
 
-        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
-            => _observers.Each(observer => observer.OnFragmentSequenceItem(source, data));
+        public void OnFragmentSequenceItem(IByteSource source, long position, IByteBuffer data)
+            => _observers.Each(observer => observer.OnFragmentSequenceItem(source, position, data));
 
         public void OnEndFragmentSequence()
             => _observers.Each(observer => observer.OnEndFragmentSequence());

@@ -159,12 +159,12 @@ namespace FellowOakDicom.Media
         #region IDicomReaderObserver Implementation
 
 
-        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
+        public void OnElement(IByteSource source, long position, DicomTag tag, DicomVR vr, IByteBuffer data)
         {
             // do nothing here
         }
 
-        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        public void OnBeginSequence(IByteSource source, long position, DicomTag tag, uint length)
         {
             _currentSequenceTag.Push(tag);
             if (tag == DicomTag.DirectoryRecordSequence)
@@ -173,7 +173,7 @@ namespace FellowOakDicom.Media
             }
         }
 
-        public void OnBeginSequenceItem(IByteSource source, uint length)
+        public void OnBeginSequenceItem(IByteSource source, long position, uint length)
         {
             if (_currentSequenceTag.Peek() == DicomTag.DirectoryRecordSequence && _directoryRecordSequence != null)
             {
@@ -191,12 +191,12 @@ namespace FellowOakDicom.Media
             _currentSequenceTag.Pop();
         }
 
-        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
+        public void OnBeginFragmentSequence(IByteSource source, long position, DicomTag tag, DicomVR vr)
         {
             // do nothing here
         }
 
-        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
+        public void OnFragmentSequenceItem(IByteSource source, long position, IByteBuffer data)
         {
             // do nothing here
         }
