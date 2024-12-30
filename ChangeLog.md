@@ -1,4 +1,6 @@
-### 5.1.6 (TBD)
+### 5.2.0 (TBD)
+- refactor the parser to make it better maintainable
+- **Breaking change**: IByteSource interface has changed
 - VOI LUT Function with empty value causes a crash (#1891)
 
 ### 5.1.5 (2024-11-25)
