@@ -3,6 +3,7 @@
 #nullable disable
 
 using BenchmarkDotNet.Attributes;
+using FellowOakDicom.IO.Reader;
 using System.IO;
 using System.Reflection;
 
@@ -35,19 +36,32 @@ namespace FellowOakDicom.Benchmark
 
 
         [Benchmark]
-        public object CT_LE_Implicit() => ParseHeader(_ctData);
+        public object CT_LE_Implicit() => ParseHeader(_ctData, false);
 
         [Benchmark]
-        public object MR_LE_Implicit() => ParseHeader(_mrData);
+        public object MR_LE_Implicit() => ParseHeader(_mrData, false);
 
         [Benchmark]
-        public object MG_LE_Explicit() => ParseHeader(_mgData);
+        public object MG_LE_Explicit() => ParseHeader(_mgData, false);
 
         [Benchmark]
-        public object DICOMDIR() => ParseHeader(_dicomdirData);
+        public object DICOMDIR() => ParseHeader(_dicomdirData, false);
 
-        public static object ParseHeader(Stream content)
+        [Benchmark]
+        public object CT_LE_Implicit_Legacy() => ParseHeader(_ctData, true);
+
+        [Benchmark]
+        public object MR_LE_Implicit_Legacy() => ParseHeader(_mrData, true);
+
+        [Benchmark]
+        public object MG_LE_Explicit_Legacy() => ParseHeader(_mgData, true);
+
+        [Benchmark]
+        public object DICOMDIR_Legacy() => ParseHeader(_dicomdirData, true);
+
+        public static object ParseHeader(Stream content, bool legacy)
         {
+            DicomFileReaderSettings.UseLegacyParser = legacy;
             content.Position = 0;
             var file = DicomFile.Open(content);
             return file;

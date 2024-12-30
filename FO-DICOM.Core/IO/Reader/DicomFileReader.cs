@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 namespace FellowOakDicom.IO.Reader
 {
 
+    public static class DicomFileReaderSettings
+    {
+        public static bool UseLegacyParser = false;
+    }
+
     /// <summary>
     /// Internal helperclass for reading DICOM file objects.
     /// </summary>
@@ -316,7 +321,15 @@ namespace FellowOakDicom.IO.Reader
                         }
                     });
 
-            var reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            IDicomReader reader;
+            if (DicomFileReaderSettings.UseLegacyParser)
+            {
+                reader = new DicomReaderLegacy(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            }
+            else
+            {
+                reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            }
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
@@ -386,7 +399,15 @@ namespace FellowOakDicom.IO.Reader
                         }
                     });
 
-            var reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            IDicomReader reader;
+            if (DicomFileReaderSettings.UseLegacyParser)
+            {
+                reader = new DicomReaderLegacy(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            }
+            else
+            {
+                reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
+            }
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)

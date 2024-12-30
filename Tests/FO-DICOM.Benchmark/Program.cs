@@ -12,8 +12,8 @@ namespace FellowOakDicom.Benchmark
         static void Main()
         {
             // Run all benchmarks in assembly
-            BenchmarkRunner.Run(typeof(Program).Assembly,
-//            BenchmarkRunner.Run<RenderImageBenchmark>(
+ //           BenchmarkRunner.Run(typeof(Program).Assembly,
+           BenchmarkRunner.Run<ParseDatasetBenchmark>(
                 ManualConfig.Create(DefaultConfig.Instance)
                 .WithOptions(ConfigOptions.JoinSummary)
                 .WithOptions(ConfigOptions.DisableOptimizationsValidator)
