@@ -112,21 +112,11 @@ namespace FellowOakDicom.IO.Reader
             private readonly Dictionary<uint, string> _private;
             private readonly IMemoryProvider _memoryProvider;
 
-            private bool _isExplicitVR;
+            private readonly bool _isExplicitVR;
 
             private readonly bool _isDeflated;
 
             private DicomReaderResult _result;
-
-            private bool _implicit;
-
-            private bool _badPrivateSequence;
-
-            private int _badPrivateSequenceDepth;
-
-            private int _fragmentItem;
-
-            private readonly object _locker;
 
             private DicomTag _previousTag;
 
@@ -153,7 +143,6 @@ namespace FellowOakDicom.IO.Reader
                 _isDeflated = isDeflated;
                 _private = @private;
                 _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
-                _locker = new object();
             }
 
             #endregion
@@ -168,7 +157,7 @@ namespace FellowOakDicom.IO.Reader
             internal DicomReaderResult DoWork(IByteSource source)
             {
                 source = ConvertSource(source);
-                ParseDataset(source, out DicomTag tag, 0, 0);
+                ParseDataset(source, out DicomTag tag, 0, 0, false);
 
                 if (tag == DicomTag.SequenceDelimitationItem && _result == DicomReaderResult.Processing && source.IsEOF)
                 {
@@ -186,7 +175,7 @@ namespace FellowOakDicom.IO.Reader
             internal async Task<DicomReaderResult> DoWorkAsync(IByteSource source)
             {
                 source = ConvertSource(source);
-                var tag = await ParseDatasetAsync(source, 0, 0).ConfigureAwait(false);
+                var tag = await ParseDatasetAsync(source, 0, 0, false).ConfigureAwait(false);
 
                 if (tag == DicomTag.SequenceDelimitationItem && _result == DicomReaderResult.Processing && source.IsEOF)
                 {
@@ -201,7 +190,7 @@ namespace FellowOakDicom.IO.Reader
                 return _isDeflated ? Decompress(source) : source;
             }
 
-            private void ParseDataset(IByteSource source, out DicomTag tag, int sequenceDepth, long positionEnd)
+            private void ParseDataset(IByteSource source, out DicomTag tag, int sequenceDepth, long positionEnd, bool handleBadPrivateSequence)
             {
                 tag = null;
                 _result = DicomReaderResult.Processing;
@@ -214,15 +203,15 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
-                    if (!ParseVR(source, vrMemory, ref tag, ref entry, out var vr))
+                    if (!ParseVR(source, vrMemory, ref tag, ref entry, out var vr, handleBadPrivateSequence))
                     {
                         return;
                     }
-                    if (!ParseLength(source, tag, ref vr, out var length))
+                    if (!ParseLength(source, tag, ref vr, out var length, handleBadPrivateSequence))
                     {
                         return;
                     }
-                    if (!ParseValue(source, vrMemory, tag, vr, length, sequenceDepth, positionElement, positionEnd))
+                    if (!ParseValue(source, vrMemory, tag, vr, length, sequenceDepth, positionElement, positionEnd, handleBadPrivateSequence))
                     {
                         return;
                     }
@@ -243,7 +232,7 @@ namespace FellowOakDicom.IO.Reader
                 _result = DicomReaderResult.Success;
             }
 
-            private async Task<DicomTag> ParseDatasetAsync(IByteSource source, int sequenceDepth, long positionEnd)
+            private async Task<DicomTag> ParseDatasetAsync(IByteSource source, int sequenceDepth, long positionEnd, bool handleBadPrivateSequence)
             {
                 _result = DicomReaderResult.Processing;
 
@@ -255,15 +244,15 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return tag;
                     }
-                    if (!ParseVR(source, vrMemory, ref tag, ref entry, out var vr))
+                    if (!ParseVR(source, vrMemory, ref tag, ref entry, out var vr, handleBadPrivateSequence))
                     {
                         return tag;
                     }
-                    if (!ParseLength(source, tag, ref vr, out var length))
+                    if (!ParseLength(source, tag, ref vr, out var length, handleBadPrivateSequence))
                     {
                         return tag;
                     }
-                    if (!await ParseValueAsync(source, vrMemory, tag, vr, length, sequenceDepth, positionElement, positionEnd).ConfigureAwait(false))
+                    if (!await ParseValueAsync(source, vrMemory, tag, vr, length, sequenceDepth, positionElement, positionEnd, handleBadPrivateSequence).ConfigureAwait(false))
                     {
                         return tag;
                     }
@@ -320,16 +309,13 @@ namespace FellowOakDicom.IO.Reader
                 // http://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.8.html
                 // The requirements of this section do not allow any use of elements in the ranges 
                 // (gggg,0001-000F) and (gggg,0100-0FFF) where gggg is odd.
-                // So element at [0x0100-0x0FFF] should not has a creator
+                // So element at [0x0100-0x0FFF] should not have a creator
                 if (@group.IsOdd() && element >= 0x1000)
                 {
                     var card = (uint)(@group << 16) + (uint)(element >> 8);
-                    lock (_locker)
+                    if (_private.TryGetValue(card, out string pvt))
                     {
-                        if (_private.TryGetValue(card, out string pvt))
-                        {
-                            creator = _dictionary.GetPrivateCreator(pvt);
-                        }
+                        creator = _dictionary.GetPrivateCreator(pvt);
                     }
                 }
 
@@ -343,8 +329,7 @@ namespace FellowOakDicom.IO.Reader
                     tag = entry.Tag; // Use dictionary tag
                 }
 
-                if (_stop != null
-                    && _stop(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }))
+                if (_stop?.Invoke(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }) ?? false)
                 {
                     // if a stop is requested, then move back to the beginning of the tag.
                     _result = DicomReaderResult.Stopped;
@@ -357,7 +342,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseVR(IByteSource source, IMemory vrMemory, ref DicomTag tag, ref DicomDictionaryEntry entry, out DicomVR vr)
+            private bool ParseVR(IByteSource source, IMemory vrMemory, ref DicomTag tag, ref DicomDictionaryEntry entry, out DicomVR vr, bool handleBadPrivateSequence)
             {
                 vr = null;
                 if (tag == DicomTag.Item || tag == DicomTag.ItemDelimitationItem
@@ -367,7 +352,7 @@ namespace FellowOakDicom.IO.Reader
                     return true;
                 }
 
-                if (_isExplicitVR || _badPrivateSequence)
+                if (_isExplicitVR || handleBadPrivateSequence)
                 {
                     if (!source.Require(2))
                     {
@@ -413,10 +398,7 @@ namespace FellowOakDicom.IO.Reader
                     }
                 }
 
-                if (vr == null)
-                {
-                    vr = DicomVR.UN;
-                }
+                vr ??= DicomVR.UN;
 
                 if (vr == DicomVR.UN)
                 {
@@ -426,10 +408,10 @@ namespace FellowOakDicom.IO.Reader
                         // change 20161216: if changing from UN to UL then ParseLength causes a error, since length in UL is 2 bytes while length in UN is 6 bytes. 
                         // so the source hat UN and coded the length in 6 bytes. if here the VR was changed to UL then ParseLength would only read 2 bytes and the parser is then wrong.
                         // but no worry: in ParseValue in the first lines there is a lookup in the Dictionary of DicomTags and there the VR is changed to UL so that the value is finally interpreted correctly as UL.
-                        // _vr = DicomVR.UL;
+                        vr = DicomVR.UL;
                         return true;
                     }
-                    if (_isExplicitVR)
+                    if (_isExplicitVR ^ handleBadPrivateSequence)
                     {
                         return true;
                     }
@@ -449,7 +431,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseLength(IByteSource source, DicomTag tag, ref DicomVR vr, out uint length)
+            private bool ParseLength(IByteSource source, DicomTag tag, ref DicomVR vr, out uint length, bool handleBadPrivateSequence)
             {
                 length = 0;
                 if (tag == DicomTag.Item || tag == DicomTag.ItemDelimitationItem
@@ -465,7 +447,7 @@ namespace FellowOakDicom.IO.Reader
                     return true;
                 }
 
-                if (_isExplicitVR || _badPrivateSequence)
+                if (_isExplicitVR || handleBadPrivateSequence)
                 {
                     if (vr == DicomVR.Implicit)
                     {
@@ -547,7 +529,7 @@ namespace FellowOakDicom.IO.Reader
                 return true;
             }
 
-            private bool ParseValue(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth, long positionElement, long positionEnd)
+            private bool ParseValue(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth, long positionElement, long positionEnd, bool handleBadPrivateSequence)
             {
                 // check dictionary for VR after reading length to handle 16-bit lengths
                 // check before reading value to handle SQ elements
@@ -555,7 +537,7 @@ namespace FellowOakDicom.IO.Reader
 
                 // check dictionary for VR after reading length to handle 16-bit lengths
                 // check before reading value to handle SQ elements
-                if (vr == DicomVR.Implicit || (vr == DicomVR.UN && _isExplicitVR))
+                if (vr == DicomVR.Implicit || (vr == DicomVR.UN && (_isExplicitVR ^ handleBadPrivateSequence)))
                 {
                     var entry = _dictionary[tag];
                     if (entry != null)
@@ -563,10 +545,7 @@ namespace FellowOakDicom.IO.Reader
                         vr = entry.ValueRepresentations.FirstOrDefault();
                     }
 
-                    if (vr == null)
-                    {
-                        vr = DicomVR.UN;
-                    }
+                    vr ??= DicomVR.UN;
                 }
 
                 if (tag == DicomTag.ItemDelimitationItem || tag == DicomTag.SequenceDelimitationItem)
@@ -583,11 +562,7 @@ namespace FellowOakDicom.IO.Reader
                     }
                     else if (IsPrivateSequenceBad(source, length, _isExplicitVR, vrMemory))
                     {
-                        _badPrivateSequence = true;
-                        // store the depth of the bad sequence, we only want to switch back once we've processed
-                        // the entire sequence, regardless of any sub-sequences.
-                        _badPrivateSequenceDepth = sequenceDepth;
-                        _isExplicitVR = !_isExplicitVR;
+                        handleBadPrivateSequence = true;
                     }
                 }
 
@@ -606,25 +581,19 @@ namespace FellowOakDicom.IO.Reader
                     _observer.OnBeginSequence(source, positionElement, tag, length);
                     if (length == 0)
                     {
-                        _implicit = false;
                         endOfValue = source.Position;
                     }
                     else if (length != _undefinedLength)
                     {
-                        _implicit = false;
                         endOfValue = source.Position + length;
                     }
-                    else
-                    {
-                        _implicit = true;
-                    }
+
                     var last = source.Position;
 
                     // Conformance with CP-246 (#177)
                     var needtoChangeEndian = false;
                     if (parsedVR == DicomVR.UN && !tag.IsPrivate)
                     {
-                        _implicit = true;
                         needtoChangeEndian = source.Endian == Endian.Big;
                     }
                     if (needtoChangeEndian)
@@ -632,7 +601,7 @@ namespace FellowOakDicom.IO.Reader
                         source.Endian = Endian.Little;
                     }
 
-                    ParseItemSequence(source, sequenceDepth, endOfValue);
+                    ParseItemSequence(source, sequenceDepth, endOfValue, handleBadPrivateSequence);
 
                     if (needtoChangeEndian)
                     {
@@ -685,16 +654,13 @@ namespace FellowOakDicom.IO.Reader
                             .TrimEnd((char)DicomVR.LO.PaddingValue);
                     var card = (uint)(tag.Group << 16) + tag.Element;
 
-                    lock (_locker)
-                    {
-                        _private[card] = creator;
-                    }
+                    _private[card] = creator;
                 }
 
                 return true;
             }
 
-            private async Task<bool> ParseValueAsync(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth, long positionElement, long positionEnd)
+            private async Task<bool> ParseValueAsync(IByteSource source, IMemory vrMemory, DicomTag tag, DicomVR vr, uint length, int sequenceDepth, long positionElement, long positionEnd, bool handleBadPrivateSequence)
             {
                 // check dictionary for VR after reading length to handle 16-bit lengths
                 // check before reading value to handle SQ elements
@@ -702,7 +668,7 @@ namespace FellowOakDicom.IO.Reader
 
                 // check dictionary for VR after reading length to handle 16-bit lengths
                 // check before reading value to handle SQ elements
-                if (vr == DicomVR.Implicit || (vr == DicomVR.UN && _isExplicitVR))
+                if (vr == DicomVR.Implicit || (vr == DicomVR.UN && (_isExplicitVR ^ handleBadPrivateSequence)))
                 {
                     var entry = _dictionary[tag];
                     if (entry != null)
@@ -710,10 +676,7 @@ namespace FellowOakDicom.IO.Reader
                         vr = entry.ValueRepresentations.FirstOrDefault();
                     }
 
-                    if (vr == null)
-                    {
-                        vr = DicomVR.UN;
-                    }
+                    vr ??= DicomVR.UN;
                 }
 
                 if (tag == DicomTag.ItemDelimitationItem || tag == DicomTag.SequenceDelimitationItem)
@@ -730,11 +693,7 @@ namespace FellowOakDicom.IO.Reader
                     }
                     else if (IsPrivateSequenceBad(source, length, _isExplicitVR, vrMemory))
                     {
-                        _badPrivateSequence = true;
-                        // store the depth of the bad sequence, we only want to switch back once we've processed
-                        // the entire sequence, regardless of any sub-sequences.
-                        _badPrivateSequenceDepth = sequenceDepth;
-                        _isExplicitVR = !_isExplicitVR;
+                        handleBadPrivateSequence = true;
                     }
                 }
 
@@ -753,25 +712,19 @@ namespace FellowOakDicom.IO.Reader
                     _observer.OnBeginSequence(source, positionElement, tag, length);
                     if (length == 0)
                     {
-                        _implicit = false;
                         endOfValue = source.Position;
                     }
                     else if (length != _undefinedLength)
                     {
-                        _implicit = false;
                         endOfValue = source.Position + length;
                     }
-                    else
-                    {
-                        _implicit = true;
-                    }
+
                     var last = source.Position;
 
                     // Conformance with CP-246 (#177)
                     var needtoChangeEndian = false;
                     if (parsedVR == DicomVR.UN && !tag.IsPrivate)
                     {
-                        _implicit = true;
                         needtoChangeEndian = source.Endian == Endian.Big;
                     }
                     if (needtoChangeEndian)
@@ -779,7 +732,7 @@ namespace FellowOakDicom.IO.Reader
                         source.Endian = Endian.Little;
                     }
 
-                    await ParseItemSequenceAsync(source, sequenceDepth, endOfValue).ConfigureAwait(false);
+                    await ParseItemSequenceAsync(source, sequenceDepth, endOfValue, handleBadPrivateSequence).ConfigureAwait(false);
 
                     if (needtoChangeEndian)
                     {
@@ -829,62 +782,67 @@ namespace FellowOakDicom.IO.Reader
                             .TrimEnd((char)DicomVR.LO.PaddingValue);
                     var card = (uint)(tag.Group << 16) + tag.Element;
 
-                    lock (_locker)
-                    {
-                        _private[card] = creator;
-                    }
+                    _private[card] = creator;
                 }
 
                 return true;
             }
 
-            private void ParseItemSequence(IByteSource source, int sequenceDepth, long positionOfValueEnd)
+            private void ParseItemSequence(IByteSource source, int sequenceDepth, long positionOfValueEnd, bool handleBadPrivateSequence)
             {
                 _result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && (positionOfValueEnd == 0 || source.Position < positionOfValueEnd))
                 {
                     var positionItem = source.Position;
-                    if (!ParseItemSequenceTag(source, out var tag, out var length, sequenceDepth, positionOfValueEnd))
+                    if (!ParseItemSequenceTag(source, out var tag, out var length, positionOfValueEnd))
                     {
                         return;
                     }
                     // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
-                    if (tag == DicomTag.SequenceDelimitationItem) continue;
+                    if (tag == DicomTag.SequenceDelimitationItem)
+                    {
+                        continue;
+                    }
 
-                    if (!ParseItemSequenceValue(source, tag, length, sequenceDepth, positionItem, positionOfValueEnd))
+                    if (!ParseItemSequenceValue(source, tag, length, sequenceDepth, positionItem, positionOfValueEnd, handleBadPrivateSequence))
                     {
                         return;
                     }
                 }
 
-                ParseItemSequencePostProcess(source, sequenceDepth);
+                // end of explicit length sequence
+                _observer.OnEndSequence();
             }
 
-            private async Task ParseItemSequenceAsync(IByteSource source, int sequenceDepth, long endOfValue)
+            private async Task ParseItemSequenceAsync(IByteSource source, int sequenceDepth, long endOfValue, bool handleBadPrivateSequence)
             {
                 _result = DicomReaderResult.Processing;
 
                 while (!source.IsEOF && (endOfValue == 0 || source.Position < endOfValue))
                 {
                     var positionItem = source.Position;
-                    if (!ParseItemSequenceTag(source, out var tag, out var length, sequenceDepth, endOfValue))
+                    if (!ParseItemSequenceTag(source, out var tag, out var length, endOfValue))
                     {
                         return;
                     }
                     // #64, in case explicit length has been specified despite occurrence of Sequence Delimitation Item
-                    if (tag == DicomTag.SequenceDelimitationItem) continue;
+                    if (tag == DicomTag.SequenceDelimitationItem)
+                    {
+                        continue;
+                    }
 
-                    if (!await ParseItemSequenceValueAsync(source, tag, length, sequenceDepth, positionItem, endOfValue).ConfigureAwait(false))
+                    if (!await ParseItemSequenceValueAsync(source, tag, length, sequenceDepth, positionItem, endOfValue, handleBadPrivateSequence).ConfigureAwait(false))
                     {
                         return;
                     }
                 }
 
-                ParseItemSequencePostProcess(source, sequenceDepth);
+                // end of explicit length sequence
+                _observer.OnEndSequence();
             }
 
-            private bool ParseItemSequenceTag(IByteSource source, out DicomTag tag, out uint length, int sequenceDepth, long endOfValue)
+            private bool ParseItemSequenceTag(IByteSource source, out DicomTag tag, out uint length, long endOfValue)
             {
                 tag = null;
                 length = 0;
@@ -905,18 +863,7 @@ namespace FellowOakDicom.IO.Reader
                 {
                     // assume invalid sequence
                     source.GoTo(positionItemSequence);
-                    if (!_implicit)
-                    {
-                        // source.PopMilestone();
-                    }
                     _observer.OnEndSequence();
-                    // #565 Only reset the badPrivate sequence if we're in the correct depth
-                    // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
-                    if (_badPrivateSequence && sequenceDepth == _badPrivateSequenceDepth)
-                    {
-                        _isExplicitVR = !_isExplicitVR;
-                        _badPrivateSequence = false;
-                    }
                     return false;
                 }
 
@@ -932,20 +879,13 @@ namespace FellowOakDicom.IO.Reader
 
                     // end of sequence
                     _observer.OnEndSequence();
-                    // #565 Only reset the badPrivate sequence if we're in the correct depth
-                    // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
-                    if (_badPrivateSequence && sequenceDepth == _badPrivateSequenceDepth)
-                    {
-                        _isExplicitVR = !_isExplicitVR;
-                        _badPrivateSequence = false;
-                    }
                     return false;
                 }
 
                 return true;
             }
 
-            private bool ParseItemSequenceValue(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem, long positionOfValueEnd)
+            private bool ParseItemSequenceValue(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem, long positionOfValueEnd, bool handleBadPrivateSequence)
             {
                 long endOfValue = positionOfValueEnd;
                 if (length != _undefinedLength)
@@ -961,7 +901,7 @@ namespace FellowOakDicom.IO.Reader
 
                 _observer.OnBeginSequenceItem(source, positionItem, length);
 
-                ParseDataset(source, out _, sequenceDepth + 1, endOfValue);
+                ParseDataset(source, out _, sequenceDepth + 1, endOfValue, handleBadPrivateSequence);
                 // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
                 bool isEndSequence = (tag == DicomTag.SequenceDelimitationItem);
 
@@ -971,20 +911,13 @@ namespace FellowOakDicom.IO.Reader
                 {
                     // end of sequence
                     _observer.OnEndSequence();
-                    // #565 Only reset the badPrivate sequence if we're in the correct depth
-                    // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
-                    if (_badPrivateSequence && sequenceDepth == _badPrivateSequenceDepth)
-                    {
-                        _isExplicitVR = !_isExplicitVR;
-                        _badPrivateSequence = false;
-                    }
                     return false;
                 }
 
                 return true;
             }
 
-            private async Task<bool> ParseItemSequenceValueAsync(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem, long positionEndOfValue)
+            private async Task<bool> ParseItemSequenceValueAsync(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem, long positionEndOfValue, bool handleBadPrivateSequence)
             {
                 long endOfValue = positionEndOfValue;
                 if (length != _undefinedLength)
@@ -1000,7 +933,7 @@ namespace FellowOakDicom.IO.Reader
 
                 _observer.OnBeginSequenceItem(source, positionItem, length);
 
-                await ParseDatasetAsync(source, sequenceDepth +1, endOfValue).ConfigureAwait(false);
+                await ParseDatasetAsync(source, sequenceDepth + 1, endOfValue, handleBadPrivateSequence).ConfigureAwait(false);
                 // bugfix k-pacs. there a sequence was not ended by ItemDelimitationItem>SequenceDelimitationItem, but directly with SequenceDelimitationItem
                 bool isEndSequence = (tag == DicomTag.SequenceDelimitationItem);
 
@@ -1010,37 +943,17 @@ namespace FellowOakDicom.IO.Reader
                 {
                     // end of sequence
                     _observer.OnEndSequence();
-                    // #565 Only reset the badPrivate sequence if we're in the correct depth
-                    // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
-                    if (_badPrivateSequence && sequenceDepth == _badPrivateSequenceDepth)
-                    {
-                        _isExplicitVR = !_isExplicitVR;
-                        _badPrivateSequence = false;
-                    }
                     return false;
                 }
 
                 return true;
             }
 
-            private void ParseItemSequencePostProcess(IByteSource source, int sequenceDepth)
-            {
-                // end of explicit length sequence
-
-                _observer.OnEndSequence();
-                // #565 Only reset the badPrivate sequence if we're in the correct depth
-                // This prevents prematurely resetting in case of sub-sequences contained in the bad private sequence
-                if (_badPrivateSequence && sequenceDepth == _badPrivateSequenceDepth)
-                {
-                    _isExplicitVR = !_isExplicitVR;
-                    _badPrivateSequence = false;
-                }
-            }
-
             private void ParseFragmentSequence(IByteSource source, DicomVR vr)
             {
                 _result = DicomReaderResult.Processing;
 
+                bool isFirstFragment = true;
                 while (!source.IsEOF)
                 {
                     var positionFragment = source.Position;
@@ -1048,10 +961,12 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
-                    if (!ParseFragmentSequenceValue(source, vr, length, positionFragment))
+                    if (!ParseFragmentSequenceValue(source, vr, length, positionFragment, isFirstFragment))
                     {
                         return;
                     }
+
+                    isFirstFragment = false;
 
                     /*
                      * #1339
@@ -1070,6 +985,7 @@ namespace FellowOakDicom.IO.Reader
             {
                 _result = DicomReaderResult.Processing;
 
+                bool isFirstFragment = true;
                 while (!source.IsEOF)
                 {
                     var positionFragment = source.Position;
@@ -1077,10 +993,12 @@ namespace FellowOakDicom.IO.Reader
                     {
                         return;
                     }
-                    if (!await ParseFragmentSequenceValueAsync(source, vr, length, positionFragment).ConfigureAwait(false))
+                    if (!await ParseFragmentSequenceValueAsync(source, vr, length, positionFragment, isFirstFragment).ConfigureAwait(false))
                     {
                         return;
                     }
+
+                    isFirstFragment = false;
 
                     /*
                      * #1339
@@ -1108,28 +1026,26 @@ namespace FellowOakDicom.IO.Reader
                 var group = source.GetUInt16();
                 var element = source.GetUInt16();
 
-                var tag = new DicomTag(@group, element);
-
-                if (tag != DicomTag.Item && tag != DicomTag.SequenceDelimitationItem)
+                if ((group, element) == (DicomTag.Item.Group, DicomTag.Item.Element))
                 {
-                    throw new DicomReaderException($"Unexpected tag in DICOM fragment sequence: {tag}");
+                    length = source.GetUInt32();
+                    return true;
                 }
-
-                length = source.GetUInt32();
-
-                if (tag == DicomTag.SequenceDelimitationItem)
+                else if ((group, element) == (DicomTag.SequenceDelimitationItem.Group, DicomTag.SequenceDelimitationItem.Element))
                 {
+                    length = source.GetUInt32();
+
                     // end of fragment
                     _observer.OnEndFragmentSequence();
-                    _fragmentItem = 0;
                     return false;
                 }
-
-                _fragmentItem++;
-                return true;
+                else
+                {
+                    throw new DicomReaderException($"Unexpected tag in DICOM fragment sequence: {new DicomTag(group, element)}");
+                }
             }
 
-            private bool ParseFragmentSequenceValue(IByteSource source, DicomVR vr, uint length, long positionFragment)
+            private bool ParseFragmentSequenceValue(IByteSource source, DicomVR vr, uint length, long positionFragment, bool firstFragment)
             {
                 if (!source.Require(length))
                 {
@@ -1138,13 +1054,13 @@ namespace FellowOakDicom.IO.Reader
                 }
 
                 var buffer = source.GetBuffer(length);
-                buffer = EndianByteBuffer.Create(buffer, source.Endian, _fragmentItem == 1 ? 4 : vr.UnitSize);
+                buffer = EndianByteBuffer.Create(buffer, source.Endian, firstFragment ? 4 : vr.UnitSize);
                 _observer.OnFragmentSequenceItem(source, positionFragment, buffer);
 
                 return true;
             }
 
-            private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source, DicomVR vr, uint length, long positionFragment)
+            private async Task<bool> ParseFragmentSequenceValueAsync(IByteSource source, DicomVR vr, uint length, long positionFragment, bool firstFragment)
             {
                 if (!source.Require(length))
                 {
@@ -1153,7 +1069,7 @@ namespace FellowOakDicom.IO.Reader
                 }
 
                 var buffer = await source.GetBufferAsync(length).ConfigureAwait(false);
-                buffer = EndianByteBuffer.Create(buffer, source.Endian, _fragmentItem == 1 ? 4 : vr.UnitSize);
+                buffer = EndianByteBuffer.Create(buffer, source.Endian, firstFragment ? 4 : vr.UnitSize);
                 _observer.OnFragmentSequenceItem(source, positionFragment, buffer);
 
                 return true;
@@ -1168,10 +1084,11 @@ namespace FellowOakDicom.IO.Reader
                 {
                     var group = source.GetUInt16();
                     var element = source.GetUInt16();
-                    // TODO: do not initialte a DicomTag, but just 
-                    var tag = new DicomTag(group, element);
-
-                    if (tag == DicomTag.Item || tag == DicomTag.SequenceDelimitationItem)
+                    if (
+                        (group, element) == (DicomTag.Item.Group, DicomTag.Item.Element)
+                        ||
+                        (group, element) == (DicomTag.SequenceDelimitationItem.Group, DicomTag.SequenceDelimitationItem.Element)
+                        )
                     {
                         return true;
                     }
@@ -1213,7 +1130,7 @@ namespace FellowOakDicom.IO.Reader
                     source.GetUInt16(); // group
                     source.GetUInt16(); // element
 
-                    if (source.GetBytes(vrMemory.Bytes, 0, 2) == 2 && DicomVR.TryParse(vrMemory.Bytes, out DicomVR dummy))
+                    if (source.GetBytes(vrMemory.Bytes, 0, 2) == 2 && DicomVR.TryParse(vrMemory.Bytes, out DicomVR _))
                     {
                         return !isExplicitVR;
                     }

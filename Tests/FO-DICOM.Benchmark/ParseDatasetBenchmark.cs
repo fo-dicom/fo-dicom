@@ -36,18 +36,6 @@ namespace FellowOakDicom.Benchmark
 
 
         [Benchmark]
-        public object CT_LE_Implicit() => ParseHeader(_ctData, false);
-
-        [Benchmark]
-        public object MR_LE_Implicit() => ParseHeader(_mrData, false);
-
-        [Benchmark]
-        public object MG_LE_Explicit() => ParseHeader(_mgData, false);
-
-        [Benchmark]
-        public object DICOMDIR() => ParseHeader(_dicomdirData, false);
-
-        [Benchmark]
         public object CT_LE_Implicit_Legacy() => ParseHeader(_ctData, true);
 
         [Benchmark]
@@ -58,6 +46,18 @@ namespace FellowOakDicom.Benchmark
 
         [Benchmark]
         public object DICOMDIR_Legacy() => ParseHeader(_dicomdirData, true);
+
+        [Benchmark]
+        public object CT_LE_Implicit() => ParseHeader(_ctData, false);
+
+        [Benchmark]
+        public object MR_LE_Implicit() => ParseHeader(_mrData, false);
+
+        [Benchmark]
+        public object MG_LE_Explicit() => ParseHeader(_mgData, false);
+
+        [Benchmark]
+        public object DICOMDIR() => ParseHeader(_dicomdirData, false);
 
         public static object ParseHeader(Stream content, bool legacy)
         {
