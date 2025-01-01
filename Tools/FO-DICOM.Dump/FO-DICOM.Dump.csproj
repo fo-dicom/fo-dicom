@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Codecs" Version="5.13.0" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.15.4" />
   </ItemGroup>
 
   <ItemGroup>
