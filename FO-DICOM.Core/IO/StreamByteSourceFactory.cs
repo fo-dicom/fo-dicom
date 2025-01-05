@@ -27,7 +27,10 @@ namespace FellowOakDicom.IO
                 return new StreamByteSource(stream, readOption, largeObjectSize);
             }
 
-            return new StreamByteSource(new ReadBufferedStream(stream, 2*1024), readOption, largeObjectSize);
+            // in case of unseekable stream, we need to add a buffer as wrapper. This allow the parser to do the necesarry seek-operations.
+            // a buffer-size of 4096 should be appropriate.
+            // and because there is a buffer in between, the FileReadOption.ReadLargeOnDemand is not supported there.
+            return new StreamByteSource(new ReadBufferedStream(stream, 4096), readOption == FileReadOption.SkipLargeTags ? FileReadOption.SkipLargeTags : FileReadOption.ReadAll, largeObjectSize);
         }
     }
 }

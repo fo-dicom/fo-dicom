@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2023 fo-dicom contributors.
+﻿// Copyright (c) 2012-2025 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
@@ -7,9 +7,26 @@ using System.IO;
 
 namespace FellowOakDicom.IO
 {
-
+    /// <summary>
+    /// This class is a buffered read-only wrapper around another stream. 
+    /// The parser requires to seek within the stream, so when reading from an unseekable stream, such a buffer is necessary.
+    /// Because the parser does not jump very wide, a small buffer is just fine.
+    /// </summary>
     public class ReadBufferedStream : Stream
     {
+        /*  .............................................    underlying stream
+         *       [++++++++++++][++++++++++++]               seekbackbuffer and seekcurrentbuffer
+         *                |                 |
+         *      seekbackbufferposition    underlyingposition
+         *      
+         * this stream is a cyclic buffer. when reading from the underlying (unseekable) buffer, then 
+         * always a array of SeekBackBufferSize is read. But because seeking back also should always
+         * be possible, there are two such buffers. so when the current read-position (SeekBackBufferPosition) reaches the
+         * end of the buffers close to the underlyingposition, then the SeekCurrentBuffer is set to the SeekBackBuffer and
+         * the next data is loaded into SeekCurrentBuffer.
+         * With that, a seek back by SeekBackBufferSize bytes is always possible.
+         */
+
         private long _underlyingPosition;
         private long _underlyingLastReadPosition;
         private long _seekBackBufferPosition;

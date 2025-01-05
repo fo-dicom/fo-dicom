@@ -121,6 +121,10 @@ namespace FellowOakDicom.IO
         /// <returns>Awaitable byte buffer containing the read bytes.</returns>
         Task<IByteBuffer> GetBufferAsync(uint count);
 
+        /// <summary>
+        /// Sets the current read position to the position <paramref name="position"/>
+        /// </summary>
+        /// <param name="position">the position to seek to</param>
         void GoTo(long position);
 
         /// <summary>

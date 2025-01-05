@@ -673,10 +673,8 @@ namespace FellowOakDicom.IO.Reader
                     var entry = _dictionary[tag];
                     if (entry != null)
                     {
-                        vr = entry.ValueRepresentations.FirstOrDefault();
+                        vr = entry.ValueRepresentations.FirstOrDefault() ?? DicomVR.UN;
                     }
-
-                    vr ??= DicomVR.UN;
                 }
 
                 if (tag == DicomTag.ItemDelimitationItem || tag == DicomTag.SequenceDelimitationItem)
