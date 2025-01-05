@@ -151,15 +151,11 @@ namespace FellowOakDicom.Tests.Media
     {
         public Endian Endian { get; set; }
         public long Position { get; set; }
-        public long Marker { get; set; }
         public bool IsEOF { get; set; }
-        public bool CanRewind { get; set; }
-        public int MilestonesCount { get; set; }
 
         public IByteBuffer GetBuffer(uint count) => throw new NotImplementedException();
         public Task<IByteBuffer> GetBufferAsync(uint count) => throw new NotImplementedException();
         public void Skip(uint count) => throw new NotImplementedException();
-        public void Skip(int count) => throw new NotImplementedException();
         public byte[] GetBytes(int count) => throw new NotImplementedException();
         public int GetBytes(byte[] buffer, int index, int count) => throw new NotImplementedException();
         public double GetDouble() => throw new NotImplementedException();
@@ -171,14 +167,8 @@ namespace FellowOakDicom.Tests.Media
         public uint GetUInt32() => throw new NotImplementedException();
         public ulong GetUInt64() => throw new NotImplementedException();
         public byte GetUInt8() => throw new NotImplementedException();
-        public bool HasReachedMilestone() => throw new NotImplementedException();
-        public void Mark() => throw new NotImplementedException();
-        public void PopMilestone() => throw new NotImplementedException();
-        public void PushMilestone(uint count) => throw new NotImplementedException();
         public bool Require(uint count) => throw new NotImplementedException();
         public bool Require(uint count, ByteSourceCallback callback, object state) => throw new NotImplementedException();
-        public void Rewind() => throw new NotImplementedException();
-
         public void GoTo(long position) => throw new NotImplementedException();
         public Stream GetStream() => throw new NotImplementedException();
     }
@@ -222,9 +212,9 @@ namespace FellowOakDicom.Tests.Media
                     child.Sequence.AddOrUpdate(DicomTag.SOPInstanceUID, id.ToString());
                     child.Sequence.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, 0u);
                     child.Sequence.AddOrUpdate(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0u);
-                    if (Children.Any())
+                    if (Children.Count > 0)
                     {
-                        Children.Last().Sequence.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, offset);
+                        Children[Children.Count - 1].Sequence.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, offset);
                     }
                     else
                     {

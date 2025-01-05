@@ -11,11 +11,6 @@ using System.Threading.Tasks;
 namespace FellowOakDicom.IO.Reader
 {
 
-    public static class DicomFileReaderSettings
-    {
-        public static bool UseLegacyParser = false;
-    }
-
     /// <summary>
     /// Internal helperclass for reading DICOM file objects.
     /// </summary>
@@ -24,7 +19,7 @@ namespace FellowOakDicom.IO.Reader
 
         #region INNER TYPES
 
-        private class ParseResult
+        private sealed class ParseResult
         {
             #region CONSTRUCTORS
 
@@ -52,13 +47,13 @@ namespace FellowOakDicom.IO.Reader
 
         #region FIELDS
 
-        private static readonly DicomTag _FileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
+        private static readonly DicomTag _fileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
-        private static readonly Func<ParseState, bool> _FileMetaInfoStopCriterion =
-            state => state.Tag.CompareTo(_FileMetaInfoStopTag) >= 0
+        private static readonly Func<ParseState, bool> _fileMetaInfoStopCriterion =
+            state => state.Tag.CompareTo(_fileMetaInfoStopTag) >= 0
                 || (state.PreviousTag?.Group == 0x0002 && state.PreviousTag.CompareTo(state.Tag) >= 0);
 
-        private static readonly Lazy<IMemoryProvider> _MemoryProvider = new Lazy<IMemoryProvider>(() => Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
+        private static readonly Lazy<IMemoryProvider> _memoryProvider = new Lazy<IMemoryProvider>(() => Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
 
         private readonly object _locker;
 
@@ -76,37 +71,37 @@ namespace FellowOakDicom.IO.Reader
             _locker = new object();
         }
 
-      #endregion
+        #endregion
 
-      #region PROPERTIES
+        #region PROPERTIES
 
-      /// <summary>
-      /// Gets file format of latest read.
-      /// </summary>
-      public DicomFileFormat FileFormat { get; private set; }
+        /// <summary>
+        /// Gets file format of latest read.
+        /// </summary>
+        public DicomFileFormat FileFormat { get; private set; }
 
-      /// <summary>
-      /// Gets the transfer syntax of latest read.
-      /// </summary>
-      public DicomTransferSyntax Syntax { get; private set; }
+        /// <summary>
+        /// Gets the transfer syntax of latest read.
+        /// </summary>
+        public DicomTransferSyntax Syntax { get; private set; }
 
-      #endregion
+        #endregion
 
-      #region METHODS
+        #region METHODS
 
-      /// <summary>
-      /// Read DICOM file object.
-      /// </summary>
-      /// <param name="source">Byte source to read.</param>
-      /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
-      /// <param name="dataset">Reader observer for dataset.</param>
-      /// <param name="stop">Stop criterion in dataset.</param>
-      /// <returns>Reader result.</returns>
-      public DicomReaderResult Read(
-            IByteSource source,
-            IDicomReaderObserver fileMetaInfo,
-            IDicomReaderObserver dataset,
-            Func<ParseState, bool> stop = null)
+        /// <summary>
+        /// Read DICOM file object.
+        /// </summary>
+        /// <param name="source">Byte source to read.</param>
+        /// <param name="fileMetaInfo">Reader observer for file meta information.</param>
+        /// <param name="dataset">Reader observer for dataset.</param>
+        /// <param name="stop">Stop criterion in dataset.</param>
+        /// <returns>Reader result.</returns>
+        public DicomReaderResult Read(
+              IByteSource source,
+              IDicomReaderObserver fileMetaInfo,
+              IDicomReaderObserver dataset,
+              Func<ParseState, bool> stop = null)
         {
             var parse = Parse(source, fileMetaInfo, dataset, stop);
             lock (_locker)
@@ -195,7 +190,7 @@ namespace FellowOakDicom.IO.Reader
             ref DicomTransferSyntax syntax)
         {
             // mark file origin
-            source.Mark();
+            var positionOrigin = source.Position;
 
             // test for DICM preamble
             source.Skip(128);
@@ -211,12 +206,12 @@ namespace FellowOakDicom.IO.Reader
                 if (fileFormat == DicomFileFormat.DICOM3)
                 {
                     // move milestone to after preamble
-                    source.Mark();
+                    positionOrigin = source.Position;
                 }
                 else
                 {
                     // rewind to origin milestone
-                    source.Rewind();
+                    source.GoTo(positionOrigin);
                 }
 
                 // test for file meta info
@@ -234,7 +229,7 @@ namespace FellowOakDicom.IO.Reader
                 {
                     // invalid starting tag
                     fileFormat = DicomFileFormat.Unknown;
-                    source.Rewind();
+                    source.GoTo(positionOrigin);
                     break;
                 }
 
@@ -251,12 +246,12 @@ namespace FellowOakDicom.IO.Reader
                 var vrCode = tagDictionaryEntry.ValueRepresentations[0].Code;
 
                 // test for explicit VR
-                using var vrMemory = _MemoryProvider.Value.Provide(2 + Encoding.UTF8.GetMaxByteCount(vrCode.Length));
+                using var vrMemory = _memoryProvider.Value.Provide(2 + Encoding.UTF8.GetMaxByteCount(vrCode.Length));
                 var vrBytes = vrMemory.Bytes;
                 if (source.GetBytes(vrBytes, 0, 2) != 2)
                 {
                     fileFormat = DicomFileFormat.Unknown;
-                    source.Rewind();
+                    source.GoTo(positionOrigin);
                     break;
                 }
                 Encoding.UTF8.GetBytes(vrCode, 0, vrCode.Length, vrBytes, 2);
@@ -269,7 +264,7 @@ namespace FellowOakDicom.IO.Reader
                                  : DicomTransferSyntax.ImplicitVRBigEndian;
                 }
 
-                source.Rewind();
+                source.GoTo(positionOrigin);
             }
             while (fileFormat == DicomFileFormat.Unknown);
 
@@ -321,15 +316,7 @@ namespace FellowOakDicom.IO.Reader
                         }
                     });
 
-            IDicomReader reader;
-            if (DicomFileReaderSettings.UseLegacyParser)
-            {
-                reader = new DicomReaderLegacy(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
-            }
-            else
-            {
-                reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
-            }
+            var reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
@@ -339,17 +326,13 @@ namespace FellowOakDicom.IO.Reader
             }
             else
             {
-                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), _FileMetaInfoStopCriterion)
+                if (reader.Read(source, new DicomReaderMultiObserver(obs, fileMetasetInfoObserver), _fileMetaInfoStopCriterion)
                     != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
                 }
 
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
-
-                //// rewind to last marker (start of previous tag)... ugly because 
-                //// it requires knowledge of how the parser is implemented
-                //source.Rewind();
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;
@@ -399,15 +382,7 @@ namespace FellowOakDicom.IO.Reader
                         }
                     });
 
-            IDicomReader reader;
-            if (DicomFileReaderSettings.UseLegacyParser)
-            {
-                reader = new DicomReaderLegacy(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
-            }
-            else
-            {
-                reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
-            }
+            var reader = new DicomReader(memoryProvider) { IsExplicitVR = syntax.IsExplicitVR, IsDeflated = false };
 
             DicomReaderResult result;
             if (fileFormat == DicomFileFormat.DICOM3NoFileMetaInfo)
@@ -424,16 +399,12 @@ namespace FellowOakDicom.IO.Reader
                     reader.ReadAsync(
                         source,
                         new DicomReaderMultiObserver(obs, fileMetasetInfoObserver),
-                        _FileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
+                        _fileMetaInfoStopCriterion).ConfigureAwait(false) != DicomReaderResult.Stopped)
                 {
                     throw new DicomReaderException("DICOM File Meta Info ended prematurely");
                 }
 
                 UpdateFileFormatAndSyntax(code, uid, ref fileFormat, ref syntax);
-
-                //// rewind to last marker (start of previous tag)... ugly because 
-                //// it requires knowledge of how the parser is implemented
-                //source.Rewind();
 
                 source.Endian = syntax.Endian;
                 reader.IsExplicitVR = syntax.IsExplicitVR;

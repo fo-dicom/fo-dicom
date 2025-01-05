@@ -19,11 +19,7 @@ namespace FellowOakDicom.IO.Buffer
 
         private readonly List<IByteBuffer> _buffers;
 
-        private readonly Stack<long> _milestones;
-
         private long _expired;
-
-        private long _marker;
 
         private long _position;
 
@@ -58,12 +54,10 @@ namespace FellowOakDicom.IO.Buffer
         public ByteBufferByteSource()
         {
             _expired = 0;
-            _marker = 0;
             _position = 0;
             _length = 0;
             _endian = Endian.LocalMachine;
 
-            _milestones = new Stack<long>();
             _buffers = new List<IByteBuffer>();
             _fixed = false;
 
@@ -78,12 +72,10 @@ namespace FellowOakDicom.IO.Buffer
         public ByteBufferByteSource(params IByteBuffer[] buffers)
         {
             _expired = 0;
-            _marker = 0;
             _position = 0;
             _length = 0;
             _endian = Endian.LocalMachine;
 
-            _milestones = new Stack<long>();
             _buffers = new List<IByteBuffer>(buffers);
             foreach (var x in _buffers) _length += x.Size;
             _fixed = true;
@@ -111,9 +103,6 @@ namespace FellowOakDicom.IO.Buffer
         public long Position => _position;
 
         /// <inheritdoc />
-        public long Marker => _marker;
-
-        /// <inheritdoc />
         public bool IsEOF
         {
             get
@@ -124,12 +113,6 @@ namespace FellowOakDicom.IO.Buffer
                 }
             }
         }
-
-        /// <inheritdoc />
-        public bool CanRewind => true;
-
-        /// <inheritdoc />
-        public int MilestonesCount => _milestones.Count;
 
         #endregion
 
@@ -280,59 +263,12 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-        /// <inheritdoc />
-        public void Mark()
-        {
-            lock (_lock)
-            {
-                _marker = _position;
-
-                while (_buffers.Count > 0 && (_expired + _buffers[0].Size) < _marker)
-                {
-                    _expired += _buffers[0].Size;
-                    _buffers.RemoveAt(0);
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public void Rewind()
-        {
-            lock (_lock)
-            {
-                _position = _marker;
-                SwapBuffers();
-            }
-        }
-
         public void GoTo(long position)
         {
             lock (_lock)
             {
                 _position = position;
                 SwapBuffers();
-            }
-        }
-
-        /// <inheritdoc />
-        public void PushMilestone(uint count)
-        {
-            lock (_lock) _milestones.Push(_position + count);
-        }
-
-        /// <inheritdoc />
-        public void PopMilestone()
-        {
-            lock (_lock) _milestones.Pop();
-        }
-
-        /// <inheritdoc />
-        public bool HasReachedMilestone()
-        {
-            lock (_lock)
-            {
-                if (_milestones.Count > 0 && _position >= _milestones.Peek()) return true;
-                return false;
             }
         }
 
@@ -457,7 +393,6 @@ namespace FellowOakDicom.IO.Buffer
             }
         }
 
-
         public Stream GetStream()
         {
             lock (_lock)
@@ -471,7 +406,6 @@ namespace FellowOakDicom.IO.Buffer
                 return stream;
             }
         }
-
 
         #endregion
     }

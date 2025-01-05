@@ -32,24 +32,9 @@ namespace FellowOakDicom.IO
         long Position { get; }
 
         /// <summary>
-        /// Gets the position of the current marker.
-        /// </summary>
-        long Marker { get; }
-
-        /// <summary>
         /// Gets whether end-of-source is reached.
         /// </summary>
         bool IsEOF { get; }
-
-        /// <summary>
-        /// Gets whether its possible to rewind the source.
-        /// </summary>
-        bool CanRewind { get; }
-
-        /// <summary>
-        /// Gets the milestone levels count.
-        /// </summary>
-        int MilestonesCount { get; }
 
         /// <summary>
         /// Gets one byte from the current position and moves to subsequent position.
@@ -143,33 +128,6 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="count">Number of bytes to skip.</param>
         void Skip(uint count);
-
-        /// <summary>
-        /// Set a mark at the current position.
-        /// </summary>
-        void Mark();
-
-        /// <summary>
-        /// Rewind byte source to latest <see cref="Marker"/>.
-        /// </summary>
-        void Rewind();
-
-        /// <summary>
-        /// Mark the position of a new level of milestone.
-        /// </summary>
-        /// <param name="count">Expected distance in bytes from the current position to the milestone.</param>
-        void PushMilestone(uint count);
-
-        /// <summary>
-        /// Pop the uppermost level of milestone.
-        /// </summary>
-        void PopMilestone();
-
-        /// <summary>
-        /// Checks whether the byte source position is at the uppermost milestone position.
-        /// </summary>
-        /// <returns>true if uppermost milestone is reached, false otherwise.</returns>
-        bool HasReachedMilestone();
 
         /// <summary>
         /// Verifies that there is a sufficient number of bytes to read.

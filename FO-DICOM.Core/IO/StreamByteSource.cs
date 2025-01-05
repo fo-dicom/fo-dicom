@@ -4,7 +4,6 @@
 
 using FellowOakDicom.IO.Buffer;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -24,10 +23,6 @@ namespace FellowOakDicom.IO
 
         private BinaryReader _reader;
 
-        private long _mark;
-
-        private readonly Stack<long> _milestones;
-
         private readonly object _lock;
 
         #endregion
@@ -45,13 +40,11 @@ namespace FellowOakDicom.IO
             _stream = stream;
             _endian = Endian.LocalMachine;
             _reader = EndianBinaryReader.Create(_stream, _endian, false);
-            _mark = 0;
             // here the mapping of the default option is applied - may be extracted into some GlobalSettings class or similar
             ReadOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
             LargeObjectSize = largeObjectSize <= 0 ? 64 * 1024 : largeObjectSize;
 
-            _milestones = new Stack<long>();
             _lock = new object();
         }
 
@@ -80,16 +73,7 @@ namespace FellowOakDicom.IO
         public long Position => _stream.Position;
 
         /// <inheritdoc />
-        public long Marker => _mark;
-
-        /// <inheritdoc />
         public bool IsEOF => _stream.Position >= _stream.Length;
-
-        /// <inheritdoc />
-        public bool CanRewind => _stream.CanSeek;
-
-        /// <inheritdoc />
-        public int MilestonesCount => _milestones.Count;
 
         /// <summary>
         /// Gets or sets the size of what is considered a large object.
@@ -163,7 +147,7 @@ namespace FellowOakDicom.IO
                 }
                 else
                 {
-                    var numberOfBuffers = (int) Math.Ceiling((double) count / MemoryByteBuffer.MaxArrayLength);
+                    var numberOfBuffers = (int)Math.Ceiling((double)count / MemoryByteBuffer.MaxArrayLength);
                     var buffers = new IByteBuffer[numberOfBuffers];
                     for (var i = 0; i < numberOfBuffers - 1; i++)
                     {
@@ -173,7 +157,7 @@ namespace FellowOakDicom.IO
                     }
                     var lastBufferData = new byte[count % MemoryByteBuffer.MaxArrayLength];
                     GetBytes(lastBufferData, 0, lastBufferData.Length);
-                    buffers[numberOfBuffers-1] = new MemoryByteBuffer(lastBufferData);
+                    buffers[numberOfBuffers - 1] = new MemoryByteBuffer(lastBufferData);
                     buffer = new CompositeByteBuffer(buffers);
                 }
             }
@@ -186,41 +170,7 @@ namespace FellowOakDicom.IO
         /// <inheritdoc />
         public void Skip(uint count) => _stream.Seek(count, SeekOrigin.Current);
 
-        /// <inheritdoc />
-        public void Mark() => _mark = _stream.Position;
-
-        /// <inheritdoc />
-        public void Rewind() => _stream.Position = _mark;
-
         public void GoTo(long position) => _stream.Position = position;
-
-
-        /// <inheritdoc />
-        public void PushMilestone(uint count)
-        {
-            lock (_lock)
-            {
-                _milestones.Push(_stream.Position + count);
-            }
-        }
-
-        /// <inheritdoc />
-        public void PopMilestone()
-        {
-            lock (_lock)
-            {
-                _milestones.Pop();
-            }
-        }
-
-        /// <inheritdoc />
-        public bool HasReachedMilestone()
-        {
-            lock (_lock)
-            {
-                return _milestones.Count > 0 && _stream.Position >= _milestones.Peek();
-            }
-        }
 
         /// <inheritdoc />
         public bool Require(uint count) => Require(count, null, null);
@@ -233,7 +183,6 @@ namespace FellowOakDicom.IO
                 return (_stream.Length - Position) >= count;
             }
         }
-
 
         public Stream GetStream()
         {
