@@ -17,6 +17,8 @@ If you find some breaking changes when updating, read here for more information 
     <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
     <Version>5.1.5</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <IncludeSymbols>true</IncludeSymbols>
+	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageId>fo-dicom</PackageId>
     <LangVersion>8.0</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
