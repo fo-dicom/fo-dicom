@@ -90,7 +90,7 @@ namespace FellowOakDicom.Imaging.Render
         /// according to the input <paramref name="pixelData"/> <see cref="PhotometricInterpretation"/>
         /// </summary>
         /// <param name="pixelData">Input pixel data</param>
-        /// <param name="frame">Frame number (0 based)</param>
+        /// <param name="frame">Zero-based frame index.</param>
         /// <returns>Implementation of <see cref="IPixelData"/> according to <see cref="PhotometricInterpretation"/></returns>
         public static IPixelData Create(DicomPixelData pixelData, int frame)
         {

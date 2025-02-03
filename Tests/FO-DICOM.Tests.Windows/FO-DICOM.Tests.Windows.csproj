@@ -1,17 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net462;net6.0-windows;net8.0-windows</TargetFrameworks>
     <RootNamespace>FellowOakDicom.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
-    <AssemblyName>fo-dicom.Tests</AssemblyName>
+    <AssemblyName>fo-dicom.Tests.Windows</AssemblyName>
     <LangVersion>8.0</LangVersion>
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
-    <Encoding>utf-8</Encoding>
-
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <!-- 
       Suppress warning CS8002 because Dicom.NativeCodecs is not strong named, 
       but since .NET Core you can reference unsigned assemblies from signed assemblies without issues
@@ -27,7 +26,7 @@
     </PackageReference>
     <PackageReference Include="fo-dicom.Codecs" Version="5.15.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -68,53 +67,9 @@
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
 	<ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
     <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Test Data\**\*.dcm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Test Data\*.dcm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\1403-OB.dcm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-	<None Update="Test Data\abd1.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\CR-MONO1-10-chest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\CT-MONO2-16-ankle">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\CT1_J2KI">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\DICOMDIR">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\DIRW0007">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\FellowOakDicom.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\FellowOakDicomClient.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\minimumdict.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\minimumdict.xml.gz">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Test Data\testclienteku.contoso.com.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

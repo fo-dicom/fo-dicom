@@ -33,6 +33,7 @@ DICOM/T4/part16.xml
 AppPackages/
 Documentation/Help/
 Platform/Mono/Dictionaries/*.xml.gz
+**/.DS_Store
 
 ### Rider ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

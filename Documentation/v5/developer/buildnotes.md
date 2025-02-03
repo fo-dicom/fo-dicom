@@ -21,6 +21,7 @@ Project | Description
 FO-DICOM.Core | This project contains the core logic for handling DICOM files, and working with DICOM services
 Tools/FO-DICOM.Dump | Is is some sample project that can be used to reproduce some isses and debug into the code. The application opens files, shows all tags and values, can anonymize the file and render the image.
 Tests/FO-DICOM.Tests | The xUnit based unit test project
+Tests/FO-DICOM.Tests.Windows | Windows-only unit test project
 Tests/FO-DICOM.Benchmark | This project executes a benchmark test for some typical actions like opening and parsing a dataset or sending a file via store scu and scp.
 Platform/* | Within this folder there are several projects, that contain some platform specific code and can be then registered in DI container.
 Logging/* | Projects integrating logging frameworks

@@ -262,7 +262,11 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus status = null;
                 var request = new DicomCStoreRequest(TestData.Resolve("CT-MONO2-16-ankle"))
                 {
-                    OnResponseReceived = (req, res) => status = res.Status
+                    OnResponseReceived = (req, res) =>
+                    {
+                        status = res.Status;
+                        Assert.Equal(req.SOPInstanceUID, res.AffectedSOPInstanceUID);
+                    }
                 };
 
                 var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");

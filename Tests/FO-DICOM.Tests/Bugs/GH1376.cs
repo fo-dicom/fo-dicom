@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using System.IO;
 using System.Threading.Tasks;
 using FellowOakDicom.Imaging;
 using Xunit;
@@ -14,7 +15,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task ShouldParseFileMetaInfoFromFirstMetaGroupAndTreatSecondMetaGroupAsData()
         {
             // Arrange
-            var file = "Test Data\\GH1376.dcm";
+            var file = Path.Combine("Test Data", "GH1376.dcm");
             var dicomFile = await DicomFile.OpenAsync(file);
 
             // Act
@@ -37,7 +38,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task ShouldBeAbleToRender()
         {
             // Arrange
-            var file = "Test Data\\GH1376.dcm";
+            var file = Path.Combine("Test Data", "GH1376.dcm");
             var dicomFile = await DicomFile.OpenAsync(file);
 
             // Act

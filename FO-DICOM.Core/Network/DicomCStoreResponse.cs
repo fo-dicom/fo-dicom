@@ -29,6 +29,26 @@ namespace FellowOakDicom.Network
         public DicomCStoreResponse(DicomCStoreRequest request, DicomStatus status)
             : base(request, status)
         {
+            AffectedSOPInstanceUID = request.SOPInstanceUID;
+        }
+
+
+        /// <summary>Gets the SOP Instance UID of the DICOM file associated with this DICOM C-Store request.</summary>
+        public DicomUID AffectedSOPInstanceUID
+        {
+            get => Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPInstanceUID, null);
+            set
+            {
+                if (value == null)
+                {
+                    Command.Remove(DicomTag.AffectedSOPInstanceUID);
+                }
+                else
+                {
+                    using var unvalidatedCommand = new UnvalidatedScope(Command);
+                    Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
+                }
+            }
         }
     }
 }

@@ -4,6 +4,8 @@
     <RootNamespace>FellowOakDicom.Imaging.Desktop</RootNamespace>
     <AssemblyName>fo-dicom.Imaging.Desktop</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <IncludeSymbols>true</IncludeSymbols>
+	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Version>5.1.5</Version>
     <Authors>fo-dicom contributors</Authors>
     <Copyright>Copyright (c) fo-dicom contributors 2012-2024</Copyright>

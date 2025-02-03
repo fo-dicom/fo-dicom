@@ -642,6 +642,38 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void AddOrUpdate_Sequence_ViaDicomdatasets()
+        {
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(DicomTag.ReferencedStudySequence,
+                new DicomDataset { { DicomTag.ReferencedSOPClassUID, DicomUID.CTImageStorage }, { DicomTag.ReferencedSOPInstanceUID, DicomUID.Generate() } },
+                new DicomDataset { { DicomTag.ReferencedSOPClassUID, DicomUID.CTImageStorage }, { DicomTag.ReferencedSOPInstanceUID, DicomUID.Generate() } }
+                    );
+
+            var refSequence = dataset.GetSequence(DicomTag.ReferencedStudySequence);
+            Assert.NotNull(refSequence);
+            Assert.Equal(2, refSequence.Count());
+            Assert.Equal(DicomUID.CTImageStorage, refSequence.ElementAt(0).GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID));
+        }
+
+        [Fact]
+        public void AddOrUpdate_Sequence_ViaDicomsequence()
+        {
+            var seq = new DicomSequence(DicomTag.ReferencedStudySequence,
+                new DicomDataset { { DicomTag.ReferencedSOPClassUID, DicomUID.CTImageStorage }, { DicomTag.ReferencedSOPInstanceUID, DicomUID.Generate() } },
+                new DicomDataset { { DicomTag.ReferencedSOPClassUID, DicomUID.CTImageStorage }, { DicomTag.ReferencedSOPInstanceUID, DicomUID.Generate() } }
+                    );
+
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(DicomTag.ReferencedStudySequence, seq);
+
+            var refSequence = dataset.GetSequence(DicomTag.ReferencedStudySequence);
+            Assert.NotNull(refSequence);
+            Assert.Equal(2, refSequence.Count());
+            Assert.Equal(DicomUID.CTImageStorage, refSequence.ElementAt(0).GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID));
+        }
+
+        [Fact]
         public void AddOrUpdate_PrivateTagWithoutExplicitVR_ShouldThrow()
         {
             var dataset = new DicomDataset();

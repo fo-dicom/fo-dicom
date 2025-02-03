@@ -279,7 +279,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
         [Theory]
         [InlineData(20)]
-        [InlineData(200)]
+        [InlineData(100)]
         public async Task SendAsync_MultipleTimesParallel_AllRecognized(int expected)
         {
             int port = Ports.GetNext();

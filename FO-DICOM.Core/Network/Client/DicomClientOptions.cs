@@ -7,6 +7,11 @@ namespace FellowOakDicom.Network.Client
     public class DicomClientOptions
     {
         /// <summary>
+        /// Gets or sets the timeout (in ms) to wait for the TCP connection to establish
+        /// </summary>
+        public int ConnectionTimeoutInMs { get; set; } = 0;
+
+        /// <summary>
         /// Gets or sets the timeout (in ms) to wait for an association response after sending an association request
         /// </summary>
         public int AssociationRequestTimeoutInMs { get; set; } = 5000;

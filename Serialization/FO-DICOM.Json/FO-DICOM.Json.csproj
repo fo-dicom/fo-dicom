@@ -5,7 +5,9 @@
     <RootNamespace>FellowOakDicom.Json</RootNamespace>
     <AssemblyName>fo-dicom.json</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>5.1.5</Version>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<Version>5.1.5</Version>
     <Authors>fo-dicom contributors</Authors>
     <Copyright>Copyright (c) fo-dicom contributors 2012-2024</Copyright>
     <Company>fo-dicom</Company>

@@ -41,6 +41,11 @@ namespace FellowOakDicom.Network
         public TimeSpan Timeout { get; set; }
 
         /// <summary>
+        /// Geets or sets the timeout when the TCP connection is established
+        /// </summary>
+        public TimeSpan ConnectionTimeout { get; set; } = TimeSpan.FromMilliseconds(-1);
+
+        /// <summary>
         /// Gets or sets the size of the receive buffer of the underlying TCP connection
         /// If not configured, the default value of 8192 bytes will be used
         /// </summary>

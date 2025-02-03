@@ -62,6 +62,8 @@ namespace FellowOakDicom.Tests.Bugs
 
         public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest request)
         {
+            await Task.CompletedTask;
+
             yield return new DicomCFindResponse(request, DicomStatus.Pending)
             {
                 Dataset = new DicomDataset(

@@ -15,15 +15,15 @@ namespace FellowOakDicom.Tests.IO.Reader
         {
         }
 
-        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
+        public void OnElement(IByteSource source, long position, DicomTag tag, DicomVR vr, IByteBuffer data)
         {
         }
 
-        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        public void OnBeginSequence(IByteSource source, long position, DicomTag tag, uint length)
         {
         }
 
-        public void OnBeginSequenceItem(IByteSource source, uint length)
+        public void OnBeginSequenceItem(IByteSource source, long position, uint length)
         {
         }
 
@@ -35,11 +35,11 @@ namespace FellowOakDicom.Tests.IO.Reader
         {
         }
 
-        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
+        public void OnBeginFragmentSequence(IByteSource source, long position, DicomTag tag, DicomVR vr)
         {
         }
 
-        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
+        public void OnFragmentSequenceItem(IByteSource source, long position, IByteBuffer data)
         {
         }
 

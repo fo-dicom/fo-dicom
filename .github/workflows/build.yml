@@ -9,46 +9,61 @@ on:
     - development
   workflow_dispatch:
 
-jobs:
-  net-462:
-    runs-on: windows-2022
+jobs:  
+  tests:
+    runs-on: ${{ matrix.os.ver }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [
+            { name: Windows, ver: windows-2022, runtime: win-x64 },
+            { name: Ubuntu-x64, ver: ubuntu-22.04, runtime: linux-x64 },
+            { name: Ubuntu-arm, ver: ubuntu-22.04-arm, runtime: linux-arm64 },
+            { name: macOS-x64, ver: macos-13, runtime: osx-x64 },
+            { name: macOS-arm, ver: macos-14, runtime: osx-arm64 }
+          ]
+        frameworks: [
+            { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' },
+            { name: ".NET 8.0", common: "net8.0", win: "net8.0-windows", coverage: '--collect:"XPlat Code Coverage" --settings coverlet.runsettings' }
+          ]
+        include:
+          - frameworks: { name: ".NET Framework 4.6.2", common: "net462", win: "net462", coverage: "" }
+            os: { name: Windows, ver: windows-2022, runtime: win-x64 }
+        exclude:
+          # .NET 6 not available for macOS per default
+          - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
+            os: { name: macOS-x64, ver: macos-13, runtime: osx-x64 }
+          - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
+            os: { name: macOS-arm, ver: macos-14, runtime: osx-arm64 }
+
+    name: ${{ matrix.os.name }} (${{ matrix.frameworks.name }})
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
     steps:
     - uses: actions/checkout@v4
-    - name: Build FO-DICOM.Core
-      run: dotnet build ./FO-DICOM.Core/FO-DICOM.Core.csproj --configuration Release --runtime win-x64
     - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net462 --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet462.xml"
+      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework ${{ matrix.frameworks.common }} --blame --runtime ${{ matrix.os.runtime }} --logger:"trx;LogFileName=.\results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results
+      if: success() || failure()
       uses: actions/upload-artifact@v4
       with:
-          name: test-v5-net-462.xml
-          path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet462.xml
-      
-  net-60:
-    runs-on: windows-2022
-    steps:
-    - uses: actions/checkout@v4
-    - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net6.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet60.xml"
+          name: test-v5-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
+          path: ./Tests/FO-DICOM.Tests/TestResults/results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
+    - name: Test FO-DICOM.Tests.Windows
+      if: matrix.os.name == 'Windows'
+      run: dotnet test ./Tests/FO-DICOM.Tests.Windows/FO-DICOM.Tests.Windows.csproj --configuration Release --framework ${{ matrix.frameworks.win }} --blame --runtime win-x64 --logger:"trx;LogFileName=.\results-win-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results
+      if: matrix.os.name == 'Windows'
       uses: actions/upload-artifact@v4
       with:
-          name: test-v5-net-60.xml
-          path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet60.xml
-      
-  net-80:
-    runs-on: windows-2022
-    steps:
-    - uses: actions/checkout@v4
-    - name: Test FO-DICOM.Tests
-      run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework net8.0-windows --blame --runtime win-x64 --logger:"trx;LogFileName=.\resultsnet80.xml" --collect:"XPlat Code Coverage" --settings coverlet.runsettings
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      with:
-          name: test-v5-net-80.xml
-          path: ./Tests/FO-DICOM.Tests/TestResults/resultsnet80.xml
-    - name: Upload code coverage 
-      uses: codecov/codecov-action@v4
+          name: test-v5-win-${{ matrix.frameworks.win }}.xml
+          path: ./Tests/FO-DICOM.Tests.Windows/TestResults/results-win-${{ matrix.frameworks.common }}.xml
+    - name: Upload code coverage
+      if: matrix.frameworks.coverage != ''
+      uses: codecov/codecov-action@v5
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -68,4 +83,3 @@ jobs:
           ./BenchmarkDotNet.Artifacts/
           ./BenchmarkDotNet.Artifacts/results/
  
-

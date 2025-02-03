@@ -2,8 +2,6 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
-using FellowOakDicom.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 
 namespace FellowOakDicom.IO
@@ -29,9 +27,10 @@ namespace FellowOakDicom.IO
                 return new StreamByteSource(stream, readOption, largeObjectSize);
             }
 
-            var memoryProvider = Setup.ServiceProvider.GetRequiredService<IMemoryProvider>();
-            
-            return new UnseekableStreamByteSource(stream, readOption, largeObjectSize, memoryProvider);
+            // in case of unseekable stream, we need to add a buffer as wrapper. This allows the parser to do the necessary seek-operations.
+            // a buffer-size of 4096 should be appropriate.
+            // and because there is a buffer in between, the FileReadOption.ReadLargeOnDemand is not supported there.
+            return new StreamByteSource(new ReadBufferedStream(stream, 4096), readOption == FileReadOption.SkipLargeTags ? FileReadOption.SkipLargeTags : FileReadOption.ReadAll, largeObjectSize);
         }
     }
 }

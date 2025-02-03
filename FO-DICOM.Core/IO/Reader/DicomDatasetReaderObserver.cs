@@ -42,7 +42,7 @@ namespace FellowOakDicom.IO.Reader
             _sequences = new Stack<DicomSequence>();
         }
 
-        public void OnElement(IByteSource source, DicomTag tag, DicomVR vr, IByteBuffer data)
+        public void OnElement(IByteSource source, long position, DicomTag tag, DicomVR vr, IByteBuffer data)
         {
             DicomElement element = vr.Code switch
             {
@@ -96,7 +96,7 @@ namespace FellowOakDicom.IO.Reader
             ds.AddOrUpdate(element);
         }
 
-        public void OnBeginSequence(IByteSource source, DicomTag tag, uint length)
+        public void OnBeginSequence(IByteSource source, long position, DicomTag tag, uint length)
         {
             var sq = new DicomSequence(tag);
             _sequences.Push(sq);
@@ -105,7 +105,7 @@ namespace FellowOakDicom.IO.Reader
             ds.AddOrUpdate(sq);
         }
 
-        public void OnBeginSequenceItem(IByteSource source, uint length)
+        public void OnBeginSequenceItem(IByteSource source, long position, uint length)
         {
             DicomSequence sq = _sequences.Peek();
 
@@ -131,7 +131,7 @@ namespace FellowOakDicom.IO.Reader
 
         public void OnEndSequence() => _sequences.Pop();
 
-        public void OnBeginFragmentSequence(IByteSource source, DicomTag tag, DicomVR vr)
+        public void OnBeginFragmentSequence(IByteSource source, long position, DicomTag tag, DicomVR vr)
         {
             if (vr == DicomVR.OB)
             {
@@ -147,7 +147,7 @@ namespace FellowOakDicom.IO.Reader
             }
         }
 
-        public void OnFragmentSequenceItem(IByteSource source, IByteBuffer data)
+        public void OnFragmentSequenceItem(IByteSource source, long position, IByteBuffer data)
         {
             if (data == null)
             {

@@ -1,5 +1,14 @@
-### 5.1.6 (TBD)
-
+### 5.2.0 (TBD)
+- refactor the parser to make it better maintainable
+- **Breaking change**: IByteSource interface has changed
+- VOI LUT Function with empty value causes a crash (#1891)
+- Add ConnectionTimeout to ClientConnectionOptions (#1784)
+- Fixed bug, where milliseconds have been cut away when adding a Datetime to a DicomDataset (#1719)
+- DicomElement.ValueRepresentation.ValidateString() now throws a DicomValidationException if a null value is passed (#1590)
+- The optional AffectedSopInstanceUID is added to the CStoreResponse by default. (#1390)
+- Handle invalid DICOM files, that contain "," as decimal separator in DS values (#1296)
+- DicomDataset.AddOrUpdate also allows passing DicomSequence as argument type (#1664)
+- Fix parsing files from stream created by HttpClient (#1698)
 
 ### 5.1.5 (2024-11-25)
 

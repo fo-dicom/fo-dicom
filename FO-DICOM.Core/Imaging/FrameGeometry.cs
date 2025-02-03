@@ -66,7 +66,7 @@ namespace FellowOakDicom.Imaging
         /// A convenience class that extracts all data from a DicomDataset, that is relevant for geometry calculations.
         /// </summary>
         /// <param name="image">The DicomDataset where the information is extracted from</param>
-        /// <param name="frame">An optional frame number. if not provided, then frame 0 is taken. I case of EnhancedCT or EnhancedMR the geometrydata will be different for each frame</param>
+        /// <param name="frame">An optional zero-based frame index. If not provided, then frame 0 is taken. In case of EnhancedCT or EnhancedMR the geometry data will be different for each frame</param>
         public FrameGeometry(DicomDataset image, int frame = 0)
         {
             var functionalItems = image.FunctionalGroupValues(frame);

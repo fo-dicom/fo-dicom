@@ -54,7 +54,10 @@ namespace FellowOakDicom.Network
             {
                 _tcpClient.SendBufferSize = options.SendBufferSize.Value;
             }
-            _tcpClient.ConnectAsync(options.Host, options.Port).Wait();
+            if (!_tcpClient.ConnectAsync(options.Host, options.Port).Wait(options.ConnectionTimeout))
+            {
+                throw new TimeoutException();
+            }
 
             Stream stream = _tcpClient.GetStream();
             if (options.TlsInitiator != null)

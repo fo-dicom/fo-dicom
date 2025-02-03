@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -654,6 +655,40 @@ namespace FellowOakDicom.Tests.Network.Client
                 Assert.Equal(maxRetryCount, eventFired);
                 Assert.NotNull(exception);
             }
+        }
+
+        [Fact]
+        public async Task ConnectionTimeoutExceptionShouldThrow()
+        {
+            var client = DicomClientFactory.Create("1.1.1.1", 4242, false, "dummy", "dummy");
+            client.ClientOptions.ConnectionTimeoutInMs = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
+
+            var timedOut = false;
+            var stopWatch = Stopwatch.StartNew();
+            var cEchoRequest = new DicomCEchoRequest
+            {
+                OnTimeout = (sender, args) => { stopWatch.Stop(); _logger.LogInformation("timed out"); },
+                OnResponseReceived = (request, response) => { _logger.LogInformation("response received"); }
+            };
+            await client.AddRequestAsync(cEchoRequest);
+            _logger.LogInformation("Opening connection");
+            try
+            {
+                await client.SendAsync();
+            }
+            catch (TimeoutException te)
+            {
+                _logger.LogError(te, te.Message);
+                timedOut = true;
+            }
+            catch (Exception e) {
+                _logger.LogError(e, e.Message);
+            }
+            stopWatch.Stop();
+            
+            // the timeout was configured with 1 second, so assert that the method should at least wait this 1 second timeout, but returned after no longer than 2 seconds
+            Assert.InRange(stopWatch.Elapsed.TotalMilliseconds, 900, 2000);
+            Assert.True(timedOut);
         }
 
         [Fact]

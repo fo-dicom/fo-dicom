@@ -99,17 +99,6 @@ namespace FellowOakDicom.Tests.IO
             }
         }
 
-        [Fact]
-        public void Create_StoragePathNull_FileAttributesContainTempFlag()
-        {
-            lock (_locker)
-            {
-                TemporaryFile.StoragePath = null;
-                var path = TemporaryFile.Create().Name;
-                Assert.True((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
-            }
-        }
-
         #endregion
     }
 }

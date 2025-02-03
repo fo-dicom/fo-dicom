@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [FactForNetCore]
         public void CheckLossyCompressionRatio_HasAddedMultiValueAfterCompression()
         {
-            var file = DicomFile.Open(TestData.Resolve("GH538-JPEG1.dcm"));
+            var file = DicomFile.Open(TestData.Resolve("GH538-jpeg1.dcm"));
             var oldRatios = file.Dataset.GetValues<string>(DicomTag.LossyImageCompressionRatio);
             var ds = file.Clone(DicomTransferSyntax.JPEGProcess1).Dataset;
             var newRatios = ds.GetValues<string>(DicomTag.LossyImageCompressionRatio);
@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         [FactForNetCore]
         public void CheckLossyCompressionRatio_HasSingleValueAfterCompression()
         {
-            var file = DicomFile.Open(TestData.Resolve("GH538-JPEG14SV1.dcm"));
+            var file = DicomFile.Open(TestData.Resolve("GH538-jpeg14sv1.dcm"));
             var ds = file.Clone(DicomTransferSyntax.JPEGProcess1).Dataset;
             var ratios = ds.GetValues<string>(DicomTag.LossyImageCompressionRatio);
             Assert.Single(ratios);

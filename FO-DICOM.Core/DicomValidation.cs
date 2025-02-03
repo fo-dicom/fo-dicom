@@ -15,6 +15,8 @@ namespace FellowOakDicom
 
         public static void ValidateAE(string content)
         {
+            HandleNullValue(content, DicomVR.AE);
+
             // may not be longer than 16 characters
             if (content.Length > 16)
             {
@@ -35,6 +37,7 @@ namespace FellowOakDicom
 
         public static void ValidateAS(string content)
         {
+            HandleNullValue(content, DicomVR.AS);
             if (string.IsNullOrEmpty(content))
             {
                 return;
@@ -51,6 +54,8 @@ namespace FellowOakDicom
 
         public static void ValidateCS(string content)
         {
+            HandleNullValue(content, DicomVR.CS);
+
             // 16 bytes maximum
             if (content.Length > 16)
             {
@@ -66,6 +71,8 @@ namespace FellowOakDicom
 
         public static void ValidateDA(string content)
         {
+            HandleNullValue(content, DicomVR.DA);
+
             /*
             A string of characters of the format YYYYMMDD; where YYYY shall contain year, MM shall contain the
             month, and DD shall contain the day, interpreted as a date of the Gregorian calendar system.
@@ -113,6 +120,8 @@ namespace FellowOakDicom
 
         public static void ValidateDS(string content)
         {
+            HandleNullValue(content, DicomVR.DS);
+
             // 16 bytes maximum
             if (content.Length > 16)
             {
@@ -130,6 +139,8 @@ namespace FellowOakDicom
 
         public static void ValidateDT(string content)
         {
+            HandleNullValue(content, DicomVR.DT);
+
             /*
              "0"-"9", "+", "-", "." and the SPACE character of Default Character Repertoire
 
@@ -353,6 +364,8 @@ namespace FellowOakDicom
 
         public static void ValidateIS(string content)
         {
+            HandleNullValue(content, DicomVR.IS);
+
             /* "0" - "9", "+", "-" of Default Character Repertoire
 
             12 bytes maximum
@@ -389,6 +402,8 @@ namespace FellowOakDicom
 
         public static void ValidateLO(string content)
         {
+            HandleNullValue(content, DicomVR.LO);
+
             /*
              * Default Character Repertoire and/or as defined by (0008,0005).
              *
@@ -419,6 +434,7 @@ namespace FellowOakDicom
 
         public static void ValidateLT(string content)
         {
+            HandleNullValue(content, DicomVR.LT);
             if (string.IsNullOrEmpty(content))
             {
                 return;
@@ -444,6 +460,7 @@ namespace FellowOakDicom
 
         public static void ValidatePN(string content)
         {
+            HandleNullValue(content, DicomVR.PN);
             /*
             A character string encoded using a 5 component convention. The character code 5CH (the
             BACKSLASH "\" in ISO-IR 6) shall not be present, as it is used as the delimiter between
@@ -517,6 +534,8 @@ namespace FellowOakDicom
 
         public static void ValidateSH(string content)
         {
+            HandleNullValue(content, DicomVR.SH);
+
             /*
              A character string that may be padded with leading and/or trailing spaces. The character
              code 05CH (the BACKSLASH "\" in ISO-IR 6) shall not be present, as it is used as the
@@ -541,6 +560,8 @@ namespace FellowOakDicom
 
         public static void ValidateST(string content)
         {
+            HandleNullValue(content, DicomVR.ST);
+
             /*
              A character string that may contain one or more paragraphs. It may contain the Graphic
              Character set and the Control Characters, CR, LF, FF, and ESC. It may be padded with
@@ -559,8 +580,10 @@ namespace FellowOakDicom
         }
 
 
-        public static void ValidateTM (string content)
+        public static void ValidateTM(string content)
         {
+            HandleNullValue(content, DicomVR.TM);
+
             /*
              A string of characters of the format HHMMSS.FFFFFF; where HH contains hours (range "00" - "23"),
              MM contains minutes (range "00" - "59"), SS contains seconds (range "00" - "60"), and FFFFFF
@@ -645,6 +668,8 @@ namespace FellowOakDicom
 
         public static void ValidateUI(string content)
         {
+            HandleNullValue(content, DicomVR.UI);
+
             /*
              The UID is a series of numeric components separated by the period "." character.
              If a Value Field containing one or more UIDs is an odd number of bytes in length,
@@ -684,6 +709,14 @@ namespace FellowOakDicom
 
         private static bool IsControlExceptESC(char c)
             => char.IsControl(c) && (c != '\u001b');
+
+        private static void HandleNullValue(string content, DicomVR vr)
+        {
+            if (content == null)
+            {
+                throw new DicomValidationException(null, vr, "value is null");
+            }
+        }
 
     }
 

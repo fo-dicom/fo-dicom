@@ -6,6 +6,8 @@ using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.Tests.Helpers;
 using System.IO;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,6 +19,19 @@ namespace FellowOakDicom.Tests.IO.Reader
     {
 
         #region Unit tests
+
+        [Fact]
+        public async Task ReadFromNetworkStreamAsync()
+        {
+            var client = new HttpClient();
+            using var stream = await client.GetStreamAsync("https://github.com/fo-dicom/fo-dicom/raw/refs/heads/development/Tests/FO-DICOM.Tests/Test%20Data/CT-MONO2-16-ankle");
+
+            var dicomfile = await DicomFile.OpenAsync(stream, FileReadOption.ReadAll);
+
+            Assert.NotNull(dicomfile);
+            Assert.Equal(47, dicomfile.Dataset.Count());
+        }
+
 
         [Fact]
         public void ReadLargeFileFromStream()

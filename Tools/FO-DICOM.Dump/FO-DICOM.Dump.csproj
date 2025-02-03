@@ -7,10 +7,11 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>fo-dicom.Dump</AssemblyName>
     <Platforms>AnyCPU;x64</Platforms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Codecs" Version="5.13.0" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.15.4" />
   </ItemGroup>
 
   <ItemGroup>

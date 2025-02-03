@@ -19,7 +19,7 @@ To override this selection upon rendering, for example using a color table loade
 ```csharp
     public static ILUT CreateFromDataset(DicomDataset dataset, Color32[] colorTable)
     {
-      var options = GrayscaleRenderOptions.FromDataset(dataset);
+      var options = GrayscaleRenderOptions.FromDataset(dataset, 0);
 
       var composite = new CompositeLUT();
       OutputLUT output;
