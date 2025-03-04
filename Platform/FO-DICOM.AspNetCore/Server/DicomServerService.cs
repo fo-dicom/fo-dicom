@@ -2,9 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.AspNetCore.Configs;
 using FellowOakDicom.Network;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,16 +14,13 @@ namespace FellowOakDicom.AspNetCore.Server
     class DicomServerService<T> : IHostedService where T : DicomService, IDicomServiceProvider
     {
         private IDicomServer _server;
-        private IDicomServerFactory _serverFactory;
-        private IConfiguration _configuration;
+        private readonly IDicomServerFactory _serverFactory;
+        private readonly IOptions<DicomConfiguration> _options;
 
-        public DicomServerServiceOptions Options { get; set; } = new DicomServerServiceOptions();
-
-        public DicomServerService(IConfiguration configuration, IDicomServerFactory serverFactory)
+        public DicomServerService(IDicomServerFactory serverFactory, IOptions<DicomConfiguration> serviceOptions)
         {
             _serverFactory = serverFactory;
-            // TODO: get settings
-            _configuration = configuration;
+            _options = serviceOptions;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -30,7 +28,7 @@ namespace FellowOakDicom.AspNetCore.Server
             // preload dictionary to prevent tiemouts
             _ = DicomDictionary.Default;
             _server = _serverFactory.Create<T>(
-                Options.Port
+                _options.Value.Server.Port
                 );
             return Task.CompletedTask;
         }

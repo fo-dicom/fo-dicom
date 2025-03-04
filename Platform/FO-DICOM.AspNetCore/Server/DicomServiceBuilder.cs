@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.AspNetCore.Configs;
 using FellowOakDicom.Network;
 using System;
 using System.Threading.Tasks;
@@ -13,11 +14,18 @@ namespace FellowOakDicom.AspNetCore.Server
         internal Func<DicomCEchoRequest, DicomCEchoResponse> EchoHandler { get; set; } = null;
         internal Func<DicomAssociation, bool> AssociationRequestHandler { get; set; } = null;
         internal Func<InstanceReceivedEventArgs, Task<bool>> InstanceReceivedHandlerAsync { get; set; } = null;
+        internal Action<DicomConfiguration> ConfigureAction { get; set; } = null;
 
         internal DicomServiceBuilder()
         {
         }
 
+
+        public DicomServiceBuilder Configure(Action<DicomConfiguration> configureAction)
+        {
+            ConfigureAction = configureAction;
+            return this;
+        }
 
         /// <summary>
         /// Sets a custom handler to be executed on AssociationRequest
