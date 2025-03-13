@@ -404,11 +404,10 @@ namespace FellowOakDicom.IO.Reader
                 {
                     if (tag.Element == 0x0000)
                     {
-                        // Group Length to UL
+                        // Group Length should be UL
                         // change 20161216: if changing from UN to UL then ParseLength causes a error, since length in UL is 2 bytes while length in UN is 6 bytes. 
                         // so the source hat UN and coded the length in 6 bytes. if here the VR was changed to UL then ParseLength would only read 2 bytes and the parser is then wrong.
                         // but no worry: in ParseValue in the first lines there is a lookup in the Dictionary of DicomTags and there the VR is changed to UL so that the value is finally interpreted correctly as UL.
-                        vr = DicomVR.UL;
                         return true;
                     }
                     if (_isExplicitVR ^ handleBadPrivateSequence)
