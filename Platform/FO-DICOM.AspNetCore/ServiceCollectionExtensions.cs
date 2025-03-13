@@ -16,6 +16,9 @@ namespace FellowOakDicom.AspNetCore
     public static class ServiceCollectionExtensions
     {
 
+        /// <summary>
+        /// Adds default implementations of all required services to the collection if the services haven't already been registered
+        /// </summary>
         public static IServiceCollection UseFellowOakDicom(this IServiceCollection services)
             => services.AddFellowOakDicom()
                 .AddTransient<IHostedService, DicomInitializationHelper>(provider => {

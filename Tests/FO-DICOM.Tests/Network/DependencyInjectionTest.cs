@@ -5,6 +5,8 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +55,36 @@ namespace FellowOakDicom.Tests.Network
             Assert.False(string.IsNullOrEmpty(value));
         }
 
+        [Fact]
+        public void DependencyShouldNotOverwrite()
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddFellowOakDicom()
+                .AddImageManager<MyCustomImageManager>()
+                .AddTranscoderManager<MyCustomTranscoderManager>()
+                .AddFellowOakDicom();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var imageService = serviceProvider.GetRequiredService<IImageManager>();
+            var transcoderService = serviceProvider.GetRequiredService<ITranscoderManager>();
+            Assert.IsType<MyCustomImageManager>(imageService);
+            Assert.IsType<MyCustomTranscoderManager>(transcoderService);
+        }
+
+    }
+
+
+    public class MyCustomImageManager : IImageManager
+    {
+        public IImage CreateImage(int width, int height) => throw new NotImplementedException();
+    }
+
+    public class MyCustomTranscoderManager : ITranscoderManager
+    {
+        public bool CanTranscode(DicomTransferSyntax inSyntax, DicomTransferSyntax outSyntax) => throw new NotImplementedException();
+        public IDicomCodec GetCodec(DicomTransferSyntax syntax) => throw new NotImplementedException();
+        public bool HasCodec(DicomTransferSyntax syntax) => throw new NotImplementedException();
+        public void LoadCodecs(string path = null, string search = null) => throw new NotImplementedException();
     }
 
 

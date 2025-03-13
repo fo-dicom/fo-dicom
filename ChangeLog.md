@@ -1,5 +1,5 @@
 ### 5.2.1 (TBD)
-
+- UseFellowOakDicom registers the default services only if there are not yet some services registered (#1929)
 
 ### 5.2.0 (2025-02-03)
 - refactor the parser to make it better maintainable
