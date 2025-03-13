@@ -881,6 +881,18 @@ namespace FellowOakDicom
         ///<summary>(0008,1250) VR=SQ VM=1 Related Series Sequence</summary>
         public readonly static DicomTag RelatedSeriesSequence = new DicomTag(0x0008, 0x1250);
 
+        ///<summary>(0008,1301) VR=SQ VM=1 Principal Diagnosis Code Sequence</summary>
+        public readonly static DicomTag PrincipalDiagnosisCodeSequence = new DicomTag(0x0008, 0x1301);
+
+        ///<summary>(0008,1302) VR=SQ VM=1 Primary Diagnosis Code Sequence</summary>
+        public readonly static DicomTag PrimaryDiagnosisCodeSequence = new DicomTag(0x0008, 0x1302);
+
+        ///<summary>(0008,1303) VR=SQ VM=1 Secondary Diagnoses Code Sequence</summary>
+        public readonly static DicomTag SecondaryDiagnosesCodeSequence = new DicomTag(0x0008, 0x1303);
+
+        ///<summary>(0008,1304) VR=SQ VM=1 Histological Diagnoses Code Sequence</summary>
+        public readonly static DicomTag HistologicalDiagnosesCodeSequence = new DicomTag(0x0008, 0x1304);
+
         ///<summary>(0008,2110) VR=CS VM=1 Lossy Image Compression (Retired) (RETIRED)</summary>
         public readonly static DicomTag LossyImageCompressionRetiredRETIRED = new DicomTag(0x0008, 0x2110);
 
@@ -8573,6 +8585,63 @@ namespace FellowOakDicom
         ///<summary>(0040,B020) VR=SQ VM=1 Waveform Annotation Sequence</summary>
         public readonly static DicomTag WaveformAnnotationSequence = new DicomTag(0x0040, 0xB020);
 
+        ///<summary>(0040,B030) VR=SQ VM=1 Structured Waveform Annotation Sequence</summary>
+        public readonly static DicomTag StructuredWaveformAnnotationSequence = new DicomTag(0x0040, 0xB030);
+
+        ///<summary>(0040,B031) VR=SQ VM=1 Waveform Annotation Display Selection Sequence</summary>
+        public readonly static DicomTag WaveformAnnotationDisplaySelectionSequence = new DicomTag(0x0040, 0xB031);
+
+        ///<summary>(0040,B032) VR=US VM=1 Referenced Montage Index</summary>
+        public readonly static DicomTag ReferencedMontageIndex = new DicomTag(0x0040, 0xB032);
+
+        ///<summary>(0040,B033) VR=SQ VM=1 Waveform Textual Annotation Sequence</summary>
+        public readonly static DicomTag WaveformTextualAnnotationSequence = new DicomTag(0x0040, 0xB033);
+
+        ///<summary>(0040,B034) VR=DT VM=1 Annotation DateTime</summary>
+        public readonly static DicomTag AnnotationDateTime = new DicomTag(0x0040, 0xB034);
+
+        ///<summary>(0040,B035) VR=SQ VM=1 Displayed Waveform Segment Sequence</summary>
+        public readonly static DicomTag DisplayedWaveformSegmentSequence = new DicomTag(0x0040, 0xB035);
+
+        ///<summary>(0040,B036) VR=DT VM=1 Segment Definition DateTime</summary>
+        public readonly static DicomTag SegmentDefinitionDateTime = new DicomTag(0x0040, 0xB036);
+
+        ///<summary>(0040,B037) VR=SQ VM=1 Montage Activation Sequence</summary>
+        public readonly static DicomTag MontageActivationSequence = new DicomTag(0x0040, 0xB037);
+
+        ///<summary>(0040,B038) VR=DS VM=1 Montage Activation Time Offset</summary>
+        public readonly static DicomTag MontageActivationTimeOffset = new DicomTag(0x0040, 0xB038);
+
+        ///<summary>(0040,B039) VR=SQ VM=1 Waveform Montage Sequence</summary>
+        public readonly static DicomTag WaveformMontageSequence = new DicomTag(0x0040, 0xB039);
+
+        ///<summary>(0040,B03A) VR=IS VM=1 Referenced Montage Channel Number</summary>
+        public readonly static DicomTag ReferencedMontageChannelNumber = new DicomTag(0x0040, 0xB03A);
+
+        ///<summary>(0040,B03B) VR=LT VM=1 Montage Name</summary>
+        public readonly static DicomTag MontageName = new DicomTag(0x0040, 0xB03B);
+
+        ///<summary>(0040,B03C) VR=SQ VM=1 Montage Channel Sequence</summary>
+        public readonly static DicomTag MontageChannelSequence = new DicomTag(0x0040, 0xB03C);
+
+        ///<summary>(0040,B03D) VR=US VM=1 Montage Index</summary>
+        public readonly static DicomTag MontageIndex = new DicomTag(0x0040, 0xB03D);
+
+        ///<summary>(0040,B03E) VR=IS VM=1 Montage Channel Number</summary>
+        public readonly static DicomTag MontageChannelNumber = new DicomTag(0x0040, 0xB03E);
+
+        ///<summary>(0040,B03F) VR=LO VM=1 Montage Channel Label</summary>
+        public readonly static DicomTag MontageChannelLabel = new DicomTag(0x0040, 0xB03F);
+
+        ///<summary>(0040,B040) VR=SQ VM=1 Montage Channel Source Code Sequence</summary>
+        public readonly static DicomTag MontageChannelSourceCodeSequence = new DicomTag(0x0040, 0xB040);
+
+        ///<summary>(0040,B041) VR=SQ VM=1 Contributing Channel Sources Sequence</summary>
+        public readonly static DicomTag ContributingChannelSourcesSequence = new DicomTag(0x0040, 0xB041);
+
+        ///<summary>(0040,B042) VR=FL VM=1 Channel Weight</summary>
+        public readonly static DicomTag ChannelWeight = new DicomTag(0x0040, 0xB042);
+
         ///<summary>(0040,DB00) VR=CS VM=1 Template Identifier</summary>
         public readonly static DicomTag TemplateIdentifier = new DicomTag(0x0040, 0xDB00);
 
@@ -9106,6 +9175,9 @@ namespace FellowOakDicom
 
         ///<summary>(0048,0303) VR=UL VM=1 Total Pixel Matrix Focal Planes</summary>
         public readonly static DicomTag TotalPixelMatrixFocalPlanes = new DicomTag(0x0048, 0x0303);
+
+        ///<summary>(0048,0304) VR=CS VM=1 Tiles Overlap</summary>
+        public readonly static DicomTag TilesOverlap = new DicomTag(0x0048, 0x0304);
 
         ///<summary>(0050,0004) VR=CS VM=1 Calibration Image</summary>
         public readonly static DicomTag CalibrationImage = new DicomTag(0x0050, 0x0004);

@@ -77,6 +77,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.SMPTEST211020UncompressedProgressiveActiveVideo.UID, DicomUID.SMPTEST211020UncompressedProgressiveActiveVideo);
             _uids.Add(DicomUID.SMPTEST211020UncompressedInterlacedActiveVideo.UID, DicomUID.SMPTEST211020UncompressedInterlacedActiveVideo);
             _uids.Add(DicomUID.SMPTEST211030PCMDigitalAudio.UID, DicomUID.SMPTEST211030PCMDigitalAudio);
+            _uids.Add(DicomUID.DeflatedImageFrameCompression.UID, DicomUID.DeflatedImageFrameCompression);
             _uids.Add(DicomUID.MediaStorageDirectoryStorage.UID, DicomUID.MediaStorageDirectoryStorage);
             _uids.Add(DicomUID.HotIronPalette.UID, DicomUID.HotIronPalette);
             _uids.Add(DicomUID.PETPalette.UID, DicomUID.PETPalette);
@@ -201,6 +202,8 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.ElectrooculogramWaveformStorage.UID, DicomUID.ElectrooculogramWaveformStorage);
             _uids.Add(DicomUID.SleepElectroencephalogramWaveformStorage.UID, DicomUID.SleepElectroencephalogramWaveformStorage);
             _uids.Add(DicomUID.BodyPositionWaveformStorage.UID, DicomUID.BodyPositionWaveformStorage);
+            _uids.Add(DicomUID.WaveformPresentationStateStorage.UID, DicomUID.WaveformPresentationStateStorage);
+            _uids.Add(DicomUID.WaveformAcquisitionPresentationStateStorage.UID, DicomUID.WaveformAcquisitionPresentationStateStorage);
             _uids.Add(DicomUID.StandaloneModalityLUTStorageRETIRED.UID, DicomUID.StandaloneModalityLUTStorageRETIRED);
             _uids.Add(DicomUID.StandaloneVOILUTStorageRETIRED.UID, DicomUID.StandaloneVOILUTStorageRETIRED);
             _uids.Add(DicomUID.GrayscaleSoftcopyPresentationStateStorage.UID, DicomUID.GrayscaleSoftcopyPresentationStateStorage);
@@ -2056,6 +2059,9 @@ namespace FellowOakDicom
         ///<summary>Transfer Syntax: SMPTE ST 2110-30 PCM Digital Audio</summary>
         public static readonly DicomUID SMPTEST211030PCMDigitalAudio = new DicomUID("1.2.840.10008.1.2.7.3", "SMPTE ST 2110-30 PCM Digital Audio", DicomUidType.TransferSyntax, false);
 
+        ///<summary>Transfer Syntax: Deflated Image Frame Compression</summary>
+        public static readonly DicomUID DeflatedImageFrameCompression = new DicomUID("1.2.840.10008.1.2.8.1", "Deflated Image Frame Compression", DicomUidType.TransferSyntax, false);
+
         ///<summary>SOP Class: Media Storage Directory Storage</summary>
         public static readonly DicomUID MediaStorageDirectoryStorage = new DicomUID("1.2.840.10008.1.3.10", "Media Storage Directory Storage", DicomUidType.SOPClass, false);
 
@@ -2427,6 +2433,12 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Body Position Waveform Storage</summary>
         public static readonly DicomUID BodyPositionWaveformStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.8.1", "Body Position Waveform Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Waveform Presentation State Storage</summary>
+        public static readonly DicomUID WaveformPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.100.1", "Waveform Presentation State Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Waveform Acquisition Presentation State Storage</summary>
+        public static readonly DicomUID WaveformAcquisitionPresentationStateStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.9.100.2", "Waveform Acquisition Presentation State Storage", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Standalone Modality LUT Storage (Retired)</summary>
         public static readonly DicomUID StandaloneModalityLUTStorageRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.10", "Standalone Modality LUT Storage (Retired)", DicomUidType.SOPClass, true);

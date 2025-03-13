@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2025 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2024e">
+<dictionary version="2025a">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -295,6 +295,10 @@
     <tag group="0008" element="119B" keyword="FailedStudySequence" vr="SQ" vm="1">Failed Study Sequence</tag>
     <tag group="0008" element="1200" keyword="StudiesContainingOtherReferencedInstancesSequence" vr="SQ" vm="1">Studies Containing Other Referenced Instances Sequence</tag>
     <tag group="0008" element="1250" keyword="RelatedSeriesSequence" vr="SQ" vm="1">Related Series Sequence</tag>
+    <tag group="0008" element="1301" keyword="PrincipalDiagnosisCodeSequence" vr="SQ" vm="1">Principal Diagnosis Code Sequence</tag>
+    <tag group="0008" element="1302" keyword="PrimaryDiagnosisCodeSequence" vr="SQ" vm="1">Primary Diagnosis Code Sequence</tag>
+    <tag group="0008" element="1303" keyword="SecondaryDiagnosesCodeSequence" vr="SQ" vm="1">Secondary Diagnoses Code Sequence</tag>
+    <tag group="0008" element="1304" keyword="HistologicalDiagnosesCodeSequence" vr="SQ" vm="1">Histological Diagnoses Code Sequence</tag>
     <tag group="0008" element="2110" keyword="LossyImageCompressionRetired" vr="CS" vm="1" retired="true">Lossy Image Compression (Retired)</tag>
     <tag group="0008" element="2111" keyword="DerivationDescription" vr="ST" vm="1">Derivation Description</tag>
     <tag group="0008" element="2112" keyword="SourceImageSequence" vr="SQ" vm="1">Source Image Sequence</tag>
@@ -2859,6 +2863,25 @@
     <tag group="0040" element="A808" keyword="CellValuesSequence" vr="SQ" vm="1">Cell Values Sequence</tag>
     <tag group="0040" element="A992" keyword="UniformResourceLocatorTrial" vr="ST" vm="1" retired="true">Uniform Resource Locator (Trial)</tag>
     <tag group="0040" element="B020" keyword="WaveformAnnotationSequence" vr="SQ" vm="1">Waveform Annotation Sequence</tag>
+    <tag group="0040" element="B030" keyword="StructuredWaveformAnnotationSequence" vr="SQ" vm="1">Structured Waveform Annotation Sequence</tag>
+    <tag group="0040" element="B031" keyword="WaveformAnnotationDisplaySelectionSequence" vr="SQ" vm="1">Waveform Annotation Display Selection Sequence</tag>
+    <tag group="0040" element="B032" keyword="ReferencedMontageIndex" vr="US" vm="1">Referenced Montage Index</tag>
+    <tag group="0040" element="B033" keyword="WaveformTextualAnnotationSequence" vr="SQ" vm="1">Waveform Textual Annotation Sequence</tag>
+    <tag group="0040" element="B034" keyword="AnnotationDateTime" vr="DT" vm="1">Annotation DateTime</tag>
+    <tag group="0040" element="B035" keyword="DisplayedWaveformSegmentSequence" vr="SQ" vm="1">Displayed Waveform Segment Sequence</tag>
+    <tag group="0040" element="B036" keyword="SegmentDefinitionDateTime" vr="DT" vm="1">Segment Definition DateTime</tag>
+    <tag group="0040" element="B037" keyword="MontageActivationSequence" vr="SQ" vm="1">Montage Activation Sequence</tag>
+    <tag group="0040" element="B038" keyword="MontageActivationTimeOffset" vr="DS" vm="1">Montage Activation Time Offset</tag>
+    <tag group="0040" element="B039" keyword="WaveformMontageSequence" vr="SQ" vm="1">Waveform Montage Sequence</tag>
+    <tag group="0040" element="B03A" keyword="ReferencedMontageChannelNumber" vr="IS" vm="1">Referenced Montage Channel Number</tag>
+    <tag group="0040" element="B03B" keyword="MontageName" vr="LT" vm="1">Montage Name</tag>
+    <tag group="0040" element="B03C" keyword="MontageChannelSequence" vr="SQ" vm="1">Montage Channel Sequence</tag>
+    <tag group="0040" element="B03D" keyword="MontageIndex" vr="US" vm="1">Montage Index</tag>
+    <tag group="0040" element="B03E" keyword="MontageChannelNumber" vr="IS" vm="1">Montage Channel Number</tag>
+    <tag group="0040" element="B03F" keyword="MontageChannelLabel" vr="LO" vm="1">Montage Channel Label</tag>
+    <tag group="0040" element="B040" keyword="MontageChannelSourceCodeSequence" vr="SQ" vm="1">Montage Channel Source Code Sequence</tag>
+    <tag group="0040" element="B041" keyword="ContributingChannelSourcesSequence" vr="SQ" vm="1">Contributing Channel Sources Sequence</tag>
+    <tag group="0040" element="B042" keyword="ChannelWeight" vr="FL" vm="1">Channel Weight</tag>
     <tag group="0040" element="DB00" keyword="TemplateIdentifier" vr="CS" vm="1">Template Identifier</tag>
     <tag group="0040" element="DB06" keyword="TemplateVersion" vr="DT" vm="1" retired="true">Template Version</tag>
     <tag group="0040" element="DB07" keyword="TemplateLocalVersion" vr="DT" vm="1" retired="true">Template Local Version</tag>
@@ -3037,6 +3060,7 @@
     <tag group="0048" element="0301" keyword="PixelOriginInterpretation" vr="CS" vm="1">Pixel Origin Interpretation</tag>
     <tag group="0048" element="0302" keyword="NumberOfOpticalPaths" vr="UL" vm="1">Number of Optical Paths</tag>
     <tag group="0048" element="0303" keyword="TotalPixelMatrixFocalPlanes" vr="UL" vm="1">Total Pixel Matrix Focal Planes</tag>
+    <tag group="0048" element="0304" keyword="TilesOverlap" vr="CS" vm="1">Tiles Overlap</tag>
     <tag group="0050" element="0004" keyword="CalibrationImage" vr="CS" vm="1">Calibration Image</tag>
     <tag group="0050" element="0010" keyword="DeviceSequence" vr="SQ" vm="1">Device Sequence</tag>
     <tag group="0050" element="0012" keyword="ContainerComponentTypeCodeSequence" vr="SQ" vm="1">Container Component Type Code Sequence</tag>
@@ -5345,6 +5369,7 @@
     <uid uid="1.2.840.10008.1.2.7.1" keyword="SMPTEST211020UncompressedProgressiveActiveVideo" type="Transfer Syntax">SMPTE ST 2110-20 Uncompressed Progressive Active Video</uid>
     <uid uid="1.2.840.10008.1.2.7.2" keyword="SMPTEST211020UncompressedInterlacedActiveVideo" type="Transfer Syntax">SMPTE ST 2110-20 Uncompressed Interlaced Active Video</uid>
     <uid uid="1.2.840.10008.1.2.7.3" keyword="SMPTEST211030PCMDigitalAudio" type="Transfer Syntax">SMPTE ST 2110-30 PCM Digital Audio</uid>
+    <uid uid="1.2.840.10008.1.2.8.1" keyword="DeflatedImageFrameCompression" type="Transfer Syntax">Deflated Image Frame Compression</uid>
     <uid uid="1.2.840.10008.1.3.10" keyword="MediaStorageDirectoryStorage" type="SOP Class">Media Storage Directory Storage</uid>
     <uid uid="1.2.840.10008.1.5.1" keyword="HotIronPalette" type="Well-known SOP Instance">Hot Iron Color Palette SOP Instance</uid>
     <uid uid="1.2.840.10008.1.5.2" keyword="PETPalette" type="Well-known SOP Instance">PET Color Palette SOP Instance</uid>
@@ -5469,6 +5494,8 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.9.7.3" keyword="ElectrooculogramWaveformStorage" type="SOP Class">Electrooculogram Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.7.4" keyword="SleepElectroencephalogramWaveformStorage" type="SOP Class">Sleep Electroencephalogram Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.9.8.1" keyword="BodyPositionWaveformStorage" type="SOP Class">Body Position Waveform Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.9.100.1" keyword="WaveformPresentationStateStorage" type="SOP Class">Waveform Presentation State Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.9.100.2" keyword="WaveformAcquisitionPresentationStateStorage" type="SOP Class">Waveform Acquisition Presentation State Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.10" keyword="StandaloneModalityLUTStorage" type="SOP Class" retired="true">Standalone Modality LUT Storage (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11" keyword="StandaloneVOILUTStorage" type="SOP Class" retired="true">Standalone VOI LUT Storage (Retired)</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.11.1" keyword="GrayscaleSoftcopyPresentationStateStorage" type="SOP Class">Grayscale Softcopy Presentation State Storage</uid>
