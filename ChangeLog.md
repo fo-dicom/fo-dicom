@@ -1,4 +1,7 @@
-### 5.2.1 (TBD)
+### 5.2.2 (TBD)
+
+
+### 5.2.1 (2025-03-13)
 - Fixed regression in parser where group length of VR UN was parsed wrong (#1941)
 - UseFellowOakDicom registers the default services only if there are not yet some services registered (#1929)
 - update to DICOM Standard 2025a
