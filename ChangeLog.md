@@ -1,5 +1,5 @@
 ### 5.2.2 (TBD)
-
+- render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
 
 ### 5.2.1 (2025-03-13)
 - Fixed regression in parser where group length of VR UN was parsed wrong (#1941)
