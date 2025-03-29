@@ -178,7 +178,6 @@ namespace FellowOakDicom.IO
         public Task<IByteBuffer> GetBufferAsync(uint count) => Task.FromResult(GetBuffer(count));
 
         /// <inheritdoc />
-        /// <param name="count">Number of bytes to skip.</param>
         public void Skip(uint count) => _stream.Seek(count, SeekOrigin.Current);
 
         public void GoTo(long position) => _stream.Position = position;

@@ -156,7 +156,7 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Adds <see cref="TImageManager"/> services to the specified <see cref="IServiceCollection" />.
+        /// Adds <see cref="IImageManager"/> services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
@@ -167,7 +167,7 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Adds <see cref="TImageManager"/> services to the specified <see cref="IServiceCollection" /> if they are not already registered.
+        /// Adds <see cref="IImageManager"/> services to the specified <see cref="IServiceCollection" /> if they are not already registered.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
@@ -178,7 +178,7 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Adds <see cref="TNetworkManager"/> services to the specified <see cref="IServiceCollection" />.
+        /// Adds <see cref="INetworkManager"/> services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
@@ -189,7 +189,7 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Adds <see cref="TNetworkManager"/> services to the specified <see cref="IServiceCollection" /> if they are not already registered.
+        /// Adds <see cref="INetworkManager"/> services to the specified <see cref="IServiceCollection" /> if they are not already registered.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
