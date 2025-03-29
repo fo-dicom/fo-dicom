@@ -1,10 +1,10 @@
 ### Prerequisites for *development* branch
 
-Fellow Oak Dicom is developed with Visual Studio 2017 or later. 
+Fellow Oak Dicom is developed with Visual Studio 2022 or later. 
 
-*fo-dicom.core* targets .Net Standard 2.0 and uses C# 8 as language version. This requires NetCore3 SDK to be installed on the machine.
+*fo-dicom.core* targets .Net Standard 2.0 and uses C# 8 as language version. This requires at least NetCore3 SDK to be installed on the machine.
 
-*fo-dicom.Tests* are targeting .Net Framework 4.6.2, .Net Core 2.1 and .Net Core 3.1. In order to run the unittests you need to have those SDKs installed.
+*fo-dicom.Tests* are targeting .Net Framework 4.6.2, .Net 6 and .Net 8. In order to run the unittests you need to have those SDKs installed.
 
 
 ### Getting the source code
@@ -24,7 +24,6 @@ Tests/FO-DICOM.Tests | The xUnit based unit test project
 Tests/FO-DICOM.Tests.Windows | Windows-only unit test project
 Tests/FO-DICOM.Benchmark | This project executes a benchmark test for some typical actions like opening and parsing a dataset or sending a file via store scu and scp.
 Platform/* | Within this folder there are several projects, that contain some platform specific code and can be then registered in DI container.
-Logging/* | Projects integrating logging frameworks
 Serialization/* | Projects integrationg serialization into Json, Xml or any other format
 
 

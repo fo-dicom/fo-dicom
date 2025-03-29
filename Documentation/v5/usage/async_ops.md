@@ -41,7 +41,7 @@ To save an existing file:
 To asynchronously send a service request to some DICOM server:
 
 ```csharp
-    var client = new DicomClient("DICOMSERVER", 11112, false, "SCU", "ANY-SCP");
+    var client = DicomClientFactory.Create("DICOMSERVER", 11112, false, "SCU", "ANY-SCP");
     await client.AddRequestAsync(new DicomCEchoRequest());
     await client.SendAsync();
 ```
