@@ -1,6 +1,6 @@
 For grayscale images, *fo-dicom* by default applies the rendering options available in the DICOM dataset when rendering the actual image with `DicomImage.RenderImage`. By default, the rendering options identifies whether the colors should be displayed using the `Monochrome1` or `Monochrome2` color tables. To override this color scheme, the following workarounds are available.
 
-The `Color32[]` property `GrayscaleColorMap` has been added to the `DicomImage` class in *fo-dicom* version 2.0. By default, the color map is selected based on the Photometric Interpretation of the associated dataset (Monochrome 1 or 2), but it can be set to any 256 item `Color32` array prior to rendering the image.
+The `Color32[]` property `GrayscaleColorMap` has been added to the `DicomImage` class. By default, the color map is selected based on the Photometric Interpretation of the associated dataset (Monochrome 1 or 2), but it can be set to any 256 item `Color32` array prior to rendering the image.
 
 Example of applying arbitrary color map and then render image:
 
@@ -9,6 +9,8 @@ Example of applying arbitrary color map and then render image:
     di.GrayscaleColorMap = ColorTable.LoadLUT(lutFileName);
     var image = di.RenderImage();
 ```
+
+The `lutFileName` has to reference a binary file, with 768 bytes length. It has to contain the 3 bytes (red, green blue) for all 256 possible values.
 
 By default, grayscale images are rendered via the `Monochrome1` or `Monochrome2` color tables: 
 
