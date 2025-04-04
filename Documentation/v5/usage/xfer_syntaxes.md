@@ -1,6 +1,6 @@
 # Transfer Syntaxes for images
 
-Ony for images in TransferSyntaxes, extracting the pixel data is supported in fo-dicom.core.
+Only for images with transfer syntaxes contained in the following list, extracting the pixel data is supported in fo-dicom.core.
 
 Transfer Syntax UID | Description
 ----- | ------

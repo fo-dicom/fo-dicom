@@ -4,7 +4,7 @@ It has always been a important requirement for fo-dicom to be usable on as many 
 Take a look [here](#breaking-changes) at the **breaking changes** that you will have to handle if you upgrade an existing application based on fo-dicom 4 to use version 5.0.0.
 
 > [!NOTE]
-> To find all breaking changes in the latest version of fo-dicom compared to some previous versions, take a look at the [ReleaeNotes](https://github.com/fo-dicom/fo-dicom/wiki/Releases)
+> To find all breaking changes in the latest version of fo-dicom compared to some previous versions, take a look at the [ReleaseNotes](https://github.com/fo-dicom/fo-dicom/wiki/Releases)
 
 ### Changes
 
@@ -76,7 +76,7 @@ The new interface `IServiceProviderHost` manages, if there is an internal Servic
   * `DicomUIDGenerator.Generate()` and `DicomUIDGenerator.GenerateNew()`: use `DicomUIDGenerator.GenerateDerivedFromUUID()`
   * `DicomImage.Dataset`, `DicomImage.PixelData` and `DicomImage.PhotometricInterpretation`: do not load the DicomImage directly from filename if you also need access to the dataset, but load the DicomDataset from file first and then construct the DicomImage from this loaded DicomDataset. Then you can access both.
 
-* `DicomStringElement` and derived classes do not have the "encoding" parameter in constructor, that takes a string-value. And `DicomDataset.Add(OrUpdate)` does not take an "encoding" parameter any more. Instead add or update the SpecificCharacterSet tag in the DicomDataset if you want fo-dicom to use some certain encoding.
+* `DicomStringElement` and derived classes do not have the "encoding" parameter in constructor, that takes a string-value. And `DicomDataset.Add(OrUpdate)` does not take an "encoding" parameter any more. Instead add or update the SpecificCharacterSet tag in the DicomDataset if you want fo-dicom to use a certain encoding.
 
 * in update to DICOM2021a the keywords, that are provided by Nema, are used. therefore some DicomUID-Names changed.
 
