@@ -125,14 +125,14 @@ namespace FellowOakDicom.Imaging
         public static GrayscaleRenderOptions FromDataset(DicomDataset dataset, int frame)
         {
             GrayscaleRenderOptions grayscaleRenderOptions;
-            if (dataset.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) && windowWidth >= 1.0
+            if (dataset.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) && windowWidth > 0
                 && dataset.TryGetValue(DicomTag.WindowCenter, 0, out double _))
             {
                 // If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
                 grayscaleRenderOptions = FromWindowLevel(dataset, frame);
             }
             else if (dataset.FunctionalGroupValues(frame) is { } functionalGroupValues 
-                     && functionalGroupValues.TryGetValue(DicomTag.WindowWidth, 0, out double functionalWindowWidth) && functionalWindowWidth >= 1.0
+                     && functionalGroupValues.TryGetValue(DicomTag.WindowWidth, 0, out double functionalWindowWidth) && functionalWindowWidth > 0
                      && functionalGroupValues.TryGetValue(DicomTag.WindowCenter, 0, out double _))
             {
                 grayscaleRenderOptions = FromFunctionalWindowLevel(dataset, frame);
@@ -200,6 +200,12 @@ namespace FellowOakDicom.Imaging
                 voiLutFunction = "LINEAR";
             }
 
+            // #1905 LINEAR function requires a windowWidth of >= 1. So if windowWidth is lower, then LINEAR_EXACT has to be applied
+            if (windowWidth < 1.0 && voiLutFunction == "LINEAR")
+            {
+                voiLutFunction = "LINEAR_EXACT";
+            }
+
             var options = new GrayscaleRenderOptions(bits)
             {
                 RescaleSlope = dataset.Contains(DicomTag.RescaleSlope)
@@ -259,6 +265,12 @@ namespace FellowOakDicom.Imaging
             && !dataset.TryGetValue(DicomTag.VOILUTFunction, 0, out voiLutFunction))
             {
                 voiLutFunction = "LINEAR";
+            }
+
+            // #1905 LINEAR function requires a windowWidth of >= 1. So if windowWidth is lower, then LINEAR_EXACT has to be applied
+            if (windowWidth < 1.0 && voiLutFunction == "LINEAR")
+            {
+                voiLutFunction = "LINEAR_EXACT";
             }
 
             var bits = BitDepth.FromDataset(dataset);

@@ -13,7 +13,6 @@ namespace FellowOakDicom.Tests.Bugs
         [InlineData("NaN", "NaN")]
         [InlineData("100", "NaN")]
         [InlineData("NaN", "100")]
-        [InlineData("0.99", "100")]
         [InlineData("0", "100")]
         [InlineData("-1", "100")]
         public void GrayScaleRenderOptionsFromInvalidWindowCenterOrWidthShouldFallbackCorrectly(string windowWidth, string windowCenter)
