@@ -1563,6 +1563,7 @@ namespace FellowOakDicom.Network
     {
         private readonly IMemoryProvider _memoryProvider;
         private List<PDV> _pdVs;
+        private uint _sumLengthOfPDVs = 0;
 
         /// <summary>
         /// Initializes new P-DATA-TF
@@ -1579,24 +1580,31 @@ namespace FellowOakDicom.Network
         ~PDataTF() => Dispose(false);
 
         /// <summary>PDVs in this P-DATA-TF</summary>
-        public List<PDV> PDVs => _pdVs;
+        public IReadOnlyList<PDV> PDVs => _pdVs;
+
+        /// <summary>Adds a PDV to the PDVs in this P-DATA-TF</summary>
+        public void AddPDV(PDV pdv)
+        {
+            _pdVs.Add(pdv);
+            _sumLengthOfPDVs += pdv.PDVLength;
+        }
 
         /// <summary>Calculates the total length of the PDVs in this P-DATA-TF</summary>
         /// <returns>Length of PDVs</returns>
         public uint GetLengthOfPDVs()
         {
-            return (uint)_pdVs.Sum(pdv => pdv.PDVLength);
+            return _sumLengthOfPDVs;
         }
 
         public override string ToString()
         {
-            var value = $"P-DATA-TF [Length: {RawPDU.CommonFieldsLength + GetLengthOfPDVs()}]";
-            foreach (var pdv in PDVs)
+            var value = new StringBuilder("P-DATA-TF [Length: ").Append(RawPDU.CommonFieldsLength + GetLengthOfPDVs()).Append("]");
+            for (var i = 0; i < _pdVs.Count; i++)
             {
-                value += "\n\t" + pdv;
+                value.Append("\n\t").Append(_pdVs[i].ToString());
             }
 
-            return value;
+            return value.ToString();
         }
 
         #region Write
@@ -1622,9 +1630,9 @@ namespace FellowOakDicom.Network
 
         private void Write(RawPDU pdu)
         {
-            foreach (var pdv in _pdVs)
+            for (var i = 0; i < _pdVs.Count; i++)
             {
-                pdv.Write(pdu);
+                _pdVs[i].Write(pdu);
             }
         }
 
@@ -1644,7 +1652,7 @@ namespace FellowOakDicom.Network
             {
                 var pdv = new PDV(_memoryProvider);
                 read += pdv.Read(raw);
-                _pdVs.Add(pdv);
+                AddPDV(pdv);
             }
         }
 
@@ -1657,11 +1665,14 @@ namespace FellowOakDicom.Network
 
         private void Dispose(bool disposing)
         {
-            var pdvs = Interlocked.Exchange(ref _pdVs, new List<PDV>());
-            
-            foreach (var pdv in pdvs)
+            var pdvs = Interlocked.Exchange(ref _pdVs, null);
+            if (pdvs != null)
             {
-                pdv.Dispose();
+
+                for (var i = 0; i < pdvs.Count; i++)
+                {
+                    pdvs[i].Dispose();
+                }
             }
         }
     }

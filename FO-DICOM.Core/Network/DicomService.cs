@@ -735,8 +735,9 @@ namespace FellowOakDicom.Network
         {
             try
             {
-                foreach (var pdv in pdu.PDVs)
+                for (var i = 0; i < pdu.PDVs.Count; i++)
                 {
+                    var pdv = pdu.PDVs[i];
                     if (_dimse == null)
                     {
                         // create stream for receiving command
@@ -1817,7 +1818,7 @@ namespace FellowOakDicom.Network
                     }
 
                     var pdv = new PDV(_pcid, memory, _length, _command, last);
-                    _pdu.PDVs.Add(pdv);
+                    _pdu.AddPDV(pdv);
 
                     // reset length in case we recurse into WritePDU()
                     _length = 0;
