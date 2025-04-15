@@ -16,7 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [
-            { name: Windows, ver: windows-2022, runtime: win-x64 },
+            { name: Windows-x64, ver: windows-2022, runtime: win-x64 },
+            { name: Windows-arm, ver: windows-11-arm, runtime: win-arm64 },
             { name: Ubuntu-x64, ver: ubuntu-22.04, runtime: linux-x64 },
             { name: Ubuntu-arm, ver: ubuntu-22.04-arm, runtime: linux-arm64 },
             { name: macOS-x64, ver: macos-13, runtime: osx-x64 },
@@ -28,7 +29,7 @@ jobs:
           ]
         include:
           - frameworks: { name: ".NET Framework 4.6.2", common: "net462", win: "net462", coverage: "" }
-            os: { name: Windows, ver: windows-2022, runtime: win-x64 }
+            os: { name: Windows-x64, ver: windows-2022, runtime: win-x64 }
         exclude:
           # .NET 6 not available for macOS per default
           - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
@@ -50,17 +51,17 @@ jobs:
       if: success() || failure()
       uses: actions/upload-artifact@v4
       with:
-          name: test-v5-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
+          name: test-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
     - name: Test FO-DICOM.Tests.Windows
-      if: matrix.os.name == 'Windows'
-      run: dotnet test ./Tests/FO-DICOM.Tests.Windows/FO-DICOM.Tests.Windows.csproj --configuration Release --framework ${{ matrix.frameworks.win }} --blame --runtime win-x64 --logger:"trx;LogFileName=.\results-win-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
+      if: ${{ startsWith(matrix.os.name, 'Windows') }}
+      run: dotnet test ./Tests/FO-DICOM.Tests.Windows/FO-DICOM.Tests.Windows.csproj --configuration Release --framework ${{ matrix.frameworks.win }} --blame --runtime ${{ matrix.os.runtime }} --logger:"trx;LogFileName=.\results-${{ matrix.os.runtime }}-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results
-      if: matrix.os.name == 'Windows'
+      if: ${{ startsWith(matrix.os.name, 'Windows') }}
       uses: actions/upload-artifact@v4
       with:
-          name: test-v5-win-${{ matrix.frameworks.win }}.xml
-          path: ./Tests/FO-DICOM.Tests.Windows/TestResults/results-win-${{ matrix.frameworks.common }}.xml
+          name: test.windows-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
+          path: ./Tests/FO-DICOM.Tests.Windows/TestResults/results-${{ matrix.os.runtime }}-${{ matrix.frameworks.common }}.xml
     - name: Upload code coverage
       if: matrix.frameworks.coverage != ''
       uses: codecov/codecov-action@v5
