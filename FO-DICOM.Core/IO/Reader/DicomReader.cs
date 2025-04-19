@@ -550,6 +550,11 @@ namespace FellowOakDicom.IO.Reader
                 if (tag == DicomTag.ItemDelimitationItem || tag == DicomTag.SequenceDelimitationItem)
                 {
                     // end of sequence item
+                    // fix GE structured report (#1958): after the acutal dataset there is a single ItemDelimitationItem at the end of the file -> ignore it
+                    if (source.IsEOF && sequenceDepth == 0)
+                    {
+                        return true;
+                    }
                     return false;
                 }
 
