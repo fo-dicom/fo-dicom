@@ -30,8 +30,8 @@ jobs:
           git clone https://$API_TOKEN_GITHUB@github.com/fo-dicom/fo-dicom.github.io doc
           cd doc
           git checkout master
-      - name: Install requirements
-        run: choco install docfx -y
+      - name: Setup DocFx
+        uses: clFaster/docfx-setup-action@v1
       - name: Build documentation
         run: |
           cd dev/Documentation
@@ -47,7 +47,7 @@ jobs:
           git add -A
           if [ `git status -s | wc -l` = 0 ]; then
             echo "No changes in built documentation, skipping"
-            exit 0
+            exit 
           fi
           git commit -m "$LAST_COMMIT"
           git push origin master
