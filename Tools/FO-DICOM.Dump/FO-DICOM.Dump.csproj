@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -12,11 +12,13 @@
 
   <ItemGroup>
     <PackageReference Include="fo-dicom.Codecs" Version="5.15.4" />
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.116.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
-    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.Desktop\FO-DICOM.Imaging.Desktop.csproj" />
+    <ProjectReference Include="..\..\Platform\FO-DICOM.Imaging.SkiaSharp\FO-DICOM.Imaging.SkiaSharp.csproj" />
   </ItemGroup>
 
 </Project>
