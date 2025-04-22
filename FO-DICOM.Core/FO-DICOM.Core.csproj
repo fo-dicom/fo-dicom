@@ -15,10 +15,10 @@
     <Description>A NetStandard DICOM library.
 If you find some breaking changes when updating, read here for more information how to migrate: https://github.com/fo-dicom/fo-dicom/wiki/Upgrade-from-version-4-to-version-5</Description>
     <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
-    <Version>5.2.1</Version>
+    <Version>5.2.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <IncludeSymbols>true</IncludeSymbols>
-	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageId>fo-dicom</PackageId>
     <LangVersion>8.0</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>

@@ -15,6 +15,8 @@ set GenerateDocumentation=1
 
 @dotnet build ./../Platform/FO-DICOM.Imaging.ImageSharp.NetStandard/FO-DICOM.Imaging.ImageSharp.NetStandard.csproj --configuration Release
 
+@dotnet build ./../Platform/FO-DICOM.Imaging.SkiaSharp/FO-DICOM.Imaging.SkiaSharp.csproj --configuration Release
+
 @dotnet build ./../Serialization/FO-DICOM.Json/FO-DICOM.Json.csproj --configuration Release
 
 
