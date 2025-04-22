@@ -3,6 +3,8 @@
 #nullable disable
 
 using FellowOakDicom.Imaging;
+using SkiaSharp;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -17,6 +19,8 @@ namespace FellowOakDicom.Dump
         private Point _lastDownPosition;
         private DicomImage _image;
         private int _frameNumber;
+
+        private SKBitmap _currentView;
 
         public DicomImage ImageToDisplay
         {
@@ -41,14 +45,14 @@ namespace FellowOakDicom.Dump
         {
             if (_image == null)
             {
-                ImageView.Source = null;
+                _currentView = null;
+                SkiaImageView.InvalidateVisual();
                 return;
             }
 
             var img = _image.RenderImage(_frameNumber);
-            var sharpImage = img.AsWriteableBitmap();
-
-            ImageView.Source = sharpImage;
+            _currentView = img.AsSKBitmap();
+            SkiaImageView.InvalidateVisual();
         }
 
         private void ImageView_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -60,7 +64,7 @@ namespace FellowOakDicom.Dump
             else if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed)
             {
                 // window
-                var point = e.GetPosition(ImageView);
+                var point = e.GetPosition(SkiaImageView);
                 var delta = point - _lastDownPosition;
                 _lastDownPosition = point;
 
@@ -106,7 +110,26 @@ namespace FellowOakDicom.Dump
 
         private void ImageView_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            _lastDownPosition = e.GetPosition(ImageView);
+            _lastDownPosition = e.GetPosition(SkiaImageView);
+        }
+
+        private void SkiaImageView_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
+        {
+            var canvas = e.Surface.Canvas;
+            var info = e.Info;
+
+            canvas.Clear(SKColors.White);
+
+            if (_currentView != null)
+            {
+                float scale = Math.Min((float)info.Width / _currentView.Width,
+                               (float)info.Height / _currentView.Height);
+                float x = (info.Width - scale * _currentView.Width) / 2;
+                float y = (info.Height - scale * _currentView.Height) / 2;
+                var destRect = new SKRect(x, y, x + scale * _currentView.Width,
+                                                   y + scale * _currentView.Height);
+                canvas.DrawBitmap(_currentView, destRect);
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
     {
       "src": [
         {
-          "files": [ "**/*.cs" ],
+          "files": [ "FO-DICOM.Core.csproj" ],
           "exclude": [ "**/bin/**", "**/obj/**", "External/**" ],
           "src": "../../FO-DICOM.Core"
         }
@@ -19,7 +19,7 @@
         "dest": "api/"
       },
       {
-        "files": [ "index.md", "toc.yml" ],
+        "files": [ "index.md", "toc.yml" ]
       },
       {
         "files": [ "*.md", "toc.yml" ],
@@ -32,23 +32,44 @@
         "dest": "developer/"
       },
       {
-      "files": [ "*.md", "toc.yml" ],
+        "files": [ "*.md", "toc.yml" ],
         "src": "developer",
         "dest": "developer/"
       },
       {
         "files": [ "CONTRIBUTING.md" ],
-       "src": "../../.github",
+        "src": "../../.github",
         "dest": "developer/"
+      }
+    ],
+    "resource": [
+      {
+        "files": ["images/**"]
       }
     ],
     "template": [
       "default",
-      "../templates/fo-dicom"
+      "modern",
+      "templates/material",
+      "templates/fo-dicom"
     ],
     "globalMetadata": {
       "_appTitle": "Fellow Oak DICOM 5 API",
-      "_enableSearch": "true"
+      "_appName": "Fellow Oak DICOM",
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/favicon.ico",
+      "_appFooter": "Copyright (c) 2012-2025 fo-dicom contributors",
+      "_enableSearch": "true",
+      "_disableContribution": true
+    },
+    "postProcessors": [ "ExtractSearchIndex" ],
+    "markdownEngineProperties": {
+      "markdigExtensions": [
+        "Abbreviations",
+        "Footnotes",
+        "Bootstrap",
+        "Diagrams"
+      ]
     },
     "markdownEngineName": "markdig",
     "dest": "_site",

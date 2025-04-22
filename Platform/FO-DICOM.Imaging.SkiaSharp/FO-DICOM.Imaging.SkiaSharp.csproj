@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+		<RootNamespace>FellowOakDicom</RootNamespace>
+		<AssemblyName>fo-dicom.Imaging.SkiaSharp</AssemblyName>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<Version>5.2.1</Version>
+		<Authors>fo-dicom contributors</Authors>
+		<Copyright>Copyright (c) fo-dicom contributors 2012-2025</Copyright>
+		<Company>fo-dicom</Company>
+		<Product>Fellow Oak DICOM</Product>
+		<Description>A modern .NET imaging library for fo-dicom</Description>
+		<PackageReadmeFile>READMENuget.md</PackageReadmeFile>
+		<PackageLicenseExpression>MS-PL</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
+		<PackageIcon>FellowOakSquareTransp.png</PackageIcon>
+		<LangVersion>9</LangVersion>
+		<Platforms>AnyCPU;x64</Platforms>
+		<DebugType>Embedded</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SkiaSharp" Version="3.116.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\FO-DICOM.Core\FO-DICOM.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\FellowOakSquareTransp.png" Link="FellowOakSquareTransp.png">
+			<PackagePath></PackagePath>
+			<Pack>True</Pack>
+		</None>
+		<None Include="..\..\READMENuget.md" Link="READMENuget.md">
+			<PackagePath>\</PackagePath>
+			<Pack>true</Pack>
+		</None>
+	</ItemGroup>
+
+</Project>
