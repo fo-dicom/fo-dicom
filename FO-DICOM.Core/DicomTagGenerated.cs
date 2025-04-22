@@ -1082,6 +1082,24 @@ namespace FellowOakDicom
         ///<summary>(0010,0010) VR=PN VM=1 Patient's Name</summary>
         public readonly static DicomTag PatientName = new DicomTag(0x0010, 0x0010);
 
+        ///<summary>(0010,0011) VR=SQ VM=1 Person Names to Use Sequence</summary>
+        public readonly static DicomTag PersonNamesToUseSequence = new DicomTag(0x0010, 0x0011);
+
+        ///<summary>(0010,0012) VR=LT VM=1 Name to Use</summary>
+        public readonly static DicomTag NameToUse = new DicomTag(0x0010, 0x0012);
+
+        ///<summary>(0010,0013) VR=UT VM=1 Name to Use Comment</summary>
+        public readonly static DicomTag NameToUseComment = new DicomTag(0x0010, 0x0013);
+
+        ///<summary>(0010,0014) VR=SQ VM=1 Third Person Pronouns Sequence</summary>
+        public readonly static DicomTag ThirdPersonPronounsSequence = new DicomTag(0x0010, 0x0014);
+
+        ///<summary>(0010,0015) VR=SQ VM=1 Pronoun Code Sequence</summary>
+        public readonly static DicomTag PronounCodeSequence = new DicomTag(0x0010, 0x0015);
+
+        ///<summary>(0010,0016) VR=UT VM=1 Pronoun Comment</summary>
+        public readonly static DicomTag PronounComment = new DicomTag(0x0010, 0x0016);
+
         ///<summary>(0010,0020) VR=LO VM=1 Patient ID</summary>
         public readonly static DicomTag PatientID = new DicomTag(0x0010, 0x0020);
 
@@ -1120,6 +1138,27 @@ namespace FellowOakDicom
 
         ///<summary>(0010,0040) VR=CS VM=1 Patient's Sex</summary>
         public readonly static DicomTag PatientSex = new DicomTag(0x0010, 0x0040);
+
+        ///<summary>(0010,0041) VR=SQ VM=1 Gender Identity Sequence</summary>
+        public readonly static DicomTag GenderIdentitySequence = new DicomTag(0x0010, 0x0041);
+
+        ///<summary>(0010,0042) VR=UT VM=1 Sex Parameters for Clinical Use Category Comment</summary>
+        public readonly static DicomTag SexParametersForClinicalUseCategoryComment = new DicomTag(0x0010, 0x0042);
+
+        ///<summary>(0010,0043) VR=SQ VM=1 Sex Parameters for Clinical Use Category Sequence</summary>
+        public readonly static DicomTag SexParametersForClinicalUseCategorySequence = new DicomTag(0x0010, 0x0043);
+
+        ///<summary>(0010,0044) VR=SQ VM=1 Gender Identity Code Sequence</summary>
+        public readonly static DicomTag GenderIdentityCodeSequence = new DicomTag(0x0010, 0x0044);
+
+        ///<summary>(0010,0045) VR=UT VM=1 Gender Identity Comment</summary>
+        public readonly static DicomTag GenderIdentityComment = new DicomTag(0x0010, 0x0045);
+
+        ///<summary>(0010,0046) VR=SQ VM=1 Sex Parameters for Clinical Use Category Code Sequence</summary>
+        public readonly static DicomTag SexParametersForClinicalUseCategoryCodeSequence = new DicomTag(0x0010, 0x0046);
+
+        ///<summary>(0010,0047) VR=UR VM=1-n Sex Parameters for Clinical Use Category Reference</summary>
+        public readonly static DicomTag SexParametersForClinicalUseCategoryReference = new DicomTag(0x0010, 0x0047);
 
         ///<summary>(0010,0050) VR=SQ VM=1 Patient's Insurance Plan Code Sequence</summary>
         public readonly static DicomTag PatientInsurancePlanCodeSequence = new DicomTag(0x0010, 0x0050);
@@ -1244,11 +1283,14 @@ namespace FellowOakDicom
         ///<summary>(0010,2155) VR=LT VM=1 Patient's Telecom Information</summary>
         public readonly static DicomTag PatientTelecomInformation = new DicomTag(0x0010, 0x2155);
 
-        ///<summary>(0010,2160) VR=SH VM=1 Ethnic Group</summary>
-        public readonly static DicomTag EthnicGroup = new DicomTag(0x0010, 0x2160);
+        ///<summary>(0010,2160) VR=SH VM=1 Ethnic Group (RETIRED)</summary>
+        public readonly static DicomTag EthnicGroupRETIRED = new DicomTag(0x0010, 0x2160);
 
         ///<summary>(0010,2161) VR=SQ VM=1 Ethnic Group Code Sequence</summary>
         public readonly static DicomTag EthnicGroupCodeSequence = new DicomTag(0x0010, 0x2161);
+
+        ///<summary>(0010,2162) VR=UC VM=1-n Ethnic Groups</summary>
+        public readonly static DicomTag EthnicGroups = new DicomTag(0x0010, 0x2162);
 
         ///<summary>(0010,2180) VR=SH VM=1 Occupation</summary>
         public readonly static DicomTag Occupation = new DicomTag(0x0010, 0x2180);
@@ -1909,6 +1951,42 @@ namespace FellowOakDicom
 
         ///<summary>(0014,40A2) VR=LO VM=1-n Image Quality Indicator Size</summary>
         public readonly static DicomTag ImageQualityIndicatorSize = new DicomTag(0x0014, 0x40A2);
+
+        ///<summary>(0014,4101) VR=SQ VM=1 Wave Dimensions Definition Sequence</summary>
+        public readonly static DicomTag WaveDimensionsDefinitionSequence = new DicomTag(0x0014, 0x4101);
+
+        ///<summary>(0014,4102) VR=US VM=1 Wave Dimension Number</summary>
+        public readonly static DicomTag WaveDimensionNumber = new DicomTag(0x0014, 0x4102);
+
+        ///<summary>(0014,4103) VR=LO VM=1 Wave Dimension Description</summary>
+        public readonly static DicomTag WaveDimensionDescription = new DicomTag(0x0014, 0x4103);
+
+        ///<summary>(0014,4104) VR=US VM=1 Wave Dimension Unit</summary>
+        public readonly static DicomTag WaveDimensionUnit = new DicomTag(0x0014, 0x4104);
+
+        ///<summary>(0014,4105) VR=CS VM=1 Wave Dimension Value Type</summary>
+        public readonly static DicomTag WaveDimensionValueType = new DicomTag(0x0014, 0x4105);
+
+        ///<summary>(0014,4106) VR=SQ VM=1-n Wave Dimension Values Sequence</summary>
+        public readonly static DicomTag WaveDimensionValuesSequence = new DicomTag(0x0014, 0x4106);
+
+        ///<summary>(0014,4107) VR=US VM=1 Referenced Wave Dimension</summary>
+        public readonly static DicomTag ReferencedWaveDimension = new DicomTag(0x0014, 0x4107);
+
+        ///<summary>(0014,4108) VR=SL VM=1 Integer Numeric Value</summary>
+        public readonly static DicomTag IntegerNumericValue = new DicomTag(0x0014, 0x4108);
+
+        ///<summary>(0014,4109) VR=OB VM=1 Byte Numeric Value</summary>
+        public readonly static DicomTag ByteNumericValue = new DicomTag(0x0014, 0x4109);
+
+        ///<summary>(0014,410A) VR=OW VM=1 Short Numeric Value</summary>
+        public readonly static DicomTag ShortNumericValue = new DicomTag(0x0014, 0x410A);
+
+        ///<summary>(0014,410B) VR=OF VM=1 Single Precision Floating Point Numeric Value</summary>
+        public readonly static DicomTag SinglePrecisionFloatingPointNumericValue = new DicomTag(0x0014, 0x410B);
+
+        ///<summary>(0014,410C) VR=OD VM=1 Double Precision Floating Point Numeric Value</summary>
+        public readonly static DicomTag DoublePrecisionFloatingPointNumericValue = new DicomTag(0x0014, 0x410C);
 
         ///<summary>(0014,5002) VR=IS VM=1 LINAC Energy</summary>
         public readonly static DicomTag LINACEnergy = new DicomTag(0x0014, 0x5002);
@@ -8269,6 +8347,12 @@ namespace FellowOakDicom
 
         ///<summary>(0040,A033) VR=DT VM=1 Observation Start DateTime</summary>
         public readonly static DicomTag ObservationStartDateTime = new DicomTag(0x0040, 0xA033);
+
+        ///<summary>(0040,A034) VR=DT VM=1 Effective Start DateTime</summary>
+        public readonly static DicomTag EffectiveStartDateTime = new DicomTag(0x0040, 0xA034);
+
+        ///<summary>(0040,A035) VR=DT VM=1 Effective Stop DateTime</summary>
+        public readonly static DicomTag EffectiveStopDateTime = new DicomTag(0x0040, 0xA035);
 
         ///<summary>(0040,A040) VR=CS VM=1 Value Type</summary>
         public readonly static DicomTag ValueType = new DicomTag(0x0040, 0xA040);

@@ -4,6 +4,7 @@
 - new package Fo-Dicom.Imaging.SkiaSharp (#1956)
 - Send Command and Data in separate PDUs (#1960)
 - Fix opening an invalid file that contains some delimiter items at the end of the file (#1958)
+- update to DICOM Standard 2025b
 
 ### 5.2.1 (2025-03-13)
 - Fixed regression in parser where group length of VR UN was parsed wrong (#1941)

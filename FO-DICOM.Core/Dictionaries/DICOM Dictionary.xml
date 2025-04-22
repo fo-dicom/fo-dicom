@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2025 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2025a">
+<dictionary version="2025b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -362,6 +362,12 @@
     <tag group="0008" element="9459" keyword="RecommendedDisplayFrameRateInFloat" vr="FL" vm="1">Recommended Display Frame Rate in Float</tag>
     <tag group="0008" element="9460" keyword="SkipFrameRangeFlag" vr="CS" vm="1">Skip Frame Range Flag</tag>
     <tag group="0010" element="0010" keyword="PatientName" vr="PN" vm="1">Patient's Name</tag>
+    <tag group="0010" element="0011" keyword="PersonNamesToUseSequence" vr="SQ" vm="1">Person Names to Use Sequence</tag>
+    <tag group="0010" element="0012" keyword="NameToUse" vr="LT" vm="1">Name to Use</tag>
+    <tag group="0010" element="0013" keyword="NameToUseComment" vr="UT" vm="1">Name to Use Comment</tag>
+    <tag group="0010" element="0014" keyword="ThirdPersonPronounsSequence" vr="SQ" vm="1">Third Person Pronouns Sequence</tag>
+    <tag group="0010" element="0015" keyword="PronounCodeSequence" vr="SQ" vm="1">Pronoun Code Sequence</tag>
+    <tag group="0010" element="0016" keyword="PronounComment" vr="UT" vm="1">Pronoun Comment</tag>
     <tag group="0010" element="0020" keyword="PatientID" vr="LO" vm="1">Patient ID</tag>
     <tag group="0010" element="0021" keyword="IssuerOfPatientID" vr="LO" vm="1">Issuer of Patient ID</tag>
     <tag group="0010" element="0022" keyword="TypeOfPatientID" vr="CS" vm="1">Type of Patient ID</tag>
@@ -375,6 +381,13 @@
     <tag group="0010" element="0034" keyword="PatientDeathDateInAlternativeCalendar" vr="LO" vm="1">Patient's Death Date in Alternative Calendar</tag>
     <tag group="0010" element="0035" keyword="PatientAlternativeCalendar" vr="CS" vm="1">Patient's Alternative Calendar</tag>
     <tag group="0010" element="0040" keyword="PatientSex" vr="CS" vm="1">Patient's Sex</tag>
+    <tag group="0010" element="0041" keyword="GenderIdentitySequence" vr="SQ" vm="1">Gender Identity Sequence</tag>
+    <tag group="0010" element="0042" keyword="SexParametersForClinicalUseCategoryComment" vr="UT" vm="1">Sex Parameters for Clinical Use Category Comment</tag>
+    <tag group="0010" element="0043" keyword="SexParametersForClinicalUseCategorySequence" vr="SQ" vm="1">Sex Parameters for Clinical Use Category Sequence</tag>
+    <tag group="0010" element="0044" keyword="GenderIdentityCodeSequence" vr="SQ" vm="1">Gender Identity Code Sequence</tag>
+    <tag group="0010" element="0045" keyword="GenderIdentityComment" vr="UT" vm="1">Gender Identity Comment</tag>
+    <tag group="0010" element="0046" keyword="SexParametersForClinicalUseCategoryCodeSequence" vr="SQ" vm="1">Sex Parameters for Clinical Use Category Code Sequence</tag>
+    <tag group="0010" element="0047" keyword="SexParametersForClinicalUseCategoryReference" vr="UR" vm="1-n">Sex Parameters for Clinical Use Category Reference</tag>
     <tag group="0010" element="0050" keyword="PatientInsurancePlanCodeSequence" vr="SQ" vm="1">Patient's Insurance Plan Code Sequence</tag>
     <tag group="0010" element="0101" keyword="PatientPrimaryLanguageCodeSequence" vr="SQ" vm="1">Patient's Primary Language Code Sequence</tag>
     <tag group="0010" element="0102" keyword="PatientPrimaryLanguageModifierCodeSequence" vr="SQ" vm="1">Patient's Primary Language Modifier Code Sequence</tag>
@@ -416,8 +429,9 @@
     <tag group="0010" element="2152" keyword="RegionOfResidence" vr="LO" vm="1">Region of Residence</tag>
     <tag group="0010" element="2154" keyword="PatientTelephoneNumbers" vr="SH" vm="1-n">Patient's Telephone Numbers</tag>
     <tag group="0010" element="2155" keyword="PatientTelecomInformation" vr="LT" vm="1">Patient's Telecom Information</tag>
-    <tag group="0010" element="2160" keyword="EthnicGroup" vr="SH" vm="1">Ethnic Group</tag>
+    <tag group="0010" element="2160" keyword="EthnicGroup" vr="SH" vm="1" retired="true">Ethnic Group</tag>
     <tag group="0010" element="2161" keyword="EthnicGroupCodeSequence" vr="SQ" vm="1">Ethnic Group Code Sequence</tag>
+    <tag group="0010" element="2162" keyword="EthnicGroups" vr="UC" vm="1-n">Ethnic Groups</tag>
     <tag group="0010" element="2180" keyword="Occupation" vr="SH" vm="1">Occupation</tag>
     <tag group="0010" element="21A0" keyword="SmokingStatus" vr="CS" vm="1">Smoking Status</tag>
     <tag group="0010" element="21B0" keyword="AdditionalPatientHistory" vr="LT" vm="1">Additional Patient History</tag>
@@ -638,6 +652,18 @@
     <tag group="0014" element="40A0" keyword="ImageQualityIndicatorType" vr="LO" vm="1-n">Image Quality Indicator Type</tag>
     <tag group="0014" element="40A1" keyword="ImageQualityIndicatorMaterial" vr="LO" vm="1-n">Image Quality Indicator Material</tag>
     <tag group="0014" element="40A2" keyword="ImageQualityIndicatorSize" vr="LO" vm="1-n">Image Quality Indicator Size</tag>
+    <tag group="0014" element="4101" keyword="WaveDimensionsDefinitionSequence" vr="SQ" vm="1">Wave Dimensions Definition Sequence</tag>
+    <tag group="0014" element="4102" keyword="WaveDimensionNumber" vr="US" vm="1">Wave Dimension Number</tag>
+    <tag group="0014" element="4103" keyword="WaveDimensionDescription" vr="LO" vm="1">Wave Dimension Description</tag>
+    <tag group="0014" element="4104" keyword="WaveDimensionUnit" vr="US" vm="1">Wave Dimension Unit</tag>
+    <tag group="0014" element="4105" keyword="WaveDimensionValueType" vr="CS" vm="1">Wave Dimension Value Type</tag>
+    <tag group="0014" element="4106" keyword="WaveDimensionValuesSequence" vr="SQ" vm="1-n">Wave Dimension Values Sequence</tag>
+    <tag group="0014" element="4107" keyword="ReferencedWaveDimension" vr="US" vm="1">Referenced Wave Dimension</tag>
+    <tag group="0014" element="4108" keyword="IntegerNumericValue" vr="SL" vm="1">Integer Numeric Value</tag>
+    <tag group="0014" element="4109" keyword="ByteNumericValue" vr="OB" vm="1">Byte Numeric Value</tag>
+    <tag group="0014" element="410A" keyword="ShortNumericValue" vr="OW" vm="1">Short Numeric Value</tag>
+    <tag group="0014" element="410B" keyword="SinglePrecisionFloatingPointNumericValue" vr="OF" vm="1">Single Precision Floating Point Numeric Value</tag>
+    <tag group="0014" element="410C" keyword="DoublePrecisionFloatingPointNumericValue" vr="OD" vm="1">Double Precision Floating Point Numeric Value</tag>
     <tag group="0014" element="5002" keyword="LINACEnergy" vr="IS" vm="1">LINAC Energy</tag>
     <tag group="0014" element="5004" keyword="LINACOutput" vr="IS" vm="1">LINAC Output</tag>
     <tag group="0014" element="5100" keyword="ActiveAperture" vr="US" vm="1">Active Aperture</tag>
@@ -2758,6 +2784,8 @@
     <tag group="0040" element="A030" keyword="VerificationDateTime" vr="DT" vm="1">Verification DateTime</tag>
     <tag group="0040" element="A032" keyword="ObservationDateTime" vr="DT" vm="1">Observation DateTime</tag>
     <tag group="0040" element="A033" keyword="ObservationStartDateTime" vr="DT" vm="1">Observation Start DateTime</tag>
+    <tag group="0040" element="A034" keyword="EffectiveStartDateTime" vr="DT" vm="1">Effective Start DateTime</tag>
+    <tag group="0040" element="A035" keyword="EffectiveStopDateTime" vr="DT" vm="1">Effective Stop DateTime</tag>
     <tag group="0040" element="A040" keyword="ValueType" vr="CS" vm="1">Value Type</tag>
     <tag group="0040" element="A043" keyword="ConceptNameCodeSequence" vr="SQ" vm="1">Concept Name Code Sequence</tag>
     <tag group="0040" element="A047" keyword="MeasurementPrecisionDescriptionTrial" vr="LO" vm="1" retired="true">Measurement Precision Description (Trial)</tag>
@@ -5656,6 +5684,7 @@
     <uid uid="1.2.840.10008.5.1.4.1.1.601.2" keyword="EddyCurrentMultiFrameImageStorage" type="SOP Class">Eddy Current Multi-frame Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.601.3" keyword="ThermographyImageStorage" type="SOP Class">Thermography Image Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.1.601.4" keyword="ThermographyMultiFrameImageStorage" type="SOP Class">Thermography Multi-frame Image Storage</uid>
+    <uid uid="1.2.840.10008.5.1.4.1.1.601.5" keyword="UltrasoundWaveformStorage" type="SOP Class">Ultrasound Waveform Storage</uid>
     <uid uid="1.2.840.10008.5.1.4.1.2.1.1" keyword="PatientRootQueryRetrieveInformationModelFind" type="SOP Class">Patient Root Query/Retrieve Information Model - FIND</uid>
     <uid uid="1.2.840.10008.5.1.4.1.2.1.2" keyword="PatientRootQueryRetrieveInformationModelMove" type="SOP Class">Patient Root Query/Retrieve Information Model - MOVE</uid>
     <uid uid="1.2.840.10008.5.1.4.1.2.1.3" keyword="PatientRootQueryRetrieveInformationModelGet" type="SOP Class">Patient Root Query/Retrieve Information Model - GET</uid>
@@ -6314,7 +6343,7 @@
     <uid uid="1.2.840.10008.6.1.543" keyword="DoseMeasurementDevice10010" type="Context Group Name">Dose Measurement Device (10010)</uid>
     <uid uid="1.2.840.10008.6.1.544" keyword="EffectiveDoseEvaluationMethod10011" type="Context Group Name">Effective Dose Evaluation Method (10011)</uid>
     <uid uid="1.2.840.10008.6.1.545" keyword="CTAcquisitionType10013" type="Context Group Name">CT Acquisition Type (10013)</uid>
-    <uid uid="1.2.840.10008.6.1.546" keyword="ContrastImagingTechnique10014" type="Context Group Name">Contrast Imaging Technique (10014)</uid>
+    <uid uid="1.2.840.10008.6.1.546" keyword="CTIVContrastImagingTechnique10014" type="Context Group Name">CT IV Contrast Imaging Technique (10014)</uid>
     <uid uid="1.2.840.10008.6.1.547" keyword="CTDoseReferenceAuthority10015" type="Context Group Name">CT Dose Reference Authority (10015)</uid>
     <uid uid="1.2.840.10008.6.1.548" keyword="AnodeTargetMaterial10016" type="Context Group Name">Anode Target Material (10016)</uid>
     <uid uid="1.2.840.10008.6.1.549" keyword="XRayGrid10017" type="Context Group Name">X-Ray Grid (10017)</uid>
@@ -6807,7 +6836,7 @@
     <uid uid="1.2.840.10008.6.1.1142" keyword="MeasurementSelectionReason12301" type="Context Group Name">Measurement Selection Reason (12301)</uid>
     <uid uid="1.2.840.10008.6.1.1143" keyword="EchoFindingObservationType12302" type="Context Group Name">Echo Finding Observation Type (12302)</uid>
     <uid uid="1.2.840.10008.6.1.1144" keyword="EchoMeasurementType12303" type="Context Group Name">Echo Measurement Type (12303)</uid>
-    <uid uid="1.2.840.10008.6.1.1145" keyword="EchoMeasuredProperty12304" type="Context Group Name">Echo Measured Property (12304)</uid>
+    <uid uid="1.2.840.10008.6.1.1145" keyword="CardiovascularMeasuredProperty12304" type="Context Group Name">Cardiovascular Measured Property (12304)</uid>
     <uid uid="1.2.840.10008.6.1.1146" keyword="BasicEchoAnatomicSite12305" type="Context Group Name">Basic Echo Anatomic Site (12305)</uid>
     <uid uid="1.2.840.10008.6.1.1147" keyword="EchoFlowDirection12306" type="Context Group Name">Echo Flow Direction (12306)</uid>
     <uid uid="1.2.840.10008.6.1.1148" keyword="CardiacPhaseAndTimePoint12307" type="Context Group Name">Cardiac Phase and Time Point (12307)</uid>
@@ -7163,4 +7192,36 @@
     <uid uid="1.2.840.10008.6.1.1498" keyword="FetalEchocardiographyImageView12312" type="Context Group Name">Fetal Echocardiography Image View (12312)</uid>
     <uid uid="1.2.840.10008.6.1.1499" keyword="CardiacUltrasoundFetalArrhythmiaMeasurements12313" type="Context Group Name">Cardiac Ultrasound Fetal Arrhythmia Measurements (12313)</uid>
     <uid uid="1.2.840.10008.6.1.1500" keyword="CommonFetalEchocardiographyMeasurements12314" type="Context Group Name">Common Fetal Echocardiography Measurements (12314)</uid>
+    <uid uid="1.2.840.10008.6.1.1501" keyword="HeadAndNeckPrimaryAnatomicStructure4061" type="Context Group Name">Head and Neck Primary Anatomic Structure (4061)</uid>
+    <uid uid="1.2.840.10008.6.1.1502" keyword="VLView4062" type="Context Group Name">VL View (4062)</uid>
+    <uid uid="1.2.840.10008.6.1.1503" keyword="VLDentalView4063" type="Context Group Name">VL Dental View (4063)</uid>
+    <uid uid="1.2.840.10008.6.1.1504" keyword="VLViewModifier4064" type="Context Group Name">VL View Modifier (4064)</uid>
+    <uid uid="1.2.840.10008.6.1.1505" keyword="VLDentalViewModifier4065" type="Context Group Name">VL Dental View Modifier (4065)</uid>
+    <uid uid="1.2.840.10008.6.1.1506" keyword="OrthognathicFunctionalCondition4066" type="Context Group Name">Orthognathic Functional Condition (4066)</uid>
+    <uid uid="1.2.840.10008.6.1.1507" keyword="OrthodonticFindingByInspection4067" type="Context Group Name">Orthodontic Finding by Inspection (4067)</uid>
+    <uid uid="1.2.840.10008.6.1.1508" keyword="OrthodonticObservableEntity4068" type="Context Group Name">Orthodontic Observable Entity (4068)</uid>
+    <uid uid="1.2.840.10008.6.1.1509" keyword="DentalOcclusion4069" type="Context Group Name">Dental Occlusion (4069)</uid>
+    <uid uid="1.2.840.10008.6.1.1510" keyword="OrthodonticTreatmentProgress4070" type="Context Group Name">Orthodontic Treatment Progress (4070)</uid>
+    <uid uid="1.2.840.10008.6.1.1511" keyword="GeneralPhotographyDevice4071" type="Context Group Name">General Photography Device (4071)</uid>
+    <uid uid="1.2.840.10008.6.1.1512" keyword="DevicesForThePurposeOfDentalPhotography4072" type="Context Group Name">Devices for the Purpose of Dental Photography (4072)</uid>
+    <uid uid="1.2.840.10008.6.1.1513" keyword="CTDIPhantomDevice4053" type="Context Group Name">CTDI Phantom Device (4053)</uid>
+    <uid uid="1.2.840.10008.6.1.1514" keyword="DiagnosticImagingProcedureWithoutIVContrast108" type="Context Group Name">Diagnostic Imaging Procedure without IV Contrast (108)</uid>
+    <uid uid="1.2.840.10008.6.1.1515" keyword="DiagnosticImagingProcedureWithIVContrast109" type="Context Group Name">Diagnostic Imaging Procedure with IV Contrast (109)</uid>
+    <uid uid="1.2.840.10008.6.1.1516" keyword="StructuralHeartProcedure12331" type="Context Group Name">Structural Heart Procedure (12331)</uid>
+    <uid uid="1.2.840.10008.6.1.1517" keyword="StructuralHeartDevice12332" type="Context Group Name">Structural Heart Device (12332)</uid>
+    <uid uid="1.2.840.10008.6.1.1518" keyword="StructuralHeartMeasurement12333" type="Context Group Name">Structural Heart Measurement (12333)</uid>
+    <uid uid="1.2.840.10008.6.1.1519" keyword="AorticValveStructuralMeasurement12334" type="Context Group Name">Aortic Valve Structural Measurement (12334)</uid>
+    <uid uid="1.2.840.10008.6.1.1520" keyword="MitralValveStructuralMeasurement12335" type="Context Group Name">Mitral Valve Structural Measurement (12335)</uid>
+    <uid uid="1.2.840.10008.6.1.1521" keyword="TricuspidValveStructuralMeasurement12336" type="Context Group Name">Tricuspid Valve Structural Measurement (12336)</uid>
+    <uid uid="1.2.840.10008.6.1.1522" keyword="StructuralHeartEchoMeasurement12337" type="Context Group Name">Structural Heart Echo Measurement (12337)</uid>
+    <uid uid="1.2.840.10008.6.1.1523" keyword="LeftAtrialAppendageClosureMeasurement12338" type="Context Group Name">Left Atrial Appendage Closure Measurement (12338)</uid>
+    <uid uid="1.2.840.10008.6.1.1524" keyword="StructuralHeartProcedureAnatomicSite12339" type="Context Group Name">Structural Heart Procedure Anatomic Site (12339)</uid>
+    <uid uid="1.2.840.10008.6.1.1525" keyword="IndicationForStructuralHeartProcedure12341" type="Context Group Name">Indication for Structural Heart Procedure (12341)</uid>
+    <uid uid="1.2.840.10008.6.1.1526" keyword="BradycardiacAgent12342" type="Context Group Name">Bradycardiac Agent (12342)</uid>
+    <uid uid="1.2.840.10008.6.1.1527" keyword="TransesophagealEchocardiographyScanPlane12343" type="Context Group Name">Transesophageal Echocardiography Scan Plane (12343)</uid>
+    <uid uid="1.2.840.10008.6.1.1528" keyword="StructuralHeartMeasurementReportDocumentTitle12344" type="Context Group Name">Structural Heart Measurement Report Document Title (12344)</uid>
+    <uid uid="1.2.840.10008.6.1.1529" keyword="PersonGenderIdentity7458" type="Context Group Name">Person Gender Identity (7458)</uid>
+    <uid uid="1.2.840.10008.6.1.1530" keyword="CategoryOfSexParametersForClinicalUse7459" type="Context Group Name">Category of Sex Parameters for Clinical Use (7459)</uid>
+    <uid uid="1.2.840.10008.6.1.1531" keyword="ThirdPersonPronounSet7448" type="Context Group Name">Third Person Pronoun Set (7448)</uid>
+    <uid uid="1.2.840.10008.6.1.1532" keyword="CardiacStructureCalcificationQualitativeEvaluation12345" type="Context Group Name">Cardiac Structure Calcification Qualitative Evaluation (12345)</uid>
 </dictionary>
