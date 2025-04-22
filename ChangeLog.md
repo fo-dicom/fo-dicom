@@ -1,5 +1,6 @@
 ### 5.2.2 (TBD)
 - render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
+- use current version of fo-dicom.Codecs in tests and DicomDump supporting Windows arm64 builds
 - new package Fo-Dicom.Imaging.SkiaSharp (#1956)
 - Send Command and Data in separate PDUs (#1960)
 
