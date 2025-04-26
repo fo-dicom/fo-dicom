@@ -1,5 +1,5 @@
 ### 5.2.3 (TBD)
-
+- Add Milliseconds to result in DicomDataset.GetDateTime (#1967)
 
 ### 5.2.2 (2025-04-22)
 - render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
