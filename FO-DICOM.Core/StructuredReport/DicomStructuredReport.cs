@@ -51,7 +51,7 @@ namespace FellowOakDicom.StructuredReport
         /// <summary>
         /// Read DICOM StructuredReport
         /// </summary>
-        /// <param name="filename">name of file to read.</param>
+        /// <param name="filename">Name of file to read.</param>
         /// <returns><see cref="DicomStructuredReport"/> instance.</returns>
         public static DicomStructuredReport Open(string filename)
         {
@@ -62,7 +62,7 @@ namespace FellowOakDicom.StructuredReport
         /// <summary>
         /// Read DICOM StructuredReport
         /// </summary>
-        /// <param name="filename">name of file to read.</param>
+        /// <param name="filename">Name of file to read.</param>
         /// <param name="fallbackEncoding">Encoding to use when reading the file</param>
         /// <returns><see cref="DicomStructuredReport"/> instance.</returns>
         public static DicomStructuredReport Open(string filename, Encoding fallbackEncoding)
