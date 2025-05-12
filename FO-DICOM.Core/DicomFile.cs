@@ -72,6 +72,10 @@ namespace FellowOakDicom
 
         #region CONSTRUCTORS
 
+        /// <summary>
+        /// Constructs an empty DicomFile instance with empty <see cref="Dataset"> and empty <see cref="FileMetaInfo"/>.
+        /// <see cref="Dataset"/> and <see cref="FileMetaInfo"/> have to be filled manually.
+        /// </summary>
         public DicomFile()
         {
             FileMetaInfo = new DicomFileMetaInformation();
@@ -80,6 +84,10 @@ namespace FellowOakDicom
             IsPartial = false;
         }
 
+        /// <summary>
+        /// Constructs a DicomFile instance. <see cref="Dataset"/> and <see cref="FileMetaInfo"/> are initialized from values contained in parameter <paramref name="dataset"/>
+        /// </summary>
+        /// <param name="dataset">Values with that the DicomFile is initialized</param>
         public DicomFile(DicomDataset dataset)
         {
             Dataset = dataset;
