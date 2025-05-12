@@ -45,7 +45,7 @@ namespace FellowOakDicom
             var da = dd != null && dd.Count > 0 ? dd.Get<DateTime>(0) : DateTime.MinValue;
             var tm = dt != null && dt.Count > 0 ? dt.Get<DateTime>(0) : DateTime.MinValue;
 
-            return new DateTime(da.Year, da.Month, da.Day, tm.Hour, tm.Minute, tm.Second);
+            return new DateTime(da.Year, da.Month, da.Day, tm.Hour, tm.Minute, tm.Second, tm.Millisecond);
         }
 
         /// <summary>

@@ -27,6 +27,19 @@ namespace FellowOakDicom.Tests
         }
 
         [Fact]
+        public void GetDateTime_DateAndTimeAvailable_ReturnsSpecifiedDateTimeWithMilliseconds()
+        {
+            var expected = new DateTime(2016, 5, 25, 15, 54, 31, 750);
+
+            var dataset = new DicomDataset(
+                new DicomDate(DicomTag.CreationDate, "20160525"),
+                new DicomTime(DicomTag.CreationTime, "155431.750"));
+            var actual = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void GetDateTime_DateAndTimeMissing_ReturnsMinimumDateTime()
         {
             var expected = DateTime.MinValue;
@@ -69,6 +82,21 @@ namespace FellowOakDicom.Tests
             var dataset = new DicomDataset(
                 new DicomDate(DicomTag.CreationDate, "20160525"),
                 new DicomTime(DicomTag.CreationTime, "155431"),
+                new DicomShortString(DicomTag.TimezoneOffsetFromUTC, "+0400"));
+
+            var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetDateTimeOffset_DateAndTimeAndTimezoneAvailable_ReturnsSpecifiedDateTimeWithMilliseconds()
+        {
+            var expected = new DateTimeOffset(2016, 5, 25, 15, 54, 31, 750, new TimeSpan(04, 00, 00));
+
+            var dataset = new DicomDataset(
+                new DicomDate(DicomTag.CreationDate, "20160525"),
+                new DicomTime(DicomTag.CreationTime, "155431.750"),
                 new DicomShortString(DicomTag.TimezoneOffsetFromUTC, "+0400"));
 
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
