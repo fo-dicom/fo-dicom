@@ -4,6 +4,9 @@
 
 namespace FellowOakDicom.StructuredReport
 {
+    /// <summary>
+    /// Class that represents a reference to an SOP Instance
+    /// </summary>
     public class DicomReferencedSOP : DicomDataset
     {
         public DicomReferencedSOP(DicomDataset dataset)
@@ -13,7 +16,11 @@ namespace FellowOakDicom.StructuredReport
 
         public DicomReferencedSOP(DicomSequence sequence)
         {
-            if (sequence.Items.Count == 0) throw new DicomDataException("No referenced SOP pair item found in sequence.");
+            if (sequence.Items.Count == 0)
+            {
+                throw new DicomDataException("No referenced SOP pair item found in sequence.");
+            }
+
             Add(sequence.Items[0]);
         }
 
@@ -23,15 +30,9 @@ namespace FellowOakDicom.StructuredReport
             Add(DicomTag.ReferencedSOPClassUID, clazz);
         }
 
-        public DicomUID Instance
-        {
-            get => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
-        }
+        public DicomUID Instance => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
 
-        public DicomUID Class
-        {
-            get => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID);
-        }
+        public DicomUID Class => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID);
 
     }
 }
