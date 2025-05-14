@@ -39,6 +39,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Setup .NET 9.0
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework ${{ matrix.frameworks.common }} --blame --runtime ${{ matrix.os.runtime }} --logger:"trx;LogFileName=.\results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results
