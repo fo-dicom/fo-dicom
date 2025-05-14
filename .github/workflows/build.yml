@@ -24,7 +24,7 @@ jobs:
             { name: macOS-arm, ver: macos-14, runtime: osx-arm64 }
           ]
         frameworks: [
-            { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' },
+            { name: ".NET 9.0", common: "net9.0", win: "net9.0-windows", coverage: '' },
             { name: ".NET 8.0", common: "net8.0", win: "net8.0-windows", coverage: '--collect:"XPlat Code Coverage" --settings coverlet.runsettings' }
           ]
         include:
@@ -32,9 +32,9 @@ jobs:
             os: { name: Windows-x64, ver: windows-2022, runtime: win-x64 }
         exclude:
           # .NET 6 not available for macOS per default
-          - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
+          - frameworks: { name: ".NET 9.0", common: "net9.0", win: "net9.0-windows", coverage: '' }
             os: { name: macOS-x64, ver: macos-13, runtime: osx-x64 }
-          - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
+          - frameworks: { name: ".NET 9.0", common: "net9.0", win: "net9.0-windows", coverage: '' }
             os: { name: macOS-arm, ver: macos-14, runtime: osx-arm64 }
 
     name: ${{ matrix.os.name }} (${{ matrix.frameworks.name }})
