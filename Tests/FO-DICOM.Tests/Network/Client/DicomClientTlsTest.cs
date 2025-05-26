@@ -92,7 +92,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
-            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
+            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.p12", "FellowOakDicom")
             {
                 RequireMutualAuthentication = requireMutualAuthentication,
                 CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
@@ -208,7 +208,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
-            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
+            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.p12", "FellowOakDicom")
             {
                 RequireMutualAuthentication = false,
                 CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
@@ -260,7 +260,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
-            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.pfx", "FellowOakDicom")
+            var tlsAcceptor = new DefaultTlsAcceptor(TestData.Resolve("FellowOakDicom.p12"), "FellowOakDicom")
             {
                 RequireMutualAuthentication = false,
                 CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>

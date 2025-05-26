@@ -18,24 +18,18 @@ jobs:
         os: [
             { name: Windows-x64, ver: windows-2022, runtime: win-x64 },
             { name: Windows-arm, ver: windows-11-arm, runtime: win-arm64 },
-            { name: Ubuntu-x64, ver: ubuntu-22.04, runtime: linux-x64 },
-            { name: Ubuntu-arm, ver: ubuntu-22.04-arm, runtime: linux-arm64 },
+            { name: Ubuntu-x64, ver: ubuntu-24.04, runtime: linux-x64 },
+            { name: Ubuntu-arm, ver: ubuntu-24.04-arm, runtime: linux-arm64 },
             { name: macOS-x64, ver: macos-13, runtime: osx-x64 },
             { name: macOS-arm, ver: macos-14, runtime: osx-arm64 }
           ]
         frameworks: [
-            { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' },
+            { name: ".NET 9.0", common: "net9.0", win: "net9.0-windows", coverage: '' },
             { name: ".NET 8.0", common: "net8.0", win: "net8.0-windows", coverage: '--collect:"XPlat Code Coverage" --settings coverlet.runsettings' }
           ]
         include:
           - frameworks: { name: ".NET Framework 4.6.2", common: "net462", win: "net462", coverage: "" }
             os: { name: Windows-x64, ver: windows-2022, runtime: win-x64 }
-        exclude:
-          # .NET 6 not available for macOS per default
-          - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
-            os: { name: macOS-x64, ver: macos-13, runtime: osx-x64 }
-          - frameworks: { name: ".NET 6.0", common: "net6.0", win: "net6.0-windows", coverage: '' }
-            os: { name: macOS-arm, ver: macos-14, runtime: osx-arm64 }
 
     name: ${{ matrix.os.name }} (${{ matrix.frameworks.name }})
     env:
@@ -45,6 +39,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Setup .NET 9.0
+      if: ${{ startsWith(matrix.os.name, 'Ubuntu') }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
     - name: Test FO-DICOM.Tests
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework ${{ matrix.frameworks.common }} --blame --runtime ${{ matrix.os.runtime }} --logger:"trx;LogFileName=.\results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results

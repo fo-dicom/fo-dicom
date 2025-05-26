@@ -26,7 +26,7 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 Fellow Oak DICOM officially supports the following runtimes:
 
 * .NET Core 8.0
-* .NET Core 6.0
+* .NET Core 9.0
 * .NET Framework 4.6.2
 
 Other runtimes that implement .NET Standard 2.0 may work, but be aware that our CI pipeline only tests these platforms (and only on Windows)
