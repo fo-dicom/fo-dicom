@@ -208,15 +208,6 @@ namespace FellowOakDicom.Imaging
 
             var options = new GrayscaleRenderOptions(bits)
             {
-                RescaleSlope = dataset.TryGetSingleValue<double>(DicomTag.RescaleSlope, out var slope)
-                    || functional.TryGetSingleValue<double>(DicomTag.RescaleSlope, out slope)
-                    ? slope
-                    : 1.0,
-                RescaleIntercept = dataset.TryGetSingleValue<double>(DicomTag.RescaleIntercept, out var intercept)
-                    || functional.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept)
-                    ? intercept
-                    : 0.0,
-
                 WindowWidth = windowWidth,
                 WindowCenter = windowCenter,
                 VOILUTFunction = voiLutFunction,
@@ -226,6 +217,19 @@ namespace FellowOakDicom.Imaging
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
                 options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                options.RescaleSlope = 1.0;
+                options.RescaleIntercept = 0.0;
+            }
+            else
+            {
+                options.RescaleSlope = dataset.TryGetSingleValue<double>(DicomTag.RescaleSlope, out var slope)
+                                       || functional.TryGetSingleValue<double>(DicomTag.RescaleSlope, out slope)
+                    ? slope
+                    : 1.0;
+                options.RescaleIntercept = dataset.TryGetSingleValue<double>(DicomTag.RescaleIntercept, out var intercept)
+                                           || functional.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept)
+                    ? intercept
+                    : 0.0;
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
