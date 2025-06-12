@@ -449,7 +449,7 @@ namespace FellowOakDicom.Imaging
             double max;
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
                 // if there is a modalityLUT sequence, then we can get the values from the LUT itself
                 min = options.ModalityLUT.MinimumOutputValue;
                 max = options.ModalityLUT.MaximumOutputValue;
