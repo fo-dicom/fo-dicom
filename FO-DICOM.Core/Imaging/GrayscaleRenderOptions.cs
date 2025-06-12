@@ -321,11 +321,7 @@ namespace FellowOakDicom.Imaging
             }
 
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits)
-            {
-                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
-                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
-            };
+            var options = new GrayscaleRenderOptions(bits);
 
             int smallValue = dataset.GetSingleValue<int>(DicomTag.SmallestImagePixelValue);
             int largeValue = dataset.GetSingleValue<int>(DicomTag.LargestImagePixelValue);
@@ -345,6 +341,13 @@ namespace FellowOakDicom.Imaging
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
                 options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                options.RescaleSlope = 1.0;
+                options.RescaleIntercept = 0.0;
+            }
+            else
+            {
+                options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
+                options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
             }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
@@ -364,11 +367,7 @@ namespace FellowOakDicom.Imaging
         public static GrayscaleRenderOptions FromMinMax(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits)
-            {
-                RescaleSlope = 1.0,
-                RescaleIntercept = 0.0
-            };
+            var options = new GrayscaleRenderOptions(bits);
 
             int padding = dataset.GetValueOrDefault(DicomTag.PixelPaddingValue, 0, int.MinValue);
 
@@ -401,6 +400,8 @@ namespace FellowOakDicom.Imaging
                 if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
                 {
                     options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
+                    options.RescaleSlope = 1.0;
+                    options.RescaleIntercept = 0.0;
                     // if there is a modalityLUT sequence, then the values have to be mapped
                     min = options.ModalityLUT[min];
                     max = options.ModalityLUT[max];
@@ -439,17 +440,15 @@ namespace FellowOakDicom.Imaging
         public static GrayscaleRenderOptions FromBitRange(DicomDataset dataset)
         {
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits)
-            {
-                RescaleSlope = 1.0,
-                RescaleIntercept = 0.0
-            };
+            var options = new GrayscaleRenderOptions(bits);
 
             double min;
             double max;
             if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
             {
                 options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
+                options.RescaleSlope = 1.0;
+                options.RescaleIntercept = 0.0;
                 // if there is a modalityLUT sequence, then we can get the values from the LUT itself
                 min = options.ModalityLUT.MinimumOutputValue;
                 max = options.ModalityLUT.MaximumOutputValue;

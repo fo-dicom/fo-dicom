@@ -35,5 +35,22 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(511.5, result.WindowCenter);
             Assert.Equal(1023, result.WindowWidth);
         }
+
+        [Fact]
+        public void GrayscaleRenderOptions_FromImagePixelValueTags()
+        {
+            var dcmFile = DicomFile.Open(TestData.Resolve("GH1986.dcm"));
+            var dataset = dcmFile.Dataset;
+            dataset.AddOrUpdate(DicomTag.SmallestImagePixelValue, (ushort)0);
+            dataset.AddOrUpdate(DicomTag.LargestImagePixelValue, (ushort)1023);
+
+            var result = GrayscaleRenderOptions.FromImagePixelValueTags(dataset);
+            
+            Assert.Equal(0, result.RescaleIntercept);
+            Assert.Equal(1, result.RescaleSlope);
+            Assert.NotNull(result.ModalityLUT);
+            Assert.Equal(511.5, result.WindowCenter);
+            Assert.Equal(1023, result.WindowWidth);
+        }
     }
 }
