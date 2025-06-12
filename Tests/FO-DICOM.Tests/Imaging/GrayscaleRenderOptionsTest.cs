@@ -60,6 +60,40 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(windowCenter, actual.WindowCenter);
         }
 
+        [Theory]
+        [InlineData((ushort)16, (ushort)12, (ushort)0, "1.0", "0.0", "500.0", "20.0", "LINEAR", 500.0, 20.0)]
+        [InlineData((ushort)16, (ushort)12, (ushort)0, "", "", "500.0", "20.0", "LINEAR", 500.0, 20.0)]
+        [InlineData((ushort)16, (ushort)12, (ushort)0, "1.0", "0.0", "", "", "LINEAR", null, null)]
+        public void FromWindowLevel_InvalidInput_CorrectOutput(
+          ushort bitsAllocated,
+          ushort bitsStored,
+          ushort pixelRepresentation,
+          string rescaleSlope,
+          string rescaleIntercept,
+          string windowWidth,
+          string windowCenter,
+          string voiLutFunction,
+          double? expectedWindowWith,
+          double? expectedWindowCenter)
+        {
+            var dataset = new DicomDataset(
+                new DicomCodeString(DicomTag.PhotometricInterpretation, "MONOCHROME1"),
+                new DicomUnsignedShort(DicomTag.BitsAllocated, bitsAllocated),
+                new DicomUnsignedShort(DicomTag.BitsStored, bitsStored),
+                new DicomUnsignedShort(DicomTag.PixelRepresentation, pixelRepresentation),
+                new DicomDecimalString(DicomTag.RescaleSlope, rescaleSlope),
+                new DicomDecimalString(DicomTag.RescaleIntercept, rescaleIntercept),
+                new DicomDecimalString(DicomTag.WindowWidth, windowWidth),
+                new DicomDecimalString(DicomTag.WindowCenter, windowCenter),
+                new DicomCodeString(DicomTag.VOILUTFunction, voiLutFunction));
+
+            var actual = GrayscaleRenderOptions.FromWindowLevel(dataset);
+
+            Assert.Equal(expectedWindowWith, actual?.WindowWidth);
+            Assert.Equal(expectedWindowCenter, actual?.WindowCenter);
+        }
+
+
         [Fact]
         public void FromDataset_WindowCenterWidth_Monochrome()
         {

@@ -131,7 +131,7 @@ namespace FellowOakDicom.Imaging
                 // If dataset contains WindowWidth and WindowCenter valid attributes used initially for the grayscale options
                 grayscaleRenderOptions = FromWindowLevel(dataset, frame);
             }
-            else if (dataset.FunctionalGroupValues(frame) is { } functionalGroupValues 
+            else if (dataset.FunctionalGroupValues(frame) is { } functionalGroupValues
                      && functionalGroupValues.TryGetValue(DicomTag.WindowWidth, 0, out double functionalWindowWidth) && functionalWindowWidth > 0
                      && functionalGroupValues.TryGetValue(DicomTag.WindowCenter, 0, out double _))
             {
@@ -149,7 +149,7 @@ namespace FellowOakDicom.Imaging
             {
                 // If reached here, minimum and maximum pixel values calculated from pixels data to calculate
                 // WindowWidth and WindowCenter
-                grayscaleRenderOptions = FromMinMax(dataset);    
+                grayscaleRenderOptions = FromMinMax(dataset);
             }
 
             /*
@@ -165,7 +165,7 @@ namespace FellowOakDicom.Imaging
                 (or more specifically prior to application of the VOI LUT Module attributes to the stored pixel data).
             */
             if (grayscaleRenderOptions.ModalityLUT != null
-                && dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClassUID) 
+                && dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClassUID)
                 && (sopClassUID == DicomUID.XRayAngiographicImageStorage
                 || sopClassUID == DicomUID.XRayRadiofluoroscopicImageStorage
                 || sopClassUID == DicomUID.XRayAngiographicBiPlaneImageStorageRETIRED))
@@ -208,15 +208,13 @@ namespace FellowOakDicom.Imaging
 
             var options = new GrayscaleRenderOptions(bits)
             {
-                RescaleSlope = dataset.Contains(DicomTag.RescaleSlope)
-                    ? dataset.GetSingleValue<double>(DicomTag.RescaleSlope)
-                    : functional.Contains(DicomTag.RescaleSlope)
-                    ? functional.GetSingleValue<double>(DicomTag.RescaleSlope)
+                RescaleSlope = dataset.TryGetSingleValue<double>(DicomTag.RescaleSlope, out var slope)
+                    || functional.TryGetSingleValue<double>(DicomTag.RescaleSlope, out slope)
+                    ? slope
                     : 1.0,
-                RescaleIntercept = dataset.Contains(DicomTag.RescaleIntercept)
-                    ? dataset.GetSingleValue<double>(DicomTag.RescaleIntercept)
-                    : functional.Contains(DicomTag.RescaleIntercept)
-                    ? functional.GetSingleValue<double>(DicomTag.RescaleIntercept)
+                RescaleIntercept = dataset.TryGetSingleValue<double>(DicomTag.RescaleIntercept, out var intercept)
+                    || functional.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept)
+                    ? intercept
                     : 0.0,
 
                 WindowWidth = windowWidth,
@@ -253,7 +251,7 @@ namespace FellowOakDicom.Imaging
             {
                 return null;
             }
-            
+
             if (!functional.TryGetValue(DicomTag.WindowWidth, 0, out double windowWidth) ||
                 !functional.TryGetValue(DicomTag.WindowCenter, 0, out double windowCenter))
             {
@@ -276,15 +274,13 @@ namespace FellowOakDicom.Imaging
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
             {
-                RescaleSlope = dataset.Contains(DicomTag.RescaleSlope)
-                    ? dataset.GetSingleValue<double>(DicomTag.RescaleSlope)
-                    : functional.Contains(DicomTag.RescaleSlope)
-                    ? functional.GetSingleValue<double>(DicomTag.RescaleSlope)
+                RescaleSlope = dataset.TryGetSingleValue<double>(DicomTag.RescaleSlope, out var slope)
+                    || functional.TryGetSingleValue<double>(DicomTag.RescaleSlope, out slope)
+                    ? slope
                     : 1.0,
-                RescaleIntercept = dataset.Contains(DicomTag.RescaleIntercept)
-                    ? dataset.GetSingleValue<double>(DicomTag.RescaleIntercept)
-                    : functional.Contains(DicomTag.RescaleIntercept)
-                    ? functional.GetSingleValue<double>(DicomTag.RescaleIntercept)
+                RescaleIntercept = dataset.TryGetSingleValue<double>(DicomTag.RescaleIntercept, out var intercept)
+                    || functional.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept)
+                    ? intercept
                     : 0.0,
 
                 WindowWidth = windowWidth,
