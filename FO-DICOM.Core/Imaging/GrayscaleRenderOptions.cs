@@ -380,6 +380,8 @@ namespace FellowOakDicom.Imaging
                 options.WindowWidth = 1;
                 options.WindowCenter = 1;
                 options.VOILUTFunction = "LINEAR";
+                options.RescaleSlope = 1.0;
+                options.RescaleIntercept = 0.0;
             }
             else
             {
@@ -489,11 +491,7 @@ namespace FellowOakDicom.Imaging
         public static GrayscaleRenderOptions FromHistogram(DicomDataset dataset, int percent = 90)
         {
             var bits = BitDepth.FromDataset(dataset);
-            var options = new GrayscaleRenderOptions(bits)
-            {
-                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
-                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
-            };
+            var options = new GrayscaleRenderOptions(bits);
 
             var transcoder = new DicomTranscoder(
                 dataset.InternalTransferSyntax,
