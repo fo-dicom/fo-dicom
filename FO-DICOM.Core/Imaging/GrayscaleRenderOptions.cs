@@ -398,7 +398,6 @@ namespace FellowOakDicom.Imaging
 
                 var min = range.Minimum;
                 var max = range.Maximum;
-
                 if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
                 {
                     options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
@@ -411,8 +410,8 @@ namespace FellowOakDicom.Imaging
                     // no modalityLUT sequence, so apply rescale slope and intercept
                     options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
                     options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
-                    min *= options.RescaleSlope + options.RescaleIntercept;
-                    max *= options.RescaleSlope + options.RescaleIntercept;
+                    min = min * options.RescaleSlope + options.RescaleIntercept;
+                    max = max * options.RescaleSlope + options.RescaleIntercept;
                 }
 
                 options.WindowWidth = Math.Max(1, Math.Abs(max - min));
@@ -442,23 +441,33 @@ namespace FellowOakDicom.Imaging
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
             {
-                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
-                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
+                RescaleSlope = 1.0,
+                RescaleIntercept = 0.0
             };
 
-            var min = bits.MinimumValue * options.RescaleSlope + options.RescaleIntercept;
-            var max = bits.MaximumValue * options.RescaleSlope + options.RescaleIntercept;
+            double min;
+            double max;
+            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                // if there is a modalityLUT sequence, then we can get the values from the LUT itself
+                min = options.ModalityLUT.MinimumOutputValue;
+                max = options.ModalityLUT.MaximumOutputValue;
+            }
+            else
+            {
+                // no modalityLUT sequence, so apply rescale slope and intercept
+                options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
+                options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
+                min = bits.MinimumValue * options.RescaleSlope + options.RescaleIntercept;
+                max = bits.MaximumValue * options.RescaleSlope + options.RescaleIntercept;
+            }
 
             options.WindowWidth = Math.Abs(max - min);
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-            }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
             {

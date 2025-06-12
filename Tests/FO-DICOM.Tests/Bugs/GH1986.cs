@@ -20,5 +20,20 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(511.5, result.WindowCenter);
             Assert.Equal(1023, result.WindowWidth);
         }
+        
+        [Fact]
+        public void GrayscaleRenderOptions_FromBitRange_WithModalityLut_ShouldIgnoreRescaleSlopeIntercept()
+        {
+            var dcmFile = DicomFile.Open(TestData.Resolve("GH1986.dcm"));
+            var dataset = dcmFile.Dataset;
+
+            var result = GrayscaleRenderOptions.FromBitRange(dataset);
+            
+            Assert.Equal(0, result.RescaleIntercept);
+            Assert.Equal(1, result.RescaleSlope);
+            Assert.NotNull(result.ModalityLUT);
+            Assert.Equal(511.5, result.WindowCenter);
+            Assert.Equal(1023, result.WindowWidth);
+        }
     }
 }
