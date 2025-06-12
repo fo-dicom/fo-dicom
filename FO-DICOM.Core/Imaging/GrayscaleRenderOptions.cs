@@ -509,19 +509,31 @@ namespace FellowOakDicom.Imaging
 
             histogram.ApplyWindow(percent);
 
-            var min = histogram.WindowStart * options.RescaleSlope + options.RescaleIntercept;
-            var max = histogram.WindowEnd * options.RescaleSlope + options.RescaleIntercept;
+            double min = histogram.WindowStart;
+            double max = histogram.WindowEnd;
+            
+            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
+                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                options.RescaleSlope = 1.0;
+                options.RescaleIntercept = 0.0;
+                // if there is a modalityLUT sequence, then the values have to be mapped
+                min = options.ModalityLUT[histogram.WindowStart];
+                max = options.ModalityLUT[histogram.WindowEnd];
+            }
+            else
+            {
+                options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
+                options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
+                min = min * options.RescaleSlope + options.RescaleIntercept;
+                max = max * options.RescaleSlope + options.RescaleIntercept;
+            }
 
             options.WindowWidth = Math.Abs(max - min);
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-            }
 
             if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
             {
