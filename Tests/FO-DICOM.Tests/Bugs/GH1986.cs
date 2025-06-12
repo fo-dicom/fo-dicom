@@ -69,5 +69,26 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(500, result.WindowCenter);
             Assert.Equal(512, result.WindowWidth);
         }
+
+        [Fact]
+        public void GrayscaleRenderOptions_FromFunctionalWindowLevel()
+        {
+            var dcmFile = DicomFile.Open(TestData.Resolve("GH1986.dcm"));
+            var dataset = dcmFile.Dataset;
+            var referencedImageSequence = new DicomDataset { ValidateItems = false };
+            referencedImageSequence.Add(DicomTag.WindowCenter, 500.0); 
+            referencedImageSequence.Add(DicomTag.WindowWidth, 512.0); 
+            var sharedFunctionalGroups = new DicomDataset { ValidateItems = false };
+            sharedFunctionalGroups.Add(new DicomSequence(DicomTag.RenderedImageReferenceSequence, referencedImageSequence));
+            dataset.AddOrUpdate(new DicomSequence(DicomTag.SharedFunctionalGroupsSequence, sharedFunctionalGroups));
+
+            var result = GrayscaleRenderOptions.FromFunctionalWindowLevel(dataset, 0);
+            
+            Assert.Equal(0, result.RescaleIntercept);
+            Assert.Equal(1, result.RescaleSlope);
+            Assert.NotNull(result.ModalityLUT);
+            Assert.Equal(500, result.WindowCenter);
+            Assert.Equal(512, result.WindowWidth);
+        }
     }
 }
