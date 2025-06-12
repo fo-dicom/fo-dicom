@@ -366,8 +366,8 @@ namespace FellowOakDicom.Imaging
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits)
             {
-                RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0),
-                RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0)
+                RescaleSlope = 1.0,
+                RescaleIntercept = 0.0
             };
 
             int padding = dataset.GetValueOrDefault(DicomTag.PixelPaddingValue, 0, int.MinValue);
@@ -396,15 +396,23 @@ namespace FellowOakDicom.Imaging
                     range.Maximum = bits.MaximumValue;
                 }
 
-                var min = range.Minimum * options.RescaleSlope + options.RescaleIntercept;
-                var max = range.Maximum * options.RescaleSlope + options.RescaleIntercept;
+                var min = range.Minimum;
+                var max = range.Maximum;
 
                 if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
                 {
-                    options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
+                    options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
                     // if there is a modalityLUT sequence, then the values have to be mapped
                     min = options.ModalityLUT[min];
                     max = options.ModalityLUT[max];
+                }
+                else
+                {
+                    // no modalityLUT sequence, so apply rescale slope and intercept
+                    options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
+                    options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
+                    min *= options.RescaleSlope + options.RescaleIntercept;
+                    max *= options.RescaleSlope + options.RescaleIntercept;
                 }
 
                 options.WindowWidth = Math.Max(1, Math.Abs(max - min));
