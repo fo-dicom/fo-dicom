@@ -2,6 +2,7 @@
 - Add Milliseconds to result in DicomDataset.GetDateTime (#1967)
 - Add convenience function to open and save in DicomStructuredReport (#1968)
 - FO-DICOM.Tests target net9.0 instead of net6.0
+- Fix issue where rescale slope/intercept were used from dataset in case a Modality LUT Sequence is present (#1986)
 - allow rendering of images with empty rescale information (#1975)
 
 ### 5.2.2 (2025-04-22)
