@@ -4,6 +4,7 @@
 - FO-DICOM.Tests target net9.0 instead of net6.0
 - Fix issue where rescale slope/intercept were used from dataset in case a Modality LUT Sequence is present (#1986)
 - allow rendering of images with empty rescale information (#1975)
+- Prevent StackOverflow in DicomDirectlry by changing recursive to iterative method (#1977)
 
 ### 5.2.2 (2025-04-22)
 - render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
