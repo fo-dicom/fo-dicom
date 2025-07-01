@@ -394,7 +394,7 @@ namespace FellowOakDicom.Media
             {
                 CalculateOffsets(calculator);
 
-                SetOffsets(RootDirectoryRecord);
+                SetOffsets();
 
                 Dataset.AddOrUpdate(
                     DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity,
@@ -441,28 +441,13 @@ namespace FellowOakDicom.Media
             _fileOffset += 4 + 4; // Sequence Delimitation Item
         }
 
-        private void SetOffsets(DicomDirectoryRecord record)
+        private void SetOffsets()
         {
-            if (record.NextDirectoryRecord != null)
+            foreach (var record in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence).OfType<DicomDirectoryRecord>())
             {
-                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
-                SetOffsets(record.NextDirectoryRecord);
-            }
-            else
-            {
-                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, 0U);
-            }
+                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord?.Offset ?? 0U);
 
-            if (record.LowerLevelDirectoryRecord != null)
-            {
-                record.AddOrUpdate(
-                    DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity,
-                    record.LowerLevelDirectoryRecord.Offset);
-                SetOffsets(record.LowerLevelDirectoryRecord);
-            }
-            else
-            {
-                record.AddOrUpdate(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U);
+                record.AddOrUpdate(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, record.LowerLevelDirectoryRecord?.Offset ?? 0U);
             }
         }
 
@@ -718,7 +703,7 @@ namespace FellowOakDicom.Media
             DicomReaderResult result)
         {
             HandleOpenError(df, result);
-            
+
             df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
             df.Format = reader.FileFormat;
             df.Dataset.InternalTransferSyntax = reader.Syntax;
