@@ -25,6 +25,8 @@ namespace FellowOakDicom.Media
         public string DirectoryRecordType
             => GetSingleValue<string>(DicomTag.DirectoryRecordType);
 
+        public string Key { get; set; }
+
         #endregion
 
         public DicomDirectoryRecord()
@@ -47,6 +49,11 @@ namespace FellowOakDicom.Media
         {
         }
 
+        public DicomDirectoryRecord(IEnumerable<DicomItem> items, bool validateItems)
+            : base(items, validateItems)
+        {
+            ValidateItems = validateItems;
+        }
 
         public override string ToString()
         {
