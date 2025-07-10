@@ -29,24 +29,24 @@ Fellow Oak DICOM officially supports the following runtimes:
 * .NET Core 9.0
 * .NET Framework 4.6.2
 
-Other runtimes that implement .NET Standard 2.0 may work, but be aware that our CI pipeline only tests these platforms (and only on Windows)
+Other runtimes that implement .NET Standard 2.0 may work, but be aware that our CI pipeline only tests these platforms.
 
 ### Installation
-Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
+Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package references the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
 
 ### NuGet Packages
 *Valid for version 5.0.0 and later*
 
 Package | Description
 ------- | -----------
-[fo-dicom](https://www.nuget.org/packages/fo-dicom/) | Core package containing parser, services and tools.
-[fo-dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with referencte to System.Drawing, required for rendering into Bitmaps
-[fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Imaging.ImageSharp/) | Library with reference to ImageSharp, can be used for platform independent rendering
-[fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform Dicom codecs for fo-dicom, developed by Efferent Health (https://github.com/Efferent-Health/fo-dicom.Codecs)
+[fo&#8209;dicom](https://www.nuget.org/packages/fo-dicom/) | Core package containing parser, services and tools.
+[fo&#8209;dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with reference to System.Drawing, required for rendering into Bitmaps
+[fo&#8209;dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Imaging.ImageSharp/) | Library with reference to ImageSharp, can be used for platform independent rendering
+[fo&#8209;dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform DICOM codecs for fo-dicom, developed by Efferent Health (https://github.com/Efferent-Health/fo-dicom.Codecs)
 
 
 ### Documentation
-Documentation, including API documentation, is available via GitHub pages:
+Full documentation, including API, is available via GitHub pages:
 - documentation for the latest release for [fo-dicom 4](https://fo-dicom.github.io/stable/v4/index.html) and
   [fo-dicom 5](https://fo-dicom.github.io/stable/v5/index.html)
 - documentation for the development version for [fo-dicom 5](https://fo-dicom.github.io/dev/v5/index.html)
@@ -107,7 +107,7 @@ Please note that using dependency injection is generally preferred over the stat
 | --------------------------------------------- |------------------------------------------------------------| ------------------------------------------------ |
 | Creating a DICOM server                       | `DicomServerFactory.Create`                                | Yes, use `IDicomServerFactory`                   |
 | Creating a DICOM client                       | `DicomClientFactory.Create`                                | Yes, use `IDicomClientFactory`                   |
-| Creating an advanced DICOM client connection  | `AdvancedDicomClientConnectionFactory.OpenConnectionAsync` | Yes, use `IAdvancedDicomClientConnectionFactory` |
+| Creating an advanced DICOM client connection  | `AdvancedDicomClientConnectionFactory.<br>OpenConnectionAsync` | Yes, use `IAdvancedDicomClientConnectionFactory` |
 | Opening a DICOM file                          | `DicomFile.OpenAsync(..)`                                  | No                                               |
 | Rendering a DICOM file                        | `new DicomImage(..).RenderImage(..)`                       | No                                               |
 
@@ -233,9 +233,8 @@ public class EchoService : DicomService, IDicomServiceProvider, IDicomCEchoProvi
 }
 ```
 
-
 #### Image rendering configuration
-Out-of-the-box, *fo-dicom* defaults to an internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to Desktop-style or ImageSharp-style image rendering, you first have to add the nuget package you desire and then call:
+Out-of-the-box, *fo-dicom* defaults to an internal class *FellowOakDicom.Imaging.IImage*-style image rendering. To switch to WinForms-style or ImageSharp-style image rendering, you first have to add the NuGet package you desire and then call:
 
 ```csharp
 new DicomSetupBuilder()
@@ -287,7 +286,6 @@ public class MyLogManager: ILogManager {
 }
 ```
 
-
 ### Sample applications
 There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
 that were previously included in the *Examples* sub-folder of the VS solutions.
@@ -313,8 +311,7 @@ await file.SaveAsync(@"output.dcm");  // Alt 2
 #### Render Image to JPEG
 ```csharp
 var image = new DicomImage(@"test.dcm");
-image.RenderImage().AsBitmap().Save(@"test.jpg");                     // Windows Forms
-
+image.RenderImage().AsBitmap().Save(@"test.jpg");  // Windows Forms
 ```
 
 #### C-Store SCU
@@ -365,8 +362,7 @@ await client.SendAsync();
 
 #### N-Action SCU
 ```csharp
-// It is better to increase 'associationLingerTimeoutInMs' default is 50 ms, which may not be
-// be sufficient
+// It is better to increase 'associationLingerTimeoutInMs' default is 50 ms, which may not be sufficient
 var dicomClient = DicomClientFactory.Create("127.0.0.1", 12345, false, "SCU-AE", "SCP-AE",
 DicomClientDefaults.DefaultAssociationRequestTimeoutInMs, DicomClientDefaults.DefaultAssociationReleaseTimeoutInMs,5000);
 var txnUid = DicomUIDGenerator.GenerateDerivedFromUUID().UID;
