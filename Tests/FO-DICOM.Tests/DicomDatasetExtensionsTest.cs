@@ -180,6 +180,54 @@ namespace FellowOakDicom.Tests
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void ParseInvalidDateTimeOffset()
+        {
+            var ds1 = new DicomDataset
+            {
+                { DicomTag.SeriesDate, "20250701" },
+                { DicomTag.SeriesTime, "103000" },
+                { DicomTag.TimezoneOffsetFromUTC, "+01-3" } // Violating the DICOM standard
+            };
+
+            var ex = Record.Exception(() =>
+            {
+                var _ = ds1.GetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime);
+            });
+            Assert.NotNull(ex);
+        }
+
+        [Fact]
+        public void ParseInvalidDateTimeOffsetWithZoneName()
+        {
+            var ds1 = new DicomDataset
+            {
+                { DicomTag.SeriesDate, "20250701" },
+                { DicomTag.SeriesTime, "103000" },
+                { DicomTag.TimezoneOffsetFromUTC, "CET" } // Central European Time, is UTC+01:00
+            };
+
+            var ex = Record.Exception(() =>
+            {
+                var _ = ds1.GetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime);
+            });
+            Assert.NotNull(ex);
+        }
+
+        [Fact]
+        public void GetDateTimeOffset_NegativeMinutes()
+        {
+            var ds2 = new DicomDataset
+            {
+                { DicomTag.SeriesDate, "20250701" },
+                { DicomTag.SeriesTime, "103000" },
+                { DicomTag.TimezoneOffsetFromUTC, "-0130" }
+            };
+
+            var dateTimeOffset2 = ds2.GetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime);
+            Assert.Equal(new TimeSpan(hours: -1, minutes: -30, seconds: 0), dateTimeOffset2.Offset);
+        }
+
         #endregion
     }
 }
