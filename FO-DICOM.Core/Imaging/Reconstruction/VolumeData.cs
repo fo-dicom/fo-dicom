@@ -95,7 +95,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
             var commonData = new DicomDataset().NotValidated();
             commonData.Add(
                 _slices
-                .Select(s => s.Dataset.Where(t => t.Tag != DicomTag.PixelData || (t.Tag.Group >= 0x6000 && t.Tag.Group < 0x6100)))
+                .Select(s => s.Dataset.Where(t => t.Tag != DicomTag.PixelData || (DicomOverlayData.IsOverlaySequence(t))))
                 .Aggregate((x, y) => x.Intersect(y, valueComparer))
                 );
             return commonData;

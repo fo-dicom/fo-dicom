@@ -83,9 +83,12 @@ namespace FellowOakDicom.Imaging
             get
             {
                 var type = Dataset.GetSingleValue<string>(OverlayTag(DicomTag.OverlayType));
-                if (type.StartsWith("R")) return DicomOverlayType.ROI;
-                if (type.StartsWith("G")) return DicomOverlayType.Graphics;
-                throw new DicomImagingException($"Unsupported overlay type: {type}");
+                return type switch
+                {
+                    string s when s.StartsWith("R") => DicomOverlayType.ROI,
+                    string s when s.StartsWith("G") => DicomOverlayType.Graphics,
+                    _ => throw new DicomImagingException($"Unsupported overlay type: {type}")
+                };
             }
             set => Dataset.AddOrUpdate(
                     OverlayTag(DicomTag.OverlayType),
@@ -186,6 +189,8 @@ namespace FellowOakDicom.Imaging
 
         #region Public Members
 
+        public static readonly Func<DicomItem, bool> IsOverlaySequence = x => x.Tag.Group >= 0x6000 && x.Tag.Group <= 0x60FF && x.Tag.Group.IsEven();
+
         /// <summary>
         /// Gets the overlay data as <see cref="int"/> values.
         /// </summary>
@@ -217,7 +222,7 @@ namespace FellowOakDicom.Imaging
         {
             var groups = new List<ushort>();
             groups.AddRange(
-                ds.Where(x => x.Tag.Group >= 0x6000 && x.Tag.Group <= 0x60FF && x.Tag.Element == 0x0010)
+                ds.Where(x => DicomOverlayData.IsOverlaySequence(x) && x.Tag.Element == 0x0010)
                     .Select(x => x.Tag.Group));
             var overlays = new List<DicomOverlayData>();
             foreach (var group in groups)
@@ -247,7 +252,7 @@ namespace FellowOakDicom.Imaging
         {
             var groups = new List<ushort>();
             groups.AddRange(
-                ds.Where(x => x.Tag.Group >= 0x6000 && x.Tag.Group <= 0x60FF && x.Tag.Element == 0x0010)
+                ds.Where(x => DicomOverlayData.IsOverlaySequence(x) && x.Tag.Element == 0x0010)
                     .Select(x => x.Tag.Group));
 
             foreach (var group in groups)
