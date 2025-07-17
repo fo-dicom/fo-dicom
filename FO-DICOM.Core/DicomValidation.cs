@@ -706,6 +706,15 @@ namespace FellowOakDicom
             }
         }
 
+        public static void ValidateTimezoneOffset(string content)
+        {
+            // http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.12.html#sect_C.12.1.1.8
+            if (! Regex.IsMatch(content, @"^[+-]\d{4}$"))
+            {
+                throw new DicomValidationException(content, DicomVR.SH, "Invalid format for TimezoneOffsetFromUTC");
+            }
+        }
+
 
         private static bool IsControlExceptESC(char c)
             => char.IsControl(c) && (c != '\u001b');

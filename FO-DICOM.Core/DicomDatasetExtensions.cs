@@ -71,12 +71,19 @@ namespace FellowOakDicom
             var timezone = (topLevelDataset ?? dataset).GetDicomItem<DicomShortString>(DicomTag.TimezoneOffsetFromUTC);
             if (timezone != null && timezone.Count > 0)
             {
-                // Explicit timezone information present in dataset
+                // Explicit timezone information present in dataset. The format is &XXZZ, where & is either '+' or '-' and XX or YY are the hours or minutes
                 string s = timezone.Get<string>();
-                int hh = int.Parse(s.Substring(0, 3));
+                DicomValidation.ValidateTimezoneOffset(s);
+                int sign = s[0] switch
+                {
+                    '+' => +1,
+                    '-' => -1,
+                    _ => throw new DicomValidationException(s, DicomVR.SH, "Invalid format for TimezoneOffsetFromUTC")
+                };
+                int hh = int.Parse(s.Substring(1, 2));
                 int mm = int.Parse(s.Substring(3, 2));
 
-                var offset = new TimeSpan(hh, mm, 00);
+                var offset = new TimeSpan(sign * hh, sign * mm, 00);
                 return new DateTimeOffset(datetime, offset);
             }
             else
