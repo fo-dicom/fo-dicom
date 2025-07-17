@@ -122,11 +122,11 @@ namespace FellowOakDicom.Media
 
             _directoryRecordSequence = new DicomSequence(DicomTag.DirectoryRecordSequence);
 
-            Dataset.Add(DicomTag.FileSetID, string.Empty)
-                .Add<ushort>(DicomTag.FileSetConsistencyFlag, 0)
-                .Add(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0U)
-                .Add(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0U)
-                .Add(_directoryRecordSequence);
+            Dataset.Add(new DicomCodeString(DicomTag.FileSetID, string.Empty),
+                new DicomUnsignedShort(DicomTag.FileSetConsistencyFlag, 0),
+                new DicomUnsignedLong(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0U),
+                new DicomUnsignedLong(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0U),
+                _directoryRecordSequence);
         }
 
         /// <summary>
@@ -394,11 +394,8 @@ namespace FellowOakDicom.Media
             {
                 CalculateOffsets(calculator);
 
-                SetOffsets(RootDirectoryRecord);
+                SetOffsets();
 
-                Dataset.AddOrUpdate(
-                    DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity,
-                    RootDirectoryRecord.Offset);
 
                 var lastRoot = RootDirectoryRecord;
 
@@ -407,12 +404,17 @@ namespace FellowOakDicom.Media
                     lastRoot = lastRoot.NextDirectoryRecord;
                 }
 
-                Dataset.AddOrUpdate(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset);
+                Dataset.AddOrUpdate(
+                    new DicomUnsignedLong(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, RootDirectoryRecord.Offset),
+                    new DicomUnsignedLong(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, lastRoot.Offset)
+                );
             }
             else
             {
-                Dataset.AddOrUpdate(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0U);
-                Dataset.AddOrUpdate(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0U);
+                Dataset.AddOrUpdate(
+                    new DicomUnsignedLong(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity, 0U),
+                    new DicomUnsignedLong(DicomTag.OffsetOfTheLastDirectoryRecordOfTheRootDirectoryEntity, 0U)
+                );
             }
         }
 
@@ -441,28 +443,14 @@ namespace FellowOakDicom.Media
             _fileOffset += 4 + 4; // Sequence Delimitation Item
         }
 
-        private void SetOffsets(DicomDirectoryRecord record)
+        private void SetOffsets()
         {
-            if (record.NextDirectoryRecord != null)
-            {
-                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord.Offset);
-                SetOffsets(record.NextDirectoryRecord);
-            }
-            else
-            {
-                record.AddOrUpdate(DicomTag.OffsetOfTheNextDirectoryRecord, 0U);
-            }
-
-            if (record.LowerLevelDirectoryRecord != null)
+            foreach (var record in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence).OfType<DicomDirectoryRecord>())
             {
                 record.AddOrUpdate(
-                    DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity,
-                    record.LowerLevelDirectoryRecord.Offset);
-                SetOffsets(record.LowerLevelDirectoryRecord);
-            }
-            else
-            {
-                record.AddOrUpdate(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U);
+                    new DicomUnsignedLong(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord?.Offset ?? 0U),
+                    new DicomUnsignedLong(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, record.LowerLevelDirectoryRecord?.Offset ?? 0U)
+                );
             }
         }
 
@@ -511,7 +499,7 @@ namespace FellowOakDicom.Media
 
             while (currentImage != null)
             {
-                if (currentImage.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile) == imageInstanceUid)
+                if (currentImage.Key == imageInstanceUid)
                 {
                     return currentImage;
                 }
@@ -530,22 +518,24 @@ namespace FellowOakDicom.Media
             DicomDirectoryRecord newImage;
             if (metaFileInfo.MediaStorageSOPClassUID.StorageCategory == DicomStorageCategory.StructuredReport)
             {
-                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Report, dataset);
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Report, dataset, imageInstanceUid);
             }
             else if (metaFileInfo.MediaStorageSOPClassUID.StorageCategory == DicomStorageCategory.PresentationState)
             {
-                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.PresentationState, dataset);
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.PresentationState, dataset, imageInstanceUid);
             }
             else
             {
-                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset);
+                newImage = CreateRecordSequenceItem(DicomDirectoryRecordType.Image, dataset, imageInstanceUid);
             }
 
-            newImage.AddOrUpdate(DicomTag.ReferencedFileID, referencedFileId);
+            newImage.AddOrUpdate(new DicomCodeString(DicomTag.ReferencedFileID, referencedFileId));
             using var unvalidated = new UnvalidatedScope(newImage);
-            newImage.AddOrUpdate(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID);
-            newImage.AddOrUpdate(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID);
-            newImage.AddOrUpdate(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID);
+            newImage.AddOrUpdate(
+                new DicomUniqueIdentifier(DicomTag.ReferencedSOPClassUIDInFile, metaFileInfo.MediaStorageSOPClassUID.UID),
+                new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID),
+                new DicomUniqueIdentifier(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID)
+            );
 
             if (currentImage != null)
             {
@@ -568,7 +558,7 @@ namespace FellowOakDicom.Media
 
             while (currentSeries != null)
             {
-                if (currentSeries.GetSingleValue<string>(DicomTag.SeriesInstanceUID) == seriesInstanceUid)
+                if (currentSeries.Key == seriesInstanceUid)
                 {
                     return currentSeries;
                 }
@@ -584,7 +574,7 @@ namespace FellowOakDicom.Media
                 }
             }
 
-            var newSeries = CreateRecordSequenceItem(DicomDirectoryRecordType.Series, dataset);
+            var newSeries = CreateRecordSequenceItem(DicomDirectoryRecordType.Series, dataset, seriesInstanceUid);
             if (currentSeries != null)
             {
                 //series not found under study record
@@ -605,7 +595,7 @@ namespace FellowOakDicom.Media
 
             while (currentStudy != null)
             {
-                if (currentStudy.GetSingleValue<string>(DicomTag.StudyInstanceUID) == studyInstanceUid)
+                if (currentStudy.Key == studyInstanceUid)
                 {
                     return currentStudy;
                 }
@@ -620,7 +610,7 @@ namespace FellowOakDicom.Media
                     break;
                 }
             }
-            var newStudy = CreateRecordSequenceItem(DicomDirectoryRecordType.Study, dataset);
+            var newStudy = CreateRecordSequenceItem(DicomDirectoryRecordType.Study, dataset, studyInstanceUid);
             if (currentStudy != null)
             {
                 //study not found under patient record
@@ -643,7 +633,7 @@ namespace FellowOakDicom.Media
 
             while (currentPatient != null)
             {
-                var currPatId = currentPatient.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
+                var currPatId = currentPatient.Key;
                 var currPatName = currentPatient.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
 
                 if (currPatId == patientId && DicomPersonName.HaveSameContent(currPatName, patientName))
@@ -662,7 +652,7 @@ namespace FellowOakDicom.Media
                 }
             }
 
-            var newPatient = CreateRecordSequenceItem(DicomDirectoryRecordType.Patient, dataset);
+            var newPatient = CreateRecordSequenceItem(DicomDirectoryRecordType.Patient, dataset, patientId);
             if (currentPatient != null)
             {
                 //patient not found under root record
@@ -678,22 +668,21 @@ namespace FellowOakDicom.Media
         }
 
 
-        private DicomDirectoryRecord CreateRecordSequenceItem(DicomDirectoryRecordType recordType, DicomDataset dataset)
+        private DicomDirectoryRecord CreateRecordSequenceItem(DicomDirectoryRecordType recordType, DicomDataset dataset, string key)
         {
             if (recordType == null) throw new ArgumentNullException(nameof(recordType));
             if (dataset == null) throw new ArgumentNullException(nameof(dataset));
 
-            var sequenceItem = new DicomDirectoryRecord(ValidateItems)
-            {
-                //add record item attributes
-                { DicomTag.OffsetOfTheNextDirectoryRecord, 0U },
-                { DicomTag.RecordInUseFlag, (ushort)0xFFFF },
-                { DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U },
-                { DicomTag.DirectoryRecordType, recordType.ToString() },
-
-                //copy the current dataset character set
-                dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet)
-            };
+            var sequenceItem = new DicomDirectoryRecord(new DicomItem[] {
+                    //add record item attributes
+                    new DicomUnsignedLong(DicomTag.OffsetOfTheNextDirectoryRecord, 0U),
+                    new DicomUnsignedShort(DicomTag.RecordInUseFlag, 0xFFFF),
+                    new DicomUnsignedLong(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity, 0U),
+                    new DicomCodeString(DicomTag.DirectoryRecordType, recordType.ToString()),
+                    //copy the current dataset character set
+                    dataset.FirstOrDefault(d => d.Tag == DicomTag.SpecificCharacterSet)
+                }, ValidateItems);
+            sequenceItem.Key = key;
 
             using var unvalidated = new UnvalidatedScope(sequenceItem);
             foreach (var tag in recordType.Tags)
@@ -718,7 +707,7 @@ namespace FellowOakDicom.Media
             DicomReaderResult result)
         {
             HandleOpenError(df, result);
-            
+
             df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
             df.Format = reader.FileFormat;
             df.Dataset.InternalTransferSyntax = reader.Syntax;
@@ -730,20 +719,17 @@ namespace FellowOakDicom.Media
 
         private void AddDirectoryRecordsToSequenceItem(DicomDirectoryRecord recordItem)
         {
-            if (recordItem == null)
+            var currentItem = recordItem;
+            while (currentItem != null)
             {
-                return;
-            }
+                _directoryRecordSequence.Items.Add(currentItem);
 
-            _directoryRecordSequence.Items.Add(recordItem);
-            if (recordItem.LowerLevelDirectoryRecord != null)
-            {
-                AddDirectoryRecordsToSequenceItem(recordItem.LowerLevelDirectoryRecord);
-            }
+                if (currentItem.LowerLevelDirectoryRecord != null)
+                {
+                    AddDirectoryRecordsToSequenceItem(currentItem.LowerLevelDirectoryRecord);
+                }
 
-            if (recordItem.NextDirectoryRecord != null)
-            {
-                AddDirectoryRecordsToSequenceItem(recordItem.NextDirectoryRecord);
+                currentItem = currentItem.NextDirectoryRecord;
             }
         }
 
