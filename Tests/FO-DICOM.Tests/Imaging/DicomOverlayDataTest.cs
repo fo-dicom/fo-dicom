@@ -191,5 +191,21 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(expected, originY);
         }
 
+        [Fact]
+        public void OnlyReadOverlayFromEvenGroups()
+        {
+            var dicomFile = DicomFile.Open(TestData.Resolve("multiframe.dcm"));
+            var dataset = dicomFile.Dataset;
+            // Add a generic "overlay" tag in the dataset to simulate an overlay
+            dataset.AddOrUpdate(new DicomLongString(new DicomTag(0x6001, 0x0010), "Generic Data"));
+
+            var hasEmbeddedOverlay = DicomOverlayData.HasEmbeddedOverlays(dataset);
+            Assert.False(hasEmbeddedOverlay);
+
+            dataset.AddOrUpdate(new DicomLongString(new DicomTag(0x6002, 0x0010), "Generic Data"));
+            hasEmbeddedOverlay = DicomOverlayData.HasEmbeddedOverlays(dataset);
+            Assert.True(hasEmbeddedOverlay);
+        }
+
     }
 }
