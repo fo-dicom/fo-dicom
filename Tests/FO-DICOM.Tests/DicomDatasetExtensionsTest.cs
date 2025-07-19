@@ -24,6 +24,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTime(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetime);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetime);
         }
 
         [Fact]
@@ -37,6 +41,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTime(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetime);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetime);
         }
 
         [Fact]
@@ -48,6 +56,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTime(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetime);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetime);
         }
 
         [Fact]
@@ -60,6 +72,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTime(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetime);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetime);
         }
 
         [Fact]
@@ -72,7 +88,31 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTime(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetime);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetime);
         }
+
+        [Fact]
+        public void GetDateTime_DateInvalid_Throws()
+        {
+            var dataset = new DicomDataset().NotValidated().AddOrUpdate(
+                new DicomDate(DicomTag.CreationDate, "20163040"),
+                new DicomTime(DicomTag.CreationTime, "155431.750")
+            );
+            var ex = Record.Exception(() =>
+            {
+                var _ = dataset.GetDateTime(DicomTag.CreationDate, DicomTag.CreationTime);
+            });
+
+            Assert.NotNull(ex);
+
+            var result = dataset.TryGetDateTime(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetime);
+            Assert.False(result);
+        }
+
+
 
         [Fact]
         public void GetDateTimeOffset_DateAndTimeAndTimezoneAvailable_ReturnsSpecifiedDateTime()
@@ -87,6 +127,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetimeoffset);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetimeoffset);
         }
 
         [Fact]
@@ -102,6 +146,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetimeoffset);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetimeoffset);
         }
 
         [Fact]
@@ -117,6 +165,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetimeoffset);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetimeoffset);
         }
 
         [Fact]
@@ -131,6 +183,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetimeoffset);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetimeoffset);
         }
 
         [Fact]
@@ -145,6 +201,10 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTimeOffset(DicomTag.CreationDate, DicomTag.CreationTime, out var creationDatetimeoffset);
+            Assert.True(result);
+            Assert.Equal(expected, creationDatetimeoffset);
         }
 
         [Fact]
@@ -158,6 +218,9 @@ namespace FellowOakDicom.Tests
             var actual = dataset.GetDateTimeOffset(DicomTag.StudyDate, DicomTag.StudyTime);
 
             Assert.Equal(expected, actual);
+
+            var result = dataset.TryGetDateTimeOffset(DicomTag.StudyDate, DicomTag.StudyTime, out var studyDatetimeoffset);
+            Assert.False(result);
         }
 
         [Fact]
@@ -178,6 +241,10 @@ namespace FellowOakDicom.Tests
 
             var actual = scheduledProcedure.GetDateTimeOffset(DicomTag.ScheduledProcedureStepStartDate, DicomTag.ScheduledProcedureStepStartTime, dataset);
             Assert.Equal(expected, actual);
+
+            var result = scheduledProcedure.TryGetDateTimeOffset(DicomTag.ScheduledProcedureStepStartDate, DicomTag.ScheduledProcedureStepStartTime, out var scheduledDatetimeoffset, dataset);
+            Assert.True(result);
+            Assert.Equal(expected, scheduledDatetimeoffset);
         }
 
         [Fact]
@@ -195,6 +262,9 @@ namespace FellowOakDicom.Tests
                 var _ = ds1.GetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime);
             });
             Assert.NotNull(ex);
+
+            var result = ds1.TryGetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime, out var _);
+            Assert.False(result);
         }
 
         [Fact]
@@ -212,11 +282,15 @@ namespace FellowOakDicom.Tests
                 var _ = ds1.GetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime);
             });
             Assert.NotNull(ex);
+
+            var result = ds1.TryGetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime, out var _);
+            Assert.False(result);
         }
 
         [Fact]
         public void GetDateTimeOffset_NegativeMinutes()
         {
+            var expected = new TimeSpan(hours: -1, minutes: -30, seconds: 0);
             var ds2 = new DicomDataset
             {
                 { DicomTag.SeriesDate, "20250701" },
@@ -225,7 +299,11 @@ namespace FellowOakDicom.Tests
             };
 
             var dateTimeOffset2 = ds2.GetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime);
-            Assert.Equal(new TimeSpan(hours: -1, minutes: -30, seconds: 0), dateTimeOffset2.Offset);
+            Assert.Equal(expected, dateTimeOffset2.Offset);
+
+            var result = ds2.TryGetDateTimeOffset(DicomTag.SeriesDate, DicomTag.SeriesTime, out var seriesDatetimeoffset);
+            Assert.True(result);
+            Assert.Equal(expected, seriesDatetimeoffset.Offset);
         }
 
         #endregion

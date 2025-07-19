@@ -452,15 +452,12 @@ namespace FellowOakDicom
                 }
                 else
                 {
-                    _values = new DateTime[vals.Length];
-                    for (int i = 0; i < vals.Length; i++)
-                    {
-                        _values[i] = DateTime.ParseExact(
-                            vals[i],
+                    _values = vals.Select(val => DateTime.ParseExact(
+                            val,
                             DateFormats,
                             _dicomDateElementFormat,
-                            _dicomDateElementStyle);
-                    }
+                            _dicomDateElementStyle))
+                        .ToArray();
                 }
             }
 
