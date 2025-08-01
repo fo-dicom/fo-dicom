@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
-    <PackageReference Include="fo-dicom.Codecs" Version="5.16.2" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.16.3" />
   </ItemGroup>
 
   <ItemGroup>
