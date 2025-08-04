@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +35,7 @@
       <PackagePath></PackagePath>
       <Link>FellowOakSquareTransp.png</Link>
     </None>
-    <None Include="..\..\READMENuget.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\READMENuget.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
