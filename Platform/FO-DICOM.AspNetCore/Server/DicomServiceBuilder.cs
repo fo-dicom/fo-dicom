@@ -14,14 +14,14 @@ namespace FellowOakDicom.AspNetCore.Server
         internal Func<DicomCEchoRequest, DicomCEchoResponse> EchoHandler { get; set; } = null;
         internal Func<DicomAssociation, bool> AssociationRequestHandler { get; set; } = null;
         internal Func<InstanceReceivedEventArgs, Task<bool>> InstanceReceivedHandlerAsync { get; set; } = null;
-        internal Action<DicomConfiguration> ConfigureAction { get; set; } = null;
+        internal Action<ServerConfiguration> ConfigureAction { get; set; } = null;
 
         internal DicomServiceBuilder()
         {
         }
 
 
-        public DicomServiceBuilder Configure(Action<DicomConfiguration> configureAction)
+        public DicomServiceBuilder Configure(Action<ServerConfiguration> configureAction)
         {
             ConfigureAction = configureAction;
             return this;

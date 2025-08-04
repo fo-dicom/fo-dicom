@@ -16,29 +16,28 @@ namespace FellowOakDicom.AspNetCore.Server
         private IDicomServer _server;
         private readonly IDicomServerFactory _serverFactory;
         private readonly DicomServiceBuilder _serviceBuilder;
-        private readonly IOptions<DicomConfiguration> _options;
+        private readonly IOptions<ServerConfiguration> _serverConfiguration;
 
 
-        public GeneralPurposeDicomServerService(IDicomServerFactory serverFactory, DicomServiceBuilder builder, IOptions<DicomConfiguration> serviceOptions)
+        public GeneralPurposeDicomServerService(IDicomServerFactory serverFactory, DicomServiceBuilder builder, IOptions<ServerConfiguration> serverConfiguration)
         {
             _serverFactory = serverFactory;
             // TODO: get settings
             _serviceBuilder = builder;
-            _options = serviceOptions;
+            _serverConfiguration = serverConfiguration;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var options = _options.Value;
-            _serviceBuilder.ConfigureAction?.Invoke(options);
+            var configuration = _serverConfiguration.Value;
+            _serviceBuilder.ConfigureAction?.Invoke(configuration);
 
             // preload dictionary to prevent tiemouts
             _ = DicomDictionary.Default;
 
             _server = _serverFactory.Create<GeneralPurposeDicomService>(
-                options.Server.Port,
-                userState: _serviceBuilder,
-                configure: options.ServerOptions.CopyTo
+                configuration.Port,
+                userState: _serviceBuilder
                 );
 
             return Task.CompletedTask;

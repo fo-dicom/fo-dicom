@@ -15,12 +15,12 @@ namespace FellowOakDicom.AspNetCore.Server
     {
         private IDicomServer _server;
         private readonly IDicomServerFactory _serverFactory;
-        private readonly IOptions<DicomConfiguration> _options;
+        private readonly IOptions<ServerConfiguration> _serverConfiguration;
 
-        public DicomServerService(IDicomServerFactory serverFactory, IOptions<DicomConfiguration> serviceOptions)
+        public DicomServerService(IDicomServerFactory serverFactory, IOptions<ServerConfiguration> serverConfiguration)
         {
             _serverFactory = serverFactory;
-            _options = serviceOptions;
+            _serverConfiguration = serverConfiguration;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -28,7 +28,7 @@ namespace FellowOakDicom.AspNetCore.Server
             // preload dictionary to prevent tiemouts
             _ = DicomDictionary.Default;
             _server = _serverFactory.Create<T>(
-                _options.Value.Server.Port
+                _serverConfiguration.Value.Port
                 );
             return Task.CompletedTask;
         }

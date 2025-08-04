@@ -5,6 +5,7 @@
 using FellowOakDicom.AspNetCore.Configs;
 using FellowOakDicom.AspNetCore.Server;
 using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,8 +22,8 @@ namespace FellowOakDicom.AspNetCore
         /// <summary>
         /// Adds default implementations of all required services to the collection if the services haven't already been registered
         /// </summary>
-        public static IServiceCollection UseFellowOakDicom(this IServiceCollection services)
-            => services.AddFellowOakDicom()
+        public static IServiceCollection UseFellowOakDicom(this IServiceCollection services, IConfiguration namedConfigurationSection = null, Action<DicomServiceOptions> configureServiceOptions = null, Action<DicomClientOptions> configureClientOptions = null, Action<DicomServerOptions> configureServerOptions = null)
+            => services.AddFellowOakDicom(namedConfigurationSection, configureServiceOptions, configureClientOptions, configureServerOptions)
                 .AddTransient<IHostedService, DicomInitializationHelper>(provider => {
                     DicomSetupBuilder.UseServiceProvider(provider);
                     return new DicomInitializationHelper();
@@ -33,37 +34,30 @@ namespace FellowOakDicom.AspNetCore
 
         public static IServiceCollection AddDicomServer<T>(
             this IServiceCollection services,
-            IConfiguration configurationRoot,
-            Action<DicomConfiguration> configureAction = null) where T : DicomService, IDicomServiceProvider
+            IConfiguration namedConfigurationSection = null,
+            Action<ServerConfiguration> configureAction = null) where T : DicomService, IDicomServiceProvider
         {
-            var dicomConfiguration = new DicomConfiguration();
-            configurationRoot?.GetSection(DicomConfiguration.SectionName).Bind(dicomConfiguration);
-            configureAction?.Invoke(dicomConfiguration);
+            var optionsBuilder = services.AddOptions<ServerConfiguration>();
+            if (namedConfigurationSection != null )
+            {
+                optionsBuilder.Bind(namedConfigurationSection);
+            }
+            if (configureAction == null)
+            {
+                optionsBuilder.Configure(configureAction);
+            }
 
             services
-                .AddSingleton(Options.Create(dicomConfiguration))
-                .AddSingleton(Options.Create(dicomConfiguration.ServerOptions))
-                .AddSingleton(Options.Create(dicomConfiguration.ClientOptions))
-                .AddSingleton(Options.Create(dicomConfiguration.ServiceOptions))
                 .UseFellowOakDicom()
                 .AddOptions()
                 .AddTransient<IHostedService>(s =>
                 {
-                    var dicomService = new DicomServerService<T>(s.GetRequiredService<IDicomServerFactory>(), s.GetRequiredService<IOptions<DicomConfiguration>>());
+                    var dicomService = new DicomServerService<T>(s.GetRequiredService<IDicomServerFactory>(), s.GetRequiredService<IOptions<ServerConfiguration>>());
                     return dicomService;
                 });
 
             return services;
         }
-
-        public static IServiceCollection AddDicomServer<T>(this IServiceCollection services) where T : DicomService, IDicomServiceProvider
-            => services
-            .UseFellowOakDicom()
-            .AddTransient<IHostedService>(s =>
-            {
-                var dicomService = new DicomServerService<T>(s.GetRequiredService<IDicomServerFactory>(), s.GetRequiredService<IOptions<DicomConfiguration>>());
-                return dicomService;
-            });
 
         #endregion
 
@@ -76,7 +70,7 @@ namespace FellowOakDicom.AspNetCore
             {
                 var builder = new DicomServiceBuilder();
                 builderAction(builder);
-                var dicomService = new GeneralPurposeDicomServerService(s.GetRequiredService<IDicomServerFactory>(), builder, s.GetRequiredService<IOptions<DicomConfiguration>>());
+                var dicomService = new GeneralPurposeDicomServerService(s.GetRequiredService<IDicomServerFactory>(), builder, s.GetRequiredService<IOptions<ServerConfiguration>>());
                 return dicomService;
             });
 
