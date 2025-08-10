@@ -5,6 +5,7 @@
 - Fix issue where rescale slope/intercept were used from dataset in case a Modality LUT Sequence is present (#1986)
 - allow rendering of images with empty rescale information (#1975)
 - Prevent stack overflow in DicomDirectory by changing recursive to iterative method (#1977)
+- Only accept even groups as Overlay Plane Module (#1994)
 
 ### 5.2.2 (2025-04-22)
 - render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
