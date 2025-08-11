@@ -49,6 +49,35 @@ namespace FellowOakDicom
         }
 
         /// <summary>
+        /// Tries to get a composite <see cref="System.DateTime"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
+        /// </summary>
+        /// <param name="dataset">Dataset from which data should be retrieved.</param>
+        /// <param name="date">Tag associated with date value.</param>
+        /// <param name="time">Tag associated with time value.</param>
+        /// <param name="dateTime">Composite <see cref="System.DateTime"/>.</param>
+        /// <returns>Boolean if the composite DateTime could be extracted.</returns>
+        public static bool TryGetDateTime(this DicomDataset dataset, DicomTag date, DicomTag time, out DateTime dateTime)
+        {
+            try
+            {
+                var dd = dataset.GetDicomItem<DicomDate>(date);
+                var dt = dataset.GetDicomItem<DicomTime>(time);
+
+                var da = dd != null && dd.Count > 0 ? dd.Get<DateTime>(0) : DateTime.MinValue;
+                var tm = dt != null && dt.Count > 0 ? dt.Get<DateTime>(0) : DateTime.MinValue;
+
+                dateTime = new DateTime(da.Year, da.Month, da.Day, tm.Hour, tm.Minute, tm.Second, tm.Millisecond);
+                return true;
+            }
+            catch (Exception)
+            {
+                dateTime = DateTime.MinValue;
+                return false;
+            }
+        }
+
+
+        /// <summary>
         /// Get a composite <see cref="System.DateTimeOffset"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
         /// This will take any time zone information specified in the dataset into account. 
         /// If the dataset is a child sequence item, the <paramref name="topLevelDataset"/> must be specified to find time zone information.
@@ -71,12 +100,19 @@ namespace FellowOakDicom
             var timezone = (topLevelDataset ?? dataset).GetDicomItem<DicomShortString>(DicomTag.TimezoneOffsetFromUTC);
             if (timezone != null && timezone.Count > 0)
             {
-                // Explicit timezone information present in dataset
+                // Explicit timezone information present in dataset. The format is &XXYY, where & is either '+' or '-' and XX or YY are the hours or minutes
                 string s = timezone.Get<string>();
-                int hh = int.Parse(s.Substring(0, 3));
+                DicomValidation.ValidateTimezoneOffset(s);
+                int sign = s[0] switch
+                {
+                    '+' => +1,
+                    '-' => -1,
+                    _ => throw new DicomValidationException(s, DicomVR.SH, "Invalid format for TimezoneOffsetFromUTC")
+                };
+                int hh = int.Parse(s.Substring(1, 2));
                 int mm = int.Parse(s.Substring(3, 2));
 
-                var offset = new TimeSpan(hh, mm, 00);
+                var offset = new TimeSpan(sign * hh, sign * mm, 00);
                 return new DateTimeOffset(datetime, offset);
             }
             else
@@ -86,6 +122,68 @@ namespace FellowOakDicom
                 // to get the offset for the specific date. Fortunately, this is
                 // the default of this class
                 return new DateTimeOffset(datetime);
+            }
+        }
+
+        /// <summary>
+        /// Tries to get a composite <see cref="System.DateTimeOffset"/> instance based on <paramref name="date"/> and <paramref name="time"/> values.
+        /// This will take any time zone information specified in the dataset into account. 
+        /// If the dataset is a child sequence item, the <paramref name="topLevelDataset"/> must be specified to find time zone information.
+        /// </summary>
+        /// <param name="dataset">Dataset from which data should be retrieved.</param>
+        /// <param name="date">Tag associated with date value.</param>
+        /// <param name="time">Tag associated with time value.</param>
+        /// <param name="datetimeoffset">Composite <see cref="System.DateTimeOffset"/>.</param>
+        /// <param name="topLevelDataset">The top-level dataset (if different from the current dataset). This is where the time zone information will be located</param>
+        /// <returns>Boolean if the composite DateTimeOffset could be extracted.</returns>
+        public static bool TryGetDateTimeOffset(this DicomDataset dataset, DicomTag date, DicomTag time, out DateTimeOffset datetimeoffset, DicomDataset topLevelDataset = null)
+        {
+            try
+            {
+                if (!TryGetDateTime(dataset, date, time, out var datetime) || datetime == DateTime.MinValue)
+                {
+                    // Don't specify timezone when no date or time is present. This will make
+                    // the behavior consistent with GetDateTime extension
+                    return false;
+                }
+
+                var timezone = (topLevelDataset ?? dataset).GetDicomItem<DicomShortString>(DicomTag.TimezoneOffsetFromUTC);
+                if (timezone != null && timezone.Count > 0)
+                {
+                    // Explicit timezone information present in dataset. The format is &XXYY, where & is either '+' or '-' and XX or YY are the hours or minutes
+                    string s = timezone.Get<string>();
+                    if (!DicomValidation.IsValidTimezoneOffset(s))
+                    {
+                        return false;
+                    }
+                    int sign = s[0] switch
+                    {
+                        '+' => +1,
+                        '-' => -1,
+                        _ => throw new DicomValidationException(s, DicomVR.SH, "Invalid format for TimezoneOffsetFromUTC")
+                    };
+                    if (!int.TryParse(s.Substring(1, 2), out var hh) || !int.TryParse(s.Substring(3, 2), out var mm))
+                    {
+                        return false;
+                    }
+
+                    var offset = new TimeSpan(sign * hh, sign * mm, 00);
+                    datetimeoffset = new DateTimeOffset(datetime, offset);
+                    return true;
+                }
+                else
+                {
+                    // Use local timezone when no explicit timezone info in dataset
+                    // Note! The local timezone may change with daylight savings, thus we need 
+                    // to get the offset for the specific date. Fortunately, this is
+                    // the default of this class
+                    datetimeoffset = new DateTimeOffset(datetime);
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 

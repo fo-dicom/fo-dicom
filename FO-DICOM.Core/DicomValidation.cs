@@ -128,7 +128,7 @@ namespace FellowOakDicom
                 throw new DicomValidationException(content, DicomVR.DS, "value exceeds maximum length of 16 characters");
             }
 
-            content=content.Trim();
+            content = content.Trim();
             // This is not very inefficient - uses .NET regex caching
             if (!Regex.IsMatch(content, @"^[+-]?((\d+(\.\d*)?)|(\.\d+))([eE][-+]?\d+)?$"))
             {
@@ -379,12 +379,12 @@ namespace FellowOakDicom
             -2^31 <= n <= (2^31-1).
              */
 
-             if (string.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 // empty value allowed
                 return;
             }
-       
+
             // leading or trailing spaces allowed
             content = content.Trim(' ');
 
@@ -513,7 +513,7 @@ namespace FellowOakDicom
             {
                 throw new DicomValidationException(content, DicomVR.PN, "value contains too many groups");
             }
-            foreach(var group in groups)
+            foreach (var group in groups)
             {
                 if (group.Length > 64)
                 {
@@ -705,6 +705,19 @@ namespace FellowOakDicom
                 throw new DicomValidationException(content, DicomVR.UI, "a component can not be empty");
             }
         }
+
+        public static void ValidateTimezoneOffset(string content)
+        {
+            // http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.12.html#sect_C.12.1.1.8
+            if (!IsValidTimezoneOffset(content))
+            {
+                throw new DicomValidationException(content, DicomVR.SH, "Invalid format for TimezoneOffsetFromUTC");
+            }
+        }
+
+        public static bool IsValidTimezoneOffset(string content) =>
+            // http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.12.html#sect_C.12.1.1.8
+            Regex.IsMatch(content, @"^[+-]\d{4}$");
 
 
         private static bool IsControlExceptESC(char c)

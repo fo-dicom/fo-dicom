@@ -2,6 +2,8 @@
 - Add Milliseconds to result in DicomDataset.GetDateTime (#1967)
 - Add convenience function to open and save in DicomStructuredReport (#1968)
 - FO-DICOM.Tests target net9.0 instead of net6.0
+- Apply the sign to the minutes part of DatetimeOffsetFromUTC correctly (#1988)
+- Add new functions TryGetDateTime and TryGetDateTimeOffset in DicomDataset (#1988)
 - Fix issue where rescale slope/intercept were used from dataset in case a Modality LUT Sequence is present (#1986)
 - allow rendering of images with empty rescale information (#1975)
 - Prevent stack overflow in DicomDirectory by changing recursive to iterative method (#1977)
