@@ -18,7 +18,7 @@ namespace FellowOakDicom.StructuredReport
         {
             if (sequence.Items.Count == 0)
             {
-                throw new DicomDataException("No measurement item found in sequence.");
+                throw new DicomDataException("No measurement item found in sequence.", sequence.Tag);
             }
 
             Add(sequence.Items[0]);

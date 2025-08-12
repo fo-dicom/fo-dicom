@@ -210,12 +210,12 @@ namespace FellowOakDicom
                 }
                 else
                 {
-                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.", tag);
                 }
             }
             else
             {
-                throw new DicomDataException($"Tag: {tag} not found in dataset");
+                throw new DicomDataException($"Tag: {tag} not found in dataset", tag);
             }
         }
 
@@ -231,12 +231,12 @@ namespace FellowOakDicom
                 }
                 else
                 {
-                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.", tag);
                 }
             }
             else
             {
-                throw new DicomDataException($"Tag: {tag} not found in dataset");
+                throw new DicomDataException($"Tag: {tag} not found in dataset", tag);
             }
         }
 
@@ -252,12 +252,12 @@ namespace FellowOakDicom
                 }
                 else
                 {
-                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.", tag);
                 }
             }
             else
             {
-                throw new DicomDataException($"Tag: {tag} not found in dataset");
+                throw new DicomDataException($"Tag: {tag} not found in dataset", tag);
             }
         }
 
@@ -273,12 +273,12 @@ namespace FellowOakDicom
                 }
                 else
                 {
-                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.");
+                    throw new DicomDataException($"DicomTag {tag} isn't a sequence.", tag);
                 }
             }
             else
             {
-                throw new DicomDataException($"Tag: {tag} not found in dataset");
+                throw new DicomDataException($"Tag: {tag} not found in dataset", tag);
             }
         }
 
@@ -349,7 +349,7 @@ namespace FellowOakDicom
             else
             {
                 //Are there any other cases where this method can be called for non DicomElement types?
-                throw new DicomDataException("DicomTag doesn't support values.");
+                throw new DicomDataException("DicomTag doesn't support values.", tag);
             }
         }
 
@@ -367,7 +367,7 @@ namespace FellowOakDicom
         {
             tag = ValidatePrivate(tag);
             if (index < 0) { throw new ArgumentOutOfRangeException(nameof(index), "index must be a non-negative value"); }
-            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead", tag); }
 
             ValidateDicomTag(tag, out DicomItem item);
 
@@ -377,7 +377,7 @@ namespace FellowOakDicom
 
                 if (index >= element.Count)
                 {
-                    throw new DicomDataException($"Index out of range: index {index} for Tag {tag} must be less than value count {element.Count}");
+                    throw new DicomDataException($"Index out of range: index {index} for Tag {tag} must be less than value count {element.Count}", tag);
                 }
                 else
                 {
@@ -386,7 +386,7 @@ namespace FellowOakDicom
             }
             else
             {
-                throw new DicomDataException("DicomTag doesn't support values.");
+                throw new DicomDataException("DicomTag doesn't support values.", tag);
             }
         }
 
@@ -461,7 +461,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>.</exception>
         public T[] GetValues<T>(DicomTag tag)
         {
-            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type."); }
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type.", tag); }
 
             tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
@@ -474,7 +474,7 @@ namespace FellowOakDicom
             }
             else
             {
-                throw new DicomDataException("DicomTag doesn't support values.");
+                throw new DicomDataException("DicomTag doesn't support values.", tag);
             }
         }
 
@@ -537,7 +537,7 @@ namespace FellowOakDicom
         /// <exception cref="DicomDataException">If the dataset does not contain <paramref name="tag"/>, is empty or is multi-valued.</exception>
         public T GetSingleValue<T>(DicomTag tag)
         {
-            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead"); }
+            if (typeof(T).GetTypeInfo().IsArray) { throw new DicomDataException("T can't be an Array type. Use GetValues instead", tag); }
 
             tag = ValidatePrivate(tag);
             ValidateDicomTag(tag, out DicomItem item);
@@ -552,7 +552,7 @@ namespace FellowOakDicom
             }
             else
             {
-                throw new DicomDataException("DicomTag doesn't support values.");
+                throw new DicomDataException("DicomTag doesn't support values.", tag);
             }
         }
 
@@ -634,7 +634,7 @@ namespace FellowOakDicom
             }
             else
             {
-                throw new DicomDataException("DicomTag doesn't support values.");
+                throw new DicomDataException("DicomTag doesn't support values.", tag);
             }
         }
 
@@ -689,7 +689,7 @@ namespace FellowOakDicom
             }
             else
             {
-                throw new DicomDataException($"Tag: {tag} not found in dataset");
+                throw new DicomDataException($"Tag: {tag} not found in dataset", tag);
             }
         }
 
@@ -713,7 +713,7 @@ namespace FellowOakDicom
         {
             if (!_items.TryGetValue(tag, out item))
             {
-                throw new DicomDataException($"Tag: {tag} not found in dataset");
+                throw new DicomDataException($"Tag: {tag} not found in dataset", tag);
             }
         }
 
@@ -802,7 +802,7 @@ namespace FellowOakDicom
             if (TryGetSequence(DicomTag.SharedFunctionalGroupsSequence, out var sharedFunctionalGroupsSequence)
                 && sharedFunctionalGroupsSequence.Items.Count > 0)
             {
-                var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.Items[0] ?? throw new DicomDataException("unexpected empty SharedFunctionalGroupsSequence");
+                var sharedFunctionGroupItem = sharedFunctionalGroupsSequence.Items[0] ?? throw new DicomDataException("unexpected empty SharedFunctionalGroupsSequence", sharedFunctionalGroupsSequence.Tag);
                 foreach (var sequence in sharedFunctionGroupItem.OfType<DicomSequence>())
                 {
                     if (sequence.Tag == DicomTag.ReferencedImageSequence)
@@ -1215,11 +1215,11 @@ namespace FellowOakDicom
             {
                 string groupNumber = tag.Group.ToString("X4");
                 string elementNumber = tag.Element.ToString("X4");
-                throw new DicomDataException($"Unknown private tag <{tag.PrivateCreator}> ({groupNumber}, {elementNumber}) has no VR defined.");
+                throw new DicomDataException($"Unknown private tag <{tag.PrivateCreator}> ({groupNumber}, {elementNumber}) has no VR defined.", tag);
             }
             if (entry == DicomDictionary.UnknownTag && !tag.IsPrivate)
             {
-                throw new DicomDataException($"Tag {tag} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.");
+                throw new DicomDataException($"Tag {tag} not found in DICOM dictionary. Only dictionary tags may be added implicitly to the dataset.", tag);
             }
 
             DicomVR vr = null;

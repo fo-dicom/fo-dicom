@@ -9,14 +9,18 @@ namespace FellowOakDicom
 
     public class DicomDataException : DicomException
     {
-        public DicomDataException(string message)
+        public DicomTag Tag { get; }
+
+        public DicomDataException(string message, DicomTag tag = null)
             : base(message)
         {
+            Tag = tag;
         }
 
-        public DicomDataException(string message, Exception innerException)
+        public DicomDataException(string message, Exception innerException, DicomTag tag = null)
             : base(message, innerException)
         {
+            Tag = tag;
         }
     }
 }

@@ -79,7 +79,7 @@ namespace FellowOakDicom.IO.Reader
                 "US" => new DicomUnsignedShort(tag, data),
                 "UT" => new DicomUnlimitedText(tag, _encodings.Peek(), data),
                 "UV" => new DicomUnsignedVeryLong(tag, data),
-                _ => throw new DicomDataException($"Unhandled VR in DICOM parser observer: {vr.Code}"),
+                _ => throw new DicomDataException($"Unhandled VR in DICOM parser observer: {vr.Code}", tag),
             };
             if (element.Tag == DicomTag.SpecificCharacterSet)
             {
@@ -143,7 +143,7 @@ namespace FellowOakDicom.IO.Reader
             }
             else
             {
-                throw new DicomDataException($"Unexpected VR found for DICOM fragment sequence: {vr.Code}");
+                throw new DicomDataException($"Unexpected VR found for DICOM fragment sequence: {vr.Code}", tag);
             }
         }
 

@@ -238,7 +238,7 @@ namespace FellowOakDicom
         {
             if (tag.Group != 2)
             {
-                throw new DicomDataException($"Tag with group ID {tag.Group} is not allowed in meta information.");
+                throw new DicomDataException($"Tag with group ID {tag.Group} is not allowed in meta information.", tag);
             }
         }
 
