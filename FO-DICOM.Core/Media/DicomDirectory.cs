@@ -160,7 +160,7 @@ namespace FellowOakDicom.Media
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
+        public static new DicomDirectory Open(string fileName, Encoding fallbackEncoding, Func<ParseState, ParseStopStatus> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -214,7 +214,7 @@ namespace FellowOakDicom.Media
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns><see cref="DicomDirectory"/> instance.</returns>
-        public static new DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
+        public static new DicomDirectory Open(Stream stream, Encoding fallbackEncoding, Func<ParseState, ParseStopStatus> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -267,7 +267,7 @@ namespace FellowOakDicom.Media
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
+        public static new async Task<DicomDirectory> OpenAsync(string fileName, Encoding fallbackEncoding, Func<ParseState, ParseStopStatus> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {
@@ -323,7 +323,7 @@ namespace FellowOakDicom.Media
         /// <param name="readOption">The option how to deal with large DICOM tags like pixel data.</param>
         /// <param name="largeObjectSize">Custom limit of what are large values and what are not. If 0 is passend, then the default of 64k is used.</param>
         /// <returns>Awaitable <see cref="DicomDirectory"/> instance.</returns>
-        public new static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, bool> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
+        public new static async Task<DicomDirectory> OpenAsync(Stream stream, Encoding fallbackEncoding, Func<ParseState, ParseStopStatus> stop = null, FileReadOption readOption = FileReadOption.Default, int largeObjectSize = 0)
         {
             if (fallbackEncoding == null)
             {

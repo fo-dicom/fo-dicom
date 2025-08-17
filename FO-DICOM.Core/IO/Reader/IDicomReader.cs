@@ -63,7 +63,7 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
-        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
+        DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, ParseStopStatus> stop = null);
 
         /// <summary>
         /// Asynchronously perform DICOM reading of a byte source.
@@ -72,7 +72,7 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null);
+        Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, ParseStopStatus> stop = null);
 
     }
 }

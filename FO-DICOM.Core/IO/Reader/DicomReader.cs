@@ -67,7 +67,7 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Reader resulting status.</returns>
-        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
+        public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, ParseStopStatus> stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
             return worker.DoWork(source);
@@ -80,7 +80,7 @@ namespace FellowOakDicom.IO.Reader
         /// <param name="observer">Reader observer.</param>
         /// <param name="stop">Criterion at which to stop.</param>
         /// <returns>Awaitable reader resulting status.</returns>
-        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
+        public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, ParseStopStatus> stop = null)
         {
             var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
             return worker.DoWorkAsync(source);
@@ -105,7 +105,7 @@ namespace FellowOakDicom.IO.Reader
 
             private readonly IDicomReaderObserver _observer;
 
-            private readonly Func<ParseState, bool> _stop;
+            private readonly Func<ParseState, ParseStopStatus> _stop;
 
             private readonly DicomDictionary _dictionary;
 
@@ -129,7 +129,7 @@ namespace FellowOakDicom.IO.Reader
             /// </summary>
             internal DicomReaderWorker(
                 IDicomReaderObserver observer,
-                Func<ParseState, bool> stop,
+                Func<ParseState, ParseStopStatus> stop,
                 DicomDictionary dictionary,
                 bool isExplicitVR,
                 bool isDeflated,
@@ -199,10 +199,12 @@ namespace FellowOakDicom.IO.Reader
                 while (!source.IsEOF && (positionEnd == 0 || source.Position < positionEnd) && _result == DicomReaderResult.Processing)
                 {
                     var positionElement = source.Position;
-                    if (!ParseTag(source, out tag, out var entry, sequenceDepth, positionElement))
+                    var parseState = ParseTag(source, out tag, out var entry, sequenceDepth, positionElement);
+                    if (parseState == ParseStopStatus.Stop)
                     {
                         return;
                     }
+
                     if (!ParseVR(source, vrMemory, ref tag, ref entry, out var vr, handleBadPrivateSequence))
                     {
                         return;
@@ -210,6 +212,11 @@ namespace FellowOakDicom.IO.Reader
                     if (!ParseLength(source, tag, ref vr, out var length, handleBadPrivateSequence))
                     {
                         return;
+                    }
+                    if (parseState == ParseStopStatus.SkipTag)
+                    {
+                        source.GoTo(positionEnd);
+                        continue;
                     }
                     if (!ParseValue(source, vrMemory, tag, vr, length, sequenceDepth, positionElement, positionEnd, handleBadPrivateSequence))
                     {
@@ -240,7 +247,8 @@ namespace FellowOakDicom.IO.Reader
                 while (!source.IsEOF && (positionEnd == 0 || source.Position < positionEnd) && _result == DicomReaderResult.Processing)
                 {
                     var positionElement = source.Position;
-                    if (!ParseTag(source, out var tag, out var entry, sequenceDepth, positionElement))
+                    var parseState = ParseTag(source, out var tag, out var entry, sequenceDepth, positionElement);
+                    if (parseState == ParseStopStatus.Stop)
                     {
                         return tag;
                     }
@@ -251,6 +259,11 @@ namespace FellowOakDicom.IO.Reader
                     if (!ParseLength(source, tag, ref vr, out var length, handleBadPrivateSequence))
                     {
                         return tag;
+                    }
+                    if (parseState == ParseStopStatus.SkipTag)
+                    {
+                        source.GoTo(positionEnd);
+                        continue;
                     }
                     if (!await ParseValueAsync(source, vrMemory, tag, vr, length, sequenceDepth, positionElement, positionEnd, handleBadPrivateSequence).ConfigureAwait(false))
                     {
@@ -290,7 +303,7 @@ namespace FellowOakDicom.IO.Reader
             }
 
 
-            private bool ParseTag(IByteSource source, out DicomTag tag, out DicomDictionaryEntry entry, int sequenceDepth, long positionElement)
+            private ParseStopStatus ParseTag(IByteSource source, out DicomTag tag, out DicomDictionaryEntry entry, int sequenceDepth, long positionElement)
             {
                 tag = null;
                 entry = null;
@@ -298,7 +311,7 @@ namespace FellowOakDicom.IO.Reader
                 if (!source.Require(4))
                 {
                     _result = DicomReaderResult.Suspended;
-                    return false;
+                    return ParseStopStatus.Stop;
                 }
 
                 var group = source.GetUInt16();
@@ -329,17 +342,18 @@ namespace FellowOakDicom.IO.Reader
                     tag = entry.Tag; // Use dictionary tag
                 }
 
-                if (_stop?.Invoke(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }) ?? false)
+                var stopState = _stop?.Invoke(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }) ?? ParseStopStatus.Continue;
+                if (stopState == ParseStopStatus.Stop)
                 {
                     // if a stop is requested, then move back to the beginning of the tag.
                     _result = DicomReaderResult.Stopped;
                     source.GoTo(positionElement);
-                    return false;
+                    return stopState;
                 }
 
                 _previousTag = tag;
 
-                return true;
+                return stopState;
             }
 
             private bool ParseVR(IByteSource source, IMemory vrMemory, ref DicomTag tag, ref DicomDictionaryEntry entry, out DicomVR vr, bool handleBadPrivateSequence)

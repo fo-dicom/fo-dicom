@@ -49,9 +49,11 @@ namespace FellowOakDicom.IO.Reader
 
         private static readonly DicomTag _fileMetaInfoStopTag = new DicomTag(0x0002, 0xffff);
 
-        private static readonly Func<ParseState, bool> _fileMetaInfoStopCriterion =
+        private static readonly Func<ParseState, ParseStopStatus> _fileMetaInfoStopCriterion =
             state => state.Tag.CompareTo(_fileMetaInfoStopTag) >= 0
-                || (state.PreviousTag?.Group == 0x0002 && state.PreviousTag.CompareTo(state.Tag) >= 0);
+                || (state.PreviousTag?.Group == 0x0002 && state.PreviousTag.CompareTo(state.Tag) >= 0)
+                ? ParseStopStatus.Stop
+                : ParseStopStatus.Continue;
 
         private static readonly Lazy<IMemoryProvider> _memoryProvider = new Lazy<IMemoryProvider>(() => Setup.ServiceProvider.GetRequiredService<IMemoryProvider>());
 
@@ -101,7 +103,7 @@ namespace FellowOakDicom.IO.Reader
               IByteSource source,
               IDicomReaderObserver fileMetaInfo,
               IDicomReaderObserver dataset,
-              Func<ParseState, bool> stop = null)
+              Func<ParseState, ParseStopStatus> stop = null)
         {
             var parse = Parse(source, fileMetaInfo, dataset, stop);
             lock (_locker)
@@ -125,7 +127,7 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetaInfo,
             IDicomReaderObserver dataset,
-            Func<ParseState, bool> stop = null)
+            Func<ParseState, ParseStopStatus> stop = null)
         {
             var parse = await ParseAsync(source, fileMetaInfo, dataset, stop).ConfigureAwait(false);
             lock (_locker)
@@ -140,7 +142,7 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<ParseState, bool> stop)
+            Func<ParseState, ParseStopStatus> stop)
         {
             if (!source.Require(132))
             {
@@ -167,7 +169,7 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<ParseState, bool> stop)
+            Func<ParseState, ParseStopStatus> stop)
         {
             if (!source.Require(132))
             {
@@ -281,7 +283,7 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<ParseState, bool> stop,
+            Func<ParseState, ParseStopStatus> stop,
             ref DicomTransferSyntax syntax,
             ref DicomFileFormat fileFormat)
         {
@@ -347,7 +349,7 @@ namespace FellowOakDicom.IO.Reader
             IByteSource source,
             IDicomReaderObserver fileMetasetInfoObserver,
             IDicomReaderObserver datasetObserver,
-            Func<ParseState, bool> stop,
+            Func<ParseState, ParseStopStatus> stop,
             DicomTransferSyntax syntax,
             DicomFileFormat fileFormat)
         {

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) 2012-2025 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 using Xunit;
 
 namespace FellowOakDicom.Tests.Bugs
@@ -25,6 +22,24 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(DicomTag.PersonNamesToUseSequence, (ex.InnerException as DicomDataException).Tag);
         }
 
+        [Fact]
+        public void ParsingInvlidFileWithCallback()
+        {
+            var filename = TestData.Resolve("GH1982.dcm");
+            DicomFile dcmFile = null;
+            var ex = Record.Exception(() =>
+            {
+                dcmFile = DicomFile.Open(filename, DicomEncoding.Default, stop: (ParseState state) =>
+                {
+                    if (state.Tag == DicomTag.PersonNamesToUseSequence) return ParseStopStatus.SkipTag;
+                    return ParseStopStatus.Continue;
+                });
+            });
+            Assert.Null(ex);
+            Assert.NotNull(dcmFile);
+            // ensure that all tags after DicomTag.PersonNamesToUseSequence are pared
+            Assert.True(dcmFile.Dataset.Contains(DicomTag.PatientBirthDate));
+        }
 
     }
 }

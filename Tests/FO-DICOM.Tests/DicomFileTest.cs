@@ -331,7 +331,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAtOperatorsNameTag_OperatorsNameExcluded()
         {
-            static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0;
+            static ParseStopStatus criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) >= 0 ? ParseStopStatus.Stop : ParseStopStatus.Continue;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.OperatorsName));
@@ -340,7 +340,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterOperatorsNameTag_OperatorsNameIncluded()
         {
-            static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) > 0;
+            static ParseStopStatus criterion(ParseState state) => state.Tag.CompareTo(DicomTag.OperatorsName) > 0 ? ParseStopStatus.Stop : ParseStopStatus.Continue;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.OperatorsName));
@@ -349,7 +349,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterInstanceNumberTag_SequenceDepth0InstanceNumberExcluded()
         {
-            static bool criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            static ParseStopStatus criterion(ParseState state) => state.Tag.CompareTo(DicomTag.InstanceNumber) > 0 ? ParseStopStatus.Stop : ParseStopStatus.Continue;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.False(file.Dataset.Contains(DicomTag.InstanceNumber));
@@ -358,8 +358,8 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Open_StopAfterInstanceNumberTagAtDepth0_SequenceDepth0InstanceNumberIncluded()
         {
-            static bool criterion(ParseState state) =>
-                state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0;
+            static ParseStopStatus criterion(ParseState state) =>
+                state.SequenceDepth == 0 && state.Tag.CompareTo(DicomTag.InstanceNumber) > 0 ? ParseStopStatus.Stop : ParseStopStatus.Continue;
 
             var file = DicomFile.Open(TestData.Resolve("GH064.dcm"), DicomEncoding.Default, criterion);
             Assert.True(file.Dataset.Contains(DicomTag.InstanceNumber));
