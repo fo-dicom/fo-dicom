@@ -22,7 +22,7 @@ await client.SendAsync();
 ```
 
 ```csharp
-using var server = serverFactry.Create<DicomCEchoProvider>(port);
+using var server = serverFactory.Create<DicomCEchoProvider>(port);
 // change the options of the DicomServer
 server.Options.UseRemoteAEForLogName = true;
 ```
@@ -32,7 +32,7 @@ server.Options.UseRemoteAEForLogName = true;
 As described in the options pattern, fo-dicom accepts configuration functions as paraemters in factories or at startup of the application. These configuration actions are then always executed and change the default values of the registered options classes.
 
 ```csharp
-using var server = serverFactry.Create<DicomCEchoProvider>(port, configure: o => o.MaxClientsAllowed = 1);
+using var server = serverFactory.Create<DicomCEchoProvider>(port, configure: o => o.MaxClientsAllowed = 1);
 ```
 
 ```csharp
@@ -100,7 +100,7 @@ FellowOakDicom__DicomClientOptions__ConnectionTimeoutInMs=2000
 
 ### Priority of evaluation
 
-1. By defaut *fo-dicom* ships the options with some default values that are applied if no other configuration is set.
+1. By default *fo-dicom* ships the options with some default values that are applied if no other configuration is set.
 2. Then if some Configuration is bound to the options, then these values overrule the built-in default values.
 3. Any configuration method that is passed as parameter in factories or at startup then overrides the values read from Configuration
 4. Changing the properties of a created instance directly has the highest priority and will be used in any case and not changed by any other configuration mechanism.

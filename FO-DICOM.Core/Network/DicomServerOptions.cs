@@ -19,10 +19,5 @@ namespace FellowOakDicom.Network
             {
                 MaxClientsAllowed = MaxClientsAllowed
             };
-
-        public void CopyTo(DicomServerOptions other)
-        {
-            other.MaxClientsAllowed = this.MaxClientsAllowed;
-        }
     }
 }

@@ -113,8 +113,8 @@ namespace FellowOakDicom.Tests
             var clientFactory = serviceProvider.GetService<IDicomClientFactory>();
             Assert.NotNull(clientFactory);
 
-            var serverFactry = serviceProvider.GetRequiredService<IDicomServerFactory>();
-            using var server = serverFactry.Create<DicomCEchoProvider>(port);
+            var serverFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
+            using var server = serverFactory.Create<DicomCEchoProvider>(port);
 
             var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(new DicomCEchoRequest());
@@ -151,8 +151,8 @@ namespace FellowOakDicom.Tests
             var clientFactory = serviceProvider.GetService<IDicomClientFactory>();
             Assert.NotNull(clientFactory);
 
-            var serverFactry = serviceProvider.GetRequiredService<IDicomServerFactory>();
-            using var server = serverFactry.Create<DicomCEchoProvider>(port);
+            var serverFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
+            using var server = serverFactory.Create<DicomCEchoProvider>(port);
 
             var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(new DicomCEchoRequest());
