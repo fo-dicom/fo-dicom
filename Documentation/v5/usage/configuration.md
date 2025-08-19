@@ -103,5 +103,5 @@ FellowOakDicom__DicomClientOptions__ConnectionTimeoutInMs=2000
 1. By defaut *fo-dicom* ships the options with some default values that are applied if no other configuration is set.
 2. Then if some Configuration is bound to the options, then these values overrule the built-in default values.
 3. Any configuration method that is passed as parameter in factories or at startup then overrides the values read from Configuration
-4. Changing the properties of a created instance directly has the highes priority and will be used in any case and not changed by any other configuration mechanism.
+4. Changing the properties of a created instance directly has the highest priority and will be used in any case and not changed by any other configuration mechanism.
 
