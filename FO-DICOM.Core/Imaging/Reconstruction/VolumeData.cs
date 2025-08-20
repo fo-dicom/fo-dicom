@@ -38,7 +38,17 @@ namespace FellowOakDicom.Imaging.Reconstruction
         private readonly Lazy<DicomDataset> _commonData;
         public DicomDataset CommonData => _commonData.Value;
 
+        
+        /// <summary>
+        /// Constructs a VolumeData object from a multi-layer dataset (eg. Enhanced CT).
+        /// It is strongly recommended this dataset is already decompressed before being passed to this constructor, or each slice will be decompressed separately.
+        /// </summary>
+        /// <param name="dataset">The dataset, containing at least the tag <see cref="DicomTag.NumberOfFrames"/></param>
+        public VolumeData(DicomDataset dataset) : this(ConstructSlicesFromMultiFrameDataset(dataset))
+        {
+        }
 
+        
         public VolumeData(IEnumerable<ImageData> slices)
         {
             slices = new List<ImageData>(slices
@@ -58,8 +68,20 @@ namespace FellowOakDicom.Imaging.Reconstruction
             BuildVolumeData();
         }
 
+        
+        private static IEnumerable<ImageData> ConstructSlicesFromMultiFrameDataset(DicomDataset dataset)
+        {
+            ValidateInput(dataset.Contains(DicomTag.NumberOfFrames), "Given dataset must contain multiple frames");
+            
+            var numberOfFrames = dataset.GetSingleValue<int>(DicomTag.NumberOfFrames);
+            var pixelData = DicomPixelData.Create(dataset);
+            
+            return Enumerable.Range(0, numberOfFrames)
+                .Select(frame => new ImageData(dataset, pixelData, frame));
+        }
+        
 
-        private void ValidateInput(Func<bool> validation, string message = "")
+        private static void ValidateInput(Func<bool> validation, string message = "")
         {
             if (!validation())
             {
@@ -68,7 +90,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private void ValidateInput(bool validated, string message = "") => ValidateInput(() => validated, message);
+        private static void ValidateInput(bool validated, string message = "") => ValidateInput(() => validated, message);
 
 
         private void BuildVolumeData()
