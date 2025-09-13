@@ -37,7 +37,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            var server1 = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
+            using var server1 = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server1.IsListening)
             {
                 await Task.Delay(10);
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var port = Ports.GetNext();
 
-            var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
+            using var server = DicomServerFactory.Create<DicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer"));
             while (!server.IsListening)
             {
                 await Task.Delay(10);
