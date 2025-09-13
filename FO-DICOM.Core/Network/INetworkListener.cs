@@ -26,6 +26,12 @@ namespace FellowOakDicom.Network
         void Stop();
 
         /// <summary>
+        /// Port property is valid after StartAsync() has been invoked and a listener
+        /// is bound. Returns -1 otherwise.
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
         /// Wait until a TCP client is trying to connect, and return the accepted TCP client.
         /// </summary>
         /// <param name="noDelay">No delay?</param>

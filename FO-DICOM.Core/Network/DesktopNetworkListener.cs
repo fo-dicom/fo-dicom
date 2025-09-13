@@ -56,6 +56,13 @@ namespace FellowOakDicom.Network
             return Task.FromResult(0);
         }
 
+        public int Port
+        {
+            get
+            {
+                return _listener.LocalEndpoint is IPEndPoint localEndPoint ? localEndPoint.Port : -1;
+            }
+        }
         /// <inheritdoc />
         public void Stop() => _listener.Stop();
 
