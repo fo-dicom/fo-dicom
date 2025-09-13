@@ -60,7 +60,7 @@ Information     > (0010,0022) CS [INTERNAL]                                 #   
             ".Trim();
             var actual = string.Join(Environment.NewLine, logger.LogEntries.Select(entry => $"{entry.Item1} {entry.Item2}"));
             _output.WriteLine(actual);
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.Replace("\r\n", "\n"), actual.Replace("\r\n", "\n"));
         }
 
         [Fact]
@@ -100,7 +100,7 @@ Information     > (0010,0022) CS [INTERNAL]                                 #   
     > (0010,0022) CS [INTERNAL]                                                   #     8, TypeOfPatientID
             ".Trim() + Environment.NewLine;
             _output.WriteLine(actual);
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.Replace("\r\n", "\n"), actual.Replace("\r\n", "\n"));
         }
     }
 }
