@@ -90,11 +90,10 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task SendAsync_MultipleRequestsWhileAlreadySending_ReusesSameAssociation()
         {
-            int port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
             var counter = 0;
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
             for (var i = 0; i < 5; i++)
             {
@@ -132,20 +131,18 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task SendAsync_SingleRequest_Recognized()
         {
-            int port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
-            {
-                var counter = 0;
-                var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+            using var server = CreateServer<DicomCEchoProvider>(0);
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(request);
+            var counter = 0;
+            var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
-                var task = client.SendAsync();
-                //await Task.WhenAny(task, Task.Delay(10000));
-                await task;
-                Assert.Equal(1, counter);
-            }
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(request);
+
+            var task = client.SendAsync();
+            //await Task.WhenAny(task, Task.Delay(10000));
+            await task;
+            Assert.Equal(1, counter);
         }
 
         [Fact]
@@ -154,11 +151,12 @@ namespace FellowOakDicom.Tests.Network.Client
             var writer = new StringWriter();
             var logger = new TextWriterLogger(writer);
 
-            int port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
+            int port;
             {
+                using var server = CreateServer<DicomCEchoProvider>(0);
+                port = server.Port;
                 var request = new DicomCEchoRequest { };
-                var client = CreateClient("127.0.0.1", port, false, "LOG-SCU", "ANY-SCP");
+                var client = CreateClient("127.0.0.1", server.Port, false, "LOG-SCU", "ANY-SCP");
                 client.Logger = logger;
 
                 await client.AddRequestAsync(request);
@@ -176,9 +174,8 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task AutomaticallyFixTooLongAETitles()
         {
             // Arrange
-            var port = Ports.GetNext();
             var counter = 0;
-            using var server = CreateServer<ConfigurableDicomCEchoProvider, ConfigurableDicomCEchoProviderServer>(port);
+            using var server = CreateServer<ConfigurableDicomCEchoProvider, ConfigurableDicomCEchoProviderServer>(0);
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
             DicomAssociation capturedAssociation = null;
             server.OnAssociationRequest(association =>
@@ -189,7 +186,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
             // DicomClientFactory cares about the length of AETitles,
             // but in case some developer registers a custom Factory or creates DicomClient directly for some other reason.
-            var client = new DicomClient("localhost", port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
+            var client = new DicomClient("localhost", server.Port, null, "STORAGECOMMITTEST", "DE__257a276f6d47",
                 new DicomClientOptions { }, new DicomServiceOptions { },
                 Setup.ServiceProvider.GetRequiredService<ILoggerFactory>(),
                 Setup.ServiceProvider.GetRequiredService<IAdvancedDicomClientConnectionFactory>());
@@ -219,23 +216,21 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(1000)]
         public async Task SendAsync_MultipleRequests_AllRecognized(int expected)
         {
-            int port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
-            {
-                var actual = 0;
+            using var server = CreateServer<DicomCEchoProvider>(0);
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.NegotiateAsyncOps(expected, 1);
+            var actual = 0;
 
-                var requests = Enumerable.Range(0, expected)
-                    .Select(i => new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.NegotiateAsyncOps(expected, 1);
 
-                await client.AddRequestsAsync(requests);
+            var requests = Enumerable.Range(0, expected)
+                .Select(i => new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref actual) });
 
-                await client.SendAsync();
+            await client.AddRequestsAsync(requests);
 
-                Assert.Equal(expected, actual);
-            }
+            await client.SendAsync();
+
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -243,10 +238,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(100)]
         public async Task SendAsync_MultipleTimes_AllRecognized(int expected)
         {
-            var port = Ports.GetNext();
             var flag = new ManualResetEventSlim();
 
-            using var server = CreateServer<DicomCEchoProvider>(port);
+            using var server = CreateServer<DicomCEchoProvider>(0);
             while (!server.IsListening)
             {
                 await Task.Delay(50);
@@ -254,7 +248,7 @@ namespace FellowOakDicom.Tests.Network.Client
 
             var actual = 0;
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             for (var i = 0; i < expected; i++)
             {
                 await client.AddRequestAsync(
@@ -282,9 +276,7 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(100)]
         public async Task SendAsync_MultipleTimesParallel_AllRecognized(int expected)
         {
-            int port = Ports.GetNext();
-
-            using var server = CreateServer<DicomCEchoProvider>(port);
+            using var server = CreateServer<DicomCEchoProvider>(0);
 
             await Task.Delay(500);
             Assert.True(server.IsListening, "Server is not listening");
@@ -294,7 +286,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var requests = Enumerable.Range(0, expected).Select(
                 async requestIndex =>
                 {
-                    var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                    var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                     client.Logger = _logger.IncludePrefix($"{nameof(DicomClient)} #{requestIndex}");
                     await client.AddRequestAsync(
                         new DicomCEchoRequest
@@ -318,117 +310,105 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task AssociationAccepted_SuccessfulSendAsync_IsInvoked()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            using var server = CreateServer<MockCEchoProvider>(0);
 
-                var accepted = false;
-                client.AssociationAccepted += (sender, args) => accepted = true;
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
 
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                await client.SendAsync();
+            var accepted = false;
+            client.AssociationAccepted += (sender, args) => accepted = true;
 
-                Assert.True(accepted);
-            }
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            await client.SendAsync();
+
+            Assert.True(accepted);
         }
 
         [Fact]
         public async Task AssociationRejected_AssociationNotAllowed_IsInvoked()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "NOTACCEPTEDSCP");
+            using var server = CreateServer<MockCEchoProvider>(0);
 
-                var reason = DicomRejectReason.NoReasonGiven;
-                client.AssociationRejected += (sender, args) => reason = args.Reason;
+        var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "NOTACCEPTEDSCP");
 
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
+            var reason = DicomRejectReason.NoReasonGiven;
+            client.AssociationRejected += (sender, args) => reason = args.Reason;
 
-                Assert.Equal(DicomRejectReason.CalledAENotRecognized, reason);
-                Assert.NotNull(exception);
-            }
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+
+            Assert.Equal(DicomRejectReason.CalledAENotRecognized, reason);
+            Assert.NotNull(exception);
         }
 
         [Fact]
         public async Task AssociationReleased_SuccessfulSendAsync_IsInvoked()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
+            using var server = CreateServer<DicomCEchoProvider>(0);
+
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+
+            var released = false;
+            var handle = new ManualResetEventSlim();
+            client.AssociationReleased += (sender, args) =>
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                released = true;
+                handle.Set();
+            };
 
-                var released = false;
-                var handle = new ManualResetEventSlim();
-                client.AssociationReleased += (sender, args) =>
-                {
-                    released = true;
-                    handle.Set();
-                };
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            await client.SendAsync();
 
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                await client.SendAsync();
-
-                handle.Wait(1000);
-                Assert.True(released);
-            }
+            handle.Wait(1000);
+            Assert.True(released);
         }
 
         [Fact]
         public async Task SendAsync_RecordAssociationData_AssociationContainsHostAndPort()
         {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                await client.SendAsync();
+            using var server = CreateServer<MockCEchoProvider>(0);
 
-                Assert.NotNull(_remoteHost);
-                Assert.True(_remotePort > 0);
-                Assert.NotEqual(port, _remotePort);
-            }
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            await client.SendAsync();
+
+            Assert.NotNull(_remoteHost);
+            Assert.True(_remotePort > 0);
+            Assert.NotEqual(server.Port, _remotePort);
         }
 
         [Fact]
         public async Task SendAsync_RecordAssociationData_AssociationContainsExtendedNegotiation()
         {
-            int port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                var requestedNegotiation = new DicomExtendedNegotiation(
-                    DicomUID.Verification,
-                    new DicomServiceApplicationInfo(new byte[] { 1, 1, 1 }));
-                DicomExtendedNegotiationCollection acceptedNegotiations = null;
+            using var server = CreateServer<MockCEchoProvider>(0);
 
-                client.AdditionalExtendedNegotiations.Add(requestedNegotiation);
-                client.AssociationAccepted += (sender, args) => acceptedNegotiations = args.Association.ExtendedNegotiations;
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            var requestedNegotiation = new DicomExtendedNegotiation(
+                DicomUID.Verification,
+                new DicomServiceApplicationInfo(new byte[] { 1, 1, 1 }));
+            DicomExtendedNegotiationCollection acceptedNegotiations = null;
 
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                await client.SendAsync();
+            client.AdditionalExtendedNegotiations.Add(requestedNegotiation);
+            client.AssociationAccepted += (sender, args) => acceptedNegotiations = args.Association.ExtendedNegotiations;
 
-                Assert.NotNull(acceptedNegotiations);
-                Assert.NotEmpty(acceptedNegotiations);
-                var acceptedNegotiation = acceptedNegotiations.First();
-                Assert.Equal(requestedNegotiation.SopClassUid, acceptedNegotiation.SopClassUid);
-                Assert.Equal(requestedNegotiation.RequestedApplicationInfo.GetValues(), acceptedNegotiation.AcceptedApplicationInfo.GetValues());
-            }
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            await client.SendAsync();
+
+            Assert.NotNull(acceptedNegotiations);
+            Assert.NotEmpty(acceptedNegotiations);
+            var acceptedNegotiation = acceptedNegotiations.First();
+            Assert.Equal(requestedNegotiation.SopClassUid, acceptedNegotiation.SopClassUid);
+            Assert.Equal(requestedNegotiation.RequestedApplicationInfo.GetValues(), acceptedNegotiation.AcceptedApplicationInfo.GetValues());
         }
 
         [Fact]
         public async Task SendAsync_RejectedAssociation_ShouldYieldException()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<MockCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "INVALID");
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
-                Assert.IsType<DicomAssociationRejectedException>(exception);
-            }
+            using var server = CreateServer<MockCEchoProvider>(0);
+
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "INVALID");
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+            Assert.IsType<DicomAssociationRejectedException>(exception);
         }
 
         [Fact(Skip = "Requires external C-ECHO SCP")]
@@ -468,110 +448,100 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task IsSendRequired_AddedRequestNotConnected_ReturnsTrue()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(new DicomCEchoRequest());
-                Assert.True(client.IsSendRequired);
-                await client.SendAsync();
-                await Task.Delay(100);
+            using var server = CreateServer<DicomCEchoProvider>(0);
 
-                await client.AddRequestAsync(new DicomCEchoRequest());
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            Assert.True(client.IsSendRequired);
+            await client.SendAsync();
+            await Task.Delay(100);
 
-                Assert.True(client.IsSendRequired);
-            }
+            await client.AddRequestAsync(new DicomCEchoRequest());
+
+            Assert.True(client.IsSendRequired);
         }
 
         [Fact]
         public async Task IsSendRequired_NoRequestNotConnected_ReturnsFalse()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
-            {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
-                await client.SendAsync();
+            using var server = CreateServer<DicomCEchoProvider>(0);
 
-                Assert.False(client.IsSendRequired);
-            }
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (req, res) => Thread.Sleep(100) });
+            await client.SendAsync();
+
+            Assert.False(client.IsSendRequired);
         }
 
         [Fact]
         public async Task IsSendRequired_AddedRequestIsConnected_ReturnsFalse()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<DicomCEchoProvider>(port))
-            {
-                var counter = 0;
-                var flag = new ManualResetEventSlim();
+            using var server = CreateServer<DicomCEchoProvider>(0);
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.ClientOptions.AssociationLingerTimeoutInMs = 100;
+            var counter = 0;
+            var flag = new ManualResetEventSlim();
 
-                await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.ClientOptions.AssociationLingerTimeoutInMs = 100;
 
-                var sendTask = client.SendAsync();
+            await client.AddRequestAsync(new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) });
 
-                await client.AddRequestAsync(
-                    new DicomCEchoRequest
+            var sendTask = client.SendAsync();
+
+            await client.AddRequestAsync(
+                new DicomCEchoRequest
+                {
+                    OnResponseReceived = (req, res) =>
                     {
-                        OnResponseReceived = (req, res) =>
-                        {
-                            Interlocked.Increment(ref counter);
-                            flag.Set();
-                        }
-                    });
-                Assert.False(client.IsSendRequired);
+                        Interlocked.Increment(ref counter);
+                        flag.Set();
+                    }
+                });
+            Assert.False(client.IsSendRequired);
 
-                flag.Wait(1000);
-                Assert.Equal(2, counter);
-                await sendTask;
-            }
+            flag.Wait(1000);
+            Assert.Equal(2, counter);
+            await sendTask;
         }
 
         [Fact]
         public async Task SendAsync_ToExplicitOnlyProvider_NotAccepted()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<ExplicitLECStoreProvider>(port))
-            {
-                var request = new DicomCStoreRequest(TestData.Resolve("CR-MONO1-10-chest"));
+            using var server = CreateServer<ExplicitLECStoreProvider>(0);
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(request);
+            var request = new DicomCStoreRequest(TestData.Resolve("CR-MONO1-10-chest"));
 
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(request);
 
-                Assert.IsType<DicomAssociationRejectedException>(exception);
-            }
+            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+
+            Assert.IsType<DicomAssociationRejectedException>(exception);
         }
 
         [Theory]
         [InlineData(200)]
         public async Task SendAsync_Plus128CStoreRequestsCompressedTransferSyntax_NoOverflowContextIdsAllRequestsRecognized(int expected)
         {
-            var port = Ports.GetNext();
-            using (CreateServer<SimpleCStoreProvider>(port))
-            {
-                var actual = 0;
+            using var server = CreateServer<SimpleCStoreProvider>(0);
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.NegotiateAsyncOps(expected, 1);
+            var actual = 0;
 
-                var requests = Enumerable.Range(0, expected)
-                    .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
-                    {
-                        OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
-                    });
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.NegotiateAsyncOps(expected, 1);
 
-                await client.AddRequestsAsync(requests);
+            var requests = Enumerable.Range(0, expected)
+                .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
+                {
+                    OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
+                });
 
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
+            await client.AddRequestsAsync(requests);
 
-                Assert.Null(exception);
-                Assert.Equal(expected, actual);
-            }
+            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+
+            Assert.Null(exception);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -579,10 +549,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_BeforeSendAsync_ShouldNeverConnect(DicomClientCancellationMode cancellationMode)
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
             var cancellationTokenSource = new CancellationTokenSource();
             var numberOfRequestsSent = 5;
@@ -621,10 +590,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_AfterConnect_BeforeAssociation_ShouldNeverAssociate(DicomClientCancellationMode cancellationMode)
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
             var cancellationTokenSource = new CancellationTokenSource();
             var numberOfRequestsSent = 5;
@@ -667,10 +635,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_AfterAssociation_BeforeSendAsync_ShouldNeverSend(DicomClientCancellationMode cancellationMode)
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
             var cancellationTokenSource = new CancellationTokenSource();
 
@@ -714,11 +681,10 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_DuringSendAsync_ShouldStopSending(DicomClientCancellationMode cancellationMode)
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
             server.SetResponseTimeout(TimeSpan.FromSeconds(1));
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -778,11 +744,10 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task CancelImmediatelyRelease_DuringSendAsync_ShouldStopSendingAndImmediatelyRelease()
         {
             var cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation;
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
             server.SetResponseTimeout(TimeSpan.FromMilliseconds(100));
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -845,12 +810,11 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task CancelImmediatelyAbort_DuringSendAsync_ShouldStopSendingAndImmediatelyAbort()
         {
             var cancellationMode = DicomClientCancellationMode.ImmediatelyAbortAssociation;
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
             server.SetResponseTimeout(TimeSpan.FromMilliseconds(100));
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -913,10 +877,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_DuringLinger_ShouldStopLingering(DicomClientCancellationMode cancellationMode)
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = 10000;
             client.NegotiateAsyncOps(1, 1);
             var cancellationTokenSource = new CancellationTokenSource();
@@ -972,10 +935,9 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(DicomClientCancellationMode.ImmediatelyAbortAssociation)]
         public async Task Cancel_DuringAssociationRelease_ShouldNotLinger(DicomClientCancellationMode cancellationMode)
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(1, 1);
             var cancellationTokenSource = new CancellationTokenSource();
             var numberOfRequestsSent = 5;
@@ -1039,12 +1001,11 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_Linger_ShouldLingerLongEnoughToReuseAssociation(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
             var logger = _logger.IncludePrefix("UnitTest");
-            var port = Ports.GetNext();
             var expectedNumberOfAssociations = 1;
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
             logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
@@ -1090,11 +1051,10 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_Linger_ShouldKeepDelayingLingerAsLongAsRequestsAreComingIn(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
             var logger = _logger.IncludePrefix("UnitTest");
-            var port = Ports.GetNext();
             var expectedNumberOfAssociations = 1;
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
             logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
@@ -1141,12 +1101,11 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_Linger_ShouldAutomaticallyOpenNewAssociationAfterLingerTime(int numberOfRequests, int secondsBetweenEachRequest, int lingerTimeoutInSeconds)
         {
             var logger = _logger.IncludePrefix("UnitTest");
-            var port = Ports.GetNext();
             // Each request should have its own association
             var expectedNumberOfAssociations = 2;
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
             logger.LogInformation($"Beginning {numberOfRequests} parallel requests with {secondsBetweenEachRequest}s between each request");
@@ -1195,13 +1154,12 @@ namespace FellowOakDicom.Tests.Network.Client
             var secondsBetweenEachRequest = new[] { 1, 1, 1, 6, 1, 1 };
             var expectedNumberOfAssociations = 2;
             var logger = _logger.IncludePrefix("UnitTest");
-            var port = Ports.GetNext();
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
             server.SetResponseTimeout(TimeSpan.FromTicks(0));
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = lingerTimeoutInSeconds * 1000;
 
             logger.LogInformation($"Beginning {numberOfRequests} parallel requests with variable wait times between each request");
@@ -1248,41 +1206,38 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task OnCStoreRequest_AfterCGet_ShouldTrigger()
         {
             var logger = _logger.IncludePrefix("UnitTest");
-            var port = Ports.GetNext();
+            using var server = CreateServer<RecordingDicomCGetProvider, RecordingDicomCGetProviderServer>(0);
 
-            using (CreateServer<RecordingDicomCGetProvider, RecordingDicomCGetProviderServer>(port))
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+
+            DicomCStoreRequest capturedCStoreRequest = null;
+
+            client.OnCStoreRequest = async request =>
             {
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                logger.LogInformation("Handling C-Store request");
+                capturedCStoreRequest = request;
+                await Task.Delay(50);
+                return new DicomCStoreResponse(request, DicomStatus.Success);
+            };
 
-                DicomCStoreRequest capturedCStoreRequest = null;
+            var studyInstanceUID = "999.999.3859744";
+            var seriesInstanceUID = "999.999.94827453";
+            var sopInstanceUID = "999.999.133.1996.1.1800.1.6.21";
 
-                client.OnCStoreRequest = async request =>
-                {
-                    logger.LogInformation("Handling C-Store request");
-                    capturedCStoreRequest = request;
-                    await Task.Delay(50);
-                    return new DicomCStoreResponse(request, DicomStatus.Success);
-                };
+            logger.LogInformation("Sending C-Get request");
+            await client.AddRequestAsync(new DicomCGetRequest(studyInstanceUID, seriesInstanceUID, sopInstanceUID));
 
-                var studyInstanceUID = "999.999.3859744";
-                var seriesInstanceUID = "999.999.94827453";
-                var sopInstanceUID = "999.999.133.1996.1.1800.1.6.21";
+            var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
+                DicomStorageCategory.Image,
+                DicomTransferSyntax.ExplicitVRLittleEndian,
+                DicomTransferSyntax.ImplicitVRLittleEndian,
+                DicomTransferSyntax.ImplicitVRBigEndian);
+            client.AdditionalPresentationContexts.AddRange(pcs);
 
-                logger.LogInformation("Sending C-Get request");
-                await client.AddRequestAsync(new DicomCGetRequest(studyInstanceUID, seriesInstanceUID, sopInstanceUID));
+            await client.SendAsync();
 
-                var pcs = DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
-                    DicomStorageCategory.Image,
-                    DicomTransferSyntax.ExplicitVRLittleEndian,
-                    DicomTransferSyntax.ImplicitVRLittleEndian,
-                    DicomTransferSyntax.ImplicitVRBigEndian);
-                client.AdditionalPresentationContexts.AddRange(pcs);
-
-                await client.SendAsync();
-
-                Assert.NotNull(capturedCStoreRequest);
-                Assert.Equal(DicomUID.Parse(sopInstanceUID).ToString(), capturedCStoreRequest.SOPInstanceUID.ToString());
-            }
+            Assert.NotNull(capturedCStoreRequest);
+            Assert.Equal(DicomUID.Parse(sopInstanceUID).ToString(), capturedCStoreRequest.SOPInstanceUID.ToString());
         }
 
         [Theory]
@@ -1292,12 +1247,11 @@ namespace FellowOakDicom.Tests.Network.Client
         [InlineData(100, 10, 10)]
         public async Task SendAsync_MaxRequestsPerAssoc_ShouldAlwaysCreateCorrectNumberOfAssociations(int numberOfRequests, int maxRequestsPerAssoc, int expectedNumberOfAssociations)
         {
-            var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("UnitTest");
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ClientOptions.MaximumNumberOfRequestsPerAssociation = maxRequestsPerAssoc;
             client.NegotiateAsyncOps(10, 10);
 
@@ -1359,16 +1313,15 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task SendAsync_ToDisposedDicomServer_ShouldNotLoopInfinitely()
         {
-            var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("UnitTest");
 
             RecordingDicomCEchoProviderServer server = null;
             DicomCEchoResponse echoResponse1 = null, echoResponse2 = null, echoResponse3 = null;
             try
             {
-                server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(port);
+                server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>(0);
 
-                var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                 // Ensure requests are handled sequentially
                 client.NegotiateAsyncOps(1, 1);
 
@@ -1428,9 +1381,8 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task UnlimitedAsyncOpsInvokedShouldBeSupported()
         {
-            var port = Ports.GetNext();
-            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("Server"));
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(0, logger: _logger.IncludePrefix("Server"));
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.NegotiateAsyncOps(0,0);
             client.Logger = _logger.IncludePrefix("Client");
 
@@ -1455,16 +1407,15 @@ namespace FellowOakDicom.Tests.Network.Client
             /*
              * This test simply verifies that setting a custom TCP buffer size does not crash
              */
-            var port = Ports.GetNext();
             var bufferSize = 4 * 1024 * 1024;
-            using var server = CreateServer<DicomCEchoProvider>(port);
+            using var server = CreateServer<DicomCEchoProvider>(0);
             server.Options.TcpReceiveBufferSize = bufferSize;
             server.Options.TcpSendBufferSize = bufferSize;
 
             var counter = 0;
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
 
-            var client = CreateClient("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.ServiceOptions.TcpReceiveBufferSize = bufferSize;
             client.ServiceOptions.TcpSendBufferSize = bufferSize;
             await client.AddRequestAsync(request);

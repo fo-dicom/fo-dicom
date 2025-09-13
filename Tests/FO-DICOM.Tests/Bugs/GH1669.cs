@@ -37,13 +37,12 @@ namespace FellowOakDicom.Tests.Bugs
             var delayPerClient = TimeSpan.FromSeconds(5);
             var serverDelay = TimeSpan.FromSeconds(1);
             
-            var port = Ports.GetNext();
             using var server = (ConfigurableDicomCEchoProviderServer)
                 DicomServerFactory.Create<
                     ConfigurableDicomCEchoProvider,
                     ConfigurableDicomCEchoProviderServer>(
                     NetworkManager.IPv4Any,
-                    port,
+                    0,
                     configure: o => o.MaxClientsAllowed = maxClientsAllowed
                 );
             server.Logger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Debug);
@@ -57,7 +56,7 @@ namespace FellowOakDicom.Tests.Bugs
             var clients = new List<IDicomClient>(numberOfClients);
             for (var i = 1; i <= numberOfClients; i++)
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                 client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(1).TotalMilliseconds;
                 client.ServiceOptions.RequestTimeout = TimeSpan.FromMinutes(1);
                 client.Logger = _logger.IncludePrefix($"Client{i}").WithMinimumLevel(LogLevel.Debug);

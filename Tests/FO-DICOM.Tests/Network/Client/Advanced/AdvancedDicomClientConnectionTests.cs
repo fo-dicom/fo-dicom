@@ -49,10 +49,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenConnection_LoggerIsOptional()
         {
-            var port = Ports.GetNext();
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -87,10 +86,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenConnection_DicomServiceOptionsIsOptional()
         {
-            var port = Ports.GetNext();
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -125,10 +123,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenConnection_FallbackEncodingIsOptional()
         {
-            var port = Ports.GetNext();
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -163,10 +160,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenConnection_NetworkStreamCreationOptionsIsRequired()
         {
-            var port = Ports.GetNext();
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -197,10 +193,9 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenConnection_CanBeCalledMultipleTimes()
         {
-            var port = Ports.GetNext();
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {

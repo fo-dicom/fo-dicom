@@ -42,12 +42,10 @@ namespace FellowOakDicom.Tests.Network
             var file = DicomFile.Open(TestData.Resolve("VL_Olympus1.dcm"), actualEncoding);
             Assert.Equal("Efternamn^Förnamn^Mellannamn^^", file.Dataset.GetSingleValue<string>(DicomTag.PatientName));
 
-            var port = Ports.GetNext();
-
             // Specify fallback encoding
-            using var server = DicomServerFactory.Create<CStoreScp>(port, null, actualEncoding);
+            using var server = DicomServerFactory.Create<CStoreScp>(0, null, actualEncoding);
 
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "SCP");
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
             await client.AddRequestAsync(new DicomCStoreRequest(file));
             await client.SendAsync();
 

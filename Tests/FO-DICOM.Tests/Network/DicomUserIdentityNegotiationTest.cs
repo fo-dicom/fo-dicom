@@ -131,8 +131,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_ThrowsForNonValidUserIdentityNegotiation()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -177,8 +176,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_ThrowsRejectionForEmptyUserIdentity()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -216,8 +214,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task DicomClientFactory_OpenAssociation_ThrowsForNonValidUserIdentityNegotiation()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             ArgumentException exception = null;
             try
@@ -240,8 +237,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task DicomClientFactory_OpenAssociation_ThrowsForNonSuccessfulUserIdentityNegotiation()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockUserIdentityUnawareCEchoProvider>(port);
+            using var server = CreateServer<MockUserIdentityUnawareCEchoProvider>(0);
 
             DicomNetworkException nonSuccessfulException = null;
             try
@@ -314,8 +310,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task DicomClientFactory_OpenAssociation_ThrowsRejectionForEmptyUserIdentity()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             DicomAssociationRejectedException exception = null;
             try
@@ -337,8 +332,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_ThrowsRejectionForNegativeUserIdentityResponseRequest()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -381,8 +375,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task DicomClientFactory_OpenAssociation_AcceptsAssociationForUserIdentityWithUsername()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             DicomAssociationRejectedException exception = null;
             DicomAssociation association = null;
@@ -420,8 +413,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_AcceptsAssociationForUserIdentityWithUsername()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -471,8 +463,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_AcceptsAssociationForUserIdentityWithUsernameAndPasscode()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -523,8 +514,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_AcceptsAssociationForUserIdentityWithKerberos()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -574,8 +564,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_AcceptsAssociationForUserIdentityWithSaml()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -625,8 +614,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_OpenAssociation_AcceptsAssociationForUserIdentityWithJwt()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -676,8 +664,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AdvancedDicomClient_C_ECHO_ReturnsResponseForUserIdentity()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -730,8 +717,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task DicomClientFactory_C_ECHO_ReturnsResponseForUserIdentity()
         {
-            var port = Ports.GetNext();
-            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(port);
+            using var server = CreateServer<MockMandatoryUserIdentityCEchoProvider>(0);
 
             DicomAssociationRejectedException exception = null;
             DicomCEchoResponse echoResponse = null;

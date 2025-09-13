@@ -30,40 +30,37 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AcceptEchoButNotStoreContexts()
         {
-            int port = Ports.GetNext();
-            using (var server = DicomServerFactory.Create<AcceptOnlyEchoProvider>(port))
-            {
-                server.Logger = _logger.IncludePrefix("Server");
-                var echoReq = new DicomCEchoRequest();
-                DicomStatus echoStatus = DicomStatus.Pending;
-                echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
+            using var server = DicomServerFactory.Create<AcceptOnlyEchoProvider>(0);
 
-                var storeReq = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
-                DicomStatus storeStatus = DicomStatus.Pending;
-                storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
+            server.Logger = _logger.IncludePrefix("Server");
+            var echoReq = new DicomCEchoRequest();
+            DicomStatus echoStatus = DicomStatus.Pending;
+            echoReq.OnResponseReceived += (req, resp) => echoStatus = resp.Status;
 
-                var filmSession = new FilmSession(DicomUID.BasicFilmSession, DicomUID.Generate());
-                var printReq = new DicomNCreateRequest(filmSession.SOPClassUID, filmSession.SOPInstanceUID);
-                DicomStatus printStatus = DicomStatus.Pending;
-                printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
+            var storeReq = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
+            DicomStatus storeStatus = DicomStatus.Pending;
+            storeReq.OnResponseReceived += (req, resp) => storeStatus = resp.Status;
 
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix("Client");
-                await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
+            var filmSession = new FilmSession(DicomUID.BasicFilmSession, DicomUID.Generate());
+            var printReq = new DicomNCreateRequest(filmSession.SOPClassUID, filmSession.SOPInstanceUID);
+            DicomStatus printStatus = DicomStatus.Pending;
+            printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                await client.SendAsync();
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix("Client");
+            await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
-                Assert.Equal(DicomStatus.Success, echoStatus);
-                Assert.Equal(DicomStatus.SOPClassNotSupported, storeStatus);
-                Assert.Equal(DicomStatus.SOPClassNotSupported, printStatus);
-            }
+            await client.SendAsync();
+
+            Assert.Equal(DicomStatus.Success, echoStatus);
+            Assert.Equal(DicomStatus.SOPClassNotSupported, storeStatus);
+            Assert.Equal(DicomStatus.SOPClassNotSupported, printStatus);
         }
 
         [Fact]
         public async Task AcceptPrintContexts()
         {
-            int port = Ports.GetNext();
-            using (var server = DicomServerFactory.Create<AcceptOnlyEchoPrintManagementProvider>(port))
+            using (var server = DicomServerFactory.Create<AcceptOnlyEchoPrintManagementProvider>(0))
             {
                 server.Logger = _logger.IncludePrefix("Server");
                 var echoReq = new DicomCEchoRequest();
@@ -79,7 +76,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("Client");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 
@@ -94,8 +91,7 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task AcceptStoreContexts()
         {
-            int port = Ports.GetNext();
-            using (var server = DicomServerFactory.Create<AcceptOnlyEchoStoreProvider>(port))
+           using (var server = DicomServerFactory.Create<AcceptOnlyEchoStoreProvider>(0))
             {
                 server.Logger = _logger.IncludePrefix("Server");
                 var echoReq = new DicomCEchoRequest();
@@ -111,7 +107,7 @@ namespace FellowOakDicom.Tests.Network
                 DicomStatus printStatus = DicomStatus.Pending;
                 printReq.OnResponseReceived += (req, resp) => printStatus = resp.Status;
 
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix("Client");
                 await client.AddRequestsAsync(new DicomRequest[] { echoReq, storeReq, printReq });
 

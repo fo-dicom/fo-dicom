@@ -89,7 +89,6 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithClientCertificate_ShouldAuthenticate(bool requireMutualAuthentication)
         {
             // Arrange
-            var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
             var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.p12", "FellowOakDicom")
@@ -140,10 +139,10 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
             };
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", port, tlsAcceptor: tlsAcceptor);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", 0, tlsAcceptor: tlsAcceptor);
 
             var tlsInitiator = new DefaultTlsInitiator();
-            var client = CreateClient("127.0.0.1", port, tlsInitiator, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, tlsInitiator, "SCU", "ANY-SCP");
 
             tlsInitiator.CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
                 {
@@ -205,7 +204,6 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithInvalidCertificate_ShouldFail()
         {
             // Arrange
-            var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
             var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.p12", "FellowOakDicom")
@@ -217,10 +215,10 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
             };
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", port, tlsAcceptor: tlsAcceptor);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", 0, tlsAcceptor: tlsAcceptor);
 
             var tlsInitiator = new DefaultTlsInitiator();
-            var client = CreateClient("127.0.0.1", port, tlsInitiator, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, tlsInitiator, "SCU", "ANY-SCP");
 
             DicomCEchoResponse actualResponse = null;
             var dicomCEchoRequest = new DicomCEchoRequest
@@ -257,7 +255,6 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_WithFrozenSslHandshake_ShouldAcceptMoreConnections()
         {
             // Arrange
-            var port = Ports.GetNext();
             var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
 
             var tlsAcceptor = new DefaultTlsAcceptor(TestData.Resolve("FellowOakDicom.p12"), "FellowOakDicom")
@@ -304,7 +301,7 @@ namespace FellowOakDicom.Tests.Network.Client
                 }
             };
 
-            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", port, tlsAcceptor: tlsAcceptor);
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", 0, tlsAcceptor: tlsAcceptor);
 
             // Step 1: Manually start a TCP session and start an SSL handshake with the server, and then freeze the handshake
             using var tcpClient = new TcpClient("127.0.0.1", server.Port);
@@ -335,7 +332,7 @@ namespace FellowOakDicom.Tests.Network.Client
             
             // Step 2: Check that, while the SSL handshake is frozen, the server accepts more connections
             var tlsInitiator = new DefaultTlsInitiator();
-            var client = CreateClient("127.0.0.1", port, tlsInitiator, "SCU", "ANY-SCP");
+            var client = CreateClient("127.0.0.1", server.Port, tlsInitiator, "SCU", "ANY-SCP");
             tlsInitiator.CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
                 {
                     if (errors != SslPolicyErrors.None)

@@ -30,183 +30,165 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task OnNActionRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomNServiceProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomNActionResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomNActionRequest(
+                DicomUID.BasicFilmSession,
+                new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
+                1)
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomNActionResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomNActionRequest(
-                    DicomUID.BasicFilmSession,
-                    new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
-                    1)
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnNCreateRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomNServiceProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomNCreateResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomNCreateRequest(
+                DicomUID.BasicFilmSession,
+                new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomNCreateResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomNCreateRequest(
-                    DicomUID.BasicFilmSession,
-                    new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnNDeleteRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomNServiceProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomNDeleteResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomNDeleteRequest(
+                DicomUID.BasicFilmSession,
+                new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomNDeleteResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomNDeleteRequest(
-                    DicomUID.BasicFilmSession,
-                    new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnNEventReportRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomNServiceProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomNEventReportResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomNEventReportRequest(
+                DicomUID.BasicFilmSession,
+                new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
+                1)
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomNEventReportResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomNEventReportRequest(
-                    DicomUID.BasicFilmSession,
-                    new DicomUID("1.2.3", null, DicomUidType.SOPInstance),
-                    1)
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnNGetRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomNServiceProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomNGetResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomNGetRequest(
+                DicomUID.BasicFilmSession,
+                new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomNGetResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomNGetRequest(
-                    DicomUID.BasicFilmSession,
-                    new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnNSetRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomNServiceProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomNServiceProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomNSetResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomNSetRequest(
+                DicomUID.BasicFilmSession,
+                new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name);
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomNSetResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomNSetRequest(
-                    DicomUID.BasicFilmSession,
-                    new DicomUID("1.2.3", null, DicomUidType.SOPInstance))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
     }
 
