@@ -9,6 +9,7 @@
 - Prevent stack overflow in DicomDirectory by changing recursive to iterative method (#1977)
 - Only accept even groups as Overlay Plane Module (#1994)
 - Fix issue where all DicomMatchRules would not match any value (#2010)
+- Fix memory leak in DicomServer (#2009)
 
 ### 5.2.2 (2025-04-22)
 - render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
