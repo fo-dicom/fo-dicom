@@ -37,17 +37,14 @@ namespace FellowOakDicom.Imaging.Codec
         /// <param name="search">Search pattern for codec assemblies.</param>
         public override void LoadCodecs(string path, string search)
         {
-            var assembly = typeof(DefaultTranscoderManager).GetTypeInfo().Assembly;
-            var types =
-                assembly.DefinedTypes.Where(
-                    ti => ti.IsClass && !ti.IsAbstract && ti.ImplementedInterfaces.Contains(typeof(IDicomCodec)));
-
-            foreach (var ti in types)
-            {
-                var codec = (IDicomCodec)Activator.CreateInstance(ti.AsType());
-                Codecs[codec.TransferSyntax] = codec;
-            }
+            // previously there was a method that loaded the codecs via reflection, but this is not AOT-compilation compatible.
+            // because this initialization will not be very dynamically and change often, it is propably fine to do a explicit initialization
+            AddCodec(new JpegLosslessDecoderWrapperProcess14());
+            AddCodec(new JpegLosslessDecoderWrapperProcess14SV1());
+            AddCodec(new DicomRleCodecImpl());
         }
+
+        private void AddCodec(IDicomCodec codec) => Codecs[codec.TransferSyntax] = codec;
 
         #endregion
     }

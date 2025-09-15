@@ -12,7 +12,7 @@ namespace FellowOakDicom
     /// <summary>
     /// Representation of a DICOM transfer syntax.
     /// </summary>
-    public class DicomTransferSyntax : DicomParseable
+    public class DicomTransferSyntax
     {
         #region CONSTRUCTORS
 

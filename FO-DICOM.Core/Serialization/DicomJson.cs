@@ -3,7 +3,11 @@
 #nullable disable
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace FellowOakDicom.Serialization
 {
@@ -15,8 +19,11 @@ namespace FellowOakDicom.Serialization
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
         /// <param name="formatIndented">Gets or sets a value that defines whether JSON should use pretty printing. By default, JSON is serialized without any extra white space.</param>
         /// <param name="numberSerializationMode">Defines how numbers should be serialized. Defaults to 'AsNumber', which will throw FormatException when a number is not parsable.</param>
+#if NET6_0_OR_GREATER
+        [RequiresUnreferencedCode("Uses System.Text.Json.JsonSerializer.Serialize, which can break funktionality when AOT compiling")]
+#endif
         public static string ConvertDicomToJson(DicomDataset dataset, bool writeTagsAsKeywords = false, bool formatIndented = false,
-            NumberSerializationMode numberSerializationMode = NumberSerializationMode.AsNumber)
+        NumberSerializationMode numberSerializationMode = NumberSerializationMode.AsNumber)
         {
             var options = new JsonSerializerOptions();
             options.Converters.Add(new DicomJsonConverter(
@@ -34,6 +41,9 @@ namespace FellowOakDicom.Serialization
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
         /// <param name="formatIndented">Gets or sets a value that defines whether JSON should use pretty printing. By default, JSON is serialized without any extra white space.</param>
+#if NET6_0_OR_GREATER
+        [RequiresUnreferencedCode("Uses System.Text.Json.JsonSerializer.Serialize, which can break funktionality when AOT compiling")]
+#endif
         public static string ConvertDicomToJson(IEnumerable<DicomDataset> dataset, bool writeTagsAsKeywords = false, bool formatIndented = false)
         {
             var options = new JsonSerializerOptions();
@@ -48,6 +58,9 @@ namespace FellowOakDicom.Serialization
         /// Converts a Json-String to a <see cref="DicomDataset"/>.
         /// </summary>
         /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset.</param>
+#if NET6_0_OR_GREATER
+        [RequiresUnreferencedCode("Uses System.Text.Json.JsonSerializer.Serialize, which can break funktionality when AOT compiling")]
+#endif
         public static DicomDataset ConvertJsonToDicom(string json, bool autoValidate = true)
         {
             var options = new JsonSerializerOptions();
@@ -57,6 +70,9 @@ namespace FellowOakDicom.Serialization
             return ds;
         }
 
+#if NET6_0_OR_GREATER
+        [RequiresUnreferencedCode("Uses System.Text.Json.JsonSerializer.Serialize, which can break funktionality when AOT compiling")]
+#endif
         public static DicomDataset[] ConvertJsonToDicomArray(string json)
         {
             var options = new JsonSerializerOptions();

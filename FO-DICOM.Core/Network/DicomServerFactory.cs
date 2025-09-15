@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using FellowOakDicom.Network.Tls;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,11 @@ namespace FellowOakDicom.Network
         /// <param name="userState">Optional parameters</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
-        IDicomServer Create<T>(
+        IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T>(
             int port,
             ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
@@ -44,7 +49,11 @@ namespace FellowOakDicom.Network
         /// <param name="userState">Optional parameters.</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
-        IDicomServer Create<T>(
+        IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T>(
             string ipAddress,
             int port,
             ITlsAcceptor tlsAcceptor = null,
@@ -66,7 +75,11 @@ namespace FellowOakDicom.Network
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
-        IDicomServer Create<T, TServer>(
+        IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T, TServer>(
             string ipAddress,
             int port,
             object userState = null,
@@ -89,7 +102,11 @@ namespace FellowOakDicom.Network
         /// <param name="userState">Optional parameters</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
-        public static IDicomServer Create<T>(
+        public static IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T>(
             int port,
             ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null,
@@ -111,7 +128,11 @@ namespace FellowOakDicom.Network
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <see cref="DicomServer{T}"/>, that starts listening for connections in the background.</returns>
-        public static IDicomServer Create<T>(
+        public static IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T>(
             string ipAddress,
             int port,
             ITlsAcceptor tlsAcceptor = null,
@@ -135,7 +156,15 @@ namespace FellowOakDicom.Network
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
-        public static IDicomServer Create<T, TServer>(
+        public static IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T,
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TServer>(
             string ipAddress,
             int port,
             object userState = null,
@@ -160,7 +189,11 @@ namespace FellowOakDicom.Network
             _dicomServerRegistry = dicomServerRegistry ?? throw new ArgumentNullException(nameof(dicomServerRegistry));
         }
 
-        public IDicomServer Create<T>(
+        public IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T>(
             int port,
             ITlsAcceptor tlsAcceptor = null,
             Encoding fallbackEncoding = null, 
@@ -170,7 +203,11 @@ namespace FellowOakDicom.Network
             where T : DicomService, IDicomServiceProvider 
             => Create<T, DicomServer<T>>(NetworkManager.IPv4Any, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
 
-        public IDicomServer Create<T>(
+        public IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            T>(
             string ipAddress,
             int port, 
             ITlsAcceptor tlsAcceptor = null,
@@ -180,7 +217,15 @@ namespace FellowOakDicom.Network
             Action<DicomServerOptions> configure = null) where T : DicomService, IDicomServiceProvider
             => Create<T, DicomServer<T>>(ipAddress, port, userState, tlsAcceptor, fallbackEncoding, logger, configure);
 
-        public virtual IDicomServer Create<TServiceProvider, TServer>(
+        public virtual IDicomServer Create<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TServiceProvider,
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TServer>(
             string ipAddress,
             int port,
             object userState = null,

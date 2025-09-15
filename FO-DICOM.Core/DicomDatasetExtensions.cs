@@ -144,6 +144,7 @@ namespace FellowOakDicom
                 {
                     // Don't specify timezone when no date or time is present. This will make
                     // the behavior consistent with GetDateTime extension
+                    datetimeoffset = default;
                     return false;
                 }
 
@@ -154,6 +155,7 @@ namespace FellowOakDicom
                     string s = timezone.Get<string>();
                     if (!DicomValidation.IsValidTimezoneOffset(s))
                     {
+                        datetimeoffset = default;
                         return false;
                     }
                     int sign = s[0] switch
@@ -164,6 +166,7 @@ namespace FellowOakDicom
                     };
                     if (!int.TryParse(s.Substring(1, 2), out var hh) || !int.TryParse(s.Substring(3, 2), out var mm))
                     {
+                        datetimeoffset = default;
                         return false;
                     }
 
@@ -183,6 +186,7 @@ namespace FellowOakDicom
             }
             catch
             {
+                datetimeoffset = default;
                 return false;
             }
         }

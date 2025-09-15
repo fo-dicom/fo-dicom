@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,7 +20,11 @@ namespace FellowOakDicom.Network
     /// Representation of a DICOM server.
     /// </summary>
     /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
-    public class DicomServer<T> : IDicomServer<T> where T : DicomService, IDicomServiceProvider
+    public class DicomServer<
+#if NET6_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+        T> : IDicomServer<T> where T : DicomService, IDicomServiceProvider
     {
         #region FIELDS
 

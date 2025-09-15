@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
@@ -163,10 +164,9 @@ namespace FellowOakDicom
                 return (T)(object)(new string[] { StringValue });
             }
 
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable)))
-            {
-                return DicomParseable.Parse<T>(StringValue);
-            }
+            if (typeof(T) == typeof(DicomUID)) return (T)(object)DicomUID.Parse(StringValue);
+            if (typeof(T) == typeof(PhotometricInterpretation)) return (T)(object)PhotometricInterpretation.Parse(StringValue);
+            if (typeof(T) == typeof(DicomTransferSyntax)) return (T)(object)DicomTransferSyntax.Parse(StringValue);
 
             if (typeof(T).GetTypeInfo().IsEnum)
             {
@@ -299,10 +299,9 @@ namespace FellowOakDicom
                 throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
             }
 
-            if (typeof(T).GetTypeInfo().IsSubclassOf(typeof(DicomParseable)))
-            {
-                return DicomParseable.Parse<T>(_values[item]);
-            }
+            if (typeof(T) == typeof(DicomUID)) return (T)(object)DicomUID.Parse(_values[item]);
+            if (typeof(T) == typeof(PhotometricInterpretation)) return (T)(object)PhotometricInterpretation.Parse(_values[item]);
+            if (typeof(T) == typeof(DicomTransferSyntax)) return (T)(object)DicomTransferSyntax.Parse(_values[item]);
 
             var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
             if (t.GetTypeInfo().IsEnum)
