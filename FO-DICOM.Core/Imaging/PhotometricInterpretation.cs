@@ -8,7 +8,7 @@ namespace FellowOakDicom.Imaging
     /// <summary>
     /// Photometric Interpretation.
     /// </summary>
-    public class PhotometricInterpretation : DicomParseable
+    public class PhotometricInterpretation
     {
         #region Constructor
 
