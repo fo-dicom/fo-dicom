@@ -93,8 +93,6 @@ namespace FellowOakDicom.Tests
         [Fact()]
         public async Task ConfigureDicomServiceOptionsInIConfiguration()
         {
-            int port = Ports.GetNext();
-
             var defaultServiceOptions = new DicomServiceOptions();
             var defaultPduLength = defaultServiceOptions.MaxPDULength;
             var configuredPduLength = defaultPduLength / 2;
@@ -114,9 +112,9 @@ namespace FellowOakDicom.Tests
             Assert.NotNull(clientFactory);
 
             var serverFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
-            using var server = serverFactory.Create<DicomCEchoProvider>(port);
+            using var server = serverFactory.Create<DicomCEchoProvider>(0);
 
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(new DicomCEchoRequest());
 
             uint serverPduInAssociationAccepted = 0;
@@ -129,8 +127,6 @@ namespace FellowOakDicom.Tests
         [Fact()]
         public async Task ConfigureDicomServiceOptionsInIConfigurationAndInSetup()
         {
-            int port = Ports.GetNext();
-
             var defaultServiceOptions = new DicomServiceOptions();
             var defaultPduLength = defaultServiceOptions.MaxPDULength;
             var configuredPduLength = defaultPduLength + 100 ;
@@ -152,9 +148,9 @@ namespace FellowOakDicom.Tests
             Assert.NotNull(clientFactory);
 
             var serverFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
-            using var server = serverFactory.Create<DicomCEchoProvider>(port);
+            using var server = serverFactory.Create<DicomCEchoProvider>(0);
 
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(new DicomCEchoRequest());
 
             uint serverPduInAssociationAccepted = 0;
