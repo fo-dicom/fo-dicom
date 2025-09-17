@@ -41,7 +41,6 @@ namespace FellowOakDicom.Network
 
         /// <summary>
         /// Gets the options to control behavior of <see cref="DicomService"/> base class.
-        /// Gets the port to which the server is listening.
         /// </summary>
         DicomServiceOptions Options { get; }
 

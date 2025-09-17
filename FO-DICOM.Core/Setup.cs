@@ -10,6 +10,7 @@ using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Network.Client.Advanced.Connection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -75,8 +76,42 @@ namespace FellowOakDicom
         /// <summary>
         /// Adds default implementations of all required services to the collection if the services haven't already been registered
         /// </summary>
-        public static IServiceCollection AddFellowOakDicom(this IServiceCollection services)
-            => services
+        /// <param name="namedConfigurationSection"></param>
+        /// <param name="configureServiceOptions"></param>
+        /// <param name="configureClientOptions"></param>
+        /// <param name="configureServerOptions"></param>
+        public static IServiceCollection AddFellowOakDicom(this IServiceCollection services, IConfiguration namedConfigurationSection = null, Action<DicomServiceOptions> configureServiceOptions = null, Action<DicomClientOptions> configureClientOptions = null, Action<DicomServerOptions> configureServerOptions = null)
+        {
+            if (namedConfigurationSection == null)
+            {
+                services.AddOptions<DicomServiceOptions>();
+                services.AddOptions<DicomClientOptions>();
+                services.AddOptions<DicomServerOptions>();
+            }
+            else
+            {
+                services.AddOptions<DicomServiceOptions>()
+                    .Bind(namedConfigurationSection.GetSection("DicomServiceOptions"));
+                services.AddOptions<DicomClientOptions>()
+                    .Bind(namedConfigurationSection.GetSection("DicomClientOptions"));
+                services.AddOptions<DicomServerOptions>()
+                    .Bind(namedConfigurationSection.GetSection("DicomServerOptions"));
+
+            }
+            if (configureServiceOptions != null)
+            {
+                services.Configure(configureServiceOptions);
+            }
+            if (configureClientOptions != null)
+            {
+                services.Configure(configureClientOptions);
+            }
+            if (configureServerOptions != null)
+            {
+                services.Configure(configureServerOptions);
+            }
+
+            services
                 .TryAddInternals()
                 .AddLogging()
                 .TryAddTranscoderManager<DefaultTranscoderManager>()
@@ -84,6 +119,9 @@ namespace FellowOakDicom
                 .TryAddNetworkManager<DesktopNetworkManager>()
                 .AddDicomClient()
                 .AddDicomServer();
+
+            return services;
+        }
 
         private static IServiceCollection TryAddInternals(this IServiceCollection services)
         {
@@ -103,8 +141,6 @@ namespace FellowOakDicom
             services.TryAddSingleton<DicomServiceDependencies>();
             services.TryAddSingleton<IDicomClientFactory, DefaultDicomClientFactory>();
             services.TryAddSingleton<IAdvancedDicomClientConnectionFactory, DefaultAdvancedDicomClientConnectionFactory>();
-            services.AddOptions<DicomClientOptions>();
-            services.AddOptions<DicomServiceOptions>();
             if (options != null)
             {
                 services.Configure(options);
@@ -124,8 +160,6 @@ namespace FellowOakDicom
             services.TryAddSingleton<DicomServerDependencies>();
             services.TryAddSingleton<IDicomServerRegistry, DefaultDicomServerRegistry>();
             services.TryAddSingleton<IDicomServerFactory, DefaultDicomServerFactory>();
-            services.AddOptions<DicomServerOptions>();
-            services.AddOptions<DicomServiceOptions>();
             if (options != null)
             {
                 services.Configure(options);
@@ -193,7 +227,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection TryAddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager: class, INetworkManager
+        public static IServiceCollection TryAddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
         {
             services.TryAddSingleton<INetworkManager, TNetworkManager>();
             return services;

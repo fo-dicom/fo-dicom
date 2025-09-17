@@ -31,6 +31,8 @@
   items:
   - name: Ssl connections
     href: ssl.md
+  - name: Configurations
+    href: configuration.md
 - name: Logging
   expanded: true
   items:

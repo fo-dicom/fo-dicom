@@ -8,6 +8,8 @@
 - allow rendering of images with empty rescale information (#1975)
 - Prevent stack overflow in DicomDirectory by changing recursive to iterative method (#1977)
 - Only accept even groups as Overlay Plane Module (#1994)
+- Connect Options pattern with IConfiguration in setup (#1940)
+- **Breaking change**: IDicomClientFactory does not have the parameters IOptions<DicomClientOption> and IOptions<DicomServiceOption> any more. (#1977)
 - Fix issue where all DicomMatchRules would not match any value (#2010)
 - Fix memory leak in DicomServer (#2009)
 - You can now specify port number 0 when creating a DicomServer to let the OS assign an available port, following standard socket API behavior. (#1990)

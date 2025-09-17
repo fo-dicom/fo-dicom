@@ -151,19 +151,13 @@ namespace FellowOakDicom.Network
     {
         private readonly IServiceScopeFactory  _serviceScopeFactory;
         private readonly IDicomServerRegistry _dicomServerRegistry;
-        private readonly IOptions<DicomServiceOptions> _defaultServiceOptions;
-        private readonly IOptions<DicomServerOptions> _defaultServerOptions;
 
         public DefaultDicomServerFactory(
             IServiceScopeFactory  serviceScopeFactory,
-            IDicomServerRegistry dicomServerRegistry,
-            IOptions<DicomServiceOptions> defaultServiceOptions, 
-            IOptions<DicomServerOptions> defaultServerOptions)
+            IDicomServerRegistry dicomServerRegistry)
         {
             _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             _dicomServerRegistry = dicomServerRegistry ?? throw new ArgumentNullException(nameof(dicomServerRegistry));
-            _defaultServiceOptions = defaultServiceOptions ?? throw new ArgumentNullException(nameof(defaultServiceOptions));
-            _defaultServerOptions = defaultServerOptions ?? throw new ArgumentNullException(nameof(defaultServerOptions));
         }
 
         public IDicomServer Create<T>(
@@ -211,8 +205,8 @@ namespace FellowOakDicom.Network
             }
             server.ServiceScope = dicomServerScope;
 
-            var serviceOptions = _defaultServiceOptions.Value.Clone();
-            var serverOptions = _defaultServerOptions.Value.Clone();
+            var serviceOptions = dicomServerScope.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>().Value.Clone();
+            var serverOptions = dicomServerScope.ServiceProvider.GetRequiredService<IOptions<DicomServerOptions>>().Value.Clone();
 
             // if not explicitly set, try to get a tls handler from DI container
             tlsAcceptor ??= dicomServerScope.ServiceProvider.GetService<ITlsAcceptor>();

@@ -46,6 +46,7 @@ namespace FellowOakDicom.Network.Client
                 AssociationRequestTimeoutInMs = AssociationRequestTimeoutInMs,
                 AssociationReleaseTimeoutInMs = AssociationReleaseTimeoutInMs,
                 AssociationLingerTimeoutInMs = AssociationLingerTimeoutInMs,
+                ConnectionTimeoutInMs = ConnectionTimeoutInMs,
                 MaximumNumberOfRequestsPerAssociation = MaximumNumberOfRequestsPerAssociation,
                 MaximumNumberOfConsecutiveTimedOutAssociationRequests = MaximumNumberOfConsecutiveTimedOutAssociationRequests
             };

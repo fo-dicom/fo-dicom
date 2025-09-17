@@ -16,12 +16,15 @@ namespace FellowOakDicom.Network
         public ITranscoderManager TranscoderManager { get; }
         public IMemoryProvider MemoryProvider { get; }
 
-        public DicomServiceDependencies(ILoggerFactory loggerFactory, INetworkManager networkManager, ITranscoderManager transcoderManager, IMemoryProvider memoryProvider)
+        public IServiceProvider ServiceProvider { get; }
+
+        public DicomServiceDependencies(ILoggerFactory loggerFactory, INetworkManager networkManager, ITranscoderManager transcoderManager, IMemoryProvider memoryProvider, IServiceProvider serviceProvider)
         {
             LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             NetworkManager = networkManager ?? throw new ArgumentNullException(nameof(networkManager));
             TranscoderManager = transcoderManager ?? throw new ArgumentNullException(nameof(transcoderManager));
             MemoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
+            ServiceProvider = serviceProvider ?? throw new ArgumentNullException($"{nameof(serviceProvider)}");
         }
     }
 }
