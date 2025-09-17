@@ -97,3 +97,4 @@
 * [Arun Mohan Kumar](https://github.com/arunmk-ms)
 * [DMIAOCHEN](https://github.com/DMIAOCHEN)
 * [BrunoMilutin](https://github.com/BrunoMilutin)
+* [Thomas Sondergaard](https://github.com/tsondergaard)

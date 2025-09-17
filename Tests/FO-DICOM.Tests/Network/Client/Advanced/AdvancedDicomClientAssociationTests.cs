@@ -64,12 +64,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenAssociation_RethrowsRejection()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "UNKNOWN-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<MockCEchoProvider>(port);
+            using var server = CreateServer<MockCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -121,12 +120,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenAssociation_OnDisposedConnection_ThrowsObjectDisposedException()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<MockCEchoProvider>(port);
+            using var server = CreateServer<MockCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -162,12 +160,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenAssociation_AfterDisposingAssociationOnSameConnection_ThrowsInvalidOperationException()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<MockCEchoProvider>(port);
+            using var server = CreateServer<MockCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -207,12 +204,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task OpenAssociation_AfterAlreadyOpeningAnAssociationOnSameConnection_ThrowsInvalidOperationException()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<MockCEchoProvider>(port);
+            using var server = CreateServer<MockCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -253,12 +249,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task Dispose_TryingToSendRequestsOnDisposedAssociation_ThrowsObjectDisposedException()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<MockCEchoProvider>(port);
+            using var server = CreateServer<MockCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -294,12 +289,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task Dispose_PendingRequestOnDisposedAssociation_ThrowsObjectDisposedException()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<DicomClientTest.RecordingDicomCEchoProvider, DicomClientTest.RecordingDicomCEchoProviderServer>(port);
+            using var server = CreateServer<DicomClientTest.RecordingDicomCEchoProvider, DicomClientTest.RecordingDicomCEchoProviderServer>(0);
 
             server.OnCEchoRequest(request => Task.Delay(TimeSpan.FromMinutes(10), cancellationToken));
 
@@ -339,12 +333,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task C_ECHO_ReturnsResponse()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            using var server = CreateServer<AsyncDicomCEchoProvider>(port);
+            using var server = CreateServer<AsyncDicomCEchoProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -390,12 +383,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task C_FIND_ReturnsResponse()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            var server = CreateServer<PendingAsyncDicomCFindProvider>(port);
+            var server = CreateServer<PendingAsyncDicomCFindProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -447,12 +439,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task C_STORE_ReturnsResponse()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            var server = CreateServer<AsyncDicomCStoreProvider>(port);
+            var server = CreateServer<AsyncDicomCStoreProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
@@ -499,12 +490,11 @@ namespace FellowOakDicom.Tests.Network.Client.Advanced
         [Fact]
         public async Task C_MOVE_ReturnsResponse()
         {
-            var port = Ports.GetNext();
             var callingAE = "SCU";
             var calledAE = "ANY-SCP";
             var cancellationToken = CancellationToken.None;
 
-            var server = CreateServer<AsyncDicomCMoveProvider>(port);
+            var server = CreateServer<AsyncDicomCMoveProvider>(0);
 
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {

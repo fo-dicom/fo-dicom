@@ -32,63 +32,57 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task OnCGetRequestAsync_ImmediateSuccess_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<ImmediateSuccessAsyncDicomCGetProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<ImmediateSuccessAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomCGetResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var studyInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID().ToString();
+            var request = new DicomCGetRequest(studyInstanceUID)
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomCGetResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var studyInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID().ToString();
-                var request = new DicomCGetRequest(studyInstanceUID)
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnCGetRequestAsync_Pending_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<PendingAsyncDicomCGetProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<PendingAsyncDicomCGetProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            var responses = new ConcurrentQueue<DicomCGetResponse>();
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var studyInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID().ToString();
+            var request = new DicomCGetRequest(studyInstanceUID)
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => responses.Enqueue(res),
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                var responses = new ConcurrentQueue<DicomCGetResponse>();
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var studyInstanceUID = DicomUIDGenerator.GenerateDerivedFromUUID().ToString();
-                var request = new DicomCGetRequest(studyInstanceUID)
-                {
-                    OnResponseReceived = (req, res) => responses.Enqueue(res),
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.Collection(
-                    responses,
-                    response1 => Assert.Equal(DicomStatus.Pending, response1.Status),
-                    response2 => Assert.Equal(DicomStatus.Pending, response2.Status),
-                    response3 => Assert.Equal(DicomStatus.Success, response3.Status)
-                );
-                Assert.Null(timeout);
-            }
+            Assert.Collection(
+                responses,
+                response1 => Assert.Equal(DicomStatus.Pending, response1.Status),
+                response2 => Assert.Equal(DicomStatus.Pending, response2.Status),
+                response3 => Assert.Equal(DicomStatus.Success, response3.Status)
+            );
+            Assert.Null(timeout);
         }
     }
 

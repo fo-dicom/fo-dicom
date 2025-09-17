@@ -34,24 +34,21 @@ namespace FellowOakDicom.Tests.Bugs
             var success = false;
             var handle = new ManualResetEventSlim();
 
-            var port = Ports.GetNext();
-            using (DicomServerFactory.Create<VideoCStoreProvider>(port))
+            using var server = DicomServerFactory.Create<VideoCStoreProvider>(0);
+            var request = new DicomCStoreRequest(fileName);
+            request.OnResponseReceived = (req, rsp) =>
             {
-                var request = new DicomCStoreRequest(fileName);
-                request.OnResponseReceived = (req, rsp) =>
-                {
-                    success = req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.MPEG2) &&
-                              rsp.Status == DicomStatus.Success;
-                    handle.Set();
-                };
+                success = req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.MPEG2) &&
+                            rsp.Status == DicomStatus.Success;
+                handle.Set();
+            };
 
-                var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-                handle.Wait(10000);
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "STORESCU", "STORESCP");
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
+            handle.Wait(10000);
 
-                Assert.True(success);
-            }
+            Assert.True(success);
         }
 
         [Fact]
@@ -61,8 +58,7 @@ namespace FellowOakDicom.Tests.Bugs
             var success = false;
             var handle = new ManualResetEventSlim();
 
-            var port = Ports.GetNext();
-            using var server = DicomServerFactory.Create<VideoCStoreProvider>(port);
+            using var server = DicomServerFactory.Create<VideoCStoreProvider>(0);
             server.Logger = _logger.IncludePrefix("VideoCStoreProvider");
 
             var request = new DicomCStoreRequest(fileName)
@@ -76,7 +72,7 @@ namespace FellowOakDicom.Tests.Bugs
                 }
             };
 
-            var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "STORESCU", "STORESCP");
             client.Logger = _logger.IncludePrefix("DicomClient");
 
             await client.AddRequestAsync(request);

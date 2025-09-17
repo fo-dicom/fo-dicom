@@ -30,29 +30,26 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task OnCEchoRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomCEchoProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomCEchoResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomCEchoRequest
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomCEchoResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomCEchoRequest
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
     }
 

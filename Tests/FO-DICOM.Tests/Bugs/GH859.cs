@@ -30,12 +30,11 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task DicomService_reading_messages_with_invalid_UIDs_does_not_fail()
         {
-            int port = Ports.GetNext();
             var clientLogger = _output.IncludePrefix(nameof(DicomClient));
             var serverLogger = _output.IncludePrefix(nameof(DicomCEchoProvider));
             var source = new CancellationTokenSource();
 
-            using var server = DicomServerFactory.Create<SimpleCStoreProvider>(port, logger: serverLogger);
+            using var server = DicomServerFactory.Create<SimpleCStoreProvider>(0, logger: serverLogger);
             server.Options.LogDataPDUs = true;
             server.Options.LogDimseDatasets = true;
 
@@ -44,7 +43,7 @@ namespace FellowOakDicom.Tests.Bugs
                 await Task.Delay(50);
             }
 
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.Logger = clientLogger;
 
             var command = new DicomDataset

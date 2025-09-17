@@ -31,30 +31,27 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task OnCMoveRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCMoveProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomCMoveProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+
+            var responses = new List<DicomCMoveResponse>();
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomCMoveRequest("OTHER-SCP", "123")
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+                OnResponseReceived = (req, res) => responses.Add(res),
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                var responses = new List<DicomCMoveResponse>();
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomCMoveRequest("OTHER-SCP", "123")
-                {
-                    OnResponseReceived = (req, res) => responses.Add(res),
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotEmpty(responses);
-                Assert.Equal(DicomState.Pending, responses[0].Status.State);
-                Assert.Equal(DicomState.Pending, responses[1].Status.State);
-                Assert.Equal(DicomState.Success, responses[2].Status.State);
-                Assert.Null(timeout);
-            }
+            Assert.NotEmpty(responses);
+            Assert.Equal(DicomState.Pending, responses[0].Status.State);
+            Assert.Equal(DicomState.Pending, responses[1].Status.State);
+            Assert.Equal(DicomState.Success, responses[2].Status.State);
+            Assert.Null(timeout);
         }
     }
 

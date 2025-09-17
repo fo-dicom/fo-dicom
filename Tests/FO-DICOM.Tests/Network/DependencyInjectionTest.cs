@@ -30,7 +30,6 @@ namespace FellowOakDicom.Tests.Network
 #endif
         public async Task DependencyPropertyHasValue()
         {
-            var port = Ports.GetNext();
             var serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
                 .AddTransient<ISomeInterface, SomeInterfaceImplementation>();
@@ -38,9 +37,9 @@ namespace FellowOakDicom.Tests.Network
             var dicomServerFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
             var dicomClientFactory = serviceProvider.GetRequiredService<IDicomClientFactory>();
 
-            using var server = dicomServerFactory.Create<EchoProviderWithDependency>(port);
+            using var server = dicomServerFactory.Create<EchoProviderWithDependency>(0);
 
-            var client = dicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = dicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
 
             string value = string.Empty;
             var request = new DicomCEchoRequest();
