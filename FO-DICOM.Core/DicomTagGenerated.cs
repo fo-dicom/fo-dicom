@@ -8882,6 +8882,9 @@ namespace FellowOakDicom
         ///<summary>(0044,010A) VR=SQ VM=1 Organizational Role Code Sequence</summary>
         public readonly static DicomTag OrganizationalRoleCodeSequence = new DicomTag(0x0044, 0x010A);
 
+        ///<summary>(0044,0110) VR=SQ VM=1 RT Assertions Sequence</summary>
+        public readonly static DicomTag RTAssertionsSequence = new DicomTag(0x0044, 0x0110);
+
         ///<summary>(0046,0012) VR=LO VM=1 Lens Description</summary>
         public readonly static DicomTag LensDescription = new DicomTag(0x0046, 0x0012);
 
