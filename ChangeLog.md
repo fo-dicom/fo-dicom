@@ -1,4 +1,7 @@
-### 5.2.3 (TBD)
+### 5.2.4 (TBD)
+
+
+### 5.2.3 (2025-09-18)
 - Add Milliseconds to result in DicomDataset.GetDateTime (#1967)
 - Add convenience function to open and save in DicomStructuredReport (#1968)
 - FO-DICOM.Tests target net9.0 instead of net6.0
@@ -13,6 +16,7 @@
 - Fix issue where all DicomMatchRules would not match any value (#2010)
 - Fix memory leak in DicomServer (#2009)
 - You can now specify port number 0 when creating a DicomServer to let the OS assign an available port, following standard socket API behavior. (#1990)
+- update to DICOM standard 2025c
 
 ### 5.2.2 (2025-04-22)
 - render images with window width < 1, but apply LINEAR_EXACT on rendering (#1905)
