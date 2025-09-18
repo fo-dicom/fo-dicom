@@ -1904,6 +1904,20 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.CategoryOfSexParametersForClinicalUse7459.UID, DicomUID.CategoryOfSexParametersForClinicalUse7459);
             _uids.Add(DicomUID.ThirdPersonPronounSet7448.UID, DicomUID.ThirdPersonPronounSet7448);
             _uids.Add(DicomUID.CardiacStructureCalcificationQualitativeEvaluation12345.UID, DicomUID.CardiacStructureCalcificationQualitativeEvaluation12345);
+            _uids.Add(DicomUID.VisualFieldMeasurements4280.UID, DicomUID.VisualFieldMeasurements4280);
+            _uids.Add(DicomUID.OpticDiscKeyMeasurements4281.UID, DicomUID.OpticDiscKeyMeasurements4281);
+            _uids.Add(DicomUID.RetinalSectorMethods4282.UID, DicomUID.RetinalSectorMethods4282);
+            _uids.Add(DicomUID.RNFLSectorMeasurements4283.UID, DicomUID.RNFLSectorMeasurements4283);
+            _uids.Add(DicomUID.RNFLClockfaceMeasurements4284.UID, DicomUID.RNFLClockfaceMeasurements4284);
+            _uids.Add(DicomUID.MacularThicknessKeyMeasurements4285.UID, DicomUID.MacularThicknessKeyMeasurements4285);
+            _uids.Add(DicomUID.GanglionCellMeasurementExtent4286.UID, DicomUID.GanglionCellMeasurementExtent4286);
+            _uids.Add(DicomUID.GanglionCellKeyMeasurements4287.UID, DicomUID.GanglionCellKeyMeasurements4287);
+            _uids.Add(DicomUID.GanglionCellSectorMeasurements4288.UID, DicomUID.GanglionCellSectorMeasurements4288);
+            _uids.Add(DicomUID.GanglionCellSectorMethods4289.UID, DicomUID.GanglionCellSectorMethods4289);
+            _uids.Add(DicomUID.EndothelialCellCountMeasurements4290.UID, DicomUID.EndothelialCellCountMeasurements4290);
+            _uids.Add(DicomUID.OphthalmicImageROIMeasurements4291.UID, DicomUID.OphthalmicImageROIMeasurements4291);
+            _uids.Add(DicomUID.RTPlanApprovalAssertion9584.UID, DicomUID.RTPlanApprovalAssertion9584);
+            _uids.Add(DicomUID.EstimatedDeliveryDateMethods12026.UID, DicomUID.EstimatedDeliveryDateMethods12026);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -7572,6 +7586,48 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Cardiac Structure Calcification Qualitative Evaluation (12345)</summary>
         public static readonly DicomUID CardiacStructureCalcificationQualitativeEvaluation12345 = new DicomUID("1.2.840.10008.6.1.1532", "Cardiac Structure Calcification Qualitative Evaluation (12345)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Visual Field Measurements (4280)</summary>
+        public static readonly DicomUID VisualFieldMeasurements4280 = new DicomUID("1.2.840.10008.6.1.1533", "Visual Field Measurements (4280)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Optic Disc Key Measurements (4281)</summary>
+        public static readonly DicomUID OpticDiscKeyMeasurements4281 = new DicomUID("1.2.840.10008.6.1.1534", "Optic Disc Key Measurements (4281)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Retinal Sector Methods (4282)</summary>
+        public static readonly DicomUID RetinalSectorMethods4282 = new DicomUID("1.2.840.10008.6.1.1535", "Retinal Sector Methods (4282)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RNFL Sector Measurements (4283)</summary>
+        public static readonly DicomUID RNFLSectorMeasurements4283 = new DicomUID("1.2.840.10008.6.1.1536", "RNFL Sector Measurements (4283)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RNFL Clockface Measurements (4284)</summary>
+        public static readonly DicomUID RNFLClockfaceMeasurements4284 = new DicomUID("1.2.840.10008.6.1.1537", "RNFL Clockface Measurements (4284)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Macular Thickness Key Measurements (4285)</summary>
+        public static readonly DicomUID MacularThicknessKeyMeasurements4285 = new DicomUID("1.2.840.10008.6.1.1538", "Macular Thickness Key Measurements (4285)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ganglion Cell Measurement Extent (4286)</summary>
+        public static readonly DicomUID GanglionCellMeasurementExtent4286 = new DicomUID("1.2.840.10008.6.1.1539", "Ganglion Cell Measurement Extent (4286)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ganglion Cell Key Measurements (4287)</summary>
+        public static readonly DicomUID GanglionCellKeyMeasurements4287 = new DicomUID("1.2.840.10008.6.1.1540", "Ganglion Cell Key Measurements (4287)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ganglion Cell Sector Measurements (4288)</summary>
+        public static readonly DicomUID GanglionCellSectorMeasurements4288 = new DicomUID("1.2.840.10008.6.1.1541", "Ganglion Cell Sector Measurements (4288)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ganglion Cell Sector Methods (4289)</summary>
+        public static readonly DicomUID GanglionCellSectorMethods4289 = new DicomUID("1.2.840.10008.6.1.1542", "Ganglion Cell Sector Methods (4289)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Endothelial Cell Count Measurements (4290)</summary>
+        public static readonly DicomUID EndothelialCellCountMeasurements4290 = new DicomUID("1.2.840.10008.6.1.1543", "Endothelial Cell Count Measurements (4290)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ophthalmic Image ROI Measurements (4291)</summary>
+        public static readonly DicomUID OphthalmicImageROIMeasurements4291 = new DicomUID("1.2.840.10008.6.1.1544", "Ophthalmic Image ROI Measurements (4291)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Plan Approval Assertion (9584)</summary>
+        public static readonly DicomUID RTPlanApprovalAssertion9584 = new DicomUID("1.2.840.10008.6.1.1545", "RT Plan Approval Assertion (9584)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Estimated Delivery Date Methods (12026)</summary>
+        public static readonly DicomUID EstimatedDeliveryDateMethods12026 = new DicomUID("1.2.840.10008.6.1.1546", "Estimated Delivery Date Methods (12026)", DicomUidType.ContextGroupName, false);
 
     }
 }

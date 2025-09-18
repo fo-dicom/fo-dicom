@@ -28,30 +28,27 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task DicomClientSend_TooManyPresentationContexts_YieldsInformativeException()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
 
-            using (DicomServerFactory.Create<DicomCEchoProvider>(port))
-            {
-                var client = DicomClientFactory.Create("localhost", port, false, "SCU", "SCP");
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "SCU", "SCP");
 
-                client.Logger = _logger;
+            client.Logger = _logger;
 
-                // this just illustrates the issue of too many presentation contexts, not real world application.
-                var pcs =
-                    DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
-                        DicomStorageCategory.None,
-                        DicomTransferSyntax.ImplicitVRLittleEndian);
+            // this just illustrates the issue of too many presentation contexts, not real world application.
+            var pcs =
+                DicomPresentationContext.GetScpRolePresentationContextsFromStorageUids(
+                    DicomStorageCategory.None,
+                    DicomTransferSyntax.ImplicitVRLittleEndian);
 
-                client.AdditionalPresentationContexts.AddRange(pcs);
+            client.AdditionalPresentationContexts.AddRange(pcs);
 
-                DicomCGetRequest request = new DicomCGetRequest("1.2.840.113619.2.1.1.322987881.621.736170080");
+            DicomCGetRequest request = new DicomCGetRequest("1.2.840.113619.2.1.1.322987881.621.736170080");
 
-                await client.AddRequestAsync(request);
+            await client.AddRequestAsync(request);
 
-                var exception = await Record.ExceptionAsync(() => client.SendAsync());
-                Assert.IsType<DicomNetworkException>(exception);
-                Assert.Equal("Too many presentation contexts configured for this association!", exception.Message);
-            }
+            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+            Assert.IsType<DicomNetworkException>(exception);
+            Assert.Equal("Too many presentation contexts configured for this association!", exception.Message);
         }
 
         #endregion

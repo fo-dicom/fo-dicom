@@ -34,18 +34,17 @@ namespace FellowOakDicom.Tests.Bugs
         [InlineData(1000)]
         public async Task DicomClientShallNotCloseConnectionTooEarly_CEchoSerialAsync(int expected)
         {
-            var port = Ports.GetNext();
             var testLogger = _logger.IncludePrefix("GH745");
             var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
-            using var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
+            using var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
             server.Logger = serverLogger;
             while (!server.IsListening) { await Task.Delay(50); }
 
             var actual = 0;
 
-            var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.Logger = clientLogger;
             client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
             client.ClientOptions.AssociationLingerTimeoutInMs = 1; // No need to linger, we only send one request at a time
@@ -79,13 +78,11 @@ namespace FellowOakDicom.Tests.Bugs
         [InlineData(1)]
         public async Task DicomClientShallNotCloseConnectionTooEarly_CEchoParallelAsync(int expected)
         {
-            int port = Ports.GetNext();
-
             var testLogger = _logger.IncludePrefix("GH745");
             var clientLogger = _logger.IncludePrefix(nameof(DicomClient));
             var serverLogger = _logger.IncludePrefix(nameof(DicomCEchoProvider));
 
-            using var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
+            using var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
             server.Logger = serverLogger;
             while (!server.IsListening) { await Task.Delay(50); }
 
@@ -94,7 +91,7 @@ namespace FellowOakDicom.Tests.Bugs
             var requests = Enumerable.Range(0, expected).Select(
                 async requestIndex =>
                 {
-                    var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                    var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                     client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
                     client.Logger = clientLogger;
 

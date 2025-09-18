@@ -31,57 +31,51 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task OnCStoreRequestAsync_ShouldRespond()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCStoreProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomCStoreProvider>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            DicomCStoreResponse response = null;
+            DicomRequest.OnTimeoutEventArgs timeout = null;
+            var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => timeout = args
+            };
 
-                DicomCStoreResponse response = null;
-                DicomRequest.OnTimeoutEventArgs timeout = null;
-                var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => timeout = args
-                };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.NotNull(response);
-                Assert.Equal(DicomStatus.Success, response.Status);
-                Assert.Null(timeout);
-            }
+            Assert.NotNull(response);
+            Assert.Equal(DicomStatus.Success, response.Status);
+            Assert.Null(timeout);
         }
 
         [Fact]
         public async Task OnCStoreRequestAsync_PreferredTransfersyntax()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<AsyncDicomCStoreProviderPreferingUncompressedTS>(0, logger: _logger.IncludePrefix("DicomServer"));
 
-            using (DicomServerFactory.Create<AsyncDicomCStoreProviderPreferingUncompressedTS>(port, logger: _logger.IncludePrefix("DicomServer")))
+            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(nameof(DicomClient));
+            client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+
+            int numberOfContexts = 0;
+            DicomTransferSyntax accpetedTS = null;
+            // create a request with a jpeg-encoded file
+            var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
+            client.AssociationAccepted += (sender, e) =>
             {
-                var client = DicomClientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(nameof(DicomClient));
-                client.ClientOptions.AssociationRequestTimeoutInMs = (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+                numberOfContexts = e.Association.PresentationContexts.Count;
+                accpetedTS = e.Association.PresentationContexts.First().AcceptedTransferSyntax;
+            };
+            await client.AddRequestAsync(request);
+            await client.SendAsync();
 
-                int numberOfContexts = 0;
-                DicomTransferSyntax accpetedTS = null;
-                // create a request with a jpeg-encoded file
-                var request = new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"));
-                client.AssociationAccepted += (sender, e) =>
-                {
-                    numberOfContexts = e.Association.PresentationContexts.Count;
-                    accpetedTS = e.Association.PresentationContexts.First().AcceptedTransferSyntax;
-                };
-                await client.AddRequestAsync(request);
-                await client.SendAsync();
-
-                Assert.Equal(2, numberOfContexts); // one for the jpeg2k TS and one for the mandatory ImplicitLittleEndian
-                Assert.Equal(DicomTransferSyntax.JPEG2000Lossy, accpetedTS);
-            }
+            Assert.Equal(2, numberOfContexts); // one for the jpeg2k TS and one for the mandatory ImplicitLittleEndian
+            Assert.Equal(DicomTransferSyntax.JPEG2000Lossy, accpetedTS);
         }
 
     }

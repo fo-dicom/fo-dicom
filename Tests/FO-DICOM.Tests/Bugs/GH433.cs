@@ -21,60 +21,54 @@ namespace FellowOakDicom.Tests.Bugs
         [Fact]
         public async Task DicomClientSend_ToAcceptedAssociation_ShouldSendRequest()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<DicomClientTest.MockCEchoProvider>(0);
 
-            using (DicomServerFactory.Create<DicomClientTest.MockCEchoProvider>(port))
-            {
-                var locker = new object();
+            var locker = new object();
 
-                var expected = DicomStatus.Success;
-                DicomStatus actual = null;
+            var expected = DicomStatus.Success;
+            DicomStatus actual = null;
 
-                var client = DicomClientFactory.Create("localhost", port, false, "SCU", "ANY-SCP");
-                await client.AddRequestAsync(
-                    new DicomCEchoRequest
-                        {
-                            OnResponseReceived = (rq, rsp) =>
-                                {
-                                    lock (locker) actual = rsp.Status;
-                                }
-                        });
-                await client.SendAsync();
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "SCU", "ANY-SCP");
+            await client.AddRequestAsync(
+                new DicomCEchoRequest
+                    {
+                        OnResponseReceived = (rq, rsp) =>
+                            {
+                                lock (locker) actual = rsp.Status;
+                            }
+                    });
+            await client.SendAsync();
 
-                Assert.Equal(expected, actual);
-            }
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public async Task DicomClientSend_ToRejectedAssociation_ShouldNotSendRequest()
         {
-            var port = Ports.GetNext();
+            using var server = DicomServerFactory.Create<DicomClientTest.MockCEchoProvider>(0);
 
-            using (DicomServerFactory.Create<DicomClientTest.MockCEchoProvider>(port))
-            {
-                var locker = new object();
-                DicomStatus status = null;
+            var locker = new object();
+            DicomStatus status = null;
 
-                var client = DicomClientFactory.Create("localhost", port, false, "SCU", "WRONG-SCP");
-                await client.AddRequestAsync(
-                    new DicomCEchoRequest
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "SCU", "WRONG-SCP");
+            await client.AddRequestAsync(
+                new DicomCEchoRequest
+                {
+                    OnResponseReceived = (rq, rsp) =>
                     {
-                        OnResponseReceived = (rq, rsp) =>
-                        {
-                            lock (locker) status = rsp.Status;
-                        }
-                    });
+                        lock (locker) status = rsp.Status;
+                    }
+                });
 
-                try
-                {
-                    await client.SendAsync();
-                }
-                catch
-                {
-                }
-
-                Assert.Null(status);
+            try
+            {
+                await client.SendAsync();
             }
+            catch
+            {
+            }
+
+            Assert.Null(status);
         }
 
         #endregion

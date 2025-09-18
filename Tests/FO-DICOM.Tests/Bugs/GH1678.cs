@@ -23,14 +23,13 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task WhenReceivingAnHttpRequest_ShouldCloseConnectionAndNotAllocateLargeBuffer()
         {
             // Arrange
-            var port = Ports.GetNext();
             var recordingMemoryProvider = new RecordingMemoryProvider(new ArrayPoolMemoryProvider());
             var serviceProvider = new ServiceCollection()
                 .AddFellowOakDicom()
                 .Replace(ServiceDescriptor.Singleton<IMemoryProvider>(recordingMemoryProvider))
                 .BuildServiceProvider();
             var dicomServerFactory = serviceProvider.GetRequiredService<IDicomServerFactory>();
-            using var server = dicomServerFactory.Create<DicomCEchoProvider>(port);
+            using var server = dicomServerFactory.Create<DicomCEchoProvider>(0);
             using var httpClient = new HttpClient();
             HttpRequestException capturedHttpRequestException = null;
             OperationCanceledException capturedOperationCanceledException = null;
@@ -39,7 +38,7 @@ namespace FellowOakDicom.Tests.Bugs
             try
             {
                 using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-                await httpClient.GetAsync($"http://localhost:{port}/", cts.Token);
+                await httpClient.GetAsync($"http://localhost:{server.Port}/", cts.Token);
             }
             catch (HttpRequestException e)
             {

@@ -38,12 +38,9 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
-            var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             var advancedDicomClientConnectionFactory = new DefaultAdvancedDicomClientConnectionFactory(networkManager, loggerFactory, defaultServiceOptions, dicomServiceDependencies);
             return new DefaultDicomClientFactory(
-                defaultClientOptions,
-                defaultServiceOptions,
                 loggerFactory,
                 advancedDicomClientConnectionFactory,
                 Setup.ServiceProvider);
@@ -55,8 +52,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task SendingCStoreRequest_AfterPreviousCStoreRequestTimedOut_ShouldUseSeparateAssociation(int asyncInvoked)
         {
             // Arrange
-            var port = Ports.GetNext();
-            using var server = (ConfigurableDicomCStoreServer) DicomServerFactory.Create<ConfigurableDicomCStoreProvider, ConfigurableDicomCStoreServer>("127.0.0.1", port);
+            using var server = (ConfigurableDicomCStoreServer) DicomServerFactory.Create<ConfigurableDicomCStoreProvider, ConfigurableDicomCStoreServer>("127.0.0.1", 0);
             server.Options.MaxPDULength = 1024;
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
@@ -121,7 +117,7 @@ namespace FellowOakDicom.Tests.Bugs
                     }
                 }
             ));
-            var client = clientFactory.Create("127.0.0.1", port, false, "AnySCU", "AnySCP");
+            var client = clientFactory.Create("127.0.0.1", server.Port, false, "AnySCU", "AnySCP");
             client.ClientOptions.AssociationLingerTimeoutInMs = 0;
             client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(5);
             client.ServiceOptions.MaxPDULength = server.Options.MaxPDULength;

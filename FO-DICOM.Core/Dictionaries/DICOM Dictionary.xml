@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2025 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2025b">
+<dictionary version="2025c">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -2962,6 +2962,7 @@
     <tag group="0044" element="0108" keyword="ReferencedAssertionUID" vr="UI" vm="1">Referenced Assertion UID</tag>
     <tag group="0044" element="0109" keyword="ApprovalSubjectSequence" vr="SQ" vm="1">Approval Subject Sequence</tag>
     <tag group="0044" element="010A" keyword="OrganizationalRoleCodeSequence" vr="SQ" vm="1">Organizational Role Code Sequence</tag>
+    <tag group="0044" element="0110" keyword="RTAssertionsSequence" vr="SQ" vm="1">RT Assertions Sequence</tag>
     <tag group="0046" element="0012" keyword="LensDescription" vr="LO" vm="1">Lens Description</tag>
     <tag group="0046" element="0014" keyword="RightLensSequence" vr="SQ" vm="1">Right Lens Sequence</tag>
     <tag group="0046" element="0015" keyword="LeftLensSequence" vr="SQ" vm="1">Left Lens Sequence</tag>
@@ -7224,4 +7225,18 @@
     <uid uid="1.2.840.10008.6.1.1530" keyword="CategoryOfSexParametersForClinicalUse7459" type="Context Group Name">Category of Sex Parameters for Clinical Use (7459)</uid>
     <uid uid="1.2.840.10008.6.1.1531" keyword="ThirdPersonPronounSet7448" type="Context Group Name">Third Person Pronoun Set (7448)</uid>
     <uid uid="1.2.840.10008.6.1.1532" keyword="CardiacStructureCalcificationQualitativeEvaluation12345" type="Context Group Name">Cardiac Structure Calcification Qualitative Evaluation (12345)</uid>
+    <uid uid="1.2.840.10008.6.1.1533" keyword="VisualFieldMeasurements4280" type="Context Group Name">Visual Field Measurements (4280)</uid>
+    <uid uid="1.2.840.10008.6.1.1534" keyword="OpticDiscKeyMeasurements4281" type="Context Group Name">Optic Disc Key Measurements (4281)</uid>
+    <uid uid="1.2.840.10008.6.1.1535" keyword="RetinalSectorMethods4282" type="Context Group Name">Retinal Sector Methods (4282)</uid>
+    <uid uid="1.2.840.10008.6.1.1536" keyword="RNFLSectorMeasurements4283" type="Context Group Name">RNFL Sector Measurements (4283)</uid>
+    <uid uid="1.2.840.10008.6.1.1537" keyword="RNFLClockfaceMeasurements4284" type="Context Group Name">RNFL Clockface Measurements (4284)</uid>
+    <uid uid="1.2.840.10008.6.1.1538" keyword="MacularThicknessKeyMeasurements4285" type="Context Group Name">Macular Thickness Key Measurements (4285)</uid>
+    <uid uid="1.2.840.10008.6.1.1539" keyword="GanglionCellMeasurementExtent4286" type="Context Group Name">Ganglion Cell Measurement Extent (4286)</uid>
+    <uid uid="1.2.840.10008.6.1.1540" keyword="GanglionCellKeyMeasurements4287" type="Context Group Name">Ganglion Cell Key Measurements (4287)</uid>
+    <uid uid="1.2.840.10008.6.1.1541" keyword="GanglionCellSectorMeasurements4288" type="Context Group Name">Ganglion Cell Sector Measurements (4288)</uid>
+    <uid uid="1.2.840.10008.6.1.1542" keyword="GanglionCellSectorMethods4289" type="Context Group Name">Ganglion Cell Sector Methods (4289)</uid>
+    <uid uid="1.2.840.10008.6.1.1543" keyword="EndothelialCellCountMeasurements4290" type="Context Group Name">Endothelial Cell Count Measurements (4290)</uid>
+    <uid uid="1.2.840.10008.6.1.1544" keyword="OphthalmicImageROIMeasurements4291" type="Context Group Name">Ophthalmic Image ROI Measurements (4291)</uid>
+    <uid uid="1.2.840.10008.6.1.1545" keyword="RTPlanApprovalAssertion9584" type="Context Group Name">RT Plan Approval Assertion (9584)</uid>
+    <uid uid="1.2.840.10008.6.1.1546" keyword="EstimatedDeliveryDateMethods12026" type="Context Group Name">Estimated Delivery Date Methods (12026)</uid>
 </dictionary>

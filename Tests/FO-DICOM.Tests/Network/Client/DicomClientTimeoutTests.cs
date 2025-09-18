@@ -76,12 +76,9 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             var loggerFactory = Setup.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var dicomServiceDependencies = Setup.ServiceProvider.GetRequiredService<DicomServiceDependencies>();
-            var defaultClientOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomClientOptions>>();
             var defaultServiceOptions = Setup.ServiceProvider.GetRequiredService<IOptions<DicomServiceOptions>>();
             var advancedDicomClientConnectionFactory = new DefaultAdvancedDicomClientConnectionFactory(networkManager, loggerFactory, defaultServiceOptions, dicomServiceDependencies);
             return new DefaultDicomClientFactory(
-                defaultClientOptions,
-                defaultServiceOptions,
                 loggerFactory,
                 advancedDicomClientConnectionFactory,
                 Setup.ServiceProvider);
@@ -90,325 +87,309 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task SendingFindRequestToServerThatNeverRespondsShouldTimeout()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<NeverRespondingDicomServer>(port))
+            using var server = CreateServer<NeverRespondingDicomServer>(0);
+
+            var client = CreateClient(server.Port);
+
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+
+            var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
             {
-                var client = CreateClient(port);
-
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
-
-                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
+                Dataset = new DicomDataset
                 {
-                    Dataset = new DicomDataset
-                    {
-                        {DicomTag.PatientID, "PAT123"}
-                    },
-                    OnResponseReceived = (req, res) => throw new Exception("Did not expect a response"),
-                };
+                    {DicomTag.PatientID, "PAT123"}
+                },
+                OnResponseReceived = (req, res) => throw new Exception("Did not expect a response"),
+            };
 
-                DicomRequest.OnTimeoutEventArgs eventArgsFromRequestTimeout = null;
-                request.OnTimeout += (sender, args) => eventArgsFromRequestTimeout = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
-                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
+            DicomRequest.OnTimeoutEventArgs eventArgsFromRequestTimeout = null;
+            request.OnTimeout += (sender, args) => eventArgsFromRequestTimeout = args;
+            RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+            client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
-                await client.AddRequestAsync(request);
+            await client.AddRequestAsync(request);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                Assert.Equal(winner, sendTask);
-                Assert.NotNull(eventArgsFromRequestTimeout);
-                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
-                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
-            }
+            Assert.Equal(winner, sendTask);
+            Assert.NotNull(eventArgsFromRequestTimeout);
+            Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+            Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+            Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
         }
 
         [Fact]
         public async Task SendingMoveRequestToServerThatNeverRespondsShouldTimeout()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<NeverRespondingDicomServer>(port))
+            using var server = CreateServer<NeverRespondingDicomServer>(0);
+
+            var client = CreateClient(server.Port);
+
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+
+            var request = new DicomCMoveRequest("another-AE", "study123")
             {
-                var client = CreateClient(port);
+                OnResponseReceived = (req, res) => throw new Exception("Did not expect a response")
+            };
 
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+            DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+            request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+            RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+            client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
-                var request = new DicomCMoveRequest("another-AE", "study123")
-                {
-                    OnResponseReceived = (req, res) => throw new Exception("Did not expect a response")
-                };
+            await client.AddRequestAsync(request);
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
-                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
-                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                await client.AddRequestAsync(request);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
-
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
-
-                Assert.Equal(winner, sendTask);
-                Assert.NotNull(onTimeoutEventArgs);
-                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
-                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
-            }
+            Assert.Equal(winner, sendTask);
+            Assert.NotNull(onTimeoutEventArgs);
+            Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+            Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+            Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
         }
 
         [Fact]
         public async Task SendingFindRequestToServerThatSendsPendingResponsesWithinTimeoutShouldNotTimeout()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<FastPendingResponsesDicomServer>(port))
+            using var server = CreateServer<FastPendingResponsesDicomServer>(0);
+
+            var client = CreateClient(server.Port);
+
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+
+            DicomCFindResponse lastResponse = null;
+            var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
             {
-                var client = CreateClient(port);
-
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
-
-                DicomCFindResponse lastResponse = null;
-                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
+                Dataset = new DicomDataset
                 {
-                    Dataset = new DicomDataset
-                    {
-                        {DicomTag.PatientID, "PAT123"}
-                    },
-                    OnResponseReceived = (req, res) => lastResponse = res
-                };
+                    {DicomTag.PatientID, "PAT123"}
+                },
+                OnResponseReceived = (req, res) => lastResponse = res
+            };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
-                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+            DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+            request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
 
-                await client.AddRequestAsync(request);
+            await client.AddRequestAsync(request);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                Assert.Equal(winner, sendTask);
-                Assert.NotNull(lastResponse);
-                Assert.Equal(lastResponse.Status, DicomStatus.Success);
-                Assert.Null(onTimeoutEventArgs);
-            }
+            Assert.Equal(winner, sendTask);
+            Assert.NotNull(lastResponse);
+            Assert.Equal(lastResponse.Status, DicomStatus.Success);
+            Assert.Null(onTimeoutEventArgs);
         }
 
         [Fact]
         public async Task SendingMoveRequestToServerThatSendsPendingResponsesWithinTimeoutShouldNotTimeout()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<FastPendingResponsesDicomServer>(port))
+            using var server = CreateServer<FastPendingResponsesDicomServer>(0);
+
+            var client = CreateClient(server.Port);
+
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+
+            DicomCMoveResponse lastResponse = null;
+            var request = new DicomCMoveRequest("another-AE", "study123")
             {
-                var client = CreateClient(port);
+                OnResponseReceived = (req, res) => lastResponse = res
+            };
 
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+            DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+            request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
 
-                DicomCMoveResponse lastResponse = null;
-                var request = new DicomCMoveRequest("another-AE", "study123")
-                {
-                    OnResponseReceived = (req, res) => lastResponse = res
-                };
+            await client.AddRequestAsync(request);
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
-                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                await client.AddRequestAsync(request);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
-
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
-
-                Assert.Equal(winner, sendTask);
-                Assert.NotNull(lastResponse);
-                Assert.Equal(lastResponse.Status, DicomStatus.Success);
-                Assert.Null(onTimeoutEventArgs);
-            }
+            Assert.Equal(winner, sendTask);
+            Assert.NotNull(lastResponse);
+            Assert.Equal(lastResponse.Status, DicomStatus.Success);
+            Assert.Null(onTimeoutEventArgs);
         }
 
         [Fact]
         public async Task SendingFindRequestToServerThatSendsPendingResponsesTooSlowlyShouldTimeout()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<SlowPendingResponsesDicomServer>(port))
+            using var server = CreateServer<SlowPendingResponsesDicomServer>(0);
+
+            var client = CreateClient(server.Port);
+
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+
+            var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
             {
-                var client = CreateClient(port);
-
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
-
-                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Patient)
+                Dataset = new DicomDataset
                 {
-                    Dataset = new DicomDataset
-                    {
-                        {DicomTag.PatientID, "PAT123"}
-                    }
-                };
+                    {DicomTag.PatientID, "PAT123"}
+                }
+            };
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
-                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
-                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
+            DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+            request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+            RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+            client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
-                await client.AddRequestAsync(request);
+            await client.AddRequestAsync(request);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                Assert.Equal(winner, sendTask);
-                Assert.NotNull(onTimeoutEventArgs);
-                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
-                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
-            }
+            Assert.Equal(winner, sendTask);
+            Assert.NotNull(onTimeoutEventArgs);
+            Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+            Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+            Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
         }
 
         [Fact]
         public async Task SendingMoveRequestToServerThatSendsPendingResponsesTooSlowlyShouldTimeout()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<SlowPendingResponsesDicomServer>(port))
-            {
-                var client = CreateClient(port);
+            using var server = CreateServer<SlowPendingResponsesDicomServer>(0);
 
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+            var client = CreateClient(server.Port);
 
-                var request = new DicomCMoveRequest("another-AE", "study123");
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
 
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
-                request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
-                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
+            var request = new DicomCMoveRequest("another-AE", "study123");
 
-                await client.AddRequestAsync(request);
+            DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+            request.OnTimeout += (sender, args) => onTimeoutEventArgs = args;
+            RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+            client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            await client.AddRequestAsync(request);
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                Assert.Equal(winner, sendTask);
-                Assert.NotNull(onTimeoutEventArgs);
-                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
-                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
-            }
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
+
+            Assert.Equal(winner, sendTask);
+            Assert.NotNull(onTimeoutEventArgs);
+            Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+            Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+            Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
         }
 
         [Fact]
         public async Task SendingLargeFileUsingVeryShortResponseTimeoutShouldSucceed()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<InMemoryDicomCStoreProvider>(port))
+            using var server = CreateServer<InMemoryDicomCStoreProvider>(0);
+
+            var streamWriteTimeout = TimeSpan.FromMilliseconds(10);
+            var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+            var client = clientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
+            client.ServiceOptions.MaxPDULength = 16 * 1024; // 16 KB
+
+            DicomResponse response = null;
+
+            // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
+            // If stream timeout = 50ms, then total time to send will be 3s 250ms
+            var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
             {
-                var streamWriteTimeout = TimeSpan.FromMilliseconds(10);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
-                var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(2);
-                client.ServiceOptions.MaxPDULength = 16 * 1024; // 16 KB
+                OnResponseReceived = (req, res) => response = res,
+            };
+            await client.AddRequestAsync(request);
 
-                DicomResponse response = null;
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
 
-                // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
-                // If stream timeout = 50ms, then total time to send will be 3s 250ms
-                var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                };
-                await client.AddRequestAsync(request);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(10), sendTimeoutCancellationTokenSource.Token);
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
+            Assert.Equal(winner, sendTask);
 
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
+            Assert.NotNull(response);
 
-                Assert.Equal(winner, sendTask);
-
-                Assert.NotNull(response);
-
-                Assert.Equal(DicomStatus.Success, response.Status);
-            }
+            Assert.Equal(DicomStatus.Success, response.Status);
         }
 
         [Fact]
         public async Task SendingLargeFileUsingVeryShortResponseTimeoutAndSendingTakesTooLongShouldFail()
         {
-            var port = Ports.GetNext();
-            using (CreateServer<InMemoryDicomCStoreProvider>(port))
+            using var server = CreateServer<InMemoryDicomCStoreProvider>(0);
+
+            var streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
+            var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
+            var client = clientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
+            client.ServiceOptions.MaxPDULength = 16 * 1024;
+
+            DicomResponse response = null;
+            DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+
+            // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
+            // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
+            var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
             {
-                var streamWriteTimeout = TimeSpan.FromMilliseconds(1500);
-                var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
-                var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
-                client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromSeconds(1);
-                client.ServiceOptions.MaxPDULength = 16 * 1024;
+                OnResponseReceived = (req, res) => response = res,
+                OnTimeout = (sender, args) => onTimeoutEventArgs = args
+            };
 
-                DicomResponse response = null;
-                DicomRequest.OnTimeoutEventArgs onTimeoutEventArgs = null;
+            RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
+            client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
+            await client.AddRequestAsync(request);
 
-                // Size = 5 192 KB, one PDU = 16 KB, so this will result in 325 PDUs
-                // If stream timeout = 1500ms, then total time to send will be 325 * 1500 = 487.5 seconds
-                var request = new DicomCStoreRequest(TestData.Resolve("10200904.dcm"))
-                {
-                    OnResponseReceived = (req, res) => response = res,
-                    OnTimeout = (sender, args) => onTimeoutEventArgs = args
-                };
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromSeconds(20), sendTimeoutCancellationTokenSource.Token);
 
-                RequestTimedOutEventArgs eventArgsFromDicomClientRequestTimedOut = null;
-                client.RequestTimedOut += (sender, args) => eventArgsFromDicomClientRequestTimedOut = args;
-                await client.AddRequestAsync(request);
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
 
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromSeconds(20), sendTimeoutCancellationTokenSource.Token);
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
 
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
-
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
-
-                Assert.Same(winner, sendTask);
-                Assert.Null(response);
-                Assert.NotNull(onTimeoutEventArgs);
-                Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
-                Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
-                Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
-            }
+            Assert.Same(winner, sendTask);
+            Assert.Null(response);
+            Assert.NotNull(onTimeoutEventArgs);
+            Assert.NotNull(eventArgsFromDicomClientRequestTimedOut);
+            Assert.Equal(request, eventArgsFromDicomClientRequestTimedOut.Request);
+            Assert.Equal(client.ServiceOptions.RequestTimeout, eventArgsFromDicomClientRequestTimedOut.Timeout);
         }
 
         [Theory]
@@ -426,62 +407,58 @@ namespace FellowOakDicom.Tests.Network.Client
                 MaxRequestsPerAssoc = maximumRequestsPerAssociation,
             };
 
-            var port = Ports.GetNext();
-            using (CreateServer<NeverRespondingDicomServer>(port))
+            using var server = CreateServer<NeverRespondingDicomServer>(0);
+
+            var client = CreateClient(server.Port);
+            client.NegotiateAsyncOps(asyncOpsInvoked);
+
+            // Ensure the client is quite impatient
+            client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
+
+            var testLogger = _logger.IncludePrefix("Test");
+            testLogger.LogInformation($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
+
+            var requests = new List<DicomRequest>();
+            for (var i = 1; i <= options.Requests; i++)
             {
-                var client = CreateClient(port);
-                client.NegotiateAsyncOps(asyncOpsInvoked);
+                var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
 
-                // Ensure the client is quite impatient
-                client.ServiceOptions.RequestTimeout = TimeSpan.FromMilliseconds(200);
+                requests.Add(request);
+                await client.AddRequestAsync(request);
 
-                var testLogger = _logger.IncludePrefix("Test");
-                testLogger.LogInformation($"Beginning {options.Requests} parallel requests with {options.MaxRequestsPerAssoc} requests / association");
-
-                var requests = new List<DicomRequest>();
-                for (var i = 1; i <= options.Requests; i++)
+                if (i < options.Requests)
                 {
-                    var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
-
-                    requests.Add(request);
-                    await client.AddRequestAsync(request);
-
-                    if (i < options.Requests)
-                    {
-                        testLogger.LogInformation($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
-                        await Task.Delay(options.TimeBetweenRequests);
-                        testLogger.LogInformation($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
-                    }
+                    testLogger.LogInformation($"Waiting {options.TimeBetweenRequests.TotalMilliseconds}ms between requests");
+                    await Task.Delay(options.TimeBetweenRequests);
+                    testLogger.LogInformation($"Waited {options.TimeBetweenRequests.TotalMilliseconds}ms, moving on to next request");
                 }
-
-                var timedOutRequests = new ConcurrentStack<DicomRequest>();
-                client.RequestTimedOut += (sender, args) => { timedOutRequests.Push(args.Request); };
-
-                var sendTask = client.SendAsync();
-                var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
-                var sendTimeout = Task.Delay(TimeSpan.FromMinutes(1), sendTimeoutCancellationTokenSource.Token);
-
-                var winner = await Task.WhenAny(sendTask, sendTimeout);
-
-                sendTimeoutCancellationTokenSource.Cancel();
-                sendTimeoutCancellationTokenSource.Dispose();
-
-                if (winner != sendTask)
-                    throw new Exception("DicomClient.SendAsync timed out");
-
-                Assert.Equal(requests.OrderBy(m => m.MessageID), timedOutRequests.OrderBy(m => m.MessageID));
             }
+
+            var timedOutRequests = new ConcurrentStack<DicomRequest>();
+            client.RequestTimedOut += (sender, args) => { timedOutRequests.Push(args.Request); };
+
+            var sendTask = client.SendAsync();
+            var sendTimeoutCancellationTokenSource = new CancellationTokenSource();
+            var sendTimeout = Task.Delay(TimeSpan.FromMinutes(1), sendTimeoutCancellationTokenSource.Token);
+
+            var winner = await Task.WhenAny(sendTask, sendTimeout);
+
+            sendTimeoutCancellationTokenSource.Cancel();
+            sendTimeoutCancellationTokenSource.Dispose();
+
+            if (winner != sendTask)
+                throw new Exception("DicomClient.SendAsync timed out");
+
+            Assert.Equal(requests.OrderBy(m => m.MessageID), timedOutRequests.OrderBy(m => m.MessageID));
         }
 
         [Fact]
         public async Task SendAsync_WithSocketException_ShouldNotLoopInfinitely()
         {
-            var port = Ports.GetNext();
-
             DicomCStoreResponse response1 = null, response2 = null, response3 = null;
             DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
-            using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
+                using var server = CreateServer<InMemoryDicomCStoreProvider>(0);
 
                 var request1HasArrived = false;
                 var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() =>
@@ -492,7 +469,7 @@ namespace FellowOakDicom.Tests.Network.Client
                             new SocketException());
                     }
                 }));
-                var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = clientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
 
                 // Ensure requests are handled sequentially
@@ -548,13 +525,12 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact(Skip = "Flaky test. Sometimes gets stuck in an indefinite loop.")]
         public async Task SendAsync_WithGenericStreamException_ShouldNotLoopInfinitely()
         {
-            var port = Ports.GetNext();
             var logger = _logger.IncludePrefix("UnitTest");
 
             DicomCStoreResponse response1 = null, response2 = null, response3 = null;
             DicomRequest.OnTimeoutEventArgs timeout1 = null, timeout2 = null, timeout3 = null;
-            using (CreateServer<InMemoryDicomCStoreProvider>(port))
             {
+                using var server = CreateServer<InMemoryDicomCStoreProvider>(0);
                 var request1HasArrived = false;
                 var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() =>
                 {
@@ -563,7 +539,7 @@ namespace FellowOakDicom.Tests.Network.Client
                         throw new Exception("Request 1 has arrived, we can no longer write to this stream!");
                     }
                 }));
-                var client = clientFactory.Create("127.0.0.1", port, false, "SCU", "ANY-SCP");
+                var client = clientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                 client.Logger = _logger.IncludePrefix(typeof(DicomClient).Name).WithMinimumLevel(LogLevel.Debug);
 
                 // Ensure requests are handled sequentially
@@ -620,19 +596,18 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task AssociationRequestTimeOutExceptionShouldThrowAfterMaxRetry()
         {
-            var port = Ports.GetNext();
             const int maxRetryCount = 2;
             const int assocReqTimeOutInMs = 2000;
             int eventFired = 0;
 
-            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(port))
+            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(0))
             {
                 server.OnAssociationRequest(async association =>
                 {
                     await Task.Delay(100_000);
                     return true;
                 });
-                var client = CreateClient(port);
+                var client = CreateClient(server.Port);
                 client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
                 client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;
                 client.AssociationRequestTimedOut += (sender, args) =>
@@ -694,12 +669,11 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task AssociationRequestRetryCounterShouldResetWhenAssociationIsAccepted()
         {
-            var port = Ports.GetNext();
             const int maxRetryCount = 2;
             const int assocReqTimeOutInMs = 2000;
             int eventFired = 0;
 
-            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(port))
+            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(0))
             {
                 server.Logger = _logger.IncludePrefix("Server");
                 var associationRequest = 0;
@@ -715,7 +689,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     return true;
                 });
 
-                var client = CreateClient(port);
+                var client = CreateClient(server.Port);
                 client.Logger = _logger.IncludePrefix("Client");
                 client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
                 client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;
@@ -757,12 +731,11 @@ namespace FellowOakDicom.Tests.Network.Client
         [Fact]
         public async Task AssociationRequestRetryCounterShouldResetWhenAssociationIsRejected()
         {
-            var port = Ports.GetNext();
             const int maxRetryCount = 2;
             const int assocReqTimeOutInMs = 2000;
             int eventFired = 0;
 
-            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(port))
+            using (var server = CreateServer<ConfigurableDicomCEchoProviderServer, ConfigurableDicomCEchoProvider>(0))
             {
                 server.Logger = _logger.IncludePrefix("Server");
                 var associationRequest = 0;
@@ -778,7 +751,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     return false;
                 });
 
-                var client = CreateClient(port);
+                var client = CreateClient(server.Port);
                 client.Logger = _logger.IncludePrefix("Client");
                 client.ClientOptions.AssociationRequestTimeoutInMs = assocReqTimeOutInMs;
                 client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = maxRetryCount;

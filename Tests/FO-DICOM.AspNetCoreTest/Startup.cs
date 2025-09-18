@@ -30,13 +30,13 @@ namespace FO_DICOM.AspNetCoreTest
             services.AddControllers();
             services.AddLogging(c => c.AddConsole());
 
-            services.AddDicomServer<MyDicomService>(o => {
+            services.AddDicomServer<MyDicomService>(Configuration, o => {
                 o.Port = 104;
             });
 
             services.AddDicomServer(
-                o => o.Port = 105,
                 builder => builder
+                    .Configure(o => o.Port = 105)
                     .AnswerDicomEcho()
                     .CheckAssociationForCalledAET("SERVER")
                     .OnInstanceReceived(e => HandleInstanceReceivedAsync(e))

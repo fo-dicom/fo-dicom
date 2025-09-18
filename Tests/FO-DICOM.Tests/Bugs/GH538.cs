@@ -27,43 +27,41 @@ namespace FellowOakDicom.Tests.Bugs
             var handle2 = new ManualResetEventSlim();
             var successes = 0;
 
-            var port = Ports.GetNext();
-            using (DicomServerFactory.Create<SimpleCStoreProvider>(port))
+            using var server = DicomServerFactory.Create<SimpleCStoreProvider>(0);
+
+            var request1 = new DicomCStoreRequest(file1);
+            request1.OnResponseReceived = (req, rsp) =>
             {
-                var request1 = new DicomCStoreRequest(file1);
-                request1.OnResponseReceived = (req, rsp) =>
+                if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess1) &&
+                    rsp.Status == DicomStatus.Success)
                 {
-                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess1) &&
-                        rsp.Status == DicomStatus.Success)
-                    {
-                        ++successes;
-                    }
+                    ++successes;
+                }
 
-                    handle1.Set();
-                };
+                handle1.Set();
+            };
 
-                var request2 = new DicomCStoreRequest(file2);
-                request2.OnResponseReceived = (req, rsp) =>
+            var request2 = new DicomCStoreRequest(file2);
+            request2.OnResponseReceived = (req, rsp) =>
+            {
+                if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess14SV1) &&
+                    rsp.Status == DicomStatus.Success)
                 {
-                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.JPEGProcess14SV1) &&
-                        rsp.Status == DicomStatus.Success)
-                    {
-                        ++successes;
-                    }
+                    ++successes;
+                }
 
-                    handle2.Set();
-                };
+                handle2.Set();
+            };
 
-                var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
-                await client.AddRequestAsync(request1);
-                await client.AddRequestAsync(request2);
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "STORESCU", "STORESCP");
+            await client.AddRequestAsync(request1);
+            await client.AddRequestAsync(request2);
 
-                await client.SendAsync();
-                handle1.Wait(10000);
-                handle2.Wait(10000);
+            await client.SendAsync();
+            handle1.Wait(10000);
+            handle2.Wait(10000);
 
-                Assert.Equal(2, successes);
-            }
+            Assert.Equal(2, successes);
         }
 
 
@@ -74,31 +72,29 @@ namespace FellowOakDicom.Tests.Bugs
             var handle = new ManualResetEventSlim();
             var success = false;
 
-            var port = Ports.GetNext();
-            using (DicomServerFactory.Create<VideoCStoreProvider>(port))
+            using var server = DicomServerFactory.Create<VideoCStoreProvider>(0);
+
+            var request = new DicomCStoreRequest(file)
             {
-                var request = new DicomCStoreRequest(file)
+                OnResponseReceived = (req, rsp) =>
                 {
-                    OnResponseReceived = (req, rsp) =>
+                    if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
+                        req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success)
                     {
-                        if (req.Dataset.InternalTransferSyntax.Equals(DicomTransferSyntax.ImplicitVRLittleEndian) &&
-                            req.Dataset.Contains(DicomTag.PixelData) && rsp.Status == DicomStatus.Success)
-                        {
-                            success = true;
-                        }
-
-                        handle.Set();
+                        success = true;
                     }
-                };
 
-                var client = DicomClientFactory.Create("localhost", port, false, "STORESCU", "STORESCP");
-                await client.AddRequestAsync(request);
+                    handle.Set();
+                }
+            };
 
-                await client.SendAsync();
-                handle.Wait(10000);
+            var client = DicomClientFactory.Create("localhost", server.Port, false, "STORESCU", "STORESCP");
+            await client.AddRequestAsync(request);
 
-                Assert.True(success);
-            }
+            await client.SendAsync();
+            handle.Wait(10000);
+
+            Assert.True(success);
         }
 
         #endregion

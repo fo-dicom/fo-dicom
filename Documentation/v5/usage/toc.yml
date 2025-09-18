@@ -26,14 +26,13 @@
     href: raw_pixel_data.md
   - name: LUT application
     href: lut_application.md
-- name: Network
+- name: Usage
   expanded: true
   items:
   - name: Ssl connections
     href: ssl.md
-- name: Logging
-  expanded: true
-  items:
+  - name: Configurations
+    href: configuration.md
   - name: Logging configuration  
     href: logging_config.md
 - name: Miscellaneous
