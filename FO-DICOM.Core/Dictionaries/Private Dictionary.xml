@@ -4947,9 +4947,21 @@
 <tag group="300B" element="xx98" vr="FL" vm="2">Line Scanning Spot Size</tag>
 <tag group="300B" element="xx9A" vr="IS" vm="1">Number of Line Scan Spot Paintings</tag>
 </dictionary>
+<dictionary creator="Varian Medical Systems VISION 3241">
+<tag group="3241" element="xx00" vr="LO" vm="1">Internal Image Id</tag>
+<tag group="3241" element="xx02" vr="IS" vm="1">Internal Pixel Offset</tag>
+<tag group="3241" element="xx03" vr="US" vm="1">Not Calibrated</tag>
+<tag group="3241" element="xx04" vr="DS" vm="1">Image Orientation (Patient)</tag>
+<tag group="3241" element="xx05" vr="DS" vm="1">Image Position (Patient)</tag>
+<tag group="3241" element="xx06" vr="DS" vm="1">Pixel Spacing</tag>
+</dictionary>
 <dictionary creator="Varian Medical Systems VISION 3243">
-<tag group="3243" element="xx09" vr="LO" vm="1">Beam Secondary Name</tag>
+<tag group="3243" element="xx09" vr="SH" vm="1">Beam Secondary Name</tag>
 <tag group="3243" element="xx28" vr="IS" vm="1">Related Referenced Beam Number</tag>
+<tag group="3243" element="xx30" vr="LO" vm="1-n">Imaging Procedure Label</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3247">
+<tag group="3247" element="xx00" vr="SH" vm="1">Session Termination Status</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3249">
 <tag group="3249" element="xx00" vr="DS" vm="1">Maximum Treatment Time</tag>
@@ -4965,9 +4977,13 @@
 <tag group="3251" element="xx00" vr="LO" vm="1">Treatment Machine Note</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3253">
-<tag group="3253" element="xx00" vr="OB" vm="1">Extended Interface Data</tag>
+<tag group="3253" element="xx00" vr="LT" vm="1">Extended Interface Data</tag>
 <tag group="3253" element="xx01" vr="IS" vm="1">Extended Interface Length</tag>
-<tag group="3253" element="xx02" vr="LO" vm="1">Extended Interface Format</tag>
+<tag group="3253" element="xx02" vr="CS" vm="1">Extended Interface Format</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3257">
+<tag group="3257" element="xx02" vr="CS" vm="1">Plan Type</tag>
+<tag group="3257" element="xx02" vr="CS" vm="1">Reference Image Type</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3259">
 <tag group="3259" element="xx00" vr="SQ" vm="0-n">Additional Dose Value Sequence SQ</tag>
@@ -4976,15 +4992,19 @@
 <tag group="3259" element="xx06" vr="DS" vm="1">Life Time Total Dose</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3261">
-<tag group="3261" element="xx2A" vr="OB" vm="1">Treatment Session Beam Extended Interface</tag>
+<tag group="3261" element="xx2A" vr="OB" vm="1">Treatment Session Beam Data</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3263">
+<tag group="3263" element="xx00" vr="CS" vm="1">Structure Overlapping Status</tag>
 <tag group="3263" element="xx01" vr="SQ" vm="1">Referenced Structure Set Relationship Sequence</tag>
 <tag group="3263" element="xx02" vr="CS" vm="1">Structure Set Relationship</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3265">
 <tag group="3265" element="xx00" vr="SL" vm="1">Total Number of Fractions</tag>
-<tag group="3265" element="xx01" vr="SL" vm="1">Last treated Fraction</tag>
+<tag group="3265" element="xx01" vr="SL" vm="1">Last Treated Fraction</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3267">
+<tag group="3267" element="xx00" vr="SH" vm="1">Referenced Patient Volume Id</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3271">
 <tag group="3271" element="xx00" vr="CS" vm="1">Marker Subtype</tag>
@@ -4995,6 +5015,53 @@
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3275">
 <tag group="3275" element="xx00" vr="LO" vm="1">Registration Sub Type</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3277">
+<tag group="3277" element="xx00" vr="SQ" vm="1">RT Motion Synchronization Sequence</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3283">
+<tag group="3283" element="xx00" vr="CS" vm="1">Visual Coaching Type</tag>
+<tag group="3283" element="xx01" vr="CS" vm="1">Audio Coaching Type</tag>
+<tag group="3283" element="xx02" vr="SQ" vm="1">Coaching Language Code Sequence</tag>
+<tag group="3283" element="xx03" vr="CS" vm="1">Voice Type</tag>
+<tag group="3283" element="xx04" vr="CS" vm="1">Coaching Display Type</tag>
+<tag group="3283" element="xx05" vr="CS" vm="1">Breathing Technique</tag>
+<tag group="3283" element="xx06" vr="DS" vm="1">Inhale Period</tag>
+<tag group="3283" element="xx07" vr="DS" vm="1">Exhale Period</tag>
+<tag group="3283" element="xx08" vr="DS" vm="1">Breathhold Period</tag>
+<tag group="3283" element="xx09" vr="DS" vm="1">Motion Range</tag>
+<tag group="3283" element="xx0A" vr="SQ" vm="1">Signal Source Sequence</tag>
+<tag group="3283" element="xx0B" vr="SH" vm="1">Signal Source ID</tag>
+<tag group="3283" element="xx0C" vr="SQ" vm="1">Reference Curve Sequence</tag>
+<tag group="3283" element="xx0D" vr="DS" vm="1">Beam On Delay</tag>
+<tag group="3283" element="xx10" vr="SQ" vm="1">Tolerance Channel Sequence</tag>
+<tag group="3283" element="xx11" vr="IS" vm="1">Tolerance Channel Number</tag>
+<tag group="3283" element="xx20" vr="SQ" vm="1">Threshold Sequence</tag>
+<tag group="3283" element="xx21" vr="IS" vm="1">Referenced Tolerance Channel Number</tag>
+<tag group="3283" element="xx22" vr="US" vm="1">Threshold Group Number</tag>
+<tag group="3283" element="xx23" vr="US" vm="1">Threshold Value</tag>
+<tag group="3283" element="xx24" vr="SQ" vm="1">Threshold Type Sequence</tag>
+<tag group="3283" element="xx25" vr="CS" vm="1">Relative Reference Value Type</tag>
+<tag group="3283" element="xx26" vr="US" vm="1">Detected Relative Reference Value</tag>
+<tag group="3283" element="xx27" vr="US" vm="1">Relative Reference Value Offset</tag>
+<tag group="3283" element="xx30" vr="SQ" vm="1">Tolerance Region Sequence</tag>
+<tag group="3283" element="xx31" vr="US" vm="1">Multiplex Group Number</tag>
+<tag group="3283" element="xx32" vr="DS" vm="1">Multiplex Group Offset</tag>
+<tag group="3283" element="xx33" vr="US" vm="1">Number of Tolerance Samples</tag>
+<tag group="3283" element="xx34" vr="CS" vm="1">Sample Domain</tag>
+<tag group="3283" element="xx35" vr="DS" vm="1">Sampling Frequency</tag>
+<tag group="3283" element="xx36" vr="US" vm="1">Number of Tolerance Channels</tag>
+<tag group="3283" element="xx37" vr="SQ" vm="1">Referenced Channel Sequence</tag>
+<tag group="3283" element="xx40" vr="SQ" vm="1">Channel Identification Sequence</tag>
+<tag group="3283" element="xx41" vr="SQ" vm="1">Channel Identification Modifiers Sequence</tag>
+<tag group="3283" element="xx42" vr="CS" vm="1">Signal Source Type</tag>
+<tag group="3283" element="xx43" vr="SH" vm="1">Tracked Object ID</tag>
+<tag group="3283" element="xx50" vr="SH" vm="1">Waveform Label</tag>
+<tag group="3283" element="xx51" vr="LO" vm="1">Waveform Name</tag>
+<tag group="3283" element="xx52" vr="ST" vm="1">Waveform Description</tag>
+<tag group="3283" element="xx53" vr="CS" vm="1">Motion Management Waveform Type</tag>
+<tag group="3283" element="xx54" vr="DT" vm="1">Timestamp</tag>
+<tag group="3283" element="xx60" vr="SQ" vm="1">Referenced Motion Management Object Sequence</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3285">
 <tag group="3285" element="xx00" vr="SQ" vm="1">Primary Fluence Mode Sequence (PRIVATE)</tag>
@@ -5023,9 +5090,13 @@
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3299">
 <tag group="3299" element="xx00" vr="OB" vm="1">Structure Detection Data</tag>
+<tag group="3299" element="xx01" vr="DS" vm="1">Gantry Angle Stop</tag>
+<tag group="3299" element="xx02" vr="IS" vm="1">Number of Averaged Sub-frames</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3303">
-<tag group="3303" element="xx00" vr="UI" vm="1">Referenced Conceptual volume UID</tag>
+<tag group="3303" element="xx00" vr="FL" vm="1-n">FLASH Scan Spot Meterset Rates</tag>
+<tag group="3303" element="xx01" vr="FL" vm="1-n">FLASH Scan Spot Meterset Rates</tag>
+<tag group="3303" element="xx02" vr="SH" vm="1">NTPC Algorithm Version</tag>
 </dictionary>
 <dictionary creator="VEPRO DICOM TRANSFER 1.0">
 <tag group="0059" element="xx10" vr="SQ" vm="1">Unknown</tag>
