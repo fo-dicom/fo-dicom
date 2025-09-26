@@ -511,6 +511,12 @@
 <tag group="7fdf" element="xxf0" vr="OB" vm="1">Unknown</tag>
 <tag group="7fdf" element="xxff" vr="SH" vm="1">Unknown</tag>
 </dictionary>
+<dictionary creator="EVuPrivateInfo">
+<tag group="7171" element="xx2B" vr="LT" vm="2">Private referenced proprietary image (SOP class and instance UID)</tag>
+</dictionary>
+<dictionary creator="EVuPrivateInBinary">
+<tag group="9191" element="xxE1" vr="LT" vm="2">Private raw data for ExactVu proprietary data</tag>
+</dictionary>
 <dictionary creator="FDMS 1.0">
 <tag group="0009" element="xx04" vr="SH" vm="1">Image Control Unit</tag>
 <tag group="0009" element="xx05" vr="OW" vm="1">Image UID</tag>
