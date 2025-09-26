@@ -436,28 +436,78 @@
 <tag group="0601" element="xx70" vr="DS" vm="1">Batch Number</tag>
 <tag group="0601" element="xx71" vr="DS" vm="1">Batch Size</tag>
 <tag group="0601" element="xx72" vr="DS" vm="1">Batch Slice Number</tag>
+<tag group="07a1" element="xx02" vr="UL" vm="1">Tamar Number Of Images In Series</tag>
 <tag group="07a1" element="xx0a" vr="OB" vm="1">Unknown</tag>
 <tag group="07a1" element="xx10" vr="LO" vm="1">Unknown</tag>
 <tag group="07a1" element="xx11" vr="CS" vm="1">Unknown</tag>
 <tag group="07a1" element="xx13" vr="UL" vm="1">Unknown</tag>
-<tag group="07a1" element="xx2a" vr="UN" vm="1">Unknown</tag>
+<tag group="07a1" element="xx2a" vr="CS" vm="1">Tamar Study Status</tag>
 <tag group="07a1" element="xx36" vr="UN" vm="1">Unknown</tag>
 <tag group="07a1" element="xx3d" vr="US" vm="1">Unknown</tag>
+<tag group="07a1" element="xx40" vr="CS" vm="1">Tamar Study Body Part</tag>
+<tag group="07a1" element="xx42" vr="SH" vm="1">Tamar Assign To Doctor</tag>
+<tag group="07a1" element="xx43" vr="IS" vm="1">Tamar Study Priority</tag>
 <tag group="07a1" element="xx47" vr="UN" vm="1">Unknown</tag>
-<tag group="07a1" element="xx50" vr="US" vm="1">Unknown</tag>
+<tag group="07a1" element="xx50" vr="US" vm="1">Tamar Site Id</tag>
+<tag group="07a1" element="xx58" vr="CS" vm="1">Tamar Study Published</tag>
+<tag group="07a1" element="xx5d" vr="DT" vm="1">Tamar Study Creation Date</tag>
+<tag group="07a1" element="xx5f" vr="CS" vm="1">Tamar Study Has Bookmark</tag>
 <tag group="07a1" element="xx75" vr="UN" vm="1">Unknown</tag>
 <tag group="07a1" element="xx82" vr="UN" vm="1">Unknown</tag>
 <tag group="07a1" element="xx85" vr="UL" vm="1">Unknown</tag>
+<tag group="07a1" element="xx88" vr="CS" vm="1">Tamar Tf Teaching Indication</tag>
 <tag group="07a1" element="xx93" vr="US" vm="1">Unknown</tag>
-<tag group="07a3" element="xx01" vr="LO" vm="1">Unknown</tag>
-<tag group="07a3" element="xx03" vr="CS" vm="1">Unknown</tag>
+<tag group="07a1" element="xx98" vr="CS" vm="1">Tamar Tf Afip</tag>
+<tag group="07a1" element="xxb7" vr="LO" vm="1">Tamar Report Plain Text Data Version</tag>
+<tag group="07a3" element="xx01" vr="LO" vm="1">Tamar Tamar Exe Software Version</tag>
+<tag group="07a3" element="xx03" vr="CS" vm="1">Tamar Study Has Sticky Note</tag>
 <tag group="07a3" element="xx05" vr="UN" vm="1">Unknown</tag>
-<tag group="07a3" element="xx34" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx13" vr="SH" vm="1">Tamar Patient Class</tag>
+<tag group="07a3" element="xx14" vr="ST" vm="1">Tamar Procedure Code</tag>
+<tag group="07a3" element="xx17" vr="SH" vm="1">Tamar Order Status</tag>
+<tag group="07a3" element="xx2a" vr="UL" vm="1">Tamar Doc Raw Data Length</tag>
+<tag group="07a3" element="xx2b" vr="ST" vm="1">Tamar Doc Extended Mime Type</tag>
+<tag group="07a3" element="xx2c" vr="CS" vm="1">Tamar User Request Dicomization</tag>
+<tag group="07a3" element="xx34" vr="SH" vm="1">Tamar Study Age</tag>
+<tag group="07a3" element="xx36" vr="ST" vm="1">Tamar Class Code</tag>
+<tag group="07a3" element="xx37" vr="ST" vm="1">Tamar Type Code</tag>
 <tag group="07a3" element="xx43" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx44" vr="CS" vm="1">Tamar Report Version Reason</tag>
+<tag group="07a3" element="xx45" vr="CS" vm="1">Tamar Series Type</tag>
+<tag group="07a3" element="xx46" vr="CS" vm="1">Tamar Report Content</tag>
+<tag group="07a3" element="xx47" vr="OB" vm="1-n">Tamar Rendered Report</tag>
+<tag group="07a3" element="xx4a" vr="LT" vm="1">Tamar Procedure Text</tag>
 <tag group="07a3" element="xx52" vr="UN" vm="1">Unknown</tag>
-<tag group="07a3" element="xx55" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx55" vr="SH" vm="1">Tamar Study Has Mammo Cad</tag>
+<tag group="07a3" element="xx5c" vr="ST" vm="1">Tamar Practice Settings Code</tag>
 <tag group="07a3" element="xx62" vr="UN" vm="1">Unknown</tag>
 <tag group="07a3" element="xx65" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx6a" vr="CS" vm="1">Tamar Back Merge Candidate</tag>
+<tag group="07a3" element="xx8c" vr="CS" vm="1">Tamar Report Is Pending Sign</tag>
+<tag group="07a3" element="xx8f" vr="CS" vm="1">Tamar Study Has Nondicom Data</tag>
+<tag group="07a3" element="xx95" vr="OB" vm="1-n">Tamar Doc Metadata</tag>
+<tag group="07a3" element="xx96" vr="OB" vm="1-n">Tamar Doc Raw Data</tag>
+<tag group="07a3" element="xx97" vr="LO" vm="1">Tamar Doc Mimytype</tag>
+<tag group="07a3" element="xx99" vr="CS" vm="1">Tamar Is Doc Type</tag>
+<tag group="07a3" element="xx9c" vr="CS" vm="1">Tamar Study Has Key Image</tag>
+<tag group="07a3" element="xxb9" vr="CS" vm="1">Tamar Key Series Indication</tag>
+<tag group="07a3" element="xxbb" vr="CS" vm="1">Tamar Study Has Key Series</tag>
+<tag group="07a3" element="xxe1" vr="CS" vm="1">Tamar Report Version Status</tag>
+<tag group="07a3" element="xxef" vr="CS" vm="1">Tamar Report Creation System</tag>
+<tag group="07a3" element="xxf2" vr="CS" vm="1">Tamar Study Report Creation System</tag>
+<tag group="07a5" element="xx10" vr="UL" vm="1">Tamar Assignment Rule Persistency</tag>
+<tag group="07a5" element="xx54" vr="DT" vm="1">Tamar Reports Update Date</tag>
+<tag group="07a5" element="xx56" vr="CS" vm="1">Tamar Referring Physicians Study Read</tag>
+<tag group="07a5" element="xx5b" vr="OB" vm="1-n">Tamar Report Rendered Pdf Data</tag>
+<tag group="07a5" element="xx69" vr="AE" vm="1">Tamar Original Storing Ae</tag>
+<tag group="07a5" element="xx72" vr="DT" vm="1">Tamar Study Insert Time</tag>
+<tag group="07a5" element="xxab" vr="LT" vm="1">Tamar Xds Filename</tag>
+<tag group="07a5" element="xxae" vr="IS" vm="1">Tamar Rejection Status</tag>
+<tag group="07a5" element="xxc8" vr="CS" vm="1">Tamar Study Has Dicom Data</tag>
+<tag group="07a5" element="xxdc" vr="UL" vm="1">Tamar Study Sla</tag>
+<tag group="07a5" element="xxdd" vr="FL" vm="1">Tamar Study Rvu</tag>
+<tag group="07a5" element="xxde" vr="LO" vm="1">Tamar Study Subspecialty Id</tag>
+<tag group="07a5" element="xxe8" vr="IS" vm="1">Tamar Assignment Rule Priority</tag>
 <tag group="7fdf" element="xxf0" vr="OB" vm="1">Unknown</tag>
 <tag group="7fdf" element="xxff" vr="SH" vm="1">Unknown</tag>
 </dictionary>
