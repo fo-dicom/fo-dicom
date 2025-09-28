@@ -4989,7 +4989,7 @@
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3257">
 <tag group="3257" element="xx02" vr="CS" vm="1">Plan Type</tag>
-<tag group="3257" element="xx02" vr="CS" vm="1">Reference Image Type</tag>
+<tag group="3257" element="xx10" vr="CS" vm="1">Reference Image Type</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3259">
 <tag group="3259" element="xx00" vr="SQ" vm="0-n">Additional Dose Value Sequence SQ</tag>
