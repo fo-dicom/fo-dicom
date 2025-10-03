@@ -12419,6 +12419,21 @@ namespace FellowOakDicom
         ///<summary>(3004,0074) VR=DS VM=1 DVH Mean Dose</summary>
         public readonly static DicomTag DVHMeanDose = new DicomTag(0x3004, 0x0074);
 
+        ///<summary>(3004,0080) VR=SQ VM=1 Dose Calculation Model Sequence</summary>
+        public readonly static DicomTag DoseCalculationModelSequence = new DicomTag(0x3004, 0x0080);
+
+        ///<summary>(3004,0081) VR=SQ VM=1 Dose Calculation Algorithm Sequence</summary>
+        public readonly static DicomTag DoseCalculationAlgorithmSequence = new DicomTag(0x3004, 0x0081);
+
+        ///<summary>(3004,0082) VR=CS VM=1 Commissioning Status</summary>
+        public readonly static DicomTag CommissioningStatus = new DicomTag(0x3004, 0x0082);
+
+        ///<summary>(3004,0083) VR=SQ VM=1 Dose Calculation Model Parameter Sequence</summary>
+        public readonly static DicomTag DoseCalculationModelParameterSequence = new DicomTag(0x3004, 0x0083);
+
+        ///<summary>(3004,0084) VR=CS VM=1 Dose Deposition Calculation Medium</summary>
+        public readonly static DicomTag DoseDepositionCalculationMedium = new DicomTag(0x3004, 0x0084);
+
         ///<summary>(3006,0002) VR=SH VM=1 Structure Set Label</summary>
         public readonly static DicomTag StructureSetLabel = new DicomTag(0x3006, 0x0002);
 
@@ -13990,6 +14005,12 @@ namespace FellowOakDicom
 
         ///<summary>(300A,039A) VR=IS VM=1 Number of Paintings</summary>
         public readonly static DicomTag NumberOfPaintings = new DicomTag(0x300A, 0x039A);
+
+        ///<summary>(300A,039B) VR=FL VM=1-n Scan Spot Gantry Angles</summary>
+        public readonly static DicomTag ScanSpotGantryAngles = new DicomTag(0x300A, 0x039B);
+
+        ///<summary>(300A,039C) VR=FL VM=1-n Scan Spot Patient Support Angles</summary>
+        public readonly static DicomTag ScanSpotPatientSupportAngles = new DicomTag(0x300A, 0x039C);
 
         ///<summary>(300A,03A0) VR=SQ VM=1 Ion Tolerance Table Sequence</summary>
         public readonly static DicomTag IonToleranceTableSequence = new DicomTag(0x300A, 0x03A0);
