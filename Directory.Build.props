@@ -6,9 +6,9 @@
         <Description>fo-dicom</Description>
         <LangVersion>8</LangVersion>
 
-        <AssemblyVersion>5.2.3</AssemblyVersion>
-        <FileVersion>5.2.3.0</FileVersion>
-        <InformationalVersion>5.2.3</InformationalVersion>
+        <AssemblyVersion>5.2.4</AssemblyVersion>
+        <FileVersion>5.2.4.0</FileVersion>
+        <InformationalVersion>5.2.4</InformationalVersion>
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
     </PropertyGroup>
