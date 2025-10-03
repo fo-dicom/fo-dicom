@@ -6,9 +6,11 @@ using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Reader;
 using FellowOakDicom.IO.Writer;
+using FellowOakDicom.Log.Metrics;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network.Client;
 using FellowOakDicom.Tools;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -78,6 +80,8 @@ namespace FellowOakDicom.Network
 
         private bool _canStillProcessPDataTF;
 
+        private readonly INetworkMetricsCollector _metricsCollector;
+
         #endregion
 
         #region CONSTRUCTORS
@@ -114,6 +118,9 @@ namespace FellowOakDicom.Network
             LoggerFactory = dependencies.LoggerFactory ?? throw new ArgumentNullException(nameof(dependencies.LoggerFactory));
             NetworkManager = dependencies.NetworkManager ?? throw new ArgumentNullException(nameof(dependencies.NetworkManager));
             TranscoderManager = dependencies.TranscoderManager ?? throw new ArgumentNullException(nameof(dependencies.TranscoderManager));
+
+            // tries to get an instance, that can be registered optionally.
+            _metricsCollector = dependencies.ServiceProvider.GetService<INetworkMetricsCollector>();
 
             Options = new DicomServiceOptions();
         }
@@ -439,9 +446,10 @@ namespace FellowOakDicom.Network
                     Logger.LogInformation("{logId} -> {pdu}", LogID, pdu);
                 }
 
+                uint written = 0;
                 try
                 {
-                    await pdu.WriteAsync(_writeStream, CancellationToken.None).ConfigureAwait(false);
+                    written = await pdu.WriteAsync(_writeStream, CancellationToken.None).ConfigureAwait(false);
                     await _writeStream.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (IOException e)
@@ -470,6 +478,7 @@ namespace FellowOakDicom.Network
                         _writing = false;
                     }
                 }
+                _metricsCollector?.DataSent(written);
             }
         }
 
@@ -549,6 +558,8 @@ namespace FellowOakDicom.Network
 
                     using var rawPduStream = new MemoryStream(rawPduBuffer.Bytes, 0, rawPduLength);
                     using var raw = new RawPDU(rawPduStream, _memoryProvider);
+
+                    _metricsCollector?.DataReceived(rawPduLength);
 
                     switch (raw.Type)
                     {
