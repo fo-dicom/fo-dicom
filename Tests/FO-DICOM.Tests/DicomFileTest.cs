@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -427,6 +428,51 @@ namespace FellowOakDicom.Tests
             var bytes1 = File.ReadAllBytes("saveasynctofile1");
             var bytes2 = File.ReadAllBytes("saveasynctofile2");
             Assert.Equal(bytes1, bytes2);
+        }
+
+        [Fact]
+        public void Clone_ShouldDoADeepClone()
+        {
+            // prepare:
+            var seedDicomDataset = new DicomDataset();
+            var procedureCodeItem = new DicomDataset
+            {
+                { DicomTag.CodeValue, "12345" },
+                { DicomTag.CodingSchemeDesignator, "SRT" },
+                { DicomTag.CodeMeaning, "CT Abdomen" }
+            };
+            // Add the item as a sequence
+            seedDicomDataset.Add(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage.UID);
+            seedDicomDataset.Add(DicomTag.StudyInstanceUID, "123");
+            seedDicomDataset.Add(DicomTag.SeriesInstanceUID, "123");
+            seedDicomDataset.Add(DicomTag.SOPInstanceUID, "123");
+            seedDicomDataset.Add(new DicomSequence(DicomTag.ProcedureCodeSequence, procedureCodeItem));
+            // wrap in DicomFile
+            var seedDicomFile = new DicomFile(seedDicomDataset);
+
+            // Act:
+            // clone seedDicomFile and update CodeValue
+            DicomFile cloneDicomFile = seedDicomFile.Clone();
+            cloneDicomFile.Dataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).AddOrUpdate(DicomTag.CodeValue, "UPDATE from DF");
+
+            // clone seedDataset and update CodeMeaning
+            DicomDataset cloneDicomDataset = seedDicomDataset.Clone();
+            cloneDicomDataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).AddOrUpdate(DicomTag.CodeMeaning, "UPDATE from DS");
+
+            // Verify:
+            // Expect unchanged content in seedDicomDataset and seedDicomFile
+            Assert.Equal("12345", seedDicomDataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeValue));
+            Assert.Equal("CT Abdomen", seedDicomDataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeMeaning));
+            Assert.Equal("12345", seedDicomFile.Dataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeValue));
+            Assert.Equal("CT Abdomen", seedDicomFile.Dataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeMeaning));
+
+            // expect changed CodeValue but unchanged CodeMeaning in cloneDicomFile
+            Assert.Equal("UPDATE from DF", cloneDicomFile.Dataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeValue));
+            Assert.Equal("CT Abdomen", cloneDicomFile.Dataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeMeaning));
+
+            // exptect chaned CodeMeaning but unchanged CodeValue in cloneDicomDataset
+            Assert.Equal("12345", cloneDicomDataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeValue));
+            Assert.Equal("UPDATE from DS", cloneDicomDataset.GetSequence(DicomTag.ProcedureCodeSequence).ElementAt(0).GetString(DicomTag.CodeMeaning));
         }
 
         [Fact]

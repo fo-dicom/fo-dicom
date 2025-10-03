@@ -3,7 +3,7 @@
 <!-- Copyright (c) 2012-2025 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2025c">
+<dictionary version="2025d">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -4141,6 +4141,11 @@
     <tag group="3004" element="0070" keyword="DVHMinimumDose" vr="DS" vm="1">DVH Minimum Dose</tag>
     <tag group="3004" element="0072" keyword="DVHMaximumDose" vr="DS" vm="1">DVH Maximum Dose</tag>
     <tag group="3004" element="0074" keyword="DVHMeanDose" vr="DS" vm="1">DVH Mean Dose</tag>
+    <tag group="3004" element="0080" keyword="DoseCalculationModelSequence" vr="SQ" vm="1">Dose Calculation Model Sequence</tag>
+    <tag group="3004" element="0081" keyword="DoseCalculationAlgorithmSequence" vr="SQ" vm="1">Dose Calculation Algorithm Sequence</tag>
+    <tag group="3004" element="0082" keyword="CommissioningStatus" vr="CS" vm="1">Commissioning Status</tag>
+    <tag group="3004" element="0083" keyword="DoseCalculationModelParameterSequence" vr="SQ" vm="1">Dose Calculation Model Parameter Sequence</tag>
+    <tag group="3004" element="0084" keyword="DoseDepositionCalculationMedium" vr="CS" vm="1">Dose Deposition Calculation Medium</tag>
     <tag group="3006" element="0002" keyword="StructureSetLabel" vr="SH" vm="1">Structure Set Label</tag>
     <tag group="3006" element="0004" keyword="StructureSetName" vr="LO" vm="1">Structure Set Name</tag>
     <tag group="3006" element="0006" keyword="StructureSetDescription" vr="ST" vm="1">Structure Set Description</tag>
@@ -4665,6 +4670,8 @@
     <tag group="300A" element="0398" keyword="ScanningSpotSize" vr="FL" vm="2">Scanning Spot Size</tag>
     <tag group="300A" element="0399" keyword="ScanSpotSizesDelivered" vr="FL" vm="2-2n">Scan Spot Sizes Delivered</tag>
     <tag group="300A" element="039A" keyword="NumberOfPaintings" vr="IS" vm="1">Number of Paintings</tag>
+    <tag group="300A" element="039B" keyword="ScanSpotGantryAngles" vr="FL" vm="1-n">Scan Spot Gantry Angles</tag>
+    <tag group="300A" element="039C" keyword="ScanSpotPatientSupportAngles" vr="FL" vm="1-n">Scan Spot Patient Support Angles</tag>
     <tag group="300A" element="03A0" keyword="IonToleranceTableSequence" vr="SQ" vm="1">Ion Tolerance Table Sequence</tag>
     <tag group="300A" element="03A2" keyword="IonBeamSequence" vr="SQ" vm="1">Ion Beam Sequence</tag>
     <tag group="300A" element="03A4" keyword="IonBeamLimitingDeviceSequence" vr="SQ" vm="1">Ion Beam Limiting Device Sequence</tag>
@@ -7238,5 +7245,8 @@
     <uid uid="1.2.840.10008.6.1.1543" keyword="EndothelialCellCountMeasurements4290" type="Context Group Name">Endothelial Cell Count Measurements (4290)</uid>
     <uid uid="1.2.840.10008.6.1.1544" keyword="OphthalmicImageROIMeasurements4291" type="Context Group Name">Ophthalmic Image ROI Measurements (4291)</uid>
     <uid uid="1.2.840.10008.6.1.1545" keyword="RTPlanApprovalAssertion9584" type="Context Group Name">RT Plan Approval Assertion (9584)</uid>
-    <uid uid="1.2.840.10008.6.1.1546" keyword="EstimatedDeliveryDateMethods12026" type="Context Group Name">Estimated Delivery Date Methods (12026)</uid>
+    <uid uid="1.2.840.10008.6.1.1546" keyword="EstimatedDeliveryDateMethod12026" type="Context Group Name">Estimated Delivery Date Method (12026)</uid>
+    <uid uid="1.2.840.10008.6.1.1547" keyword="RTDoseCalculationAlgorithmFamily9585" type="Context Group Name">RT Dose Calculation Algorithm Family (9585)</uid>
+    <uid uid="1.2.840.10008.6.1.1548" keyword="DoseIndexForDoseCalibration10012" type="Context Group Name">Dose Index for Dose Calibration (10012)</uid>
+    <uid uid="1.2.840.10008.6.1.1549" keyword="UltrasoundAttenuationImagingSite12036" type="Context Group Name">Ultrasound Attenuation Imaging Site (12036)</uid>
 </dictionary>

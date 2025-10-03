@@ -1917,7 +1917,10 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.EndothelialCellCountMeasurements4290.UID, DicomUID.EndothelialCellCountMeasurements4290);
             _uids.Add(DicomUID.OphthalmicImageROIMeasurements4291.UID, DicomUID.OphthalmicImageROIMeasurements4291);
             _uids.Add(DicomUID.RTPlanApprovalAssertion9584.UID, DicomUID.RTPlanApprovalAssertion9584);
-            _uids.Add(DicomUID.EstimatedDeliveryDateMethods12026.UID, DicomUID.EstimatedDeliveryDateMethods12026);
+            _uids.Add(DicomUID.EstimatedDeliveryDateMethod12026.UID, DicomUID.EstimatedDeliveryDateMethod12026);
+            _uids.Add(DicomUID.RTDoseCalculationAlgorithmFamily9585.UID, DicomUID.RTDoseCalculationAlgorithmFamily9585);
+            _uids.Add(DicomUID.DoseIndexForDoseCalibration10012.UID, DicomUID.DoseIndexForDoseCalibration10012);
+            _uids.Add(DicomUID.UltrasoundAttenuationImagingSite12036.UID, DicomUID.UltrasoundAttenuationImagingSite12036);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -7626,8 +7629,17 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: RT Plan Approval Assertion (9584)</summary>
         public static readonly DicomUID RTPlanApprovalAssertion9584 = new DicomUID("1.2.840.10008.6.1.1545", "RT Plan Approval Assertion (9584)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Estimated Delivery Date Methods (12026)</summary>
-        public static readonly DicomUID EstimatedDeliveryDateMethods12026 = new DicomUID("1.2.840.10008.6.1.1546", "Estimated Delivery Date Methods (12026)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Estimated Delivery Date Method (12026)</summary>
+        public static readonly DicomUID EstimatedDeliveryDateMethod12026 = new DicomUID("1.2.840.10008.6.1.1546", "Estimated Delivery Date Method (12026)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: RT Dose Calculation Algorithm Family (9585)</summary>
+        public static readonly DicomUID RTDoseCalculationAlgorithmFamily9585 = new DicomUID("1.2.840.10008.6.1.1547", "RT Dose Calculation Algorithm Family (9585)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Dose Index for Dose Calibration (10012)</summary>
+        public static readonly DicomUID DoseIndexForDoseCalibration10012 = new DicomUID("1.2.840.10008.6.1.1548", "Dose Index for Dose Calibration (10012)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ultrasound Attenuation Imaging Site (12036)</summary>
+        public static readonly DicomUID UltrasoundAttenuationImagingSite12036 = new DicomUID("1.2.840.10008.6.1.1549", "Ultrasound Attenuation Imaging Site (12036)", DicomUidType.ContextGroupName, false);
 
     }
 }

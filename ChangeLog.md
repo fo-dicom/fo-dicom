@@ -1,5 +1,10 @@
-### 5.2.4 (TBD)
+### 5.2.5 (TBD)
 - Add support for constructing ImageData/VolumeData from multi-frame datasets (#2015)
+
+### 5.2.4 (2025-10-03)
+- Fix issue where DicomFile.Clone did not do a deep-clone as expected (#2025)
+- Fix referencing the wrong System.Text.Encoding.CodePages package (#2021)
+- update to DICOM standard 2025d
 
 ### 5.2.3 (2025-09-18)
 - Add Milliseconds to result in DicomDataset.GetDateTime (#1967)

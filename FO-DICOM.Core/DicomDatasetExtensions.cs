@@ -16,7 +16,7 @@ namespace FellowOakDicom
     {
 
         /// <summary>
-        /// Clone a dataset.
+        /// Deep-Clone a dataset.
         /// </summary>
         /// <param name="dataset">Dataset to be cloned.</param>
         /// <returns>Clone of dataset.</returns>

@@ -118,7 +118,7 @@ namespace FellowOakDicom
         /// <summary>
         /// Gets the DICOM dataset of the file.
         /// </summary>
-        public DicomDataset Dataset { get; protected set; }
+        public DicomDataset Dataset { get; internal set; }
 
         /// <summary>
         /// Gets whether the parsing of the file ended prematurely.

@@ -38,10 +38,10 @@ jobs:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Setup .NET 9.0
       if: ${{ startsWith(matrix.os.name, 'Ubuntu') }}
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '9.0.x'
     - name: Test FO-DICOM.Tests
@@ -70,7 +70,7 @@ jobs:
   benchmarks:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net8.0
     - name: run benchmarks
