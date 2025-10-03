@@ -1,5 +1,5 @@
 ### 5.2.4 (TBD)
-
+- Fix issue where DicomFile.Clone did not do a deep-clone as expected (#2025)
 
 ### 5.2.3 (2025-09-18)
 - Add Milliseconds to result in DicomDataset.GetDateTime (#1967)
