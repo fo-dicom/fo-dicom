@@ -484,6 +484,8 @@ namespace FellowOakDicom.Network
 
         private async Task ListenAndProcessPDUAsync()
         {
+            _metricsCollector?.ConnectionEstablished();
+
             while (IsConnected)
             {
                 try
@@ -1570,6 +1572,7 @@ namespace FellowOakDicom.Network
             }
 
             Logger.LogInformation("Connection closed");
+            _metricsCollector?.ConnectionClosed();
 
             if (exception != null)
             {
