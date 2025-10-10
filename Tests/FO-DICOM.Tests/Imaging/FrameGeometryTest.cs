@@ -4,6 +4,7 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Mathematics;
+using System.Linq;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
@@ -234,6 +235,30 @@ namespace FellowOakDicom.Tests.Imaging
                 var distance = point1.Distance(point2);
                 Assert.Equal(expectedMeassure, distance, 4);
             }
+        }
+
+        [Theory]
+        [InlineData("1,2", 0x0018, 0x1164)] // DicomTag.ImagerPixelSpacing
+        [InlineData("", 0x0018, 0x1164)]    // DicomTag.ImagerPixelSpacing
+        [InlineData("1,2", 0x0028, 0x0030)] // DicomTag.PixelSpacing
+        [InlineData("", 0x0028, 0x0030)]    // DicomTag.PixelSpacing
+        [InlineData("1,2", 0x0018, 0x2010)] // DicomTag.NominalScannedPixelSpacing
+        [InlineData("", 0x0018, 0x2010)]    // DicomTag.NominalScannedPixelSpacing
+        public void FrameGeometry_InstantiatesWithVariousPixelSpacingLengths(string values, ushort group, ushort element)
+        {
+            var pixelSpacingValues = values == "" ? System.Array.Empty<decimal>() : values.Split(',').Select(decimal.Parse).ToArray();
+
+            var dataset = new DicomDataset
+            {
+                { DicomTag.ImagePositionPatient, new decimal[] { 0.0m, 0.0m, 0.0m } },
+                { DicomTag.ImageOrientationPatient, new decimal[] { 1.0m, 0.0m, 0.0m, 0.0m, 1.0m, 0.0m } },
+                { DicomTag.Rows, (ushort)500 },
+                { DicomTag.Columns, (ushort)500 },
+                { new DicomTag(group, element), pixelSpacingValues }
+            };
+
+            var exception = Record.Exception(() => new FrameGeometry(dataset));
+            Assert.Null(exception);
         }
 
         [Fact]
