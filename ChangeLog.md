@@ -1,5 +1,5 @@
 ### 5.2.5 (TBD)
-
+- Fix issue where creating an instance of ImageData when Pixel Spacing DICOM tags are present but empty causes an exception (#2043)
 
 ### 5.2.4 (2025-10-03)
 - Fix issue where DicomFile.Clone did not do a deep-clone as expected (#2025)
