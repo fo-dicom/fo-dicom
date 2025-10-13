@@ -237,6 +237,7 @@ namespace FellowOakDicom.Tests.Imaging
             }
         }
 
+
         [Theory]
         [InlineData("1,2", 0x0018, 0x1164)] // DicomTag.ImagerPixelSpacing
         [InlineData("", 0x0018, 0x1164)]    // DicomTag.ImagerPixelSpacing
@@ -260,6 +261,38 @@ namespace FellowOakDicom.Tests.Imaging
             var exception = Record.Exception(() => new FrameGeometry(dataset));
             Assert.Null(exception);
         }
+
+
+        [Theory]
+        [InlineData("1,2", 0x0028, 0x0030)] // DicomTag.PixelSpacing in functional groups
+        [InlineData("", 0x0028, 0x0030)]    // DicomTag.PixelSpacing in functional groups
+        [InlineData("1,2", 0x0018, 0x1164)] // DicomTag.ImagerPixelSpacing in functional groups
+        [InlineData("", 0x0018, 0x1164)]    // DicomTag.ImagerPixelSpacing in functional groups
+        public void FrameGeometry_InstantiatesWithFunctionalGroupPixelSpacing(string values, ushort group, ushort element)
+        {
+            var pixelSpacingValues = values == "" ? System.Array.Empty<double>() : values.Split(',').Select(double.Parse).ToArray();
+
+            var pixelMeasuresSequenceItem = new DicomDataset { ValidateItems = false };
+            pixelMeasuresSequenceItem.Add(new DicomTag(group, element), pixelSpacingValues);
+
+            var pixelMeasuresSequence = new DicomSequence(DicomTag.PixelMeasuresSequence, pixelMeasuresSequenceItem);
+            var sharedFunctionalGroup = new DicomDataset { ValidateItems = false };
+            sharedFunctionalGroup.Add(pixelMeasuresSequence);
+            var sharedFunctionalGroupsSequence = new DicomSequence(DicomTag.SharedFunctionalGroupsSequence, sharedFunctionalGroup);
+
+            var dataset = new DicomDataset
+            {
+                { DicomTag.ImagePositionPatient, new decimal[] { 0.0m, 0.0m, 0.0m } },
+                { DicomTag.ImageOrientationPatient, new decimal[] { 1.0m, 0.0m, 0.0m, 0.0m, 1.0m, 0.0m } },
+                { DicomTag.Rows, (ushort)500 },
+                { DicomTag.Columns, (ushort)500 },
+                sharedFunctionalGroupsSequence
+            };
+
+            var exception = Record.Exception(() => new FrameGeometry(dataset));
+            Assert.Null(exception);
+        }
+
 
         [Fact]
         public void ThrowWhenTransformingWithoutGeometryData()
