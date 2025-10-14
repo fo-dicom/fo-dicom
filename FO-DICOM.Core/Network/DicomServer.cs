@@ -398,129 +398,149 @@ namespace FellowOakDicom.Network
                     } 
                     _cancellationToken.ThrowIfCancellationRequested();
 
-                    // Then, we wait until at least one service completes
-                    // We must take into account that more services can start while we wait here
-                    while (true)
-                    {
-                        List<RunningDicomService> runningDicomServices;
-
-                        while (_servicesChannel.Reader.TryRead(out _))
-                        {
-                            // Discard queued new services, we're only interested in new arrivals after we start waiting                            
-                        }
-                        lock (_services)
-                        {
-                            runningDicomServices = _services.ToList();
-                        }
-                        var numberOfDicomServices = runningDicomServices.Count;
-                        Logger.LogDebug("There are {NumberOfDicomServices} running DICOM services", numberOfDicomServices);
-                        if (numberOfDicomServices == 0)
-                        {
-                            // No more services at all? Exit early
-                            break;
-                        }
-
-                        using (var readerCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationToken))
-                        {
-                            var anotherServiceHasStarted = _servicesChannel.Reader.ReadAsync(readerCts.Token).AsTask();
-                            
-                            var tasks = new List<Task>(numberOfDicomServices + 1);
-                            tasks.Add(anotherServiceHasStarted);
-                            tasks.AddRange(runningDicomServices.Select(s => s.Task));
-                            var winner = await Task.WhenAny(tasks).ConfigureAwait(false);
-                            
-                            readerCts.Cancel();
-                            
-                            if (winner == anotherServiceHasStarted)
-                            {
-                                try
-                                {
-                                    await anotherServiceHasStarted;
-                                }
-                                catch (OperationCanceledException)
-                                {
-                                    // If the server is disposed while we were waiting, deal with that gracefully
-                                    break;
-                                }
-                                catch (ChannelClosedException)
-                                {
-                                    // If the server is disposed while we were waiting, deal with that gracefully
-                                    break;
-                                }
-
-                                // If another service started, we must restart the Task.WhenAny with the new set of running service tasks
-                                Logger.LogDebug("Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
-                            }
-                            else
-                            {
-                                Logger.LogDebug("One or more running DICOM services have completed");
-                                break;
-                            }
-                        }
-                    }
-
                     int numberOfRemainingServices;
-                    var servicesToDispose = new List<RunningDicomService>();
                     lock (_services)
                     {
-                        for (var i = _services.Count - 1; i >= 0; i--)
+                        numberOfRemainingServices = _services.Count;
+                    }
+
+                    while (numberOfRemainingServices > 0)
+                    {
+                        await Task.Delay(500, _cancellationToken); // Short delay to avoid busy waiting on a lot of DICOM Clients being stopped at the same time
+
+                        // Then, we wait until at least one service completes
+                        // We must take into account that more services can start while we wait here
+                        while (true)
                         {
-                            var service = _services[i];
-                            if (service.Task.IsCompleted)
+                            List<RunningDicomService> runningDicomServices;
+
+                            while (_servicesChannel.Reader.TryRead(out _))
                             {
-                                _services.RemoveAt(i);
-                                servicesToDispose.Add(service);
+                                // Discard queued new services, we're only interested in new arrivals after we start waiting                            
+                            }
+
+                            lock (_services)
+                            {
+                                runningDicomServices = _services.ToList();
+                            }
+
+                            var numberOfDicomServices = runningDicomServices.Count;
+                            Logger.LogDebug("There are {NumberOfDicomServices} running DICOM services",
+                                numberOfDicomServices);
+                            if (numberOfDicomServices == 0)
+                            {
+                                // No more services at all? Exit early
+                                break;
+                            }
+
+                            using (var readerCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationToken))
+                            {
+                                var anotherServiceHasStarted =
+                                    _servicesChannel.Reader.ReadAsync(readerCts.Token).AsTask();
+
+                                var tasks = new List<Task>(numberOfDicomServices + 1);
+                                tasks.Add(anotherServiceHasStarted);
+                                tasks.AddRange(runningDicomServices.Select(s => s.Task));
+                                var winner = await Task.WhenAny(tasks).ConfigureAwait(false);
+
+                                readerCts.Cancel();
+
+                                if (winner == anotherServiceHasStarted)
+                                {
+                                    try
+                                    {
+                                        await anotherServiceHasStarted;
+                                    }
+                                    catch (OperationCanceledException)
+                                    {
+                                        // If the server is disposed while we were waiting, deal with that gracefully
+                                        break;
+                                    }
+                                    catch (ChannelClosedException)
+                                    {
+                                        // If the server is disposed while we were waiting, deal with that gracefully
+                                        break;
+                                    }
+
+                                    // If another service started, we must restart the Task.WhenAny with the new set of running service tasks
+                                    Logger.LogDebug(
+                                        "Another DICOM service has started while the cleanup was waiting for one or more DICOM services to complete");
+                                }
+                                else
+                                {
+                                    Logger.LogDebug("One or more running DICOM services have completed");
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        var servicesToDispose = new List<RunningDicomService>();
+                        lock (_services)
+                        {
+                            for (var i = _services.Count - 1; i >= 0; i--)
+                            {
+                                var service = _services[i];
+                                if (service.Task.IsCompleted)
+                                {
+                                    _services.RemoveAt(i);
+                                    servicesToDispose.Add(service);
+                                }
+                            }
+
+                            numberOfRemainingServices = _services.Count;
+                        }
+
+                        var numberOfCompletedServices = servicesToDispose.Count;
+                        foreach (var service in servicesToDispose)
+                        {
+                            try
+                            {
+                                service.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.LogWarning(
+                                    "An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
                             }
                         }
 
-                        numberOfRemainingServices = _services.Count;
-                    }
-                    var numberOfCompletedServices = servicesToDispose.Count;
-                    foreach (var service in servicesToDispose)
-                    {
-                        try
+                        // Avoid object disposed exception if we can
+                        if (!_cancellationToken.IsCancellationRequested)
                         {
-                            service.Dispose();
+                            _maxClientsSemaphore?.Release(numberOfCompletedServices);
                         }
-                        catch (Exception e)
+
+                        Logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services",
+                            numberOfCompletedServices);
+                        if (numberOfRemainingServices > 0)
                         {
-                            Logger.LogWarning("An error occurred while trying to dispose a completed DICOM service: {@Error}", e);
-                        }
-                    }
-
-                    // Avoid object disposed exception if we can
-                    if (!_cancellationToken.IsCancellationRequested)
-                    {
-                        _maxClientsSemaphore?.Release(numberOfCompletedServices);
-                    }
-
-                    Logger.LogDebug("Cleaned up {NumberOfCompletedServices} completed DICOM services", numberOfCompletedServices);
-                    if (numberOfRemainingServices > 0)
-                    {
-                        Logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now", numberOfRemainingServices);
-                    }
-                    else
-                    {
-                        Logger.LogDebug("There are no clients connected now");
-                    }
-
-                    if (maxClientsAllowed > 0)
-                    {
-                        if (numberOfRemainingServices == maxClientsAllowed)
-                        {
-                            Logger.LogDebug("Cannot accept more incoming client connections until one or more clients disconnect");
+                            Logger.LogDebug("There are still {NumberOfRemainingServices} clients connected now",
+                                numberOfRemainingServices);
                         }
                         else
                         {
-                            var numberOfExtraClientsAllowed = maxClientsAllowed - numberOfRemainingServices;
-                            Logger.LogDebug(
-                                "{NumberOfExtraServicesAllowed} more incoming client connections are allowed",
-                                numberOfExtraClientsAllowed);
+                            Logger.LogDebug("There are no clients connected now");
                         }
-                    }
-                    else
-                    {
-                        Logger.LogDebug("Unlimited more incoming client connections are allowed");
+
+                        if (maxClientsAllowed > 0)
+                        {
+                            if (numberOfRemainingServices == maxClientsAllowed)
+                            {
+                                Logger.LogDebug(
+                                    "Cannot accept more incoming client connections until one or more clients disconnect");
+                            }
+                            else
+                            {
+                                var numberOfExtraClientsAllowed = maxClientsAllowed - numberOfRemainingServices;
+                                Logger.LogDebug(
+                                    "{NumberOfExtraServicesAllowed} more incoming client connections are allowed",
+                                    numberOfExtraClientsAllowed);
+                            }
+                        }
+                        else
+                        {
+                            Logger.LogDebug("Unlimited more incoming client connections are allowed");
+                        }
                     }
                 }
                 catch (ChannelClosedException)
