@@ -1,4 +1,5 @@
 ### 5.2.5 (TBD)
+- Fix issue where DicomServer can keep last finished DICOM Clients in memory (#2046)
 
 
 ### 5.2.4 (2025-10-03)
