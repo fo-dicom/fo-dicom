@@ -58,7 +58,7 @@ The new interface `IServiceProviderHost` manages, if there is an internal Servic
 * There are now only asynchronous server provider interfaces. All synchronous methods have been replaced by asynchronous.
 
 * Instances of `DicomClient` and `DicomServer` are not created directly, but via a `DicomClientFactory` or a `DicomServerFactory`.
-  If you are in a "DI-Environment" like Asp.Net, then inject a `IDicomClientFactory` instance and use this to create a DicomClient. Otherwise call `DicomClientFactory.CreateDicomClient(...)`. This is a wrapper around accessing the internal DI container, getting the registered IDicomClientFactory and then calling this. So this is more overhead.
+  If you are in a "DI-Environment" like Asp.Net, then inject a `IDicomClientFactory` instance and use this to create a DicomClient. Otherwise call `DicomClientFactory.Create(...)`. This is a wrapper around accessing the internal DI container, getting the registered IDicomClientFactory and then calling this. So this is more overhead.
 
 * DicomServiceOptions cannot be passed as parameter to DicomServer constructor/factory any more, but the values of options have to be set to the created instance of DicomServer.
 
