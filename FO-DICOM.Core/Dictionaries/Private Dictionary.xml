@@ -436,30 +436,86 @@
 <tag group="0601" element="xx70" vr="DS" vm="1">Batch Number</tag>
 <tag group="0601" element="xx71" vr="DS" vm="1">Batch Size</tag>
 <tag group="0601" element="xx72" vr="DS" vm="1">Batch Slice Number</tag>
+<tag group="07a1" element="xx02" vr="UL" vm="1">Tamar Number Of Images In Series</tag>
 <tag group="07a1" element="xx0a" vr="OB" vm="1">Unknown</tag>
 <tag group="07a1" element="xx10" vr="LO" vm="1">Unknown</tag>
 <tag group="07a1" element="xx11" vr="CS" vm="1">Unknown</tag>
 <tag group="07a1" element="xx13" vr="UL" vm="1">Unknown</tag>
-<tag group="07a1" element="xx2a" vr="UN" vm="1">Unknown</tag>
+<tag group="07a1" element="xx2a" vr="CS" vm="1">Tamar Study Status</tag>
 <tag group="07a1" element="xx36" vr="UN" vm="1">Unknown</tag>
 <tag group="07a1" element="xx3d" vr="US" vm="1">Unknown</tag>
+<tag group="07a1" element="xx40" vr="CS" vm="1">Tamar Study Body Part</tag>
+<tag group="07a1" element="xx42" vr="SH" vm="1">Tamar Assign To Doctor</tag>
+<tag group="07a1" element="xx43" vr="IS" vm="1">Tamar Study Priority</tag>
 <tag group="07a1" element="xx47" vr="UN" vm="1">Unknown</tag>
-<tag group="07a1" element="xx50" vr="US" vm="1">Unknown</tag>
+<tag group="07a1" element="xx50" vr="US" vm="1">Tamar Site Id</tag>
+<tag group="07a1" element="xx58" vr="CS" vm="1">Tamar Study Published</tag>
+<tag group="07a1" element="xx5d" vr="DT" vm="1">Tamar Study Creation Date</tag>
+<tag group="07a1" element="xx5f" vr="CS" vm="1">Tamar Study Has Bookmark</tag>
 <tag group="07a1" element="xx75" vr="UN" vm="1">Unknown</tag>
 <tag group="07a1" element="xx82" vr="UN" vm="1">Unknown</tag>
 <tag group="07a1" element="xx85" vr="UL" vm="1">Unknown</tag>
+<tag group="07a1" element="xx88" vr="CS" vm="1">Tamar Tf Teaching Indication</tag>
 <tag group="07a1" element="xx93" vr="US" vm="1">Unknown</tag>
-<tag group="07a3" element="xx01" vr="LO" vm="1">Unknown</tag>
-<tag group="07a3" element="xx03" vr="CS" vm="1">Unknown</tag>
+<tag group="07a1" element="xx98" vr="CS" vm="1">Tamar Tf Afip</tag>
+<tag group="07a1" element="xxb7" vr="LO" vm="1">Tamar Report Plain Text Data Version</tag>
+<tag group="07a3" element="xx01" vr="LO" vm="1">Tamar Tamar Exe Software Version</tag>
+<tag group="07a3" element="xx03" vr="CS" vm="1">Tamar Study Has Sticky Note</tag>
 <tag group="07a3" element="xx05" vr="UN" vm="1">Unknown</tag>
-<tag group="07a3" element="xx34" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx13" vr="SH" vm="1">Tamar Patient Class</tag>
+<tag group="07a3" element="xx14" vr="ST" vm="1">Tamar Procedure Code</tag>
+<tag group="07a3" element="xx17" vr="SH" vm="1">Tamar Order Status</tag>
+<tag group="07a3" element="xx2a" vr="UL" vm="1">Tamar Doc Raw Data Length</tag>
+<tag group="07a3" element="xx2b" vr="ST" vm="1">Tamar Doc Extended Mime Type</tag>
+<tag group="07a3" element="xx2c" vr="CS" vm="1">Tamar User Request Dicomization</tag>
+<tag group="07a3" element="xx34" vr="SH" vm="1">Tamar Study Age</tag>
+<tag group="07a3" element="xx36" vr="ST" vm="1">Tamar Class Code</tag>
+<tag group="07a3" element="xx37" vr="ST" vm="1">Tamar Type Code</tag>
 <tag group="07a3" element="xx43" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx44" vr="CS" vm="1">Tamar Report Version Reason</tag>
+<tag group="07a3" element="xx45" vr="CS" vm="1">Tamar Series Type</tag>
+<tag group="07a3" element="xx46" vr="CS" vm="1">Tamar Report Content</tag>
+<tag group="07a3" element="xx47" vr="OB" vm="1-n">Tamar Rendered Report</tag>
+<tag group="07a3" element="xx4a" vr="LT" vm="1">Tamar Procedure Text</tag>
 <tag group="07a3" element="xx52" vr="UN" vm="1">Unknown</tag>
-<tag group="07a3" element="xx55" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx55" vr="SH" vm="1">Tamar Study Has Mammo Cad</tag>
+<tag group="07a3" element="xx5c" vr="ST" vm="1">Tamar Practice Settings Code</tag>
 <tag group="07a3" element="xx62" vr="UN" vm="1">Unknown</tag>
 <tag group="07a3" element="xx65" vr="UN" vm="1">Unknown</tag>
+<tag group="07a3" element="xx6a" vr="CS" vm="1">Tamar Back Merge Candidate</tag>
+<tag group="07a3" element="xx8c" vr="CS" vm="1">Tamar Report Is Pending Sign</tag>
+<tag group="07a3" element="xx8f" vr="CS" vm="1">Tamar Study Has Nondicom Data</tag>
+<tag group="07a3" element="xx95" vr="OB" vm="1-n">Tamar Doc Metadata</tag>
+<tag group="07a3" element="xx96" vr="OB" vm="1-n">Tamar Doc Raw Data</tag>
+<tag group="07a3" element="xx97" vr="LO" vm="1">Tamar Doc Mimytype</tag>
+<tag group="07a3" element="xx99" vr="CS" vm="1">Tamar Is Doc Type</tag>
+<tag group="07a3" element="xx9c" vr="CS" vm="1">Tamar Study Has Key Image</tag>
+<tag group="07a3" element="xxb9" vr="CS" vm="1">Tamar Key Series Indication</tag>
+<tag group="07a3" element="xxbb" vr="CS" vm="1">Tamar Study Has Key Series</tag>
+<tag group="07a3" element="xxe1" vr="CS" vm="1">Tamar Report Version Status</tag>
+<tag group="07a3" element="xxef" vr="CS" vm="1">Tamar Report Creation System</tag>
+<tag group="07a3" element="xxf2" vr="CS" vm="1">Tamar Study Report Creation System</tag>
+<tag group="07a5" element="xx10" vr="UL" vm="1">Tamar Assignment Rule Persistency</tag>
+<tag group="07a5" element="xx54" vr="DT" vm="1">Tamar Reports Update Date</tag>
+<tag group="07a5" element="xx56" vr="CS" vm="1">Tamar Referring Physicians Study Read</tag>
+<tag group="07a5" element="xx5b" vr="OB" vm="1-n">Tamar Report Rendered Pdf Data</tag>
+<tag group="07a5" element="xx69" vr="AE" vm="1">Tamar Original Storing Ae</tag>
+<tag group="07a5" element="xx72" vr="DT" vm="1">Tamar Study Insert Time</tag>
+<tag group="07a5" element="xxab" vr="LT" vm="1">Tamar Xds Filename</tag>
+<tag group="07a5" element="xxae" vr="IS" vm="1">Tamar Rejection Status</tag>
+<tag group="07a5" element="xxc8" vr="CS" vm="1">Tamar Study Has Dicom Data</tag>
+<tag group="07a5" element="xxdc" vr="UL" vm="1">Tamar Study Sla</tag>
+<tag group="07a5" element="xxdd" vr="FL" vm="1">Tamar Study Rvu</tag>
+<tag group="07a5" element="xxde" vr="LO" vm="1">Tamar Study Subspecialty Id</tag>
+<tag group="07a5" element="xxe8" vr="IS" vm="1">Tamar Assignment Rule Priority</tag>
 <tag group="7fdf" element="xxf0" vr="OB" vm="1">Unknown</tag>
 <tag group="7fdf" element="xxff" vr="SH" vm="1">Unknown</tag>
+</dictionary>
+<dictionary creator="EVuPrivateInfo">
+<tag group="7171" element="xx2B" vr="LT" vm="2">Private referenced proprietary image (SOP class and instance UID)</tag>
+</dictionary>
+<dictionary creator="EVuPrivateInBinary">
+<tag group="9191" element="xxE1" vr="LT" vm="2">Private raw data for ExactVu proprietary data</tag>
 </dictionary>
 <dictionary creator="FDMS 1.0">
 <tag group="0009" element="xx04" vr="SH" vm="1">Image Control Unit</tag>
@@ -4897,9 +4953,21 @@
 <tag group="300B" element="xx98" vr="FL" vm="2">Line Scanning Spot Size</tag>
 <tag group="300B" element="xx9A" vr="IS" vm="1">Number of Line Scan Spot Paintings</tag>
 </dictionary>
+<dictionary creator="Varian Medical Systems VISION 3241">
+<tag group="3241" element="xx00" vr="LO" vm="1">Internal Image Id</tag>
+<tag group="3241" element="xx02" vr="IS" vm="1">Internal Pixel Offset</tag>
+<tag group="3241" element="xx03" vr="US" vm="1">Not Calibrated</tag>
+<tag group="3241" element="xx04" vr="DS" vm="1">Image Orientation (Patient)</tag>
+<tag group="3241" element="xx05" vr="DS" vm="1">Image Position (Patient)</tag>
+<tag group="3241" element="xx06" vr="DS" vm="1">Pixel Spacing</tag>
+</dictionary>
 <dictionary creator="Varian Medical Systems VISION 3243">
-<tag group="3243" element="xx09" vr="LO" vm="1">Beam Secondary Name</tag>
+<tag group="3243" element="xx09" vr="SH" vm="1">Beam Secondary Name</tag>
 <tag group="3243" element="xx28" vr="IS" vm="1">Related Referenced Beam Number</tag>
+<tag group="3243" element="xx30" vr="LO" vm="1-n">Imaging Procedure Label</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3247">
+<tag group="3247" element="xx00" vr="SH" vm="1">Session Termination Status</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3249">
 <tag group="3249" element="xx00" vr="DS" vm="1">Maximum Treatment Time</tag>
@@ -4915,9 +4983,13 @@
 <tag group="3251" element="xx00" vr="LO" vm="1">Treatment Machine Note</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3253">
-<tag group="3253" element="xx00" vr="OB" vm="1">Extended Interface Data</tag>
+<tag group="3253" element="xx00" vr="LT" vm="1">Extended Interface Data</tag>
 <tag group="3253" element="xx01" vr="IS" vm="1">Extended Interface Length</tag>
-<tag group="3253" element="xx02" vr="LO" vm="1">Extended Interface Format</tag>
+<tag group="3253" element="xx02" vr="CS" vm="1">Extended Interface Format</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3257">
+<tag group="3257" element="xx02" vr="CS" vm="1">Plan Type</tag>
+<tag group="3257" element="xx10" vr="CS" vm="1">Reference Image Type</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3259">
 <tag group="3259" element="xx00" vr="SQ" vm="0-n">Additional Dose Value Sequence SQ</tag>
@@ -4926,15 +4998,19 @@
 <tag group="3259" element="xx06" vr="DS" vm="1">Life Time Total Dose</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3261">
-<tag group="3261" element="xx2A" vr="OB" vm="1">Treatment Session Beam Extended Interface</tag>
+<tag group="3261" element="xx2A" vr="OB" vm="1">Treatment Session Beam Data</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3263">
+<tag group="3263" element="xx00" vr="CS" vm="1">Structure Overlapping Status</tag>
 <tag group="3263" element="xx01" vr="SQ" vm="1">Referenced Structure Set Relationship Sequence</tag>
 <tag group="3263" element="xx02" vr="CS" vm="1">Structure Set Relationship</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3265">
 <tag group="3265" element="xx00" vr="SL" vm="1">Total Number of Fractions</tag>
-<tag group="3265" element="xx01" vr="SL" vm="1">Last treated Fraction</tag>
+<tag group="3265" element="xx01" vr="SL" vm="1">Last Treated Fraction</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3267">
+<tag group="3267" element="xx00" vr="SH" vm="1">Referenced Patient Volume Id</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3271">
 <tag group="3271" element="xx00" vr="CS" vm="1">Marker Subtype</tag>
@@ -4945,6 +5021,53 @@
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3275">
 <tag group="3275" element="xx00" vr="LO" vm="1">Registration Sub Type</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3277">
+<tag group="3277" element="xx00" vr="SQ" vm="1">RT Motion Synchronization Sequence</tag>
+</dictionary>
+<dictionary creator="Varian Medical Systems VISION 3283">
+<tag group="3283" element="xx00" vr="CS" vm="1">Visual Coaching Type</tag>
+<tag group="3283" element="xx01" vr="CS" vm="1">Audio Coaching Type</tag>
+<tag group="3283" element="xx02" vr="SQ" vm="1">Coaching Language Code Sequence</tag>
+<tag group="3283" element="xx03" vr="CS" vm="1">Voice Type</tag>
+<tag group="3283" element="xx04" vr="CS" vm="1">Coaching Display Type</tag>
+<tag group="3283" element="xx05" vr="CS" vm="1">Breathing Technique</tag>
+<tag group="3283" element="xx06" vr="DS" vm="1">Inhale Period</tag>
+<tag group="3283" element="xx07" vr="DS" vm="1">Exhale Period</tag>
+<tag group="3283" element="xx08" vr="DS" vm="1">Breathhold Period</tag>
+<tag group="3283" element="xx09" vr="DS" vm="1">Motion Range</tag>
+<tag group="3283" element="xx0A" vr="SQ" vm="1">Signal Source Sequence</tag>
+<tag group="3283" element="xx0B" vr="SH" vm="1">Signal Source ID</tag>
+<tag group="3283" element="xx0C" vr="SQ" vm="1">Reference Curve Sequence</tag>
+<tag group="3283" element="xx0D" vr="DS" vm="1">Beam On Delay</tag>
+<tag group="3283" element="xx10" vr="SQ" vm="1">Tolerance Channel Sequence</tag>
+<tag group="3283" element="xx11" vr="IS" vm="1">Tolerance Channel Number</tag>
+<tag group="3283" element="xx20" vr="SQ" vm="1">Threshold Sequence</tag>
+<tag group="3283" element="xx21" vr="IS" vm="1">Referenced Tolerance Channel Number</tag>
+<tag group="3283" element="xx22" vr="US" vm="1">Threshold Group Number</tag>
+<tag group="3283" element="xx23" vr="US" vm="1">Threshold Value</tag>
+<tag group="3283" element="xx24" vr="SQ" vm="1">Threshold Type Sequence</tag>
+<tag group="3283" element="xx25" vr="CS" vm="1">Relative Reference Value Type</tag>
+<tag group="3283" element="xx26" vr="US" vm="1">Detected Relative Reference Value</tag>
+<tag group="3283" element="xx27" vr="US" vm="1">Relative Reference Value Offset</tag>
+<tag group="3283" element="xx30" vr="SQ" vm="1">Tolerance Region Sequence</tag>
+<tag group="3283" element="xx31" vr="US" vm="1">Multiplex Group Number</tag>
+<tag group="3283" element="xx32" vr="DS" vm="1">Multiplex Group Offset</tag>
+<tag group="3283" element="xx33" vr="US" vm="1">Number of Tolerance Samples</tag>
+<tag group="3283" element="xx34" vr="CS" vm="1">Sample Domain</tag>
+<tag group="3283" element="xx35" vr="DS" vm="1">Sampling Frequency</tag>
+<tag group="3283" element="xx36" vr="US" vm="1">Number of Tolerance Channels</tag>
+<tag group="3283" element="xx37" vr="SQ" vm="1">Referenced Channel Sequence</tag>
+<tag group="3283" element="xx40" vr="SQ" vm="1">Channel Identification Sequence</tag>
+<tag group="3283" element="xx41" vr="SQ" vm="1">Channel Identification Modifiers Sequence</tag>
+<tag group="3283" element="xx42" vr="CS" vm="1">Signal Source Type</tag>
+<tag group="3283" element="xx43" vr="SH" vm="1">Tracked Object ID</tag>
+<tag group="3283" element="xx50" vr="SH" vm="1">Waveform Label</tag>
+<tag group="3283" element="xx51" vr="LO" vm="1">Waveform Name</tag>
+<tag group="3283" element="xx52" vr="ST" vm="1">Waveform Description</tag>
+<tag group="3283" element="xx53" vr="CS" vm="1">Motion Management Waveform Type</tag>
+<tag group="3283" element="xx54" vr="DT" vm="1">Timestamp</tag>
+<tag group="3283" element="xx60" vr="SQ" vm="1">Referenced Motion Management Object Sequence</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3285">
 <tag group="3285" element="xx00" vr="SQ" vm="1">Primary Fluence Mode Sequence (PRIVATE)</tag>
@@ -4973,9 +5096,13 @@
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3299">
 <tag group="3299" element="xx00" vr="OB" vm="1">Structure Detection Data</tag>
+<tag group="3299" element="xx01" vr="DS" vm="1">Gantry Angle Stop</tag>
+<tag group="3299" element="xx02" vr="IS" vm="1">Number of Averaged Sub-frames</tag>
 </dictionary>
 <dictionary creator="Varian Medical Systems VISION 3303">
-<tag group="3303" element="xx00" vr="UI" vm="1">Referenced Conceptual volume UID</tag>
+<tag group="3303" element="xx00" vr="FL" vm="1-n">FLASH Scan Spot Meterset Rates</tag>
+<tag group="3303" element="xx01" vr="FL" vm="1-n">FLASH Scan Spot Meterset Rates</tag>
+<tag group="3303" element="xx02" vr="SH" vm="1">NTPC Algorithm Version</tag>
 </dictionary>
 <dictionary creator="VEPRO DICOM TRANSFER 1.0">
 <tag group="0059" element="xx10" vr="SQ" vm="1">Unknown</tag>
