@@ -38,9 +38,9 @@ new DicomSetupBuilder()
 
 For all other logging libraries, you will have to provide your own implementation of `ILogManager` and `ILogger`.
 
-## Logging Policy — Data Protection (PHI)
+## Logging Policy - Data Protection (PHI)
 
-fo-dicom’s intent is to avoid emitting PHI in library-generated logs.
+fo-dicom's intent is to avoid emitting PHI in library-generated logs.
 
 * The library does not dump DICOM datasets or element values by default.
 * Dataset-to-log helpers exist but are opt-in and not invoked by the library.
