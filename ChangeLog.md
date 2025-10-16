@@ -1,5 +1,5 @@
 ### 5.2.5 (TBD)
-
+- Added some private tags to dictionary (#2027)
 
 ### 5.2.4 (2025-10-03)
 - Fix issue where DicomFile.Clone did not do a deep-clone as expected (#2025)
