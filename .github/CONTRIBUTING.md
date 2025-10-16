@@ -9,3 +9,4 @@ Here are a few guidelines for Pull Request submission.
 * List and describe *all* modifications.
 * Include a sufficient set of unit tests. 
 * If you add types, methods or properties to the (public) API, please include sufficient API documentation for these additions.
+* Adhere to the logging policy in [logging_config.md](../Documentation/v5/usage/logging_config.md)
