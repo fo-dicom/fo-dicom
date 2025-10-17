@@ -1,7 +1,5 @@
-// Copyright (c) Medicim NV. All rights reserved.
-// Confidential and for internal use only. The content of this document constitutes proprietary
-// information of the Nobel Biocare group of companies. Any disclosure, copying, distribution or use of
-// any parts of the content of this document by unauthorized parties is strictly prohibited.
+// Copyright (c) 2012-2025 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
 
 using FellowOakDicom.Imaging.Reconstruction;
 using System.Threading.Tasks;
