@@ -69,8 +69,12 @@ namespace FellowOakDicom.Imaging.Reconstruction
         
         public ImageData(DicomDataset dataset, DicomPixelData dicomPixelData, int frame)
         {
-            Dataset = dataset
-                .Clone(DicomTransferSyntax.ExplicitVRLittleEndian); // ensure decompressed
+            if (dicomPixelData.Syntax.IsEncapsulated)
+            {
+                throw new DicomDataException("The PixelData given to the ImageData constructor must not be compressed");
+            }
+            
+            Dataset = dataset;
             Geometry = new FrameGeometry(Dataset, frame);
             PixelData = dicomPixelData;
             Pixels = PixelDataFactory.Create(PixelData, frame);
