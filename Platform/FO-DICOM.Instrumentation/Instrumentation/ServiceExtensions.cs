@@ -1,7 +1,11 @@
 ﻿// Copyright (c) 2012-2025 fo-dicom contributors.
-﻿using FellowOakDicom.Log.Metrics;
+// Licensed under the Microsoft Public License (MS-PL).
+
+using FellowOakDicom.Log.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using System;
 
 namespace FellowOakDicom.Instrumentation
 {
@@ -25,6 +29,12 @@ namespace FellowOakDicom.Instrumentation
             return providerBuilder
                 .AddMeter("fellowoakdicom.core");
         } 
+
+        public static TracerProviderBuilder AddFellowOakDicomInstrumentation(this TracerProviderBuilder providerBuilder)
+        {
+            return providerBuilder
+                .AddSource("fellowoakdicom.core");
+        }
 
     }
 }
