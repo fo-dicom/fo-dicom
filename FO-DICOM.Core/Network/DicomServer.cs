@@ -318,6 +318,7 @@ namespace FellowOakDicom.Network
                                 var networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
 
                                 var scp = CreateScp(networkStream);
+                                scp.RunsAsServer = true;
                                 if (Options != null)
                                 {
                                     scp.Options = Options;

@@ -229,6 +229,14 @@ namespace FellowOakDicom.Network
         /// </summary>
         private ITranscoderManager TranscoderManager { get; }
 
+
+        /// <summary>
+        /// Gets whether the DicomService is running as SCP-Server, or else as a service within a client SCU
+        /// </summary>
+        public bool RunsAsServer { get; internal set; }
+
+        public int LocalPort => _network.LocalPort;
+
         #endregion
 
         #region METHODS
@@ -478,13 +486,14 @@ namespace FellowOakDicom.Network
                         _writing = false;
                     }
                 }
-                _metricsCollector?.DataSent(written);
+                _metricsCollector?.DataSent(written, this);
             }
         }
 
         private async Task ListenAndProcessPDUAsync()
         {
-            _metricsCollector?.ConnectionEstablished();
+            using var activity = _metricsCollector?.Source?.StartActivity((RunsAsServer ? "SCP" : "SCU") + " DicomService");
+            _metricsCollector?.ConnectionEstablished(this);
 
             while (IsConnected)
             {
@@ -561,7 +570,7 @@ namespace FellowOakDicom.Network
                     using var rawPduStream = new MemoryStream(rawPduBuffer.Bytes, 0, rawPduLength);
                     using var raw = new RawPDU(rawPduStream, _memoryProvider);
 
-                    _metricsCollector?.DataReceived(rawPduLength);
+                    _metricsCollector?.DataReceived(rawPduLength, this);
 
                     switch (raw.Type)
                     {
@@ -1572,7 +1581,7 @@ namespace FellowOakDicom.Network
             }
 
             Logger.LogInformation("Connection closed");
-            _metricsCollector?.ConnectionClosed();
+            _metricsCollector?.ConnectionClosed(this);
 
             if (exception != null)
             {
