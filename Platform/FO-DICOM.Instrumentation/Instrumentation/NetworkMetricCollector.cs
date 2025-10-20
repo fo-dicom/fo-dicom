@@ -9,7 +9,9 @@ namespace FellowOakDicom.Instrumentation
         private readonly Counter<long> _bytesReceived;
         private readonly UpDownCounter<int> _connections;
 
-        public NetworkMetricCollector(IMeterFactory meterFactory)
+        private readonly IOptions<MetricsOptions> _options;
+
+        public NetworkMetricCollector(IMeterFactory meterFactory, IOptions<MetricsOptions> options)
         {
             var meter = meterFactory.Create("fellowoakdicom.core");
             _bytesSent = meter.CreateCounter<long>("fo-dicom.network.sent", "bytes");
