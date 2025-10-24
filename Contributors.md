@@ -98,3 +98,4 @@
 * [DMIAOCHEN](https://github.com/DMIAOCHEN)
 * [BrunoMilutin](https://github.com/BrunoMilutin)
 * [Thomas Sondergaard](https://github.com/tsondergaard)
+* [Jon Kelling](https://github.com/jonkelling)
