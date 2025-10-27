@@ -1,4 +1,5 @@
 ### 5.2.5 (TBD)
+- Fix issue where creating an instance of ImageData when Pixel Spacing DICOM tags are present but empty causes an exception (#2043)
 - Add support for constructing ImageData/VolumeData from multi-frame datasets (#2015)
 - Added some private tags to dictionary (#2027)
 
