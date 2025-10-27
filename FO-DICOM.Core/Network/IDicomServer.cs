@@ -84,6 +84,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         void Stop();
 
+        int GetNumberOfConnectedClients();
+
         #endregion
     }
 

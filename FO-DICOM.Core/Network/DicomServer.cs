@@ -212,6 +212,11 @@ namespace FellowOakDicom.Network
             }
         }
 
+        public virtual int GetNumberOfConnectedClients()
+        {
+            return _services.Count;
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
