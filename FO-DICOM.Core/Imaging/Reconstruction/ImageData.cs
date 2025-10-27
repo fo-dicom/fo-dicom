@@ -55,6 +55,31 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
             SortingValue = Geometry.DirectionNormal.DotProduct(Geometry.PointTopLeft);
         }
+        
+        public ImageData(DicomDataset dataset, int frame)
+        {
+            Dataset = dataset
+                .Clone(DicomTransferSyntax.ExplicitVRLittleEndian); // ensure decompressed
+            Geometry = new FrameGeometry(Dataset, frame);
+            PixelData = DicomPixelData.Create(Dataset);
+            Pixels = PixelDataFactory.Create(PixelData, frame);
 
+            SortingValue = Geometry.DirectionNormal.DotProduct(Geometry.PointTopLeft);
+        }
+        
+        public ImageData(DicomDataset dataset, DicomPixelData dicomPixelData, int frame)
+        {
+            if (dicomPixelData.Syntax.IsEncapsulated)
+            {
+                throw new DicomDataException("The PixelData given to the ImageData constructor must not be compressed");
+            }
+            
+            Dataset = dataset;
+            Geometry = new FrameGeometry(Dataset, frame);
+            PixelData = dicomPixelData;
+            Pixels = PixelDataFactory.Create(PixelData, frame);
+
+            SortingValue = Geometry.DirectionNormal.DotProduct(Geometry.PointTopLeft);
+        }
     }
 }
