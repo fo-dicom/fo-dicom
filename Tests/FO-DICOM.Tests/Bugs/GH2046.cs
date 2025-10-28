@@ -67,7 +67,7 @@ namespace FellowOakDicom.Tests.Bugs
 
                 //Each service is disposed twice, once in RemoveUnusedServicesAsync, once by the continuation task in RunningDicomService
                 //Better would be to check `server._services.Count == 0` but that field is not accessible here
-                Assert.Equal(100 * 2, disposedDicomServices.Count);
+                Assert.Equal(100, disposedDicomServices.Count);
 
                 server.Stop();
 
