@@ -604,12 +604,12 @@ namespace FellowOakDicom.Tests.Network
 
                 // Wait for the server to shut down gracefully
                 await server.Registration.Task;
-
-                // Wait for the ContinueWith-Task to be executed
-                // In previous versions, the server.Registration.Task also included the RemoveUnusedServicesAsync.
-                // This method now no longer exists, so the server.Registration.Task only awaits the StartAsync method, which listens and accepts clients.
-                await Task.Delay(TimeSpan.FromMilliseconds(50));
             }
+
+            // Wait for the ContinueWith-Task to be executed
+            // In previous versions, the server.Registration.Task also included the RemoveUnusedServicesAsync.
+            // This method now no longer exists, so the server.Registration.Task only awaits the StartAsync method, which listens and accepts clients.
+            await Task.Delay(1000); //Wait a bit more than to be sure all disconnected services are cleaned up
 
             var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
             Assert.Single(uniqueDisposedServices);

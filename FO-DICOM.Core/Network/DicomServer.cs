@@ -315,7 +315,7 @@ namespace FellowOakDicom.Network
                                     _services.Add(runningService);
                                     numberOfServices = _services.Count;
                                 }
-                                runningService.Task.ContinueWith((t) => RemoveCompletedService(runningService));
+                                runningService.Task.ContinueWith((t) => RemoveCompletedService(runningService), TaskContinuationOptions.PreferFairness | TaskContinuationOptions.RunContinuationsAsynchronously);
 
                                 Logger.LogDebug(
                                     "Accepted an incoming client connection, there are now {NumberOfServices} connected clients",
@@ -405,7 +405,7 @@ namespace FellowOakDicom.Network
             {
                 Service = service ?? throw new ArgumentNullException(nameof(service));
                 Task = task ?? throw new ArgumentNullException(nameof(task));
-                Task.ContinueWith((t) => Service.Dispose());
+                Task.ContinueWith((t) => Service.Dispose(), TaskContinuationOptions.AttachedToParent);
             }
 
             public void Dispose() => Service.Dispose();
