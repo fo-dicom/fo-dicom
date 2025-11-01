@@ -95,7 +95,7 @@ namespace FellowOakDicom.Tests.Network
             await Task.Yield();
             return new DicomCEchoResponse(request, DicomStatus.Success);
         }
-        }
+    }
 
 
     #endregion
