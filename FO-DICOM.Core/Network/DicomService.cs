@@ -679,7 +679,11 @@ namespace FellowOakDicom.Network
                                     LogID,
                                     pdu.Source,
                                     pdu.Reason);
-                                if (this is IDicomService service)
+                                if (this is IDicomServiceAsync asyncService)
+                                {
+                                    await asyncService.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
+                                }
+                                else if (this is IDicomService service)
                                 {
                                     service.OnReceiveAbort(pdu.Source, pdu.Reason);
                                 }
@@ -1144,9 +1148,7 @@ namespace FellowOakDicom.Network
                         dicomRequest.PendingSince = DateTime.Now;
 
                         // This call should not be awaited because it can only complete when the pending queue is empty
-#pragma warning disable 4014 
                         Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
-#pragma warning restore 4014
                     }
                 }
 
@@ -1536,7 +1538,11 @@ namespace FellowOakDicom.Network
                     }
                 }
 
-                if (this is IDicomService dicomService)
+                if (this is IDicomServiceAsync asyncDicomService)
+                {
+                    await asyncDicomService.OnConnectionClosedAsync(exception).ConfigureAwait(false);
+                }
+                else if (this is IDicomService dicomService)
                 {
                     dicomService.OnConnectionClosed(exception);
                 }
