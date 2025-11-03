@@ -12,7 +12,7 @@ namespace FellowOakDicom.Network
     /// </summary>
     public interface IDicomService
     {
-        // TODO: In next major release remove this interface in favour of IDicomServiceAsync
+        // TODO: In next major release remove this interface in favour of IAsyncDicomService
 
         /// <summary>
         /// Callback on recieving an abort message.
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Network
     /// <summary>
     /// Common interface for DICOM service users and providers.
     /// </summary>
-    public interface IDicomServiceAsync
+    public interface IAsyncDicomService
     {
         /// <summary>
         /// Callback on recieving an abort message.

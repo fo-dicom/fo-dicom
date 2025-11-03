@@ -301,7 +301,7 @@ namespace FellowOakDicom.Tests.Network
 
     }
 
-    public class PendingAsyncDicomCFindProviderWithAsyncService : PendingAsyncDicomCFindProvider, IDicomServiceAsync
+    public class PendingAsyncDicomCFindProviderWithAsyncService : PendingAsyncDicomCFindProvider, IAsyncDicomService
     {
         public PendingAsyncDicomCFindProviderWithAsyncService(INetworkStream stream, Encoding fallbackEncoding, ILogger log, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, log, dependencies)
         {

@@ -679,7 +679,7 @@ namespace FellowOakDicom.Network
                                     LogID,
                                     pdu.Source,
                                     pdu.Reason);
-                                if (this is IDicomServiceAsync asyncService)
+                                if (this is IAsyncDicomService asyncService)
                                 {
                                     await asyncService.OnReceiveAbortAsync(pdu.Source, pdu.Reason).ConfigureAwait(false);
                                 }
@@ -1538,7 +1538,7 @@ namespace FellowOakDicom.Network
                     }
                 }
 
-                if (this is IDicomServiceAsync asyncDicomService)
+                if (this is IAsyncDicomService asyncDicomService)
                 {
                     await asyncDicomService.OnConnectionClosedAsync(exception).ConfigureAwait(false);
                 }
