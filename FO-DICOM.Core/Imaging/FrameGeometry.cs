@@ -74,33 +74,28 @@ namespace FellowOakDicom.Imaging
 
             FrameSize = new Point2(image.GetSingleValueOrDefault<int>(DicomTag.Columns, 0), image.GetSingleValueOrDefault<int>(DicomTag.Rows, 0));
 
-            if (image.Contains(DicomTag.ImagerPixelSpacing))
+            if (image.TryGetValues<double>(DicomTag.ImagerPixelSpacing, out var imagerPixelSpacing) && imagerPixelSpacing.Length == 2)
             {
-                var imagerPixelSpacing = image.GetValues<double>(DicomTag.ImagerPixelSpacing);
                 PixelSpacingBetweenRows = imagerPixelSpacing[0];
                 PixelSpacingBetweenColumns = imagerPixelSpacing[1];
             }
-            else if (image.Contains(DicomTag.PixelSpacing))
+            else if (image.TryGetValues<double>(DicomTag.PixelSpacing, out var pixelSpacing) && pixelSpacing.Length == 2)
             {
-                var pixelSpacing = image.GetValues<double>(DicomTag.PixelSpacing);
                 PixelSpacingBetweenRows = pixelSpacing[0];
                 PixelSpacingBetweenColumns = pixelSpacing[1];
             }
-            else if (image.Contains(DicomTag.NominalScannedPixelSpacing))
+            else if (image.TryGetValues<double>(DicomTag.NominalScannedPixelSpacing, out var nominalPixelSpacing) && nominalPixelSpacing.Length == 2)
             {
-                var nominalPixelSpacing = image.GetValues<double>(DicomTag.NominalScannedPixelSpacing);
                 PixelSpacingBetweenRows = nominalPixelSpacing[0];
                 PixelSpacingBetweenColumns = nominalPixelSpacing[1];
             }
-            else if (functionalItems.Contains(DicomTag.PixelSpacing))
+            else if (functionalItems.TryGetValues<double>(DicomTag.PixelSpacing, out var functionalPixelSpacing) && functionalPixelSpacing.Length == 2)
             {
-                var functionalPixelSpacing = functionalItems.GetValues<double>(DicomTag.PixelSpacing);
                 PixelSpacingBetweenRows = functionalPixelSpacing[0];
                 PixelSpacingBetweenColumns = functionalPixelSpacing[1];
             }
-            else if (functionalItems.Contains(DicomTag.ImagerPixelSpacing))
+            else if (functionalItems.TryGetValues<double>(DicomTag.ImagerPixelSpacing, out var functionalImagerPixelSpacing) && functionalImagerPixelSpacing.Length == 2)
             {
-                var functionalImagerPixelSpacing = functionalItems.GetValues<double>(DicomTag.ImagerPixelSpacing);
                 PixelSpacingBetweenRows = functionalImagerPixelSpacing[0];
                 PixelSpacingBetweenColumns = functionalImagerPixelSpacing[1];
             }
