@@ -2,6 +2,7 @@
 - Fix issue where creating an instance of ImageData when Pixel Spacing DICOM tags are present but empty causes an exception (#2043)
 - Add support for constructing ImageData/VolumeData from multi-frame datasets (#2015)
 - Added some private tags to dictionary (#2027)
+- Rework disposing and cleanup of finished DICOM Clients in DicomServer (#2046)
 - new interface IAsyncDicomService where OnConnectionClosedAsync and OnAbortAsync are invoked (#2056)
 
 ### 5.2.4 (2025-10-03)
