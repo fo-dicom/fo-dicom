@@ -481,7 +481,8 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Writes PDU to stream
         /// </summary>
-        Task WriteAsync(Stream stream, CancellationToken cancellationToken);
+        /// <returns>The number of written bytes</returns>
+        Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken);
 
         /// <summary>
         /// Reads PDU from PDU buffer
@@ -529,8 +530,8 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <param name="stream">The stream to write the PDU to</param>
         /// <param name="cancellationToken">The token that cancels the write operation</param>
-        /// <returns>A Task that represents the asynchronous operation</returns>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        /// <returns>A Task that represents the asynchronous operation and the number of </returns>
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-RQ Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
             using IMemory buffer = _memoryProvider.Provide(ushort.MaxValue);
@@ -540,6 +541,7 @@ namespace FellowOakDicom.Network
             var length = (ushort)ms.Position;
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
+            return (uint)(RawPDU.CommonFieldsLength + length);
         }
 
         private void Write(RawPDU pdu)
@@ -897,7 +899,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">The stream to write the PDU to</param>
         /// <param name="cancellationToken">The token that cancels the write operation</param>
         /// <returns>A Task that represents the asynchronous operation</returns>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-AC Item-Length is ushort, so the whole PDU can be maximum ushort.MaxValue bytes long
             using IMemory buffer = _memoryProvider.Provide(ushort.MaxValue);
@@ -907,6 +909,7 @@ namespace FellowOakDicom.Network
             var length = (ushort)ms.Position;
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
+            return (uint)(RawPDU.CommonFieldsLength + length);
         }
 
         private void Write(RawPDU pdu)
@@ -1283,7 +1286,7 @@ namespace FellowOakDicom.Network
         /// <remarks>When writing the rejection reason to the <see cref="RawPDU"/> object, the <see cref="DicomRejectSource"/>
         /// specification in the underlying value is masked out, to ensure that the reason code matches the codes specified
         /// in Table 9-21 of DICOM Standard PS 3.8.</remarks>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ASSOCIATE-RJ is always 4 bytes
             const int length = 4;
@@ -1293,6 +1296,7 @@ namespace FellowOakDicom.Network
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
+            return RawPDU.CommonFieldsLength + length;
         }
 
         private void Write(RawPDU pdu)
@@ -1348,7 +1352,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">The stream to write the PDU to</param>
         /// <param name="cancellationToken">The token that cancels the write operation</param>
         /// <returns>A Task that represents the asynchronous operation</returns>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-RELEASE-RQ is always one uint (reserved)
             const int length = sizeof(uint);
@@ -1358,6 +1362,7 @@ namespace FellowOakDicom.Network
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
+            return RawPDU.CommonFieldsLength + length;
         }
 
         private void Write(RawPDU pdu)
@@ -1404,7 +1409,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">The stream to write the PDU to</param>
         /// <param name="cancellationToken">The token that cancels the write operation</param>
         /// <returns>A Task that represents the asynchronous operation</returns>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-RELEASE-RP is always one uint (reserved)
             const int length = 4;
@@ -1414,6 +1419,7 @@ namespace FellowOakDicom.Network
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
+            return RawPDU.CommonFieldsLength + length;
         }
 
         private void Write(RawPDU pdu)
@@ -1515,7 +1521,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">The stream to write the PDU to</param>
         /// <param name="cancellationToken">The token that cancels the write operation</param>
         /// <returns>A Task that represents the asynchronous operation</returns>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // A-ABORT is always 4 bytes
             const int length = 4;
@@ -1525,6 +1531,7 @@ namespace FellowOakDicom.Network
             Write(rawPdu);
             rawPdu.GetCommonFields(buffer, length);
             await stream.WriteAsync(buffer.Bytes, 0, RawPDU.CommonFieldsLength + length, cancellationToken).ConfigureAwait(false);
+            return RawPDU.CommonFieldsLength + length;
         }
 
         private void Write(RawPDU pdu)
@@ -1615,7 +1622,7 @@ namespace FellowOakDicom.Network
         /// <param name="stream">The stream to write the PDU to</param>
         /// <param name="cancellationToken">The token that cancels the write operation</param>
         /// <returns>A Task that represents the asynchronous operation</returns>
-        public async Task WriteAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<uint> WriteAsync(Stream stream, CancellationToken cancellationToken)
         {
             // Instead of using rented byte arrays, P-DATA-TF PDVs are written directly to the underlying stream
             await using var pdu = new RawPDU(RawPduType.P_DATA_TF, _memoryProvider, DicomEncoding.Default, stream, true);
@@ -1627,6 +1634,7 @@ namespace FellowOakDicom.Network
             // write synchronously, so that the pdu is flushed to the network at once if possible
             stream.Write(preamble.Bytes, 0, RawPDU.CommonFieldsLength);
             Write(pdu);
+            return RawPDU.CommonFieldsLength + length;
         }
 
         private void Write(RawPDU pdu)

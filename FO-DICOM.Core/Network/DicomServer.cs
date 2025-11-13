@@ -197,6 +197,11 @@ namespace FellowOakDicom.Network
             }
         }
 
+        public virtual int GetNumberOfConnectedClients()
+        {
+            return _services.Count;
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -302,6 +307,7 @@ namespace FellowOakDicom.Network
                                 var networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
 
                                 var scp = CreateScp(networkStream);
+                                scp.RunsAsServer = true;
                                 if (Options != null)
                                 {
                                     scp.Options = Options;

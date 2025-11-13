@@ -63,6 +63,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
             Options = dicomServiceOptions ?? throw new ArgumentNullException(nameof(dicomServiceOptions));
             _eventCollector = eventCollector ?? throw new ArgumentNullException(nameof(eventCollector));
             NetworkStream = networkStream ?? throw new ArgumentNullException(nameof(networkStream));
+            RunsAsServer = false;
         }
 
         public void StartListener()
