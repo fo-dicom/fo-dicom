@@ -48,7 +48,7 @@ jobs:
       run: dotnet test ./Tests/FO-DICOM.Tests/FO-DICOM.Tests.csproj --configuration Release --framework ${{ matrix.frameworks.common }} --blame --runtime ${{ matrix.os.runtime }} --logger:"trx;LogFileName=.\results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
           name: test-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
           path: ./Tests/FO-DICOM.Tests/TestResults/results-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
@@ -57,7 +57,7 @@ jobs:
       run: dotnet test ./Tests/FO-DICOM.Tests.Windows/FO-DICOM.Tests.Windows.csproj --configuration Release --framework ${{ matrix.frameworks.win }} --blame --runtime ${{ matrix.os.runtime }} --logger:"trx;LogFileName=.\results-${{ matrix.os.runtime }}-${{ matrix.frameworks.common }}.xml" ${{ matrix.frameworks.coverage }}
     - name: Upload test results
       if: ${{ startsWith(matrix.os.name, 'Windows') }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
           name: test.windows-${{ matrix.os.name }}-${{ matrix.frameworks.common }}.xml
           path: ./Tests/FO-DICOM.Tests.Windows/TestResults/results-${{ matrix.os.runtime }}-${{ matrix.frameworks.common }}.xml
@@ -76,7 +76,7 @@ jobs:
     - name: run benchmarks
       run: ./Tests/FO-DICOM.Benchmark/bin/Release/net8.0/fo-dicom.Benchmark.exe
     - name: Upload benchmark log
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: benchmark
         path: |

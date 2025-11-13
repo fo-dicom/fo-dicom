@@ -3,6 +3,7 @@
 - Add support for constructing ImageData/VolumeData from multi-frame datasets (#2015)
 - Added some private tags to dictionary (#2027)
 - Rework disposing and cleanup of finished DICOM Clients in DicomServer (#2046)
+- new interface IAsyncDicomService where OnConnectionClosedAsync and OnAbortAsync are invoked (#2056)
 
 ### 5.2.4 (2025-10-03)
 - Fix issue where DicomFile.Clone did not do a deep-clone as expected (#2025)
