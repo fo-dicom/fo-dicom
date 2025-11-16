@@ -29,4 +29,6 @@ Package | Description
 [fo-dicom.Imaging.Desktop](https://www.nuget.org/packages/fo-dicom.Imaging.Desktop/) | Library with referencte to System.Drawing, required for rendering into Bitmaps
 [fo-dicom.Imaging.ImageSharp](https://www.nuget.org/packages/fo-dicom.Imaging.ImageSharp/) | Library with reference to ImageSharp 3, can be used for platform independent rendering
 [fo-dicom.Imaging.ImageSharp.Netstandard](https://www.nuget.org/packages/fo-dicom.Imaging.ImageSharp.Netstandard/) | Library with reference to ImageSharp 2, can be used for platform independent rendering
+[fo-dicom.Imaging.SkiaSharp](https://www.nuget.org/packages/fo-dicom.Imaging.SkiaSharp/) | Library with reference to SkiaSharp, can be used for platform independent rendering
 [fo-dicom.Codecs](https://www.nuget.org/packages/fo-dicom.Codecs/) | Cross-platform DICOM codecs for `fo-dicom`, developed by [Efferent Health](https://github.com/Efferent-Health/fo-dicom.Codecs)
+[fo-dicom.Instrumentation](https://www.nuget.org/packages/fo-dicom.Instrumentation/) | Library to add instrumentation of fo-dicom via OpenTelemetry
