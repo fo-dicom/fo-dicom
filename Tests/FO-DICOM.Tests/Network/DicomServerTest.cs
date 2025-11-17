@@ -695,6 +695,14 @@ namespace FellowOakDicom.Tests.Network
                 await server.Registration.Task;
             }
 
+            // Wait for all 3 services to be disposed with proper synchronization
+            var timeout = TimeSpan.FromSeconds(10);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            while (disposedDicomServices.Distinct().Count() < 3 && stopwatch.Elapsed < timeout)
+            {
+                await Task.Delay(50);
+            }
+
             // Verify that, after the server is disposed, all 3 services were disposed (even the one that never dropped its connection)
             numberOfDisposedDicomServices = disposedDicomServices.Distinct().Count();
             Assert.Equal(3, numberOfDisposedDicomServices);
