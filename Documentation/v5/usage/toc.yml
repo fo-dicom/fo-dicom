@@ -35,6 +35,8 @@
     href: configuration.md
   - name: Logging configuration  
     href: logging_config.md
+  - name: Instrumentation
+    href: instrumentation.md
 - name: Miscellaneous
   expanded: true
   items:

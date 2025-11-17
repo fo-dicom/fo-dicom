@@ -1,4 +1,6 @@
-### 5.2.5 (TBD)
+### 5.2.6 (TBD)
+
+### 5.2.5 (2025-11-16)
 - Add INetoworkMetricsCollector, that is invoked by DicomService, to optionally collect metrics (#2039)
 - Fix issue where creating an instance of ImageData when Pixel Spacing DICOM tags are present but empty causes an exception (#2043)
 - Add support for constructing ImageData/VolumeData from multi-frame datasets (#2015)
