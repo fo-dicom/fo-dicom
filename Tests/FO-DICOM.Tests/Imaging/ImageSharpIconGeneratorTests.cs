@@ -3,28 +3,17 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.ImageSharp.Media;
-using FellowOakDicom.Imaging.NativeCodec;
 using FellowOakDicom.Media;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
 {
-    [Collection(TestCollections.General)]
+    [Collection(TestCollections.ImageSharp)]
     public class ImageSharpIconGeneratorTests
     {
-        public ImageSharpIconGeneratorTests()
-        {
-            // Setup ImageSharp as the image manager for these tests
-            // IMPORTANT: Must include NativeTranscoderManager to avoid breaking codec tests
-            var services = new ServiceCollection();
-            services.AddFellowOakDicom()
-                .AddTranscoderManager<NativeTranscoderManager>()
-                .AddImageManager<ImageSharpImageManager>();
-            var serviceProvider = services.BuildServiceProvider();
-            DicomSetupBuilder.UseServiceProvider(serviceProvider);
-        }
+        // No constructor needed - GlobalFixture already sets up ImageSharpImageManager
+        // for TestCollections.ImageSharp (see Fixture.cs lines 43-49)
 
         [Fact]
         public void GenerateIconImageSequence_ValidDicomImage_ProducesCorrectIcon()
