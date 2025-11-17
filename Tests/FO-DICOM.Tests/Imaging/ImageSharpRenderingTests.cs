@@ -3,8 +3,6 @@
 #nullable disable
 
 using FellowOakDicom.Imaging;
-using FellowOakDicom.Imaging.NativeCodec;
-using Microsoft.Extensions.DependencyInjection;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
@@ -14,17 +12,8 @@ namespace FellowOakDicom.Tests.Imaging
     [Collection(TestCollections.ImageSharp)]
     public class ImageSharpRenderingTests
     {
-        public ImageSharpRenderingTests()
-        {
-            // Setup ImageSharp as the image manager for these tests
-            // IMPORTANT: Must include NativeTranscoderManager to avoid breaking codec tests
-            var services = new ServiceCollection();
-            services.AddFellowOakDicom()
-                .AddTranscoderManager<NativeTranscoderManager>()
-                .AddImageManager<ImageSharpImageManager>();
-            var serviceProvider = services.BuildServiceProvider();
-            DicomSetupBuilder.UseServiceProvider(serviceProvider);
-        }
+        // No constructor needed - GlobalFixture already sets up ImageSharpImageManager
+        // for TestCollections.ImageSharp (see Fixture.cs lines 43-49)
 
 #if NET462
         [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
