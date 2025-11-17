@@ -80,4 +80,11 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Link TestData helper class from main test project -->
+    <Compile Include="..\FO-DICOM.Tests\TestData.cs">
+      <Link>TestData.cs</Link>
+    </Compile>
+  </ItemGroup>
+
 </Project>
