@@ -463,22 +463,23 @@ namespace FellowOakDicom.Media
         /// </summary>
         /// <param name="dicomFile">DICOM file to add.</param>
         /// <param name="referencedFileId">Referenced file ID.</param>
-        public DicomDirectoryEntry AddFile(DicomFile dicomFile, string referencedFileId = "")
+        /// <param name="iconGenerator">Optional icon generator for creating thumbnail images in DICOMDIR.</param>
+        public DicomDirectoryEntry AddFile(DicomFile dicomFile, string referencedFileId = "", IIconGenerator iconGenerator = null)
         {
             if (dicomFile == null)
             {
                 throw new ArgumentNullException(nameof(dicomFile));
             }
 
-            return AddNewRecord(dicomFile.FileMetaInfo, dicomFile.Dataset, referencedFileId);
+            return AddNewRecord(dicomFile.FileMetaInfo, dicomFile.Dataset, referencedFileId, iconGenerator);
         }
 
-        private DicomDirectoryEntry AddNewRecord(DicomFileMetaInformation metaFileInfo, DicomDataset dataset, string referencedFileId)
+        private DicomDirectoryEntry AddNewRecord(DicomFileMetaInformation metaFileInfo, DicomDataset dataset, string referencedFileId, IIconGenerator iconGenerator = null)
         {
             var patientRecord = CreatePatientRecord(dataset);
             var studyRecord = CreateStudyRecord(dataset, patientRecord);
             var seriesRecord = CreateSeriesRecord(dataset, studyRecord);
-            var imageRecord = CreateImageRecord(metaFileInfo, dataset, seriesRecord, referencedFileId);
+            var imageRecord = CreateImageRecord(metaFileInfo, dataset, seriesRecord, referencedFileId, iconGenerator);
             return new DicomDirectoryEntry
             {
                 PatientRecord = patientRecord,
@@ -492,7 +493,8 @@ namespace FellowOakDicom.Media
             DicomFileMetaInformation metaFileInfo,
             DicomDataset dataset,
             DicomDirectoryRecord seriesRecord,
-            string referencedFileId)
+            string referencedFileId,
+            IIconGenerator iconGenerator = null)
         {
             var currentImage = seriesRecord.LowerLevelDirectoryRecord;
             var imageInstanceUid = dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
@@ -536,6 +538,24 @@ namespace FellowOakDicom.Media
                 new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID),
                 new DicomUniqueIdentifier(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID)
             );
+
+            // Generate and add icon image sequence if icon generator is provided
+            if (iconGenerator != null)
+            {
+                try
+                {
+                    var iconSequence = iconGenerator.GenerateIconImageSequence(dataset);
+                    if (iconSequence != null)
+                    {
+                        newImage.Add(iconSequence);
+                    }
+                }
+                catch
+                {
+                    // Icon generation failure should not prevent DICOMDIR creation
+                    // Silently continue without icon
+                }
+            }
 
             if (currentImage != null)
             {
