@@ -3,6 +3,7 @@
 
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.ImageSharp.Media;
+using FellowOakDicom.Imaging.NativeCodec;
 using FellowOakDicom.Media;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -16,8 +17,11 @@ namespace FellowOakDicom.Tests.Imaging
         public ImageSharpIconGeneratorTests()
         {
             // Setup ImageSharp as the image manager for these tests
+            // IMPORTANT: Must include NativeTranscoderManager to avoid breaking codec tests
             var services = new ServiceCollection();
-            services.AddFellowOakDicom().AddImageManager<ImageSharpImageManager>();
+            services.AddFellowOakDicom()
+                .AddTranscoderManager<NativeTranscoderManager>()
+                .AddImageManager<ImageSharpImageManager>();
             var serviceProvider = services.BuildServiceProvider();
             DicomSetupBuilder.UseServiceProvider(serviceProvider);
         }
