@@ -72,4 +72,12 @@
     <ProjectReference Include="..\..\Serialization\FO-DICOM.Json\FO-DICOM.Json.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Copy test data from main test project -->
+    <None Include="..\FO-DICOM.Tests\Test Data\CT-MONO2-16-ankle">
+      <Link>Test Data\CT-MONO2-16-ankle</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
