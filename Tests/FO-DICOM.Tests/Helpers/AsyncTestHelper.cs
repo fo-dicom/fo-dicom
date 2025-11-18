@@ -1,6 +1,7 @@
 // Copyright (c) 2012-2025 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Network;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -43,7 +44,7 @@ namespace FellowOakDicom.Tests.Helpers
             Func<T> getValue,
             T expectedValue,
             int timeoutSeconds = 10,
-            string failureMessage = null,
+            string? failureMessage = null,
             int pollingIntervalMs = 50) where T : IEquatable<T>
         {
             var timeout = TimeSpan.FromSeconds(timeoutSeconds);
@@ -67,7 +68,7 @@ namespace FellowOakDicom.Tests.Helpers
             Func<int> getCount,
             int expectedCount,
             int timeoutSeconds = 10,
-            string failureMessage = null,
+            string? failureMessage = null,
             int pollingIntervalMs = 50)
         {
             var timeout = TimeSpan.FromSeconds(timeoutSeconds);
