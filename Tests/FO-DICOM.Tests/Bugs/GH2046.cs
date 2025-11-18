@@ -37,6 +37,9 @@ namespace FellowOakDicom.Tests.Bugs
                            "127.0.0.1", 0, logger: serverLogger);
             server.OnDispose = service => disposedDicomServices.Push(service);
 
+            // Verify no services disposed yet
+            Assert.Equal(0, disposedDicomServices.Count);
+
             var numberOfClients = 50;
 
             //First run to warm up
@@ -59,12 +62,36 @@ namespace FellowOakDicom.Tests.Bugs
 
             Assert.Equal(100, cEchoRequestCount); // Make sure all clients actually sent their request
 
-            await Task.Delay(500 + 100); //Wait a bit more than the RemoveUnusedServicesAsync busy wait loop (500ms) to be sure all disconnected services are cleaned up
+            // Wait for disposal to complete with timeout
+            var timeout = System.TimeSpan.FromSeconds(10);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var previousCount = 0;
+            var stableCount = 0;
+
+            // Wait until disposal count stabilizes (no change for 200ms)
+            while (stopwatch.Elapsed < timeout)
+            {
+                await Task.Delay(50);
+                var currentCount = disposedDicomServices.Distinct().Count();
+
+                if (currentCount == previousCount)
+                {
+                    stableCount += 50;
+                    if (stableCount >= 200) break; // Stable for 200ms
+                }
+                else
+                {
+                    stableCount = 0;
+                    previousCount = currentCount;
+                }
+            }
 
             var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
+
+            // Should have exactly 100 unique disposed services
             Assert.Equal(100, uniqueDisposedServices.Count);
 
-            // Better would be to check `server._services.Count == 0` but that field is not accessible here
+            // Total count should also be 100 (no duplicates)
             Assert.Equal(100, disposedDicomServices.Count);
 
             server.Stop();
