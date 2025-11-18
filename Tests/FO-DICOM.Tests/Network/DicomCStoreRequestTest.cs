@@ -45,6 +45,9 @@ namespace FellowOakDicom.Tests.Network
             // Specify fallback encoding
             using var server = DicomServerFactory.Create<CStoreScp>(0, null, actualEncoding);
 
+            // Wait for server to start listening (port 0 binding takes time)
+            await Task.Delay(100);
+
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
             await client.AddRequestAsync(new DicomCStoreRequest(file));
             await client.SendAsync();
