@@ -494,6 +494,10 @@ namespace FellowOakDicom.Tests.Network
             var serverLogger = _logger.IncludePrefix("Server");
             var clientLogger = _logger.IncludePrefix("Client");
             using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(0, logger: serverLogger, configure: o => o.MaxClientsAllowed = 1);
+
+            // Wait for server to start listening (port 0 assignment and binding can take time on net462)
+            await Task.Delay(200);
+
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -528,21 +532,29 @@ namespace FellowOakDicom.Tests.Network
                 exception1 = e;
             }
 
-            // Allow 5 seconds for the server to clean up its running DICOM services
-            await Task.Delay(5000);
+            // Wait for server to clean up first connection, then retry connection2 until it succeeds
+            // Server must free the MaxClientsAllowed=1 slot before connection2 can succeed
+            var retryTimeout = TimeSpan.FromSeconds(10);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            try
+            while (stopwatch.Elapsed < retryTimeout && connection2 == null)
             {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cts.Token);
-                association2 = await connection2.OpenAssociationAsync(associationRequest, cts.Token);
-                await association2.ReleaseAsync(CancellationToken.None);
-                association2.Dispose();
-                connection2.Dispose();
-            }
-            catch (Exception e)
-            {
-                exception2 = e;
+                await Task.Delay(500); // Wait between retry attempts
+
+                try
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cts.Token);
+                    association2 = await connection2.OpenAssociationAsync(associationRequest, cts.Token);
+                    await association2.ReleaseAsync(CancellationToken.None);
+                    association2.Dispose();
+                    connection2.Dispose();
+                }
+                catch (Exception e)
+                {
+                    exception2 = e;
+                    connection2 = null; // Reset for retry
+                }
             }
 
             association1?.Dispose();
@@ -550,13 +562,13 @@ namespace FellowOakDicom.Tests.Network
             connection1?.Dispose();
             connection2?.Dispose();
 
-            // Nothing should have gone wrong with connection 1
-            Assert.NotNull(association1);
+            // Check exceptions first to see actual failure reason if any
             Assert.Null(exception1);
-
-            // Nothing should have gone wrong with connection 2
-            Assert.NotNull(association2);
             Assert.Null(exception2);
+
+            // Both connections should have succeeded
+            Assert.NotNull(association1);
+            Assert.NotNull(association2);
         }
 
         [Fact]
