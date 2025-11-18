@@ -764,6 +764,14 @@ namespace FellowOakDicom.Tests.Network
 
                 // Wait for the server to shut down gracefully
                 await server.Registration.Task;
+
+                // Wait for all 100 services to be disposed with proper synchronization
+                var timeout = TimeSpan.FromSeconds(10);
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                while (disposedDicomServices.Distinct().Count() < 100 && stopwatch.Elapsed < timeout)
+                {
+                    await Task.Delay(50);
+                }
             }
 
             var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
