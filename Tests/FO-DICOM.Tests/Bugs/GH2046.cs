@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstracts;
+using Xunit.Abstractions;
 
 namespace FellowOakDicom.Tests.Bugs
 {
