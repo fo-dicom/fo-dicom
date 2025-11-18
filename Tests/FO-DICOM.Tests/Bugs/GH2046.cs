@@ -39,7 +39,7 @@ namespace FellowOakDicom.Tests.Bugs
             server.OnDispose = service => disposedDicomServices.Push(service);
 
             // Verify no services disposed yet
-            Assert.Equal(0, disposedDicomServices.Count);
+            Assert.Empty(disposedDicomServices);
 
             var numberOfClients = 50;
 
