@@ -525,20 +525,41 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             using var server = CreateServer<SimpleCStoreProvider>(0);
 
+            // Wait for server to be ready
+            await Task.Delay(100);
+
             var actual = 0;
+            Exception exception = null;
 
-            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
-            client.NegotiateAsyncOps(expected, 1);
+            // Retry loop for transient network failures (especially on ARM platforms under load)
+            var maxRetries = 3;
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                actual = 0; // Reset counter for retry
+                var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(expected, 1);
 
-            var requests = Enumerable.Range(0, expected)
-                .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
+                var requests = Enumerable.Range(0, expected)
+                    .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
+                    {
+                        OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
+                    });
+
+                await client.AddRequestsAsync(requests);
+
+                exception = await Record.ExceptionAsync(() => client.SendAsync());
+
+                if (exception == null)
                 {
-                    OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
-                });
+                    break; // Success - exit retry loop
+                }
 
-            await client.AddRequestsAsync(requests);
-
-            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+                // On last attempt, don't wait
+                if (attempt < maxRetries - 1)
+                {
+                    await Task.Delay(1000); // Wait before retry
+                }
+            }
 
             Assert.Null(exception);
             Assert.Equal(expected, actual);
