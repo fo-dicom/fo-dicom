@@ -326,17 +326,30 @@ namespace FellowOakDicom.Tests.Network
         public async Task Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.Logger = _logger.IncludePrefix("DicomClient");
             await client.AddRequestAsync(new DicomCEchoRequest());
-            await client.SendAsync();
-            await Task.Delay(100);
+
+            // Verify client connects
+            var sendTask = client.SendAsync();
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.GetNumberOfConnectedClients() > 0,
+                timeoutSeconds: 5,
+                failureMessage: "Client never connected to server");
+
+            await sendTask;
+
+            // Wait for client to disconnect and service to be cleaned up
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.GetNumberOfConnectedClients() == 0,
+                timeoutSeconds: 5,
+                failureMessage: "Client did not disconnect after SendAsync");
 
             server.Stop();
-            await Task.Delay(100);
 
+            // Verify completed services were removed from tracking list
             var actual = ((DicomServer<DicomCEchoProvider>)server).CompletedServicesCount;
             Assert.Equal(0, actual);
         }
