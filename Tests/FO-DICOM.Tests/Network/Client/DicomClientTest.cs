@@ -176,6 +176,8 @@ namespace FellowOakDicom.Tests.Network.Client
             // Arrange
             var counter = 0;
             using var server = CreateServer<ConfigurableDicomCEchoProvider, ConfigurableDicomCEchoProviderServer>(0);
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
+
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
             DicomAssociation capturedAssociation = null;
             server.OnAssociationRequest(association =>
