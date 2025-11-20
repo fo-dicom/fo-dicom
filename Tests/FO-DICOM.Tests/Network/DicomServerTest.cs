@@ -325,33 +325,33 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
         {
-            using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            await AsyncTestHelper.WaitForServerListeningAsync(server);
+            var disposedServices = new ConcurrentDictionary<DicomService, byte>();
 
-            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
-            client.Logger = _logger.IncludePrefix("DicomClient");
-            await client.AddRequestAsync(new DicomCEchoRequest());
+            using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
+                       .Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
+                           "127.0.0.1", 0, logger: _logger.IncludePrefix("DicomServer")))
+            {
+                server.OnDispose = service => disposedServices.TryAdd(service, 0);
+                await AsyncTestHelper.WaitForServerListeningAsync(server);
 
-            // Verify client connects
-            var sendTask = client.SendAsync();
-            await AsyncTestHelper.WaitForConditionAsync(
-                () => server.GetNumberOfConnectedClients() > 0,
-                timeoutSeconds: 5,
-                failureMessage: "Client never connected to server");
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                await client.SendAsync();
 
-            await sendTask;
+                // Wait for service to be disposed (proves it was created and cleaned up)
+                await AsyncTestHelper.WaitForCountAsync(
+                    () => disposedServices.Count,
+                    expectedCount: 1,
+                    timeoutSeconds: 5,
+                    failureMessage: "Service was not disposed after SendAsync");
 
-            // Wait for client to disconnect and service to be cleaned up
-            await AsyncTestHelper.WaitForConditionAsync(
-                () => server.GetNumberOfConnectedClients() == 0,
-                timeoutSeconds: 5,
-                failureMessage: "Client did not disconnect after SendAsync");
+                server.Stop();
 
-            server.Stop();
-
-            // Verify completed services were removed from tracking list
-            var actual = ((DicomServer<DicomCEchoProvider>)server).CompletedServicesCount;
-            Assert.Equal(0, actual);
+                // Verify completed services were removed from tracking list
+                var actual = ((DicomServer<DisposableDicomCEchoProvider>)server).CompletedServicesCount;
+                Assert.Equal(0, actual);
+            }
         }
 
         [Fact]
