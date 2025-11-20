@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests.IO.Reader
             // Copy file to pipe in background
             var writeTask = Task.Run(async () =>
             {
-                await using var fileStream = File.OpenRead(testFile);
+                using var fileStream = File.OpenRead(testFile);
                 await fileStream.CopyToAsync(pipe.Writer.AsStream());
                 await pipe.Writer.CompleteAsync();
             });
