@@ -278,7 +278,10 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             using var server = CreateServer<DicomCEchoProvider>(0);
 
-            await Task.Delay(500);
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.IsListening,
+                timeoutSeconds: 5,
+                failureMessage: "Server failed to start listening");
             Assert.True(server.IsListening, "Server is not listening");
 
             var actual = 0;

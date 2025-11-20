@@ -30,13 +30,13 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task RemoveUnusedServicesAsync_ShouldCleanupAllFinishedInternalServices()
         {
             var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
-            var disposedDicomServices = new ConcurrentStack<DicomService>();
+            var disposedDicomServices = new ConcurrentDictionary<DicomService, byte>();
             var cEchoRequestCount = 0;
 
             using var server = (DicomServerTest.DisposableDicomCEchoProviderServer)DicomServerFactory
                        .Create<DicomServerTest.DisposableDicomCEchoProvider, DicomServerTest.DisposableDicomCEchoProviderServer>(
                            "127.0.0.1", 0, logger: serverLogger);
-            server.OnDispose = service => disposedDicomServices.Push(service);
+            server.OnDispose = service => disposedDicomServices.TryAdd(service, 0);
 
             // Verify no services disposed yet
             Assert.Empty(disposedDicomServices);
@@ -73,7 +73,7 @@ namespace FellowOakDicom.Tests.Bugs
             while (stopwatch.Elapsed < timeout)
             {
                 await Task.Delay(50);
-                var currentCount = disposedDicomServices.Distinct().Count();
+                var currentCount = disposedDicomServices.Count;
 
                 if (currentCount == previousCount)
                 {
@@ -87,12 +87,7 @@ namespace FellowOakDicom.Tests.Bugs
                 }
             }
 
-            var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-
-            // Should have exactly 100 unique disposed services
-            Assert.Equal(100, uniqueDisposedServices.Count);
-
-            // Total count should also be 100 (no duplicates)
+            // Should have exactly 100 unique disposed services (dictionary keys are already unique)
             Assert.Equal(100, disposedDicomServices.Count);
 
             server.Stop();
