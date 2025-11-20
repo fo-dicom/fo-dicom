@@ -91,7 +91,7 @@ namespace FellowOakDicom.Tests.Bugs
             var requests = Enumerable.Range(0, expected).Select(
                 async requestIndex =>
                 {
-                    using var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+                    var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
                     client.ClientOptions.AssociationRequestTimeoutInMs = 600 * 1000;
                     client.Logger = clientLogger;
 

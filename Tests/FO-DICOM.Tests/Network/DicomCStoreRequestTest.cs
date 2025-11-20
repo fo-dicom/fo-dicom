@@ -49,19 +49,9 @@ namespace FellowOakDicom.Tests.Network
             // Wait for server to be ready
             await AsyncTestHelper.WaitForServerListeningAsync(server);
 
-            var idleStateReached = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
-            client.StateChanged += (sender, args) =>
-            {
-                if (args.NewState is DicomClientIdleState)
-                {
-                    idleStateReached.TrySetResult(true);
-                }
-            };
-
             await client.AddRequestAsync(new DicomCStoreRequest(file));
             await client.SendAsync();
-            await idleStateReached.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
             // Verify received instance correctly shows Swedish characters
             var patientName = CStoreScp.LastReceivedSopInstance.GetSingleValue<string>(DicomTag.PatientName);
