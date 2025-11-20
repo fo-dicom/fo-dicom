@@ -23,8 +23,9 @@ namespace FellowOakDicom.Tests.IO.Reader
         [Fact]
         public async Task ReadFromNetworkStreamAsync()
         {
-            var client = new HttpClient();
-            using var stream = await client.GetStreamAsync("https://github.com/fo-dicom/fo-dicom/raw/refs/heads/development/Tests/FO-DICOM.Tests/Test%20Data/CT-MONO2-16-ankle");
+            // Use local test file with FileStream to simulate network stream behavior
+            var testFile = TestData.Resolve("CT-MONO2-16-ankle");
+            using var stream = File.OpenRead(testFile);
 
             var dicomfile = await DicomFile.OpenAsync(stream, FileReadOption.ReadAll);
 
