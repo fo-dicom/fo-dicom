@@ -128,10 +128,10 @@ namespace FellowOakDicom.Network.Client
 
         /// <summary>
         /// Whenever the DICOM client changes state, an event will be emitted containing the old state and the new state.
-        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="FellowOakDicom.Network.Client.Advanced.Connection.IAdvancedDicomClientConnection"/>
+        /// The current DICOM client implementation is no longer state based, and has been rewritten as a wrapper around the new <see cref="FellowOakDicom.Network.Client.Advanced.Connection.IAdvancedD[...]
         /// This event handler is still supported for backwards compatibility reasons, but may be removed in the future.
         /// </summary>
-        [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility purposes")]
+        [Obsolete(nameof(StateChanged) + " is an artifact of an older state-based implementation of the DicomClient and will be deleted in the future. It only exists today for backwards compatibility [...
         event EventHandler<StateChangedEventArgs> StateChanged;
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace FellowOakDicom.Network.Client
             return Task.CompletedTask;
         }
 
-
+        
 
         public async Task SendAsync(CancellationToken cancellationToken = default,
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation)
@@ -358,7 +358,38 @@ namespace FellowOakDicom.Network.Client
 
                         SetState(DicomClientConnectState.Instance);
 
-                        connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
+-                        connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
++                        // Enforce a client-side connection timeout similar to association-open timeout logic.
++                        var connectionTimeout = ClientOptions.ConnectionTimeoutInMs > 0
++                            ? TimeSpan.FromMilliseconds(ClientOptions.ConnectionTimeoutInMs)
++                            : Timeout.InfiniteTimeSpan;
++
++                        if (connectionTimeout == Timeout.InfiniteTimeSpan)
++                        {
++                            connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
++                        }
++                        else
++                        {
++                            using (var timeoutCts = new CancellationTokenSource(connectionTimeout))
++                            using (var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken))
++                            {
++                                try
++                                {
++                                    connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, combinedCts.Token).ConfigureAwait(false);
++                                }
++                                catch (OperationCanceledException)
++                                {
++                                    // If the original cancellation token triggered, propagate
++                                    if (cancellationToken.IsCancellationRequested)
++                                    {
++                                        throw;
++                                    }
++
++                                    // Otherwise this was a connection timeout enforced by the client
++                                    throw new TimeoutException($"Opening connection to remote host timed out after {ClientOptions.ConnectionTimeoutInMs} ms.");
++                                }
++                            }
++                        }
 
                         SetState(DicomClientRequestAssociationState.Instance);
 
@@ -458,10 +489,10 @@ namespace FellowOakDicom.Network.Client
                         {
                             if (association.Association.UserIdentityNegotiation.PositiveResponseRequested)
                             {
-                                throw new DicomNetworkException($"A positive response requested for user identity type {association.Association.UserIdentityNegotiation.UserIdentityType} but server response was null");
+                                throw new DicomNetworkException($"A positive response requested for user identity type {association.Association.UserIdentityNegotiation.UserIdentityType} but server res[...]"
                             }
 
-                            _logger.LogWarning("Successful user identity negotiation with type {UserIdentityType} was required but server response was null", association.Association.UserIdentityNegotiation.UserIdentityType);
+                            _logger.LogWarning("Successful user identity negotiation with type {UserIdentityType} was required but server response was null", association.Association.UserIdentityNegoti[
                         }
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
