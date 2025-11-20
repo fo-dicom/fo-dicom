@@ -110,7 +110,7 @@ namespace FellowOakDicom.Tests.Bugs
                     await client.SendAsync();
                     testLogger.LogInformation("Sent (or timed out) #{0}", requestIndex);
                 }
-            ).ToArray();
+            );
 
             await Task.WhenAll(requests);
 
