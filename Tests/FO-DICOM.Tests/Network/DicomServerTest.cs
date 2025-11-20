@@ -174,7 +174,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
                 ports[i] = server.Port;
-                while (!server.IsListening) { await Task.Delay(10); }
+                await AsyncTestHelper.WaitForServerListeningAsync(server);
             }
 
             foreach (var port in ports)
@@ -192,7 +192,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task IsListening_DicomServerRunningOnPort_ReturnsTrue()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
             Assert.True(DicomServerRegistry.Get(server.Port).DicomServer.IsListening);
         }
 
@@ -200,7 +200,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task IsListening_DicomServerStoppedOnPort_ReturnsFalse()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var port = server.Port; // Capture port before stopping
 

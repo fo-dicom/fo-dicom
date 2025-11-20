@@ -241,10 +241,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var flag = new ManualResetEventSlim();
 
             using var server = CreateServer<DicomCEchoProvider>(0);
-            while (!server.IsListening)
-            {
-                await Task.Delay(50);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var actual = 0;
 
@@ -456,8 +453,18 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(new DicomCEchoRequest());
             Assert.True(client.IsSendRequired);
+
+            var idleStateReached = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            client.StateChanged += (sender, args) =>
+            {
+                if (args.NewState is DicomClientIdleState)
+                {
+                    idleStateReached.TrySetResult(true);
+                }
+            };
+
             await client.SendAsync();
-            await Task.Delay(100);
+            await idleStateReached.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
             await client.AddRequestAsync(new DicomCEchoRequest());
 
@@ -529,7 +536,10 @@ namespace FellowOakDicom.Tests.Network.Client
             using var server = CreateServer<SimpleCStoreProvider>(0);
 
             // Wait for server to be ready
-            await Task.Delay(100);
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.IsListening,
+                timeoutSeconds: 5,
+                failureMessage: "Server failed to start listening");
 
             var actual = 0;
             Exception exception = null;

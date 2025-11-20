@@ -38,10 +38,7 @@ namespace FellowOakDicom.Tests.Bugs
             server.Options.LogDataPDUs = true;
             server.Options.LogDimseDatasets = true;
 
-            while (!server.IsListening)
-            {
-                await Task.Delay(50);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.Logger = clientLogger;
