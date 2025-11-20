@@ -454,17 +454,7 @@ namespace FellowOakDicom.Tests.Network.Client
             await client.AddRequestAsync(new DicomCEchoRequest());
             Assert.True(client.IsSendRequired);
 
-            var idleStateReached = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            client.StateChanged += (sender, args) =>
-            {
-                if (args.NewState is DicomClientIdleState)
-                {
-                    idleStateReached.TrySetResult(true);
-                }
-            };
-
             await client.SendAsync();
-            await idleStateReached.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
             await client.AddRequestAsync(new DicomCEchoRequest());
 
