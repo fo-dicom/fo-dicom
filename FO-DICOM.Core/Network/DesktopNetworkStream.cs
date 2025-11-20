@@ -46,7 +46,6 @@ namespace FellowOakDicom.Network
             {
                 NoDelay = options.NoDelay
             };
-            _tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             if (options.ReceiveBufferSize.HasValue)
             {
                 _tcpClient.ReceiveBufferSize = options.ReceiveBufferSize.Value;
