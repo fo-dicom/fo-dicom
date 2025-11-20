@@ -23,11 +23,21 @@ namespace FellowOakDicom.Tests.IO.Reader
         [Fact]
         public async Task ReadFromNetworkStreamAsync()
         {
-            // Use local test file with FileStream to simulate network stream behavior
+            // Use pipe to simulate non-seekable network stream behavior
             var testFile = TestData.Resolve("CT-MONO2-16-ankle");
-            using var stream = File.OpenRead(testFile);
+            var pipe = new System.IO.Pipelines.Pipe();
 
-            var dicomfile = await DicomFile.OpenAsync(stream, FileReadOption.ReadAll);
+            // Copy file to pipe in background
+            var writeTask = Task.Run(async () =>
+            {
+                await using var fileStream = File.OpenRead(testFile);
+                await fileStream.CopyToAsync(pipe.Writer.AsStream());
+                await pipe.Writer.CompleteAsync();
+            });
+
+            var dicomfile = await DicomFile.OpenAsync(pipe.Reader.AsStream(), FileReadOption.ReadAll);
+
+            await writeTask;
 
             Assert.NotNull(dicomfile);
             Assert.Equal(47, dicomfile.Dataset.Count());
