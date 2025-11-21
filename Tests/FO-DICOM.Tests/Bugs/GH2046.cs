@@ -99,6 +99,8 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 //Send a simple CEcho request
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "AnySCU", "AnySCP");
+                // Disable retries to ensure exactly one connection per client
+                client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = 1;
                 var request = new DicomCEchoRequest
                 {
                     OnResponseReceived = (echoRequest, response) =>
