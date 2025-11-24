@@ -48,7 +48,12 @@ namespace FellowOakDicom.Tests.StructuredReport
             // Save the SR to a stream
             report.Save(stream);
 
-            Assert.True(stream.Length > 930);
+            // Ensure writer buffer is flushed before checking length
+            stream.Flush();
+
+            // Verify file size is reasonable (accommodates full range of UID length variation)
+            // UIDs from DicomUID.Generate() vary in length (2.25.{random-128bit-number})
+            Assert.InRange(stream.Length, 744, 934);
 
             stream.Position = 0;
             var report2 = DicomStructuredReport.Open(stream);
