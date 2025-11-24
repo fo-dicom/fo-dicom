@@ -52,7 +52,9 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public Task StartAsync()
         {
-            _listener.Start();
+            // Use explicit backlog to handle many simultaneous connections in CI environments
+            // where the default backlog may be too small for parallel connection tests
+            _listener.Start(backlog: 255);
             return Task.FromResult(0);
         }
 
