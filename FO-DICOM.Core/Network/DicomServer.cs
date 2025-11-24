@@ -163,7 +163,7 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
+        public virtual async Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
             DicomServiceOptions serviceOptions, object userState, DicomServerOptions serverOptions)
         {
             if (_wasStarted)
@@ -186,12 +186,13 @@ namespace FellowOakDicom.Network
                 : null;
             MaxClientsAllowedWaitInterval = TimeSpan.FromSeconds(60);
 
-            // Start the listener synchronously to get the actual assigned port before returning
+            // Start the listener to get the actual assigned port before starting the accept loop
             var listener = _networkManager.CreateNetworkListener(IPAddress, Port);
-            listener.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            await listener.StartAsync().ConfigureAwait(false);
             _port = listener.Port;
 
-            return ListenForConnectionsInternalAsync(listener);
+            // Run the accept loop - exceptions will be observed by the caller
+            await ListenForConnectionsInternalAsync(listener);
         }
 
         /// <inheritdoc />

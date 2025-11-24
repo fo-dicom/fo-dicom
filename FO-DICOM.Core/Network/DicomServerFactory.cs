@@ -213,7 +213,12 @@ namespace FellowOakDicom.Network
 
             configure?.Invoke(serverOptions);
 
+            // StartAsync is now async and awaits listener start to set the port before returning the runner task
             var runner = server.StartAsync(ipAddress, port, tlsAcceptor, fallbackEncoding, serviceOptions, userState, serverOptions);
+
+            // Wait for the listener to start and port to be assigned
+            // This is safe because StartAsync only awaits listener.StartAsync() before returning
+            runner.ConfigureAwait(false).GetAwaiter().GetResult();
 
             if (server.Exception != null)
             {
@@ -221,6 +226,7 @@ namespace FellowOakDicom.Network
                 throw new DicomNetworkException("Failed to start DICOM server", server.Exception);
             }
 
+            // Port is now correctly set, register with the runner task
             var registration = _dicomServerRegistry.Register(server, runner);
 
             server.Registration = registration;
