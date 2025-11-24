@@ -29,7 +29,8 @@
       "Bash(md5:*)",
       "mcp__code-index__search_code_advanced",
       "Bash(sysctl:*)",
-      "mcp__MCPsharp__search_text"
+      "mcp__MCPsharp__search_text",
+      "WebSearch"
     ]
   },
   "enabledMcpjsonServers": [
