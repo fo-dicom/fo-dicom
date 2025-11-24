@@ -463,6 +463,9 @@ namespace FellowOakDicom.Network.Client
                                 // Save the requests to retry, otherwise they are lost because we already extracted them from QueuedRequests
                                 requestsToRetry.AddRange(requestsToSend);
 
+                                // Dispose the timed-out connection before retrying to prevent connection leaks
+                                connection?.Dispose();
+
                                 // try again
                                 continue;
                             }
