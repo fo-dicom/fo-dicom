@@ -185,7 +185,13 @@ namespace FellowOakDicom.Network
                 ? new SemaphoreSlim(serverOptions.MaxClientsAllowed, serverOptions.MaxClientsAllowed)
                 : null;
             MaxClientsAllowedWaitInterval = TimeSpan.FromSeconds(60);
-            return ListenForConnectionsAsync();
+
+            // Start the listener synchronously to get the actual assigned port before returning
+            var listener = _networkManager.CreateNetworkListener(IPAddress, Port);
+            listener.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            _port = listener.Port;
+
+            return ListenForConnectionsInternalAsync(listener);
         }
 
         /// <inheritdoc />
@@ -265,14 +271,10 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Listen indefinitely for network connections on the specified port.
         /// </summary>
-        private async Task ListenForConnectionsAsync()
+        private async Task ListenForConnectionsInternalAsync(INetworkListener listener)
         {
-            INetworkListener listener = null;
             try
             {
-                listener = _networkManager.CreateNetworkListener(IPAddress, Port);
-                await listener.StartAsync().ConfigureAwait(false);
-                _port = listener.Port;
                 IsListening = true;
 
                 var maxClientsAllowed = _serverOptions.MaxClientsAllowed;
