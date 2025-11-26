@@ -178,7 +178,13 @@ namespace FellowOakDicom.Tests.Network.Client
                 };
             if (requireMutualAuthentication)
             {
-                tlsInitiator.Certificates = new X509CertificateCollection { new X509Certificate(TestData.Resolve("testclienteku.contoso.com.pfx"), "PLACEHOLDER") };
+#if NET9_0_OR_GREATER
+                var cert = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12FromFile(
+                    TestData.Resolve("testclienteku.contoso.com.pfx"), "PLACEHOLDER");
+#else
+                var cert = new X509Certificate(TestData.Resolve("testclienteku.contoso.com.pfx"), "PLACEHOLDER");
+#endif
+                tlsInitiator.Certificates = new X509CertificateCollection { cert };
             }
 
 
