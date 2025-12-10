@@ -319,5 +319,32 @@ namespace FellowOakDicom.Tests.Imaging
         }
 
 
+        [Theory]
+        [InlineData(0, 0)]  // Both missing
+        [InlineData(1, 0)]  // Position has 1 value, orientation missing
+        [InlineData(2, 0)]  // Position has 2 values, orientation missing
+        [InlineData(3, 0)]  // Position complete, orientation missing
+        [InlineData(0, 3)]  // Position missing, orientation has 3 values
+        [InlineData(0, 5)]  // Position missing, orientation has 5 values
+        [InlineData(0, 6)]  // Position missing, orientation complete
+        [InlineData(3, 3)]  // Position complete, orientation has only row direction
+        [InlineData(3, 5)]  // Position complete, orientation missing one value for column direction
+        [InlineData(2, 5)]  // Both incomplete
+        public void FrameGeometry_HandlesIncompletePositionAndOrientationArrays(int positionLength, int orientationLength)
+        {
+            var positionValues = Enumerable.Range(0, positionLength).Select(i => (decimal)i).ToArray();
+            var orientationValues = Enumerable.Range(0, orientationLength).Select(i => i < 3 ? (decimal)1.0 : (decimal)0.0).ToArray();
+
+            var dataset = new DicomDataset { ValidateItems = false };
+            dataset.Add(DicomTag.PixelSpacing, new decimal[] { 0.5m, 0.5m });
+            dataset.Add(DicomTag.Rows, (ushort)500);
+            dataset.Add(DicomTag.Columns, (ushort)500);
+
+            dataset.AddOrUpdate(DicomTag.ImagePositionPatient, positionValues);
+            dataset.AddOrUpdate(DicomTag.ImageOrientationPatient, orientationValues);
+
+            var exception = Record.Exception(() => new FrameGeometry(dataset));
+            Assert.Null(exception);
+        }
     }
 }
