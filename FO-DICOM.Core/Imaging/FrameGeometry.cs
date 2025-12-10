@@ -146,16 +146,11 @@ namespace FellowOakDicom.Imaging
             if (imagePatientPosition.Length == 0 && imagePatientOrientation.Length == 0)
             {
                 Orientation = FrameOrientation.None;
-                PointTopLeft = new Point3D(0, 0, 0);
-                DirectionRow = new Vector3D(1, 0, 0);
-                DirectionColumn = new Vector3D(0, 1, 0);
             }
-            else
-            {
-                PointTopLeft = new Point3D(imagePatientPosition);
-                DirectionRow = new Vector3D(imagePatientOrientation, 0);
-                DirectionColumn = new Vector3D(imagePatientOrientation, 3);
-            }
+
+            PointTopLeft = imagePatientPosition.Length >= 3 ? new Point3D(imagePatientPosition) : new Point3D(0, 0, 0);
+            DirectionRow = imagePatientOrientation.Length >= 3 ? new Vector3D(imagePatientOrientation, 0) : new Vector3D(1, 0, 0);
+            DirectionColumn = imagePatientOrientation.Length >= 6 ? new Vector3D(imagePatientOrientation, 3) : new Vector3D(0, 1, 0);
 
             DirectionNormal = DirectionRow.CrossProduct(DirectionColumn);
             if (DirectionNormal.IsZero)
