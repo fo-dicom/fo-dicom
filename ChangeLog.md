@@ -1,4 +1,5 @@
 ### 5.2.6 (TBD)
+- Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
 
 ### 5.2.5 (2025-11-16)
 - Add INetoworkMetricsCollector, that is invoked by DicomService, to optionally collect metrics (#2039)
