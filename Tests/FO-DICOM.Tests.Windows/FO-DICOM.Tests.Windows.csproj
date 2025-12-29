@@ -19,7 +19,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>fo-dicom.Tests.Windows</AssemblyName>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <OutputType>Library</OutputType>
     <Platforms>AnyCPU;x64</Platforms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
