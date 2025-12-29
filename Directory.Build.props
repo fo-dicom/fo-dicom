@@ -4,7 +4,7 @@
         <Company>fo-dicom</Company>
         <Copyright>Copyright © fo-dicom contributors 2012-2026</Copyright>
         <Description>fo-dicom</Description>
-        <LangVersion>13.0</LangVersion>
+        <LangVersion>14.0</LangVersion>
 
         <AssemblyVersion>6.0.0</AssemblyVersion>
         <FileVersion>6.0.0.0</FileVersion>

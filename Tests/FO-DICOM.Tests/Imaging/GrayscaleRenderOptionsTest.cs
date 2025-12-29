@@ -14,7 +14,7 @@ namespace FellowOakDicom.Tests.Imaging
     {
         #region Unit tests
 
-        [FactForNetCore]
+        [Fact]
         public void ColorMap_Monochrome2ImageOptions_ReturnsMonochrome2ColorMap()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Same(ColorTable.Monochrome2, options.ColorMap);
         }
 
-        [FactForNetCore]
+        [Fact]
         public void ColorMap_Setter_ReturnsSetColorMap()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
