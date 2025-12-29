@@ -880,11 +880,7 @@ namespace FellowOakDicom.Tests
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
-#if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.1")
-#else
                         Encoding.Default.GetBytes("1.1")
-#endif
                     )
                 ) },
                 false // do not validate, since the VR violation is intended.
@@ -901,11 +897,7 @@ namespace FellowOakDicom.Tests
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
-#if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.1")
-#else
                         Encoding.Default.GetBytes("1.1")
-#endif
                     )
                 ) },
                 false // do not validate, since the VR violation is intended.
@@ -922,11 +914,7 @@ namespace FellowOakDicom.Tests
                 new DicomIntegerString(
                     DicomTag.SeriesNumber,
                     new MemoryByteBuffer(
-#if NETSTANDARD
-                        Encoding.GetEncoding(0).GetBytes("1.1")
-#else
                         Encoding.Default.GetBytes("1.1")
-#endif
                     )
                 ) },
                 false // do not validate, since the VR violation is intended.

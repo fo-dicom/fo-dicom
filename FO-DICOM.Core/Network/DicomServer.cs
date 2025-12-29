@@ -20,11 +20,7 @@ namespace FellowOakDicom.Network
     /// Representation of a DICOM server.
     /// </summary>
     /// <typeparam name="T">DICOM service that the server should manage.</typeparam>
-    public class DicomServer<
-#if NET6_0_OR_GREATER
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
-#endif
-        T> : IDicomServer<T> where T : DicomService, IDicomServiceProvider
+    public class DicomServer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T> : IDicomServer<T> where T : DicomService, IDicomServiceProvider
     {
         #region FIELDS
 

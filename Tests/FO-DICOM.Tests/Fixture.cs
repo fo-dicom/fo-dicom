@@ -38,8 +38,6 @@ namespace FellowOakDicom.Tests
             var collectionLogServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register(TestCollections.Logging, collectionLogServiceProvider);
 
-#if !NET462
-
             serviceCollection = new ServiceCollection()
                 .AddFellowOakDicom()
                 .AddTranscoderManager<NativeTranscoderManager>()
@@ -53,8 +51,6 @@ namespace FellowOakDicom.Tests
                 .AddTranscoderManager<NativeTranscoderManager>();
             var noTranscoderServiceProvider = serviceCollection.BuildServiceProvider();
             serviceProviders.Register(TestCollections.WithTranscoder, noTranscoderServiceProvider);
-
-#endif
 
             DicomSetupBuilder.UseServiceProvider(serviceProviders);
         }

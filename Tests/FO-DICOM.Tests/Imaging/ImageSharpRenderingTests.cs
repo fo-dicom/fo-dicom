@@ -13,11 +13,7 @@ namespace FellowOakDicom.Tests.Imaging
     public class ImageSharpRenderingTests
     {
 
-#if NET462
-        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
-#else
         [Fact]
-#endif
         public void TestRenderImage()
         {
             var image = ImageManager.CreateImage(100, 100);
@@ -25,11 +21,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.IsType<ImageSharpImage>(image);
         }
 
-#if NET462
-        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
-#else
         [Fact]
-#endif
         public void TestActualRendering()
         {
             var dcmImage = new DicomImage(TestData.Resolve("CT-MONO2-16-ankle"));

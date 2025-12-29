@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
 
         #region Unit tests
 
-        [TheoryForNetCore]
+        [Theory]
         [MemberData(nameof(TransferSyntaxesNames))]
         public void GetCodec_KnownTransferSyntax_ShouldReturnCodecObject(DicomTransferSyntax transferSyntax, string expected)
         {

@@ -257,17 +257,10 @@ namespace FellowOakDicom.Tests.Bugs
                 throw new NotSupportedException();
             }
 
-#if NET462
-            public ValueTask DisposeAsync()
-            {
-                return default;
-            }
-#else
             public override ValueTask DisposeAsync()
             {
                 return default;
             }
-#endif
         }
     }
 }

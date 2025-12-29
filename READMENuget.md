@@ -9,7 +9,6 @@ Fellow Oak DICOM is a DICOM toolkit in C# for all .NET Standard 2.0 compatible f
 This library is licensed under the [Microsoft Public License (MS-PL)](http://opensource.org/licenses/MS-PL). See [License.txt](License.txt) for more information.
 
 ### Features
-* Targets .NET Standard 2.0
 * DICOM dictionary version 2025d
 * High-performance, fully asynchronous `async`/`await` API
 * JPEG (including lossless), JPEG-LS, JPEG2000, HTJPEG2000, and RLE image compression (via additional package)
@@ -24,11 +23,11 @@ This library is licensed under the [Microsoft Public License (MS-PL)](http://ope
 
 Fellow Oak DICOM officially supports the following runtimes:
 
-* .NET Core 8.0
-* .NET Core 9.0
-* .NET Framework 4.6.2
+* .NET 8.0
+* .NET 9.0
+* .NET 10.0
 
-Other runtimes that implement .NET Standard 2.0 may work, but be aware that our CI pipeline only tests these platforms (and only on Windows)
+Other runtimes may work, but be aware that our CI pipeline only tests these platforms (and only on Windows)
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
