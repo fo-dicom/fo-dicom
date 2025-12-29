@@ -46,7 +46,7 @@ namespace FellowOakDicom.Tests.Bugs
                 Setup.ServiceProvider);
         }
 
-        [TheoryForNetCore] // This test is flaky in .NET Framework
+        [Theory] // This test is flaky in .NET Framework
         [InlineData(1)]
         [InlineData(3)]
         public async Task SendingCStoreRequest_AfterPreviousCStoreRequestTimedOut_ShouldUseSeparateAssociation(int asyncInvoked)

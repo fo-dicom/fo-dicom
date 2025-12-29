@@ -12,6 +12,18 @@
 		<Platforms>AnyCPU;x64</Platforms>
 		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 		<!-- 
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-windows;net9.0-windows;net8.0-windows</TargetFrameworks>
+    <RootNamespace>FellowOakDicom.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>fo-dicom.Tests.Windows</AssemblyName>
+    <LangVersion>8.0</LangVersion>
+    <OutputType>Library</OutputType>
+    <Platforms>AnyCPU;x64</Platforms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- 
       Suppress warning CS8002 because Dicom.NativeCodecs is not strong named, 
       but since .NET Core you can reference unsigned assemblies from signed assemblies without issues
      -->

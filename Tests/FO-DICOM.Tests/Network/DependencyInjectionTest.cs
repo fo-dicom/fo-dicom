@@ -23,11 +23,7 @@ namespace FellowOakDicom.Tests.Network
 
         }
 
-#if NET462
-        [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this
-#else
         [Fact]
-#endif
         public async Task DependencyPropertyHasValue()
         {
             var serviceCollection = new ServiceCollection()
