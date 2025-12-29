@@ -17,7 +17,7 @@
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
-    <LangVersion>9</LangVersion>
+    <LangVersion>14</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
     <DebugType>Embedded</DebugType>
   </PropertyGroup>

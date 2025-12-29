@@ -712,6 +712,7 @@ namespace FellowOakDicom.Tests.Serialization
         private static DicomDataset[] LegacyConvertJsonToDicomArray(string json)
         {
             var options = new JsonSerializerOptions();
+            options.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
 #pragma warning disable CS0618
             options.Converters.Add(new DicomArrayJsonConverter());
 #pragma warning restore CS0618
@@ -1173,6 +1174,7 @@ namespace FellowOakDicom.Tests.Serialization
             var converter = new DicomJsonConverter(autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
 
             var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
             serializerOptions.Converters.Add(converter);
 
             var json = JsonSerializer.Serialize(dicomDataset, serializerOptions);
@@ -1194,6 +1196,7 @@ namespace FellowOakDicom.Tests.Serialization
             var converter = new DicomJsonConverter(autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
 
             var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
             serializerOptions.Converters.Add(converter);
 
             var json = JsonSerializer.Serialize(dicomDataset, serializerOptions);
@@ -1442,6 +1445,7 @@ namespace FellowOakDicom.Tests.Serialization
             };
 
             var options = new JsonSerializerOptions();
+            options.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
             options.Converters.Add(converter);
             var json = JsonSerializer.Serialize(dataset, options);
 
@@ -1455,6 +1459,7 @@ namespace FellowOakDicom.Tests.Serialization
             var ds = new DicomDataset(new DicomOtherByteFragment(DicomTag.PixelData));
             var jsonOptions = new JsonSerializerOptions
             {
+                TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default,
                 WriteIndented = true,
                 Converters = { new DicomJsonConverter() }
             };

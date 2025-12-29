@@ -20,8 +20,9 @@ If you find some breaking changes when updating, read here for more information 
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageId>fo-dicom</PackageId>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
+    <GenerateJsonSourceContexts>true</GenerateJsonSourceContexts>
   </PropertyGroup>
 
   <ItemGroup>
