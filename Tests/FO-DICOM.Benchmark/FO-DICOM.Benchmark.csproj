@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="BenchmarkDotNet" Version="0.15.5" />
-    <PackageReference Include="fo-dicom.Codecs" Version="5.16.4" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.16.5.1" />
   </ItemGroup>
 
   <ItemGroup>
