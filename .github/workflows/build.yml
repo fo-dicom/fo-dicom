@@ -38,7 +38,7 @@ jobs:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Setup .NET
       if: ${{ matrix.frameworks.common != 'net462' }}
       uses: actions/setup-dotnet@v5
@@ -72,7 +72,7 @@ jobs:
   benchmarks:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net8.0
     - name: run benchmarks
