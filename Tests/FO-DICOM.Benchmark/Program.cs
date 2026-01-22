@@ -3,7 +3,9 @@
 #nullable disable
 
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 
 namespace FellowOakDicom.Benchmark
 {
@@ -11,10 +13,12 @@ namespace FellowOakDicom.Benchmark
     {
         static void Main()
         {
+            var config = DefaultConfig.Instance.AddJob(Job.MediumRun.WithToolchain(InProcessNoEmitToolchain.Instance));
+
             // Run all benchmarks in assembly
             BenchmarkRunner.Run(typeof(Program).Assembly,
  //           BenchmarkRunner.Run<ParseDatasetBenchmark>(
-                ManualConfig.Create(DefaultConfig.Instance)
+                ManualConfig.Create(config)
                 .WithOptions(ConfigOptions.JoinSummary)
                 .WithOptions(ConfigOptions.DisableOptimizationsValidator)
                 );

@@ -1175,7 +1175,7 @@ namespace FellowOakDicom
         /// <param name="item">DICOM item to add.</param>
         /// <param name="allowUpdate">True if existing tag can be updated, false if method should throw when trying to add already existing tag.</param>
         /// <returns>The dataset instance.</returns>
-        private DicomDataset DoAdd(DicomItem item, bool allowUpdate)
+        internal DicomDataset DoAdd(DicomItem item, bool allowUpdate)
         {
             if (item != null)
             {

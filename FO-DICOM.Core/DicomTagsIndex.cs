@@ -25,11 +25,10 @@ namespace FellowOakDicom
         {
             var allDicomTags = typeof(DicomTag)
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
-                .Where(field => field.FieldType == typeof(DicomTag))
+                .Where(field => typeof(DicomTag).IsAssignableFrom(field.FieldType))
                 .Select(field => field.GetValue(null) as DicomTag)
                 .Where(tag => tag != null)
                 .ToList();
-
             var index = new Dictionary<uint, DicomTag>(allDicomTags.Count);
             foreach (var tag in allDicomTags)
             {
@@ -40,18 +39,17 @@ namespace FellowOakDicom
                 }
             }
 
-
             return index;
         }
-        
+
         /// <summary>
         /// Looks up or creates a DICOM tag based on its group and element
         /// </summary>
         /// <param name="group">The group of the DICOM tag</param>
         /// <param name="element">The element of the DICOM tag</param>
         /// <returns>A tag from the known DICOM tag index or a newly created instance of <see cref="DicomTag"/> otherwise</returns>
-        public static DicomTag LookupOrCreate(ushort group, ushort element) => 
-            _index.Value.TryGetValue(((uint)group << 16) | element, out var tag)
+        public static DicomTag LookupOrCreate(ushort group, ushort element) =>
+            _index.Value.TryGetValue(((uint) group << 16) | element, out var tag)
                 ? tag
                 : new DicomTag(group, element);
     }

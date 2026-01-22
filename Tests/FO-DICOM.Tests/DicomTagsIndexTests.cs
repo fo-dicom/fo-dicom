@@ -11,7 +11,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void ShouldFindKnownDicomTags()
         {
-            var tagsToTest = new[]
+            var tagsToTest = new DicomTag[]
             {
                 DicomTag.AccessionNumber,
                 DicomTag.PatientID,

@@ -12,7 +12,7 @@ namespace FellowOakDicom
     /// <summary>
     /// DICOM Tag
     /// </summary>
-    public sealed partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable
+    public partial class DicomTag : IFormattable, IEquatable<DicomTag>, IComparable<DicomTag>, IComparable
     {
         public static readonly DicomTag Unknown = new DicomTag(0xffff, 0xffff);
 
@@ -225,4 +225,531 @@ namespace FellowOakDicom
         }
 
     }
+
+
+    public sealed class DicomTagUL : DicomTag
+    {
+        public DicomTagUL(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUL(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUL(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUI : DicomTag
+    {
+        public DicomTagUI(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUI(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUI(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUS : DicomTag
+    {
+        public DicomTagUS(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUS(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUS(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagAE : DicomTag
+    {
+        public DicomTagAE(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagAE(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagAE(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagAT : DicomTag
+    {
+        public DicomTagAT(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagAT(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagAT(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagLO : DicomTag
+    {
+        public DicomTagLO(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagLO(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagLO(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagSH : DicomTag
+    {
+        public DicomTagSH(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagSH(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagSH(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagLT : DicomTag
+    {
+        public DicomTagLT(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagLT(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagLT(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagCS : DicomTag
+    {
+        public DicomTagCS(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagCS(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagCS(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagIS : DicomTag
+    {
+        public DicomTagIS(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagIS(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagIS(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagOB : DicomTag
+    {
+        public DicomTagOB(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagOB(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagOB(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUR : DicomTag
+    {
+        public DicomTagUR(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUR(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUR(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagTM : DicomTag
+    {
+        public DicomTagTM(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagTM(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagTM(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagDT : DicomTag
+    {
+        public DicomTagDT(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagDT(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagDT(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagSQ : DicomTag
+    {
+        public DicomTagSQ(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagSQ(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagSQ(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagST : DicomTag
+    {
+        public DicomTagST(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagST(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagST(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUT : DicomTag
+    {
+        public DicomTagUT(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUT(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUT(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUV : DicomTag
+    {
+        public DicomTagUV(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUV(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUV(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagPN : DicomTag
+    {
+        public DicomTagPN(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagPN(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagPN(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagFD : DicomTag
+    {
+        public DicomTagFD(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagFD(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagFD(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUC : DicomTag
+    {
+        public DicomTagUC(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUC(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUC(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagAS : DicomTag
+    {
+        public DicomTagAS(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagAS(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagAS(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagDS : DicomTag
+    {
+        public DicomTagDS(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagDS(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagDS(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagDA : DicomTag
+    {
+        public DicomTagDA(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagDA(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagDA(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagSL : DicomTag
+    {
+        public DicomTagSL(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagSL(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagSL(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagFL : DicomTag
+    {
+        public DicomTagFL(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagFL(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagFL(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagOW : DicomTag
+    {
+        public DicomTagOW(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagOW(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagOW(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagOD : DicomTag
+    {
+        public DicomTagOD(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagOD(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagOD(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagSS : DicomTag
+    {
+        public DicomTagSS(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagSS(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagSS(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagOF : DicomTag
+    {
+        public DicomTagOF(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagOF(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagOF(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagOV : DicomTag
+    {
+        public DicomTagOV(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagOV(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagOV(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagSV : DicomTag
+    {
+        public DicomTagSV(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagSV(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagSV(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagNO : DicomTag
+    {
+        public DicomTagNO(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagNO(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagNO(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagOL : DicomTag
+    {
+        public DicomTagOL(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagOL(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagOL(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
+    public sealed class DicomTagUN : DicomTag
+    {
+        public DicomTagUN(ushort group, ushort element)
+            : base(group, element)
+        { }
+
+        public DicomTagUN(ushort group, ushort element, string privateCreator)
+            : base(group, element, privateCreator)
+        { }
+
+        public DicomTagUN(ushort group, ushort element, DicomPrivateCreator privateCreator)
+            : base(group, element, privateCreator)
+        { }
+    }
+
 }

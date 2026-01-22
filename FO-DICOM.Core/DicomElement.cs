@@ -132,7 +132,7 @@ namespace FellowOakDicom
         /// <value>Number of value items.</value>
         public override int Count => 1;
 
-        protected string StringValue
+        internal string StringValue
         {
             get
             {
@@ -216,8 +216,8 @@ namespace FellowOakDicom
 
         #region FIELDS
 
-        private int _count = -1;
-        private string[] _values;
+        internal int _count = -1;
+        internal string[] _values;
 
         #endregion
 
@@ -250,7 +250,7 @@ namespace FellowOakDicom
 
         #region Private Methods
 
-        private void EnsureSplitValues()
+        internal void EnsureSplitValues()
         {
             if (_values == null || _count == -1)
             {
@@ -334,7 +334,7 @@ namespace FellowOakDicom
 
         private const DateTimeStyles _dicomDateElementStyle = DateTimeStyles.NoCurrentDateDefault;
 
-        private DateTime[] _values;
+        internal DateTime[] _dateValues;
 
         #endregion
 
@@ -443,16 +443,16 @@ namespace FellowOakDicom
                 return (T)(object)range;
             }
 
-            if (_values == null)
+            if (_dateValues == null)
             {
                 string[] vals = base.Get<string[]>();
                 if (vals.Length == 1 && string.IsNullOrEmpty(vals[0]))
                 {
-                    _values = Array.Empty<DateTime>();
+                    _dateValues = Array.Empty<DateTime>();
                 }
                 else
                 {
-                    _values = vals.Select(val => DateTime.ParseExact(
+                    _dateValues = vals.Select(val => DateTime.ParseExact(
                             val,
                             DateFormats,
                             _dicomDateElementFormat,
@@ -463,16 +463,16 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object))
             {
-                if (item == -1) return (T)((object)_values[0]);
+                if (item == -1) return (T)((object)_dateValues[0]);
 
                 if (item < 0 || item >= Count) throw new ArgumentOutOfRangeException(nameof(item), "Index is outside the range of available value items");
 
-                return (T)((object)_values[item]);
+                return (T)((object)_dateValues[item]);
             }
 
             if (typeof(T) == typeof(DateTime[]) || typeof(T) == typeof(object[]))
             {
-                return (T)(object)_values;
+                return (T)(object)_dateValues;
             }
 
             return base.Get<T>(item);
@@ -480,6 +480,29 @@ namespace FellowOakDicom
 
         #endregion
 
+        internal void EnsureParseDates()
+        {
+            if (_dateValues == null)
+            {
+                string[] vals = base.Get<string[]>();
+                if (vals.Length == 1 && string.IsNullOrEmpty(vals[0]))
+                {
+                    _dateValues = Array.Empty<DateTime>();
+                }
+                else
+                {
+                    _dateValues = new DateTime[vals.Length];
+                    for (int i = 0; i < vals.Length; i++)
+                    {
+                        _dateValues[i] = DateTime.ParseExact(
+                            vals[i],
+                            DateFormats,
+                            _dicomDateElementFormat,
+                            _dicomDateElementStyle);
+                    }
+                }
+            }
+        }
     }
 
     public abstract class DicomValueElement<Tv> : DicomElement

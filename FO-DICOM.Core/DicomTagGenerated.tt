@@ -1,6 +1,6 @@
 ﻿<#@ include file="T4/dictionarymethods.t4" #>
 <#@ output extension=".cs" #>
-// Copyright (c) 2012-2025 fo-dicom contributors.
+// Copyright (c) 2012-2026 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace FellowOakDicom
@@ -18,7 +18,7 @@ namespace FellowOakDicom
         var description = ToXmlValidDescription(tag.Item4);
 #>
         ///<summary>(<#= tag.Item1 #>,<#= tag.Item2 #>) VR=<#= tag.Item5 #> VM=<#= tag.Item6 #> <#= description #><#= tag.Item7 ? " (RETIRED)" : "" #></summary>
-        public readonly static DicomTag <#= ToTagKeyword(tag.Item3, tag.Item7) #> = new DicomTag(0x<#= ToStrictNumeric(tag.Item1) #>, 0x<#= ToStrictNumeric(tag.Item2) #>);
+        public readonly static DicomTag<#= tag.Item5.Substring(0,2) #> <#= ToTagKeyword(tag.Item3, tag.Item7) #> = new DicomTag<#= tag.Item5.Substring(0,2) #>(0x<#= ToStrictNumeric(tag.Item1) #>, 0x<#= ToStrictNumeric(tag.Item2) #>);
 
 <#
     }
