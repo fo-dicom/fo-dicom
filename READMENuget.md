@@ -27,7 +27,7 @@ Fellow Oak DICOM officially supports the following runtimes:
 * .NET 9.0
 * .NET 10.0
 
-Other runtimes may work, but be aware that our CI pipeline only tests these platforms (and only on Windows)
+Other runtimes may work, but be aware that our CI pipeline only tests these platforms
 
 ### Installation
 Easiest is to obtain *fo-dicom* binaries from [NuGet](https://www.nuget.org/packages/fo-dicom/). This package reference the core *fo-dicom* assemblies for all Microsoft and Xamarin platforms.
