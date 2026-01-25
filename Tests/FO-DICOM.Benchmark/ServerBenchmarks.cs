@@ -14,10 +14,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FellowOakDicom.Benchmark
 {
-    //[MemoryDiagnoser]
-    //[MaxIterationCount(25)]
-    //[MaxWarmupCount(10)]
-    //[InvocationCount(128,16)]
+    [MemoryDiagnoser]
+    [MaxIterationCount(25)]
+    [MaxWarmupCount(10)]
+    [InvocationCount(128, 16)]
     public class ServerBenchmarks
     {
         private string _rootPath;
@@ -77,14 +77,14 @@ namespace FellowOakDicom.Benchmark
             _cEchoServer.Dispose();
         }
 
-        //[Benchmark]
+        [Benchmark]
         public async Task SendEchoToServer()
         {
             await _cEchoClient.AddRequestAsync(new DicomCEchoRequest());
             await _cEchoClient.SendAsync();
         }
 
-        //[Benchmark]
+        [Benchmark]
         public async Task SendStoreToServer()
         {
             await _cStoreClient.AddRequestAsync(new DicomCStoreRequest(_sampleFile));
