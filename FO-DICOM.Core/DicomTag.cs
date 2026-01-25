@@ -52,7 +52,8 @@ namespace FellowOakDicom
 
         public DicomPrivateCreator PrivateCreator { get; set; }
 
-        public DicomDictionaryEntry DictionaryEntry => DicomDictionary.Default[this];
+        private DicomDictionaryEntry _dictionaryEntry = null;
+        public DicomDictionaryEntry DictionaryEntry => _dictionaryEntry ??= DicomDictionary.Default[this];
 
         public override string ToString()
             => ToString("G", null);

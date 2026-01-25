@@ -34,31 +34,32 @@ namespace FellowOakDicom.Benchmark
             new DicomSetupBuilder()
                 .RegisterServices(s => s
                 .AddFellowOakDicom()
-                .AddTranscoderManager<FellowOakDicom.Imaging.NativeCodec.NativeTranscoderManager>())
+                //.AddTranscoderManager<FellowOakDicom.Imaging.NativeCodec.NativeTranscoderManager>()
+                )
                 .Build();
 
             var tomofilename = Path.Combine(_rootpath, "Data\\CT0070.dcm");
             _loadedTomo = DicomFile.Open(tomofilename).Dataset;
         }
 
-        [Benchmark]
-        public void RenderFirstFrameOfWSI()
-        {
-            var filename = Path.Combine(_rootpath, "Data\\multiframe.dcm");
-            var image = new DicomImage(filename);
-            var rendered = image.RenderImage(0);
-        }
+        //[Benchmark]
+        //public void RenderFirstFrameOfWSI()
+        //{
+        //    var filename = Path.Combine(_rootpath, "Data\\multiframe.dcm");
+        //    var image = new DicomImage(filename);
+        //    var rendered = image.RenderImage(0);
+        //}
 
-        [Benchmark]
-        public void RenderFourFramesOfWSI()
-        {
-            var filename = Path.Combine(_rootpath, "Data\\multiframe.dcm");
-            var image = new DicomImage(filename);
-            var rendered = image.RenderImage(0);
-            rendered = image.RenderImage(5);
-            rendered = image.RenderImage(50);
-            rendered = image.RenderImage(130);
-        }
+        //[Benchmark]
+        //public void RenderFourFramesOfWSI()
+        //{
+        //    var filename = Path.Combine(_rootpath, "Data\\multiframe.dcm");
+        //    var image = new DicomImage(filename);
+        //    var rendered = image.RenderImage(0);
+        //    rendered = image.RenderImage(5);
+        //    rendered = image.RenderImage(50);
+        //    rendered = image.RenderImage(130);
+        //}
 
         [Benchmark]
         public void RenderFirstFrameOfTomo()

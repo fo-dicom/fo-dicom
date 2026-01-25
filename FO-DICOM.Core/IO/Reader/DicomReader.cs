@@ -368,7 +368,7 @@ namespace FellowOakDicom.IO.Reader
                         // If the VR is 0x2020, try to use the first known VR of the tag (issue #179)
                         if (entry != null && (vrMemory.Bytes[0] == 0x20 && vrMemory.Bytes[1] == 0x20))
                         {
-                            vr = entry.ValueRepresentations.FirstOrDefault();
+                            vr = entry.ValueRepresentations.FirstIfExists();
                         }
                         else
                         {
@@ -393,7 +393,7 @@ namespace FellowOakDicom.IO.Reader
                         }
                         else
                         {
-                            vr = entry.ValueRepresentations.FirstOrDefault();
+                            vr = entry.ValueRepresentations.FirstIfExists();
                         }
                     }
                 }
@@ -541,7 +541,7 @@ namespace FellowOakDicom.IO.Reader
                     var entry = _dictionary[tag];
                     if (entry != null)
                     {
-                        vr = entry.ValueRepresentations.FirstOrDefault();
+                        vr = entry.ValueRepresentations.FirstIfExists();
                     }
 
                     vr ??= DicomVR.UN;
@@ -677,7 +677,7 @@ namespace FellowOakDicom.IO.Reader
                     var entry = _dictionary[tag];
                     if (entry != null)
                     {
-                        vr = entry.ValueRepresentations.FirstOrDefault() ?? DicomVR.UN;
+                        vr = entry.ValueRepresentations.FirstIfExists() ?? DicomVR.UN;
                     }
                 }
 

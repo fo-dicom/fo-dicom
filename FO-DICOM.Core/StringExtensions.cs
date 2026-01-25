@@ -12,7 +12,14 @@ namespace FellowOakDicom
     {
         public static bool IsDigits(this string s)
         {
-            foreach (char c in s) if (!char.IsDigit(c)) return false;
+            foreach (char c in s)
+            {
+                if (!char.IsDigit(c))
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -21,7 +28,10 @@ namespace FellowOakDicom
             var parts = s.Split(separator);
             foreach (string part in parts)
             {
-                if (part.Trim() == value) return true;
+                if (part.Trim() == value)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -52,7 +62,10 @@ namespace FellowOakDicom
         /// <returns></returns>
         public static bool Wildcard(this string s, string pattern, bool caseSensitive)
         {
-            if (pattern == "*") return true;
+            if (pattern == "*")
+            {
+                return true;
+            }
 
             // if not concerned about case, convert both string and pattern
             // to lower case for comparison
@@ -63,7 +76,10 @@ namespace FellowOakDicom
             }
 
             // if pattern doesn't actually contain any wildcards, use simple equality
-            if (pattern.IndexOfAny(Wildcards) == -1) return (s == pattern);
+            if (pattern.IndexOfAny(Wildcards) == -1)
+            {
+                return (s == pattern);
+            }
 
             // otherwise do pattern matching
             int i = 0;
@@ -126,6 +142,13 @@ namespace FellowOakDicom
                 action(item);
             }
         }
+
+    }
+
+    public static class ArrayExtensions
+    {
+
+        public static T FirstIfExists<T>(this T[] values) => values != null && values.Length > 0 ? values[0] : default;
 
     }
 }

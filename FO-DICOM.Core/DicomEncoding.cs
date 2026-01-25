@@ -284,7 +284,7 @@ namespace FellowOakDicom
 
         internal static string DecodeBytes(IByteBuffer buffer, Encoding[] encodings, bool isPersonName)
         {
-            var firstEncoding = encodings?.FirstOrDefault() ?? Default;
+            var firstEncoding = encodings?.FirstIfExists() ?? Default;
             var value = buffer.Data;
             if (encodings == null || encodings.Length < 2)
             {

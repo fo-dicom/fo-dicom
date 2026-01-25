@@ -68,7 +68,7 @@ namespace FellowOakDicom
     /// Base class for a DICOM string element.
     /// </summary>
     /// <seealso cref="DicomPersonName"/>
-    public abstract class DicomStringElement : DicomElement
+    public abstract class DicomStringElement : DicomElement, IDicomString
     {
 
         #region FIELDS
@@ -124,7 +124,7 @@ namespace FellowOakDicom
 
         public Encoding TargetEncoding
         {
-            get => _targetEncodings?.FirstOrDefault() ?? DicomEncoding.Default;
+            get => _targetEncodings?.FirstIfExists() ?? DicomEncoding.Default;
             set => TargetEncodings = new[] { value };
         }
 
@@ -209,9 +209,17 @@ namespace FellowOakDicom
             }
             return false;
         }
+
+        #region IDicomString members
+
+        bool IDicomString.Exists => true;
+
+        string IDicomString.Value => StringValue;
+
+        #endregion
     }
 
-    public abstract class DicomMultiStringElement : DicomStringElement
+    public abstract class DicomMultiStringElement : DicomStringElement, IDicomStrings
     {
 
         #region FIELDS
@@ -324,9 +332,25 @@ namespace FellowOakDicom
 
         #endregion
 
+        #region IDicomStrings Members
+
+        public bool Exists => true;
+
+        public string Value => StringValue ?? string.Empty;
+
+        public string[] Values
+        {
+            get
+            {
+                EnsureSplitValues();
+                return _values;
+            }
+        }
+
+        #endregion
     }
 
-    public abstract class DicomDateElement : DicomMultiStringElement
+    public abstract class DicomDateElement : DicomMultiStringElement, IDicomDate
     {
         #region FIELDS
 
@@ -350,6 +374,7 @@ namespace FellowOakDicom
             : base(tag, values.Select(x => x.ToString(dateFormats[0]).Replace(":", string.Empty)).ToArray())
         {
             DateFormats = dateFormats;
+            _dateValues = values;
         }
 
         /// <summary>
@@ -480,11 +505,43 @@ namespace FellowOakDicom
 
         #endregion
 
+        #region IDicomDate members
+
+        DateTime? IDicomDate.Value
+        {
+            get
+            {
+                EnsureParseDates();
+                return _dateValues?.FirstIfExists();
+            }
+        }
+
+        DateTime[] IDicomDate.Values
+        {
+            get
+            {
+                EnsureParseDates();
+                return _dateValues;
+            }
+        }
+
+        public string[] StringValues
+        {
+            get
+            {
+                EnsureSplitValues();
+                return _values;
+            }
+        }
+
+        #endregion
+
         internal void EnsureParseDates()
         {
             if (_dateValues == null)
             {
-                string[] vals = base.Get<string[]>();
+                EnsureSplitValues();
+                string[] vals = base._values;
                 if (vals.Length == 1 && string.IsNullOrEmpty(vals[0]))
                 {
                     _dateValues = Array.Empty<DateTime>();
@@ -505,15 +562,18 @@ namespace FellowOakDicom
         }
     }
 
-    public abstract class DicomValueElement<Tv> : DicomElement
+    public abstract class DicomValueElement<Tv> : DicomElement, IDicomValue<Tv>
         where Tv : struct
     {
+
+        private Tv[] _parsedValues;
 
         #region Constructors
 
         protected DicomValueElement(DicomTag tag, params Tv[] values)
             : this(tag, ByteConverter.ToByteBuffer<Tv>(values))
         {
+            _parsedValues = values;
         }
 
         protected DicomValueElement(DicomTag tag, IByteBuffer data)
@@ -526,6 +586,18 @@ namespace FellowOakDicom
         #region Public Properties
 
         public override int Count => (int)Buffer.Size / ValueRepresentation.UnitSize;
+
+        #endregion
+
+        #region private members
+
+        private void EnsureParsed()
+        {
+            if (_parsedValues == null)
+            {
+                _parsedValues = ByteConverter.ToArray<Tv>(Buffer);
+            }
+        }
 
         #endregion
 
@@ -608,6 +680,39 @@ namespace FellowOakDicom
 
         #endregion
 
+        #region IDicomValue members
+
+        bool IDicomValue<Tv>.Exists => true;
+
+        Tv? IDicomValue<Tv>.Value
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues.FirstIfExists();
+            }
+        }
+
+        Tv[] IDicomValue<Tv>.Values
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues;
+            }
+        }
+
+        string[] IDicomValue<Tv>.StringValues
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues.Select(x => x.ToString()).ToArray();
+            }
+        }
+
+        #endregion
+
     }
 
     /// <summary>Application Entity (AE)</summary>
@@ -662,7 +767,7 @@ namespace FellowOakDicom
     }
 
     /// <summary>Attribute Tag (AT)</summary>
-    public class DicomAttributeTag : DicomElement
+    public class DicomAttributeTag : DicomElement, IDicomAttributeTag
     {
         #region FIELDS
 
@@ -691,7 +796,7 @@ namespace FellowOakDicom
 
         public override DicomVR ValueRepresentation => DicomVR.AT;
 
-        public IEnumerable<DicomTag> Values
+        public DicomTag[] Values
         {
             get
             {
@@ -711,7 +816,7 @@ namespace FellowOakDicom
             }
             private set
             {
-                _values = value.ToArray();
+                _values = value;
                 int length = _values.Length * 4;
                 byte[] buffer = new byte[length];
                 for (int i = 0; i < _values.Length; i++)
@@ -732,7 +837,7 @@ namespace FellowOakDicom
         public override T Get<T>(int item = -1)
         {
             if (item == -1) item = 0;
-            var tags = Values.ToArray();
+            var tags = Values;
 
             if (typeof(T) == typeof(DicomTag)) return (T)(object)tags[item];
 
@@ -751,11 +856,21 @@ namespace FellowOakDicom
             if (other is DicomAttributeTag otherAttribute)
             {
                 return (this.Values == null && otherAttribute.Values == null)
-                    || (this.Values != null && otherAttribute.Values != null && 
+                    || (this.Values != null && otherAttribute.Values != null &&
                         this.Values.SequenceEqual(otherAttribute.Values));
             }
             return false;
         }
+
+        #endregion
+
+        #region IDicomAttributeTag members
+
+        public bool Exists => true;
+
+        public DicomTag? Value => Values.FirstIfExists();
+
+        public string[] StringValues => Values.Select(x => x.ToString()).ToArray();
 
         #endregion
     }
@@ -841,16 +956,15 @@ namespace FellowOakDicom
         }
 
         #endregion
-
     }
 
     /// <summary>Decimal String (DS)</summary>
-    public class DicomDecimalString : DicomMultiStringElement
+    public class DicomDecimalString : DicomMultiStringElement, IDicomValue<decimal>
     {
 
         #region FIELDS
 
-        private decimal[] _values;
+        private decimal[] _parsedValues;
 
         #endregion
 
@@ -859,6 +973,8 @@ namespace FellowOakDicom
         public DicomDecimalString(DicomTag tag, params decimal[] values)
             : base(tag, values.Select(x => ToDecimalString(x)).ToArray())
         {
+            // directly remember the parsed values
+            _parsedValues = values;
         }
 
         public DicomDecimalString(DicomTag tag, params string[] values)
@@ -879,6 +995,14 @@ namespace FellowOakDicom
 
         #endregion
 
+        private void EnsureParsed()
+        {
+            _parsedValues ??= base.Values
+                // #1296 some invalid files have "," as decimal separator. because a comma is no valid character in DS, this cannot be misinterpretated and it is obvious to replace it by "."
+                .Select(x => decimal.Parse(x.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture))
+                .ToArray();
+        }
+
         #region Public Members
 
         public override T Get<T>(int item = -1)
@@ -886,23 +1010,16 @@ namespace FellowOakDicom
             // no need to parse values if returning string(s)
             if (typeof(T) == typeof(string) || typeof(T) == typeof(string[])) return base.Get<T>(item);
 
-            if (_values == null)
-            {
-                _values =
-                    base.Get<string[]>()
-                        // #1296 some invalid files have "," as decimal separator. because a comma is no valid character in DS, this cannot be misinterpretated and it is obvious to replace it by "."
-                        .Select(x => decimal.Parse(x.Replace(',','.'), NumberStyles.Any, CultureInfo.InvariantCulture))
-                        .ToArray();
-            }
+            EnsureParsed();
 
             if (typeof(T).GetTypeInfo().IsArray)
             {
                 var t = typeof(T).GetElementType();
 
-                if (t == typeof(decimal)) return (T)(object)_values;
+                if (t == typeof(decimal)) return (T)(object)_parsedValues;
 
                 var tu = Nullable.GetUnderlyingType(t) ?? t;
-                var tmp = _values.Select(x => Convert.ChangeType(x, tu));
+                var tmp = _parsedValues.Select(x => Convert.ChangeType(x, tu));
 
                 if (t == typeof(object)) return (T)(object)tmp.ToArray();
                 if (t == typeof(double)) return (T)(object)tmp.Cast<double>().ToArray();
@@ -925,7 +1042,7 @@ namespace FellowOakDicom
                 // If nullable, need to apply conversions on underlying type (#212)
                 var t = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
-                return (T)Convert.ChangeType(_values[item], t);
+                return (T)Convert.ChangeType(_parsedValues[item], t);
             }
 
             return base.Get<T>(item);
@@ -940,6 +1057,30 @@ namespace FellowOakDicom
             }
             return valueString;
         }
+
+        #endregion
+
+        #region IDicomDecimal members
+
+        decimal? IDicomValue<decimal>.Value
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues.FirstIfExists();
+            }
+        }
+
+        decimal[] IDicomValue<decimal>.Values
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues;
+            }
+        }
+
+        public string[] StringValues => base.Values;
 
         #endregion
 
@@ -1083,13 +1224,20 @@ namespace FellowOakDicom
     }
 
     /// <summary>Integer String (IS)</summary>
-    public class DicomIntegerString : DicomMultiStringElement
+    public class DicomIntegerString : DicomMultiStringElement, IDicomValue<int>
     {
+        #region Fields
+
+        private int[] _parsedValues;
+
+        #endregion
+
         #region Public Constructors
 
         public DicomIntegerString(DicomTag tag, params int[] values)
             : base(tag, values.Select(x => x.ToString(CultureInfo.InvariantCulture)).ToArray())
         {
+            _parsedValues = values;
         }
 
         public DicomIntegerString(DicomTag tag, params string[] values)
@@ -1110,9 +1258,14 @@ namespace FellowOakDicom
 
         #endregion
 
-        #region Public Members
+        private void EnsureParsed()
+        {
+            _parsedValues ??= base.Values
+                .Select(x => int.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture))
+                .ToArray();
+        }
 
-        private int[] _values;
+        #region Public Members
 
         public override T Get<T>(int item = -1)
         {
@@ -1125,24 +1278,21 @@ namespace FellowOakDicom
                 item = 0;
             }
 
-            if (_values == null)
-            {
-                _values = base.Get<string[]>().Select(x => int.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture)).ToArray();
-            }
+            EnsureParsed();
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(object))
             {
-                return (T)(object)_values[item];
+                return (T)(object)_parsedValues[item];
             }
 
             if (typeof(T).GetTypeInfo().IsArray)
             {
                 var t = typeof(T).GetElementType();
 
-                if (t == typeof(int)) return (T)(object)_values;
+                if (t == typeof(int)) return (T)(object)_parsedValues;
 
                 var tu = Nullable.GetUnderlyingType(t) ?? t;
-                var tmp = _values.Select(x => Convert.ChangeType(x, tu));
+                var tmp = _parsedValues.Select(x => Convert.ChangeType(x, tu));
 
                 if (t == typeof(object)) return (T)(object)tmp.ToArray();
                 if (t == typeof(decimal)) return (T)(object)tmp.Cast<decimal>().ToArray();
@@ -1175,14 +1325,38 @@ namespace FellowOakDicom
 
                 if (t.GetTypeInfo().IsEnum)
                 {
-                    return (T)Enum.ToObject(t, _values[item]);
+                    return (T)Enum.ToObject(t, _parsedValues[item]);
                 }
 
-                return (T)Convert.ChangeType(_values[item], t);
+                return (T)Convert.ChangeType(_parsedValues[item], t);
             }
 
             return base.Get<T>(item);
         }
+
+        #endregion
+
+        #region IDicomDecimal members
+
+        int? IDicomValue<int>.Value
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues.FirstIfExists();
+            }
+        }
+
+        int[] IDicomValue<int>.Values
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues;
+            }
+        }
+
+        public string[] StringValues => base.Values;
 
         #endregion
     }
@@ -1209,6 +1383,7 @@ namespace FellowOakDicom
         public override DicomVR ValueRepresentation => DicomVR.LO;
 
         #endregion
+
     }
 
     /// <summary>Long Text (LT)</summary>
@@ -1467,7 +1642,7 @@ namespace FellowOakDicom
     }
 
     /// <summary>Person Name (PN)</summary>
-    public sealed class DicomPersonName : DicomMultiStringElement
+    public sealed class DicomPersonName : DicomMultiStringElement, IDicomPersonName
     {
         #region Public Constructors
 
@@ -1520,19 +1695,19 @@ namespace FellowOakDicom
         private string GetComponent(int index)
         {
             string[] s = Get<string>()?.Split('\\');
-            if (s == null || !s.Any())
+            if (s == null || s.Length == 0)
             {
                 return "";
             }
 
             s = s[0].Split('=');
-            if (!s.Any())
+            if (s.Length == 0)
             {
                 return "";
             }
 
             s = s[0].Split('^');
-            if (s.Count() < index + 1)
+            if (s.Length <= index)
             {
                 return "";
             }
@@ -1571,6 +1746,22 @@ namespace FellowOakDicom
 
         #endregion
 
+        #region IDicomPersonName methods
+
+        public bool Exists => true;
+
+        public string Value => StringValue ?? string.Empty;
+
+        public string[] Values
+        {
+            get
+            {
+                EnsureSplitValues();
+                return _values;
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>Short String (SH)</summary>

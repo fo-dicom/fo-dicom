@@ -14,10 +14,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FellowOakDicom.Benchmark
 {
-    [MemoryDiagnoser]
-    [MaxIterationCount(25)]
-    [MaxWarmupCount(10)]
-    [InvocationCount(128,16)]
+    //[MemoryDiagnoser]
+    //[MaxIterationCount(25)]
+    //[MaxWarmupCount(10)]
+    //[InvocationCount(128,16)]
     public class ServerBenchmarks
     {
         private string _rootPath;
@@ -54,8 +54,8 @@ namespace FellowOakDicom.Benchmark
 
             _rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             _sampleFile = DicomFile.Open(Path.Combine(_rootPath, "Data\\GH355.dcm"));
-            _cStoreServer = _dicomServerFactory.Create<NopCStoreProvider>(11118);
-            _cEchoServer = _dicomServerFactory.Create<DicomCEchoProvider>(11119);
+            _cStoreServer = _dicomServerFactory.Create<NopCStoreProvider>(0);
+            _cEchoServer = _dicomServerFactory.Create<DicomCEchoProvider>(0);
             _cEchoClient = _dicomClientFactory.Create("127.0.0.1", _cEchoServer.Port, false, "SCU", "ANY-SCP");
             _cEchoClient.ServiceOptions.LogDimseDatasets = false;
             _cEchoClient.ServiceOptions.LogDataPDUs = false;
@@ -77,14 +77,14 @@ namespace FellowOakDicom.Benchmark
             _cEchoServer.Dispose();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public async Task SendEchoToServer()
         {
             await _cEchoClient.AddRequestAsync(new DicomCEchoRequest());
             await _cEchoClient.SendAsync();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public async Task SendStoreToServer()
         {
             await _cStoreClient.AddRequestAsync(new DicomCStoreRequest(_sampleFile));
