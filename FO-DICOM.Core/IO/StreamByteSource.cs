@@ -23,8 +23,6 @@ namespace FellowOakDicom.IO
 
         private BinaryReader _reader;
 
-        private readonly object _lock;
-
         #endregion
 
         #region CONSTRUCTORS
@@ -44,8 +42,6 @@ namespace FellowOakDicom.IO
             ReadOption = (readOption == FileReadOption.Default) ? FileReadOption.ReadLargeOnDemand : readOption;
 
             LargeObjectSize = largeObjectSize <= 0 ? 64 * 1024 : largeObjectSize;
-
-            _lock = new object();
         }
 
         #endregion
@@ -60,11 +56,8 @@ namespace FellowOakDicom.IO
             {
                 if (_endian != value)
                 {
-                    lock (_lock)
-                    {
-                        _endian = value;
-                        _reader = EndianBinaryReader.Create(_stream, _endian, false);
-                    }
+                    _endian = value;
+                    _reader = EndianBinaryReader.Create(_stream, _endian, false);
                 }
             }
         }
@@ -143,7 +136,9 @@ namespace FellowOakDicom.IO
             {
                 if (count < MemoryByteBuffer.MaxArrayLength)
                 {
-                    buffer = new MemoryByteBuffer(GetBytes((int)count));
+                    var bytes = GC.AllocateUninitializedArray<byte>((int)count);
+                    _stream.ReadExactly(bytes);
+                    buffer = new MemoryByteBuffer(bytes);
                 }
                 else
                 {
@@ -173,16 +168,10 @@ namespace FellowOakDicom.IO
         public void GoTo(long position) => _stream.Position = position;
 
         /// <inheritdoc />
-        public bool Require(uint count) => Require(count, null, null);
+        public bool Require(uint count) => (_stream.Length - _stream.Position) >= count;
 
         /// <inheritdoc />
-        public bool Require(uint count, ByteSourceCallback callback, object state)
-        {
-            lock (_lock)
-            {
-                return (_stream.Length - Position) >= count;
-            }
-        }
+        public bool Require(uint count, ByteSourceCallback callback, object state) => (_stream.Length - _stream.Position) >= count;
 
         public Stream GetStream()
         {

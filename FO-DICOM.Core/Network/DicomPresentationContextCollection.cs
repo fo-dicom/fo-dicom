@@ -49,6 +49,15 @@ namespace FellowOakDicom.Network
         /// <returns>Presentation context associated with <paramref name="id"/></returns>
         public DicomPresentationContext this[byte id] =>_pc[id];
 
+        /// <summary>
+        /// Tries to get the presentation context associated with <paramref name="id"/>.
+        /// </summary>
+        /// <param name="id">Presentation context ID.</param>
+        /// <param name="presentationContext">When this method returns, the presentation context if found; otherwise, null.</param>
+        /// <returns><c>true</c> if the presentation context was found; otherwise, <c>false</c>.</returns>
+        public bool TryGetValue(byte id, out DicomPresentationContext presentationContext)
+            => _pc.TryGetValue(id, out presentationContext);
+
         #endregion
 
         #region PROPERTIES

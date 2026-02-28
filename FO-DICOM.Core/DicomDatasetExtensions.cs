@@ -138,6 +138,7 @@ namespace FellowOakDicom
         /// <returns>Boolean if the composite DateTimeOffset could be extracted.</returns>
         public static bool TryGetDateTimeOffset(this DicomDataset dataset, DicomTag date, DicomTag time, out DateTimeOffset datetimeoffset, DicomDataset topLevelDataset = null)
         {
+            datetimeoffset = default;
             try
             {
                 if (!TryGetDateTime(dataset, date, time, out var datetime) || datetime == DateTime.MinValue)

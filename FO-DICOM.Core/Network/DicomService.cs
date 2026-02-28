@@ -780,7 +780,7 @@ namespace FellowOakDicom.Network
                         {
                             if (_dimse.Type == DicomCommandField.CStoreRequest)
                             {
-                                var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
+                                Association.PresentationContexts.TryGetValue(pdv.PCID, out var pc);
 
                                 var file = new DicomFile();
                                 if (_fallbackEncoding != null)
@@ -848,8 +848,8 @@ namespace FellowOakDicom.Network
                                 DicomCommandField.NSetResponse => new DicomNSetResponse(command),
                                 _ => new DicomMessage(command),
                             };
-                            _dimse.PresentationContext =
-                                Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
+                            Association.PresentationContexts.TryGetValue(pdv.PCID, out var dimsePC);
+                            _dimse.PresentationContext = dimsePC;
                             if (!_dimse.HasDataset)
                             {
                                 await PerformDimseAsync(_dimse).ConfigureAwait(false);
@@ -863,7 +863,7 @@ namespace FellowOakDicom.Network
                             {
                                 _dimseStream.Seek(0, SeekOrigin.Begin);
 
-                                var pc = Association.PresentationContexts.FirstOrDefault(x => x.ID == pdv.PCID);
+                                Association.PresentationContexts.TryGetValue(pdv.PCID, out var pc);
 
                                 _dimse.Dataset = new DicomDataset { InternalTransferSyntax = pc.AcceptedTransferSyntax };
 
@@ -946,7 +946,15 @@ namespace FellowOakDicom.Network
                 DicomRequest req;
                 lock (_lock)
                 {
-                    req = _pending.FirstOrDefault(x => x.MessageID == rsp.RequestMessageID);
+                    req = null;
+                    foreach (var p in _pending)
+                    {
+                        if (p.MessageID == rsp.RequestMessageID)
+                        {
+                            req = p;
+                            break;
+                        }
+                    }
                 }
 
                 if (req != null)
@@ -1153,8 +1161,7 @@ namespace FellowOakDicom.Network
                     }
 
                     if (Association.MaxAsyncOpsInvoked > 0
-                        && _pending.Count(req => req.Type != DicomCommandField.CGetRequest && req.Type != DicomCommandField.NActionRequest)
-                        >= Association.MaxAsyncOpsInvoked)
+                        && CountPendingExcluding(_pending) >= Association.MaxAsyncOpsInvoked)
                     {
                         break;
                     }
@@ -1214,14 +1221,21 @@ namespace FellowOakDicom.Network
             DicomPresentationContext pc;
             if (msg is DicomCStoreRequest dicomCStoreRequest)
             {
-                var accpetedPcs = Association.PresentationContexts
-                    .Where(x =>
-                        x.Result == DicomPresentationContextResult.Accept &&
-                        x.AbstractSyntax == msg.SOPClassUID
-                    );
-
-                pc = accpetedPcs.FirstOrDefault(x => x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax)
-                    ?? accpetedPcs.FirstOrDefault();
+                pc = null;
+                DicomPresentationContext firstAccepted = null;
+                foreach (var x in Association.PresentationContexts)
+                {
+                    if (x.Result == DicomPresentationContextResult.Accept && x.AbstractSyntax == msg.SOPClassUID)
+                    {
+                        firstAccepted ??= x;
+                        if (x.AcceptedTransferSyntax == dicomCStoreRequest.TransferSyntax)
+                        {
+                            pc = x;
+                            break;
+                        }
+                    }
+                }
+                pc ??= firstAccepted;
             }
             else if (msg is DicomResponse)
             {
@@ -1454,6 +1468,19 @@ namespace FellowOakDicom.Network
             }
         }
 
+        private static int CountPendingExcluding(List<DicomRequest> pending)
+        {
+            var count = 0;
+            foreach (var req in pending)
+            {
+                if (req.Type != DicomCommandField.CGetRequest && req.Type != DicomCommandField.NActionRequest)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
         private async Task CheckForTimeouts()
         {
             while (true)
@@ -1475,15 +1502,23 @@ namespace FellowOakDicom.Network
                     List<DicomRequest> timedOutPendingRequests;
                     lock (_lock)
                     {
-                        if (!_pending.Any())
+                        if (_pending.Count == 0)
                         {
                             return;
                         }
 
-                        timedOutPendingRequests = _pending.Where(p => p.IsTimedOut(requestTimeout)).ToList();
+                        timedOutPendingRequests = null;
+                        foreach (var p in _pending)
+                        {
+                            if (p.IsTimedOut(requestTimeout))
+                            {
+                                timedOutPendingRequests ??= new List<DicomRequest>();
+                                timedOutPendingRequests.Add(p);
+                            }
+                        }
                     }
 
-                    if (timedOutPendingRequests.Any())
+                    if (timedOutPendingRequests != null && timedOutPendingRequests.Count > 0)
                     {
                         for (var i = timedOutPendingRequests.Count - 1; i >= 0; i--)
                         {

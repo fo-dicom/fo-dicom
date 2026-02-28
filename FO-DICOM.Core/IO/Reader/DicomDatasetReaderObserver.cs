@@ -109,7 +109,7 @@ namespace FellowOakDicom.IO.Reader
         {
             DicomSequence sq = _sequences.Peek();
 
-            DicomDataset item = new DicomDataset().NotValidated();
+            DicomDataset item = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian, 16).NotValidated();
             sq.Items.Add(item);
 
             _datasets.Push(item);

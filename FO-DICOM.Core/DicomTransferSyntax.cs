@@ -4,6 +4,7 @@
 
 using FellowOakDicom.IO;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace FellowOakDicom
@@ -721,7 +722,7 @@ namespace FellowOakDicom
 
         #region Static Methods
 
-        private static readonly IDictionary<DicomUID, DicomTransferSyntax> Entries = new Dictionary<DicomUID, DicomTransferSyntax>();
+        private static readonly ConcurrentDictionary<DicomUID, DicomTransferSyntax> Entries = new ConcurrentDictionary<DicomUID, DicomTransferSyntax>();
 
         public static IEnumerable<DicomTransferSyntax> KnownEntries => Entries.Values;
 
@@ -729,62 +730,62 @@ namespace FellowOakDicom
         {
             #region Load Transfer Syntax List
 
-            Entries.Add(GEPrivateImplicitVRBigEndian.UID, GEPrivateImplicitVRBigEndian);
-            Entries.Add(ImplicitVRLittleEndian.UID, ImplicitVRLittleEndian);
-            Entries.Add(ExplicitVRLittleEndian.UID, ExplicitVRLittleEndian);
-            Entries.Add(ExplicitVRBigEndian.UID, ExplicitVRBigEndian);
-            Entries.Add(DeflatedExplicitVRLittleEndian.UID, DeflatedExplicitVRLittleEndian);
-            Entries.Add(JPEGProcess1.UID, JPEGProcess1);
-            Entries.Add(JPEGProcess2_4.UID, JPEGProcess2_4);
-            Entries.Add(JPEGProcess3_5Retired.UID, JPEGProcess3_5Retired);
-            Entries.Add(JPEGProcess6_8Retired.UID, JPEGProcess6_8Retired);
-            Entries.Add(JPEGProcess7_9Retired.UID, JPEGProcess7_9Retired);
-            Entries.Add(JPEGProcess10_12Retired.UID, JPEGProcess10_12Retired);
-            Entries.Add(JPEGProcess11_13Retired.UID, JPEGProcess11_13Retired);
-            Entries.Add(JPEGProcess14.UID, JPEGProcess14);
-            Entries.Add(JPEGProcess15Retired.UID, JPEGProcess15Retired);
-            Entries.Add(JPEGProcess16_18Retired.UID, JPEGProcess16_18Retired);
-            Entries.Add(JPEGProcess17_19Retired.UID, JPEGProcess17_19Retired);
-            Entries.Add(JPEGProcess20_22Retired.UID, JPEGProcess20_22Retired);
-            Entries.Add(JPEGProcess21_23Retired.UID, JPEGProcess21_23Retired);
-            Entries.Add(JPEGProcess24_26Retired.UID, JPEGProcess24_26Retired);
-            Entries.Add(JPEGProcess25_27Retired.UID, JPEGProcess25_27Retired);
-            Entries.Add(JPEGProcess28Retired.UID, JPEGProcess28Retired);
-            Entries.Add(JPEGProcess29Retired.UID, JPEGProcess29Retired);
-            Entries.Add(JPEGProcess14SV1.UID, JPEGProcess14SV1);
-            Entries.Add(JPEGLSLossless.UID, JPEGLSLossless);
-            Entries.Add(JPEGLSNearLossless.UID, JPEGLSNearLossless);
-            Entries.Add(JPEG2000Lossless.UID, JPEG2000Lossless);
-            Entries.Add(JPEG2000Lossy.UID, JPEG2000Lossy);
-            Entries.Add(JPEG2000Part2MultiComponentLosslessOnly.UID, JPEG2000Part2MultiComponentLosslessOnly);
-            Entries.Add(JPEG2000Part2MultiComponent.UID, JPEG2000Part2MultiComponent);
-            Entries.Add(JPIPReferenced.UID, JPIPReferenced);
-            Entries.Add(JPIPReferencedDeflate.UID, JPIPReferencedDeflate);
-            Entries.Add(MPEG2.UID, MPEG2);
-            Entries.Add(FragmentableMPEG2.UID, FragmentableMPEG2);
-            Entries.Add(MPEG2MainProfileHighLevel.UID, MPEG2MainProfileHighLevel);
-            Entries.Add(FragmentableMPEG2MainProfileHighLevel.UID, FragmentableMPEG2MainProfileHighLevel);
-            Entries.Add(MPEG4AVCH264HighProfileLevel41.UID, MPEG4AVCH264HighProfileLevel41);
-            Entries.Add(FragmentableMPEG4AVCH264HighProfileLevel41.UID, FragmentableMPEG4AVCH264HighProfileLevel41);
-            Entries.Add(MPEG4AVCH264BDCompatibleHighProfileLevel41.UID, MPEG4AVCH264BDCompatibleHighProfileLevel41);
-            Entries.Add(FragmentableMPEG4AVCH264BDCompatibleHighProfileLevel41.UID, FragmentableMPEG4AVCH264BDCompatibleHighProfileLevel41);
-            Entries.Add(MPEG4AVCH264HighProfileLevel42For2DVideo.UID, MPEG4AVCH264HighProfileLevel42For2DVideo);
-            Entries.Add(FragmentableMPEG4AVCH264HighProfileLevel42For2DVideo.UID, FragmentableMPEG4AVCH264HighProfileLevel42For2DVideo);
-            Entries.Add(MPEG4AVCH264HighProfileLevel42For3DVideo.UID, MPEG4AVCH264HighProfileLevel42For3DVideo);
-            Entries.Add(FragmentableMPEG4AVCH264HighProfileLevel42For3DVideo.UID, FragmentableMPEG4AVCH264HighProfileLevel42For3DVideo);
-            Entries.Add(MPEG4AVCH264StereoHighProfileLevel42.UID, MPEG4AVCH264StereoHighProfileLevel42);
-            Entries.Add(FragmentableMPEG4AVCH264StereoHighProfileLevel42.UID, FragmentableMPEG4AVCH264StereoHighProfileLevel42);
-            Entries.Add(HEVCH265MainProfileLevel51.UID, HEVCH265MainProfileLevel51);
-            Entries.Add(HEVCH265Main10ProfileLevel51.UID, HEVCH265Main10ProfileLevel51);
-            Entries.Add(HTJ2KLossless.UID, HTJ2KLossless);
-            Entries.Add(HTJ2KLosslessRPCL.UID, HTJ2KLosslessRPCL);
-            Entries.Add(HTJ2K.UID, HTJ2K);
-            Entries.Add(JPIPHTJ2KReferenced.UID, JPIPHTJ2KReferenced);
-            Entries.Add(JPIPHTJ2KReferencedDeflate.UID, JPIPHTJ2KReferencedDeflate);
-            Entries.Add(RLELossless.UID, RLELossless);
-            Entries.Add(RFC2557MIMEEncapsulation.UID, RFC2557MIMEEncapsulation);
-            Entries.Add(XMLEncoding.UID, XMLEncoding);
-            Entries.Add(Papyrus3ImplicitVRLittleEndianRetired.UID, Papyrus3ImplicitVRLittleEndianRetired);
+            Entries.TryAdd(GEPrivateImplicitVRBigEndian.UID, GEPrivateImplicitVRBigEndian);
+            Entries.TryAdd(ImplicitVRLittleEndian.UID, ImplicitVRLittleEndian);
+            Entries.TryAdd(ExplicitVRLittleEndian.UID, ExplicitVRLittleEndian);
+            Entries.TryAdd(ExplicitVRBigEndian.UID, ExplicitVRBigEndian);
+            Entries.TryAdd(DeflatedExplicitVRLittleEndian.UID, DeflatedExplicitVRLittleEndian);
+            Entries.TryAdd(JPEGProcess1.UID, JPEGProcess1);
+            Entries.TryAdd(JPEGProcess2_4.UID, JPEGProcess2_4);
+            Entries.TryAdd(JPEGProcess3_5Retired.UID, JPEGProcess3_5Retired);
+            Entries.TryAdd(JPEGProcess6_8Retired.UID, JPEGProcess6_8Retired);
+            Entries.TryAdd(JPEGProcess7_9Retired.UID, JPEGProcess7_9Retired);
+            Entries.TryAdd(JPEGProcess10_12Retired.UID, JPEGProcess10_12Retired);
+            Entries.TryAdd(JPEGProcess11_13Retired.UID, JPEGProcess11_13Retired);
+            Entries.TryAdd(JPEGProcess14.UID, JPEGProcess14);
+            Entries.TryAdd(JPEGProcess15Retired.UID, JPEGProcess15Retired);
+            Entries.TryAdd(JPEGProcess16_18Retired.UID, JPEGProcess16_18Retired);
+            Entries.TryAdd(JPEGProcess17_19Retired.UID, JPEGProcess17_19Retired);
+            Entries.TryAdd(JPEGProcess20_22Retired.UID, JPEGProcess20_22Retired);
+            Entries.TryAdd(JPEGProcess21_23Retired.UID, JPEGProcess21_23Retired);
+            Entries.TryAdd(JPEGProcess24_26Retired.UID, JPEGProcess24_26Retired);
+            Entries.TryAdd(JPEGProcess25_27Retired.UID, JPEGProcess25_27Retired);
+            Entries.TryAdd(JPEGProcess28Retired.UID, JPEGProcess28Retired);
+            Entries.TryAdd(JPEGProcess29Retired.UID, JPEGProcess29Retired);
+            Entries.TryAdd(JPEGProcess14SV1.UID, JPEGProcess14SV1);
+            Entries.TryAdd(JPEGLSLossless.UID, JPEGLSLossless);
+            Entries.TryAdd(JPEGLSNearLossless.UID, JPEGLSNearLossless);
+            Entries.TryAdd(JPEG2000Lossless.UID, JPEG2000Lossless);
+            Entries.TryAdd(JPEG2000Lossy.UID, JPEG2000Lossy);
+            Entries.TryAdd(JPEG2000Part2MultiComponentLosslessOnly.UID, JPEG2000Part2MultiComponentLosslessOnly);
+            Entries.TryAdd(JPEG2000Part2MultiComponent.UID, JPEG2000Part2MultiComponent);
+            Entries.TryAdd(JPIPReferenced.UID, JPIPReferenced);
+            Entries.TryAdd(JPIPReferencedDeflate.UID, JPIPReferencedDeflate);
+            Entries.TryAdd(MPEG2.UID, MPEG2);
+            Entries.TryAdd(FragmentableMPEG2.UID, FragmentableMPEG2);
+            Entries.TryAdd(MPEG2MainProfileHighLevel.UID, MPEG2MainProfileHighLevel);
+            Entries.TryAdd(FragmentableMPEG2MainProfileHighLevel.UID, FragmentableMPEG2MainProfileHighLevel);
+            Entries.TryAdd(MPEG4AVCH264HighProfileLevel41.UID, MPEG4AVCH264HighProfileLevel41);
+            Entries.TryAdd(FragmentableMPEG4AVCH264HighProfileLevel41.UID, FragmentableMPEG4AVCH264HighProfileLevel41);
+            Entries.TryAdd(MPEG4AVCH264BDCompatibleHighProfileLevel41.UID, MPEG4AVCH264BDCompatibleHighProfileLevel41);
+            Entries.TryAdd(FragmentableMPEG4AVCH264BDCompatibleHighProfileLevel41.UID, FragmentableMPEG4AVCH264BDCompatibleHighProfileLevel41);
+            Entries.TryAdd(MPEG4AVCH264HighProfileLevel42For2DVideo.UID, MPEG4AVCH264HighProfileLevel42For2DVideo);
+            Entries.TryAdd(FragmentableMPEG4AVCH264HighProfileLevel42For2DVideo.UID, FragmentableMPEG4AVCH264HighProfileLevel42For2DVideo);
+            Entries.TryAdd(MPEG4AVCH264HighProfileLevel42For3DVideo.UID, MPEG4AVCH264HighProfileLevel42For3DVideo);
+            Entries.TryAdd(FragmentableMPEG4AVCH264HighProfileLevel42For3DVideo.UID, FragmentableMPEG4AVCH264HighProfileLevel42For3DVideo);
+            Entries.TryAdd(MPEG4AVCH264StereoHighProfileLevel42.UID, MPEG4AVCH264StereoHighProfileLevel42);
+            Entries.TryAdd(FragmentableMPEG4AVCH264StereoHighProfileLevel42.UID, FragmentableMPEG4AVCH264StereoHighProfileLevel42);
+            Entries.TryAdd(HEVCH265MainProfileLevel51.UID, HEVCH265MainProfileLevel51);
+            Entries.TryAdd(HEVCH265Main10ProfileLevel51.UID, HEVCH265Main10ProfileLevel51);
+            Entries.TryAdd(HTJ2KLossless.UID, HTJ2KLossless);
+            Entries.TryAdd(HTJ2KLosslessRPCL.UID, HTJ2KLosslessRPCL);
+            Entries.TryAdd(HTJ2K.UID, HTJ2K);
+            Entries.TryAdd(JPIPHTJ2KReferenced.UID, JPIPHTJ2KReferenced);
+            Entries.TryAdd(JPIPHTJ2KReferencedDeflate.UID, JPIPHTJ2KReferencedDeflate);
+            Entries.TryAdd(RLELossless.UID, RLELossless);
+            Entries.TryAdd(RFC2557MIMEEncapsulation.UID, RFC2557MIMEEncapsulation);
+            Entries.TryAdd(XMLEncoding.UID, XMLEncoding);
+            Entries.TryAdd(Papyrus3ImplicitVRLittleEndianRetired.UID, Papyrus3ImplicitVRLittleEndianRetired);
 
             #endregion
         }
@@ -848,36 +849,23 @@ namespace FellowOakDicom
         /// <returns></returns>
         public static DicomTransferSyntax Register(DicomUID uid, Endian endian, bool isExplicitVR = true, bool isEncapsulated = true)
         {
-            lock (Entries)
+            if (uid == null)
             {
-                //  return cached transfer syntax from internal dictionary.
-                if (Entries.TryGetValue(uid, out DicomTransferSyntax tx))
-                {
-                    return tx;
-                }
-
-                if (uid == null)
-                {
-                    throw new ArgumentNullException(nameof(uid));
-                }
-
-                if (uid.Type != DicomUidType.TransferSyntax)
-                {
-                    throw new DicomDataException($"UID: {uid} is not a transfer syntax type.");
-                }
-
-                //  cache transfer syntax into internal dictionary.
-                tx = new DicomTransferSyntax(uid)
-                {
-                    IsRetired = uid.IsRetired,
-                    IsExplicitVR = isExplicitVR,
-                    IsEncapsulated = isEncapsulated,
-                    Endian = endian
-                };
-                Entries.Add(uid, tx);
-
-                return tx;
+                throw new ArgumentNullException(nameof(uid));
             }
+
+            if (uid.Type != DicomUidType.TransferSyntax)
+            {
+                throw new DicomDataException($"UID: {uid} is not a transfer syntax type.");
+            }
+
+            return Entries.GetOrAdd(uid, u => new DicomTransferSyntax(u)
+            {
+                IsRetired = u.IsRetired,
+                IsExplicitVR = isExplicitVR,
+                IsEncapsulated = isEncapsulated,
+                Endian = endian
+            });
         }
 
         /// <summary>
@@ -887,10 +875,7 @@ namespace FellowOakDicom
         /// <returns></returns>
         public static bool Unregister(DicomUID uid)
         {
-            lock (Entries)
-            {
-                return Entries.Remove(uid);
-            }
+            return Entries.TryRemove(uid, out _);
         }
 
         /// <summary>
@@ -908,11 +893,8 @@ namespace FellowOakDicom
         /// </summary>
         public static DicomTransferSyntax Query(DicomUID uid)
         {
-            lock (Entries)
-            {
-                Entries.TryGetValue(uid, out DicomTransferSyntax ts);
-                return ts;
-            }
+            Entries.TryGetValue(uid, out DicomTransferSyntax ts);
+            return ts;
         }
 
         #endregion
