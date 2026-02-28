@@ -53,8 +53,18 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="internalTransferSyntax">Internal transfer syntax representation of the dataset.</param>
         public DicomDataset(DicomTransferSyntax internalTransferSyntax)
+            : this(internalTransferSyntax, 64)
         {
-            _items = new SortedList<DicomTag, DicomItem>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DicomDataset"/> class.
+        /// </summary>
+        /// <param name="internalTransferSyntax">Internal transfer syntax representation of the dataset.</param>
+        /// <param name="capacity">Initial capacity of the internal collection.</param>
+        internal DicomDataset(DicomTransferSyntax internalTransferSyntax, int capacity)
+        {
+            _items = new SortedList<DicomTag, DicomItem>(capacity);
             InternalTransferSyntax = internalTransferSyntax;
         }
 

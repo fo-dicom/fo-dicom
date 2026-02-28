@@ -81,4 +81,3 @@ jobs:
         path: |
           ./BenchmarkDotNet.Artifacts/
           ./BenchmarkDotNet.Artifacts/results/
- 

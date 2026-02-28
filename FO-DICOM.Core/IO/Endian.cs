@@ -3,9 +3,10 @@
 #nullable disable
 
 using System;
+using System.Buffers.Binary;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FellowOakDicom.IO
 {
@@ -151,13 +152,11 @@ namespace FellowOakDicom.IO
         /// <param name="count">The maximum number of bytes in the array that should be processed</param>
         public static void SwapBytes2(byte[] bytes, int count)
         {
-            unchecked
+            var l = count - count % 2;
+            var span = MemoryMarshal.Cast<byte, ushort>(bytes.AsSpan(0, l));
+            for (var i = 0; i < span.Length; i++)
             {
-                var l = count - count % 2;
-                for (var i = 0; i < l; i += 2)
-                {
-                    (bytes[i + 1], bytes[i]) = (bytes[i], bytes[i + 1]);
-                }
+                span[i] = BinaryPrimitives.ReverseEndianness(span[i]);
             }
         }
 
@@ -174,18 +173,11 @@ namespace FellowOakDicom.IO
         /// <param name="count">The maximum number of bytes in the array that should be processed</param>
         public static void SwapBytes4(byte[] bytes, int count)
         {
-            unchecked
+            var l = count - (count % 4);
+            var span = MemoryMarshal.Cast<byte, uint>(bytes.AsSpan(0, l));
+            for (var i = 0; i < span.Length; i++)
             {
-                var l = count - (count % 4);
-                for (var i = 0; i < l; i += 4)
-                {
-                    var b = bytes[i + 3];
-                    bytes[i + 3] = bytes[i];
-                    bytes[i] = b;
-                    b = bytes[i + 2];
-                    bytes[i + 2] = bytes[i + 1];
-                    bytes[i + 1] = b;
-                }
+                span[i] = BinaryPrimitives.ReverseEndianness(span[i]);
             }
         }
 
@@ -264,9 +256,7 @@ namespace FellowOakDicom.IO
         /// <returns>Byte order swapped value.</returns>
         public static float Swap(float value)
         {
-            var b = BitConverter.GetBytes(value);
-            Array.Reverse(b);
-            return BitConverter.ToSingle(b, 0);
+            return BitConverter.Int32BitsToSingle(BinaryPrimitives.ReverseEndianness(BitConverter.SingleToInt32Bits(value)));
         }
 
         /// <summary>
@@ -276,9 +266,7 @@ namespace FellowOakDicom.IO
         /// <returns>Byte order swapped value.</returns>
         public static double Swap(double value)
         {
-            var b = BitConverter.GetBytes(value);
-            Array.Reverse(b);
-            return BitConverter.ToDouble(b, 0);
+            return BitConverter.Int64BitsToDouble(BinaryPrimitives.ReverseEndianness(BitConverter.DoubleToInt64Bits(value)));
         }
 
         /// <summary>
@@ -287,7 +275,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="short"/> values.</param>
         public static void Swap(short[] values)
         {
-            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
+            BinaryPrimitives.ReverseEndianness(values.AsSpan(), values);
         }
 
         /// <summary>
@@ -296,7 +284,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="ushort"/> values.</param>
         public static void Swap(ushort[] values)
         {
-            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
+            BinaryPrimitives.ReverseEndianness(values.AsSpan(), values);
         }
 
         /// <summary>
@@ -305,7 +293,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="int"/> values.</param>
         public static void Swap(int[] values)
         {
-            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
+            BinaryPrimitives.ReverseEndianness(values.AsSpan(), values);
         }
 
         /// <summary>
@@ -314,7 +302,7 @@ namespace FellowOakDicom.IO
         /// <param name="values">Array of <see cref="uint"/> values.</param>
         public static void Swap(uint[] values)
         {
-            Parallel.For(0, values.Length, i => values[i] = Swap(values[i]));
+            BinaryPrimitives.ReverseEndianness(values.AsSpan(), values);
         }
 
         /// <summary>
@@ -803,19 +791,6 @@ namespace FellowOakDicom.IO
 
         #endregion
 
-        #region Private Methods
-
-        private void WriteInternal(byte[] buffer)
-        {
-            if (_swapBytes)
-            {
-                Array.Reverse(buffer);
-            }
-            base.Write(buffer);
-        }
-
-        #endregion
-
         #region BinaryWriter Overrides
 
         /// <inheritdoc />
@@ -823,8 +798,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                var b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[8];
+                BinaryPrimitives.WriteDoubleBigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -837,8 +813,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                var b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[4];
+                BinaryPrimitives.WriteSingleBigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -851,8 +828,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                var b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[4];
+                BinaryPrimitives.WriteInt32BigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -865,8 +843,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                var b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[8];
+                BinaryPrimitives.WriteInt64BigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -879,8 +858,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                var b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[2];
+                BinaryPrimitives.WriteInt16BigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -893,8 +873,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                byte[] b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[4];
+                BinaryPrimitives.WriteUInt32BigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -907,8 +888,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                byte[] b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[8];
+                BinaryPrimitives.WriteUInt64BigEndian(b, value);
+                base.Write(b);
             }
             else
             {
@@ -921,8 +903,9 @@ namespace FellowOakDicom.IO
         {
             if (_swapBytes)
             {
-                byte[] b = BitConverter.GetBytes(value);
-                WriteInternal(b);
+                Span<byte> b = stackalloc byte[2];
+                BinaryPrimitives.WriteUInt16BigEndian(b, value);
+                base.Write(b);
             }
             else
             {
