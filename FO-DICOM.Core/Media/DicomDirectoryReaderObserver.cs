@@ -31,7 +31,7 @@ namespace FellowOakDicom.Media
         public DicomDirectoryRecord BuildDirectoryRecords()
         {
             var notFoundOffsets = new List<uint>();
-            var offset = _dataset.GetSingleValue<uint>(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity);
+            var offset = _dataset.GetItem(DicomTag.OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity).Value;
             var root = ParseDirectoryRecord(offset, notFoundOffsets);
 
             if (_lookup.Count > 0 && notFoundOffsets.Count > 0)
@@ -57,10 +57,10 @@ namespace FellowOakDicom.Media
                 _lookup.Remove(offset);
 
                 record.NextDirectoryRecord =
-                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord), notFoundOffsets);
+                    ParseDirectoryRecord(record.GetItem(DicomTag.OffsetOfTheNextDirectoryRecord).Value, notFoundOffsets);
 
                 record.LowerLevelDirectoryRecord =
-                    ParseDirectoryRecord(record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity), notFoundOffsets);
+                    ParseDirectoryRecord(record.GetItem(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity).Value, notFoundOffsets);
             }
             else
             {
@@ -105,13 +105,13 @@ namespace FellowOakDicom.Media
                 _lookup.Remove(offset);
             }
 
-            var nextOffset = record.GetSingleValue<uint>(DicomTag.OffsetOfTheNextDirectoryRecord);
+            var nextOffset = record.GetItem(DicomTag.OffsetOfTheNextDirectoryRecord).Value;
             if (nextOffset > 0)
             {
                 record.NextDirectoryRecord = ParseDirectoryRecordNotExact(record.NextDirectoryRecord, nextOffset);
             }
 
-            var lowerLevelOffset = record.GetSingleValue<uint>(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity);
+            var lowerLevelOffset = record.GetItem(DicomTag.OffsetOfReferencedLowerLevelDirectoryEntity).Value;
             if (lowerLevelOffset > 0)
             {
                 record.LowerLevelDirectoryRecord = ParseDirectoryRecordNotExact(record.LowerLevelDirectoryRecord, lowerLevelOffset);

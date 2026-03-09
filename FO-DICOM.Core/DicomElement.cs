@@ -684,7 +684,7 @@ namespace FellowOakDicom
 
         bool IDicomValue<Tv>.Exists => true;
 
-        Tv? IDicomValue<Tv>.Value
+        Tv IDicomValue<Tv>.Value
         {
             get
             {
@@ -1062,7 +1062,7 @@ namespace FellowOakDicom
 
         #region IDicomDecimal members
 
-        decimal? IDicomValue<decimal>.Value
+        decimal IDicomValue<decimal>.Value
         {
             get
             {
@@ -1338,7 +1338,7 @@ namespace FellowOakDicom
 
         #region IDicomDecimal members
 
-        int? IDicomValue<int>.Value
+        int IDicomValue<int>.Value
         {
             get
             {
@@ -2026,12 +2026,12 @@ namespace FellowOakDicom
     }
 
     /// <summary>Unique Identifier (UI)</summary>
-    public class DicomUniqueIdentifier : DicomMultiStringElement
+    public class DicomUniqueIdentifier : DicomMultiStringElement, IDicomUniqueIdentifier
     {
 
         #region FIELDS
 
-        private DicomUID[] _values;
+        private DicomUID[] _parsedValues;
 
         #endregion
 
@@ -2065,37 +2065,67 @@ namespace FellowOakDicom
 
         #endregion
 
+        private void EnsureParsed()
+        {
+            _parsedValues ??= base.Values
+                .Select(s => DicomUID.Parse(s))
+                .ToArray();
+        }
+
         #region Public Members
 
         public override T Get<T>(int item = -1)
         {
-            if (_values == null)
-            {
-                _values = base.Get<string[]>().Select(s => DicomUID.Parse(s)).ToArray();
-            }
+            EnsureParsed();
 
             if (typeof(T) == typeof(DicomTransferSyntax))
             {
-                return (T)(object)DicomTransferSyntax.Lookup(_values[item]);
+                return (T)(object)DicomTransferSyntax.Lookup(_parsedValues[item]);
             }
 
             if (typeof(T) == typeof(DicomTransferSyntax[]))
             {
-                return (T)(object)_values.Select(DicomTransferSyntax.Lookup).ToArray();
+                return (T)(object)_parsedValues.Select(DicomTransferSyntax.Lookup).ToArray();
             }
 
             if (typeof(T) == typeof(DicomUID) || typeof(T) == typeof(object))
             {
-                return (T)(object)_values[item];
+                return (T)(object)_parsedValues[item];
             }
 
             if (typeof(T) == typeof(DicomUID[]) || typeof(T) == typeof(object[]))
             {
-                return (T)(object)_values;
+                return (T)(object)_parsedValues;
             }
 
             return base.Get<T>(item);
         }
+
+        #endregion
+
+        #region IDicomUniqueIdentifier members
+
+        DicomUID? IDicomUniqueIdentifier.Value
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues.FirstIfExists();
+            }
+        }
+
+        DicomUID[] IDicomUniqueIdentifier.Values
+        {
+            get
+            {
+                EnsureParsed();
+                return _parsedValues;
+            }
+        }
+
+        string[] IDicomUniqueIdentifier.StringValues => base.Values;
+
+        string IDicomUniqueIdentifier.StringValue => base.Value;
 
         #endregion
     }

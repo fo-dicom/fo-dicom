@@ -46,7 +46,7 @@ namespace FellowOakDicom.Tests.Media
         public void Open_MediaStorageSOPInstanceUID_ShouldBeConsistent()
         {
             var dir = DicomDirectory.Open(TestData.Resolve("DICOMDIR"));
-            var expected = dir.FileMetaInfo.GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPInstanceUID).UID;
+            var expected = dir.FileMetaInfo.GetItem(DicomTag.MediaStorageSOPInstanceUID).StringValue;
             var actual = dir.MediaStorageSOPInstanceUID.UID;
             Assert.Equal(expected, actual);
         }
@@ -121,9 +121,9 @@ namespace FellowOakDicom.Tests.Media
             foreach (var dicomFile in dicomFiles)
             {
                 var entry = dicomDir.AddFile(dicomFile);
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID), entry.InstanceRecord.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile));
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID), entry.SeriesRecord.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID), entry.StudyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue, entry.InstanceRecord.GetItem(DicomTag.ReferencedSOPInstanceUIDInFile).StringValue);
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.SeriesInstanceUID).StringValue, entry.SeriesRecord.GetItem(DicomTag.SeriesInstanceUID).StringValue);
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue, entry.StudyRecord.GetItem(DicomTag.StudyInstanceUID).StringValue);
             }
 
             var imageNodes = dicomDir.RootDirectoryRecord.LowerLevelDirectoryRecord.LowerLevelDirectoryRecord
@@ -155,9 +155,9 @@ namespace FellowOakDicom.Tests.Media
             foreach (var dicomFile in dicomFiles)
             {
                 var entry = dicomDir.AddFile(dicomFile);
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID), entry.InstanceRecord.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile));
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID), entry.SeriesRecord.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID), entry.StudyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue, entry.InstanceRecord.GetItem(DicomTag.ReferencedSOPInstanceUIDInFile).StringValue);
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.SeriesInstanceUID).StringValue, entry.SeriesRecord.GetItem(DicomTag.SeriesInstanceUID).StringValue);
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue, entry.StudyRecord.GetItem(DicomTag.StudyInstanceUID).StringValue);
             }
 
             // there shall be only one patient record
@@ -190,9 +190,9 @@ namespace FellowOakDicom.Tests.Media
             foreach (var dicomFile in dicomFiles)
             {
                 var entry = dicomDir.AddFile(dicomFile);
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID), entry.InstanceRecord.GetSingleValue<string>(DicomTag.ReferencedSOPInstanceUIDInFile));
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID), entry.SeriesRecord.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
-                Assert.Equal(dicomFile.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID), entry.StudyRecord.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue, entry.InstanceRecord.GetItem(DicomTag.ReferencedSOPInstanceUIDInFile).StringValue);
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.SeriesInstanceUID).StringValue, entry.SeriesRecord.GetItem(DicomTag.SeriesInstanceUID).StringValue);
+                Assert.Equal(dicomFile.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue, entry.StudyRecord.GetItem(DicomTag.StudyInstanceUID).StringValue);
             }
 
             // there shall be only one patient record

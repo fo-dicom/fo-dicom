@@ -32,7 +32,7 @@ namespace FellowOakDicom.StructuredReport
 
         public DicomCodeItem Code => GetCodeItem(DicomTag.MeasurementUnitsCodeSequence);
 
-        public decimal Value => GetSingleValue<decimal>(DicomTag.NumericValue);
+        public decimal Value => this.GetItem(DicomTag.NumericValue).Value;
 
         public override string ToString() => $"{Value} {Code.Value}";
 

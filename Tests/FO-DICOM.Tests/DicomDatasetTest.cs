@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests
                 { tag, 3.45, 6.78, 9.01 }
             };
             Assert.IsType<DicomOtherDouble>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal(3, dataset.GetValues<double>(tag).Length);
+            Assert.Equal(3, dataset.GetItem(tag).Values.Length);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace FellowOakDicom.Tests
                 { tag, "abc" }
             };
             Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal("abc", dataset.GetSingleValue<string>(tag));
+            Assert.Equal("abc", dataset.GetItem(tag).Value);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace FellowOakDicom.Tests
                 { tag, "a", "b", "c" }
             };
             Assert.IsType<DicomUnlimitedCharacters>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal("c", dataset.GetValue<string>(tag, 2));
+            Assert.Equal("c", dataset.GetItem(tag).Values[2]);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace FellowOakDicom.Tests
             dataset.Add<ushort>(tag);
             Assert.IsType<DicomUnsignedShort>(dataset.First(item => item.Tag.Equals(tag)));
 
-            var data = dataset.GetValues<ushort>(tag);
+            var data = dataset.GetItem(tag).Values;
 
             Assert.Empty(data);
         }
@@ -137,7 +137,7 @@ namespace FellowOakDicom.Tests
                 { tag, "abc" }
             };
             Assert.IsType<DicomUniversalResource>(dataset.First(item => item.Tag.Equals(tag)));
-            Assert.Equal("abc", dataset.GetSingleValue<string>(tag));
+            Assert.Equal("abc", dataset.GetItem(tag).Value);
         }
 
         [Fact]
@@ -170,7 +170,7 @@ namespace FellowOakDicom.Tests
                 }
             };
 
-            var data = dataset.GetValues<string>(tag);
+            var data = dataset.GetItem(tag).Values;
             Assert.Equal(4, data.Length);
             Assert.Equal("Desouky^Hesham", data[2]);
         }
@@ -191,11 +191,11 @@ namespace FellowOakDicom.Tests
             Assert.Equal(values.Last(), data.Last());
         }
 
-        [Fact]
+        [Fact(Skip = "new api will not require this test any more")]
         public void Get_IntWithoutArgumentTagNonExisting_ShouldThrow()
         {
             var dataset = new DicomDataset();
-            var e = Record.Exception(() => dataset.GetSingleValue<int>(DicomTag.MetersetRate));
+            var e = Record.Exception(() => dataset.GetItem(DicomTag.MetersetRate).Value);
             Assert.IsType<DicomDataException>(e);
         }
 
@@ -203,8 +203,8 @@ namespace FellowOakDicom.Tests
         public void Get_IntWithIntArgumentTagNonExisting_ShouldThrow()
         {
             var dataset = new DicomDataset();
-            var e = Record.Exception(() => dataset.GetValue<int>(DicomTag.MetersetRate, 20));
-            Assert.IsType<DicomDataException>(e);
+            var e = Record.Exception(() => dataset.GetItem(DicomTag.MetersetRate).Values[20]);
+            Assert.IsType<IndexOutOfRangeException>(e);
         }
 
         [Fact]
@@ -224,8 +224,8 @@ namespace FellowOakDicom.Tests
                 { tag, 3, 4, 5 }
             };
 
-            var e = Record.Exception(() => dataset.GetValue<int>(tag, 10));
-            Assert.IsType<DicomDataException>(e);
+            var e = Record.Exception(() => dataset.GetItem(tag).Values[10]);
+            Assert.IsType<IndexOutOfRangeException>(e);
         }
 
         [Fact]
@@ -248,7 +248,7 @@ namespace FellowOakDicom.Tests
             const uint expected = 100u;
             var dataset = new DicomDataset { { tag, expected } };
 
-            var actual = dataset.GetSingleValue<uint>(tag);
+            var actual = dataset.GetItem(tag).Value;
             Assert.Equal(expected, actual);
         }
 
@@ -368,7 +368,7 @@ namespace FellowOakDicom.Tests
             ds2.GetSequence(DicomTag.ScheduledProcedureStepSequence).Items[0].GetSequence(
                 DicomTag.ScheduledProtocolCodeSequence).Items[0].AddOrUpdate(DicomTag.ContextIdentifier, "2");
 
-            Assert.Equal("1", ds.GetSingleValue<string>(DicomTag.PatientID));
+            Assert.Equal("1", ds.GetItem(DicomTag.PatientID).Value);
             Assert.Equal(
                 "1",
                 ds.GetSequence(DicomTag.ScheduledProcedureStepSequence).First().GetString(DicomTag.ScheduledStationName));
@@ -421,7 +421,7 @@ namespace FellowOakDicom.Tests
                 { tag, (string[])null }
             };
 
-            var array = ds.GetValues<string>(tag);
+            var array = ds.GetItem(tag).Values;
             Assert.Empty(array);
         }
 
@@ -476,8 +476,8 @@ namespace FellowOakDicom.Tests
             // Assert
             Assert.Null(exception);
 
-            var actualValue = dataSet.GetSingleValue<decimal>(tag);
-            var actualNegativeValue = dataSet.GetSingleValue<decimal>(negativeTag);
+            var actualValue = dataSet.GetItem(tag).Value;
+            var actualNegativeValue = dataSet.GetItem(negativeTag).Value;
             var expectedDelta = 1E-10m * Math.Abs(value);
             var comparer = new DecimalDeltaComparer(expectedDelta);
             Assert.Equal(value, actualValue, comparer);
@@ -653,7 +653,7 @@ namespace FellowOakDicom.Tests
             var refSequence = dataset.GetSequence(DicomTag.ReferencedStudySequence);
             Assert.NotNull(refSequence);
             Assert.Equal(2, refSequence.Count());
-            Assert.Equal(DicomUID.CTImageStorage, refSequence.ElementAt(0).GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID));
+            Assert.Equal(DicomUID.CTImageStorage, refSequence.ElementAt(0).GetItem(DicomTag.ReferencedSOPClassUID).Value);
         }
 
         [Fact]
@@ -670,7 +670,7 @@ namespace FellowOakDicom.Tests
             var refSequence = dataset.GetSequence(DicomTag.ReferencedStudySequence);
             Assert.NotNull(refSequence);
             Assert.Equal(2, refSequence.Count());
-            Assert.Equal(DicomUID.CTImageStorage, refSequence.ElementAt(0).GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID));
+            Assert.Equal(DicomUID.CTImageStorage, refSequence.ElementAt(0).GetItem(DicomTag.ReferencedSOPClassUID).Value);
         }
 
         [Fact]
@@ -781,7 +781,7 @@ namespace FellowOakDicom.Tests
 
             memStream.Position = 0;
             var readDataset = DicomFile.Open(memStream);
-            var readValue = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).First().GetSingleValue<string>(tag);
+            var readValue = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).First().GetItem(tag).Value;
             Assert.Equal(expected, readValue);
         }
 
@@ -847,9 +847,9 @@ namespace FellowOakDicom.Tests
 
             memStream.Position = 0;
             var readDataset = DicomFile.Open(memStream);
-            var readValue1 = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).First().GetSingleValue<string>(tag);
+            var readValue1 = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).First().GetItem(tag).Value;
             Assert.Equal(expected, readValue1);
-            var readValue2 = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).Last().GetSingleValue<string>(tag);
+            var readValue2 = readDataset.Dataset.GetSequence(DicomTag.ReferencedInstanceSequence).Last().GetItem(tag).Value;
             Assert.Equal(expected, readValue2);
         }
 

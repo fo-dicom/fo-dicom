@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Network
             // This test file from Olympus does not include Specific Charater Set,
             // but it is clearly containing Swedish characters
             var file = DicomFile.Open(TestData.Resolve("VL_Olympus1.dcm"), actualEncoding);
-            Assert.Equal("Efternamn^Förnamn^Mellannamn^^", file.Dataset.GetSingleValue<string>(DicomTag.PatientName));
+            Assert.Equal("Efternamn^Förnamn^Mellannamn^^", file.Dataset.GetItem(DicomTag.PatientName).Value);
 
             // Specify fallback encoding
             using var server = DicomServerFactory.Create<CStoreScp>(0, null, actualEncoding);
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Tests.Network
             await client.SendAsync();
 
             // Verify received instance correctly shows Swedish characters
-            var patientName = CStoreScp.LastReceivedSopInstance.GetSingleValue<string>(DicomTag.PatientName);
+            var patientName = CStoreScp.LastReceivedSopInstance.GetItem(DicomTag.PatientName).Value;
             Assert.Equal("Efternamn^Förnamn^Mellannamn^^", patientName);
         }
 

@@ -232,7 +232,7 @@ namespace FellowOakDicom.Tests.Media
         {
             if (Id != 0)
             {
-                Assert.Equal(Id.ToString(), record.GetSingleValue<string>(DicomTag.SOPInstanceUID));
+                Assert.Equal(Id.ToString(), record.GetItem(DicomTag.SOPInstanceUID).StringValue);
             }
 
             DicomDirectoryRecord current = record.LowerLevelDirectoryRecord;

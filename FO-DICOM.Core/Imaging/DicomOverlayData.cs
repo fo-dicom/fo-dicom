@@ -62,7 +62,7 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public int Rows
         {
-            get => Dataset.GetSingleValue<ushort>(OverlayTag(DicomTag.OverlayRows));
+            get => Dataset.GetSingleValue<int>(OverlayTag(DicomTag.OverlayRows));
             set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayRows), (ushort)value);
         }
 
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public int Columns
         {
-            get => Dataset.GetSingleValue<ushort>(OverlayTag(DicomTag.OverlayColumns));
+            get => Dataset.GetSingleValue<int>(OverlayTag(DicomTag.OverlayColumns));
             set => Dataset.AddOrUpdate(OverlayTag(DicomTag.OverlayColumns), (ushort)value);
         }
 

@@ -21,7 +21,7 @@ namespace FellowOakDicom.Network
 
         public DicomUID SOPInstanceUID
         {
-            get => Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPInstanceUID);
+            get => Command.GetItem(DicomTag.RequestedSOPInstanceUID).Value;
             private set => Command.AddOrUpdate(DicomTag.RequestedSOPInstanceUID, value);
         }
 

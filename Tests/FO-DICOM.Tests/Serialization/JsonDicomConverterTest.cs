@@ -80,8 +80,8 @@ namespace FellowOakDicom.Tests.Serialization
             }";
             var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             Assert.NotNull(dataset);
-            Assert.Equal(311, dataset.GetSingleValue<int>(DicomTag.NumberOfStudyRelatedSeries));
-            Assert.Equal(311, dataset.GetSingleValue<int>(DicomTag.NumberOfSeriesRelatedInstances));
+            Assert.Equal(311, dataset.GetItem(DicomTag.NumberOfStudyRelatedSeries).Value);
+            Assert.Equal(311, dataset.GetItem(DicomTag.NumberOfSeriesRelatedInstances).Value);
             Assert.Equal(0, dataset.GetValueCount(DicomTag.NumberOfPatientRelatedInstances));
         }
 
@@ -103,8 +103,8 @@ namespace FellowOakDicom.Tests.Serialization
             }";
             var dataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
             Assert.NotNull(dataset);
-            Assert.Equal(84.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientWeight));
-            Assert.Equal(174.5m, dataset.GetSingleValue<decimal>(DicomTag.PatientSize));
+            Assert.Equal(84.5m, dataset.GetItem(DicomTag.PatientWeight).Value);
+            Assert.Equal(174.5m, dataset.GetItem(DicomTag.PatientSize).Value);
         }
 
 
@@ -634,8 +634,8 @@ namespace FellowOakDicom.Tests.Serialization
         {
             var json = _jsonExampleFromDicomNemaOrg;
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset[]>(json, new JsonDicomConverter());
-            Assert.Equal(new DateTime(2013, 4, 9), reconstituated[0].GetSingleValue<DateTime>(DicomTag.StudyDate));
-            Assert.Equal("^Bob^^Dr.", reconstituated[0].GetSingleValue<string>(DicomTag.ReferringPhysicianName));
+            Assert.Equal(new DateTime(2013, 4, 9), reconstituated[0].GetItem(DicomTag.StudyDate).Value);
+            Assert.Equal("^Bob^^Dr.", reconstituated[0].GetItem(DicomTag.ReferringPhysicianName).Value);
         }
 
         /// <summary>
@@ -746,9 +746,9 @@ namespace FellowOakDicom.Tests.Serialization
             File.Delete("test.txt");
 
             Assert.Equal(target.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer.Size, (uint)expectedPixelData.Length);
-            Assert.True(target.GetValues<byte>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+            Assert.True(target.GetItem(DicomTag.PixelData).Values.SequenceEqual(expectedPixelData));
             Assert.Equal(reconstituated.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer.Size, (uint)expectedPixelData.Length);
-            Assert.True(reconstituated.GetValues<byte>(DicomTag.PixelData).SequenceEqual(expectedPixelData));
+            Assert.True(reconstituated.GetItem(DicomTag.PixelData).Values.SequenceEqual(expectedPixelData));
         }
 
         private static bool ValueEquals(DicomDataset a, DicomDataset b)
@@ -1089,14 +1089,14 @@ namespace FellowOakDicom.Tests.Serialization
             var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
             JObject.Parse(json);
             DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
-            Assert.Equal("0", recoveredString);
+            var recoveredString = deserializedDataset.GetItem(DicomTag.Acceleration).Values[0];
+            Assert.Equal(0, recoveredString);
         }
 
         [Fact]
         public static void GivenDicomDatasetWithValidDecimalStringVRType_WhenSerialized_IsDeserializedCorrectly()
         {
-            string validAccelarationValue = "97";
+            decimal validAccelarationValue = 97;
 
             var dicomDataset = new DicomDataset
             {
@@ -1106,7 +1106,7 @@ namespace FellowOakDicom.Tests.Serialization
             var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
             JObject.Parse(json);
             DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            var recoveredString = deserializedDataset.GetItem(DicomTag.Acceleration).Values[0];
             Assert.Equal(validAccelarationValue, recoveredString);
         }
 

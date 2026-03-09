@@ -95,8 +95,8 @@ namespace FellowOakDicom
         public static IDicomStrings GetItem(this DicomDataset dataset, DicomTagUC tag)
             => dataset.GetDicomItem<DicomUnlimitedCharacters>(tag) ?? (IDicomStrings)EmptyDicomStrings.Instance;
 
-        public static IDicomStrings GetItem(this DicomDataset dataset, DicomTagUI tag)
-            => dataset.GetDicomItem<DicomUniqueIdentifier>(tag) ?? (IDicomStrings)EmptyDicomStrings.Instance;
+        public static IDicomUniqueIdentifier GetItem(this DicomDataset dataset, DicomTagUI tag)
+            => dataset.GetDicomItem<DicomUniqueIdentifier>(tag) ?? EmptyDicomUniqueIdentifier.Instance;
 
         public static IDicomValue<uint> GetItem(this DicomDataset dataset, DicomTagUL tag)
             => dataset.GetDicomItem<DicomUnsignedLong>(tag) ?? EmptyDicomValue<uint>.Instance;
@@ -114,6 +114,8 @@ namespace FellowOakDicom
             => dataset.GetDicomItem<DicomUnsignedVeryLong>(tag) ?? EmptyDicomValue<ulong>.Instance;
 
 
+        public static DicomSequence GetItem(this DicomDataset dataset, DicomTagSQ tag)
+            => dataset.TryGetSequence(tag, out var seq) ? seq : new DicomSequence(tag);
 
 
         public static DicomDataset SetItem(this DicomDataset dataset, DicomTagLO tag, params string[] values)
@@ -137,7 +139,11 @@ namespace FellowOakDicom
 
     }
 
-    // TODO: DateRange, UIDs, pixeldata-buffer
+    // TODO: DateRange, pixeldata-buffer, Enums (basierend on US)
+    //       zb RedPaletteColorLookupTabelData (obwohl OW braucht man auch byte[]
+    //   wie lösen: get value or default?
+    // soll value eine Exception schmeißen, wenn es nicht gibt??
+    // Es gibt Tags wie SmallestImagePixelValue (SS/US) oder PixelData (OW/OB), die mehree VRs haben können
 
     public interface IDicomString
     {
@@ -214,10 +220,30 @@ namespace FellowOakDicom
         public string[] StringValues => Array.Empty<string>();
     }
 
+    public interface IDicomUniqueIdentifier
+    {
+        bool Exists { get; }
+        DicomUID Value { get; }
+        DicomUID[] Values { get; }
+        string[] StringValues { get; }
+        string StringValue { get; }
+    }
+
+    internal class EmptyDicomUniqueIdentifier : IDicomUniqueIdentifier
+    {
+        public static IDicomUniqueIdentifier Instance { get; } = new EmptyDicomUniqueIdentifier();
+
+        public bool Exists => false;
+        public DicomUID Value => null;
+        public DicomUID[] Values => Array.Empty<DicomUID>();
+        public string[] StringValues => Array.Empty<string>();
+        public string StringValue => string.Empty;
+    }
+
     public interface IDicomValue<T> where T:struct
     {
         bool Exists { get; }
-        T? Value { get; }
+        T Value { get; }
         T[] Values { get; }
         string[] StringValues { get; }
     }
@@ -227,7 +253,7 @@ namespace FellowOakDicom
         public static IDicomValue<T> Instance { get; } = new EmptyDicomValue<T>();
 
         public bool Exists => false;
-        public T? Value => null;
+        public T Value => throw new NullReferenceException();
         public T[] Values => Array.Empty<T>();
         public string[] StringValues => Array.Empty<string>();
     }

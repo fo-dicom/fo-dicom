@@ -29,14 +29,14 @@ namespace FellowOakDicom.Network
         /// <param name="file">DICOM file to be sent</param>
         /// <param name="priority">Priority of request</param>
         public DicomCStoreRequest(DicomFile file, DicomPriority priority = DicomPriority.Medium)
-            : base(DicomCommandField.CStoreRequest, file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID), priority)
+            : base(DicomCommandField.CStoreRequest, file.Dataset.GetItem(DicomTag.SOPClassUID).Value, priority)
         {
             File = file;
             Dataset = file.Dataset;
 
             // for potentially invalid UID values, we have to disable validation
             using var unvalidated = new UnvalidatedScope(Command);
-            SOPInstanceUID = File.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            SOPInstanceUID = File.Dataset.GetItem(DicomTag.SOPInstanceUID).Value;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace FellowOakDicom.Network
         /// <summary>Gets the SOP Instance UID of the DICOM file associated with this DICOM C-Store request.</summary>
         public DicomUID SOPInstanceUID
         {
-            get => Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+            get => Command.GetItem(DicomTag.AffectedSOPInstanceUID).Value;
             private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 

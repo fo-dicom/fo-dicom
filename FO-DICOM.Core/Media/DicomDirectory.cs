@@ -495,7 +495,7 @@ namespace FellowOakDicom.Media
             string referencedFileId)
         {
             var currentImage = seriesRecord.LowerLevelDirectoryRecord;
-            var imageInstanceUid = dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
+            var imageInstanceUid = dataset.GetItem(DicomTag.SOPInstanceUID).StringValue;
 
             while (currentImage != null)
             {
@@ -554,7 +554,7 @@ namespace FellowOakDicom.Media
         private DicomDirectoryRecord CreateSeriesRecord(DicomDataset dataset, DicomDirectoryRecord studyRecord)
         {
             var currentSeries = studyRecord.LowerLevelDirectoryRecord;
-            var seriesInstanceUid = dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID);
+            var seriesInstanceUid = dataset.GetItem(DicomTag.SeriesInstanceUID).StringValue;
 
             while (currentSeries != null)
             {
@@ -591,7 +591,7 @@ namespace FellowOakDicom.Media
         private DicomDirectoryRecord CreateStudyRecord(DicomDataset dataset, DicomDirectoryRecord patientRecord)
         {
             var currentStudy = patientRecord.LowerLevelDirectoryRecord;
-            var studyInstanceUid = dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID);
+            var studyInstanceUid = dataset.GetItem(DicomTag.StudyInstanceUID).StringValue;
 
             while (currentStudy != null)
             {

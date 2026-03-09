@@ -120,7 +120,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public string DestinationAE
         {
-            get => Command.GetSingleValue<string>(DicomTag.MoveDestination);
+            get => Command.GetItem(DicomTag.MoveDestination).Value;
             private set => Command.AddOrUpdate(DicomTag.MoveDestination, value);
         }
 

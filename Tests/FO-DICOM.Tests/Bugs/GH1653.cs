@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             var referencePixelData = streamByteDicomFile.Dataset.GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
             var pixelData = DicomPixelData.Create(streamByteDicomFile.Dataset);
-            var numberOfFrames = streamByteDicomFile.Dataset.GetSingleValue<int>(DicomTag.NumberOfFrames);
+            var numberOfFrames = streamByteDicomFile.Dataset.GetItem(DicomTag.NumberOfFrames).Value;
             var referenceBytes = Enumerable.Range(0, numberOfFrames).Select(x =>
                 {
                     var offset = (long)pixelData.UncompressedFrameSize * x;

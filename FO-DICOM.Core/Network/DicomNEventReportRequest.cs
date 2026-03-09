@@ -48,7 +48,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get => Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+            get => Command.GetItem(DicomTag.AffectedSOPInstanceUID).Value;
             private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
@@ -57,7 +57,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public ushort EventTypeID
         {
-            get => Command.GetSingleValue<ushort>(DicomTag.EventTypeID);
+            get => Command.GetItem(DicomTag.EventTypeID).Value;
             private set => Command.AddOrUpdate(DicomTag.EventTypeID, value);
         }
 

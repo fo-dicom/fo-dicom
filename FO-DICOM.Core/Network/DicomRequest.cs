@@ -54,7 +54,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public ushort MessageID
         {
-            get => Command.GetSingleValue<ushort>(DicomTag.MessageID);
+            get => Command.GetItem(DicomTag.MessageID).Value;
             protected set => Command.AddOrUpdate(DicomTag.MessageID, value);
         }
 

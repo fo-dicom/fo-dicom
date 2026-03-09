@@ -115,8 +115,7 @@ namespace FellowOakDicom.Imaging.Render
 
             if (pixelData.BitsStored == 1)
             {
-                if (pixelData.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID)
-                    == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
+                if (pixelData.Dataset.GetItem(DicomTag.SOPClassUID).Value == DicomUID.MultiFrameSingleBitSecondaryCaptureImageStorage)
                 {
                     // Multi-frame Single Bit Secondary Capture is stored LSB -> MSB
                     return new SingleBitPixelData(

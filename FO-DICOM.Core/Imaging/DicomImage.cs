@@ -91,10 +91,10 @@ namespace FellowOakDicom.Imaging
         public CacheType CacheMode { get; set; } = CacheType.PixelData;
 
         /// <summary>Width of image in pixels</summary>
-        public int Width => _dataset.GetSingleValue<ushort>(DicomTag.Columns);
+        public int Width => _dataset.GetItem(DicomTag.Columns).Value;
 
         /// <summary>Height of image in pixels</summary>
-        public int Height => _dataset.GetSingleValue<ushort>(DicomTag.Rows);
+        public int Height => _dataset.GetItem(DicomTag.Rows).Value;
 
         /// <summary>Number of frames contained in image data.</summary>
         public int NumberOfFrames => _dataset.GetSingleValueOrDefault(DicomTag.NumberOfFrames, (ushort)1);

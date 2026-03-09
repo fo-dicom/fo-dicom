@@ -22,8 +22,7 @@ namespace FellowOakDicom.Media
 
         public uint Offset { get; internal set; }
 
-        public string DirectoryRecordType
-            => GetSingleValue<string>(DicomTag.DirectoryRecordType);
+        public string DirectoryRecordType => this.GetItem(DicomTag.DirectoryRecordType).Value;
 
         public string Key { get; set; }
 

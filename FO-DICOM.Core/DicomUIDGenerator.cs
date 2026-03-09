@@ -42,9 +42,9 @@ namespace FellowOakDicom
         /// <param name="dataset">Dataset in which UIDs should be regenerated.</param>
         public void RegenerateAll(DicomDataset dataset)
         {
-            foreach (var ui in dataset.Where(x => x.ValueRepresentation == DicomVR.UI).ToArray())
+            foreach (var ui in dataset.OfType<DicomUniqueIdentifier>().ToArray())
             {
-                var uid = dataset.GetSingleValue<DicomUID>(ui.Tag);
+                var uid = (ui as IDicomUniqueIdentifier).Value;
                 if (uid.Type == DicomUidType.SOPInstance || uid.Type == DicomUidType.Unknown)
                 {
                     dataset.AddOrUpdate(ui.Tag, Generate(uid));

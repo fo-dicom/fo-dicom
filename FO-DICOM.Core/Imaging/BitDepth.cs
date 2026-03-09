@@ -104,8 +104,8 @@ namespace FellowOakDicom.Imaging
         /// <returns>New <see cref="BitDepth"/> instance</returns>
         public static BitDepth FromDataset(DicomDataset dataset)
         {
-            var allocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
-            var stored = dataset.GetSingleValue<ushort>(DicomTag.BitsStored);
+            var allocated = dataset.GetItem(DicomTag.BitsAllocated).Value;
+            var stored = dataset.GetItem(DicomTag.BitsStored).Value;
             var signed = dataset.GetSingleValue<PixelRepresentation>(DicomTag.PixelRepresentation) == PixelRepresentation.Signed;
             return new BitDepth(allocated, stored, GetHighBit(stored, signed), signed);
         }

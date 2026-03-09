@@ -73,7 +73,7 @@ namespace FellowOakDicom.Tests.Network
             var e = Record.Exception(() =>
             {
                 var request = DicomCFindRequest.CreateSeriesQuery(invalidStudyUID);
-                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(invalidStudyUID, request.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue);
             });
             Assert.Null(e);
         }
@@ -86,7 +86,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var request = new DicomCFindRequest(DicomQueryRetrieveLevel.Study);
                 request.Dataset.AddOrUpdate(DicomTag.StudyInstanceUID, invalidStudyUID);
-                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(invalidStudyUID, request.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue);
             });
             Assert.Null(e);
         }

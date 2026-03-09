@@ -22,7 +22,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = DicomFile.Open(TestData.Resolve("GH227.dcm"));
             const int expected = 512;
-            var actual = file.Dataset.GetSingleValue<int>(DicomTag.Rows);
+            var actual = file.Dataset.GetItem(DicomTag.Rows).Value;
             Assert.Equal(expected, actual);
         }
 
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Bugs
         {
             var file = await DicomFile.OpenAsync(TestData.Resolve("GH227.dcm"));
             const int expected = 512;
-            var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
+            var actual = file.Dataset.GetItem(DicomTag.Columns).Value;
             Assert.Equal(expected, actual);
         }
 
@@ -50,7 +50,7 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(DicomTransferSyntax.DeflatedExplicitVRLittleEndian, file.Dataset.InternalTransferSyntax);
 
             const int expected = 16;
-            var actual = file.Dataset.GetSingleValue<int>(DicomTag.BitsAllocated);
+            var actual = file.Dataset.GetItem(DicomTag.BitsAllocated).Value;
             Assert.Equal(expected, actual);
         }
 
@@ -69,7 +69,7 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(DicomTransferSyntax.DeflatedExplicitVRLittleEndian, file.Dataset.InternalTransferSyntax);
 
             const int expected = 16;
-            var actual = file.Dataset.GetSingleValue<int>(DicomTag.BitsAllocated);
+            var actual = file.Dataset.GetItem(DicomTag.BitsAllocated).Value;
             Assert.Equal(expected, actual);
         }
 
@@ -85,7 +85,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             var file = DicomFile.Open(stream);
             const int expected = 512;
-            var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
+            var actual = file.Dataset.GetItem(DicomTag.Columns).Value;
             Assert.Equal(expected, actual);
         }
 
@@ -101,7 +101,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             var file = await DicomFile.OpenAsync(stream);
             const int expected = 512;
-            var actual = file.Dataset.GetSingleValue<int>(DicomTag.Columns);
+            var actual = file.Dataset.GetItem(DicomTag.Columns).Value;
             Assert.Equal(expected, actual);
         }
 

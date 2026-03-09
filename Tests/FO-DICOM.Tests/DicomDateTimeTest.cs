@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests
             Assert.Null(exception);
 
             var expected = new DateTime(2016, 4, 20, 10, 20, 30);
-            var actual = dataset.GetSingleValue<DateTime>(DicomTag.AcquisitionDateTime);
+            var actual = dataset.GetItem(DicomTag.AcquisitionDateTime).Value;
 
             Assert.Equal(expected, actual);
         }

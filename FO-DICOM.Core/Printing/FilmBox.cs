@@ -104,7 +104,7 @@ namespace FellowOakDicom.Printing
         /// </remarks>
         public string ImageDisplayFormat
         {
-            get => GetSingleValue<string>(DicomTag.ImageDisplayFormat);
+            get => this.GetItem(DicomTag.ImageDisplayFormat).Value;
             set => AddOrUpdate(DicomTag.ImageDisplayFormat, value);
         }
 
@@ -368,8 +368,7 @@ namespace FellowOakDicom.Printing
             {
                 if (ReferencedPresentationLutSequence?.Items.Count > 0)
                 {
-                    var sopInstanceUid =
-                        ReferencedPresentationLutSequence.Items[0].GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
+                    var sopInstanceUid = ReferencedPresentationLutSequence.Items[0].GetItem(DicomTag.ReferencedSOPInstanceUID).Value;
                     return _filmSession.FindPresentationLut(sopInstanceUid);
                 }
                 else

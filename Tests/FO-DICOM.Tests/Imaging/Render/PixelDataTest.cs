@@ -24,15 +24,15 @@ namespace FellowOakDicom.Tests.Imaging.Render
             var df = DicomFile.Open(TestData.Resolve("IM-0001-0001-0001.dcm"));
             var img = new DicomImage(df.Dataset);
             img.RenderImage(0);
-            Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowWidth, 0), img.WindowWidth);
-            Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowCenter, 0), img.WindowCenter);
+            Assert.Equal((double)df.Dataset.GetItem(DicomTag.WindowWidth).Value, img.WindowWidth);
+            Assert.Equal((double)df.Dataset.GetItem(DicomTag.WindowCenter).Value, img.WindowCenter);
 
             // an image, that contains one windowing-setting
             df = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
             img = new DicomImage(df.Dataset);
             img.RenderImage(0);
-            Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowWidth), img.WindowWidth);
-            Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowCenter), img.WindowCenter);
+            Assert.Equal((double)df.Dataset.GetItem(DicomTag.WindowWidth).Value, img.WindowWidth);
+            Assert.Equal((double)df.Dataset.GetItem(DicomTag.WindowCenter).Value, img.WindowCenter);
 
             // an image with no windowing-setting
             df = DicomFile.Open(TestData.Resolve("GH227.dcm"));

@@ -22,20 +22,20 @@ namespace FellowOakDicom.Tests
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
-            Assert.Empty(dataset.GetValues<string>(DicomTag.PatientName));
-            Assert.Empty(dataset.GetValues<string>(DicomTag.PatientID));
-            Assert.Empty(dataset.GetValues<string>(DicomTag.PatientSex));
+            Assert.Empty(dataset.GetItem(DicomTag.PatientName).Value);
+            Assert.Empty(dataset.GetItem(DicomTag.PatientID).Value);
+            Assert.Empty(dataset.GetItem(DicomTag.PatientSex).Value);
         }
 
         [Fact]
         public void AnonymizeInPlace_File_SopInstanceUidTransferredToMetaInfo()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
-            var old = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            var old = file.Dataset.GetItem(DicomTag.SOPInstanceUID).Value;
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(file);
 
-            var expected = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            var expected = file.Dataset.GetItem(DicomTag.SOPInstanceUID).Value;
             var actual = file.FileMetaInfo.MediaStorageSOPInstanceUID;
             Assert.NotEqual(expected, old);
             Assert.Equal(expected, actual);
@@ -59,13 +59,13 @@ namespace FellowOakDicom.Tests
         public void Anonymize_Dataset_OriginalDatasetNotModified()
         {
             var dataset = DicomFile.Open(TestData.Resolve("CT-MONO2-16-ankle")).Dataset;
-            var expected = dataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
+            var expected = dataset.GetItem(DicomTag.StudyInstanceUID).Value;
 
             var anonymizer = new DicomAnonymizer();
             var newDataset = anonymizer.Anonymize(dataset);
 
-            var actual = dataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
-            var actualNew = newDataset.GetSingleValue<DicomUID>(DicomTag.StudyInstanceUID);
+            var actual = dataset.GetItem(DicomTag.StudyInstanceUID).Value;
+            var actualNew = newDataset.GetItem(DicomTag.StudyInstanceUID).Value;
 
             Assert.Equal(expected, actual);
             Assert.NotEqual(expected, actualNew);
@@ -85,8 +85,8 @@ namespace FellowOakDicom.Tests
 
             var newDataset = anonymizer.Anonymize(dataset);
 
-            var actualName = newDataset.GetSingleValue<string>(DicomTag.PatientName);
-            var actualId = newDataset.GetSingleValue<string>(DicomTag.PatientID);
+            var actualName = newDataset.GetItem(DicomTag.PatientName).Value;
+            var actualId = newDataset.GetItem(DicomTag.PatientID).Value;
 
             Assert.Equal(expectedName, actualName);
             Assert.Equal(expectedId, actualId);
@@ -99,13 +99,13 @@ namespace FellowOakDicom.Tests
             var tag = DicomTag.StudyDate;
 
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-            Assert.True(dataset.GetSingleValue<string>(tag).Length > 0);
+            Assert.True(dataset.GetItem(tag).StringValues[0].Length > 0);
 
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
 
             var expected = Array.Empty<string>();
-            var actual = dataset.GetValues<string>(tag);
+            var actual = dataset.GetItem(tag).StringValues;
             Assert.Equal(expected, actual);
         }
 
@@ -116,7 +116,7 @@ namespace FellowOakDicom.Tests
             var tag = DicomTag.SeriesDate;
 
             var dataset = DicomFile.Open($"./Test Data/{fileName}").Dataset;
-            Assert.True(dataset.GetSingleValue<string>(tag).Length > 0);
+            Assert.True(dataset.GetItem(tag).StringValues[0].Length > 0);
 
             var anonymizer = new DicomAnonymizer();
             anonymizer.AnonymizeInPlace(dataset);
@@ -194,11 +194,11 @@ namespace FellowOakDicom.Tests
             var sequence1 = dataset.GetSequence(tagRoiContourSeq);
             var sequence2 = sequence1.Items[0].GetSequence(tagContourSeq);
             var sequence3 = sequence2.Items[0].GetSequence(tagContourImgSeq);
-            Assert.NotEqual(sequence3.Items[0].GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID), sequence3.Items[1].GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID));
-            Assert.NotEqual(generatedUid1, sequence3.Items[0].GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID));
-            Assert.NotEqual(generatedUid2, sequence3.Items[1].GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID));
-            Assert.Equal(1, sequence3.Items[0].GetSingleValue<int>(DicomTag.ReferencedFrameNumber));
-            Assert.Equal(2, sequence3.Items[1].GetSingleValue<int>(DicomTag.ReferencedFrameNumber));
+            Assert.NotEqual(sequence3.Items[0].GetItem(DicomTag.ReferencedSOPInstanceUID).Value, sequence3.Items[1].GetItem(DicomTag.ReferencedSOPInstanceUID).Value);
+            Assert.NotEqual(generatedUid1, sequence3.Items[0].GetItem(DicomTag.ReferencedSOPInstanceUID).Value);
+            Assert.NotEqual(generatedUid2, sequence3.Items[1].GetItem(DicomTag.ReferencedSOPInstanceUID).Value);
+            Assert.Equal(1, sequence3.Items[0].GetItem(DicomTag.ReferencedFrameNumber).Value);
+            Assert.Equal(2, sequence3.Items[1].GetItem(DicomTag.ReferencedFrameNumber).Value);
         }
 
         [Fact]
@@ -260,29 +260,29 @@ namespace FellowOakDicom.Tests
         public void AnonymizeInPlace_DicomValueElement_ShouldBeDefault_WhenBlanking()
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
-            var floatTag = new DicomTag(0x300f, 0x1010, new DicomPrivateCreator("TEST"));
-            var doubleTag = new DicomTag(0x300f, 0x1011, new DicomPrivateCreator("TEST"));
-            var longTag = new DicomTag(0x300f, 0x1012, new DicomPrivateCreator("TEST"));
-            var unsignedLongTag = new DicomTag(0x300f, 0x1013, new DicomPrivateCreator("TEST"));
-            var shortTag = new DicomTag(0x300f, 0x1014, new DicomPrivateCreator("TEST"));
-            var unsignedShortTag = new DicomTag(0x300f, 0x1015, new DicomPrivateCreator("TEST"));
+            var floatTag = new DicomTagFL(0x300f, 0x1010, new DicomPrivateCreator("TEST"));
+            var doubleTag = new DicomTagFD(0x300f, 0x1011, new DicomPrivateCreator("TEST"));
+            var longTag = new DicomTagSV(0x300f, 0x1012, new DicomPrivateCreator("TEST"));
+            var unsignedLongTag = new DicomTagUV(0x300f, 0x1013, new DicomPrivateCreator("TEST"));
+            var shortTag = new DicomTagSS(0x300f, 0x1014, new DicomPrivateCreator("TEST"));
+            var unsignedShortTag = new DicomTagUS(0x300f, 0x1015, new DicomPrivateCreator("TEST"));
             var profile = new StringReader(@"300f,10[0-9A-F]{2};C;;;;;;;;;;");
 
             dataset.Add(new DicomFloatingPointSingle(floatTag, 12.5f));
             dataset.Add(new DicomFloatingPointDouble(doubleTag, 12.5d));
-            dataset.Add(new DicomSignedLong(longTag, -125));
-            dataset.Add(new DicomUnsignedLong(unsignedLongTag, 125U));
+            dataset.Add(new DicomSignedVeryLong(longTag, -125));
+            dataset.Add(new DicomUnsignedVeryLong(unsignedLongTag, 125U));
             dataset.Add(new DicomSignedShort(shortTag, -12));
             dataset.Add(new DicomUnsignedShort(unsignedShortTag, 12));
 
             var _anonymizer = new DicomAnonymizer(DicomAnonymizer.SecurityProfile.LoadProfile(profile, DicomAnonymizer.SecurityProfileOptions.BasicProfile));
             _anonymizer.AnonymizeInPlace(dataset);
-            Assert.Equal(new float(), dataset.GetSingleValue<float>(floatTag));
-            Assert.Equal(new double(), dataset.GetSingleValue<double>(doubleTag));
-            Assert.Equal(new long(), dataset.GetSingleValue<long>(longTag));
-            Assert.Equal(new ulong(), dataset.GetSingleValue<ulong>(unsignedLongTag));
-            Assert.Equal(new short(), dataset.GetSingleValue<short>(shortTag));
-            Assert.Equal(new ushort(), dataset.GetSingleValue<ushort>(unsignedShortTag));
+            Assert.Equal(new float(), dataset.GetItem(floatTag).Value);
+            Assert.Equal(new double(), dataset.GetItem(doubleTag).Value);
+            Assert.Equal(new long(), dataset.GetItem(longTag).Value);
+            Assert.Equal(new ulong(), dataset.GetItem(unsignedLongTag).Value);
+            Assert.Equal(new short(), dataset.GetItem(shortTag).Value);
+            Assert.Equal(new ushort(), dataset.GetItem(unsignedShortTag).Value);
         }
 
         [Fact]

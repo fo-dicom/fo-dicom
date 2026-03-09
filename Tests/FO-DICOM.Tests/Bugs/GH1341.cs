@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests.Bugs
             var dicomDataSet = roundTrippedDicomFile.Dataset;
 
             // Act
-            var imageComments = dicomDataSet.GetSingleValue<string>(DicomTag.ImageComments);
+            var imageComments = dicomDataSet.GetItem(DicomTag.ImageComments).Value;
 
             // Assert
             Assert.Equal(string.Empty, imageComments);

@@ -276,22 +276,22 @@ namespace FellowOakDicom.Imaging.Codec
                 var methods = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionMethod))
                 {
-                    methods.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionMethod));
+                    methods.AddRange(newDataset.GetItem(DicomTag.LossyImageCompressionMethod).Values);
                 }
 
                 methods.Add(outSyntax.LossyCompressionMethod);
                 newDataset.AddOrUpdate(new DicomCodeString(DicomTag.LossyImageCompressionMethod, methods.ToArray()));
 
-                double oldSize = oldPixelData.GetFrame(0).Size;
-                double newSize = newPixelData.GetFrame(0).Size;
+                decimal oldSize = oldPixelData.GetFrame(0).Size;
+                decimal newSize = newPixelData.GetFrame(0).Size;
 
-                List<string> ratios = new List<string>();
+                List<decimal> ratios = new List<decimal>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionRatio))
                 {
-                    ratios.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionRatio));
+                    ratios.AddRange(newDataset.GetItem(DicomTag.LossyImageCompressionRatio).Values);
                 }
                 
-                ratios.Add(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", oldSize / newSize));
+                ratios.Add(decimal.Round(oldSize / newSize, 3));
                 newDataset.AddOrUpdate(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratios.ToArray()));
             }
 

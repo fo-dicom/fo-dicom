@@ -46,7 +46,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public ushort RequestMessageID
         {
-            get => Command.GetSingleValue<ushort>(DicomTag.MessageIDBeingRespondedTo);
+            get => Command.GetItem(DicomTag.MessageIDBeingRespondedTo).Value;
             set => Command.AddOrUpdate(DicomTag.MessageIDBeingRespondedTo, value);
         }
 
@@ -57,7 +57,7 @@ namespace FellowOakDicom.Network
         {
             get
             {
-                var status = DicomStatus.Lookup(Command.GetSingleValue<ushort>(DicomTag.Status));
+                var status = DicomStatus.Lookup(Command.GetItem(DicomTag.Status).Value);
                 if ( Command.TryGetSingleValue(DicomTag.ErrorComment, out string comment))
                 {
                     return new DicomStatus(status, comment);
@@ -97,7 +97,7 @@ namespace FellowOakDicom.Network
 
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
-                    string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
+                    string[] tags = Command.GetItem(DicomTag.OffendingElement).StringValues;
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:\t\t");

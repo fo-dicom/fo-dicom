@@ -16,7 +16,7 @@ namespace FellowOakDicom.Tests.IO.Writer
 
         private const string _comment = "Some meaningful comment.";
 
-        private static readonly DicomTag _doseCommentTag = DicomTag.DoseComment;
+        private static readonly DicomTagLO _doseCommentTag = DicomTag.DoseComment;
 
         private readonly DicomFileMetaInformation _metaInfo;
 
@@ -61,7 +61,7 @@ namespace FellowOakDicom.Tests.IO.Writer
 
                 var expected = _comment;
                 var readFile = DicomFile.Open(fileName);
-                var actual = readFile.Dataset.GetSingleValue<string>(_doseCommentTag);
+                var actual = readFile.Dataset.GetItem(_doseCommentTag).Value;
                 Assert.Equal(expected, actual);
 
                 var syntax = readFile.FileMetaInfo.TransferSyntax;

@@ -327,8 +327,8 @@ namespace FellowOakDicom.Imaging
             var bits = BitDepth.FromDataset(dataset);
             var options = new GrayscaleRenderOptions(bits);
 
-            int smallValue = dataset.GetSingleValue<int>(DicomTag.SmallestImagePixelValue);
-            int largeValue = dataset.GetSingleValue<int>(DicomTag.LargestImagePixelValue);
+            int smallValue = dataset.GetItem(DicomTag.SmallestImagePixelValue).Value;
+            int largeValue = dataset.GetItem(DicomTag.LargestImagePixelValue).Value;
 
             if (smallValue >= largeValue)
             {

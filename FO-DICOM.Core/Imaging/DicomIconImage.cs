@@ -122,7 +122,7 @@ namespace FellowOakDicom.Imaging
         {
             // Validate the dataset
             var photometricInterpretation = PhotometricInterpretation.Parse(
-                dataset.GetSingleValue<string>(DicomTag.PhotometricInterpretation));
+                dataset.GetItem(DicomTag.PhotometricInterpretation).Value);
 
             var isValid = (photometricInterpretation == PhotometricInterpretation.PaletteColor
                 || photometricInterpretation == PhotometricInterpretation.Monochrome1

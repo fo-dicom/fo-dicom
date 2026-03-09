@@ -36,8 +36,8 @@ namespace FellowOakDicom
             ValidateItems = dataset.ValidateItems;
             Version = new byte[] { 0x00, 0x01 };
 
-            MediaStorageSOPClassUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID);
-            MediaStorageSOPInstanceUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            MediaStorageSOPClassUID = dataset.GetItem(DicomTag.SOPClassUID).Value;
+            MediaStorageSOPInstanceUID = dataset.GetItem(DicomTag.SOPInstanceUID).Value;
             TransferSyntax = dataset.InternalTransferSyntax;
 
             ImplementationClassUID = DicomImplementation.ClassUID;
@@ -106,7 +106,7 @@ namespace FellowOakDicom
         /// </summary>
         public byte[] Version
         {
-            get => GetValues<byte>(DicomTag.FileMetaInformationVersion);
+            get => this.GetItem(DicomTag.FileMetaInformationVersion).Values;
             set => AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
         }
 
@@ -115,7 +115,7 @@ namespace FellowOakDicom
         /// </summary>
         public DicomUID MediaStorageSOPClassUID
         {
-            get => GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPClassUID);
+            get => this.GetItem(DicomTag.MediaStorageSOPClassUID).Value;
             set => AddOrUpdate(DicomTag.MediaStorageSOPClassUID, value);
         }
 
@@ -124,7 +124,7 @@ namespace FellowOakDicom
         /// </summary>
         public DicomUID MediaStorageSOPInstanceUID
         {
-            get => GetSingleValue<DicomUID>(DicomTag.MediaStorageSOPInstanceUID);
+            get => this.GetItem(DicomTag.MediaStorageSOPInstanceUID).Value;
             set => AddOrUpdate(DicomTag.MediaStorageSOPInstanceUID, value);
         }
 
@@ -133,7 +133,7 @@ namespace FellowOakDicom
         /// </summary>
         public DicomTransferSyntax TransferSyntax
         {
-            get => GetSingleValue<DicomTransferSyntax>(DicomTag.TransferSyntaxUID);
+            get => DicomTransferSyntax.Lookup(this.GetItem(DicomTag.TransferSyntaxUID).Value);
             set => AddOrUpdate(DicomTag.TransferSyntaxUID, value.UID);
         }
 
@@ -142,7 +142,7 @@ namespace FellowOakDicom
         /// </summary>
         public DicomUID ImplementationClassUID
         {
-            get => GetSingleValue<DicomUID>(DicomTag.ImplementationClassUID);
+            get => this.GetItem(DicomTag.ImplementationClassUID).Value;
             set => AddOrUpdate(DicomTag.ImplementationClassUID, value);
         }
 

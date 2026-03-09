@@ -125,7 +125,7 @@ namespace FellowOakDicom.Tests
         public void PatientNameEncodings(string fileName, string patientName)
         {
             var dataset = DicomFile.Open(TestData.Resolve($"charset/{fileName}.dcm")).Dataset;
-            var actualName = dataset.GetSingleValue<string>(DicomTag.PatientName);
+            var actualName = dataset.GetItem(DicomTag.PatientName).Value;
             Assert.Equal(patientName, actualName);
         }
 

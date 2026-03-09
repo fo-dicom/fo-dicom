@@ -36,7 +36,7 @@ namespace FellowOakDicom.Tests.Network
             var e = Record.Exception(() =>
             {
                 var request = new DicomCMoveRequest("DestinationAE", invalidStudyUID);
-                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(invalidStudyUID, request.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue);
             });
             Assert.Null(e);
         }
@@ -49,7 +49,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var request = new DicomCMoveRequest("DestinationAE", invalidStudyUID);
                 request.Dataset.AddOrUpdate(DicomTag.SeriesInstanceUID, invalidStudyUID);
-                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
+                Assert.Equal(invalidStudyUID, request.Dataset.GetItem(DicomTag.SeriesInstanceUID).StringValue);
             });
             Assert.Null(e);
         }

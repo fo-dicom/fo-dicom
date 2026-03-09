@@ -65,7 +65,7 @@ namespace FellowOakDicom.Network
                     case DicomCommandField.NSetRequest:
                     case DicomCommandField.NActionRequest:
                     case DicomCommandField.NDeleteRequest:
-                        return Command.GetSingleValue<DicomUID>(DicomTag.RequestedSOPClassUID);
+                        return Command.GetItem(DicomTag.RequestedSOPClassUID).Value;
                     case DicomCommandField.CStoreRequest:
                     case DicomCommandField.CFindRequest:
                     case DicomCommandField.CGetRequest:
@@ -73,9 +73,9 @@ namespace FellowOakDicom.Network
                     case DicomCommandField.CEchoRequest:
                     case DicomCommandField.NEventReportRequest:
                     case DicomCommandField.NCreateRequest:
-                        return Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPClassUID);
+                        return Command.GetItem(DicomTag.AffectedSOPClassUID).Value;
                     default:
-                        return Command.GetSingleValueOrDefault<DicomUID>(DicomTag.AffectedSOPClassUID, null);
+                        return Command.GetItem(DicomTag.AffectedSOPClassUID).Value;
                 }
             }
             protected set
@@ -187,7 +187,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         /// <returns>Formatted output string of the DICOM message.</returns>
         public override string ToString()
-            => $"{ToString(Type)} [{(IsRequest(Type) ? Command.GetSingleValue<ushort>(DicomTag.MessageID) : Command.GetSingleValue<ushort>(DicomTag.MessageIDBeingRespondedTo))}]";
+            => $"{ToString(Type)} [{(IsRequest(Type) ? Command.GetItem(DicomTag.MessageID).Value : Command.GetItem(DicomTag.MessageIDBeingRespondedTo).Value)}]";
 
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace FellowOakDicom.Imaging
     /// Pixel Representation (0028,0103) represents signed/unsigned data of the pixel samples.
     /// Each sample shall have the same pixel representation
     /// </summary>
-    public enum PixelRepresentation
+    public enum PixelRepresentation: ushort
     {
         /// <summary>
         /// Unsigned integer

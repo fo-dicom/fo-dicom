@@ -24,7 +24,7 @@ namespace FellowOakDicom.Tests
             var ds = new DicomDataset();
             var validUid = "1.2.315.6666.0.8965.19187632.1";
             ds.Add(DicomTag.StudyInstanceUID, validUid);
-            Assert.Equal(validUid, ds.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            Assert.Equal(validUid, ds.GetItem(DicomTag.StudyInstanceUID).StringValue);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace FellowOakDicom.Tests
             ds.AutoValidate = false;
             // if AutoValidate is turned off, the invalidUid should be able to be added
             ds.Add(DicomTag.StudyInstanceUID, invalidUid);
-            Assert.Equal(invalidUid, ds.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            Assert.Equal(invalidUid, ds.GetItem(DicomTag.StudyInstanceUID).StringValue);
 
             var tmpFile = Path.GetTempFileName();
             ds.Add(DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage);
@@ -48,7 +48,7 @@ namespace FellowOakDicom.Tests
 
             // reading of this invalid dicomdataset should be possible
             var dsFile = DicomFile.Open(tmpFile);
-            Assert.Equal(invalidUid, dsFile.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            Assert.Equal(invalidUid, dsFile.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue);
 
             // but the validation should still work
             Assert.Throws<DicomValidationException>(() => dsFile.Dataset.Validate());
@@ -61,7 +61,7 @@ namespace FellowOakDicom.Tests
             var ds = new DicomDataset();
             var validUid = "1.2.315.6666.0.0.0.8965.19187632.1";
             ds.Add(DicomTag.StudyInstanceUID, validUid);
-            Assert.Equal(validUid, ds.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+            Assert.Equal(validUid, ds.GetItem(DicomTag.StudyInstanceUID).StringValue);
 
             var tooLongUid = validUid + "." + validUid;
             var ex = Assert.ThrowsAny<DicomValidationException>(() => ds.AddOrUpdate(DicomTag.StudyInstanceUID, tooLongUid));
@@ -122,7 +122,7 @@ namespace FellowOakDicom.Tests
         public void DicomValidation_ValidateValidDS(string value)
         {
             var ds = new DicomDataset { { DicomTag.RescaleSlope, value } };
-            Assert.Equal(value, ds.GetSingleValue<string>(DicomTag.RescaleSlope));
+            Assert.Equal(value, ds.GetItem(DicomTag.RescaleSlope).StringValues[0]);
         }
         
         [Theory]

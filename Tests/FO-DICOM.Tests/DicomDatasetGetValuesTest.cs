@@ -32,7 +32,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_Value_Succeeds()
         {
-            Assert.Equal(_uLTestData.Values[1], _uLTestData.Dataset.GetValue<long>(_uLTestData.Tag, 1));
+            Assert.Equal(_uLTestData.Values[1], _uLTestData.Dataset.GetItem(_uLTestData.Tag).Values[1]);
         }
 
         [Fact]
@@ -41,30 +41,30 @@ namespace FellowOakDicom.Tests
             var tag = DicomTag.SimpleFrameList;
             var dataset = new DicomDataset();
 
-            var e = Record.Exception(() => dataset.GetValue<long>(tag, 0));
-            Assert.IsType<DicomDataException>(e);
+            var e = Record.Exception(() => dataset.GetItem(tag).Values[0]);
+            Assert.IsType<IndexOutOfRangeException>(e);
         }
 
         [Fact]
         public void Get_Value_OutOfRange_ShouldThrow()
         {
-            var e = Record.Exception(() => _uLTestData.Dataset.GetValue<long>(_uLTestData.Tag, _uLTestData.Values.Length));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetItem(_uLTestData.Tag).Values[_uLTestData.Values.Length]);
 
-            Assert.IsType<DicomDataException>(e);
+            Assert.IsType<IndexOutOfRangeException>(e);
         }
 
-        [Fact]
+        [Fact(Skip = "new api will not require this test any more")]
         public void Get_Value_NegativeIndex_OutOfRange_ShouldThrow()
         {
-            var e = Record.Exception(() => _uLTestData.Dataset.GetValue<long>(_uLTestData.Tag, -1));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetItem(_uLTestData.Tag).Values);
 
             Assert.IsType<ArgumentOutOfRangeException>(e);
         }
 
-        [Fact]
+        [Fact(Skip = "new api will not require this test any more")]
         public void Get_Value_ArrayType_InvalidOperation_ShouldThrow()
         {
-            var e = Record.Exception(() => _uLTestData.Dataset.GetValue<long[]>(_uLTestData.Tag, 0));
+            var e = Record.Exception(() => _uLTestData.Dataset.GetItem(_uLTestData.Tag).Values[0]);
 
             Assert.IsType<DicomDataException>(e);
         }
@@ -90,7 +90,7 @@ namespace FellowOakDicom.Tests
         public void Get_Values_Succeeds()
         {
             Assert.Equal(_uLTestData.Values,
-                           _uLTestData.Dataset.GetValues<uint>(_uLTestData.Tag));
+                           _uLTestData.Dataset.GetItem(_uLTestData.Tag).Values);
         }
 
         [Fact]
@@ -98,15 +98,16 @@ namespace FellowOakDicom.Tests
         {
             var ds = new DicomDataset();
 
-            var e = Record.Exception(() => ds.GetValues<uint>(_uLTestData.Tag));
+            var e = Record.Exception(() => ds.GetItem(_uLTestData.Tag).Values);
 
-            Assert.IsType<DicomDataException>(e);
+            Assert.Null(e);
+            Assert.False(ds.GetItem(_uLTestData.Tag).Exists);
         }
 
         [Fact]
         public void Get_Values_EmptyArray_Success()
         {
-            Assert.Equal(_emptyStringTestData.Dataset.GetValues<string>(_emptyStringTestData.Tag), Array.Empty<string>());
+            Assert.Equal(Array.Empty<string>(), _emptyStringTestData.Dataset.GetItem(_emptyStringTestData.Tag).StringValues);
         }
 
         [Fact]
@@ -130,13 +131,13 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void Get_SingleValue_Success()
         {
-            Assert.Equal(_singleValueTestData.Values[0], _singleValueTestData.Dataset.GetSingleValue<string>(_singleValueTestData.Tag));
+            Assert.Equal(_singleValueTestData.Values[0], _singleValueTestData.Dataset.GetItem(_singleValueTestData.Tag).Value);
         }
 
-        [Fact]
+        [Fact(Skip ="new api will not require this test any more")]
         public void Get_SingleValue_MultiValue_Throws()
         {
-            var e = Record.Exception(() => _stringTestData.Dataset.GetSingleValue<string>(_stringTestData.Tag));
+            var e = Record.Exception(() => _stringTestData.Dataset.GetItem(_stringTestData.Tag).StringValue);
             Assert.IsType<DicomDataException>(e);
         }
 
@@ -229,14 +230,14 @@ namespace FellowOakDicom.Tests
         #endregion
 
         #region Support data
-        private readonly DatasetTestData<uint> _uLTestData = new DatasetTestData<uint>(DicomTag.SimpleFrameList, new uint[] { 1, 2, 3 });
-        private readonly DatasetTestData<string> _stringTestData = new DatasetTestData<string>(DicomTag.SOPClassesSupported, new string[] { "1.2.3", "4.5.6", "7.8.8.9" });
-        private readonly DatasetTestData<string> _emptyStringTestData = new DatasetTestData<string>(DicomTag.SOPClassesSupported, Array.Empty<string>());
-        private readonly DatasetTestData<string> _singleValueTestData = new DatasetTestData<string>(DicomTag.Modality, new string[] { "CT" });
+        private readonly DatasetTestData<DicomTagUL, uint> _uLTestData = new DatasetTestData<DicomTagUL, uint>(DicomTag.SimpleFrameList, new uint[] { 1, 2, 3 });
+        private readonly DatasetTestData<DicomTagUI, string> _stringTestData = new DatasetTestData<DicomTagUI, string>(DicomTag.SOPClassesSupported, new string[] { "1.2.3", "4.5.6", "7.8.8.9" });
+        private readonly DatasetTestData<DicomTagUI, string> _emptyStringTestData = new DatasetTestData<DicomTagUI, string>(DicomTag.SOPClassesSupported, Array.Empty<string>());
+        private readonly DatasetTestData<DicomTagCS, string> _singleValueTestData = new DatasetTestData<DicomTagCS, string>(DicomTag.Modality, new string[] { "CT" });
 
-        private class DatasetTestData<T>
+        private class DatasetTestData<Tv, T> where Tv: DicomTag
         {
-            public DatasetTestData(DicomTag tag, T[] values)
+            public DatasetTestData(Tv tag, T[] values)
             {
                 Dataset = new DicomDataset();
                 Tag = tag;
@@ -245,7 +246,7 @@ namespace FellowOakDicom.Tests
                 Dataset.Add(tag, values);
             }
 
-            public DicomTag Tag { get; private set; }
+            public Tv Tag { get; private set; }
             public DicomDataset Dataset { get; private set; }
             public T[] Values { get; private set; }
         }

@@ -50,7 +50,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public DicomUID SOPInstanceUID
         {
-            get => Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+            get => Command.GetItem(DicomTag.AffectedSOPInstanceUID).Value;
             private set => Command.AddOrUpdate(DicomTag.AffectedSOPInstanceUID, value);
         }
 
@@ -59,7 +59,7 @@ namespace FellowOakDicom.Network
         /// </summary>
         public ushort ActionTypeID
         {
-            get => Command.GetSingleValue<ushort>(DicomTag.ActionTypeID);
+            get => Command.GetItem(DicomTag.ActionTypeID).Value;
             private set => Command.AddOrUpdate(DicomTag.ActionTypeID, value);
         }
 

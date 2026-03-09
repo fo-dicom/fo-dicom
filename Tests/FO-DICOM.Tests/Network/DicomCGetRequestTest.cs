@@ -2,11 +2,12 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Network
@@ -113,7 +114,7 @@ namespace FellowOakDicom.Tests.Network
             var e = Record.Exception(() =>
             {
                 var request = new DicomCGetRequest(invalidStudyUID, DicomPriority.Medium);
-                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID));
+                Assert.Equal(invalidStudyUID, request.Dataset.GetItem(DicomTag.StudyInstanceUID).StringValue);
             });
             Assert.Null(e);
         }
@@ -126,7 +127,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var request = new DicomCGetRequest(invalidStudyUID, DicomPriority.Medium);
                 request.Dataset.AddOrUpdate(DicomTag.SeriesInstanceUID, invalidStudyUID);
-                Assert.Equal(invalidStudyUID, request.Dataset.GetSingleValue<string>(DicomTag.SeriesInstanceUID));
+                Assert.Equal(invalidStudyUID, request.Dataset.GetItem(DicomTag.SeriesInstanceUID).StringValue);
             });
             Assert.Null(e);
         }

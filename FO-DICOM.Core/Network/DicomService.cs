@@ -788,7 +788,7 @@ namespace FellowOakDicom.Network
                                     file.Dataset.FallbackEncodings = new[] { _fallbackEncoding };
                                 }
                                 file.FileMetaInfo.MediaStorageSOPClassUID = pc.AbstractSyntax;
-                                file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetSingleValue<DicomUID>(DicomTag.AffectedSOPInstanceUID);
+                                file.FileMetaInfo.MediaStorageSOPInstanceUID = _dimse.Command.GetItem(DicomTag.AffectedSOPInstanceUID).Value;
                                 file.FileMetaInfo.TransferSyntax = pc.AcceptedTransferSyntax;
                                 file.FileMetaInfo.ImplementationClassUID = Association.RemoteImplementationClassUID ?? DicomImplementation.ClassUID;
                                 file.FileMetaInfo.ImplementationVersionName = Association.RemoteImplementationVersion ?? DicomImplementation.Version;

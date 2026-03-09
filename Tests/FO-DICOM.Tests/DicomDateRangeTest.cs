@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests
                 new DicomDateRange(new DateTime(2016, 4, 20), new DateTime(2016, 4, 21)));
 
             const string expected = "20160420-20160421";
-            var actual = dataset.GetSingleValue<string>(DicomTag.AcquisitionDate);
+            var actual = dataset.GetItem(DicomTag.AcquisitionDate).StringValues[0];
 
             Assert.Equal(expected, actual);
         }
@@ -56,7 +56,7 @@ namespace FellowOakDicom.Tests
                 new DicomDateRange(new DateTime(1, 1, 1, 5, 10, 5), new DateTime(1, 1, 1, 19, 0, 20)));
 
             const string expected = "051005-190020";
-            var actual = dataset.GetSingleValue<string>(DicomTag.AcquisitionTime);
+            var actual = dataset.GetItem(DicomTag.AcquisitionTime).StringValues[0];
 
             Assert.Equal(expected, actual);
         }

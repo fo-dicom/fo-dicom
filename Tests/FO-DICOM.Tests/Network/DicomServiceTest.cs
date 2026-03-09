@@ -55,13 +55,13 @@ namespace FellowOakDicom.Tests.Network
 
             await client.SendAsync();
 
-            Assert.Equal((ushort)1, command.GetSingleValue<ushort>(DicomTag.CommandField));
+            Assert.Equal((ushort)1, command.GetItem(DicomTag.CommandField).Value);
 
-            Assert.Equal("CT", requestDataset.GetString(DicomTag.Modality));
+            Assert.Equal("CT", requestDataset.GetItem(DicomTag.Modality).Value);
             Assert.Equal("TESTB", requestDataset.GetSingleValueOrDefault<string>(privTag2, null));
             Assert.Equal("TESTA", requestDataset.GetSingleValueOrDefault<string>(privTag1, null));
 
-            Assert.Equal("CT", responseDataset.GetSingleValue<string>(DicomTag.Modality));
+            Assert.Equal("CT", responseDataset.GetItem(DicomTag.Modality).Value);
             Assert.Equal("TESTB", responseDataset.GetValueOrDefault<string>(privTag2, 0, null));
             Assert.Equal("TESTA", responseDataset.GetSingleValueOrDefault<string>(privTag1, null));
         }
@@ -85,10 +85,10 @@ namespace FellowOakDicom.Tests.Network
 
             await client.SendAsync();
 
-            var commandField = command.GetSingleValue<ushort>(DicomTag.CommandField);
+            var commandField = command.GetItem(DicomTag.CommandField).Value;
             Assert.Equal((ushort)1, commandField);
 
-            var modality = dataset.GetSingleValue<string>(DicomTag.Modality);
+            var modality = dataset.GetItem(DicomTag.Modality).Value;
             Assert.Equal("CT", modality);
         }
 

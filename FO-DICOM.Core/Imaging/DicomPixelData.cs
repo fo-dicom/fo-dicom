@@ -39,7 +39,7 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public ushort Width
         {
-            get => Dataset.GetSingleValue<ushort>(DicomTag.Columns);
+            get => Dataset.GetItem(DicomTag.Columns).Value;
             set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Columns, value));
         }
 
@@ -48,7 +48,7 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public ushort Height
         {
-            get => Dataset.GetSingleValue<ushort>(DicomTag.Rows);
+            get => Dataset.GetItem(DicomTag.Rows).Value;
             set => Dataset.AddOrUpdate(new DicomUnsignedShort(DicomTag.Rows, value));
         }
 
@@ -74,14 +74,14 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets number of bits allocated per pixel sample (0028,0100).
         /// </summary>
-        public ushort BitsAllocated => Dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
+        public ushort BitsAllocated => Dataset.GetItem(DicomTag.BitsAllocated).Value;
 
         /// <summary>
         /// Gets or sets number of bits stored per pixel sample (0028,0101).
         /// </summary>
         public ushort BitsStored
         {
-            get => Dataset.GetSingleValue<ushort>(DicomTag.BitsStored);
+            get => Dataset.GetItem(DicomTag.BitsStored).Value;
             set
             {
                 if (value > BitsAllocated)
@@ -98,7 +98,7 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         public ushort HighBit
         {
-            get => Dataset.GetSingleValue<ushort>(DicomTag.HighBit);
+            get => Dataset.GetItem(DicomTag.HighBit).Value;
             set
             {
                 if (value >= BitsAllocated)
@@ -155,12 +155,12 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets lossy image compression method (0028,2114).
         /// </summary>
-        public string LossyCompressionMethod => Dataset.GetSingleValue<string>(DicomTag.LossyImageCompressionMethod);
+        public string LossyCompressionMethod => Dataset.GetItem(DicomTag.LossyImageCompressionMethod).Value;
 
         /// <summary>
         /// Gets lossy image compression ratio (0028,2112).
         /// </summary>
-        public decimal LossyCompressionRatio => Dataset.GetSingleValue<decimal>(DicomTag.LossyImageCompressionRatio);
+        public decimal LossyCompressionRatio => Dataset.GetItem(DicomTag.LossyImageCompressionRatio).Value;
 
         /// <summary>
         /// Gets number of bytes allocated per pixel sample.
@@ -228,8 +228,8 @@ namespace FellowOakDicom.Imaging
                 throw new DicomImagingException("Palette Color LUT missing from dataset.");
             }
 
-            var size = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
-            var bits = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
+            var size = (uint)Dataset.GetItem(DicomTag.RedPaletteColorLookupTableDescriptor).Values[0];
+            var bits = Dataset.GetItem(DicomTag.RedPaletteColorLookupTableDescriptor).Values[2];
 
             var r = Dataset.GetValues<byte>(DicomTag.RedPaletteColorLookupTableData);
             var g = Dataset.GetValues<byte>(DicomTag.GreenPaletteColorLookupTableData);
@@ -238,7 +238,7 @@ namespace FellowOakDicom.Imaging
             // If the LUT size is 0, that means it's 65536 in size.
             if (size == 0)
             {
-                size = 65536;
+                size = 65536u;
             }
 
             var lut = new Color32[size];
@@ -300,7 +300,7 @@ namespace FellowOakDicom.Imaging
             if (newPixelData)
             {
                 var syntax = dataset.InternalTransferSyntax;
-                var bitsAllocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
+                var bitsAllocated = dataset.GetItem(DicomTag.BitsAllocated).Value;
 
                 if (syntax.IsEncapsulated)
                 {

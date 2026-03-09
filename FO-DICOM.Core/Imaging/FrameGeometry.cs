@@ -362,19 +362,20 @@ namespace FellowOakDicom.Imaging
                         out double row_spacing, out double col_spacing,
                         out double row_length, out double col_length)
         {
-            var imageorientation = dicomDataset.GetValues<double>(DicomTag.ImageOrientationPatient);
+            var imageorientation = dicomDataset.GetItem(DicomTag.ImageOrientationPatient).Values;
             rowDir = new Vector3D(imageorientation, 0);
             colDir = new Vector3D(imageorientation, 3);
             // compute nrm to row and col (i.e. cross product of row and col unit vectors)
             normalDir = rowDir.CrossProduct(colDir);
 
-            pos = new Point3D(dicomDataset.GetValues<double>(DicomTag.ImagePositionPatient));
+            pos = new Point3D(dicomDataset.GetItem(DicomTag.ImagePositionPatient).Values);
 
-            row_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 0);
-            col_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 1);
+            var spacing = dicomDataset.GetItem(DicomTag.PixelSpacing).Values;
+            row_spacing = (double)spacing[0];
+            col_spacing = (double)spacing[1];
 
-            rows = dicomDataset.GetSingleValue<int>(DicomTag.Rows);
-            cols = dicomDataset.GetSingleValue<int>(DicomTag.Columns);
+            rows = dicomDataset.GetItem(DicomTag.Rows).Value;
+            cols = dicomDataset.GetItem(DicomTag.Columns).Value;
 
             row_length = cols * row_spacing;
             col_length = rows * col_spacing;

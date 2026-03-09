@@ -61,11 +61,25 @@ namespace FellowOakDicom.Imaging.Mathematics
             Z = v[2];
         }
 
+        public Vector3D(decimal[] v)
+        {
+            X = (double)v[0];
+            Y = (double)v[1];
+            Z = (double)v[2];
+        }
+
         public Vector3D(double[] v, int start)
         {
             X = v[start];
             Y = v[start + 1];
             Z = v[start + 2];
+        }
+
+        public Vector3D(decimal[] v, int start)
+        {
+            X = (double)v[start];
+            Y = (double)v[start + 1];
+            Z = (double)v[start + 2];
         }
 
         public Vector3D(float x, float y, float z)
@@ -366,6 +380,13 @@ namespace FellowOakDicom.Imaging.Mathematics
             X = v[0];
             Y = v[1];
             Z = v[2];
+        }
+
+        public Point3D(decimal[] v)
+        {
+            X = (double)v[0];
+            Y = (double)v[1];
+            Z = (double)v[2];
         }
 
         public Point3D(double[] v, int start)

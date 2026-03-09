@@ -64,7 +64,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 // Arrange
                 var largeDicomFile = PrepareLargeDicomFile(disposables);
-                var sopInstanceUid = largeDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
+                var sopInstanceUid = largeDicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue;
                 var fragments = largeDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData).Fragments;
                 var firstFragmentLength = fragments[0].Size;
                 var lastFragmentLength = fragments[fragments.Count - 1].Size;
@@ -79,7 +79,7 @@ namespace FellowOakDicom.Tests.Bugs
                 var openedDicomFile = await DicomFile.OpenAsync(tempFileName, readOption);
 
                 // Assert
-                Assert.Equal(sopInstanceUid, openedDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID));
+                Assert.Equal(sopInstanceUid, openedDicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue);
                 if (readOption != FileReadOption.SkipLargeTags)
                 {
                     var openedPixelData =
@@ -114,7 +114,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 // Arrange
                 var largeDicomFile = PrepareLargeDicomFile(disposables);
-                var sopInstanceUid = largeDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
+                var sopInstanceUid = largeDicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue;
                 var fragments = largeDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData).Fragments;
                 var firstFragmentLength = fragments[0].Size;
                 var lastFragmentLength = fragments[fragments.Count - 1].Size;
@@ -130,7 +130,7 @@ namespace FellowOakDicom.Tests.Bugs
                 var openedDicomFile = await DicomFile.OpenAsync(fileStream, readOption);
 
                 // Assert
-                Assert.Equal(sopInstanceUid, openedDicomFile.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID));
+                Assert.Equal(sopInstanceUid, openedDicomFile.Dataset.GetItem(DicomTag.SOPInstanceUID).StringValue);
                 if (readOption != FileReadOption.SkipLargeTags)
                 {
                     var openedPixelData = openedDicomFile.Dataset.GetDicomItem<DicomOtherByteFragment>(DicomTag.PixelData);

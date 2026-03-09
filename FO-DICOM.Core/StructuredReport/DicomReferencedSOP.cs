@@ -30,9 +30,9 @@ namespace FellowOakDicom.StructuredReport
             Add(DicomTag.ReferencedSOPClassUID, clazz);
         }
 
-        public DicomUID Instance => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPInstanceUID);
+        public DicomUID Instance => this.GetItem(DicomTag.ReferencedSOPInstanceUID).Value;
 
-        public DicomUID Class => GetSingleValue<DicomUID>(DicomTag.ReferencedSOPClassUID);
+        public DicomUID Class => this.GetItem(DicomTag.ReferencedSOPClassUID).Value;
 
     }
 }

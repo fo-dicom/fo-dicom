@@ -253,7 +253,7 @@ namespace FellowOakDicom
             AnonymizeInPlace(file.Dataset);
             if (file.FileMetaInfo != null)
             {
-                file.FileMetaInfo.MediaStorageSOPInstanceUID = file.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+                file.FileMetaInfo.MediaStorageSOPInstanceUID =file.Dataset.GetItem(DicomTag.SOPInstanceUID).Value;
             }
         }
 

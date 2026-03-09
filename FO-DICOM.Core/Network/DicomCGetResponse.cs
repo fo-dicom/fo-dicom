@@ -120,7 +120,7 @@ namespace FellowOakDicom.Network
 
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
-                    string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
+                    string[] tags = Command.GetItem(DicomTag.OffendingElement).StringValues;
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:\t\t");
