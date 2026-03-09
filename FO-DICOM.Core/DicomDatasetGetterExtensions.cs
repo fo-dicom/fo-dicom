@@ -151,7 +151,7 @@ namespace FellowOakDicom
         string Value { get; }
     }
 
-    internal class EmptyDicomString : IDicomString
+    internal struct EmptyDicomString : IDicomString
     {
         public static EmptyDicomString Instance { get; } = new EmptyDicomString();
 
@@ -166,7 +166,7 @@ namespace FellowOakDicom
         string[] Values { get; }
     }
 
-    internal class EmptyDicomStrings : IDicomStrings
+    internal struct EmptyDicomStrings : IDicomStrings
     {
         public static EmptyDicomStrings Instance { get; } = new EmptyDicomStrings();
         public bool Exists => false;
@@ -184,7 +184,7 @@ namespace FellowOakDicom
         string Suffix { get; }
     }
 
-    internal class EmptyDicomPersonName : IDicomPersonName
+    internal struct EmptyDicomPersonName : IDicomPersonName
     {
         public static EmptyDicomPersonName Instance { get; } = new EmptyDicomPersonName();
 
@@ -207,7 +207,7 @@ namespace FellowOakDicom
         string[] StringValues { get; }
     }
 
-    internal class EmptyDicomDate: IDicomDate
+    internal struct EmptyDicomDate: IDicomDate
     {
         public static IDicomDate Instance { get; } = new EmptyDicomDate();
 
@@ -229,7 +229,7 @@ namespace FellowOakDicom
         string StringValue { get; }
     }
 
-    internal class EmptyDicomUniqueIdentifier : IDicomUniqueIdentifier
+    internal struct EmptyDicomUniqueIdentifier : IDicomUniqueIdentifier
     {
         public static IDicomUniqueIdentifier Instance { get; } = new EmptyDicomUniqueIdentifier();
 
@@ -248,7 +248,7 @@ namespace FellowOakDicom
         string[] StringValues { get; }
     }
 
-    internal class EmptyDicomValue<T> : IDicomValue<T> where T: struct
+    internal struct EmptyDicomValue<T> : IDicomValue<T> where T: struct
     {
         public static IDicomValue<T> Instance { get; } = new EmptyDicomValue<T>();
 
@@ -266,7 +266,7 @@ namespace FellowOakDicom
         string[] StringValues { get; }
     }
 
-    internal class EmptyDicomAttributeTag : IDicomAttributeTag
+    internal struct EmptyDicomAttributeTag : IDicomAttributeTag
     {
         public static IDicomAttributeTag Instance { get; } = new EmptyDicomAttributeTag();
 
