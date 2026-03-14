@@ -11,9 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Codecs" Version="5.16.4" />
-    <PackageReference Include="SkiaSharp" Version="3.119.1" />
-    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.16.5.1" />
+    <PackageReference Include="SkiaSharp" Version="3.119.2" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.2" />
   </ItemGroup>
 
   <ItemGroup>
