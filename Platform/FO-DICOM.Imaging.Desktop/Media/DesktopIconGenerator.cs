@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2012-2025 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Media;
+using FellowOakDicom.Imaging;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace FellowOakDicom.Imaging.Desktop.Media
+namespace FellowOakDicom.Media
 {
     /// <summary>
     /// Generates thumbnail icons for DICOMDIR using System.Drawing/GDI+.

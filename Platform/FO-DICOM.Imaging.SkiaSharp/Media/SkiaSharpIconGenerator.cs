@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2012-2025 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Media;
+using FellowOakDicom.Imaging;
 using SkiaSharp;
 using System;
 
-namespace FellowOakDicom.Imaging.SkiaSharp.Media
+namespace FellowOakDicom.Media
 {
     /// <summary>
     /// Generates thumbnail icons for DICOMDIR using SkiaSharp.

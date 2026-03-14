@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2012-2025 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
-using FellowOakDicom.Media;
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 
-namespace FellowOakDicom.Imaging.ImageSharp.Media
+namespace FellowOakDicom.Media
 {
     /// <summary>
     /// Generates thumbnail icons for DICOMDIR using ImageSharp.
