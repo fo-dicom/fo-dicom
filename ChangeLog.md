@@ -1,4 +1,5 @@
 ### 5.2.6 (TBD)
+- Add Icon Image Sequence generation for DICOMDIR with IIconGenerator interface (#654)
 
 ### 5.2.5 (2025-11-16)
 - Add INetoworkMetricsCollector, that is invoked by DicomService, to optionally collect metrics (#2039)
