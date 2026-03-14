@@ -102,15 +102,7 @@ namespace FellowOakDicom.Media
         private static byte[] CreateGrayscaleIconPixelData(Bitmap source, int targetWidth, int targetHeight)
         {
             // Create 8-bit grayscale bitmap
-            using var iconBitmap = new Bitmap(targetWidth, targetHeight, PixelFormat.Format8bppIndexed);
-
-            // Set up grayscale palette
-            var palette = iconBitmap.Palette;
-            for (int i = 0; i < 256; i++)
-            {
-                palette.Entries[i] = Color.FromArgb(i, i, i);
-            }
-            iconBitmap.Palette = palette;
+            using var iconBitmap = new Bitmap(targetWidth, targetHeight, PixelFormat.Format24bppRgb);
 
             // Draw resized image with high-quality interpolation
             using (var graphics = Graphics.FromImage(iconBitmap))
@@ -128,22 +120,37 @@ namespace FellowOakDicom.Media
             var bitmapData = iconBitmap.LockBits(
                 new Rectangle(0, 0, targetWidth, targetHeight),
                 ImageLockMode.ReadOnly,
-                PixelFormat.Format8bppIndexed);
+                PixelFormat.Format24bppRgb);
 
             try
             {
                 // Copy pixel data row by row
-                var sourcePtr = bitmapData.Scan0;
-                var stride = bitmapData.Stride;
+                int stride = bitmapData.Stride;
+                IntPtr scan0 = bitmapData.Scan0;
 
-                for (int y = 0; y < targetHeight; y++)
+                unsafe
                 {
-                    Marshal.Copy(
-                        sourcePtr + (y * stride),
-                        pixelData,
-                        y * targetWidth,
-                        targetWidth);
+                    byte* ptr = (byte*)scan0;
+
+                    for (int y = 0; y < targetHeight; y++)
+                    {
+                        byte* row = ptr + (y * stride);
+
+                        for (int x = 0; x < targetWidth; x++)
+                        {
+                            int i = x * 3;
+
+                            byte b = row[i];
+                            byte g = row[i + 1];
+                            byte r = row[i + 2];
+
+                            int grayValue = ((77 * r + 150 * g + 29 * b) >> 8);
+
+                            pixelData[y * targetWidth + x] = (byte)grayValue;
+                        }
+                    }
                 }
+
             }
             finally
             {
@@ -152,5 +159,6 @@ namespace FellowOakDicom.Media
 
             return pixelData;
         }
+
     }
 }
