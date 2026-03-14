@@ -103,7 +103,7 @@ namespace FellowOakDicom.Media
 
         /// <summary>
         /// Gets or sets if icon image sequences should be generated from added files if possible.
-        /// This will only work if an IImageManager is registered so that fo-dicom can render the file.
+        /// This will only work if an IIconGenerator is registered at startup so that fo-dicom can render the file.
         /// </summary>
         public bool GenerateImageIcons { get; set; } = false;
         private IIconGenerator _iconGenerator = null;
