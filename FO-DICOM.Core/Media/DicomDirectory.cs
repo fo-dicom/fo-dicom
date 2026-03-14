@@ -101,6 +101,13 @@ namespace FellowOakDicom.Media
             set => ValidateItems = value;
         }
 
+        /// <summary>
+        /// Gets or sets if icon image sequences should be generated from added files if possible.
+        /// This will only work if an IImageManager is registered so that fo-dicom can render the file.
+        /// </summary>
+        public bool GenerateImageIcons { get; set; } = false;
+        private IIconGenerator _iconGenerator = null;
+
         #endregion
 
         #region Constructors
@@ -536,6 +543,7 @@ namespace FellowOakDicom.Media
                 new DicomUniqueIdentifier(DicomTag.ReferencedSOPInstanceUIDInFile, metaFileInfo.MediaStorageSOPInstanceUID.UID),
                 new DicomUniqueIdentifier(DicomTag.ReferencedTransferSyntaxUIDInFile, metaFileInfo.TransferSyntax.UID)
             );
+            AddIconSequence(dataset, newImage);
 
             if (currentImage != null)
             {
@@ -549,6 +557,40 @@ namespace FellowOakDicom.Media
             }
 
             return newImage;
+        }
+
+        private void AddIconSequence(DicomDataset dataset, DicomDirectoryRecord newImage)
+        {
+            if (!GenerateImageIcons)
+            {
+                return;
+            }
+
+            try
+            {
+                _iconGenerator ??= Setup.ServiceProvider.GetService<IIconGenerator>();
+                if (_iconGenerator == null)
+                {
+                    return;
+                }
+
+                var frameNumber = 0;
+                if (dataset.TryGetSingleValue<int>(DicomTag.NumberOfFrames, out var framecount) && framecount > 1)
+                {
+                    // A.3.3.2 Note 2: for multiframe images the frame identified in the RepresentativeFrameNumber should be
+                    //                 taken, else a frame apporixmately on-third of the way through the multiframe image.
+                    frameNumber = dataset.TryGetSingleValue<ushort>(DicomTag.RepresentativeFrameNumber, out var repFrame)
+                        ? repFrame
+                        : (framecount / 3);
+                }
+                var iconSequence = _iconGenerator.GenerateIconImageSequence(dataset, frameNumber);
+                if (iconSequence != null)
+                {
+                    newImage.Add(iconSequence);
+                }
+
+            }
+            catch { /* Icon generation failure should not prevent DICOMDIR creation, so silently continue without icon */ }
         }
 
         private DicomDirectoryRecord CreateSeriesRecord(DicomDataset dataset, DicomDirectoryRecord studyRecord)
