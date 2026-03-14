@@ -12,7 +12,7 @@ namespace FellowOakDicom
         /// <summary>
         /// Registers all available services for imaging and rendering with WinForms to fo-dicom
         /// </summary>
-        public static ServiceCollection AddWinFormsImaging(this ServiceCollection services)
+        public static IServiceCollection AddWinFormsImaging(this IServiceCollection services)
         {
             services.AddImageManager<WinFormsImageManager>();
             services.AddSingleton<IIconGenerator, DesktopIconGenerator>();
@@ -22,7 +22,7 @@ namespace FellowOakDicom
         /// <summary>
         /// Registers all available services for imaging and rendering with WPF to fo-dicom
         /// </summary>
-        public static ServiceCollection AddWPFImaging(this ServiceCollection services)
+        public static IServiceCollection AddWPFImaging(this IServiceCollection services)
         {
             services.AddImageManager<WPFImageManager>();
             services.AddSingleton<IIconGenerator, DesktopIconGenerator>();

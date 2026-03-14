@@ -106,7 +106,8 @@ namespace FellowOakDicom.Media
         /// This will only work if an IIconGenerator is registered at startup so that fo-dicom can render the file.
         /// </summary>
         public bool GenerateImageIcons { get; set; } = false;
-        private IIconGenerator _iconGenerator = null;
+        // This locally cached instance of IIconGenerator is internal, so that it can explicitly set in unittests.
+        internal IIconGenerator _iconGenerator = null;
 
         #endregion
 

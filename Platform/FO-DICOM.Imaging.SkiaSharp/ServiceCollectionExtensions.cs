@@ -12,7 +12,7 @@ namespace FellowOakDicom
         /// <summary>
         /// Registers all available services for imaging and rendering with ImageSharp to fo-dicom
         /// </summary>
-        public static ServiceCollection AddSkiaSharpImaging(this ServiceCollection services)
+        public static IServiceCollection AddSkiaSharpImaging(this IServiceCollection services)
         {
             services.AddImageManager<SkiaSharpImageManager>();
             services.AddSingleton<IIconGenerator, SkiaSharpIconGenerator>();
