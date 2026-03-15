@@ -1,4 +1,5 @@
 ### 5.2.6 (TBD)
+- Strong Name fo-dicom.Imaging.ImageSharp and fo-dicom.Imaging.ImageSharp.NetStandard projects
 
 ### 5.2.5 (2025-11-16)
 - Add INetoworkMetricsCollector, that is invoked by DicomService, to optionally collect metrics (#2039)
