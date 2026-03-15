@@ -13,7 +13,7 @@ namespace FellowOakDicom.Tests.Imaging
         // No constructor needed - GlobalFixture already sets up ImageSharpImageManager
         // for TestCollections.ImageSharp (see Fixture.cs lines 43-49)
 
-        [Fact]
+        [FactForNetCore]
         public void GenerateIconImageSequence_ValidDicomImage_ProducesCorrectIcon()
         {
             // Arrange
@@ -46,7 +46,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(width * height, pixelData.Length);
         }
 
-        [Fact]
+        [FactForNetCore]
         public void GenerateIconImageSequence_PreservesAspectRatio()
         {
             // Arrange - CT-MONO2-16-ankle is 512x512
@@ -66,7 +66,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal((ushort)128, height);
         }
 
-        [Fact]
+        [FactForNetCore]
         public void GenerateIconImageSequence_WithSharpening_Succeeds()
         {
             // Arrange
@@ -86,7 +86,7 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.True(pixelData.Length > 0);
         }
 
-        [Fact]
+        [FactForNetCore]
         public void GenerateIconImageSequence_NullDataset_ThrowsArgumentNullException()
         {
             var generator = new ImageSharpIconGenerator();
