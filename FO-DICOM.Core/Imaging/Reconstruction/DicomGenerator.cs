@@ -53,8 +53,8 @@ namespace FellowOakDicom.Imaging.Reconstruction
                 dataset.AddOrUpdate(DicomTag.Rows, (ushort)slice.Rows);
                 dataset.AddOrUpdate(DicomTag.Columns, (ushort)slice.Columns);
                 dataset.AddOrUpdate(DicomTag.ImagePositionPatient, slice.TopLeft.ToArray());
-                dataset.AddOrUpdate(DicomTag.ImageOrientationPatient, new double[] { slice.RowDirection.X, slice.RowDirection.Y, slice.RowDirection.Z, slice.ColumnDirection.X, slice.ColumnDirection.Y, slice.ColumnDirection.Z });
-                dataset.AddOrUpdate(DicomTag.PixelSpacing, new double[] { slice.Spacing, slice.Spacing });
+                dataset.AddOrUpdate(DicomTag.ImageOrientationPatient, new decimal[] { slice.RowDirection.X, slice.RowDirection.Y, slice.RowDirection.Z, slice.ColumnDirection.X, slice.ColumnDirection.Y, slice.ColumnDirection.Z });
+                dataset.AddOrUpdate(DicomTag.PixelSpacing, new decimal[] { slice.Spacing, slice.Spacing });
                 dataset.AddOrUpdate(DicomTag.SliceThickness, stackToStore.SliceDistance);
 
                 if (!dataset.Contains(DicomTag.BitsStored))

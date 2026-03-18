@@ -222,7 +222,7 @@ namespace FellowOakDicom.Tests.Imaging
         [InlineData("CR-ModalitySequenceLUT.dcm", FrameGeometryType.Plane, 7.5)]
         [InlineData("CT1_J2KI", FrameGeometryType.Volume, 33.0734)]
         [InlineData("GH645.dcm", FrameGeometryType.None, 0.0)]
-        public void FrameGeometryMeassureDistance(string filename, FrameGeometryType expectedType, double expectedMeassure)
+        public void FrameGeometryMeassureDistance(string filename, FrameGeometryType expectedType, decimal expectedMeassure)
         {
             var image = DicomFile.Open(TestData.Resolve(filename));
             var geometry = new FrameGeometry(image.Dataset);

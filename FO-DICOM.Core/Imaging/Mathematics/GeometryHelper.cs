@@ -20,13 +20,19 @@ namespace FellowOakDicom.Imaging.Mathematics
         /// <summary>
         /// Finds the bounding box of the geometry by finding the bounding box of the 4 corners
         /// </summary>
-        public static (Point3D min, Point3D max) GetBoundingBox(this FrameGeometry geometry)
+        public static (Point3M min, Point3M max) GetBoundingBox(this FrameGeometry geometry)
             => GetBoundingBox(geometry.PointTopLeft, geometry.PointTopRight, geometry.PointBottomLeft, geometry.PointBottomRight);
 
         /// <summary>
         /// Finds the bounding box of a list of points in space.
         /// </summary>
         public static (Point3D min, Point3D max) GetBoundingBox(this IEnumerable<Point3D> points)
+            => GetBoundingBox(points.ToArray());
+
+        /// <summary>
+        /// Finds the bounding box of a list of points in space.
+        /// </summary>
+        public static (Point3M min, Point3M max) GetBoundingBox(this IEnumerable<Point3M> points)
             => GetBoundingBox(points.ToArray());
 
         /// <summary>
@@ -39,6 +45,18 @@ namespace FellowOakDicom.Imaging.Mathematics
             IEnumerable<double> zvalues = points.Select(p => p.Z);
             return (new Point3D(xvalues.Min(), yvalues.Min(), zvalues.Min()), new Point3D(xvalues.Max(), yvalues.Max(), zvalues.Max()));
         }
+
+        /// <summary>
+        /// Finds the bounding box of a list of points in space.
+        /// </summary>
+        private static (Point3M min, Point3M max) GetBoundingBox(params Point3M[] points)
+        {
+            IEnumerable<decimal> xvalues = points.Select(p => p.X);
+            IEnumerable<decimal> yvalues = points.Select(p => p.Y);
+            IEnumerable<decimal> zvalues = points.Select(p => p.Z);
+            return (new Point3M(xvalues.Min(), yvalues.Min(), zvalues.Min()), new Point3M(xvalues.Max(), yvalues.Max(), zvalues.Max()));
+        }
+
 
     }
 }

@@ -76,4 +76,75 @@ namespace FellowOakDicom.Imaging.Mathematics
         public Point2 Round() => new Point2((int)Math.Round(X), (int)Math.Round(Y));
 
     }
+
+    /// <summary>
+    /// Coordinate in 2D space with decimal values
+    /// </summary>
+    public class Point2M : IComparable<Point2M>, IEquatable<Point2M>
+    {
+        public static readonly Point2M Origin = new Point2M();
+
+        public Point2M()
+        {
+        }
+
+        public Point2M(decimal x, decimal y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        /// <summary>Position on X axis</summary>
+        public decimal X { get; set; }
+
+        /// <summary>Position on Y axis</summary>
+        public decimal Y { get; set; }
+
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj is Point2M other)
+            {
+                return X == other.X && Y == other.Y;
+            }
+            return false;
+        }
+
+
+        public bool Equals(Point2M other)
+        {
+            if (other == null) return false;
+            return X == other.X && Y == other.Y;
+        }
+
+
+        public override int GetHashCode() => X.GetHashCode() ^ Y.GetHashCode();
+
+
+        /// <summary>Gets a human-readable string representing this <see cref="Point2D"/> object.</summary>
+        /// <returns>String representation</returns>
+        public override string ToString() => string.Format("({0},{1})", X, Y);
+
+
+        /// <summary>IComparable interface implementation</summary>
+        /// <param name="other">Point to compare</param>
+        /// <returns>Compare result</returns>
+        public int CompareTo(Point2M other)
+        {
+            if (X < other.X) return -1;
+            if (X > other.X) return 1;
+            if (Y < other.Y) return -1;
+            if (Y > other.Y) return 1;
+            return 0;
+        }
+
+
+        public Point2 Round() => new Point2((int)Math.Round(X), (int)Math.Round(Y));
+
+    }
+
 }

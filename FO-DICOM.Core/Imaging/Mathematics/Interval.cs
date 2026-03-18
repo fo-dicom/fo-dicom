@@ -42,4 +42,42 @@ namespace FellowOakDicom.Imaging.Mathematics
             => Max - Min;
 
     }
+
+    /// <summary>
+    /// Represents an interval of decimal values
+    /// </summary>
+    public class IntervalM
+    {
+
+        /// <summary>
+        /// The lower bound of the interval
+        /// </summary>
+        public decimal Min { get; private set; }
+
+        /// <summary>
+        /// The upper bound of the interval
+        /// </summary>
+        public decimal Max { get; private set; }
+
+
+        public IntervalM(decimal min, decimal max)
+        {
+            Min = min;
+            Max = max;
+        }
+
+
+        /// <summary>
+        /// Returns true if the value is between Min and Max including the boundries
+        /// </summary>
+        public bool Contains(decimal value)
+            => Min <= value && value <= Max;
+
+        public decimal Center
+            => (Min + Max) / 2;
+
+        public decimal Width
+            => Max - Min;
+
+    }
 }

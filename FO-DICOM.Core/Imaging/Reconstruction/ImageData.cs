@@ -26,7 +26,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
         public IPixelData Pixels { get; }
 
-        public double SortingValue { get; }
+        public decimal SortingValue { get; }
 
         public int InstanceNumber => Dataset.TryGetSingleValue(DicomTag.InstanceNumber, out int numb) ? numb : 0;
 

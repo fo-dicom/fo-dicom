@@ -35,26 +35,26 @@ namespace FellowOakDicom.Imaging
 
         public string FrameOfReferenceUid { get; private set; }
 
-        public Vector3D DirectionRow { get; private set; }
+        public Vector3M DirectionRow { get; private set; }
 
-        public Vector3D DirectionColumn { get; private set; }
+        public Vector3M DirectionColumn { get; private set; }
 
-        public Vector3D DirectionNormal { get; private set; }
+        public Vector3M DirectionNormal { get; private set; }
 
         public Point2 FrameSize { get; private set; }
 
-        public double PixelSpacingBetweenColumns { get; private set; } = 0;
-        public double PixelSpacingBetweenRows { get; private set; } = 0;
+        public decimal PixelSpacingBetweenColumns { get; private set; } = 0m;
+        public decimal PixelSpacingBetweenRows { get; private set; } = 0m;
 
-        public Point3D PointTopLeft { get; private set; }
-        public Point3D PointTopRight { get; private set; }
-        public Point3D PointBottomLeft { get; private set; }
-        public Point3D PointBottomRight { get; private set; }
+        public Point3M PointTopLeft { get; private set; }
+        public Point3M PointTopRight { get; private set; }
+        public Point3M PointBottomLeft { get; private set; }
+        public Point3M PointBottomRight { get; private set; }
 
         public FrameOrientation Orientation { get; private set; }
 
-        private MatrixD ImageToPatientSpace { get; set; }
-        private MatrixD PatientToImageSpace { get; set; }
+        private MatrixM ImageToPatientSpace { get; set; }
+        private MatrixM PatientToImageSpace { get; set; }
 
         #endregion
 
@@ -74,27 +74,27 @@ namespace FellowOakDicom.Imaging
 
             FrameSize = new Point2(image.GetSingleValueOrDefault<int>(DicomTag.Columns, 0), image.GetSingleValueOrDefault<int>(DicomTag.Rows, 0));
 
-            if (image.TryGetValues<double>(DicomTag.ImagerPixelSpacing, out var imagerPixelSpacing) && imagerPixelSpacing.Length == 2)
+            if (image.TryGetValues<decimal>(DicomTag.ImagerPixelSpacing, out var imagerPixelSpacing) && imagerPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = imagerPixelSpacing[0];
                 PixelSpacingBetweenColumns = imagerPixelSpacing[1];
             }
-            else if (image.TryGetValues<double>(DicomTag.PixelSpacing, out var pixelSpacing) && pixelSpacing.Length == 2)
+            else if (image.TryGetValues<decimal>(DicomTag.PixelSpacing, out var pixelSpacing) && pixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = pixelSpacing[0];
                 PixelSpacingBetweenColumns = pixelSpacing[1];
             }
-            else if (image.TryGetValues<double>(DicomTag.NominalScannedPixelSpacing, out var nominalPixelSpacing) && nominalPixelSpacing.Length == 2)
+            else if (image.TryGetValues<decimal>(DicomTag.NominalScannedPixelSpacing, out var nominalPixelSpacing) && nominalPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = nominalPixelSpacing[0];
                 PixelSpacingBetweenColumns = nominalPixelSpacing[1];
             }
-            else if (functionalItems.TryGetValues<double>(DicomTag.PixelSpacing, out var functionalPixelSpacing) && functionalPixelSpacing.Length == 2)
+            else if (functionalItems.TryGetValues<decimal>(DicomTag.PixelSpacing, out var functionalPixelSpacing) && functionalPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = functionalPixelSpacing[0];
                 PixelSpacingBetweenColumns = functionalPixelSpacing[1];
             }
-            else if (functionalItems.TryGetValues<double>(DicomTag.ImagerPixelSpacing, out var functionalImagerPixelSpacing) && functionalImagerPixelSpacing.Length == 2)
+            else if (functionalItems.TryGetValues<decimal>(DicomTag.ImagerPixelSpacing, out var functionalImagerPixelSpacing) && functionalImagerPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = functionalImagerPixelSpacing[0];
                 PixelSpacingBetweenColumns = functionalImagerPixelSpacing[1];
@@ -106,22 +106,22 @@ namespace FellowOakDicom.Imaging
 
             InitializeTranformationMatrizes();
 
-            double[] FindInDatasetOrFunctional(DicomTag tag)
+            decimal[] FindInDatasetOrFunctional(DicomTag tag)
             {
-                if (image.TryGetValues<double>(tag, out var result))
+                if (image.TryGetValues<decimal>(tag, out var result))
                 {
                     return result;
                 }
-                if (functionalItems.TryGetValues<double>(tag, out var functionalResult))
+                if (functionalItems.TryGetValues<decimal>(tag, out var functionalResult))
                 {
                     return functionalResult;
                 }
-                return Array.Empty<double>();
+                return Array.Empty<decimal>();
             }
         }
 
 
-        public FrameGeometry(string frameOfReferenceUid, double[] imagePatientPosition, double[] imagePatientOrientation, double[] pixelSpacing, int width, int height)
+        public FrameGeometry(string frameOfReferenceUid, decimal[] imagePatientPosition, decimal[] imagePatientOrientation, decimal[] pixelSpacing, int width, int height)
         {
             // copy provided values
 
@@ -141,17 +141,17 @@ namespace FellowOakDicom.Imaging
 
         #region private methods
 
-        private void InitializeCalcualtedVolumeData(double[] imagePatientPosition, double[] imagePatientOrientation)
+        private void InitializeCalcualtedVolumeData(decimal[] imagePatientPosition, decimal[] imagePatientOrientation)
         {
             if (imagePatientPosition.Length < 3 || imagePatientOrientation.Length < 6)
             {
                 // in case there are no or only incomplete data, then no 3d-initialization can be done
                 // these are the default-values for some 2d-data like CR. they are used for measurements of lengths and angles in 2d, but not for 3d
                 Orientation = FrameOrientation.None;
-                PointTopLeft = new Point3D(0, 0, 0);
-                DirectionRow = new Vector3D(1, 0, 0);
-                DirectionColumn = new Vector3D(0, 1, 0);
-                DirectionNormal = Vector3D.Zero;
+                PointTopLeft = new Point3M(0, 0, 0);
+                DirectionRow = new Vector3M(1, 0, 0);
+                DirectionColumn = new Vector3M(0, 1, 0);
+                DirectionNormal = Vector3M.Zero;
                 PointTopRight = PointTopLeft + DirectionRow * PixelSpacingBetweenColumns * FrameSize.X;
                 PointBottomLeft = PointTopLeft + DirectionColumn * PixelSpacingBetweenRows * FrameSize.Y;
                 PointBottomRight = PointBottomLeft + (PointTopRight - PointTopLeft);
@@ -159,9 +159,9 @@ namespace FellowOakDicom.Imaging
                 return;
             }
 
-            PointTopLeft = new Point3D(imagePatientPosition);
-            DirectionRow = new Vector3D(imagePatientOrientation, 0);
-            DirectionColumn = new Vector3D(imagePatientOrientation, 3);
+            PointTopLeft = new Point3M(imagePatientPosition);
+            DirectionRow = new Vector3M(imagePatientOrientation, 0);
+            DirectionColumn = new Vector3M(imagePatientOrientation, 3);
 
             DirectionNormal = DirectionRow.CrossProduct(DirectionColumn);
             if (DirectionNormal.IsZero)
@@ -173,9 +173,9 @@ namespace FellowOakDicom.Imaging
                 var axis = DirectionNormal.NearestAxis();
                 Orientation = axis switch
                 {
-                    Vector3D xaxis when xaxis.X != 0 => FrameOrientation.Sagittal,
-                    Vector3D yaxis when yaxis.Y != 0 => FrameOrientation.Coronal,
-                    Vector3D zaxis when zaxis.Z != 0 => FrameOrientation.Axial,
+                    Vector3M xaxis when xaxis.X != 0 => FrameOrientation.Sagittal,
+                    Vector3M yaxis when yaxis.Y != 0 => FrameOrientation.Coronal,
+                    Vector3M zaxis when zaxis.Z != 0 => FrameOrientation.Axial,
                     _ => FrameOrientation.None
                 };
             }
@@ -196,13 +196,13 @@ namespace FellowOakDicom.Imaging
 
                 if (DirectionNormal.IsZero)
                 {
-                    ImageToPatientSpace = MatrixD.Identity(4);
+                    ImageToPatientSpace = MatrixM.Identity(4);
                     ImageToPatientSpace[0, 0] = PixelSpacingBetweenColumns;
                     ImageToPatientSpace[1, 1] = PixelSpacingBetweenRows;
                 }
                 else
                 {
-                    ImageToPatientSpace = MatrixD.Identity(4);
+                    ImageToPatientSpace = MatrixM.Identity(4);
                     ImageToPatientSpace.Column(0, DirectionRow.X * PixelSpacingBetweenColumns, DirectionRow.Y * PixelSpacingBetweenColumns, DirectionRow.Z * PixelSpacingBetweenColumns, 0);
                     ImageToPatientSpace.Column(1, DirectionColumn.X * PixelSpacingBetweenRows, DirectionColumn.Y * PixelSpacingBetweenRows, DirectionColumn.Z * PixelSpacingBetweenRows, 0);
                     ImageToPatientSpace.Column(2, DirectionNormal.X, DirectionNormal.Y, DirectionNormal.Z, 0);
@@ -211,7 +211,7 @@ namespace FellowOakDicom.Imaging
 
                 PatientToImageSpace = ImageToPatientSpace.Invert();
 
-                if (PointTopLeft != Point3D.Zero || DirectionRow != Vector3D.AxisX || DirectionColumn != Vector3D.AxisY)
+                if (PointTopLeft != Point3M.Zero || DirectionRow != Vector3M.AxisX || DirectionColumn != Vector3M.AxisY)
                 {
                     GeometryType = FrameGeometryType.Volume;
                 }
@@ -223,25 +223,25 @@ namespace FellowOakDicom.Imaging
         #region Methods
 
 
-        public Point3D TransformImagePointToPatient(Point2 imagePoint)
+        public Point3M TransformImagePointToPatient(Point2 imagePoint)
         {
             if (GeometryType == FrameGeometryType.None)
             {
                 throw new DicomImagingException("Cannot transform point in image without geometry data");
             }
-            var transformed = ImageToPatientSpace * new double[] { imagePoint.X, imagePoint.Y, 0, 1 };
-            return new Point3D(transformed, 0);
+            var transformed = ImageToPatientSpace * new decimal[] { imagePoint.X, imagePoint.Y, 0, 1 };
+            return new Point3M(transformed, 0);
         }
 
-        public Point2D TransformPatientPointToImage(Point3D patientPoint)
+        public Point2M TransformPatientPointToImage(Point3M patientPoint)
         {
             if (GeometryType == FrameGeometryType.None)
             {
                 throw new DicomImagingException("Cannot transform point in image without geometry data");
             }
-            double[] transformed = PatientToImageSpace * new double[] { patientPoint.X, patientPoint.Y, patientPoint.Z, 1 };
+            decimal[] transformed = PatientToImageSpace * new decimal[] { patientPoint.X, patientPoint.Y, patientPoint.Z, 1 };
             // validation, if the point is within the image plane, then the z-component of the transformed point should be zero
-            return new Point2D(transformed[0], transformed[1]);
+            return new Point2M(transformed[0], transformed[1]);
         }
 
         #endregion
@@ -403,9 +403,9 @@ namespace FellowOakDicom.Imaging
         /// <returns></returns>
         public static bool CalcualteIntersectionLocalizer(FrameGeometry sourceFrame, FrameGeometry destinationFrame, out Point2 startPoint, out Point2 endPoint)
         {
-            double t; // coeficient of the plane-equation
-            double nA, nB, nC, nD, nP;
-            var lstProj = new List<Point3D>();
+            decimal t; // coeficient of the plane-equation
+            decimal nA, nB, nC, nD, nP;
+            var lstProj = new List<Point3M>();
 
             // initialize
             startPoint = Point2.Origin;
@@ -422,7 +422,7 @@ namespace FellowOakDicom.Imaging
             nD = destinationFrame.DirectionNormal * sourceFrame.PointBottomLeft;
 
             // segment AB
-            if (Math.Abs(nB - nA) > Constants.Epsilon)
+            if (Math.Abs(nB - nA) > Constantsm.Epsilon)
             {
                 t = (nP - nA) / (nB - nA);
                 if (t > 0 && t <= 1)
@@ -430,7 +430,7 @@ namespace FellowOakDicom.Imaging
             }
 
             // segment BC
-            if (Math.Abs(nC - nB) > Constants.Epsilon)
+            if (Math.Abs(nC - nB) > Constantsm.Epsilon)
             {
                 t = (nP - nB) / (nC - nB);
                 if (t > 0 && t <= 1)
@@ -438,7 +438,7 @@ namespace FellowOakDicom.Imaging
             }
 
             // segment CD
-            if (Math.Abs(nD - nC) > Constants.Epsilon)
+            if (Math.Abs(nD - nC) > Constantsm.Epsilon)
             {
                 t = (nP - nC) / (nD - nC);
                 if (t > 0 && t <= 1)
@@ -446,7 +446,7 @@ namespace FellowOakDicom.Imaging
             }
 
             // segment DA
-            if (Math.Abs(nA - nD) > Constants.Epsilon)
+            if (Math.Abs(nA - nD) > Constantsm.Epsilon)
             {
                 t = (nP - nD) / (nA - nD);
                 if (t > 0 && t <= 1)

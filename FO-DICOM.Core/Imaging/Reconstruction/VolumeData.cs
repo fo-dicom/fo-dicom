@@ -21,17 +21,17 @@ namespace FellowOakDicom.Imaging.Reconstruction
     {
 
         private readonly List<ImageData> _slices;
-        private double[] _sortOrders;
+        private decimal[] _sortOrders;
 
-        private Vector3D _slicesNormal;
-        private double _maxSliceSpace;
-        private double _minSliceSpace;
+        private Vector3M _slicesNormal;
+        private decimal _maxSliceSpace;
+        private decimal _minSliceSpace;
 
-        public Point3D BoundingMin { get; private set; }
-        public Point3D BoundingMax { get; private set; }
+        public Point3M BoundingMin { get; private set; }
+        public Point3M BoundingMax { get; private set; }
 
-        public double PixelSpacingInSource => _slices?.FirstOrDefault()?.Geometry.PixelSpacingBetweenColumns ?? 0;
-        public IntervalD SliceSpaces => new IntervalD(_minSliceSpace, _maxSliceSpace);
+        public decimal PixelSpacingInSource => _slices?.FirstOrDefault()?.Geometry.PixelSpacingBetweenColumns ?? 0;
+        public IntervalM SliceSpaces => new IntervalM(_minSliceSpace, _maxSliceSpace);
 
         private ILUT _lut = null;
 
@@ -140,7 +140,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private int SortingIndex(double value, int guess)
+        private int SortingIndex(decimal value, int guess)
         {
             var len = _sortOrders.Length;
             while (_sortOrders[guess] >= value && guess > 0)
@@ -172,7 +172,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         /// <param name="cols"></param>
         /// <param name="spacing"></param>
         /// <returns></returns>
-        public double[] GetCut(Point3D topleft, Vector3D rowDir, Vector3D colDir, int rows, int cols, double spacing)
+        public double[] GetCut(Point3M topleft, Vector3M rowDir, Vector3M colDir, int rows, int cols, decimal spacing)
         {
             var output = new double[rows * cols];
 
@@ -194,8 +194,9 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
                     // get index of the two planes
                     var index = SortingIndex(ordered, lastIndex);
-                    if (index > 0)
+                    if (index >= 0)
                     {
+                        if (index == 0) index = 1;
                         lastIndex = index;
 
                         var nextSlice = _slices[index];
@@ -209,7 +210,9 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
                         if (nextPixel.HasValue && prevPixel.HasValue)
                         {
-                            var pixel = (prevPixel.Value * (nextSlice.SortingValue - ordered) + nextPixel.Value * (ordered - prevSlice.SortingValue)) / (nextSlice.SortingValue - prevSlice.SortingValue);
+                            var alpha1 = (double)(nextSlice.SortingValue - ordered);
+                            var alpha2 = (double)(ordered - prevSlice.SortingValue);
+                            var pixel = (prevPixel.Value * alpha1 + nextPixel.Value * alpha2) / (alpha1 + alpha2);
                             // convert from 12bit to 8 bit
                             output[x + y * cols] = pixel;
                         }
@@ -223,14 +226,14 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private double? Interpolate(IPixelData pixels, Point2D imgSpace)
+        private double? Interpolate(IPixelData pixels, Point2M imgSpace)
         {
-            if ((imgSpace.X >= 0.0) && (imgSpace.X < pixels.Width - 1) && (imgSpace.Y >= 0.0) && (imgSpace.Y < pixels.Height - 1))
+            if ((imgSpace.X >= 0.0m) && (imgSpace.X < pixels.Width - 1) && (imgSpace.Y >= 0.0m) && (imgSpace.Y < pixels.Height - 1))
             {
                 var posX = (int)Math.Floor(imgSpace.X);
-                double alphaX = imgSpace.X - posX;
+                double alphaX = (double)(imgSpace.X - posX);
                 var posY = (int)Math.Floor(imgSpace.Y);
-                double alphaY = imgSpace.Y - posY;
+                double alphaY = (double)(imgSpace.Y - posY);
 
                 return (1 - alphaX) * ((1 - alphaY) * pixels.GetPixel(posX, posY)
                     + alphaY * pixels.GetPixel(posX, posY + 1))
