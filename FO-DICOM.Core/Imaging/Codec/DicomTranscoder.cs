@@ -316,9 +316,7 @@ namespace FellowOakDicom.Imaging.Codec
                     continue;
                 }
 
-                // If embedded overlay, Overlay Bits Allocated should equal Bits Allocated (#110).
-                var bitsAlloc = output.GetSingleValueOrDefault(DicomTag.BitsAllocated, (ushort)1);
-                output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), bitsAlloc);
+                output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), (ushort)1);
                 output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element), (ushort)0);
 
                 var data = overlay.Data;
