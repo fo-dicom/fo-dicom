@@ -340,6 +340,7 @@ namespace FellowOakDicom.Network
                             catch (Exception e)
                             {
                                 Logger.LogError(e, "An exception occurred while accepting an incoming client connection");
+                                tcpClient.Close();
                             }
                         }, _cancellationToken);
                     }
