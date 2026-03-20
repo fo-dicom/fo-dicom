@@ -14,7 +14,7 @@ namespace FellowOakDicom.Imaging.Desktop.Imaging
 
         public static WriteableBitmap AsWpfBitmap(this Slice slice)
         {
-            var dpi = 25.4 / slice.Spacing;
+            var dpi = (double)(25.4m / slice.Spacing);
             var bitmap = new WriteableBitmap(slice.Columns, slice.Rows, dpi, dpi, PixelFormats.Gray8, null);
             var buffer = new byte[bitmap.BackBufferStride * bitmap.PixelHeight];
 
