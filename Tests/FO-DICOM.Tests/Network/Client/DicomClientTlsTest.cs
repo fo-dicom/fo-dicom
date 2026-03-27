@@ -258,6 +258,63 @@ namespace FellowOakDicom.Tests.Network.Client
         }
 
         [Fact]
+        public async Task SendWithoutTlsToTlsServerShouldFail()
+        {
+            // Arrange
+            var serverLogger = _logger.IncludePrefix(nameof(IDicomServer));
+
+            var tlsAcceptor = new DefaultTlsAcceptor("./Test Data/FellowOakDicom.p12", "FellowOakDicom")
+            {
+                RequireMutualAuthentication = false,
+                CertificateValidationCallback = (sender, x509Certificate, chain, errors) =>
+                {
+                    return false;
+                }
+            };
+
+            // create a server expecting tls
+            using var server = CreateServer<RecordingDicomCEchoProvider, RecordingDicomCEchoProviderServer>("127.0.0.1", 0, tlsAcceptor: tlsAcceptor);
+
+            // create a client not using tls
+            var client = CreateClient("127.0.0.1", server.Port, null, "SCU", "ANY-SCP");
+
+            DicomCEchoResponse actualResponse = null;
+            var dicomCEchoRequest = new DicomCEchoRequest
+            {
+                OnResponseReceived = (request, response) =>
+                {
+                    actualResponse = response;
+                }
+            };
+            await client.AddRequestAsync(dicomCEchoRequest);
+
+            Exception exception = null;
+            try
+            {
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+                {
+                    await client.SendAsync(cts.Token);
+                }
+            }
+            catch (AggregateException aggEx)
+            {
+                exception = aggEx.InnerException;
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
+            Assert.NotNull(exception);
+#if NET462
+            // for some reason, in .net there is still a requesttimeout instead of a network error
+            Assert.IsType<DicomAssociationRequestTimedOutException>(exception);
+#else
+            Assert.IsType<DicomNetworkException>(exception);
+#endif
+        }
+
+        [Fact]
         public async Task SendAsync_WithFrozenSslHandshake_ShouldAcceptMoreConnections()
         {
             // Arrange
