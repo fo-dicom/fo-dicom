@@ -19,6 +19,8 @@
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
     <Platforms>AnyCPU;x64</Platforms>
     <DebugType>Embedded</DebugType>
+    <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
