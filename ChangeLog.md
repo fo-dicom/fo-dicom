@@ -1,5 +1,7 @@
 ### 5.2.6 (TBD)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
+- Add Icon Image Sequence generation for DICOMDIR with IIconGenerator interface (#654)
+- Strong Name fo-dicom.Imaging.ImageSharp and fo-dicom.Imaging.ImageSharp.NetStandard projects
 
 ### 5.2.5 (2025-11-16)
 - Add INetoworkMetricsCollector, that is invoked by DicomService, to optionally collect metrics (#2039)
