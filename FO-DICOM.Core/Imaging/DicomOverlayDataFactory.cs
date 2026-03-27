@@ -38,7 +38,7 @@ namespace FellowOakDicom.Imaging
                                   OriginX = 1,
                                   OriginY = 1,
                                   BitsAllocated = 1,
-                                  BitPosition = 1
+                                  BitPosition = 0
                               };
 
             var array = new BitList { Capacity = overlay.Rows * overlay.Columns };

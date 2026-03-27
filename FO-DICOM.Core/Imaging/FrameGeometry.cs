@@ -143,19 +143,25 @@ namespace FellowOakDicom.Imaging
 
         private void InitializeCalcualtedVolumeData(double[] imagePatientPosition, double[] imagePatientOrientation)
         {
-            if (imagePatientPosition.Length == 0 && imagePatientOrientation.Length == 0)
+            if (imagePatientPosition.Length < 3 || imagePatientOrientation.Length < 6)
             {
+                // in case there are no or only incomplete data, then no 3d-initialization can be done
+                // these are the default-values for some 2d-data like CR. they are used for measurements of lengths and angles in 2d, but not for 3d
                 Orientation = FrameOrientation.None;
                 PointTopLeft = new Point3D(0, 0, 0);
                 DirectionRow = new Vector3D(1, 0, 0);
                 DirectionColumn = new Vector3D(0, 1, 0);
+                DirectionNormal = Vector3D.Zero;
+                PointTopRight = PointTopLeft + DirectionRow * PixelSpacingBetweenColumns * FrameSize.X;
+                PointBottomLeft = PointTopLeft + DirectionColumn * PixelSpacingBetweenRows * FrameSize.Y;
+                PointBottomRight = PointBottomLeft + (PointTopRight - PointTopLeft);
+
+                return;
             }
-            else
-            {
-                PointTopLeft = new Point3D(imagePatientPosition);
-                DirectionRow = new Vector3D(imagePatientOrientation, 0);
-                DirectionColumn = new Vector3D(imagePatientOrientation, 3);
-            }
+
+            PointTopLeft = new Point3D(imagePatientPosition);
+            DirectionRow = new Vector3D(imagePatientOrientation, 0);
+            DirectionColumn = new Vector3D(imagePatientOrientation, 3);
 
             DirectionNormal = DirectionRow.CrossProduct(DirectionColumn);
             if (DirectionNormal.IsZero)

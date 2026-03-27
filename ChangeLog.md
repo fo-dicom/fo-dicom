@@ -1,6 +1,9 @@
 ### 5.2.6 (TBD)
+- Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
+- Add Icon Image Sequence generation for DICOMDIR with IIconGenerator interface (#654)
 - Strong Name fo-dicom.Imaging.ImageSharp and fo-dicom.Imaging.ImageSharp.NetStandard projects
 - Close the tcpClient in cae an exception happens within DicomServer (#1991)
+- Set OverlayBitsPosition to value 0 as defined in dicom standard when transforming an overlay (#2087)
 
 ### 5.2.5 (2025-11-16)
 - Add INetoworkMetricsCollector, that is invoked by DicomService, to optionally collect metrics (#2039)
