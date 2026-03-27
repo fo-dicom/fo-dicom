@@ -319,5 +319,44 @@ namespace FellowOakDicom.Tests.Imaging
         }
 
 
+        [Theory]
+        [InlineData(0, 0, false)]  // Both missing
+        [InlineData(1, 0, false)]  // Position has 1 value, orientation missing
+        [InlineData(2, 0, false)]  // Position has 2 values, orientation missing
+        [InlineData(3, 0, false)]  // Position complete, orientation missing
+        [InlineData(0, 3, false)]  // Position missing, orientation has 3 values
+        [InlineData(0, 5, false)]  // Position missing, orientation has 5 values
+        [InlineData(0, 6, false)]  // Position missing, orientation complete
+        [InlineData(3, 3, false)]  // Position complete, orientation has only row direction
+        [InlineData(3, 5, false)]  // Position complete, orientation missing one value for column direction
+        [InlineData(2, 5, false)]  // Both incomplete
+        [InlineData(3, 6, true)]   // complete
+        public void FrameGeometry_HandlesIncompletePositionAndOrientationArrays(int positionLength, int orientationLength, bool valid)
+        {
+            var positionValues = (new decimal[] { 0, 1, 2 }).Take(positionLength).ToArray();
+            var orientationValues = (new decimal[] { 1, 0, 0, 0, 1, 0 }).Take(orientationLength).ToArray();
+
+            var dataset = new DicomDataset { ValidateItems = false };
+            dataset.Add(DicomTag.PixelSpacing, 0.5m, 0.5m);
+            dataset.Add(DicomTag.Rows, (ushort)500);
+            dataset.Add(DicomTag.Columns, (ushort)500);
+
+            dataset.AddOrUpdate(DicomTag.ImagePositionPatient, positionValues);
+            dataset.AddOrUpdate(DicomTag.ImageOrientationPatient, orientationValues);
+
+            FrameGeometry geometry = null;
+            var exception = Record.Exception(() => geometry = new FrameGeometry(dataset));
+            Assert.Null(exception);
+            Assert.NotNull(geometry);
+            if (valid)
+            {
+                Assert.NotEqual(FrameOrientation.None, geometry.Orientation);
+            }
+            else
+            {
+                Assert.Equal(FrameOrientation.None, geometry.Orientation);
+            }
+        }
+
     }
 }
