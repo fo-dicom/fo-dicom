@@ -1,4 +1,5 @@
 ### 5.2.6 (TBD)
+- Add Icon Image Sequence generation for DICOMDIR with IIconGenerator interface (#654)
 - Strong Name fo-dicom.Imaging.ImageSharp and fo-dicom.Imaging.ImageSharp.NetStandard projects
 
 ### 5.2.5 (2025-11-16)
