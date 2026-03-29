@@ -58,7 +58,7 @@
       "_appName": "Fellow Oak DICOM",
       "_appLogoPath": "images/logo.svg",
       "_appFaviconPath": "images/favicon.ico",
-      "_appFooter": "Copyright (c) 2012-2025 fo-dicom contributors",
+      "_appFooter": "Copyright (c) 2012-2026 fo-dicom contributors",
       "_enableSearch": "true",
       "_disableContribution": true
     },

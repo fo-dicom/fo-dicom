@@ -1,3 +1,6 @@
+// Copyright (c) 2012-2026 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
