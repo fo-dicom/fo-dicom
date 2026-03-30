@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
@@ -7,9 +7,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>5.2.5</Version>
+    <Version>5.2.6</Version>
     <Authors>fo-dicom contributors</Authors>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2025</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2026</Copyright>
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
     <Description>A modern .NET imaging library for fo-dicom</Description>

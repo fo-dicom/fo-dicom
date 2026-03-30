@@ -1,5 +1,5 @@
 ﻿
-// Copyright (c) 2012-2025 fo-dicom contributors.
+// Copyright (c) 2012-2026 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 using System;
@@ -1863,7 +1863,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.EEGProcedure3049.UID, DicomUID.EEGProcedure3049);
             _uids.Add(DicomUID.PatientConsciousness3050.UID, DicomUID.PatientConsciousness3050);
             _uids.Add(DicomUID.FollicleType12010.UID, DicomUID.FollicleType12010);
-            _uids.Add(DicomUID.BreastSegmentationTypes7163.UID, DicomUID.BreastSegmentationTypes7163);
+            _uids.Add(DicomUID.BreastTissueSegmentationType7163.UID, DicomUID.BreastTissueSegmentationType7163);
             _uids.Add(DicomUID.ImplantedDevice3779.UID, DicomUID.ImplantedDevice3779);
             _uids.Add(DicomUID.SimilarityMeasure281.UID, DicomUID.SimilarityMeasure281);
             _uids.Add(DicomUID.WaveformAcquisitionModality34.UID, DicomUID.WaveformAcquisitionModality34);
@@ -1921,6 +1921,28 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.RTDoseCalculationAlgorithmFamily9585.UID, DicomUID.RTDoseCalculationAlgorithmFamily9585);
             _uids.Add(DicomUID.DoseIndexForDoseCalibration10012.UID, DicomUID.DoseIndexForDoseCalibration10012);
             _uids.Add(DicomUID.UltrasoundAttenuationImagingSite12036.UID, DicomUID.UltrasoundAttenuationImagingSite12036);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessment12040.UID, DicomUID.FetalAnatomySurveyAssessment12040);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentHead12041.UID, DicomUID.FetalAnatomySurveyAssessmentHead12041);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentFaceAndNeck12042.UID, DicomUID.FetalAnatomySurveyAssessmentFaceAndNeck12042);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentChest12043.UID, DicomUID.FetalAnatomySurveyAssessmentChest12043);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentHeart12044.UID, DicomUID.FetalAnatomySurveyAssessmentHeart12044);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentAbdomenAndPelvis12045.UID, DicomUID.FetalAnatomySurveyAssessmentAbdomenAndPelvis12045);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentSpine12046.UID, DicomUID.FetalAnatomySurveyAssessmentSpine12046);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentExtremities12047.UID, DicomUID.FetalAnatomySurveyAssessmentExtremities12047);
+            _uids.Add(DicomUID.FetalAnatomySurveyAssessmentMaternal12048.UID, DicomUID.FetalAnatomySurveyAssessmentMaternal12048);
+            _uids.Add(DicomUID.FetalAnatomySurveyPracticeGuideline12049.UID, DicomUID.FetalAnatomySurveyPracticeGuideline12049);
+            _uids.Add(DicomUID.SensitiveContentCategory900.UID, DicomUID.SensitiveContentCategory900);
+            _uids.Add(DicomUID.SensitiveContentDetail901.UID, DicomUID.SensitiveContentDetail901);
+            _uids.Add(DicomUID.ApplicationTypeCode406.UID, DicomUID.ApplicationTypeCode406);
+            _uids.Add(DicomUID.XRayModulationType10035.UID, DicomUID.XRayModulationType10035);
+            _uids.Add(DicomUID.RadiotherapyDoseRealWorldUnits9586.UID, DicomUID.RadiotherapyDoseRealWorldUnits9586);
+            _uids.Add(DicomUID.RadiotherapyDoseInterpretedTypeCodes9587.UID, DicomUID.RadiotherapyDoseInterpretedTypeCodes9587);
+            _uids.Add(DicomUID.RadiotherapyDoseInterpretedTypeModifierCodes9588.UID, DicomUID.RadiotherapyDoseInterpretedTypeModifierCodes9588);
+            _uids.Add(DicomUID.RadiotherapyDoseIntentCodes9589.UID, DicomUID.RadiotherapyDoseIntentCodes9589);
+            _uids.Add(DicomUID.QualitySegmentationPropertyType7164.UID, DicomUID.QualitySegmentationPropertyType7164);
+            _uids.Add(DicomUID.UltrasoundZScorePopulationIndex12027.UID, DicomUID.UltrasoundZScorePopulationIndex12027);
+            _uids.Add(DicomUID.FetalUltrasoundZScoreReferenceAuthority12028.UID, DicomUID.FetalUltrasoundZScoreReferenceAuthority12028);
+            _uids.Add(DicomUID.MetalArtifactReductionAlgorithmFamily10036.UID, DicomUID.MetalArtifactReductionAlgorithmFamily10036);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -7467,8 +7489,8 @@ namespace FellowOakDicom
         ///<summary>Context Group Name: Follicle Type (12010)</summary>
         public static readonly DicomUID FollicleType12010 = new DicomUID("1.2.840.10008.6.1.1491", "Follicle Type (12010)", DicomUidType.ContextGroupName, false);
 
-        ///<summary>Context Group Name: Breast Segmentation Types (7163)</summary>
-        public static readonly DicomUID BreastSegmentationTypes7163 = new DicomUID("1.2.840.10008.6.1.1492", "Breast Segmentation Types (7163)", DicomUidType.ContextGroupName, false);
+        ///<summary>Context Group Name: Breast Tissue Segmentation Type (7163)</summary>
+        public static readonly DicomUID BreastTissueSegmentationType7163 = new DicomUID("1.2.840.10008.6.1.1492", "Breast Tissue Segmentation Type (7163)", DicomUidType.ContextGroupName, false);
 
         ///<summary>Context Group Name: Implanted Device (3779)</summary>
         public static readonly DicomUID ImplantedDevice3779 = new DicomUID("1.2.840.10008.6.1.1493", "Implanted Device (3779)", DicomUidType.ContextGroupName, false);
@@ -7640,6 +7662,72 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Ultrasound Attenuation Imaging Site (12036)</summary>
         public static readonly DicomUID UltrasoundAttenuationImagingSite12036 = new DicomUID("1.2.840.10008.6.1.1549", "Ultrasound Attenuation Imaging Site (12036)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment (12040)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessment12040 = new DicomUID("1.2.840.10008.6.1.1550", "Fetal Anatomy Survey Assessment (12040)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Head (12041)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentHead12041 = new DicomUID("1.2.840.10008.6.1.1551", "Fetal Anatomy Survey Assessment - Head (12041)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Face and Neck (12042)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentFaceAndNeck12042 = new DicomUID("1.2.840.10008.6.1.1552", "Fetal Anatomy Survey Assessment - Face and Neck (12042)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Chest (12043)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentChest12043 = new DicomUID("1.2.840.10008.6.1.1553", "Fetal Anatomy Survey Assessment - Chest (12043)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Heart (12044)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentHeart12044 = new DicomUID("1.2.840.10008.6.1.1554", "Fetal Anatomy Survey Assessment - Heart (12044)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Abdomen and Pelvis (12045)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentAbdomenAndPelvis12045 = new DicomUID("1.2.840.10008.6.1.1555", "Fetal Anatomy Survey Assessment - Abdomen and Pelvis (12045)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Spine (12046)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentSpine12046 = new DicomUID("1.2.840.10008.6.1.1556", "Fetal Anatomy Survey Assessment - Spine (12046)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Extremities (12047)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentExtremities12047 = new DicomUID("1.2.840.10008.6.1.1557", "Fetal Anatomy Survey Assessment - Extremities (12047)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Assessment - Maternal (12048)</summary>
+        public static readonly DicomUID FetalAnatomySurveyAssessmentMaternal12048 = new DicomUID("1.2.840.10008.6.1.1558", "Fetal Anatomy Survey Assessment - Maternal (12048)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Anatomy Survey Practice Guideline (12049)</summary>
+        public static readonly DicomUID FetalAnatomySurveyPracticeGuideline12049 = new DicomUID("1.2.840.10008.6.1.1559", "Fetal Anatomy Survey Practice Guideline (12049)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Sensitive Content Category (900)</summary>
+        public static readonly DicomUID SensitiveContentCategory900 = new DicomUID("1.2.840.10008.6.1.1560", "Sensitive Content Category (900)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Sensitive Content Detail (901)</summary>
+        public static readonly DicomUID SensitiveContentDetail901 = new DicomUID("1.2.840.10008.6.1.1561", "Sensitive Content Detail (901)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Application Type Code (406)</summary>
+        public static readonly DicomUID ApplicationTypeCode406 = new DicomUID("1.2.840.10008.6.1.1562", "Application Type Code (406)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: X-Ray Modulation Type (10035)</summary>
+        public static readonly DicomUID XRayModulationType10035 = new DicomUID("1.2.840.10008.6.1.1563", "X-Ray Modulation Type (10035)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Dose Real World Units (9586)</summary>
+        public static readonly DicomUID RadiotherapyDoseRealWorldUnits9586 = new DicomUID("1.2.840.10008.6.1.1564", "Radiotherapy Dose Real World Units (9586)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Dose Interpreted Type Codes (9587)</summary>
+        public static readonly DicomUID RadiotherapyDoseInterpretedTypeCodes9587 = new DicomUID("1.2.840.10008.6.1.1565", "Radiotherapy Dose Interpreted Type Codes (9587)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Dose Interpreted Type Modifier Codes (9588)</summary>
+        public static readonly DicomUID RadiotherapyDoseInterpretedTypeModifierCodes9588 = new DicomUID("1.2.840.10008.6.1.1566", "Radiotherapy Dose Interpreted Type Modifier Codes (9588)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Radiotherapy Dose Intent Codes (9589)</summary>
+        public static readonly DicomUID RadiotherapyDoseIntentCodes9589 = new DicomUID("1.2.840.10008.6.1.1567", "Radiotherapy Dose Intent Codes (9589)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Quality Segmentation Property Type (7164)</summary>
+        public static readonly DicomUID QualitySegmentationPropertyType7164 = new DicomUID("1.2.840.10008.6.1.1568", "Quality Segmentation Property Type (7164)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Ultrasound Z-Score Population Index (12027)</summary>
+        public static readonly DicomUID UltrasoundZScorePopulationIndex12027 = new DicomUID("1.2.840.10008.6.1.1569", "Ultrasound Z-Score Population Index (12027)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Fetal Ultrasound Z-Score Reference Authority (12028)</summary>
+        public static readonly DicomUID FetalUltrasoundZScoreReferenceAuthority12028 = new DicomUID("1.2.840.10008.6.1.1570", "Fetal Ultrasound Z-Score Reference Authority (12028)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Metal Artifact Reduction Algorithm Family (10036)</summary>
+        public static readonly DicomUID MetalArtifactReductionAlgorithmFamily10036 = new DicomUID("1.2.840.10008.6.1.1571", "Metal Artifact Reduction Algorithm Family (10036)", DicomUidType.ContextGroupName, false);
 
     }
 }

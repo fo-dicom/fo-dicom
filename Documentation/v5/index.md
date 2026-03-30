@@ -8,7 +8,7 @@ If you still need to rely on PCL or on one of the other listed frameworks, check
 
 ## Main features
 - Targets .NET Standard 2.0 and will work on all platform supporting that standard
-- DICOM dictionary version 2025a
+- DICOM dictionary version 2026b
 - High-performance, fully asynchronous async/await API
 - JPEG (including lossless), JPEG-LS, JPEG2000, HTJPEG2000, and RLE image compression (via additional package)
 - Supports very large datasets with content loading on demand

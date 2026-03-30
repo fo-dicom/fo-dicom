@@ -1,6 +1,6 @@
-﻿using Xunit.Abstractions;
-using Xunit.Sdk;
-using FellowOakDicom;
+﻿// Copyright (c) 2012-2026 fo-dicom contributors.
+// Licensed under the Microsoft Public License (MS-PL).
+
 using System;
 
 namespace FellowOakDicom.Tests
