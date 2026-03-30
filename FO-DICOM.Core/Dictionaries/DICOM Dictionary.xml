@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright (c) 2012-2025 fo-dicom contributors.        -->
+<!-- Copyright (c) 2012-2026 fo-dicom contributors.        -->
 <!-- Licensed under the Microsoft Public License (MS-PL).  -->
 
-<dictionary version="2025d">
+<dictionary version="2026b">
     <tag group="0000" element="0000" keyword="CommandGroupLength" vr="UL" vm="1">Command Group Length</tag>
     <tag group="0000" element="0002" keyword="AffectedSOPClassUID" vr="UI" vm="1">Affected SOP Class UID</tag>
     <tag group="0000" element="0003" keyword="RequestedSOPClassUID" vr="UI" vm="1">Requested SOP Class UID</tag>
@@ -107,6 +107,7 @@
     <tag group="0008" element="001A" keyword="RelatedGeneralSOPClassUID" vr="UI" vm="1-n">Related General SOP Class UID</tag>
     <tag group="0008" element="001B" keyword="OriginalSpecializedSOPClassUID" vr="UI" vm="1">Original Specialized SOP Class UID</tag>
     <tag group="0008" element="001C" keyword="SyntheticData" vr="CS" vm="1">Synthetic Data</tag>
+    <tag group="0008" element="001D" keyword="SensitiveContentCodeSequence" vr="SQ" vm="1">Sensitive Content Code Sequence</tag>
     <tag group="0008" element="0020" keyword="StudyDate" vr="DA" vm="1">Study Date</tag>
     <tag group="0008" element="0021" keyword="SeriesDate" vr="DA" vm="1">Series Date</tag>
     <tag group="0008" element="0022" keyword="AcquisitionDate" vr="DA" vm="1">Acquisition Date</tag>
@@ -777,7 +778,7 @@
     <tag group="0014" element="604E" keyword="MovingWindowWeights" vr="DS" vm="1-n">Moving Window Weights</tag>
     <tag group="0014" element="604F" keyword="MovingWindowPitch" vr="DS" vm="1">Moving Window Pitch</tag>
     <tag group="0014" element="6050" keyword="MovingWindowPaddingScheme" vr="CS" vm="1">Moving Window Padding Scheme</tag>
-    <tag group="0014" element="6051" keyword="MovingWindowPaddingLength" vr="DS" vm="1">Moving Window Padding Sength</tag>
+    <tag group="0014" element="6051" keyword="MovingWindowPaddingLength" vr="DS" vm="1">Moving Window Padding Length</tag>
     <tag group="0014" element="6052" keyword="SpatialFilteringParametersSequence" vr="SQ" vm="1">Spatial Filtering Parameters Sequence</tag>
     <tag group="0014" element="6053" keyword="SpatialFilteringScheme" vr="CS" vm="1">Spatial Filtering Scheme</tag>
     <tag group="0014" element="6056" keyword="HorizontalMovingWindowSize" vr="DS" vm="1">Horizontal Moving Window Size</tag>
@@ -1551,6 +1552,9 @@
     <tag group="0018" element="9382" keyword="MaterialAttenuationSequence" vr="SQ" vm="1">Material Attenuation Sequence</tag>
     <tag group="0018" element="9383" keyword="PhotonEnergy" vr="DS" vm="1">Photon Energy</tag>
     <tag group="0018" element="9384" keyword="XRayMassAttenuationCoefficient" vr="DS" vm="1">X-Ray Mass Attenuation Coefficient</tag>
+    <tag group="0018" element="9390" keyword="MetalArtifactReductionSequence" vr="SQ" vm="1">Metal Artifact Reduction Sequence</tag>
+    <tag group="0018" element="9391" keyword="MetalArtifactReductionApplied" vr="CS" vm="1">Metal Artifact Reduction Applied</tag>
+    <tag group="0018" element="9392" keyword="MetalArtifactReductionAlgorithmIdentificationSequence" vr="SQ" vm="1">Metal Artifact Reduction Algorithm Identification Sequence</tag>
     <tag group="0018" element="9401" keyword="ProjectionPixelCalibrationSequence" vr="SQ" vm="1">Projection Pixel Calibration Sequence</tag>
     <tag group="0018" element="9402" keyword="DistanceSourceToIsocenter" vr="FL" vm="1">Distance Source to Isocenter</tag>
     <tag group="0018" element="9403" keyword="DistanceObjectToTableTop" vr="FL" vm="1">Distance Object to Table Top</tag>
@@ -4129,6 +4133,11 @@
     <tag group="3004" element="0012" keyword="DoseValue" vr="DS" vm="1">Dose Value</tag>
     <tag group="3004" element="0014" keyword="TissueHeterogeneityCorrection" vr="CS" vm="1-3">Tissue Heterogeneity Correction</tag>
     <tag group="3004" element="0016" keyword="RecommendedIsodoseLevelSequence" vr="SQ" vm="1">Recommended Isodose Level Sequence</tag>
+    <tag group="3004" element="0020" keyword="DoseUnitCodeSequence" vr="SQ" vm="1">Dose Unit Code Sequence</tag>
+    <tag group="3004" element="0021" keyword="RTDoseInterpretedTypeCodeSequence" vr="SQ" vm="1">RT Dose Interpreted Type Code Sequence</tag>
+    <tag group="3004" element="0022" keyword="RTDoseInterpretedTypeCodeModifierSequence" vr="SQ" vm="1">RT Dose Interpreted Type Code Modifier Sequence</tag>
+    <tag group="3004" element="0023" keyword="DoseRadiobiologicalInterpretationSequence" vr="SQ" vm="1">Dose Radiobiological Interpretation Sequence</tag>
+    <tag group="3004" element="0024" keyword="RTDoseIntentCodeSequence" vr="SQ" vm="1">RT Dose Intent Code Sequence</tag>
     <tag group="3004" element="0040" keyword="DVHNormalizationPoint" vr="DS" vm="3">DVH Normalization Point</tag>
     <tag group="3004" element="0042" keyword="DVHNormalizationDoseValue" vr="DS" vm="1">DVH Normalization Dose Value</tag>
     <tag group="3004" element="0050" keyword="DVHSequence" vr="SQ" vm="1">DVH Sequence</tag>
@@ -7191,7 +7200,7 @@
     <uid uid="1.2.840.10008.6.1.1489" keyword="EEGProcedure3049" type="Context Group Name">EEG Procedure  (3049)</uid>
     <uid uid="1.2.840.10008.6.1.1490" keyword="PatientConsciousness3050" type="Context Group Name">Patient Consciousness  (3050)</uid>
     <uid uid="1.2.840.10008.6.1.1491" keyword="FollicleType12010" type="Context Group Name">Follicle Type (12010)</uid>
-    <uid uid="1.2.840.10008.6.1.1492" keyword="BreastSegmentationTypes7163" type="Context Group Name">Breast Segmentation Types (7163)</uid>
+    <uid uid="1.2.840.10008.6.1.1492" keyword="BreastTissueSegmentationType7163" type="Context Group Name">Breast Tissue Segmentation Type (7163)</uid>
     <uid uid="1.2.840.10008.6.1.1493" keyword="ImplantedDevice3779" type="Context Group Name">Implanted Device (3779)</uid>
     <uid uid="1.2.840.10008.6.1.1494" keyword="SimilarityMeasure281" type="Context Group Name">Similarity Measure (281)</uid>
     <uid uid="1.2.840.10008.6.1.1495" keyword="WaveformAcquisitionModality34" type="Context Group Name">Waveform Acquisition Modality (34)</uid>
@@ -7249,4 +7258,26 @@
     <uid uid="1.2.840.10008.6.1.1547" keyword="RTDoseCalculationAlgorithmFamily9585" type="Context Group Name">RT Dose Calculation Algorithm Family (9585)</uid>
     <uid uid="1.2.840.10008.6.1.1548" keyword="DoseIndexForDoseCalibration10012" type="Context Group Name">Dose Index for Dose Calibration (10012)</uid>
     <uid uid="1.2.840.10008.6.1.1549" keyword="UltrasoundAttenuationImagingSite12036" type="Context Group Name">Ultrasound Attenuation Imaging Site (12036)</uid>
+    <uid uid="1.2.840.10008.6.1.1550" keyword="FetalAnatomySurveyAssessment12040" type="Context Group Name">Fetal Anatomy Survey Assessment (12040)</uid>
+    <uid uid="1.2.840.10008.6.1.1551" keyword="FetalAnatomySurveyAssessmentHead12041" type="Context Group Name">Fetal Anatomy Survey Assessment - Head (12041)</uid>
+    <uid uid="1.2.840.10008.6.1.1552" keyword="FetalAnatomySurveyAssessmentFaceAndNeck12042" type="Context Group Name">Fetal Anatomy Survey Assessment - Face and Neck (12042)</uid>
+    <uid uid="1.2.840.10008.6.1.1553" keyword="FetalAnatomySurveyAssessmentChest12043" type="Context Group Name">Fetal Anatomy Survey Assessment - Chest (12043)</uid>
+    <uid uid="1.2.840.10008.6.1.1554" keyword="FetalAnatomySurveyAssessmentHeart12044" type="Context Group Name">Fetal Anatomy Survey Assessment - Heart (12044)</uid>
+    <uid uid="1.2.840.10008.6.1.1555" keyword="FetalAnatomySurveyAssessmentAbdomenAndPelvis12045" type="Context Group Name">Fetal Anatomy Survey Assessment - Abdomen and Pelvis (12045)</uid>
+    <uid uid="1.2.840.10008.6.1.1556" keyword="FetalAnatomySurveyAssessmentSpine12046" type="Context Group Name">Fetal Anatomy Survey Assessment - Spine (12046)</uid>
+    <uid uid="1.2.840.10008.6.1.1557" keyword="FetalAnatomySurveyAssessmentExtremities12047" type="Context Group Name">Fetal Anatomy Survey Assessment - Extremities (12047)</uid>
+    <uid uid="1.2.840.10008.6.1.1558" keyword="FetalAnatomySurveyAssessmentMaternal12048" type="Context Group Name">Fetal Anatomy Survey Assessment - Maternal (12048)</uid>
+    <uid uid="1.2.840.10008.6.1.1559" keyword="FetalAnatomySurveyPracticeGuideline12049" type="Context Group Name">Fetal Anatomy Survey Practice Guideline (12049)</uid>
+    <uid uid="1.2.840.10008.6.1.1560" keyword="SensitiveContentCategory900" type="Context Group Name">Sensitive Content Category (900)</uid>
+    <uid uid="1.2.840.10008.6.1.1561" keyword="SensitiveContentDetail901" type="Context Group Name">Sensitive Content Detail (901)</uid>
+    <uid uid="1.2.840.10008.6.1.1562" keyword="ApplicationTypeCode406" type="Context Group Name">Application Type Code (406)</uid>
+    <uid uid="1.2.840.10008.6.1.1563" keyword="XRayModulationType10035" type="Context Group Name">X-Ray Modulation Type (10035)</uid>
+    <uid uid="1.2.840.10008.6.1.1564" keyword="RadiotherapyDoseRealWorldUnits9586" type="Context Group Name">Radiotherapy Dose Real World Units (9586)</uid>
+    <uid uid="1.2.840.10008.6.1.1565" keyword="RadiotherapyDoseInterpretedTypeCodes9587" type="Context Group Name">Radiotherapy Dose Interpreted Type Codes (9587)</uid>
+    <uid uid="1.2.840.10008.6.1.1566" keyword="RadiotherapyDoseInterpretedTypeModifierCodes9588" type="Context Group Name">Radiotherapy Dose Interpreted Type Modifier Codes (9588)</uid>
+    <uid uid="1.2.840.10008.6.1.1567" keyword="RadiotherapyDoseIntentCodes9589" type="Context Group Name">Radiotherapy Dose Intent Codes (9589)</uid>
+    <uid uid="1.2.840.10008.6.1.1568" keyword="QualitySegmentationPropertyType7164" type="Context Group Name">Quality Segmentation Property Type (7164)</uid>
+    <uid uid="1.2.840.10008.6.1.1569" keyword="UltrasoundZScorePopulationIndex12027" type="Context Group Name">Ultrasound Z-Score Population Index (12027)</uid>
+    <uid uid="1.2.840.10008.6.1.1570" keyword="FetalUltrasoundZScoreReferenceAuthority12028" type="Context Group Name">Fetal Ultrasound Z-Score Reference Authority (12028)</uid>
+    <uid uid="1.2.840.10008.6.1.1571" keyword="MetalArtifactReductionAlgorithmFamily10036" type="Context Group Name">Metal Artifact Reduction Algorithm Family (10036)</uid>
 </dictionary>

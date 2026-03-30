@@ -1,5 +1,5 @@
 ﻿
-// Copyright (c) 2012-2025 fo-dicom contributors.
+// Copyright (c) 2012-2026 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
 namespace FellowOakDicom
@@ -316,6 +316,9 @@ namespace FellowOakDicom
 
         ///<summary>(0008,001C) VR=CS VM=1 Synthetic Data</summary>
         public readonly static DicomTag SyntheticData = new DicomTag(0x0008, 0x001C);
+
+        ///<summary>(0008,001D) VR=SQ VM=1 Sensitive Content Code Sequence</summary>
+        public readonly static DicomTag SensitiveContentCodeSequence = new DicomTag(0x0008, 0x001D);
 
         ///<summary>(0008,0020) VR=DA VM=1 Study Date</summary>
         public readonly static DicomTag StudyDate = new DicomTag(0x0008, 0x0020);
@@ -2327,7 +2330,7 @@ namespace FellowOakDicom
         ///<summary>(0014,6050) VR=CS VM=1 Moving Window Padding Scheme</summary>
         public readonly static DicomTag MovingWindowPaddingScheme = new DicomTag(0x0014, 0x6050);
 
-        ///<summary>(0014,6051) VR=DS VM=1 Moving Window Padding Sength</summary>
+        ///<summary>(0014,6051) VR=DS VM=1 Moving Window Padding Length</summary>
         public readonly static DicomTag MovingWindowPaddingLength = new DicomTag(0x0014, 0x6051);
 
         ///<summary>(0014,6052) VR=SQ VM=1 Spatial Filtering Parameters Sequence</summary>
@@ -4648,6 +4651,15 @@ namespace FellowOakDicom
 
         ///<summary>(0018,9384) VR=DS VM=1 X-Ray Mass Attenuation Coefficient</summary>
         public readonly static DicomTag XRayMassAttenuationCoefficient = new DicomTag(0x0018, 0x9384);
+
+        ///<summary>(0018,9390) VR=SQ VM=1 Metal Artifact Reduction Sequence</summary>
+        public readonly static DicomTag MetalArtifactReductionSequence = new DicomTag(0x0018, 0x9390);
+
+        ///<summary>(0018,9391) VR=CS VM=1 Metal Artifact Reduction Applied</summary>
+        public readonly static DicomTag MetalArtifactReductionApplied = new DicomTag(0x0018, 0x9391);
+
+        ///<summary>(0018,9392) VR=SQ VM=1 Metal Artifact Reduction Algorithm Identification Sequence</summary>
+        public readonly static DicomTag MetalArtifactReductionAlgorithmIdentificationSequence = new DicomTag(0x0018, 0x9392);
 
         ///<summary>(0018,9401) VR=SQ VM=1 Projection Pixel Calibration Sequence</summary>
         public readonly static DicomTag ProjectionPixelCalibrationSequence = new DicomTag(0x0018, 0x9401);
@@ -12382,6 +12394,21 @@ namespace FellowOakDicom
 
         ///<summary>(3004,0016) VR=SQ VM=1 Recommended Isodose Level Sequence</summary>
         public readonly static DicomTag RecommendedIsodoseLevelSequence = new DicomTag(0x3004, 0x0016);
+
+        ///<summary>(3004,0020) VR=SQ VM=1 Dose Unit Code Sequence</summary>
+        public readonly static DicomTag DoseUnitCodeSequence = new DicomTag(0x3004, 0x0020);
+
+        ///<summary>(3004,0021) VR=SQ VM=1 RT Dose Interpreted Type Code Sequence</summary>
+        public readonly static DicomTag RTDoseInterpretedTypeCodeSequence = new DicomTag(0x3004, 0x0021);
+
+        ///<summary>(3004,0022) VR=SQ VM=1 RT Dose Interpreted Type Code Modifier Sequence</summary>
+        public readonly static DicomTag RTDoseInterpretedTypeCodeModifierSequence = new DicomTag(0x3004, 0x0022);
+
+        ///<summary>(3004,0023) VR=SQ VM=1 Dose Radiobiological Interpretation Sequence</summary>
+        public readonly static DicomTag DoseRadiobiologicalInterpretationSequence = new DicomTag(0x3004, 0x0023);
+
+        ///<summary>(3004,0024) VR=SQ VM=1 RT Dose Intent Code Sequence</summary>
+        public readonly static DicomTag RTDoseIntentCodeSequence = new DicomTag(0x3004, 0x0024);
 
         ///<summary>(3004,0040) VR=DS VM=3 DVH Normalization Point</summary>
         public readonly static DicomTag DVHNormalizationPoint = new DicomTag(0x3004, 0x0040);
