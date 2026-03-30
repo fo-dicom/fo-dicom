@@ -9,7 +9,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	<Version>5.2.5</Version>
     <Authors>fo-dicom contributors</Authors>
-    <Copyright>Copyright (c) fo-dicom contributors 2012-2025</Copyright>
+    <Copyright>Copyright (c) fo-dicom contributors 2012-2026</Copyright>
     <Company>fo-dicom</Company>
     <Product>Fellow Oak DICOM</Product>
     <Description>A .NET Standard 2.0 imaging library for fo-dicom</Description>
