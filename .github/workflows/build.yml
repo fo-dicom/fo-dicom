@@ -65,7 +65,7 @@ jobs:
           path: ./Tests/FO-DICOM.Tests.Windows/TestResults/results-${{ matrix.os.runtime }}-${{ matrix.frameworks.common }}.xml
     - name: Upload code coverage
       if: matrix.frameworks.coverage != ''
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
