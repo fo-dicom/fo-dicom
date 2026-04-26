@@ -1,4 +1,5 @@
-### 5.2.7 (TBD)
+### 6.0.0-alpha1 (TBD)
+
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
