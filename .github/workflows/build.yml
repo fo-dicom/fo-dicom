@@ -24,12 +24,10 @@ jobs:
             { name: macOS-arm, ver: macos-15, runtime: osx-arm64 }
           ]
         frameworks: [
+            { name: ".NET 10.0", common: "net10.0", win: "net10.0-windows", coverage: '' },
             { name: ".NET 9.0", common: "net9.0", win: "net9.0-windows", coverage: '' },
             { name: ".NET 8.0", common: "net8.0", win: "net8.0-windows", coverage: '--collect:"XPlat Code Coverage" --settings coverlet.runsettings' }
           ]
-        include:
-          - frameworks: { name: ".NET Framework 4.6.2", common: "net462", win: "net462", coverage: "" }
-            os: { name: Windows-x64, ver: windows-2022, runtime: win-x64 }
 
     name: ${{ matrix.os.name }} (${{ matrix.frameworks.name }})
     env:

@@ -304,12 +304,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             Assert.NotNull(exception);
-#if NET462
-            // for some reason, in .net there is still a requesttimeout instead of a network error
-            Assert.IsType<DicomAssociationRequestTimedOutException>(exception);
-#else
             Assert.IsType<DicomNetworkException>(exception);
-#endif
         }
 
         [Fact]
