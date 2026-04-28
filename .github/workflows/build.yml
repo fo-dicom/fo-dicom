@@ -72,9 +72,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Build FO-DICOM..Benchmark
-      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net8.0
+      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net10.0
     - name: run benchmarks
-      run: ./Tests/FO-DICOM.Benchmark/bin/Release/net8.0/fo-dicom.Benchmark.exe
+      run: ./Tests/FO-DICOM.Benchmark/bin/Release/net10.0/fo-dicom.Benchmark.exe
     - name: Upload benchmark log
       uses: actions/upload-artifact@v7
       with:
