@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,7 +86,14 @@ namespace FellowOakDicom.Tests.Network
             );
             Assert.Null(timeout);
 
-            await Task.Delay(1000);
+            // Wait for connection closed callback with timeout
+            var timeout2 = TimeSpan.FromSeconds(10);
+            var sw = Stopwatch.StartNew();
+            while (counter.ConnectionClosedCounter == 0 && sw.Elapsed < timeout2)
+            {
+                await Task.Delay(100);
+            }
+
             Assert.Equal(0, counter.AbortCounter);
             Assert.Equal(1, counter.ConnectionClosedCounter);
             Assert.Equal(0, counter.AbortAsyncCounter);

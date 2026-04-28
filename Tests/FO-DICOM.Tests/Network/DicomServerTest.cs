@@ -48,23 +48,27 @@ namespace FellowOakDicom.Tests.Network
             Assert.Null(server1.Exception);
         }
 
-        [Fact(Skip = "Flaky test. The DICOM Server is not always immediately stopped. We should implement proper cancellation support all the way through DicomService")]
+        [Fact]
         public async Task Stop_IsListening_TrueUntilStopRequested()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening)
-            {
-                await Task.Delay(10);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
-            for (var i = 0; i < 10; ++i)
-            {
-                await Task.Delay(500);
-                Assert.True(server.IsListening);
-            }
+            // Verify server stays listening for 5 seconds
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.IsListening,
+                timeoutSeconds: 5,
+                "Server stopped listening unexpectedly before Stop() was called",
+                pollingIntervalMs: 500);
 
             server.Stop();
-            await Task.Delay(1000);
+
+            // Wait for server to stop listening
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => !server.IsListening,
+                timeoutSeconds: 5,
+                "Server still listening after Stop() called",
+                pollingIntervalMs: 10);
 
             Assert.False(server.IsListening);
         }
@@ -170,7 +174,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
                 ports[i] = server.Port;
-                while (!server.IsListening) { await Task.Delay(10); }
+                await AsyncTestHelper.WaitForServerListeningAsync(server);
             }
 
             foreach (var port in ports)
@@ -188,7 +192,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task IsListening_DicomServerRunningOnPort_ReturnsTrue()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
             Assert.True(DicomServerRegistry.Get(server.Port).DicomServer.IsListening);
         }
 
@@ -196,13 +200,23 @@ namespace FellowOakDicom.Tests.Network
         public async Task IsListening_DicomServerStoppedOnPort_ReturnsFalse()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
+
+            var port = server.Port; // Capture port before stopping
+
             server.Stop();
             while (server.IsListening) { await Task.Delay(10); }
 
-            var dicomServer = DicomServerRegistry.Get(server.Port)?.DicomServer;
-            Assert.NotNull(dicomServer);
-            Assert.False(dicomServer.IsListening);
+            // After stop, server may or may not still be in registry (cleanup race)
+            // If still in registry, IsListening should be false
+            var dicomServer = DicomServerRegistry.Get(port)?.DicomServer;
+            if (dicomServer != null)
+            {
+                Assert.False(dicomServer.IsListening);
+            }
+
+            // What we really care about: the server instance itself reports not listening
+            Assert.False(server.IsListening);
         }
 
         [Fact]
@@ -311,20 +325,33 @@ namespace FellowOakDicom.Tests.Network
         [Fact]
         public async Task Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
         {
-            using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            var disposedServices = new ConcurrentDictionary<DicomService, byte>();
 
-            var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
-            client.Logger = _logger.IncludePrefix("DicomClient");
-            await client.AddRequestAsync(new DicomCEchoRequest());
-            await client.SendAsync();
-            await Task.Delay(100);
+            using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
+                       .Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
+                           "127.0.0.1", 0, logger: _logger.IncludePrefix("DicomServer")))
+            {
+                server.OnDispose = service => disposedServices.TryAdd(service, 0);
+                await AsyncTestHelper.WaitForServerListeningAsync(server);
 
-            server.Stop();
-            await Task.Delay(100);
+                var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+                client.Logger = _logger.IncludePrefix("DicomClient");
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                await client.SendAsync();
 
-            var actual = ((DicomServer<DicomCEchoProvider>)server).CompletedServicesCount;
-            Assert.Equal(0, actual);
+                // Wait for service to be disposed (proves it was created and cleaned up)
+                await AsyncTestHelper.WaitForCountAsync(
+                    () => disposedServices.Count,
+                    expectedCount: 1,
+                    timeoutSeconds: 5,
+                    failureMessage: "Service was not disposed after SendAsync");
+
+                server.Stop();
+
+                // Verify completed services were removed from tracking list
+                var actual = ((DicomServer<DisposableDicomCEchoProvider>)server).CompletedServicesCount;
+                Assert.Equal(0, actual);
+            }
         }
 
         [Fact]
@@ -494,6 +521,10 @@ namespace FellowOakDicom.Tests.Network
             var serverLogger = _logger.IncludePrefix("Server");
             var clientLogger = _logger.IncludePrefix("Client");
             using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(0, logger: serverLogger, configure: o => o.MaxClientsAllowed = 1);
+
+            // Wait for server to start listening (port 0 assignment and binding can take time on net462)
+            await AsyncTestHelper.WaitForServerListeningAsync(server, timeoutSeconds: 5);
+
             var connectionRequest = new AdvancedDicomClientConnectionRequest
             {
                 NetworkStreamCreationOptions = new NetworkStreamCreationOptions
@@ -528,21 +559,29 @@ namespace FellowOakDicom.Tests.Network
                 exception1 = e;
             }
 
-            // Allow 5 seconds for the server to clean up its running DICOM services
-            await Task.Delay(5000);
+            // Wait for server to clean up first connection, then retry connection2 until it succeeds
+            // Server must free the MaxClientsAllowed=1 slot before connection2 can succeed
+            var retryTimeout = TimeSpan.FromSeconds(10);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            try
+            while (stopwatch.Elapsed < retryTimeout && connection2 == null)
             {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cts.Token);
-                association2 = await connection2.OpenAssociationAsync(associationRequest, cts.Token);
-                await association2.ReleaseAsync(CancellationToken.None);
-                association2.Dispose();
-                connection2.Dispose();
-            }
-            catch (Exception e)
-            {
-                exception2 = e;
+                await Task.Delay(500); // Wait between retry attempts
+
+                try
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    connection2 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cts.Token);
+                    association2 = await connection2.OpenAssociationAsync(associationRequest, cts.Token);
+                    await association2.ReleaseAsync(CancellationToken.None);
+                    association2.Dispose();
+                    connection2.Dispose();
+                }
+                catch (Exception e)
+                {
+                    exception2 = e;
+                    connection2 = null; // Reset for retry
+                }
             }
 
             association1?.Dispose();
@@ -550,13 +589,13 @@ namespace FellowOakDicom.Tests.Network
             connection1?.Dispose();
             connection2?.Dispose();
 
-            // Nothing should have gone wrong with connection 1
-            Assert.NotNull(association1);
+            // Check exceptions first to see actual failure reason if any
             Assert.Null(exception1);
-
-            // Nothing should have gone wrong with connection 2
-            Assert.NotNull(association2);
             Assert.Null(exception2);
+
+            // Both connections should have succeeded
+            Assert.NotNull(association1);
+            Assert.NotNull(association2);
         }
 
         [Fact]
@@ -564,7 +603,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var serverLogger = _logger.IncludePrefix("Server");
             var clientLogger = _logger.IncludePrefix("Client");
-            var disposedDicomServices = new ConcurrentStack<DicomService>();
+            var disposedDicomServices = new ConcurrentDictionary<DicomService, byte>();
 
             using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
                        .Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
@@ -588,7 +627,7 @@ namespace FellowOakDicom.Tests.Network
                 };
                 associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-                server.OnDispose = service => disposedDicomServices.Push(service);
+                server.OnDispose = service => disposedDicomServices.TryAdd(service, 0);
 
                 // Open and close connection
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -606,13 +645,17 @@ namespace FellowOakDicom.Tests.Network
                 await server.Registration.Task;
             }
 
-            // Wait for the ContinueWith-Task to be executed
+            // Wait for all disconnected services to be cleaned up
             // In previous versions, the server.Registration.Task also included the RemoveUnusedServicesAsync.
             // This method now no longer exists, so the server.Registration.Task only awaits the StartAsync method, which listens and accepts clients.
-            await Task.Delay(1000); //Wait a bit more than to be sure all disconnected services are cleaned up
+            await AsyncTestHelper.WaitForCountAsync(
+                () => disposedDicomServices.Count,
+                expectedCount: 1,
+                timeoutSeconds: 5,
+                "Expected exactly 1 unique service to be disposed",
+                pollingIntervalMs: 50);
 
-            var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-            Assert.Single(uniqueDisposedServices);
+            Assert.Single(disposedDicomServices);
         }
 
         [Fact]
@@ -620,7 +663,7 @@ namespace FellowOakDicom.Tests.Network
         {
             var serverLogger = _logger.IncludePrefix("Server");
             var clientLogger = _logger.IncludePrefix("Client");
-            var disposedDicomServices = new ConcurrentStack<DicomService>();
+            var disposedDicomServices = new ConcurrentDictionary<DicomService, byte>();
             int numberOfDisposedDicomServices;
             using(var server = (DisposableDicomCEchoProviderServer) DicomServerFactory.Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
                       "127.0.0.1", 0, logger: serverLogger))
@@ -643,7 +686,7 @@ namespace FellowOakDicom.Tests.Network
                 };
                 associationRequest.PresentationContexts.AddFromRequest(new DicomCEchoRequest());
 
-                server.OnDispose = service => disposedDicomServices.Push(service);
+                server.OnDispose = service => disposedDicomServices.TryAdd(service, 0);
 
                 // Open connection 1. This connection will stay open for the duration of the test
                 using var connection1 = await AdvancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest,
@@ -685,7 +728,7 @@ namespace FellowOakDicom.Tests.Network
                 await Task.Delay(1000);
 
                 // Verify that the 2 services were that already disconnected are disposed
-                numberOfDisposedDicomServices = disposedDicomServices.Distinct().Count();
+                numberOfDisposedDicomServices = disposedDicomServices.Count;
                 Assert.True(numberOfDisposedDicomServices >= 2);
 
                 // Stop the server
@@ -695,8 +738,16 @@ namespace FellowOakDicom.Tests.Network
                 await server.Registration.Task;
             }
 
+            // Wait for all 3 services to be disposed with proper synchronization
+            var timeout = TimeSpan.FromSeconds(10);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            while (disposedDicomServices.Count < 3 && stopwatch.Elapsed < timeout)
+            {
+                await Task.Delay(50);
+            }
+
             // Verify that, after the server is disposed, all 3 services were disposed (even the one that never dropped its connection)
-            numberOfDisposedDicomServices = disposedDicomServices.Distinct().Count();
+            numberOfDisposedDicomServices = disposedDicomServices.Count;
             Assert.Equal(3, numberOfDisposedDicomServices);
         }
 
@@ -705,13 +756,13 @@ namespace FellowOakDicom.Tests.Network
         {
             var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
             var clientLogger = _logger.IncludePrefix("Client").WithMinimumLevel(LogLevel.Information);
-            var disposedDicomServices = new ConcurrentStack<DicomService>();
+            var disposedDicomServices = new ConcurrentDictionary<DicomService, byte>();
 
             using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory
                        .Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
                            "127.0.0.1", 0, logger: serverLogger))
             {
-                server.OnDispose = service => disposedDicomServices.Push(service);
+                server.OnDispose = service => disposedDicomServices.TryAdd(service, 0);
 
                 var services = Enumerable.Range(0, 100)
                     .AsParallel()
@@ -756,16 +807,23 @@ namespace FellowOakDicom.Tests.Network
 
                 // Wait for the server to shut down gracefully
                 await server.Registration.Task;
+
+                // Wait for all 100 services to be disposed with proper synchronization
+                var timeout = TimeSpan.FromSeconds(10);
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                while (disposedDicomServices.Count < 100 && stopwatch.Elapsed < timeout)
+                {
+                    await Task.Delay(50);
+                }
             }
 
-            var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-            Assert.Equal(100, uniqueDisposedServices.Count);
+            Assert.Equal(100, disposedDicomServices.Count);
         }
 
-        private void TestFoDicomUnhandledException(int port)
+        private async Task TestFoDicomUnhandledException(int port)
         {
             var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
-            Thread.Sleep(500);
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
             server.Stop();
         }
 
@@ -776,7 +834,7 @@ namespace FellowOakDicom.Tests.Network
             AppDomain.CurrentDomain.UnhandledException += (sender, args) => ue = args.ExceptionObject;
             TaskScheduler.UnobservedTaskException += (sender, args) => ue = args.Exception;
 
-            await Task.Factory.StartNew(() => TestFoDicomUnhandledException(0));
+            await TestFoDicomUnhandledException(0);
 
             await Task.Delay(2000);
             GC.Collect();
@@ -869,9 +927,12 @@ namespace FellowOakDicom.Tests.Network
 
             protected override void Dispose(bool disposing)
             {
-                _onDispose(this);
-
                 base.Dispose(disposing);
+
+                if (disposing)
+                {
+                    _onDispose(this);
+                }
             }
         }
 

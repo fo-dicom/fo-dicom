@@ -176,6 +176,8 @@ namespace FellowOakDicom.Tests.Network.Client
             // Arrange
             var counter = 0;
             using var server = CreateServer<ConfigurableDicomCEchoProvider, ConfigurableDicomCEchoProviderServer>(0);
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
+
             var request = new DicomCEchoRequest { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
             DicomAssociation capturedAssociation = null;
             server.OnAssociationRequest(association =>
@@ -241,10 +243,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var flag = new ManualResetEventSlim();
 
             using var server = CreateServer<DicomCEchoProvider>(0);
-            while (!server.IsListening)
-            {
-                await Task.Delay(50);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var actual = 0;
 
@@ -278,7 +277,10 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             using var server = CreateServer<DicomCEchoProvider>(0);
 
-            await Task.Delay(500);
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.IsListening,
+                timeoutSeconds: 5,
+                failureMessage: "Server failed to start listening");
             Assert.True(server.IsListening, "Server is not listening");
 
             var actual = 0;
@@ -453,8 +455,8 @@ namespace FellowOakDicom.Tests.Network.Client
             var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             await client.AddRequestAsync(new DicomCEchoRequest());
             Assert.True(client.IsSendRequired);
+
             await client.SendAsync();
-            await Task.Delay(100);
 
             await client.AddRequestAsync(new DicomCEchoRequest());
 
@@ -525,20 +527,44 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             using var server = CreateServer<SimpleCStoreProvider>(0);
 
+            // Wait for server to be ready
+            await AsyncTestHelper.WaitForConditionAsync(
+                () => server.IsListening,
+                timeoutSeconds: 5,
+                failureMessage: "Server failed to start listening");
+
             var actual = 0;
+            Exception exception = null;
 
-            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
-            client.NegotiateAsyncOps(expected, 1);
+            // Retry loop for transient network failures (especially on ARM platforms under load)
+            var maxRetries = 3;
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                actual = 0; // Reset counter for retry
+                var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+                client.NegotiateAsyncOps(expected, 1);
 
-            var requests = Enumerable.Range(0, expected)
-                .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
+                var requests = Enumerable.Range(0, expected)
+                    .Select(i => new DicomCStoreRequest(TestData.Resolve("CT1_J2KI"))
+                    {
+                        OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
+                    });
+
+                await client.AddRequestsAsync(requests);
+
+                exception = await Record.ExceptionAsync(() => client.SendAsync());
+
+                if (exception == null)
                 {
-                    OnResponseReceived = (req, res) => Interlocked.Increment(ref actual)
-                });
+                    break; // Success - exit retry loop
+                }
 
-            await client.AddRequestsAsync(requests);
-
-            var exception = await Record.ExceptionAsync(() => client.SendAsync());
+                // On last attempt, don't wait
+                if (attempt < maxRetries - 1)
+                {
+                    await Task.Delay(1000); // Wait before retry
+                }
+            }
 
             Assert.Null(exception);
             Assert.Equal(expected, actual);

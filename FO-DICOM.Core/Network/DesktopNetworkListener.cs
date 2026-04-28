@@ -52,7 +52,9 @@ namespace FellowOakDicom.Network
         /// <inheritdoc />
         public Task StartAsync()
         {
-            _listener.Start();
+            // Use explicit backlog to handle many simultaneous connections in CI environments
+            // where the default backlog may be too small for parallel connection tests
+            _listener.Start(backlog: 255);
             return Task.FromResult(0);
         }
 
@@ -79,9 +81,12 @@ namespace FellowOakDicom.Network
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
                     logger.LogDebug("Waiting for inbound client connection to {IPAddress}:{Port}",
-                        _endpoint.Address.ToString(), _endpoint.Port);                
+                        _endpoint.Address.ToString(), _endpoint.Port);
                 }
 
+#if !NET5_0_OR_GREATER
+                // .NET Framework and .NET Core < 5.0 don't have AcceptTcpClientAsync(CancellationToken)
+                // Use manual cancellation wrapper with Stop() as backdoor cancellation
                 using var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
                 var acceptTcpClientTask = _listener.AcceptTcpClientAsync();
                 var awaiter = await Task.WhenAny(acceptTcpClientTask, Task.Delay(-1, cancelSource.Token)).ConfigureAwait(false);
@@ -89,6 +94,10 @@ namespace FellowOakDicom.Network
                 if (awaiter == acceptTcpClientTask)
                 {
                     var tcpClient = await acceptTcpClientTask.ConfigureAwait(false);
+#else
+                // .NET 5.0+ has proper cancellable AcceptTcpClientAsync
+                var tcpClient = await _listener.AcceptTcpClientAsync(token).ConfigureAwait(false);
+#endif
                     tcpClient.NoDelay = noDelay;
                     if (receiveBufferSize.HasValue)
                     {
@@ -98,19 +107,21 @@ namespace FellowOakDicom.Network
                     {
                         tcpClient.SendBufferSize = sendBufferSize.Value;
                     }
-                    
+
                     if (logger.IsEnabled(LogLevel.Debug))
                     {
-                        logger.LogDebug("Client connected to {IPAddress}:{Port}", _endpoint.Address.ToString(), _endpoint.Port);                
+                        logger.LogDebug("Client connected to {IPAddress}:{Port}", _endpoint.Address.ToString(), _endpoint.Port);
                     }
 
                     return tcpClient;
+#if !NET5_0_OR_GREATER
                 }
 
                 Stop();
                 await acceptTcpClientTask.ConfigureAwait(false);
 
                 return null;
+#endif
             }
             catch (OperationCanceledException)
             {

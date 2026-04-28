@@ -40,7 +40,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
             server.Logger = serverLogger;
-            while (!server.IsListening) { await Task.Delay(50); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var actual = 0;
 
@@ -84,7 +84,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
             server.Logger = serverLogger;
-            while (!server.IsListening) { await Task.Delay(50); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var actual = 0;
 
@@ -110,7 +110,7 @@ namespace FellowOakDicom.Tests.Bugs
                     await client.SendAsync();
                     testLogger.LogInformation("Sent (or timed out) #{0}", requestIndex);
                 }
-            ).ToArray();
+            );
 
             await Task.WhenAll(requests);
 

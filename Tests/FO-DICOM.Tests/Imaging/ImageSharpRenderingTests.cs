@@ -12,6 +12,8 @@ namespace FellowOakDicom.Tests.Imaging
     [Collection(TestCollections.ImageSharp)]
     public class ImageSharpRenderingTests
     {
+        // No constructor needed - GlobalFixture already sets up ImageSharpImageManager
+        // for TestCollections.ImageSharp (see Fixture.cs lines 43-49)
 
 #if NET462
         [Fact(Skip = "Re-enable when ImageSharp strong names their assemblies")] // TODO re-enable this

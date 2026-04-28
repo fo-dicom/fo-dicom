@@ -358,7 +358,24 @@ namespace FellowOakDicom.Network.Client
 
                         SetState(DicomClientConnectState.Instance);
 
-                        connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, cancellationToken).ConfigureAwait(false);
+                        // Enforce client-side connection timeout
+                        var connectionTimeout = ClientOptions.ConnectionTimeoutInMs > 0
+                            ? TimeSpan.FromMilliseconds(ClientOptions.ConnectionTimeoutInMs)
+                            : Timeout.InfiniteTimeSpan;
+
+                        using (var timeoutCts = new CancellationTokenSource(connectionTimeout))
+                        using (var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, cancellationToken))
+                        {
+                            try
+                            {
+                                connection = await _advancedDicomClientConnectionFactory.OpenConnectionAsync(connectionRequest, combinedCts.Token).ConfigureAwait(false);
+                            }
+                            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                            {
+                                // Connection timeout
+                                throw new TimeoutException($"Opening connection to remote host timed out after {ClientOptions.ConnectionTimeoutInMs} ms.");
+                            }
+                        }
 
                         SetState(DicomClientRequestAssociationState.Instance);
 
@@ -445,6 +462,9 @@ namespace FellowOakDicom.Network.Client
 
                                 // Save the requests to retry, otherwise they are lost because we already extracted them from QueuedRequests
                                 requestsToRetry.AddRange(requestsToSend);
+
+                                // Dispose the timed-out connection before retrying to prevent connection leaks
+                                connection?.Dispose();
 
                                 // try again
                                 continue;

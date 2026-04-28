@@ -163,7 +163,7 @@ namespace FellowOakDicom.Network
         #region METHODS
 
         /// <inheritdoc />
-        public virtual Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
+        public virtual async Task StartAsync(string ipAddress, int port, ITlsAcceptor tlsAcceptor, Encoding fallbackEncoding,
             DicomServiceOptions serviceOptions, object userState, DicomServerOptions serverOptions)
         {
             if (_wasStarted)
@@ -185,7 +185,14 @@ namespace FellowOakDicom.Network
                 ? new SemaphoreSlim(serverOptions.MaxClientsAllowed, serverOptions.MaxClientsAllowed)
                 : null;
             MaxClientsAllowedWaitInterval = TimeSpan.FromSeconds(60);
-            return ListenForConnectionsAsync();
+
+            // Start the listener to get the actual assigned port before starting the accept loop
+            var listener = _networkManager.CreateNetworkListener(IPAddress, Port);
+            await listener.StartAsync().ConfigureAwait(false);
+            _port = listener.Port;
+
+            // Run the accept loop - exceptions will be observed by the caller
+            await ListenForConnectionsInternalAsync(listener);
         }
 
         /// <inheritdoc />
@@ -265,14 +272,10 @@ namespace FellowOakDicom.Network
         /// <summary>
         /// Listen indefinitely for network connections on the specified port.
         /// </summary>
-        private async Task ListenForConnectionsAsync()
+        private async Task ListenForConnectionsInternalAsync(INetworkListener listener)
         {
-            INetworkListener listener = null;
             try
             {
-                listener = _networkManager.CreateNetworkListener(IPAddress, Port);
-                await listener.StartAsync().ConfigureAwait(false);
-                _port = listener.Port;
                 IsListening = true;
 
                 var maxClientsAllowed = _serverOptions.MaxClientsAllowed;

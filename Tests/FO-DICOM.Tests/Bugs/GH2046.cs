@@ -8,6 +8,7 @@ using FellowOakDicom.Tests.Network;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,13 +30,16 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task RemoveUnusedServicesAsync_ShouldCleanupAllFinishedInternalServices()
         {
             var serverLogger = _logger.IncludePrefix("Server").WithMinimumLevel(LogLevel.Information);
-            var disposedDicomServices = new ConcurrentStack<DicomService>();
+            var disposedDicomServices = new ConcurrentDictionary<DicomService, byte>();
             var cEchoRequestCount = 0;
 
             using var server = (DicomServerTest.DisposableDicomCEchoProviderServer)DicomServerFactory
                        .Create<DicomServerTest.DisposableDicomCEchoProvider, DicomServerTest.DisposableDicomCEchoProviderServer>(
                            "127.0.0.1", 0, logger: serverLogger);
-            server.OnDispose = service => disposedDicomServices.Push(service);
+            server.OnDispose = service => disposedDicomServices.TryAdd(service, 0);
+
+            // Verify no services disposed yet
+            Assert.Empty(disposedDicomServices);
 
             var numberOfClients = 50;
 
@@ -59,12 +63,31 @@ namespace FellowOakDicom.Tests.Bugs
 
             Assert.Equal(100, cEchoRequestCount); // Make sure all clients actually sent their request
 
-            await Task.Delay(500 + 100); //Wait a bit more than the RemoveUnusedServicesAsync busy wait loop (500ms) to be sure all disconnected services are cleaned up
+            // Wait for disposal to complete with timeout
+            var timeout = System.TimeSpan.FromSeconds(10);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var previousCount = 0;
+            var stableCount = 0;
 
-            var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
-            Assert.Equal(100, uniqueDisposedServices.Count);
+            // Wait until disposal count stabilizes (no change for 200ms)
+            while (stopwatch.Elapsed < timeout)
+            {
+                await Task.Delay(50);
+                var currentCount = disposedDicomServices.Count;
 
-            // Better would be to check `server._services.Count == 0` but that field is not accessible here
+                if (currentCount == previousCount)
+                {
+                    stableCount += 50;
+                    if (stableCount >= 200) break; // Stable for 200ms
+                }
+                else
+                {
+                    stableCount = 0;
+                    previousCount = currentCount;
+                }
+            }
+
+            // Should have exactly 100 unique disposed services (dictionary keys are already unique)
             Assert.Equal(100, disposedDicomServices.Count);
 
             server.Stop();
@@ -76,6 +99,8 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 //Send a simple CEcho request
                 var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "AnySCU", "AnySCP");
+                // Disable retries to ensure exactly one connection per client
+                client.ClientOptions.MaximumNumberOfConsecutiveTimedOutAssociationRequests = 1;
                 var request = new DicomCEchoRequest
                 {
                     OnResponseReceived = (echoRequest, response) =>

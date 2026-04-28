@@ -343,6 +343,9 @@ namespace FellowOakDicom.Tests.Network.Client
 
             Assert.Equal(winner, sendTask);
 
+            // Yield to ensure callback completion on loaded CI systems
+            Thread.Yield();
+
             Assert.NotNull(response);
 
             Assert.Equal(DicomStatus.Success, response.Status);

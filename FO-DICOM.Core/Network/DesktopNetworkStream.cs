@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace FellowOakDicom.Network
 {
@@ -54,7 +55,11 @@ namespace FellowOakDicom.Network
             {
                 _tcpClient.SendBufferSize = options.SendBufferSize.Value;
             }
-            if (!_tcpClient.ConnectAsync(options.Host, options.Port).Wait(options.ConnectionTimeout))
+
+            var timeout = options.ConnectionTimeout.TotalMilliseconds < 0
+                ? Timeout.InfiniteTimeSpan
+                : options.ConnectionTimeout;
+            if (!_tcpClient.ConnectAsync(options.Host, options.Port).Wait(timeout))
             {
                 throw new TimeoutException();
             }

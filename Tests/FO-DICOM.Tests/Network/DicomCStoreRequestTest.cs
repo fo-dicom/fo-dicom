@@ -4,6 +4,7 @@
 
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
+using FellowOakDicom.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
@@ -44,6 +45,9 @@ namespace FellowOakDicom.Tests.Network
 
             // Specify fallback encoding
             using var server = DicomServerFactory.Create<CStoreScp>(0, null, actualEncoding);
+
+            // Wait for server to be ready
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "SCP");
             await client.AddRequestAsync(new DicomCStoreRequest(file));
