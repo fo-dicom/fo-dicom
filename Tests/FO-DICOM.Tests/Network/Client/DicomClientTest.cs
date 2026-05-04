@@ -241,10 +241,7 @@ namespace FellowOakDicom.Tests.Network.Client
             var flag = new ManualResetEventSlim();
 
             using var server = CreateServer<DicomCEchoProvider>(0);
-            while (!server.IsListening)
-            {
-                await Task.Delay(50);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server, 30);
 
             var actual = 0;
 
@@ -524,6 +521,7 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendAsync_Plus128CStoreRequestsCompressedTransferSyntax_NoOverflowContextIdsAllRequestsRecognized(int expected)
         {
             using var server = CreateServer<SimpleCStoreProvider>(0);
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var actual = 0;
 

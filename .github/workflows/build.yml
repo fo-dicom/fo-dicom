@@ -38,10 +38,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Setup .NET
-      if: ${{ matrix.frameworks.common != 'net462' }}
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: ${{ matrix.frameworks.common == 'net8.0' && '8.0.x' || '9.0.x' }}
+        dotnet-version: ${{ matrix.frameworks.common  }}
       env:
         DOTNET_INSTALL_ARCH: ${{ contains(matrix.os.runtime, 'arm') && 'arm64' || 'x64' }}
     - name: Test FO-DICOM.Tests
