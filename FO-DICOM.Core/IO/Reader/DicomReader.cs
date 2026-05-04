@@ -103,6 +103,16 @@ namespace FellowOakDicom.IO.Reader
             /// </summary>
             private const uint _undefinedLength = 0xffffffff;
 
+            /// <summary>
+            /// Maximum nesting depth allowed for SQ items. Crafted DICOM with
+            /// deeply-nested sequences would otherwise cause an uncatchable
+            /// <see cref="StackOverflowException"/> in <see cref="ParseDataset"/>'s
+            /// recursive descent. 256 is far above any realistic medical use
+            /// (Structured Reports rarely exceed 10-15 levels) and well below
+            /// the stack-exhaustion threshold on common runtimes.
+            /// </summary>
+            private const int _maxSequenceDepth = 256;
+
             private readonly IDicomReaderObserver _observer;
 
             private readonly Func<ParseState, bool> _stop;
@@ -889,6 +899,11 @@ namespace FellowOakDicom.IO.Reader
 
             private bool ParseItemSequenceValue(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem, long positionOfValueEnd, bool handleBadPrivateSequence)
             {
+                if (sequenceDepth >= _maxSequenceDepth)
+                {
+                    throw new DicomReaderException($"Sequence nesting depth exceeded maximum of {_maxSequenceDepth} levels at item position {positionItem}.");
+                }
+
                 long endOfValue = positionOfValueEnd;
                 if (length != _undefinedLength)
                 {
@@ -921,6 +936,11 @@ namespace FellowOakDicom.IO.Reader
 
             private async Task<bool> ParseItemSequenceValueAsync(IByteSource source, DicomTag tag, uint length, int sequenceDepth, long positionItem, long positionEndOfValue, bool handleBadPrivateSequence)
             {
+                if (sequenceDepth >= _maxSequenceDepth)
+                {
+                    throw new DicomReaderException($"Sequence nesting depth exceeded maximum of {_maxSequenceDepth} levels at item position {positionItem}.");
+                }
+
                 long endOfValue = positionEndOfValue;
                 if (length != _undefinedLength)
                 {

@@ -5,6 +5,7 @@
 using FellowOakDicom.IO;
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Reader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 using FellowOakDicom.Memory;
 using Xunit;
 using System.Linq;
+using System.Buffers.Binary;
 
 namespace FellowOakDicom.Tests.IO.Reader
 {
@@ -124,6 +126,57 @@ namespace FellowOakDicom.Tests.IO.Reader
             Assert.True(exist);
 
             Assert.True(dcmFile.Dataset.Contains(DicomTag.PixelData));
+        }
+
+        [Fact]
+        public void Read_DeeplyNestedSequence_ThrowsDicomReaderException()
+        {
+            // Without an internal depth guard, ParseDataset/ParseItemSequenceValue
+            // recurses once per nested SQ item and exhausts the managed stack
+            // (StackOverflowException is uncatchable in .NET, terminating the
+            // process). 300 levels is above the parser's hard cap (256) but
+            // well below the stack-exhaustion threshold (~1.8k frames on
+            // .NET 8 / Windows), so the bound must fire here.
+            var bytes = BuildDeeplyNestedSequenceImplicitVRLE(300);
+            var stream = new MemoryStream(bytes);
+            var source = new StreamByteSource(stream);
+            var reader = new DicomReader(new ArrayPoolMemoryProvider());
+
+            Assert.Throws<DicomReaderException>(() => reader.Read(source, new MockObserver()));
+        }
+
+        [Fact]
+        public async Task ReadAsync_DeeplyNestedSequence_ThrowsDicomReaderException()
+        {
+            var bytes = BuildDeeplyNestedSequenceImplicitVRLE(300);
+            var stream = new MemoryStream(bytes);
+            var source = new StreamByteSource(stream);
+            var reader = new DicomReader(new ArrayPoolMemoryProvider());
+
+            await Assert.ThrowsAsync<DicomReaderException>(
+                () => reader.ReadAsync(source, new MockObserver()));
+        }
+
+        private static byte[] BuildDeeplyNestedSequenceImplicitVRLE(int depth)
+        {
+            // Each nesting level (Implicit VR LE) is 16 bytes:
+            //   SQ open  : tag (0040,A730) ContentSequence + length 0xFFFFFFFF (8 bytes)
+            //   Item open: tag (FFFE,E000) + length 0xFFFFFFFF                 (8 bytes)
+            // With undefined lengths the parser must walk into every item, so
+            // no closing markers are needed for the test to exercise the
+            // recursion.
+            var buffer = new byte[depth * 16];
+            for (int i = 0; i < depth; i++)
+            {
+                int offset = i * 16;
+                BinaryPrimitives.WriteUInt16LittleEndian(buffer.AsSpan(offset, 2), 0x0040);
+                BinaryPrimitives.WriteUInt16LittleEndian(buffer.AsSpan(offset + 2, 2), 0xA730);
+                BinaryPrimitives.WriteUInt32LittleEndian(buffer.AsSpan(offset + 4, 4), 0xFFFFFFFFu);
+                BinaryPrimitives.WriteUInt16LittleEndian(buffer.AsSpan(offset + 8, 2), 0xFFFE);
+                BinaryPrimitives.WriteUInt16LittleEndian(buffer.AsSpan(offset + 10, 2), 0xE000);
+                BinaryPrimitives.WriteUInt32LittleEndian(buffer.AsSpan(offset + 12, 4), 0xFFFFFFFFu);
+            }
+            return buffer;
         }
 
         #endregion
