@@ -314,6 +314,7 @@ namespace FellowOakDicom.Tests.Network.Client
         public async Task SendingLargeFileUsingVeryShortResponseTimeoutShouldSucceed()
         {
             using var server = CreateServer<InMemoryDicomCStoreProvider>(0);
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
 
             var streamWriteTimeout = TimeSpan.FromMilliseconds(10);
             var clientFactory = CreateClientFactory(new ConfigurableNetworkManager(() => Thread.Sleep(streamWriteTimeout)));
