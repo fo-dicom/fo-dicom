@@ -1,5 +1,6 @@
 ### 6.0.0-alpha1 (TBD)
-
+- breaking change: update targetframeworks to net8, net9 and net10, netstandard2.0 is dropped
+- make fo-dicom.core AOT compilant (#2005)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
