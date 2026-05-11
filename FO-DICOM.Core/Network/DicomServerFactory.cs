@@ -67,7 +67,8 @@ namespace FellowOakDicom.Network
         /// <param name="logger">Logger, if null default logger will be applied.</param>
         /// <param name="configure">Configures the service options of the newly created DICOM server</param>
         /// <returns>An instance of <typeparamref name="TServer"/>, that starts listening for connections in the background.</returns>
-        IDicomServer Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T, TServer>(
+        IDicomServer Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TServer>(
             string ipAddress,
             int port,
             object userState = null,
