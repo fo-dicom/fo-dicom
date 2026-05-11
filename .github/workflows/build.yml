@@ -20,7 +20,7 @@ jobs:
             { name: Windows-arm, ver: windows-11-arm, runtime: win-arm64 },
             { name: Ubuntu-x64, ver: ubuntu-24.04, runtime: linux-x64 },
             { name: Ubuntu-arm, ver: ubuntu-24.04-arm, runtime: linux-arm64 },
-            { name: macOS-x64, ver: macos-26-intel, runtime: osx-x64 },
+            { name: macOS-x64, ver: macos-15-intel, runtime: osx-x64 },
             { name: macOS-arm, ver: macos-15, runtime: osx-arm64 }
           ]
         frameworks: [
