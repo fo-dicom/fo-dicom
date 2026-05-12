@@ -14,6 +14,8 @@ namespace FellowOakDicom.Printing
     /// </summary>
     public static class FilmBoxExtensions
     {
+        private static readonly string _centimeter = "CM";
+        private static readonly string _inch = "IN";
         #region METHODS
 
         /// <summary>
@@ -27,9 +29,9 @@ namespace FellowOakDicom.Printing
             const float CM_PER_INCH = 2.54f;
             var filmSizeId = filmBox.FilmSizeID;
 
-            if (filmSizeId.Contains("IN"))
+            if (filmSizeId.Contains(_inch))
             {
-                var parts = filmSizeId.Split(new[] { "IN" }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = filmSizeId.Split([_inch], StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
                     var width = parts[0].Replace('_', '.');
@@ -38,9 +40,9 @@ namespace FellowOakDicom.Printing
                     return new SizeF(float.Parse(width), float.Parse(height));
                 }
             }
-            else if (filmSizeId.Contains("CM"))
+            else if (filmSizeId.Contains(_centimeter))
             {
-                var parts = filmSizeId.Split(new[] { "CM" }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = filmSizeId.Split([_centimeter], StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
                     var width = parts[0].Replace('_', '.');
@@ -66,11 +68,11 @@ namespace FellowOakDicom.Printing
         /// <param name="imageResolution">Image resolution.</param>
         public static void Print(this FilmBox filmBox, Graphics graphics, Rectangle marginBounds, int imageResolution)
         {
-            var parts = filmBox.ImageDisplayFormat.Split('\\', ',');
+            var parts = filmBox.ImageDisplayFormat.Split("\\,".ToCharArray());
 
             if (parts.Length > 0)
             {
-                RectF[] boxes = null;
+                Rect<float>[] boxes = null;
                 if (parts[0] == "STANDARD")
                 {
                     boxes = FilmBox.PrintStandardFormat(parts, ToRectF(marginBounds));
@@ -101,7 +103,7 @@ namespace FellowOakDicom.Printing
         /// </summary>
         /// <param name="rectangle">Rectangle to convert.</param>
         /// <returns>Rectangle expressed as <see cref="RectF"/>.</returns>
-        private static RectF ToRectF(Rectangle rectangle) => new RectF(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        private static Rect<float> ToRectF(Rectangle rectangle) => new Rect<float>(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 
         #endregion
     }

@@ -31,7 +31,7 @@ namespace FellowOakDicom.Printing
         /// <param name="graphics">Graphics in which image box should be contained.</param>
         /// <param name="box">Rectangle within which the image box should be contained.</param>
         /// <param name="imageResolution">Image resolution.</param>
-        public static void Print(this ImageBox imageBox, Graphics graphics, RectF box, int imageResolution)
+        public static void Print(this ImageBox imageBox, Graphics graphics, Rect<float> box, int imageResolution)
         {
             var state = graphics.Save();
 
@@ -57,10 +57,7 @@ namespace FellowOakDicom.Printing
                 }
                 finally
                 {
-                    if (bitmap != null)
-                    {
-                        bitmap.Dispose();
-                    }
+                    bitmap?.Dispose();
                 }
             }
 
@@ -73,11 +70,11 @@ namespace FellowOakDicom.Printing
         /// <param name="filmBox">Film box.</param>
         /// <param name="box">Rectangle.</param>
         /// <param name="graphics">Graphics.</param>
-        private static void FillBox(FilmBox filmBox, RectF box, Graphics graphics)
+        private static void FillBox(FilmBox filmBox, Rect<float> box, Graphics graphics)
         {
             if (filmBox.EmptyImageDensity == "BLACK")
             {
-                RectF fillBox = box;
+                Rect<float> fillBox = box;
                 if (filmBox.BorderDensity == "WHITE" && filmBox.Trim == "YES")
                 {
                     fillBox.Inflate(-_border, -_border);
@@ -95,7 +92,7 @@ namespace FellowOakDicom.Printing
         /// <param name="bitmap">Image to draw.</param>
         /// <param name="imageResolution">Image resolution.</param>
         /// <param name="emptyImageDensity">Empty image density.</param>
-        private static void DrawBitmap(Graphics graphics, RectF box, Image bitmap, int imageResolution, string emptyImageDensity)
+        private static void DrawBitmap(Graphics graphics, Rect<float> box, Image bitmap, int imageResolution, string emptyImageDensity)
         {
             var imageWidthInInch = 100 * bitmap.Width / imageResolution;
             var imageHeightInInch = 100 * bitmap.Height / imageResolution;

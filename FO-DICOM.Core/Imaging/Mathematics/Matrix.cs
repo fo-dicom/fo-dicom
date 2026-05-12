@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.Numerics;
 using System.Text;
 
 namespace FellowOakDicom.Imaging.Mathematics
@@ -23,7 +24,7 @@ namespace FellowOakDicom.Imaging.Mathematics
             _matrix = new int[rows, cols];
         }
 
-        public Matrix(int[,] matrix)
+        internal Matrix(int[,] matrix)
         {
             _matrix = (int[,])matrix.Clone();
         }
@@ -42,13 +43,19 @@ namespace FellowOakDicom.Imaging.Mathematics
         {
             get
             {
-                if (!IsSquare) return false;
+                if (!IsSquare)
+                {
+                    return false;
+                }
 
                 for (int r = 0, rows = Rows; r < rows; r++)
                 {
                     for (int c = 0, cols = Columns; c < cols; c++)
                     {
-                        if (_matrix[r, c] != ((r == c) ? 1.0 : 0.0)) return false;
+                        if (_matrix[r, c] != ((r == c) ? 1 : 0))
+                        {
+                            return false;
+                        }
                     }
                 }
 
@@ -66,11 +73,17 @@ namespace FellowOakDicom.Imaging.Mathematics
         {
             get
             {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calculate determinant of non-square matrix.");
+                if (!IsSquare)
+                {
+                    throw new InvalidOperationException("Cannot calculate determinant of non-square matrix.");
+                }
 
                 int dimensions = Rows;
 
-                if (dimensions == 1) return _matrix[0, 0];
+                if (dimensions == 1)
+                {
+                    return _matrix[0, 0];
+                }
 
                 if (dimensions == 2)
                 {
@@ -120,7 +133,10 @@ namespace FellowOakDicom.Imaging.Mathematics
         {
             get
             {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calc trace of non-square matrix.");
+                if (!IsSquare)
+                {
+                    throw new InvalidOperationException("Cannot calc trace of non-square matrix.");
+                }
 
                 int t = 0;
 
@@ -139,7 +155,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Row(int row, params int[] values)
         {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Columns)
+            {
+                throw new ArgumentOutOfRangeException("values.Length");
+            }
 
             for (int col = 0, cols = Columns; col < cols; col++)
             {
@@ -161,7 +180,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public void Column(int col, params int[] values)
         {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Rows)
+            {
+                throw new ArgumentOutOfRangeException("values.Length");
+            }
 
             for (int row = 0, rows = Rows; row < rows; row++)
             {
@@ -188,7 +210,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public Matrix Transpose()
         {
-            Matrix t = new Matrix(Columns, Rows);
+            var t = new Matrix(Columns, Rows);
 
             for (int r = 0, rows = Rows; r < rows; r++)
             {
@@ -207,9 +229,15 @@ namespace FellowOakDicom.Imaging.Mathematics
             int rows = Rows;
             int cols = Columns;
 
-            if (rows != cols) throw new InvalidOperationException("Unable to invert non-square matrix");
+            if (rows != cols)
+            {
+                throw new InvalidOperationException("Unable to invert non-square matrix");
+            }
 
-            if (Determinant == 0.0) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            if (Determinant == 0)
+            {
+                throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            }
 
             Matrix x = Clone();
 
@@ -244,31 +272,35 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            var sb = new StringBuilder();
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
-                if (r > 0) sb.Append("; ");
+                if (r > 0)
+                {
+                    sb.Append("; ");
+                }
+
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0)
+                    {
+                        sb.Append(',');
+                    }
+
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is Matrix) return (obj as Matrix) == this;
-            return false;
+            return obj is Matrix other && other == this;
         }
 
-        public override int GetHashCode()
-        {
-            return _matrix.GetHashCode();
-        }
+        public override int GetHashCode() => _matrix.GetHashCode();
 
         #endregion
 
@@ -281,7 +313,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static Matrix One(int rows, int columns)
         {
-            Matrix m = new Matrix(rows, columns);
+            var m = new Matrix(rows, columns);
 
             for (int r = 0; r < rows; r++)
             {
@@ -296,7 +328,7 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static Matrix Identity(int dimensions)
         {
-            Matrix m = new Matrix(dimensions, dimensions);
+            var m = new Matrix(dimensions, dimensions);
 
             for (int r = 0, rows = dimensions; r < rows; r++)
             {
@@ -311,13 +343,19 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static bool operator ==(Matrix a, Matrix b)
         {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) return false;
+            if (a.Rows != b.Rows || a.Columns != b.Columns)
+            {
+                return false;
+            }
 
             for (int r = 0, rows = a.Rows; r < rows; r++)
             {
                 for (int c = 0, cols = a.Columns; c < cols; c++)
                 {
-                    if (a[r, c] != b[r, c]) return false;
+                    if (a[r, c] != b[r, c])
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -331,7 +369,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static Matrix operator +(Matrix a, Matrix b)
         {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to add matrices of different dimensions");
+            if (a.Rows != b.Rows || a.Columns != b.Columns)
+            {
+                throw new ArgumentException("Unable to add matrices of different dimensions");
+            }
 
             Matrix x = a.Clone();
 
@@ -348,7 +389,10 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static Matrix operator -(Matrix a, Matrix b)
         {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to subtract matrices of different dimensions");
+            if (a.Rows != b.Rows || a.Columns != b.Columns)
+            {
+                throw new ArgumentException("Unable to subtract matrices of different dimensions");
+            }
 
             Matrix x = a.Clone();
 
@@ -380,9 +424,12 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         public static Matrix operator *(Matrix a, Matrix b)
         {
-            if (a.Columns != b.Rows) throw new ArgumentException("Unable to multiply matrices of different inner dimensions");
+            if (a.Columns != b.Rows)
+            {
+                throw new ArgumentException("Unable to multiply matrices of different inner dimensions");
+            }
 
-            Matrix x = new Matrix(a.Rows, b.Columns);
+            var x = new Matrix(a.Rows, b.Columns);
 
             int inner = a.Columns;
             for (int r = 0, rows = x.Rows; r < rows; r++)
@@ -390,7 +437,11 @@ namespace FellowOakDicom.Imaging.Mathematics
                 for (int c = 0, cols = x.Columns; c < cols; c++)
                 {
                     int d = 0;
-                    for (int i = 0; i < inner; i++) d += a[r, i] * b[i, c];
+                    for (int i = 0; i < inner; i++)
+                    {
+                        d += a[r, i] * b[i, c];
+                    }
+
                     x[r, c] = d;
                 }
             }
@@ -446,24 +497,24 @@ namespace FellowOakDicom.Imaging.Mathematics
         #endregion
     }
 
-    public class MatrixF
+    public class Matrix<T> where T : INumber<T>
     {
         #region Members
 
-        private readonly float[,] _matrix;
+        private readonly T[,] _matrix;
 
         #endregion
 
         #region Constructors
 
-        public MatrixF(int rows, int cols)
+        public Matrix(int rows, int cols)
         {
-            _matrix = new float[rows, cols];
+            _matrix = new T[rows, cols];
         }
 
-        public MatrixF(float[,] matrix)
+        internal Matrix(T[,] matrix)
         {
-            _matrix = (float[,])matrix.Clone();
+            _matrix = (T[,])matrix.Clone();
         }
 
         #endregion
@@ -480,559 +531,47 @@ namespace FellowOakDicom.Imaging.Mathematics
         {
             get
             {
-                if (!IsSquare) return false;
+                if (!IsSquare)
+                {
+                    return false;
+                }
 
                 for (int r = 0, rows = Rows; r < rows; r++)
                 {
                     for (int c = 0, cols = Columns; c < cols; c++)
                     {
-                        if (_matrix[r, c] != ((r == c) ? 1.0 : 0.0)) return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        public float this[int row, int col]
-        {
-            get => _matrix[row, col];
-            set => _matrix[row, col] = value;
-        }
-
-        public float Determinant
-        {
-            get
-            {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calculate determinant of non-square matrix.");
-
-                int dimensions = Rows;
-
-                if (dimensions == 1) return _matrix[0, 0];
-
-                if (dimensions == 2)
-                {
-                    return (_matrix[0, 0] * _matrix[1, 1]) - (_matrix[0, 1] * _matrix[1, 0]);
-                }
-
-                if (dimensions == 3)
-                {
-                    float aei = _matrix[0, 0] * _matrix[1, 1] * _matrix[2, 2];
-                    float bfg = _matrix[0, 1] * _matrix[1, 2] * _matrix[2, 0];
-                    float cdh = _matrix[0, 2] * _matrix[1, 0] * _matrix[2, 1];
-                    float hfa = _matrix[2, 1] * _matrix[1, 2] * _matrix[0, 0];
-                    float idb = _matrix[2, 2] * _matrix[1, 0] * _matrix[0, 1];
-                    float gec = _matrix[2, 0] * _matrix[1, 1] * _matrix[0, 2];
-                    return (aei + bfg + cdh) - (hfa + idb + gec);
-                }
-
-                float pos = 0.0f;
-                for (int c = 0; c < dimensions; c++)
-                {
-                    int k = c;
-                    float diag = 0.0f;
-                    for (int r = 0; r < dimensions; r++, k = ((k + 1) % dimensions))
-                    {
-                        diag *= _matrix[r, k];
-                    }
-                    pos += diag;
-                }
-
-                float neg = 0.0f;
-                for (int c = 0; c < dimensions; c++)
-                {
-                    int k = (c + 1) % dimensions;
-                    float diag = 0.0f;
-                    for (int r = dimensions - 1; r >= 0; r--, k = ((k + 1) % dimensions))
-                    {
-                        diag *= _matrix[r, k];
-                    }
-                    neg += diag;
-                }
-
-                return pos - neg;
-            }
-        }
-
-        public float Trace
-        {
-            get
-            {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calc trace of non-square matrix.");
-
-                float t = 0.0f;
-
-                for (int x = 0, count = Rows; x < count; x++)
-                {
-                    t += _matrix[x, x];
-                }
-
-                return t;
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        public void Row(int row, params float[] values)
-        {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
-
-            for (int col = 0, cols = Columns; col < cols; col++)
-            {
-                _matrix[row, col] = values[col];
-            }
-        }
-
-        public float[] Row(int row)
-        {
-            float[] values = new float[Columns];
-
-            for (int col = 0, cols = Columns; col < cols; col++)
-            {
-                values[col] = _matrix[row, col];
-            }
-
-            return values;
-        }
-
-        public void Column(int col, params float[] values)
-        {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
-
-            for (int row = 0, rows = Rows; row < rows; row++)
-            {
-                _matrix[row, col] = values[row];
-            }
-        }
-
-        public float[] Column(int col)
-        {
-            float[] values = new float[Rows];
-
-            for (int row = 0, rows = Rows; row < rows; row++)
-            {
-                values[row] = _matrix[row, col];
-            }
-
-            return values;
-        }
-
-        public MatrixF Clone()
-        {
-            return new MatrixF(_matrix);
-        }
-
-        public MatrixF Transpose()
-        {
-            MatrixF t = new MatrixF(Columns, Rows);
-
-            for (int r = 0, rows = Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = Columns; c < cols; c++)
-                {
-                    t[c, r] = _matrix[r, c];
-                }
-            }
-
-            return t;
-        }
-
-        public MatrixF Invert()
-        {
-            int rows = Rows;
-            int cols = Columns;
-
-            if (!IsSquare) throw new InvalidOperationException("Unable to invert non-square matrix");
-
-            // for dimension 3 and 4 there are optimized methods to calculate the invert matrix
-            if (rows == 3)
-            {
-                return Invert3();
-            }
-            if (rows == 4)
-            {
-                return Invert4();
-            }
-
-            if (Determinant == 0.0f) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-
-            MatrixF x = Clone();
-
-            float e;
-            for (int k = 0; k < rows; k++)
-            {
-                e = x[k, k];
-                x[k, k] = 1.0f;
-
-                for (int j = 0; j < cols; j++)
-                {
-                    x[k, j] = x[k, j] / e;
-                }
-
-                for (int i = 0; i < cols; i++)
-                {
-                    if (i != k)
-                    {
-                        e = x[i, k];
-                        x[i, k] = 0.0f;
-
-                        for (int j = 0; j < cols; j++)
+                        if (_matrix[r, c] != ((r == c) ? T.One : T.Zero))
                         {
-                            x[i, j] = x[i, j] - e * x[k, j];
+                            return false;
                         }
                     }
                 }
-            }
-
-            return x;
-        }
-
-
-        private MatrixF Invert3()
-        {
-            var b0 = _matrix[1, 1] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 1];
-            var b1 = _matrix[1, 0] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 0];
-            var b2 = _matrix[1, 0] * _matrix[2, 1] - _matrix[1, 1] * _matrix[2, 0];
-
-            var c0 = _matrix[0, 1] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 1];
-            var s0 = _matrix[0, 1] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 1];
-            var c1 = _matrix[0, 0] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 0];
-
-            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 0];
-            var c2 = _matrix[0, 0] * _matrix[2, 1] - _matrix[0, 1] * _matrix[2, 0];
-            var s2 = _matrix[0, 0] * _matrix[1, 1] - _matrix[0, 1] * _matrix[1, 0];
-
-            var det = _matrix[0, 0] * b0 - _matrix[0, 1] * b1 + _matrix[0, 2] * b2;
-            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-
-            var result = new MatrixF(3, 3);
-            det = 1 / det;
-
-            result[0, 0] = b0 * det;
-            result[0, 1] = -c0 * det;
-            result[0, 2] = s0 * det;
-            result[1, 0] = -b1 * det;
-            result[1, 1] = c1 * det;
-            result[1, 2] = -s1 * det;
-            result[2, 0] = b2 * det;
-            result[2, 1] = -c2 * det;
-            result[2, 2] = s2 * det;
-
-            return result;
-        }
-
-        private MatrixF Invert4()
-        {
-            var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
-            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
-            var s2 = _matrix[0, 0] * _matrix[1, 3] - _matrix[1, 0] * _matrix[0, 3];
-            var s3 = _matrix[0, 1] * _matrix[1, 2] - _matrix[1, 1] * _matrix[0, 2];
-            var s4 = _matrix[0, 1] * _matrix[1, 3] - _matrix[1, 1] * _matrix[0, 3];
-            var s5 = _matrix[0, 2] * _matrix[1, 3] - _matrix[1, 2] * _matrix[0, 3];
-
-            var c5 = _matrix[2, 2] * _matrix[3, 3] - _matrix[3, 2] * _matrix[2, 3];
-            var c4 = _matrix[2, 1] * _matrix[3, 3] - _matrix[3, 1] * _matrix[2, 3];
-            var c3 = _matrix[2, 1] * _matrix[3, 2] - _matrix[3, 1] * _matrix[2, 2];
-            var c2 = _matrix[2, 0] * _matrix[3, 3] - _matrix[3, 0] * _matrix[2, 3];
-            var c1 = _matrix[2, 0] * _matrix[3, 2] - _matrix[3, 0] * _matrix[2, 2];
-            var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
-
-            var det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
-            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-
-            var result = new MatrixF(4, 4);
-            det = 1 / det;
-
-            result[0, 0] = (_matrix[1, 1] * c5 - _matrix[1, 2] * c4 + _matrix[1, 3] * c3) * det;
-            result[0, 1] = (-_matrix[0, 1] * c5 + _matrix[0, 2] * c4 - _matrix[0, 3] * c3) * det;
-            result[0, 2] = (_matrix[3, 1] * s5 - _matrix[3, 2] * s4 + _matrix[3, 3] * s3) * det;
-            result[0, 3] = (-_matrix[2, 1] * s5 + _matrix[2, 2] * s4 - _matrix[2, 3] * s3) * det;
-            result[1, 0] = (-_matrix[1, 0] * c5 + _matrix[1, 2] * c2 - _matrix[1, 3] * c1) * det;
-            result[1, 1] = (_matrix[0, 0] * c5 - _matrix[0, 2] * c2 + _matrix[0, 3] * c1) * det;
-            result[1, 2] = (-_matrix[3, 0] * s5 + _matrix[3, 2] * s2 - _matrix[3, 3] * s1) * det;
-            result[1, 3] = (_matrix[2, 0] * s5 - _matrix[2, 2] * s2 + _matrix[2, 3] * s1) * det;
-            result[2, 0] = (_matrix[1, 0] * c4 - _matrix[1, 1] * c2 + _matrix[1, 3] * c0) * det;
-            result[2, 1] = (-_matrix[0, 0] * c4 + _matrix[0, 1] * c2 - _matrix[0, 3] * c0) * det;
-            result[2, 2] = (_matrix[3, 0] * s4 - _matrix[3, 1] * s2 + _matrix[3, 3] * s0) * det;
-            result[2, 3] = (-_matrix[2, 0] * s4 + _matrix[2, 1] * s2 - _matrix[2, 3] * s0) * det;
-            result[3, 0] = (-_matrix[1, 0] * c3 + _matrix[1, 1] * c1 - _matrix[1, 2] * c0) * det;
-            result[3, 1] = (_matrix[0, 0] * c3 - _matrix[0, 1] * c1 + _matrix[0, 2] * c0) * det;
-            result[3, 2] = (-_matrix[3, 0] * s3 + _matrix[3, 1] * s1 - _matrix[3, 2] * s0) * det;
-            result[3, 3] = (_matrix[2, 0] * s3 - _matrix[2, 1] * s1 + _matrix[2, 2] * s0) * det;
-
-            return result;
-        }
-
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("[");
-            for (int r = 0, rows = Rows; r < rows; r++)
-            {
-                if (r > 0) sb.Append("; ");
-                for (int c = 0, cols = Columns; c < cols; c++)
-                {
-                    if (c > 0) sb.Append(",");
-                    sb.Append(_matrix[r, c]);
-                }
-            }
-            sb.Append("]");
-            return sb.ToString();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is MatrixF) return (obj as MatrixF) == this;
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return _matrix.GetHashCode();
-        }
-
-        #endregion
-
-        #region Static
-
-        public static MatrixF Zero(int rows, int columns)
-        {
-            return new MatrixF(rows, columns);
-        }
-
-        public static MatrixF One(int rows, int columns)
-        {
-            MatrixF m = new MatrixF(rows, columns);
-
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < columns; c++)
-                {
-                    m[r, c] = 1.0f;
-                }
-            }
-
-            return m;
-        }
-
-        public static MatrixF Identity(int dimensions)
-        {
-            MatrixF m = new MatrixF(dimensions, dimensions);
-
-            for (int r = 0, rows = dimensions; r < rows; r++)
-            {
-                for (int c = 0, cols = dimensions; c < cols; c++)
-                {
-                    m[r, c] = (r == c) ? 1.0f : 0.0f;
-                }
-            }
-
-            return m;
-        }
-
-        public static bool operator ==(MatrixF a, MatrixF b)
-        {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) return false;
-
-            for (int r = 0, rows = a.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = a.Columns; c < cols; c++)
-                {
-                    if (a[r, c] != b[r, c]) return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static bool operator !=(MatrixF a, MatrixF b)
-        {
-            return !(a == b);
-        }
-
-        public static MatrixF operator +(MatrixF a, MatrixF b)
-        {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to add matrices of different dimensions");
-
-            MatrixF x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] += b[r, c];
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixF operator -(MatrixF a, MatrixF b)
-        {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to subtract matrices of different dimensions");
-
-            MatrixF x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] -= b[r, c];
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixF operator -(MatrixF a)
-        {
-            MatrixF x = a.Clone();
-
-            for (int r = 0, rows = a.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = a.Columns; c < cols; c++)
-                {
-                    x[r, c] = -x[r, c];
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixF operator *(MatrixF a, MatrixF b)
-        {
-            if (a.Columns != b.Rows) throw new ArgumentException("Unable to multiply matrices of different inner dimensions");
-
-            MatrixF x = new MatrixF(a.Rows, b.Columns);
-
-            int inner = a.Columns;
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    float d = 0.0f;
-                    for (int i = 0; i < inner; i++) d += a[r, i] * b[i, c];
-                    x[r, c] = d;
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixF operator *(MatrixF a, float d)
-        {
-            MatrixF x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] *= d;
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixF operator *(float d, MatrixF a)
-        {
-            MatrixF x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] *= d;
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixF operator /(MatrixF a, float d)
-        {
-            return a * (1 / d);
-        }
-
-        public static MatrixF operator ^(MatrixF a, int e)
-        {
-            MatrixF m = a.Clone();
-            for (int i = 1; i < e; i++)
-            {
-                m *= a;
-            }
-            return m;
-        }
-
-        #endregion
-    }
-
-    public class MatrixD
-    {
-        #region Members
-
-        private readonly double[,] _matrix;
-
-        #endregion
-
-        #region Constructors
-
-        public MatrixD(int rows, int cols)
-        {
-            _matrix = new double[rows, cols];
-        }
-
-        public MatrixD(double[,] matrix)
-        {
-            _matrix = (double[,])matrix.Clone();
-        }
-
-        #endregion
-
-        #region Properties
-
-        public int Rows => _matrix.GetLength(0);
-
-        public int Columns => _matrix.GetLength(1);
-
-        public bool IsSquare => Rows == Columns;
-
-        public bool IsIdentity
-        {
-            get
-            {
-                if (!IsSquare) return false;
-
-                for (int r = 0, rows = Rows; r < rows; r++)
-                {
-                    for (int c = 0, cols = Columns; c < cols; c++)
-                    {
-                        if (_matrix[r, c] != ((r == c) ? 1.0 : 0.0)) return false;
-                    }
-                }
 
                 return true;
             }
         }
 
-        public double this[int row, int col]
+        public T this[int row, int col]
         {
             get => _matrix[row, col];
             set => _matrix[row, col] = value;
         }
 
-        public double Determinant
+        public T Determinant
         {
             get
             {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calculate determinant of non-square matrix.");
+                if (!IsSquare)
+                {
+                    throw new InvalidOperationException("Cannot calculate determinant of non-square matrix.");
+                }
 
                 int dimensions = Rows;
 
-                if (dimensions == 1) return _matrix[0, 0];
+                if (dimensions == 1)
+                {
+                    return _matrix[0, 0];
+                }
 
                 if (dimensions == 2)
                 {
@@ -1041,12 +580,12 @@ namespace FellowOakDicom.Imaging.Mathematics
 
                 if (dimensions == 3)
                 {
-                    double aei = _matrix[0, 0] * _matrix[1, 1] * _matrix[2, 2];
-                    double bfg = _matrix[0, 1] * _matrix[1, 2] * _matrix[2, 0];
-                    double cdh = _matrix[0, 2] * _matrix[1, 0] * _matrix[2, 1];
-                    double hfa = _matrix[2, 1] * _matrix[1, 2] * _matrix[0, 0];
-                    double idb = _matrix[2, 2] * _matrix[1, 0] * _matrix[0, 1];
-                    double gec = _matrix[2, 0] * _matrix[1, 1] * _matrix[0, 2];
+                    T aei = _matrix[0, 0] * _matrix[1, 1] * _matrix[2, 2];
+                    T bfg = _matrix[0, 1] * _matrix[1, 2] * _matrix[2, 0];
+                    T cdh = _matrix[0, 2] * _matrix[1, 0] * _matrix[2, 1];
+                    T hfa = _matrix[2, 1] * _matrix[1, 2] * _matrix[0, 0];
+                    T idb = _matrix[2, 2] * _matrix[1, 0] * _matrix[0, 1];
+                    T gec = _matrix[2, 0] * _matrix[1, 1] * _matrix[0, 2];
                     return aei + bfg + cdh - (hfa + idb + gec);
                 }
 
@@ -1069,11 +608,11 @@ namespace FellowOakDicom.Imaging.Mathematics
                     return s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
                 }
 
-                double pos = 0.0;
+                T pos = T.Zero;
                 for (int c = 0; c < dimensions; c++)
                 {
                     int k = c;
-                    double diag = 1.0;
+                    T diag = T.One;
                     for (int r = 0; r < dimensions; r++, k = ((k + 1) % dimensions))
                     {
                         diag *= _matrix[r, k];
@@ -1081,11 +620,11 @@ namespace FellowOakDicom.Imaging.Mathematics
                     pos += diag;
                 }
 
-                double neg = 0.0;
+                T neg = T.Zero;
                 for (int c = 0; c < dimensions; c++)
                 {
                     int k = (c + 1) % dimensions;
-                    double diag = 0.0;
+                    T diag = T.Zero;
                     for (int r = dimensions - 1; r >= 0; r--, k = ((k + 1) % dimensions))
                     {
                         diag *= _matrix[r, k];
@@ -1097,13 +636,16 @@ namespace FellowOakDicom.Imaging.Mathematics
             }
         }
 
-        public double Trace
+        public T Trace
         {
             get
             {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calc trace of non-square matrix.");
+                if (!IsSquare)
+                {
+                    throw new InvalidOperationException("Cannot calc trace of non-square matrix.");
+                }
 
-                double t = 0.0;
+                T t = T.Zero;
 
                 for (int x = 0, count = Rows; x < count; x++)
                 {
@@ -1118,9 +660,12 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         #region Methods
 
-        public void Row(int row, params double[] values)
+        public void Row(int row, params T[] values)
         {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Columns)
+            {
+                throw new ArgumentOutOfRangeException("values.Length");
+            }
 
             for (int col = 0, cols = Columns; col < cols; col++)
             {
@@ -1128,9 +673,9 @@ namespace FellowOakDicom.Imaging.Mathematics
             }
         }
 
-        public double[] Row(int row)
+        public T[] Row(int row)
         {
-            double[] values = new double[Columns];
+            var values = new T[Columns];
 
             for (int col = 0, cols = Columns; col < cols; col++)
             {
@@ -1140,9 +685,12 @@ namespace FellowOakDicom.Imaging.Mathematics
             return values;
         }
 
-        public void Column(int col, params double[] values)
+        public void Column(int col, params T[] values)
         {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
+            if (values.Length != Rows)
+            {
+                throw new ArgumentOutOfRangeException("values.Length");
+            }
 
             for (int row = 0, rows = Rows; row < rows; row++)
             {
@@ -1150,9 +698,9 @@ namespace FellowOakDicom.Imaging.Mathematics
             }
         }
 
-        public double[] Column(int col)
+        public T[] Column(int col)
         {
-            double[] values = new double[Rows];
+            var values = new T[Rows];
 
             for (int row = 0, rows = Rows; row < rows; row++)
             {
@@ -1162,14 +710,14 @@ namespace FellowOakDicom.Imaging.Mathematics
             return values;
         }
 
-        public MatrixD Clone()
+        public Matrix<T> Clone()
         {
-            return new MatrixD(_matrix);
+            return new Matrix<T>(_matrix);
         }
 
-        public MatrixD Transpose()
+        public Matrix<T> Transpose()
         {
-            MatrixD t = new MatrixD(Columns, Rows);
+            var t = new Matrix<T>(Columns, Rows);
 
             for (int r = 0, rows = Rows; r < rows; r++)
             {
@@ -1182,12 +730,15 @@ namespace FellowOakDicom.Imaging.Mathematics
             return t;
         }
 
-        public MatrixD Invert()
+        public Matrix<T> Invert()
         {
             int rows = Rows;
             int cols = Columns;
 
-            if (!IsSquare) throw new InvalidOperationException("Unable to invert non-square matrix");
+            if (!IsSquare)
+            {
+                throw new InvalidOperationException("Unable to invert non-square matrix");
+            }
 
             // for dimensions 3 and 4 there are optimized methods to calculate the invert matrix. 
             if (rows == 3)
@@ -1199,15 +750,18 @@ namespace FellowOakDicom.Imaging.Mathematics
                 return Invert4();
             }
 
-            if (Determinant == 0.0) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            if (Determinant == T.Zero)
+            {
+                throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            }
 
-            MatrixD x = Clone();
+            Matrix<T> x = Clone();
 
-            double e;
+            T e;
             for (int k = 0; k < rows; k++)
             {
                 e = x[k, k];
-                x[k, k] = 1.0;
+                x[k, k] = T.One;
 
                 for (int j = 0; j < cols; j++)
                 {
@@ -1219,7 +773,7 @@ namespace FellowOakDicom.Imaging.Mathematics
                     if (i != k)
                     {
                         e = x[i, k];
-                        x[i, k] = 0.0;
+                        x[i, k] = T.Zero;
 
                         for (int j = 0; j < cols; j++)
                         {
@@ -1232,7 +786,7 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        private MatrixD Invert3()
+        private Matrix<T> Invert3()
         {
             var b0 = _matrix[1, 1] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 1];
             var b1 = _matrix[1, 0] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 0];
@@ -1247,10 +801,13 @@ namespace FellowOakDicom.Imaging.Mathematics
             var s2 = _matrix[0, 0] * _matrix[1, 1] - _matrix[0, 1] * _matrix[1, 0];
 
             var det = _matrix[0, 0] * b0 - _matrix[0, 1] * b1 + _matrix[0, 2] * b2;
-            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            if (T.IsZero(det))
+            {
+                throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            }
 
-            var result = new MatrixD(3,3);
-            det = 1 / det;
+            var result = new Matrix<T>(3, 3);
+            det = T.One / det;
 
             result[0, 0] = b0 * det;
             result[0, 1] = -c0 * det;
@@ -1265,7 +822,7 @@ namespace FellowOakDicom.Imaging.Mathematics
             return result;
         }
 
-        private MatrixD Invert4()
+        private Matrix<T> Invert4()
         {
             var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
             var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
@@ -1282,10 +839,13 @@ namespace FellowOakDicom.Imaging.Mathematics
             var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
 
             var det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
-            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            if (T.IsZero(det))
+            {
+                throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
+            }
 
-            var result = new MatrixD(4,4);
-            det = 1 / det;
+            var result = new Matrix<T>(4, 4);
+            det = T.One / det;
 
             result[0, 0] = (_matrix[1, 1] * c5 - _matrix[1, 2] * c4 + _matrix[1, 3] * c3) * det;
             result[0, 1] = (-_matrix[0, 1] * c5 + _matrix[0, 2] * c4 - _matrix[0, 3] * c3) * det;
@@ -1310,24 +870,31 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int r = 0, rows = Rows; r < rows; r++)
             {
-                if (r > 0) sb.Append("; ");
+                if (r > 0)
+                {
+                    sb.Append("; ");
+                }
+
                 for (int c = 0, cols = Columns; c < cols; c++)
                 {
-                    if (c > 0) sb.Append(",");
+                    if (c > 0)
+                    {
+                        sb.Append(',');
+                    }
+
                     sb.Append(_matrix[r, c]);
                 }
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is MatrixD) return (obj as MatrixD) == this;
-            return false;
+            return obj is Matrix<T> mat && mat == this;
         }
 
         public override int GetHashCode()
@@ -1339,66 +906,75 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         #region Static
 
-        public static MatrixD Zero(int rows, int columns)
+        public static Matrix<T> Zero(int rows, int columns)
         {
-            return new MatrixD(rows, columns);
+            return new Matrix<T>(rows, columns);
         }
 
-        public static MatrixD One(int rows, int columns)
+        public static Matrix<T> One(int rows, int columns)
         {
-            MatrixD m = new MatrixD(rows, columns);
+            var m = new Matrix<T>(rows, columns);
 
             for (int r = 0; r < rows; r++)
             {
                 for (int c = 0; c < columns; c++)
                 {
-                    m[r, c] = 1.0;
+                    m[r, c] = T.One;
                 }
             }
 
             return m;
         }
 
-        public static MatrixD Identity(int dimensions)
+        public static Matrix<T> Identity(int dimensions)
         {
-            MatrixD m = new MatrixD(dimensions, dimensions);
+            var m = new Matrix<T>(dimensions, dimensions);
 
             for (int r = 0, rows = dimensions; r < rows; r++)
             {
                 for (int c = 0, cols = dimensions; c < cols; c++)
                 {
-                    m[r, c] = (r == c) ? 1.0 : 0.0;
+                    m[r, c] = (r == c) ? T.One : T.Zero;
                 }
             }
 
             return m;
         }
 
-        public static bool operator ==(MatrixD a, MatrixD b)
+        public static bool operator ==(Matrix<T> a, Matrix<T> b)
         {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) return false;
+            if (a.Rows != b.Rows || a.Columns != b.Columns)
+            {
+                return false;
+            }
 
             for (int r = 0, rows = a.Rows; r < rows; r++)
             {
                 for (int c = 0, cols = a.Columns; c < cols; c++)
                 {
-                    if (a[r, c] != b[r, c]) return false;
+                    if (a[r, c] != b[r, c])
+                    {
+                        return false;
+                    }
                 }
             }
 
             return true;
         }
 
-        public static bool operator !=(MatrixD a, MatrixD b)
+        public static bool operator !=(Matrix<T> a, Matrix<T> b)
         {
             return !(a == b);
         }
 
-        public static MatrixD operator +(MatrixD a, MatrixD b)
+        public static Matrix<T> operator +(Matrix<T> a, Matrix<T> b)
         {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to add matrices of different dimensions");
+            if (a.Rows != b.Rows || a.Columns != b.Columns)
+            {
+                throw new ArgumentException("Unable to add matrices of different dimensions");
+            }
 
-            MatrixD x = a.Clone();
+            var x = a.Clone();
 
             for (int r = 0, rows = x.Rows; r < rows; r++)
             {
@@ -1411,11 +987,14 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        public static MatrixD operator -(MatrixD a, MatrixD b)
+        public static Matrix<T> operator -(Matrix<T> a, Matrix<T> b)
         {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to subtract matrices of different dimensions");
+            if (a.Rows != b.Rows || a.Columns != b.Columns)
+            {
+                throw new ArgumentException("Unable to subtract matrices of different dimensions");
+            }
 
-            MatrixD x = a.Clone();
+            var x = a.Clone();
 
             for (int r = 0, rows = x.Rows; r < rows; r++)
             {
@@ -1428,9 +1007,9 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        public static MatrixD operator -(MatrixD a)
+        public static Matrix<T> operator -(Matrix<T> a)
         {
-            MatrixD x = a.Clone();
+            var x = a.Clone();
 
             for (int r = 0, rows = a.Rows; r < rows; r++)
             {
@@ -1443,19 +1022,26 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        public static MatrixD operator *(MatrixD a, MatrixD b)
+        public static Matrix<T> operator *(Matrix<T> a, Matrix<T> b)
         {
-            if (a.Columns != b.Rows) throw new ArgumentException("Unable to multiply matrices of different inner dimensions");
+            if (a.Columns != b.Rows)
+            {
+                throw new ArgumentException("Unable to multiply matrices of different inner dimensions");
+            }
 
-            MatrixD x = new MatrixD(a.Rows, b.Columns);
+            var x = new Matrix<T>(a.Rows, b.Columns);
 
             int inner = a.Columns;
             for (int r = 0, rows = x.Rows; r < rows; r++)
             {
                 for (int c = 0, cols = x.Columns; c < cols; c++)
                 {
-                    double d = 0.0;
-                    for (int i = 0; i < inner; i++) d += a[r, i] * b[i, c];
+                    T d = T.Zero;
+                    for (int i = 0; i < inner; i++)
+                    {
+                        d += a[r, i] * b[i, c];
+                    }
+
                     x[r, c] = d;
                 }
             }
@@ -1463,18 +1049,29 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        public static double[] operator *(MatrixD a, double[] b)
+        public static T[] operator *(Matrix<T> a, T[] b)
         {
-            if (a.Columns == 4) return Multiply4(a, b);
-            if (a.Columns != b.Length) throw new ArgumentException("Unable to multiply matrix and vector of different inner dimensions");
+            if (a.Columns == 4)
+            {
+                return Multiply4(a, b);
+            }
 
-            var x = new double[a.Rows];
+            if (a.Columns != b.Length)
+            {
+                throw new ArgumentException("Unable to multiply matrix and vector of different inner dimensions");
+            }
+
+            var x = new T[a.Rows];
 
             var inner = a.Columns;
             for (int r = 0, rows = a.Rows; r < rows; r++)
             {
-                double d = 0.0;
-                for (int i = 0; i < inner; i++) d += a[r, i] * b[i];
+                T d = T.Zero;
+                for (int i = 0; i < inner; i++)
+                {
+                    d += a[r, i] * b[i];
+                }
+
                 x[r] = d;
             }
 
@@ -1482,19 +1079,19 @@ namespace FellowOakDicom.Imaging.Mathematics
         }
 
 
-        private static double[] Multiply4(MatrixD a, double[] b)
-            => new double[]
-            {
+        private static T[] Multiply4(Matrix<T> a, T[] b)
+            =>
+            [
                 a[0, 0]*b[0] + a[0, 1]*b[1] + a[0, 2]*b[2] + a[0, 3]*b[3],
                 a[1, 0]*b[0] + a[1, 1]*b[1] + a[1, 2]*b[2] + a[1, 3]*b[3],
                 a[2, 0]*b[0] + a[2, 1]*b[1] + a[2, 2]*b[2] + a[2, 3]*b[3],
                 a[3, 0]*b[0] + a[3, 1]*b[1] + a[3, 2]*b[2] + a[3, 3]*b[3]
-            };
+            ];
 
 
-        public static MatrixD operator *(MatrixD a, double d)
+        public static Matrix<T> operator *(Matrix<T> a, T d)
         {
-            MatrixD x = a.Clone();
+            Matrix<T> x = a.Clone();
 
             for (int r = 0, rows = x.Rows; r < rows; r++)
             {
@@ -1507,9 +1104,9 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        public static MatrixD operator *(double d, MatrixD a)
+        public static Matrix<T> operator *(T d, Matrix<T> a)
         {
-            MatrixD x = a.Clone();
+            Matrix<T> x = a.Clone();
 
             for (int r = 0, rows = x.Rows; r < rows; r++)
             {
@@ -1522,584 +1119,14 @@ namespace FellowOakDicom.Imaging.Mathematics
             return x;
         }
 
-        public static MatrixD operator /(MatrixD a, double d)
+        public static Matrix<T> operator /(Matrix<T> a, T d)
         {
-            return a * (1 / d);
+            return a * (T.One / d);
         }
 
-        public static MatrixD operator ^(MatrixD a, int e)
+        public static Matrix<T> operator ^(Matrix<T> a, int e)
         {
-            MatrixD m = a.Clone();
-            for (int i = 1; i < e; i++)
-            {
-                m *= a;
-            }
-            return m;
-        }
-
-        #endregion
-    }
-
-    public class MatrixM
-    {
-        #region Members
-
-        private readonly decimal[,] _matrix;
-
-        #endregion
-
-        #region Constructors
-
-        public MatrixM(int rows, int cols)
-        {
-            _matrix = new decimal[rows, cols];
-        }
-
-        public MatrixM(decimal[,] matrix)
-        {
-            _matrix = (decimal[,])matrix.Clone();
-        }
-
-        #endregion
-
-        #region Properties
-
-        public int Rows => _matrix.GetLength(0);
-
-        public int Columns => _matrix.GetLength(1);
-
-        public bool IsSquare => Rows == Columns;
-
-        public bool IsIdentity
-        {
-            get
-            {
-                if (!IsSquare) return false;
-
-                for (int r = 0, rows = Rows; r < rows; r++)
-                {
-                    for (int c = 0, cols = Columns; c < cols; c++)
-                    {
-                        if (_matrix[r, c] != ((r == c) ? 1.0m : 0.0m)) return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        public decimal this[int row, int col]
-        {
-            get => _matrix[row, col];
-            set => _matrix[row, col] = value;
-        }
-
-        public decimal Determinant
-        {
-            get
-            {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calculate determinant of non-square matrix.");
-
-                int dimensions = Rows;
-
-                if (dimensions == 1) return _matrix[0, 0];
-
-                if (dimensions == 2)
-                {
-                    return (_matrix[0, 0] * _matrix[1, 1]) - (_matrix[0, 1] * _matrix[1, 0]);
-                }
-
-                if (dimensions == 3)
-                {
-                    decimal aei = _matrix[0, 0] * _matrix[1, 1] * _matrix[2, 2];
-                    decimal bfg = _matrix[0, 1] * _matrix[1, 2] * _matrix[2, 0];
-                    decimal cdh = _matrix[0, 2] * _matrix[1, 0] * _matrix[2, 1];
-                    decimal hfa = _matrix[2, 1] * _matrix[1, 2] * _matrix[0, 0];
-                    decimal idb = _matrix[2, 2] * _matrix[1, 0] * _matrix[0, 1];
-                    decimal gec = _matrix[2, 0] * _matrix[1, 1] * _matrix[0, 2];
-                    return aei + bfg + cdh - (hfa + idb + gec);
-                }
-
-                if (dimensions == 4)
-                {
-                    var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
-                    var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
-                    var s2 = _matrix[0, 0] * _matrix[1, 3] - _matrix[1, 0] * _matrix[0, 3];
-                    var s3 = _matrix[0, 1] * _matrix[1, 2] - _matrix[1, 1] * _matrix[0, 2];
-                    var s4 = _matrix[0, 1] * _matrix[1, 3] - _matrix[1, 1] * _matrix[0, 3];
-                    var s5 = _matrix[0, 2] * _matrix[1, 3] - _matrix[1, 2] * _matrix[0, 3];
-
-                    var c5 = _matrix[2, 2] * _matrix[3, 3] - _matrix[3, 2] * _matrix[2, 3];
-                    var c4 = _matrix[2, 1] * _matrix[3, 3] - _matrix[3, 1] * _matrix[2, 3];
-                    var c3 = _matrix[2, 1] * _matrix[3, 2] - _matrix[3, 1] * _matrix[2, 2];
-                    var c2 = _matrix[2, 0] * _matrix[3, 3] - _matrix[3, 0] * _matrix[2, 3];
-                    var c1 = _matrix[2, 0] * _matrix[3, 2] - _matrix[3, 0] * _matrix[2, 2];
-                    var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
-
-                    return s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
-                }
-
-                decimal pos = 0.0m;
-                for (int c = 0; c < dimensions; c++)
-                {
-                    int k = c;
-                    decimal diag = 1.0m;
-                    for (int r = 0; r < dimensions; r++, k = ((k + 1) % dimensions))
-                    {
-                        diag *= _matrix[r, k];
-                    }
-                    pos += diag;
-                }
-
-                decimal neg = 0.0m;
-                for (int c = 0; c < dimensions; c++)
-                {
-                    int k = (c + 1) % dimensions;
-                    decimal diag = 0.0m;
-                    for (int r = dimensions - 1; r >= 0; r--, k = ((k + 1) % dimensions))
-                    {
-                        diag *= _matrix[r, k];
-                    }
-                    neg += diag;
-                }
-
-                return pos - neg;
-            }
-        }
-
-        public decimal Trace
-        {
-            get
-            {
-                if (!IsSquare) throw new InvalidOperationException("Cannot calc trace of non-square matrix.");
-
-                decimal t = 0.0m;
-
-                for (int x = 0, count = Rows; x < count; x++)
-                {
-                    t += _matrix[x, x];
-                }
-
-                return t;
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        public void Row(int row, params decimal[] values)
-        {
-            if (values.Length != Columns) throw new ArgumentOutOfRangeException("values.Length");
-
-            for (int col = 0, cols = Columns; col < cols; col++)
-            {
-                _matrix[row, col] = values[col];
-            }
-        }
-
-        public decimal[] Row(int row)
-        {
-            decimal[] values = new decimal[Columns];
-
-            for (int col = 0, cols = Columns; col < cols; col++)
-            {
-                values[col] = _matrix[row, col];
-            }
-
-            return values;
-        }
-
-        public void Column(int col, params decimal[] values)
-        {
-            if (values.Length != Rows) throw new ArgumentOutOfRangeException("values.Length");
-
-            for (int row = 0, rows = Rows; row < rows; row++)
-            {
-                _matrix[row, col] = values[row];
-            }
-        }
-
-        public decimal[] Column(int col)
-        {
-            decimal[] values = new decimal[Rows];
-
-            for (int row = 0, rows = Rows; row < rows; row++)
-            {
-                values[row] = _matrix[row, col];
-            }
-
-            return values;
-        }
-
-        public MatrixM Clone()
-        {
-            return new MatrixM(_matrix);
-        }
-
-        public MatrixM Transpose()
-        {
-            MatrixM t = new MatrixM(Columns, Rows);
-
-            for (int r = 0, rows = Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = Columns; c < cols; c++)
-                {
-                    t[c, r] = _matrix[r, c];
-                }
-            }
-
-            return t;
-        }
-
-        public MatrixM Invert()
-        {
-            int rows = Rows;
-            int cols = Columns;
-
-            if (!IsSquare) throw new InvalidOperationException("Unable to invert non-square matrix");
-
-            // for dimensions 3 and 4 there are optimized methods to calculate the invert matrix. 
-            if (rows == 3)
-            {
-                return Invert3();
-            }
-            if (rows == 4)
-            {
-                return Invert4();
-            }
-
-            if (Determinant == 0.0m) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-
-            MatrixM x = Clone();
-
-            decimal e;
-            for (int k = 0; k < rows; k++)
-            {
-                e = x[k, k];
-                x[k, k] = 1.0m;
-
-                for (int j = 0; j < cols; j++)
-                {
-                    x[k, j] = x[k, j] / e;
-                }
-
-                for (int i = 0; i < cols; i++)
-                {
-                    if (i != k)
-                    {
-                        e = x[i, k];
-                        x[i, k] = 0.0m;
-
-                        for (int j = 0; j < cols; j++)
-                        {
-                            x[i, j] = x[i, j] - e * x[k, j];
-                        }
-                    }
-                }
-            }
-
-            return x;
-        }
-
-        private MatrixM Invert3()
-        {
-            var b0 = _matrix[1, 1] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 1];
-            var b1 = _matrix[1, 0] * _matrix[2, 2] - _matrix[1, 2] * _matrix[2, 0];
-            var b2 = _matrix[1, 0] * _matrix[2, 1] - _matrix[1, 1] * _matrix[2, 0];
-
-            var c0 = _matrix[0, 1] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 1];
-            var s0 = _matrix[0, 1] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 1];
-            var c1 = _matrix[0, 0] * _matrix[2, 2] - _matrix[0, 2] * _matrix[2, 0];
-
-            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[0, 2] * _matrix[1, 0];
-            var c2 = _matrix[0, 0] * _matrix[2, 1] - _matrix[0, 1] * _matrix[2, 0];
-            var s2 = _matrix[0, 0] * _matrix[1, 1] - _matrix[0, 1] * _matrix[1, 0];
-
-            var det = _matrix[0, 0] * b0 - _matrix[0, 1] * b1 + _matrix[0, 2] * b2;
-            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-
-            var result = new MatrixM(3, 3);
-            det = 1 / det;
-
-            result[0, 0] = b0 * det;
-            result[0, 1] = -c0 * det;
-            result[0, 2] = s0 * det;
-            result[1, 0] = -b1 * det;
-            result[1, 1] = c1 * det;
-            result[1, 2] = -s1 * det;
-            result[2, 0] = b2 * det;
-            result[2, 1] = -c2 * det;
-            result[2, 2] = s2 * det;
-
-            return result;
-        }
-
-        private MatrixM Invert4()
-        {
-            var s0 = _matrix[0, 0] * _matrix[1, 1] - _matrix[1, 0] * _matrix[0, 1];
-            var s1 = _matrix[0, 0] * _matrix[1, 2] - _matrix[1, 0] * _matrix[0, 2];
-            var s2 = _matrix[0, 0] * _matrix[1, 3] - _matrix[1, 0] * _matrix[0, 3];
-            var s3 = _matrix[0, 1] * _matrix[1, 2] - _matrix[1, 1] * _matrix[0, 2];
-            var s4 = _matrix[0, 1] * _matrix[1, 3] - _matrix[1, 1] * _matrix[0, 3];
-            var s5 = _matrix[0, 2] * _matrix[1, 3] - _matrix[1, 2] * _matrix[0, 3];
-
-            var c5 = _matrix[2, 2] * _matrix[3, 3] - _matrix[3, 2] * _matrix[2, 3];
-            var c4 = _matrix[2, 1] * _matrix[3, 3] - _matrix[3, 1] * _matrix[2, 3];
-            var c3 = _matrix[2, 1] * _matrix[3, 2] - _matrix[3, 1] * _matrix[2, 2];
-            var c2 = _matrix[2, 0] * _matrix[3, 3] - _matrix[3, 0] * _matrix[2, 3];
-            var c1 = _matrix[2, 0] * _matrix[3, 2] - _matrix[3, 0] * _matrix[2, 2];
-            var c0 = _matrix[2, 0] * _matrix[3, 1] - _matrix[3, 0] * _matrix[2, 1];
-
-            var det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
-            if (det.IsNearlyZero()) throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-
-            var result = new MatrixM(4, 4);
-            det = 1 / det;
-
-            result[0, 0] = (_matrix[1, 1] * c5 - _matrix[1, 2] * c4 + _matrix[1, 3] * c3) * det;
-            result[0, 1] = (-_matrix[0, 1] * c5 + _matrix[0, 2] * c4 - _matrix[0, 3] * c3) * det;
-            result[0, 2] = (_matrix[3, 1] * s5 - _matrix[3, 2] * s4 + _matrix[3, 3] * s3) * det;
-            result[0, 3] = (-_matrix[2, 1] * s5 + _matrix[2, 2] * s4 - _matrix[2, 3] * s3) * det;
-            result[1, 0] = (-_matrix[1, 0] * c5 + _matrix[1, 2] * c2 - _matrix[1, 3] * c1) * det;
-            result[1, 1] = (_matrix[0, 0] * c5 - _matrix[0, 2] * c2 + _matrix[0, 3] * c1) * det;
-            result[1, 2] = (-_matrix[3, 0] * s5 + _matrix[3, 2] * s2 - _matrix[3, 3] * s1) * det;
-            result[1, 3] = (_matrix[2, 0] * s5 - _matrix[2, 2] * s2 + _matrix[2, 3] * s1) * det;
-            result[2, 0] = (_matrix[1, 0] * c4 - _matrix[1, 1] * c2 + _matrix[1, 3] * c0) * det;
-            result[2, 1] = (-_matrix[0, 0] * c4 + _matrix[0, 1] * c2 - _matrix[0, 3] * c0) * det;
-            result[2, 2] = (_matrix[3, 0] * s4 - _matrix[3, 1] * s2 + _matrix[3, 3] * s0) * det;
-            result[2, 3] = (-_matrix[2, 0] * s4 + _matrix[2, 1] * s2 - _matrix[2, 3] * s0) * det;
-            result[3, 0] = (-_matrix[1, 0] * c3 + _matrix[1, 1] * c1 - _matrix[1, 2] * c0) * det;
-            result[3, 1] = (_matrix[0, 0] * c3 - _matrix[0, 1] * c1 + _matrix[0, 2] * c0) * det;
-            result[3, 2] = (-_matrix[3, 0] * s3 + _matrix[3, 1] * s1 - _matrix[3, 2] * s0) * det;
-            result[3, 3] = (_matrix[2, 0] * s3 - _matrix[2, 1] * s1 + _matrix[2, 2] * s0) * det;
-
-            return result;
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("[");
-            for (int r = 0, rows = Rows; r < rows; r++)
-            {
-                if (r > 0) sb.Append("; ");
-                for (int c = 0, cols = Columns; c < cols; c++)
-                {
-                    if (c > 0) sb.Append(",");
-                    sb.Append(_matrix[r, c]);
-                }
-            }
-            sb.Append("]");
-            return sb.ToString();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is MatrixM) return (obj as MatrixM) == this;
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return _matrix.GetHashCode();
-        }
-
-        #endregion
-
-        #region Static
-
-        public static MatrixM Zero(int rows, int columns)
-        {
-            return new MatrixM(rows, columns);
-        }
-
-        public static MatrixM One(int rows, int columns)
-        {
-            MatrixM m = new MatrixM(rows, columns);
-
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < columns; c++)
-                {
-                    m[r, c] = 1.0m;
-                }
-            }
-
-            return m;
-        }
-
-        public static MatrixM Identity(int dimensions)
-        {
-            MatrixM m = new MatrixM(dimensions, dimensions);
-
-            for (int r = 0, rows = dimensions; r < rows; r++)
-            {
-                for (int c = 0, cols = dimensions; c < cols; c++)
-                {
-                    m[r, c] = (r == c) ? 1.0m : 0.0m;
-                }
-            }
-
-            return m;
-        }
-
-        public static bool operator ==(MatrixM a, MatrixM b)
-        {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) return false;
-
-            for (int r = 0, rows = a.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = a.Columns; c < cols; c++)
-                {
-                    if (a[r, c] != b[r, c]) return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static bool operator !=(MatrixM a, MatrixM b)
-        {
-            return !(a == b);
-        }
-
-        public static MatrixM operator +(MatrixM a, MatrixM b)
-        {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to add matrices of different dimensions");
-
-            MatrixM x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] += b[r, c];
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixM operator -(MatrixM a, MatrixM b)
-        {
-            if (a.Rows != b.Rows || a.Columns != b.Columns) throw new ArgumentException("Unable to subtract matrices of different dimensions");
-
-            MatrixM x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] -= b[r, c];
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixM operator -(MatrixM a)
-        {
-            MatrixM x = a.Clone();
-
-            for (int r = 0, rows = a.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = a.Columns; c < cols; c++)
-                {
-                    x[r, c] = -x[r, c];
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixM operator *(MatrixM a, MatrixM b)
-        {
-            if (a.Columns != b.Rows) throw new ArgumentException("Unable to multiply matrices of different inner dimensions");
-
-            MatrixM x = new MatrixM(a.Rows, b.Columns);
-
-            int inner = a.Columns;
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    decimal d = 0.0m;
-                    for (int i = 0; i < inner; i++) d += a[r, i] * b[i, c];
-                    x[r, c] = d;
-                }
-            }
-
-            return x;
-        }
-
-        public static decimal[] operator *(MatrixM a, decimal[] b)
-        {
-            if (a.Columns == 4) return Multiply4(a, b);
-            if (a.Columns != b.Length) throw new ArgumentException("Unable to multiply matrix and vector of different inner dimensions");
-
-            var x = new decimal[a.Rows];
-
-            var inner = a.Columns;
-            for (int r = 0, rows = a.Rows; r < rows; r++)
-            {
-                decimal d = 0.0m;
-                for (int i = 0; i < inner; i++) d += a[r, i] * b[i];
-                x[r] = d;
-            }
-
-            return x;
-        }
-
-
-        private static decimal[] Multiply4(MatrixM a, decimal[] b)
-            => new decimal[]
-            {
-                a[0, 0]*b[0] + a[0, 1]*b[1] + a[0, 2]*b[2] + a[0, 3]*b[3],
-                a[1, 0]*b[0] + a[1, 1]*b[1] + a[1, 2]*b[2] + a[1, 3]*b[3],
-                a[2, 0]*b[0] + a[2, 1]*b[1] + a[2, 2]*b[2] + a[2, 3]*b[3],
-                a[3, 0]*b[0] + a[3, 1]*b[1] + a[3, 2]*b[2] + a[3, 3]*b[3]
-            };
-
-
-        public static MatrixM operator *(MatrixM a, decimal d)
-        {
-            MatrixM x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] *= d;
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixM operator *(decimal d, MatrixM a)
-        {
-            MatrixM x = a.Clone();
-
-            for (int r = 0, rows = x.Rows; r < rows; r++)
-            {
-                for (int c = 0, cols = x.Columns; c < cols; c++)
-                {
-                    x[r, c] *= d;
-                }
-            }
-
-            return x;
-        }
-
-        public static MatrixM operator /(MatrixM a, decimal d)
-        {
-            return a * (1m / d);
-        }
-
-        public static MatrixM operator ^(MatrixM a, int e)
-        {
-            MatrixM m = a.Clone();
+            Matrix<T> m = a.Clone();
             for (int i = 1; i < e; i++)
             {
                 m *= a;

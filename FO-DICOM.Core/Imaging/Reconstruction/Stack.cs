@@ -23,7 +23,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
         private readonly VolumeData _volume;
 
-        public List<Slice> Slices { get; set; } = new List<Slice>();
+        public List<Slice> Slices { get; set; } = [];
 
         public decimal SliceDistance { get; }
 
@@ -50,14 +50,14 @@ namespace FellowOakDicom.Imaging.Reconstruction
         private void CalculateSagittal(decimal spacing, decimal sliceDistance)
         {
             var volumeVector = _volume.BoundingMax - _volume.BoundingMin;
-            var topLeft = new Point3M(_volume.BoundingMin.X, _volume.BoundingMin.Y, _volume.BoundingMax.Z);
-            var perSliceVec = new Vector3M(sliceDistance, 0, 0);
+            var topLeft = new Point3<decimal>(_volume.BoundingMin.X, _volume.BoundingMin.Y, _volume.BoundingMax.Z);
+            var perSliceVec = new Vector3<decimal>(sliceDistance, 0, 0);
 
             var numberOfSlices = volumeVector.X / sliceDistance + 1;
 
             for (int i = 1; i <= numberOfSlices; i++)
             {
-                var slice = new Slice(_volume, topLeft, new Vector3M(0, 1, 0), new Vector3M(0, 0, -1), (int)(volumeVector.Z / spacing), (int)(volumeVector.Y / spacing), spacing);
+                var slice = new Slice(_volume, topLeft, new Vector3<decimal>(0, 1, 0), new Vector3<decimal>(0, 0, -1), (int)(volumeVector.Z / spacing), (int)(volumeVector.Y / spacing), spacing);
                 Slices.Add(slice);
                 topLeft += perSliceVec;
             }
@@ -67,14 +67,14 @@ namespace FellowOakDicom.Imaging.Reconstruction
         private void CalculateCoronal(decimal spacing, decimal sliceDistance)
         {
             var volumeVector = _volume.BoundingMax - _volume.BoundingMin;
-            var topLeft = new Point3M(_volume.BoundingMin.X, _volume.BoundingMin.Y, _volume.BoundingMax.Z);
-            var perSliceVec = new Vector3M(0, sliceDistance, 0);
+            var topLeft = new Point3<decimal>(_volume.BoundingMin.X, _volume.BoundingMin.Y, _volume.BoundingMax.Z);
+            var perSliceVec = new Vector3<decimal>(0, sliceDistance, 0);
 
             var numberOfSlices = volumeVector.Y / sliceDistance + 1;
 
             for (int i = 1; i <= numberOfSlices; i++)
             {
-                var slice = new Slice(_volume, topLeft, new Vector3M(1, 0, 0), new Vector3M(0, 0, -1), (int)(volumeVector.Z / spacing), (int)(volumeVector.X / spacing), spacing);
+                var slice = new Slice(_volume, topLeft, new Vector3<decimal>(1, 0, 0), new Vector3<decimal>(0, 0, -1), (int)(volumeVector.Z / spacing), (int)(volumeVector.X / spacing), spacing);
                 Slices.Add(slice);
                 topLeft += perSliceVec;
             }
@@ -84,14 +84,14 @@ namespace FellowOakDicom.Imaging.Reconstruction
         private void CalculateAxial(decimal spacing, decimal sliceDistance)
         {
             var volumeVector = _volume.BoundingMax - _volume.BoundingMin;
-            var topLeft = new Point3M(_volume.BoundingMin.X, _volume.BoundingMin.Y, _volume.BoundingMax.Z);
-            var perSliceVec = new Vector3M(0, 0, -sliceDistance);
+            var topLeft = new Point3<decimal>(_volume.BoundingMin.X, _volume.BoundingMin.Y, _volume.BoundingMax.Z);
+            var perSliceVec = new Vector3<decimal>(0, 0, -sliceDistance);
 
             var numberOfSlices = volumeVector.Z / sliceDistance + 1;
 
             for (int i = 1; i <= numberOfSlices; i++)
             {
-                var slice = new Slice(_volume, topLeft, new Vector3M(1, 0, 0), new Vector3M(0, 1, 0), (int)(volumeVector.Y / spacing), (int)(volumeVector.X / spacing), spacing);
+                var slice = new Slice(_volume, topLeft, new Vector3<decimal>(1, 0, 0), new Vector3<decimal>(0, 1, 0), (int)(volumeVector.Y / spacing), (int)(volumeVector.X / spacing), spacing);
                 Slices.Add(slice);
                 topLeft += perSliceVec;
             }

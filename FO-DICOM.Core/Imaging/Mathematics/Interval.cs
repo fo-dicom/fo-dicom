@@ -2,27 +2,29 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using System.Numerics;
+
 namespace FellowOakDicom.Imaging.Mathematics
 {
 
     /// <summary>
     /// Represents an interval of double values
     /// </summary>
-    public class IntervalD
+    public class Interval<T> where T : INumber<T>
     {
 
         /// <summary>
         /// The lower bound of the interval
         /// </summary>
-        public double Min { get; private set; }
+        public T Min { get; private set; }
 
         /// <summary>
         /// The upper bound of the interval
         /// </summary>
-        public double Max { get; private set; }
+        public T Max { get; private set; }
 
 
-        public IntervalD(double min, double max)
+        public Interval(T min, T max)
         {
             Min = min;
             Max = max;
@@ -32,52 +34,15 @@ namespace FellowOakDicom.Imaging.Mathematics
         /// <summary>
         /// Returns true if the value is between Min and Max including the boundries
         /// </summary>
-        public bool Contains(double value)
+        public bool Contains(T value)
             => Min <= value && value <= Max;
 
-        public double Center
-            => (Min + Max) / 2;
+        public T Center
+            => (Min + Max) / (T.One + T.One);
 
-        public double Width
+        public T Width
             => Max - Min;
 
     }
 
-    /// <summary>
-    /// Represents an interval of decimal values
-    /// </summary>
-    public class IntervalM
-    {
-
-        /// <summary>
-        /// The lower bound of the interval
-        /// </summary>
-        public decimal Min { get; private set; }
-
-        /// <summary>
-        /// The upper bound of the interval
-        /// </summary>
-        public decimal Max { get; private set; }
-
-
-        public IntervalM(decimal min, decimal max)
-        {
-            Min = min;
-            Max = max;
-        }
-
-
-        /// <summary>
-        /// Returns true if the value is between Min and Max including the boundries
-        /// </summary>
-        public bool Contains(decimal value)
-            => Min <= value && value <= Max;
-
-        public decimal Center
-            => (Min + Max) / 2;
-
-        public decimal Width
-            => Max - Min;
-
-    }
 }

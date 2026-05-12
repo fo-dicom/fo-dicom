@@ -23,22 +23,20 @@ namespace FellowOakDicom.Imaging.Reconstruction
         private readonly List<ImageData> _slices;
         private decimal[] _sortOrders;
 
-        private Vector3M _slicesNormal;
+        private Vector3<decimal> _slicesNormal;
         private decimal _maxSliceSpace;
         private decimal _minSliceSpace;
 
-        public Point3M BoundingMin { get; private set; }
-        public Point3M BoundingMax { get; private set; }
+        public Point3<decimal> BoundingMin { get; private set; }
+        public Point3<decimal> BoundingMax { get; private set; }
 
         public decimal PixelSpacingInSource => _slices?.FirstOrDefault()?.Geometry.PixelSpacingBetweenColumns ?? 0;
-        public IntervalM SliceSpaces => new IntervalM(_minSliceSpace, _maxSliceSpace);
-
-        private ILUT _lut = null;
+        public Interval<decimal> SliceSpaces => new Interval<decimal>(_minSliceSpace, _maxSliceSpace);
 
         private readonly Lazy<DicomDataset> _commonData;
         public DicomDataset CommonData => _commonData.Value;
 
-        
+
         /// <summary>
         /// Constructs a VolumeData object from a multi-layer dataset (eg. Enhanced CT).
         /// It is strongly recommended this dataset is already decompressed before being passed to this constructor, or each slice will be decompressed separately.
@@ -48,18 +46,17 @@ namespace FellowOakDicom.Imaging.Reconstruction
         {
         }
 
-        
+
         public VolumeData(IEnumerable<ImageData> slices)
         {
-            slices = new List<ImageData>(slices
+            slices = [.. slices
                     .Where(s => s != null) // only use valid slices
-                    .Where(s => s.FrameOfReferenceUID != null) // remove all slices without geometry data (presentation states, luts, ..)
-                    );
+                    .Where(s => s.FrameOfReferenceUID != null)];
 
             // validate data
             ValidateInput(slices.Select(s => s.FrameOfReferenceUID).Distinct().Count() == 1, "The images are mixed up from different stacks");
 
-            _slices = slices.GroupBy(s => s.Orientation).OrderBy(g => g.Count()).Last().ToList();
+            _slices = [.. slices.GroupBy(s => s.Orientation).OrderBy(g => g.Count()).Last()];
             ValidateInput(slices.Count() > 5, "There are too few images for reconstruction");
 
             // TODO: check for each having the same normal vector
@@ -68,18 +65,18 @@ namespace FellowOakDicom.Imaging.Reconstruction
             BuildVolumeData();
         }
 
-        
+
         private static IEnumerable<ImageData> ConstructSlicesFromMultiFrameDataset(DicomDataset dataset)
         {
             ValidateInput(dataset.Contains(DicomTag.NumberOfFrames), "Given dataset must contain multiple frames");
-            
+
             var numberOfFrames = dataset.GetSingleValue<int>(DicomTag.NumberOfFrames);
             var pixelData = DicomPixelData.Create(dataset);
-            
+
             return Enumerable.Range(0, numberOfFrames)
                 .Select(frame => new ImageData(dataset, pixelData, frame));
         }
-        
+
 
         private static void ValidateInput(Func<bool> validation, string message = "")
         {
@@ -107,7 +104,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
             var boundings = _slices.Select(s => s.Geometry.GetBoundingBox());
             BoundingMin = boundings.Select(b => b.min).GetBoundingBox().min;
             BoundingMax = boundings.Select(b => b.max).GetBoundingBox().max;
-            _sortOrders = _slices.Select(s => s.SortingValue).ToArray();
+            _sortOrders = [.. _slices.Select(s => s.SortingValue)];
         }
 
 
@@ -128,16 +125,18 @@ namespace FellowOakDicom.Imaging.Reconstruction
         {
             get
             {
-                if (_lut == null)
+                if (field == null)
                 {
                     var option = GrayscaleRenderOptions.FromDataset(_slices[0].Dataset, 0);
                     var pipelie = new GenericGrayscalePipeline(option);
-                    _lut = pipelie.LUT;
-                    _lut.Recalculate();
+                    field = pipelie.LUT;
+                    field.Recalculate();
                 }
-                return _lut;
+                return field;
             }
-        }
+
+            private set;
+        } = null;
 
 
         private int SortingIndex(decimal value, int guess)
@@ -172,7 +171,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         /// <param name="cols"></param>
         /// <param name="spacing"></param>
         /// <returns></returns>
-        public double[] GetCut(Point3M topleft, Vector3M rowDir, Vector3M colDir, int rows, int cols, decimal spacing)
+        public double[] GetCut(Point3<decimal> topleft, Vector3<decimal> rowDir, Vector3<decimal> colDir, int rows, int cols, decimal spacing)
         {
             var output = new double[rows * cols];
 
@@ -196,7 +195,11 @@ namespace FellowOakDicom.Imaging.Reconstruction
                     var index = SortingIndex(ordered, lastIndex);
                     if (index >= 0)
                     {
-                        if (index == 0) index = 1;
+                        if (index == 0)
+                        {
+                            index = 1;
+                        }
+
                         lastIndex = index;
 
                         var nextSlice = _slices[index];
@@ -205,8 +208,8 @@ namespace FellowOakDicom.Imaging.Reconstruction
                         var nextImgSpace = nextSlice.Geometry.TransformPatientPointToImage(pointInPatSpace);
                         var prevImgSpace = prevSlice.Geometry.TransformPatientPointToImage(pointInPatSpace);
 
-                        var nextPixel = Interpolate(nextSlice.Pixels, nextImgSpace);
-                        var prevPixel = Interpolate(prevSlice.Pixels, prevImgSpace);
+                        var nextPixel = VolumeData.Interpolate(nextSlice.Pixels, nextImgSpace);
+                        var prevPixel = VolumeData.Interpolate(prevSlice.Pixels, prevImgSpace);
 
                         if (nextPixel.HasValue && prevPixel.HasValue)
                         {
@@ -226,7 +229,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private double? Interpolate(IPixelData pixels, Point2M imgSpace)
+        private static double? Interpolate(IPixelData pixels, Point2<decimal> imgSpace)
         {
             if ((imgSpace.X >= 0.0m) && (imgSpace.X < pixels.Width - 1) && (imgSpace.Y >= 0.0m) && (imgSpace.Y < pixels.Height - 1))
             {

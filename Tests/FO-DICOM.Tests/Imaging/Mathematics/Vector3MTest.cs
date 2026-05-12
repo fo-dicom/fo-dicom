@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2012-2025 fo-dicom contributors.
+﻿// Copyright (c) 2012-2026 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
@@ -18,15 +18,15 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestAdd()
         {
-            var v1 = new Vector3M(2.2m, 6.1m, 7.4m);
-            var v2 = new Vector3M(3.8m, 3.7m, 4.1m);
-            var result = new Vector3M(6m, 9.8m, 11.5m);
+            var v1 = new Vector3<decimal>(2.2m, 6.1m, 7.4m);
+            var v2 = new Vector3<decimal>(3.8m, 3.7m, 4.1m);
+            var result = new Vector3<decimal>(6m, 9.8m, 11.5m);
 
             Assert.Equal(result, v1 + v2, new Vector3MComparer());
 
-            v1 = new Vector3M(2.2m, -6.1m, 7.4m);
-            v2 = new Vector3M(-3.8m, 3.7m, -4.1m);
-            result = new Vector3M(-1.6m, -2.4m, 3.3m);
+            v1 = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
+            v2 = new Vector3<decimal>(-3.8m, 3.7m, -4.1m);
+            result = new Vector3<decimal>(-1.6m, -2.4m, 3.3m);
 
             Assert.Equal(result, v1 + v2, new Vector3MComparer());
         }
@@ -35,15 +35,15 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestSubtract()
         {
-            var v1 = new Vector3M(2.2m, 6.1m, 7.4m);
-            var v2 = new Vector3M(3.8m, 3.7m, 4.1m);
-            var result = new Vector3M(-1.6m, 2.4m, 3.3m);
+            var v1 = new Vector3<decimal>(2.2m, 6.1m, 7.4m);
+            var v2 = new Vector3<decimal>(3.8m, 3.7m, 4.1m);
+            var result = new Vector3<decimal>(-1.6m, 2.4m, 3.3m);
 
             Assert.Equal(result, v1 - v2, new Vector3MComparer());
 
-            v1 = new Vector3M(2.2m, -6.1m, 7.4m);
-            v2 = new Vector3M(-3.8m, 3.7m, -4.1m);
-            result = new Vector3M(6m, -9.8m, 11.5m);
+            v1 = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
+            v2 = new Vector3<decimal>(-3.8m, 3.7m, -4.1m);
+            result = new Vector3<decimal>(6m, -9.8m, 11.5m);
 
             Assert.Equal(result, v1 - v2, new Vector3MComparer());
         }
@@ -52,8 +52,8 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestMultiply()
         {
-            var v1 = new Vector3M(2.2m, -6.1m, 7.4m);
-            var result = new Vector3M(6.82m, -18.91m, 22.94m);
+            var v1 = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
+            var result = new Vector3<decimal>(6.82m, -18.91m, 22.94m);
 
             Assert.Equal(result, 3.1m * v1, new Vector3MComparer());
             Assert.Equal(result, v1 * 3.1m, new Vector3MComparer());
@@ -63,8 +63,8 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestDivide()
         {
-            var result = new Vector3M(2.2m, -6.1m, 7.4m);
-            var v1 = new Vector3M(6.82m, -18.91m, 22.94m);
+            var result = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
+            var v1 = new Vector3<decimal>(6.82m, -18.91m, 22.94m);
 
             Assert.Equal(result, v1 / 3.1m, new Vector3MComparer());
         }
@@ -73,7 +73,7 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestNormalize()
         {
-            var v1 = new Vector3M(2.2m, -6.1m, 7.4m);
+            var v1 = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
             Assert.Equal(9.8392072851F, (float)v1.Magnitude());
 
             var normalized = v1.Normalize();
@@ -84,8 +84,8 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestDot()
         {
-            var v1 = new Vector3M(2.2m, -6.1m, 7.4m);
-            var v2 = new Vector3M(3.8m, 3.7m, 4.1m);
+            var v1 = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
+            var v2 = new Vector3<decimal>(3.8m, 3.7m, 4.1m);
 
             Assert.Equal(16.13F, (float)v1.DotProduct(v2));
         }
@@ -94,9 +94,9 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void TestCross()
         {
-            var v1 = new Vector3M(2.2m, -6.1m, 7.4m);
-            var v2 = new Vector3M(-3.8m, 3.7m, 4.1m);
-            var result = new Vector3M(-52.39m, -37.14m, -15.04m);
+            var v1 = new Vector3<decimal>(2.2m, -6.1m, 7.4m);
+            var v2 = new Vector3<decimal>(-3.8m, 3.7m, 4.1m);
+            var result = new Vector3<decimal>(-52.39m, -37.14m, -15.04m);
 
             Assert.Equal(result, v1.CrossProduct(v2), new Vector3MComparer());
         }
@@ -104,10 +104,10 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
     }
 
 
-    public class Vector3MComparer : IEqualityComparer<Vector3M>
+    public class Vector3MComparer : IEqualityComparer<Vector3<decimal>>
     {
 
-        private bool _checkExact;
+        private readonly bool _checkExact;
 
         public Vector3MComparer(bool checkExact = true)
         {
@@ -117,7 +117,7 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         public decimal Epsilon { get; set; } = 0.000001m;
 
 
-        public bool Equals(Vector3M x, Vector3M y)
+        public bool Equals(Vector3<decimal> x, Vector3<decimal> y)
         {
             if (x == null && y == null)
             {
@@ -143,7 +143,7 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         }
 
 
-        public int GetHashCode(Vector3M obj)
+        public int GetHashCode(Vector3<decimal> obj)
         {
             return obj?.GetHashCode() ?? 0;
         }
