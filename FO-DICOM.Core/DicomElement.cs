@@ -268,7 +268,10 @@ namespace FellowOakDicom
         protected override void ValidateString()
         {
             EnsureSplitValues();
-            _values.ToList().ForEach(ValueRepresentation.ValidateString);
+            foreach (var v in _values)
+            {
+                ValueRepresentation.ValidateString(v);
+            }
         }
 
         public override T Get<T>(int item = -1)
@@ -864,11 +867,17 @@ namespace FellowOakDicom
 
             if (_values == null)
             {
-                _values =
-                    base.Get<string[]>()
-                        // #1296 some invalid files have "," as decimal separator. because a comma is no valid character in DS, this cannot be misinterpretated and it is obvious to replace it by "."
-                        .Select(x => decimal.Parse(x.Replace(',','.'), NumberStyles.Any, CultureInfo.InvariantCulture))
-                        .ToArray();
+                var parts = base.Get<string[]>();
+                var parsed = new decimal[parts.Length];
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    var s = parts[i];
+                    // #1296 some invalid files have "," as decimal separator. because a comma is no valid character in DS, this cannot be misinterpretated and it is obvious to replace it by "."
+                    parsed[i] = s.IndexOf(',') < 0
+                        ? decimal.Parse(s.AsSpan(), NumberStyles.Any, CultureInfo.InvariantCulture)
+                        : decimal.Parse(s.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture);
+                }
+                _values = parsed;
             }
 
             if (typeof(T).GetTypeInfo().IsArray)
@@ -1103,7 +1112,13 @@ namespace FellowOakDicom
 
             if (_values == null)
             {
-                _values = base.Get<string[]>().Select(x => int.Parse(x, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture)).ToArray();
+                var parts = base.Get<string[]>();
+                var parsed = new int[parts.Length];
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    parsed[i] = int.Parse(parts[i].AsSpan(), NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+                }
+                _values = parsed;
             }
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(object))
