@@ -77,7 +77,7 @@ namespace FellowOakDicom.StructuredReport
 
         public override int GetHashCode()
         {
-            return ToString().GetHashCode();
+            return HashCode.Combine(Value, Scheme, Version, Meaning);
         }
 
         public override string ToString()

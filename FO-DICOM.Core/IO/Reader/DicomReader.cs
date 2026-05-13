@@ -329,7 +329,7 @@ namespace FellowOakDicom.IO.Reader
                     tag = entry.Tag; // Use dictionary tag
                 }
 
-                if (_stop?.Invoke(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }) ?? false)
+                if (_stop != null && _stop(new ParseState { PreviousTag = _previousTag, Tag = tag, SequenceDepth = sequenceDepth }))
                 {
                     // if a stop is requested, then move back to the beginning of the tag.
                     _result = DicomReaderResult.Stopped;
@@ -653,9 +653,8 @@ namespace FellowOakDicom.IO.Reader
                 // The VR of the private identification code shall be LO (Long String) and the VM shall be equal to 1.
                 if (tag.IsPrivate && tag.Element >= 0x0010 && tag.Element <= 0x00ff)
                 {
-                    var creator =
-                        DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
-                            .TrimEnd((char)DicomVR.LO.PaddingValue);
+                    var creatorSpan = ((ReadOnlySpan<byte>)buffer.Data).TrimEnd(DicomVR.LO.PaddingValue);
+                    var creator = DicomEncoding.Default.GetString(creatorSpan);
                     var card = (uint)(tag.Group << 16) + tag.Element;
 
                     _private[card] = creator;
@@ -779,9 +778,8 @@ namespace FellowOakDicom.IO.Reader
                 // The VR of the private identification code shall be LO (Long String) and the VM shall be equal to 1.
                 if (tag.IsPrivate && tag.Element >= 0x0010 && tag.Element <= 0x00ff)
                 {
-                    var creator =
-                        DicomEncoding.Default.GetString(buffer.Data, 0, buffer.Data.Length)
-                            .TrimEnd((char)DicomVR.LO.PaddingValue);
+                    var creatorSpan = ((ReadOnlySpan<byte>)buffer.Data).TrimEnd(DicomVR.LO.PaddingValue);
+                    var creator = DicomEncoding.Default.GetString(creatorSpan);
                     var card = (uint)(tag.Group << 16) + tag.Element;
 
                     _private[card] = creator;

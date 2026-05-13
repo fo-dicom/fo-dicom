@@ -507,7 +507,7 @@ namespace FellowOakDicom.Network
                     // This is the (extremely small) buffer we use to read the raw PDU header
                     using var rawPduCommonFieldsBuffer = _memoryProvider.Provide(RawPDU.CommonFieldsLength);
 
-                    var count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes, 0, rawPduCommonFieldsBuffer.Length).ConfigureAwait(false);
+                    var count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes.AsMemory(0, rawPduCommonFieldsBuffer.Length)).ConfigureAwait(false);
 
                     do
                     {
@@ -523,7 +523,7 @@ namespace FellowOakDicom.Network
 
                         if (_bytesToRead > 0)
                         {
-                            count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes, rawPduCommonFieldsBuffer.Length - _bytesToRead, _bytesToRead).ConfigureAwait(false);
+                            count = await stream.ReadAsync(rawPduCommonFieldsBuffer.Bytes.AsMemory(rawPduCommonFieldsBuffer.Length - _bytesToRead, _bytesToRead)).ConfigureAwait(false);
                         }
                     }
                     while (_bytesToRead > 0);
@@ -532,7 +532,7 @@ namespace FellowOakDicom.Network
                     // The second byte is reserved
                     // The remaining four bytes contain the PDU length
                     var pduTypeByte = rawPduCommonFieldsBuffer.Bytes[0];
-                    if (!Enum.IsDefined(typeof(RawPduType), pduTypeByte))
+                    if (!Enum.IsDefined((RawPduType)pduTypeByte))
                     {
                         throw new DicomNetworkException("Unknown PDU type: " + pduTypeByte);
                     }
@@ -553,7 +553,7 @@ namespace FellowOakDicom.Network
                     {
                         int bytesToRead = Math.Min(_bytesToRead, _maxBytesToRead);
 
-                        count = await stream.ReadAsync(rawPduBuffer.Bytes, rawPduOffset, bytesToRead).ConfigureAwait(false);
+                        count = await stream.ReadAsync(rawPduBuffer.Bytes.AsMemory(rawPduOffset, bytesToRead)).ConfigureAwait(false);
 
                         if (count == 0)
                         {
@@ -769,7 +769,8 @@ namespace FellowOakDicom.Network
                         // create stream for receiving command
                         if (_dimseStream == null)
                         {
-                            _dimseStream = new MemoryStream();
+                            // DIMSE command sets are typically small (~100-300 bytes); pre-sizing avoids MemoryStream resize allocations.
+                            _dimseStream = new MemoryStream(512);
                             _dimseStreamFile = null;
                         }
                     }
@@ -804,7 +805,7 @@ namespace FellowOakDicom.Network
                         }
                     }
 
-                    await _dimseStream.WriteAsync(pdv.Value.Bytes, 0, pdv.Value.Length).ConfigureAwait(false);
+                    await _dimseStream.WriteAsync(pdv.Value.Bytes.AsMemory(0, pdv.Value.Length)).ConfigureAwait(false);
 
                     if (pdv.IsLastFragment)
                     {

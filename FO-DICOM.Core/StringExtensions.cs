@@ -3,6 +3,7 @@
 #nullable disable
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 
 namespace FellowOakDicom
@@ -26,10 +27,7 @@ namespace FellowOakDicom
             return false;
         }
 
-        /// <summary>
-        /// Array of valid wildcards
-        /// </summary>
-        private static char[] Wildcards = new char[] { '*', '?' };
+        private static readonly SearchValues<char> Wildcards = SearchValues.Create("*?");
 
         /// <summary>
         /// Returns true if the string matches the pattern which may contain * and ? wildcards.
@@ -63,7 +61,7 @@ namespace FellowOakDicom
             }
 
             // if pattern doesn't actually contain any wildcards, use simple equality
-            if (pattern.IndexOfAny(Wildcards) == -1) return (s == pattern);
+            if (pattern.AsSpan().IndexOfAny(Wildcards) == -1) return (s == pattern);
 
             // otherwise do pattern matching
             int i = 0;

@@ -78,7 +78,7 @@ namespace FellowOakDicom.IO.Buffer
 
             byte[] data = Data;
 
-            await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+            await stream.WriteAsync(data.AsMemory(0, data.Length), cancellationToken).ConfigureAwait(false);
         }
     }
 }

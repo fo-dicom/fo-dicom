@@ -1041,7 +1041,21 @@ namespace FellowOakDicom
         /// <returns>Current Dataset</returns>
         public DicomDataset Remove(Func<DicomItem, bool> selector)
         {
-            _items.Values.Where(selector).ToList().Each(item => _items.Remove(item.Tag));
+            List<DicomTag> toRemove = null;
+            foreach (var item in _items.Values)
+            {
+                if (selector(item))
+                {
+                    (toRemove ??= new List<DicomTag>()).Add(item.Tag);
+                }
+            }
+            if (toRemove != null)
+            {
+                foreach (var tag in toRemove)
+                {
+                    _items.Remove(tag);
+                }
+            }
             return this;
         }
 

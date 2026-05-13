@@ -302,7 +302,7 @@ namespace FellowOakDicom
 
             if (escapeIndexes.Count == 0)
             {
-                return GetStringFromEncoding(buffer.Data, firstEncoding, 0, (int)buffer.Size);
+                return GetStringFromEncoding(value, firstEncoding, 0, (int)buffer.Size);
             }
 
             var decodedString = new StringBuilder();

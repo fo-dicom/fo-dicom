@@ -101,9 +101,9 @@ namespace FellowOakDicom.IO.Buffer
             int numberOfBytesRead;
             int numberOfBytesToRead = (int)Math.Min(Size, buffer.Length);
             while (numberOfBytesToRead > 0
-                   && (numberOfBytesRead = await fileStream.ReadAsync(buffer.Bytes, 0, numberOfBytesToRead, cancellationToken).ConfigureAwait(false)) > 0)
+                   && (numberOfBytesRead = await fileStream.ReadAsync(buffer.Bytes.AsMemory(0, numberOfBytesToRead), cancellationToken).ConfigureAwait(false)) > 0)
             {
-                await stream.WriteAsync(buffer.Bytes, 0, numberOfBytesRead, cancellationToken).ConfigureAwait(false);
+                await stream.WriteAsync(buffer.Bytes.AsMemory(0, numberOfBytesRead), cancellationToken).ConfigureAwait(false);
 
                 totalNumberOfBytesRead += numberOfBytesRead;
                 numberOfBytesToRead = (int)Math.Min(Size - totalNumberOfBytesRead, buffer.Length);
