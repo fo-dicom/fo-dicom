@@ -1,4 +1,5 @@
 ### 6.0.0-alpha1 (TBD)
+- Add depth guard to DicomReader to prevent unbounded SQ recursion (#2114)
 - breaking change: update targetframeworks to net8, net9 and net10, netstandard2.0 is dropped
 - make fo-dicom.core AOT compilant (#2005)
 
