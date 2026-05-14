@@ -1615,10 +1615,12 @@ namespace FellowOakDicom
 
         private void SetTargetEncodingsToStringElements(Encoding[] values)
         {
-
-            foreach (var txt in this.FilterByType<DicomStringElement>())
+            foreach (var item in this)
             {
-                txt.TargetEncodings = values;
+                if (item is DicomStringElement txt)
+                {
+                    txt.TargetEncodings = values;
+                }
             }
         }
 
