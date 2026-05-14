@@ -309,7 +309,7 @@ namespace FellowOakDicom.Imaging
                         throw new DicomImagingException($"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
                     }
 
-                    return new EncapsulatedPixelData(dataset, bitsAllocated);
+                return new EncapsulatedPixelData(dataset, true);
                 }
                 else if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian)
                 {
@@ -343,7 +343,7 @@ namespace FellowOakDicom.Imaging
 
             if (item is DicomOtherByteFragment || item is DicomOtherWordFragment)
             {
-                return new EncapsulatedPixelData(dataset);
+                return new EncapsulatedPixelData(dataset, false);
             }
 
             throw new DicomImagingException($"Unexpected or unhandled pixel data element type: {item.GetType()}");
@@ -509,47 +509,31 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         private sealed class EncapsulatedPixelData : DicomPixelData
         {
-            #region FIELDS
-
             /// <summary>
             /// The pixel data fragment sequence element
             /// </summary>
             private readonly DicomFragmentSequence _element;
 
-            #endregion
-
-            #region CONSTRUCTORS
-
             /// <summary>
-            /// Initialize new instance of EncapsulatedPixelData with new empty pixel data.
+            /// Initialize new instance of EncapsulatedPixelData
             /// </summary>
             /// <param name="dataset">The source dataset where to create new pixel data.</param>
-            /// <param name="bitsAllocated">Bits allocated for the pixel data.</param>
-            public EncapsulatedPixelData(DicomDataset dataset, int bitsAllocated)
+            /// <param name="newPixelData">True to create new pixel data, false to read pixel data from <paramref name="dataset"/></param>
+            public EncapsulatedPixelData(DicomDataset dataset, bool newPixelData)
                 : base(dataset)
             {
+                if (newPixelData)
+                {
                 NumberOfFrames = 0;
-
-                _element = bitsAllocated > 8
-                    ? (DicomFragmentSequence)new DicomOtherWordFragment(DicomTag.PixelData)
-                    : new DicomOtherByteFragment(DicomTag.PixelData);
-
+                    _element = new DicomOtherByteFragment(DicomTag.PixelData);
                 Dataset.AddOrUpdate(_element);
             }
-
-            /// <summary>
-            /// Initialize new instance of EncapsulatedPixelData based on existing pixel data.
-            /// </summary>
-            /// <param name="dataset">The source dataset to extract pixel data from.</param>
-            public EncapsulatedPixelData(DicomDataset dataset)
-                : base(dataset)
+                else
             {
                 _element = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
             }
+            }
 
-            #endregion
-
-            #region METHODS
 
             /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
@@ -658,7 +642,6 @@ namespace FellowOakDicom.Imaging
                 _element.Fragments.Add(data);
             }
 
-            #endregion
         }
     }
 }
