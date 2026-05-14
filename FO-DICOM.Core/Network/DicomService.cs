@@ -1177,8 +1177,13 @@ namespace FellowOakDicom.Network
 
                         dicomRequest.PendingSince = DateTime.Now;
 
-                        // This call should not be awaited because it can only complete when the pending queue is empty
-                        Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
+                        // Only spawn the long-running timeout watcher if a timeout is actually configured;
+                        // otherwise CheckForTimeouts returns immediately and the thread creation is wasted.
+                        if (Options?.RequestTimeout != null)
+                        {
+                            // This call should not be awaited because it can only complete when the pending queue is empty
+                            Task.Factory.StartNew(CheckForTimeouts, TaskCreationOptions.LongRunning).ConfigureAwait(false);
+                        }
                     }
                 }
 
@@ -1391,7 +1396,10 @@ namespace FellowOakDicom.Network
                     throw new DicomNetworkException($"Failed to send {msg} because the connection to the DICOM server was lost");
                 }
 
-                Logger.LogInformation("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    Logger.LogInformation("{logId} -> {dicomMessage}", LogID, msg.ToString(Options.LogDimseDatasets));
+                }
 
                 try
                 {
@@ -2005,7 +2013,10 @@ namespace FellowOakDicom.Network
                 throw new NotSupportedException();
             }
 
-            public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+                => WriteAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+
+            public override async ValueTask WriteAsync(ReadOnlyMemory<byte> source, CancellationToken cancellationToken = default)
             {
                 try
                 {
@@ -2016,23 +2027,22 @@ namespace FellowOakDicom.Network
                         _memory = ProvideEvenLengthMemory(memoryLength);
                     }
 
-                    while (count >= _memory.Length - _length)
+                    while (source.Length >= _memory.Length - _length)
                     {
-                        var c = Math.Min(count, _memory.Length - _length);
+                        var c = Math.Min(source.Length, _memory.Length - _length);
 
-                        buffer.AsSpan(offset, c).CopyTo(_memory.Span.Slice(_length, c));
+                        source.Span.Slice(0, c).CopyTo(_memory.Span.Slice(_length, c));
 
                         _length += c;
-                        offset += c;
-                        count -= c;
+                        source = source.Slice(c);
 
                         await CreatePDVAsync(false).ConfigureAwait(false);
                     }
 
-                    if (count > 0)
+                    if (source.Length > 0)
                     {
-                        buffer.AsSpan(offset, count).CopyTo(_memory.Span.Slice(_length, count));
-                        _length += count;
+                        source.Span.CopyTo(_memory.Span.Slice(_length, source.Length));
+                        _length += source.Length;
 
                         if (_memory.Length == _length)
                         {
