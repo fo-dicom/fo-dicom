@@ -96,6 +96,12 @@ namespace FellowOakDicom.Tests.Bugs
                 shouldTimeoutNextRequest = true;
             };
 
+            // Released as soon as the second request's RequestTimeout fires, so the
+            // injected network "stall" does not have to wait out a fixed wall-clock
+            // sleep (which made the test flaky on slow CI runners).
+            using var unblockOnTimeout = new ManualResetEventSlim();
+            secondRequest.OnTimeout += (sender, args) => unblockOnTimeout.Set();
+
             var receivedRequests = new List<DicomCStoreRequest>();
             server.OnCStoreRequest = (association, storeRequest) =>
             {
@@ -109,11 +115,11 @@ namespace FellowOakDicom.Tests.Bugs
             var clientFactory = CreateClientFactory(new DicomClientTimeoutTest.ConfigurableNetworkManager(
                 () =>
                 {
-                    // Simulate a single network error after the first request
                     if (shouldTimeoutNextRequest)
                     {
                         shouldTimeoutNextRequest = false;
-                        Thread.Sleep(10_000);
+                        // Cap at 15s to keep the test bounded if the timeout never fires for some reason.
+                        unblockOnTimeout.Wait(TimeSpan.FromSeconds(15));
                     }
                 }
             ));
