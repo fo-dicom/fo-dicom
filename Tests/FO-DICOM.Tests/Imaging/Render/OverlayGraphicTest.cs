@@ -10,7 +10,6 @@ namespace FellowOakDicom.Tests.Imaging.Render
     [Collection(TestCollections.ImageSharp)]
     public class OverlayGraphicTest
     {
-        [FactForNetCore]
         public void RenderOutOfBoundsOrigin()
         {
             // Arrange

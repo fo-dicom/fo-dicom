@@ -24,12 +24,10 @@ jobs:
             { name: macOS-arm, ver: macos-15, runtime: osx-arm64 }
           ]
         frameworks: [
-            { name: ".NET 9.0", common: "net9.0", win: "net9.0-windows", coverage: '' },
-            { name: ".NET 8.0", common: "net8.0", win: "net8.0-windows", coverage: '--collect:"XPlat Code Coverage" --settings coverlet.runsettings' }
+            { name: ".NET 10.0", version: "10.0", common: "net10.0", win: "net10.0-windows", coverage: '' },
+            { name: ".NET 9.0", version: "9.0", common: "net9.0", win: "net9.0-windows", coverage: '' },
+            { name: ".NET 8.0", version: "8.0", common: "net8.0", win: "net8.0-windows", coverage: '--collect:"XPlat Code Coverage" --settings coverlet.runsettings' }
           ]
-        include:
-          - frameworks: { name: ".NET Framework 4.6.2", common: "net462", win: "net462", coverage: "" }
-            os: { name: Windows-x64, ver: windows-2022, runtime: win-x64 }
 
     name: ${{ matrix.os.name }} (${{ matrix.frameworks.name }})
     env:
@@ -40,10 +38,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Setup .NET
-      if: ${{ matrix.frameworks.common != 'net462' }}
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: ${{ matrix.frameworks.common == 'net8.0' && '8.0.x' || '9.0.x' }}
+        dotnet-version: ${{ matrix.frameworks.version  }}
       env:
         DOTNET_INSTALL_ARCH: ${{ contains(matrix.os.runtime, 'arm') && 'arm64' || 'x64' }}
     - name: Test FO-DICOM.Tests
@@ -74,9 +71,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Build FO-DICOM..Benchmark
-      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net8.0
+      run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net10.0
     - name: run benchmarks
-      run: ./Tests/FO-DICOM.Benchmark/bin/Release/net8.0/fo-dicom.Benchmark.exe
+      run: ./Tests/FO-DICOM.Benchmark/bin/Release/net10.0/fo-dicom.Benchmark.exe
     - name: Upload benchmark log
       uses: actions/upload-artifact@v7
       with:

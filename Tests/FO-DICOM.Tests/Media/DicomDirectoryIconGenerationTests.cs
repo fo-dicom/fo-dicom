@@ -19,11 +19,7 @@ namespace FellowOakDicom.Tests.Media
             var width = 64;
             var height = 64;
             var pixelData = new byte[width * height];
-#if NET462
-            for (int i = 0; i < pixelData.Length; i++) pixelData[i] = 128;
-#else
             Array.Fill(pixelData, (byte)128);
-#endif
 
             // Act
             var sequence = DicomIconImageSequenceBuilder.Build(width, height, pixelData);
@@ -223,11 +219,7 @@ namespace FellowOakDicom.Tests.Media
         private static DicomSequence CreateTestIconSequence()
         {
             var pixelData = new byte[64 * 64];
-#if NET462
-            for (int i = 0; i < pixelData.Length; i++) pixelData[i] = 128;
-#else
             Array.Fill(pixelData, (byte)128);
-#endif
             return DicomIconImageSequenceBuilder.Build(64, 64, pixelData);
         }
 

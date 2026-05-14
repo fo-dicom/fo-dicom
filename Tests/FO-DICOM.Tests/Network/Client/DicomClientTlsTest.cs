@@ -82,9 +82,7 @@ namespace FellowOakDicom.Tests.Network.Client
         #endregion
 
         [Theory]
-#if !NET462
         [InlineData(true)]
-#endif
         [InlineData(false)]
         public async Task SendAsync_WithClientCertificate_ShouldAuthenticate(bool requireMutualAuthentication)
         {
@@ -306,12 +304,7 @@ namespace FellowOakDicom.Tests.Network.Client
             }
 
             Assert.NotNull(exception);
-#if NET462
-            // for some reason, in .net there is still a requesttimeout instead of a network error
-            Assert.IsType<DicomAssociationRequestTimedOutException>(exception);
-#else
             Assert.IsType<DicomNetworkException>(exception);
-#endif
         }
 
         [Fact]

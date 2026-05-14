@@ -9,22 +9,21 @@ namespace FellowOakDicom.Serialization
 {
     public static class DicomJson
     {
+
         /// <summary>
         /// Converts a <see cref="DicomDataset"/> to a Json-String.
         /// </summary>
         /// <param name="writeTagsAsKeywords">Whether to write the json keys as DICOM keywords instead of tags. This makes the json non-compliant to DICOM JSON.</param>
         /// <param name="formatIndented">Gets or sets a value that defines whether JSON should use pretty printing. By default, JSON is serialized without any extra white space.</param>
         /// <param name="numberSerializationMode">Defines how numbers should be serialized. Defaults to 'AsNumber', which will throw FormatException when a number is not parsable.</param>
-        public static string ConvertDicomToJson(DicomDataset dataset, bool writeTagsAsKeywords = false, bool formatIndented = false,
-            NumberSerializationMode numberSerializationMode = NumberSerializationMode.AsNumber)
+        public static string ConvertDicomToJson(DicomDataset dataset, bool writeTagsAsKeywords = false, bool formatIndented = false, NumberSerializationMode numberSerializationMode = NumberSerializationMode.AsNumber)
         {
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new DicomJsonConverter(
+            var jsonContext = SourceGenerationContext.Create(formatIndented, new DicomJsonConverter(
                 writeTagsAsKeywords: writeTagsAsKeywords,
                 numberSerializationMode: numberSerializationMode
             ));
-            options.WriteIndented = formatIndented;
-            var conv = JsonSerializer.Serialize(dataset, options);
+
+            var conv = JsonSerializer.Serialize(dataset, jsonContext.DicomDataset);
             return conv;
         }
 
@@ -36,10 +35,10 @@ namespace FellowOakDicom.Serialization
         /// <param name="formatIndented">Gets or sets a value that defines whether JSON should use pretty printing. By default, JSON is serialized without any extra white space.</param>
         public static string ConvertDicomToJson(IEnumerable<DicomDataset> dataset, bool writeTagsAsKeywords = false, bool formatIndented = false)
         {
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new DicomJsonConverter(writeTagsAsKeywords: writeTagsAsKeywords));
-            options.WriteIndented = formatIndented;
-            var conv = JsonSerializer.Serialize(dataset, options);
+            var jsonContext = SourceGenerationContext.Create(formatIndented, new DicomJsonConverter(
+                writeTagsAsKeywords: writeTagsAsKeywords
+            ));
+            var conv = JsonSerializer.Serialize(dataset, jsonContext.DicomDatasetArray);
             return conv;
         }
 
@@ -50,19 +49,18 @@ namespace FellowOakDicom.Serialization
         /// <param name="autoValidate">Whether the content of DicomItems shall be validated as soon as they are added to the DicomDataset.</param>
         public static DicomDataset ConvertJsonToDicom(string json, bool autoValidate = true)
         {
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new DicomJsonConverter(autoValidate: autoValidate));
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-            var ds = JsonSerializer.Deserialize<DicomDataset>(json, options);
+            var jsonContext = SourceGenerationContext.Create(false, new DicomJsonConverter(
+                autoValidate: autoValidate
+            ));
+            var ds = JsonSerializer.Deserialize<DicomDataset>(json, jsonContext.DicomDataset);
             return ds;
         }
 
         public static DicomDataset[] ConvertJsonToDicomArray(string json)
         {
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new DicomJsonConverter(writeTagsAsKeywords: false, autoValidate: true));
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-            var ds = JsonSerializer.Deserialize<DicomDataset[]>(json, options);
+            var jsonContext = SourceGenerationContext.Create(false, new DicomJsonConverter(
+            ));
+            var ds = JsonSerializer.Deserialize<DicomDataset[]>(json, jsonContext.DicomDatasetArray);
             return ds;
         }
 

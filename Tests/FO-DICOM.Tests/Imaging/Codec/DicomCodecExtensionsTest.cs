@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
     {
         #region Unit tests
 
-        [FactForNetCore]
+        [FactWithCodec]
         public void CheckLossyCompressionRatio_HasAddedMultiValueAfterCompression()
         {
             var file = DicomFile.Open(TestData.Resolve("GH538-jpeg1.dcm"));
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Equal(oldRatios.Length+1, newRatios.Length);
         }
 
-        [FactForNetCore]
+        [FactWithCodec]
         public void CheckLossyCompressionRatio_HasSingleValueAfterCompression()
         {
             var file = DicomFile.Open(TestData.Resolve("GH538-jpeg14sv1.dcm"));
@@ -38,7 +38,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Single(ratios);
         }
 
-        [FactForNetCore]
+        [FactWithCodec]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
@@ -49,7 +49,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-        [FactForNetCore]
+        [FactWithCodec]
         public void ChangeTransferSyntax_FileFromRLELosslessToJPEGProcess2_4_WithParameters()
         {
             var file = DicomFile.Open(TestData.Resolve("10200904.dcm"));
@@ -60,7 +60,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             Assert.Null(exception);
         }
 
-        [FactForNetCore]
+        [FactWithCodec]
         public void ChangeTransferSyntax_FileFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -72,7 +72,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [FactForNetCore]
+        [FactWithCodec]
         public void ChangeTransferSyntax_DatasetFromJ2KToJPEGWithParameters_DoesNotThrow()
         {
             var file = DicomFile.Open(TestData.Resolve("CT1_J2KI"));
@@ -84,7 +84,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
         }
 
 
-        [TheoryForNetCore(Skip = "Bug in Photometricinterpretation, to be fixed...")] // TODO: fix the bug
+        [Theory(Skip = "Bug in Photometricinterpretation, to be fixed...")] // TODO: fix the bug
         [InlineData("TestPattern_RGB.dcm")]
         [InlineData("CR-MONO1-10-chest")]
         [InlineData("GH064.dcm")]

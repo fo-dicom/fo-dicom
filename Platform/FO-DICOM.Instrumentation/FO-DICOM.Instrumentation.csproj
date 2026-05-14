@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0;net10.0</TargetFrameworks>
     <RootNamespace>FellowOakDicom</RootNamespace>
     <AssemblyName>fo-dicom.Instrumentation</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -17,7 +17,7 @@
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
     <PackageIcon>FellowOakSquareTransp.png</PackageIcon>
-    <LangVersion>9</LangVersion>
+    <LangVersion>14</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
     <DebugType>Embedded</DebugType>
   </PropertyGroup>

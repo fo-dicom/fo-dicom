@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Bugs
     {
         #region Unit Tests
 
-        [TheoryForNetCore(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
+        [Theory(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomTranscoderTranscode_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax, int filesToTranscode)
         {
@@ -42,11 +42,11 @@ namespace FellowOakDicom.Tests.Bugs
             foreach (var dataset in bag)
             {
                 var pixelData = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
-                Assert.Equal(refPixelData, pixelData);
+                Assert.True(refPixelData.CompareTo(pixelData) == 0);
             }
         }
 
-        [TheoryForNetCore(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
+        [Theory(Skip = "This test causes test host process crashes. See Github issue #1072 at https://github.com/fo-dicom/fo-dicom/issues/1072")]
         [MemberData(nameof(CodecsNumbers))]
         public void DicomDatasetClone_ToCompressedCodecInParallel_NoMultithreadIssues(DicomTransferSyntax syntax,
             int filesToTranscode)
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Tests.Bugs
             foreach (var dataset in bag)
             {
                 var pixelData = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
-                Assert.Equal(refPixelData, pixelData);
+                Assert.True(refPixelData.CompareTo(pixelData) == 0);
             }
         }
 
@@ -79,7 +79,7 @@ namespace FellowOakDicom.Tests.Bugs
 
         #region Support Data
 
-        public static readonly IEnumerable<object[]> CodecsNumbers = new []
+        public static readonly IEnumerable<object[]> CodecsNumbers = new[]
         {
 
             new object[] {DicomTransferSyntax.JPEGLSLossless, 100},
@@ -90,6 +90,6 @@ namespace FellowOakDicom.Tests.Bugs
             new object[] {DicomTransferSyntax.RLELossless, 100}
         };
 
-    #endregion
-}
+        #endregion
+    }
 }

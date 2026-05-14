@@ -36,10 +36,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task Constructor_EstablishTwoWithSamePort_ShouldYieldAccessibleException()
         {
             using var server1 = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server1.IsListening)
-            {
-                await Task.Delay(10);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server1, 30);
 
             var exception = Record.Exception(() => DicomServerFactory.Create<DicomCEchoProvider>(server1.Port, logger: _logger.IncludePrefix("DicomServer")));
             Assert.IsType<DicomNetworkException>(exception);
@@ -52,10 +49,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task Stop_IsListening_TrueUntilStopRequested()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening)
-            {
-                await Task.Delay(10);
-            }
+            await AsyncTestHelper.WaitForServerListeningAsync(server, 30);
 
             for (var i = 0; i < 10; ++i)
             {
@@ -170,7 +164,7 @@ namespace FellowOakDicom.Tests.Network
             {
                 var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
                 ports[i] = server.Port;
-                while (!server.IsListening) { await Task.Delay(10); }
+                await AsyncTestHelper.WaitForServerListeningAsync(server, 30);
             }
 
             foreach (var port in ports)
@@ -188,7 +182,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task IsListening_DicomServerRunningOnPort_ReturnsTrue()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server, 30);
             Assert.True(DicomServerRegistry.Get(server.Port).DicomServer.IsListening);
         }
 
@@ -312,7 +306,7 @@ namespace FellowOakDicom.Tests.Network
         public async Task Stop_DisconnectedClientsCount_ShouldBeZeroAfterShortDelay()
         {
             using var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer"));
-            while (!server.IsListening) { await Task.Delay(10); }
+            await AsyncTestHelper.WaitForServerListeningAsync(server, 30);
 
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
             client.Logger = _logger.IncludePrefix("DicomClient");
@@ -757,6 +751,9 @@ namespace FellowOakDicom.Tests.Network
                 // Wait for the server to shut down gracefully
                 await server.Registration.Task;
             }
+
+            // Wait for all services to be disposed with proper synchronization
+            await AsyncTestHelper.WaitForCountAsync(() => disposedDicomServices.Count, 100, TimeSpan.FromSeconds(10));
 
             var uniqueDisposedServices = new HashSet<DicomService>(disposedDicomServices);
             Assert.Equal(100, uniqueDisposedServices.Count);

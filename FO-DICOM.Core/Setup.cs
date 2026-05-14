@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FellowOakDicom
 {
@@ -172,7 +173,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection AddTranscoderManager<TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
+        public static IServiceCollection AddTranscoderManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
         {
             services.Replace(ServiceDescriptor.Singleton<ITranscoderManager, TTranscoderManager>());
             return services;
@@ -183,7 +184,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection TryAddTranscoderManager<TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
+        public static IServiceCollection TryAddTranscoderManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTranscoderManager>(this IServiceCollection services) where TTranscoderManager : class, ITranscoderManager
         {
             services.TryAddSingleton<ITranscoderManager, TTranscoderManager>();
             return services;
@@ -194,7 +195,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection AddImageManager<TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
+        public static IServiceCollection AddImageManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
         {
             services.Replace(ServiceDescriptor.Singleton<IImageManager, TImageManager>());
             return services;
@@ -205,7 +206,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection TryAddImageManager<TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
+        public static IServiceCollection TryAddImageManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImageManager>(this IServiceCollection services) where TImageManager : class, IImageManager
         {
             services.TryAddSingleton<IImageManager, TImageManager>();
             return services;
@@ -216,7 +217,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection AddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
+        public static IServiceCollection AddNetworkManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
         {
             services.Replace(ServiceDescriptor.Singleton<INetworkManager, TNetworkManager>());
             return services;
@@ -227,7 +228,7 @@ namespace FellowOakDicom
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <returns>The IServiceCollection so that additional calls can be chained.</returns>
-        public static IServiceCollection TryAddNetworkManager<TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
+        public static IServiceCollection TryAddNetworkManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TNetworkManager>(this IServiceCollection services) where TNetworkManager : class, INetworkManager
         {
             services.TryAddSingleton<INetworkManager, TNetworkManager>();
             return services;
@@ -235,7 +236,7 @@ namespace FellowOakDicom
 
 
         [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
-        public static IServiceCollection AddLogManager<TLogManager>(this IServiceCollection services) where TLogManager : class, ILogManager
+        public static IServiceCollection AddLogManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TLogManager>(this IServiceCollection services) where TLogManager : class, ILogManager
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, FellowOakDicomLoggerProvider>());
             services.Replace(ServiceDescriptor.Singleton<ILogManager, TLogManager>());
