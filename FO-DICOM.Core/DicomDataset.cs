@@ -17,7 +17,7 @@ namespace FellowOakDicom
     /// <summary>
     /// A collection of <see cref="DicomItem">DICOM items</see>.
     /// </summary>
-    public partial class DicomDataset : IEnumerable<DicomItem>, IEquatable<DicomDataset>
+    public partial class DicomDataset : IEnumerable<DicomItem>
     {
         #region Static Properties
 
@@ -1633,19 +1633,15 @@ namespace FellowOakDicom
 
         public override bool Equals(object obj)
         {
-            if (Object.ReferenceEquals(obj, null)) return false;
+            if (obj is null) return false;
             if (Object.ReferenceEquals(this, obj)) return true;
             if (GetType() != obj.GetType()) return false;
             return Equals(obj as DicomDataset);
         }
 
-        public bool Equals(DicomDataset other)
-        {
-            return
-                CompareInstancesByContent
+        private bool Equals(DicomDataset other) => CompareInstancesByContent
                 ? DicomDatasetComparer.DefaultInstance.Equals(this, other)
                 : ReferenceEquals(this, other);
-        }
 
         public static bool operator ==(DicomDataset a, DicomDataset b)
         {
