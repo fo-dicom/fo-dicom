@@ -68,7 +68,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
                 dataset.AddOrUpdate(DicomTag.PatientPosition, (string)null);
 
-                var pixelData = DicomPixelData.Create(dataset, newPixelData: true);
+                var pixelData = DicomPixelData.CreateNew(dataset);
 
                 pixelData.AddFrame(new MemoryByteBuffer(slice.RenderRawData(pixelData.BytesAllocated)));
 

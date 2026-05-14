@@ -26,7 +26,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             var oldRatios = file.Dataset.GetValues<string>(DicomTag.LossyImageCompressionRatio);
             var ds = file.Clone(DicomTransferSyntax.JPEGProcess1).Dataset;
             var newRatios = ds.GetValues<string>(DicomTag.LossyImageCompressionRatio);
-            Assert.Equal(oldRatios.Length+1, newRatios.Length);
+            Assert.Equal(oldRatios.Length + 1, newRatios.Length);
         }
 
         [FactWithCodec]
@@ -93,7 +93,7 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             var file = DicomFile.Open(TestData.Resolve("" + filename));
 
             // when converting to JpegBaseline the Photometric interpretation has to be updated
-            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB=false, Quality = 90,  SampleFactor = DicomJpegSampleFactor.SF422 });
+            var newDataset = file.Dataset.Clone(DicomTransferSyntax.JPEGProcess2_4, new DicomJpegParams { ConvertColorspaceToRGB = false, Quality = 90, SampleFactor = DicomJpegSampleFactor.SF422 });
             Assert.Equal("YBR_FULL_422", newDataset.GetString(DicomTag.PhotometricInterpretation));
 
             // when converting to other jpeg coded that does not automatically convert to 8bitcolor the Photometric Interpretation has to stay the same.
@@ -119,8 +119,8 @@ namespace FellowOakDicom.Tests.Imaging.Codec
                     var myBitsAllocated = myResFile.Dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
                     if (myBitsAllocated == 16)
                     {
-                        byte[] myOriginalBytes = DicomPixelData.Create(myOriginalDicomFile.Dataset).GetFrame(0).Data;
-                        byte[] myResBytes = DicomPixelData.Create(myResFile.Dataset).GetFrame(0).Data;
+                        byte[] myOriginalBytes = DicomPixelData.CreateFromDataset(myOriginalDicomFile.Dataset).GetFrame(0).Data;
+                        byte[] myResBytes = DicomPixelData.CreateFromDataset(myResFile.Dataset).GetFrame(0).Data;
 
                         if (!myOriginalBytes.SequenceEqual(myResBytes))
                         {
@@ -186,12 +186,12 @@ namespace FellowOakDicom.Tests.Imaging.Codec
                 for (var k = 0; k < 100; k++)
                 {
                     var bytes = new byte[i * 2];
-                    for (var j = 0; j < 2*i; j++)
+                    for (var j = 0; j < 2 * i; j++)
                     {
                         bytes[j] = (byte)(r.Next() % 2);
                     }
 
-                    CheckData(i,1, bytes, DicomTransferSyntax.RLELossless);
+                    CheckData(i, 1, bytes, DicomTransferSyntax.RLELossless);
                 }
             }
         }
@@ -216,14 +216,14 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             ds.AddOrUpdate(DicomVR.IS, DicomTag.PixelRepresentation, 1);
             ds.AddOrUpdate(DicomVR.CS, DicomTag.PhotometricInterpretation, "MONOCHROME2");
             ds.AddOrUpdate(DicomVR.IS, DicomTag.SamplesPerPixel, 1);
-            var pixelData = DicomPixelData.Create(ds, true);
+            var pixelData = DicomPixelData.CreateNew(ds);
             pixelData.AddFrame(memoryBB);
 
             var ds2 = ds.Clone(syntax);
             var dsOrig = ds2.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
 
-            var origPixData = DicomPixelData.Create(ds);
-            var origPixData2 = DicomPixelData.Create(dsOrig);
+            var origPixData = DicomPixelData.CreateFromDataset(ds);
+            var origPixData2 = DicomPixelData.CreateFromDataset(dsOrig);
 
             var byteBuffer = origPixData.GetFrame(0);
             var byteBuffer2 = origPixData2.GetFrame(0);
@@ -241,6 +241,6 @@ namespace FellowOakDicom.Tests.Imaging.Codec
             }
         }
 
-#endregion
+        #endregion
     }
 }

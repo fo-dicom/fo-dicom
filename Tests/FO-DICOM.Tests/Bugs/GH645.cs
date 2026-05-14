@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Bugs
             var dicomFile = DicomFile.Open(TestData.Resolve("GH645.dcm"));
 
             // Act
-            var pixelData = DicomPixelData.Create(dicomFile.Dataset);
+            var pixelData = DicomPixelData.CreateFromDataset(dicomFile.Dataset);
             var uncompressedFrameSize = pixelData.UncompressedFrameSize;
 
             // Assert

@@ -2,6 +2,15 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Connection;
+using FellowOakDicom.Tests.Helpers;
+using FellowOakDicom.Tests.Network.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,16 +18,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Imaging;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Tests.Helpers;
-using FellowOakDicom.Tests.Network;
-using FellowOakDicom.Tests.Network.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -52,7 +51,7 @@ namespace FellowOakDicom.Tests.Bugs
         public async Task SendingCStoreRequest_AfterPreviousCStoreRequestTimedOut_ShouldUseSeparateAssociation(int asyncInvoked)
         {
             // Arrange
-            using var server = (ConfigurableDicomCStoreServer) DicomServerFactory.Create<ConfigurableDicomCStoreProvider, ConfigurableDicomCStoreServer>("127.0.0.1", 0);
+            using var server = (ConfigurableDicomCStoreServer)DicomServerFactory.Create<ConfigurableDicomCStoreProvider, ConfigurableDicomCStoreServer>("127.0.0.1", 0);
             server.Options.MaxPDULength = 1024;
             server.Options.LogDimseDatasets = false;
             server.Options.LogDataPDUs = false;
@@ -166,7 +165,7 @@ namespace FellowOakDicom.Tests.Bugs
                 .Where(r => !messageIdsThatTimedOut.Contains(r.MessageID))
                 .ToList();
 
-            var expectedPixelData = DicomPixelData.Create(originalDicomFile.Dataset);
+            var expectedPixelData = DicomPixelData.CreateFromDataset(originalDicomFile.Dataset);
             var expectedNumberOfFrames = expectedPixelData.NumberOfFrames;
             var expectedWidth = expectedPixelData.Width;
             var expectedHeight = expectedPixelData.Height;
@@ -176,10 +175,10 @@ namespace FellowOakDicom.Tests.Bugs
 
             Parallel.For((long)0, receivedRequestsThatSucceeded.Count, i =>
             {
-                var request = receivedRequestsThatSucceeded[(int) i];
+                var request = receivedRequestsThatSucceeded[(int)i];
                 _logger.LogInformation($"Verifying pixel data of request [{request.MessageID}]");
 
-                var actualPixelData = DicomPixelData.Create(request.File.Dataset);
+                var actualPixelData = DicomPixelData.CreateFromDataset(request.File.Dataset);
 
                 var expectedPhotometricInterpretation = expectedPixelData.PhotometricInterpretation.Value;
                 Assert.Equal(expectedPhotometricInterpretation, actualPixelData.PhotometricInterpretation.Value);
@@ -198,10 +197,10 @@ namespace FellowOakDicom.Tests.Bugs
                     var expectedData = expectedFrame.Data;
 
                     var actualFirstByte = actualData[0];
-                    var actualMiddleByte = actualData[(int) (actualData.Length / 2.0)];
+                    var actualMiddleByte = actualData[(int)(actualData.Length / 2.0)];
                     var actualLastByte = actualData[actualData.Length - 1];
                     var expectedFirstByte = expectedData[0];
-                    var expectedMiddleByte = expectedData[(int) (expectedData.Length / 2.0)];
+                    var expectedMiddleByte = expectedData[(int)(expectedData.Length / 2.0)];
                     var expectedLastByte = expectedData[expectedData.Length - 1];
                     Assert.Equal(expectedData.Length, actualData.Length);
                     Assert.Equal(expectedFirstByte, actualFirstByte);
@@ -221,7 +220,7 @@ namespace FellowOakDicom.Tests.Bugs
         public Action<DicomAssociation> OnAssociationRequest { get; set; }
 
         public ConfigurableDicomCStoreServer(DicomServerDependencies dependencies,
-            DicomServiceDependencies dicomServiceDependencies): base(dependencies)
+            DicomServiceDependencies dicomServiceDependencies) : base(dependencies)
         {
             _dicomServiceDependencies = dicomServiceDependencies ?? throw new ArgumentNullException(nameof(dicomServiceDependencies));
         }

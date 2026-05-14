@@ -297,7 +297,7 @@ namespace FellowOakDicom.Imaging
                         "Attempted to extract embedded overlay from compressed pixel data. Decompress pixel data before attempting this operation.");
                 }
 
-                var pixels = DicomPixelData.Create(Dataset);
+                var pixels = DicomPixelData.CreateFromDataset(Dataset);
 
                 // (1,1) indicates top left pixel of image
                 var ox = Math.Max(0, OriginX - 1);

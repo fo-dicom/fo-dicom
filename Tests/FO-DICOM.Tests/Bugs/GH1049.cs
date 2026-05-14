@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests.Bugs
             var dicomFile = DicomFile.Open(TestData.Resolve("GH1049_planar_0.dcm"));
 
             // Act
-            var pixelData = PixelDataFactory.Create(DicomPixelData.Create(dicomFile.Dataset), 0);
+            var pixelData = PixelDataFactory.Create(DicomPixelData.CreateFromDataset(dicomFile.Dataset), 0);
 
             // Assert
             Assert.NotNull(pixelData);
@@ -33,7 +33,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             // Act
             Assert.Throws<DicomImagingException>(() =>
-                PixelDataFactory.Create(DicomPixelData.Create(dicomFile.Dataset), 0));
+                PixelDataFactory.Create(DicomPixelData.CreateFromDataset(dicomFile.Dataset), 0));
         }
     }
 
