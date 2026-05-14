@@ -1,4 +1,5 @@
 ### 6.0.0-alpha1 (TBD)
+- Add depth guard to DicomReader to prevent unbounded SQ recursion (#2114)
 
 
 ### 5.2.6 (2026-03-30)
