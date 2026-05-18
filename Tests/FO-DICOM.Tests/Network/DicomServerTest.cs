@@ -797,7 +797,9 @@ namespace FellowOakDicom.Tests.Network
             }
             catch (Exception e) { ex = e; }
 
-            Assert.Null(ex);
+            // there has to be an exception, because the DicomServer threw an exception in constructor of SCP
+            Assert.NotNull(ex);
+            // but the client should not have run into a timeout, which would indicate that the server's semaphore was not released after the exception in the DicomService constructor
             Assert.False(cts.Token.IsCancellationRequested);
         }
 
