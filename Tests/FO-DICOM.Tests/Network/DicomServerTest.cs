@@ -759,27 +759,67 @@ namespace FellowOakDicom.Tests.Network
             Assert.Equal(100, uniqueDisposedServices.Count);
         }
 
-        private void TestFoDicomUnhandledException(int port)
+        [Fact]
+        public async Task FailingDicomServiceShouldReleaseSemaphore()
         {
-            var server = DicomServerFactory.Create<DicomCEchoProvider>(port);
-            Thread.Sleep(500);
-            server.Stop();
+            IDicomClient client;
+
+            const int maxClients = 2;
+            using var server = DicomServerFactory.Create<ThrowingDicomService>(0, configure: o => o.MaxClientsAllowed = maxClients);
+            await AsyncTestHelper.WaitForServerListeningAsync(server);
+
+            // call 2 echos - both of them will cause the dicomservice constructor to fail
+            for (int i = 1; i <= maxClients; i++)
+            {
+                client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+                client.ClientOptions.AssociationRequestTimeoutInMs = 5_000;
+                client.ClientOptions.MaximumNumberOfRequestsPerAssociation = 1;
+                await client.AddRequestAsync(new DicomCEchoRequest());
+                try
+                {
+                    using var ctsreq = new CancellationTokenSource(TimeSpan.FromMilliseconds(6_000));
+                    await client.SendAsync(ctsreq.Token);
+                }
+                catch (Exception) { /* ignore */ }
+                await Task.Delay(100);
+            }
+
+            // now after the two failed echos, there should still be some echos possible without timeout
+            Exception ex = null;
+            client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
+            client.ClientOptions.AssociationRequestTimeoutInMs = 5_000;
+            client.ClientOptions.MaximumNumberOfRequestsPerAssociation = 1;
+            await client.AddRequestAsync(new DicomCEchoRequest());
+            using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(6_000));
+            try
+            {
+                await client.SendAsync(cts.Token);
+            }
+            catch (Exception e) { ex = e; }
+
+            Assert.Null(ex);
+            Assert.False(cts.Token.IsCancellationRequested);
         }
+
 
         [Fact(Skip = "This test is flaky because it crashes whenever a parallel test happens to have an unobserved exception")]
         public async Task StopServerWithoutException()
         {
-            object ue = null;
-            AppDomain.CurrentDomain.UnhandledException += (sender, args) => ue = args.ExceptionObject;
-            TaskScheduler.UnobservedTaskException += (sender, args) => ue = args.Exception;
+            object unhandledExceptionObject = null;
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) => unhandledExceptionObject = args.ExceptionObject;
+            TaskScheduler.UnobservedTaskException += (sender, args) => unhandledExceptionObject = args.Exception;
 
-            await Task.Factory.StartNew(() => TestFoDicomUnhandledException(0));
+            await Task.Factory.StartNew(() => {
+                var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
+                Thread.Sleep(500);
+                server.Stop();
+            });
 
             await Task.Delay(2000);
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            Assert.Null(ue);
+            Assert.Null(unhandledExceptionObject);
         }
 
         #endregion
@@ -872,6 +912,29 @@ namespace FellowOakDicom.Tests.Network
             }
         }
 
+
+        /// <summary>
+        /// A DicomService subclass whose constructor always throws, simulating a DI
+        /// resolution failure or any other constructor error.
+        /// </summary>
+        public class ThrowingDicomService : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+        {
+            public ThrowingDicomService(
+                INetworkStream stream,
+                Encoding fallbackEncoding,
+                ILogger logger,
+                DicomServiceDependencies dependencies)
+                : base(stream, fallbackEncoding, logger, dependencies)
+            {
+                throw new InvalidOperationException("Simulated constructor failure in ThrowingDicomService");
+            }
+
+            public Task OnReceiveAssociationRequestAsync(DicomAssociation association) => throw new NotImplementedException();
+            public Task OnReceiveAssociationReleaseRequestAsync() => throw new NotImplementedException();
+            public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason) { }
+            public void OnConnectionClosed(Exception exception) { }
+            public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request) => throw new NotImplementedException();
+        }
 
         #endregion
     }
