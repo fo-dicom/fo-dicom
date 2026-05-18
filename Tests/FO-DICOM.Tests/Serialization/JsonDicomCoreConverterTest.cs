@@ -602,10 +602,8 @@ namespace FellowOakDicom.Tests.Serialization
         /// <summary>
         /// Run the examples from DICOM Standard PS 3.18, section F.2.1.1.2.
         /// </summary>
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void RunExamplesFromPS3_18_F_2_1_1_2(bool useLegacyConverter)
+        [Fact]
+        public void RunExamplesFromPS3_18_F_2_1_1_2()
         {
             var json = @"
 [
@@ -623,7 +621,7 @@ namespace FellowOakDicom.Tests.Serialization
   }
 ]";
 
-            var reconstituated = useLegacyConverter ? LegacyConvertJsonToDicomArray(json) : DicomJson.ConvertJsonToDicomArray(json);
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].GetSingleValue<DicomUID>(0x0020000d).UID);
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
@@ -642,13 +640,11 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void ParseExampleJsonFromDicomNemaOrg(bool useLegacyConverter)
+        [Fact]
+        public void ParseExampleJsonFromDicomNemaOrg()
         {
             var json = _jsonExampleFromDicomNemaOrg;
-            var reconstituated = useLegacyConverter ? LegacyConvertJsonToDicomArray(json) : DicomJson.ConvertJsonToDicomArray(json);
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal(new DateTime(2013, 4, 9), reconstituated[0].GetSingleValue<DateTime>(DicomTag.StudyDate));
             Assert.Equal("^Bob^^Dr.", reconstituated[0].GetSingleValue<string>(DicomTag.ReferringPhysicianName));
         }
@@ -683,10 +679,8 @@ namespace FellowOakDicom.Tests.Serialization
         /// <summary>
         /// vr is not first position of json properties.
         /// </summary>
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void VrIsNotFirstPosition(bool useLegacyConverter)
+        [Fact]
+        public void VrIsNotFirstPosition()
         {
             var json = @"
 [
@@ -704,21 +698,11 @@ namespace FellowOakDicom.Tests.Serialization
   }
 ]";
 
-            var reconstituated = useLegacyConverter ? LegacyConvertJsonToDicomArray(json) : DicomJson.ConvertJsonToDicomArray(json);
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal("1.2.392.200036.9116.2.2.2.1762893313.1029997326.945873", reconstituated[0].GetSingleValue<DicomUID>(0x0020000d).UID);
             Assert.Equal("1.2.392.200036.9116.2.2.2.2162893313.1029997326.945876", reconstituated[1].GetSingleValue<DicomUID>(0x0020000d).UID);
         }
 
-        private static DicomDataset[] LegacyConvertJsonToDicomArray(string json)
-        {
-            var options = new JsonSerializerOptions();
-            options.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
-#pragma warning disable CS0618
-            options.Converters.Add(new DicomArrayJsonConverter());
-#pragma warning restore CS0618
-            options.ReadCommentHandling = JsonCommentHandling.Skip;
-            return JsonSerializer.Deserialize<DicomDataset[]>(json, options);
-        }
 
         /// <summary>
         /// Test round-tripping a dicom dataset containing a bulk uri byte buffer.
@@ -1206,10 +1190,8 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Equal(overflowNumber, recoveredValue);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public static void GivenNestedNullJsonTokens_WhenDeserialization_ThenReturnsNull(bool useLegacyConverter)
+        [Fact]
+        public static void GivenNestedNullJsonTokens_WhenDeserialization_ThenReturnsNull()
         {
 
             string json = @"
@@ -1228,7 +1210,7 @@ namespace FellowOakDicom.Tests.Serialization
     }
   }
 ]";
-            var reconstituated = useLegacyConverter ? LegacyConvertJsonToDicomArray(json) : DicomJson.ConvertJsonToDicomArray(json);
+            var reconstituated = DicomJson.ConvertJsonToDicomArray(json);
             Assert.Equal(3, reconstituated.Length);
             Assert.NotNull(reconstituated[0]);
             Assert.Null(reconstituated[1]);
@@ -1242,10 +1224,8 @@ namespace FellowOakDicom.Tests.Serialization
             Assert.Throws<JsonException>(() => DicomJson.ConvertJsonToDicom(invalidDatasetJson));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public static void GivenNestedInvalidJsonToken_WhenDeserialization_ThenThrowsJsonException(bool useLegacyConverter)
+        [Fact]
+        public static void GivenNestedInvalidJsonToken_WhenDeserialization_ThenThrowsJsonException()
         {
             string invalidDatasetJson = @"
 [
@@ -1263,7 +1243,7 @@ namespace FellowOakDicom.Tests.Serialization
     }
   }
 ]";
-            Assert.Throws<JsonException>(() => useLegacyConverter ? LegacyConvertJsonToDicomArray(invalidDatasetJson) : DicomJson.ConvertJsonToDicomArray(invalidDatasetJson));
+            Assert.Throws<JsonException>(() => DicomJson.ConvertJsonToDicomArray(invalidDatasetJson));
         }
 
         [Fact]

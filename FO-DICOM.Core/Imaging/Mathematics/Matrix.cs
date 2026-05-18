@@ -223,53 +223,6 @@ namespace FellowOakDicom.Imaging.Mathematics
             return t;
         }
 
-        [Obsolete("Integers (Z) has only inverse elements for addition but not for multiplication. If introducing inverse for multiplications you are in rational numbers (Q). So there cant be a inverse matrix for an int-matrix", true)]
-        public Matrix Invert()
-        {
-            int rows = Rows;
-            int cols = Columns;
-
-            if (rows != cols)
-            {
-                throw new InvalidOperationException("Unable to invert non-square matrix");
-            }
-
-            if (Determinant == 0)
-            {
-                throw new InvalidOperationException("Unable to invert matrix where determinant equals 0");
-            }
-
-            Matrix x = Clone();
-
-            int e;
-            for (int k = 0; k < rows; k++)
-            {
-                e = x[k, k];
-                x[k, k] = 1;
-
-                for (int j = 0; j < cols; j++)
-                {
-                    x[k, j] = x[k, j] / e;
-                }
-
-                for (int i = 0; i < cols; i++)
-                {
-                    if (i != k)
-                    {
-                        e = x[i, k];
-                        x[i, k] = 0;
-
-                        for (int j = 0; j < cols; j++)
-                        {
-                            x[i, j] = x[i, j] - e * x[k, j];
-                        }
-                    }
-                }
-            }
-
-            return x;
-        }
-
         public override string ToString()
         {
             var sb = new StringBuilder();

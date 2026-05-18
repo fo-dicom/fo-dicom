@@ -7,6 +7,7 @@ using FellowOakDicom.Network.Client.Advanced.Connection;
 using FellowOakDicom.Network.Client.EventArguments;
 using FellowOakDicom.Network.Client.States;
 using FellowOakDicom.Network.Tls;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 // DICOM client still provides some obsolete APIs that should not be removed yet, but should also not provide obsolete compiler warnings
 #pragma warning disable CS0618
@@ -173,7 +173,7 @@ namespace FellowOakDicom.Network.Client
         /// <param name="cancellationMode">The cancellation mode that determines the cancellation behavior</param>
         Task SendAsync(CancellationToken cancellationToken = default(CancellationToken),
             DicomClientCancellationMode cancellationMode = DicomClientCancellationMode.ImmediatelyReleaseAssociation);
-    }      
+    }
 
     public class DicomClient : IDicomClient
     {
@@ -184,7 +184,7 @@ namespace FellowOakDicom.Network.Client
         private readonly Tools.AsyncManualResetEvent _hasMoreRequests;
 
         internal ConcurrentQueue<StrongBox<DicomRequest>> QueuedRequests { get; }
-        
+
         internal int AsyncInvoked { get; private set; }
         internal int AsyncPerformed { get; private set; }
 
@@ -193,7 +193,7 @@ namespace FellowOakDicom.Network.Client
         public ITlsInitiator TlsInitiator { get; }
         public string CallingAe { get; }
         public string CalledAe { get; }
-        
+
         public bool IsSendRequired => _isSending == 0 && QueuedRequests.Any();
 
         public ILogger Logger
@@ -216,7 +216,7 @@ namespace FellowOakDicom.Network.Client
         public event EventHandler<AssociationRejectedEventArgs> AssociationRejected;
         public event EventHandler<AssociationRequestTimedOutEventArgs> AssociationRequestTimedOut;
         public event EventHandler AssociationReleased;
-        
+
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler<RequestTimedOutEventArgs> RequestTimedOut;
 
@@ -251,7 +251,7 @@ namespace FellowOakDicom.Network.Client
             RequireSuccessfulUserIdentityNegotiation = true;
             AsyncInvoked = 1;
             AsyncPerformed = 1;
-            
+
             _logger = loggerFactory.CreateLogger(Log.LogCategories.Network);
             _advancedDicomClientConnectionFactory = advancedDicomClientConnectionFactory ?? throw new ArgumentNullException(nameof(advancedDicomClientConnectionFactory));
             _state = DicomClientIdleState.Instance;
@@ -278,9 +278,9 @@ namespace FellowOakDicom.Network.Client
         public Task AddRequestAsync(DicomRequest dicomRequest)
         {
             QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
-            
+
             _hasMoreRequests.Set();
-            
+
             return Task.CompletedTask;
         }
 
@@ -300,7 +300,7 @@ namespace FellowOakDicom.Network.Client
 
                 QueuedRequests.Enqueue(new StrongBox<DicomRequest>(dicomRequest));
             }
-            
+
             _hasMoreRequests.Set();
 
             return Task.CompletedTask;
@@ -316,7 +316,7 @@ namespace FellowOakDicom.Network.Client
                 // Already sending
                 return;
             }
-            
+
             try
             {
                 var exception = (Exception)null;
@@ -372,7 +372,7 @@ namespace FellowOakDicom.Network.Client
                             requestsToSend.Enqueue(request.Value);
                             numberOfRequests++;
                         }
-                        
+
                         _hasMoreRequests.Reset();
 
                         var associationRequest = new AdvancedDicomClientAssociationRequest
@@ -427,7 +427,7 @@ namespace FellowOakDicom.Network.Client
                                 // If the original cancellation token did not trigger, it must have been a timeout that lead us here
                                 // we keep track of how many consecutive times this happens
                                 numberOfConsecutiveTimedOutAssociationRequests++;
-                                
+
                                 AssociationRequestTimedOut?.Invoke(this, new AssociationRequestTimedOutEventArgs(
                                     ClientOptions.AssociationRequestTimeoutInMs,
                                     numberOfConsecutiveTimedOutAssociationRequests,
@@ -502,7 +502,7 @@ namespace FellowOakDicom.Network.Client
                                 // Wait until the request is fully sent or until the request completes with an error or cancellation
                                 await Task.WhenAny(nextRequest.AllPDUsSent, sendTask).ConfigureAwait(false);
                             }
-                            
+
                             while (parallelRequests.Count > 0)
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
@@ -510,7 +510,7 @@ namespace FellowOakDicom.Network.Client
                                 var finishedRequest = await Task.WhenAny(parallelRequests).ConfigureAwait(false);
                                 await finishedRequest.ConfigureAwait(false);
                                 parallelRequests.Remove(finishedRequest);
-                                
+
                                 // Check if more requests were queued in the meantime that we could possibly also send over the current association
                                 while (numberOfRequests < maximumNumberOfRequestsPerAssociation
                                        && connection.CanStillProcessPDataTF
@@ -530,9 +530,9 @@ namespace FellowOakDicom.Network.Client
                                     await Task.WhenAny(nextRequest.AllPDUsSent, sendTask).ConfigureAwait(false);
                                 }
                             }
-                            
+
                             _hasMoreRequests.Reset();
-                            
+
                             // Linger behavior: if the queue is empty, wait for a bit before closing the association
                             if (requestsToSend.Count == 0
                                 && numberOfRequests < maximumNumberOfRequestsPerAssociation
@@ -542,12 +542,12 @@ namespace FellowOakDicom.Network.Client
                                 _logger.LogDebug("Lingering on open association for {AssociationLingerTimeoutInMs}ms", ClientOptions.AssociationLingerTimeoutInMs);
 
                                 SetState(DicomClientLingeringState.Instance);
-                                
+
                                 await Task.WhenAny(
                                     _hasMoreRequests.WaitAsync(),
                                     Task.Delay(ClientOptions.AssociationLingerTimeoutInMs, cancellationToken)
                                 ).ConfigureAwait(false);
-                                
+
                                 // Add requests that were added after lingering
                                 while (numberOfRequests < maximumNumberOfRequestsPerAssociation
                                        && QueuedRequests.TryDequeue(out var request))
@@ -558,7 +558,7 @@ namespace FellowOakDicom.Network.Client
 
                                     numberOfRequests++;
                                 }
-                                
+
                                 _hasMoreRequests.Reset();
                             }
                         }
@@ -568,7 +568,7 @@ namespace FellowOakDicom.Network.Client
                     catch (DicomAssociationRejectedException e)
                     {
                         numberOfConsecutiveTimedOutAssociationRequests = 0;
-                        
+
                         AssociationRejected?.Invoke(this, new AssociationRejectedEventArgs(e.RejectResult, e.RejectSource, e.RejectReason));
 
                         exception = e;
@@ -583,7 +583,7 @@ namespace FellowOakDicom.Network.Client
                             {
                                 case DicomClientCancellationMode.ImmediatelyReleaseAssociation:
                                     await ReleaseAssociationAsync(association).ConfigureAwait(false);
-                                    
+
                                     break;
                                 case DicomClientCancellationMode.ImmediatelyAbortAssociation:
                                     await AbortAssociationAsync(association).ConfigureAwait(false);
@@ -645,7 +645,7 @@ namespace FellowOakDicom.Network.Client
             {
                 throw new ArgumentNullException(nameof(request));
             }
-            
+
             _logger.LogDebug("{Request} is being sent", request.ToString());
 
             try
@@ -666,7 +666,7 @@ namespace FellowOakDicom.Network.Client
                 _logger.LogDebug("{Request} has timed out", request.ToString());
             }
         }
-        
+
         /// <summary>
         /// Helper method that 'sets' the state of the DicomClient<br/>
         /// This exists for backwards compatibility reasons. In the past, DicomClient was implemented using a state pattern.<br/>
@@ -679,7 +679,7 @@ namespace FellowOakDicom.Network.Client
         {
             DicomClientState oldState;
             DicomClientState newState = state;
-            
+
             oldState = _state;
 
             if (oldState == newState)
@@ -688,7 +688,7 @@ namespace FellowOakDicom.Network.Client
             }
 
             _state = state;
-            
+
             _logger.LogDebug("[{OldState}] --> [{NewState}]", oldState, newState);
 
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
@@ -716,7 +716,7 @@ namespace FellowOakDicom.Network.Client
 
             AssociationReleased?.Invoke(this, EventArgs.Empty);
         }
-        
+
         private async Task AbortAssociationAsync(IAdvancedDicomClientAssociation association)
         {
             SetState(DicomClientAbortState.Instance);
@@ -736,7 +736,7 @@ namespace FellowOakDicom.Network.Client
                     association.Dispose();
                 }
             }
-            
+
             AssociationReleased?.Invoke(this, EventArgs.Empty);
         }
     }

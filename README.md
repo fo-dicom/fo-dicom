@@ -268,25 +268,6 @@ var sharpimage = image.RenderImage().AsSharpImage();
 #### Logging configuration
 Fellow Oak DICOM uses `Microsoft.Extensions.Logging`, so if you are already using that, Fellow Oak DICOM logging will show up automatically.
 
-In the past, Fellow Oak DICOM had a custom abstraction for logging: ILogger and ILogManager.
-For backwards compatibility purposes, this is still supported but not recommended for new applications.
-
-```csharp
-services.AddLogManager<MyLogManager>();
-```
-
-where MyLogManager looks like this:
-
-```
-using FellowOakDicom.Log;
-
-public class MyLogManager: ILogManager {
-    public ILogger GetLogger(string name) {
-        ...
-    }
-}
-```
-
 ### Sample applications
 There are a number of simple sample applications that use *fo-dicom* available in separate repository [here](https://github.com/fo-dicom/fo-dicom-samples). These also include the samples
 that were previously included in the *Examples* sub-folder of the VS solutions.

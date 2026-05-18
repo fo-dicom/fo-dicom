@@ -12,7 +12,7 @@ For consumers of `IImage` on different platforms, the most important interface m
 
 which allows you to cast the `IImage` object to the real image type on whatever platform you are targeting!
 
-Which `IImage` implementation to use is determined in the `ImageManager` class (compare with `LogManager` and `TranscoderManager`). In core library *RawImage* based imaging is selected by default. To select an other imaging, call:
+Which `IImage` implementation to use is determined in the `ImageManager` class (compare with `TranscoderManager`). In core library *RawImage* based imaging is selected by default. To select an other imaging, call:
 
     new DicomSetupBuilder()
         .RegisterServices(s => s.AddImageManager<ImageSharpImageManager>())

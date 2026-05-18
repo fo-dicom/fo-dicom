@@ -1,12 +1,12 @@
 // Copyright (c) 2012-2026 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.Log;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using FellowOakDicom.Log;
 using Xunit;
 using Xunit.Abstractions;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace FellowOakDicom.Tests.Log
 {

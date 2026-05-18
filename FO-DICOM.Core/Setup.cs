@@ -5,7 +5,6 @@
 using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Codec;
 using FellowOakDicom.IO;
-using FellowOakDicom.Log;
 using FellowOakDicom.Memory;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
@@ -234,13 +233,5 @@ namespace FellowOakDicom
             return services;
         }
 
-
-        [Obsolete("Fellow Oak DICOM now supports Microsoft.Extensions.Logging")]
-        public static IServiceCollection AddLogManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TLogManager>(this IServiceCollection services) where TLogManager : class, ILogManager
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, FellowOakDicomLoggerProvider>());
-            services.Replace(ServiceDescriptor.Singleton<ILogManager, TLogManager>());
-            return services;
-        }
     }
 }
