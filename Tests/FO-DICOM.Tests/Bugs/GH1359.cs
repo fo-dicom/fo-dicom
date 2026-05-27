@@ -100,7 +100,12 @@ namespace FellowOakDicom.Tests.Bugs
             // injected network "stall" does not have to wait out a fixed wall-clock
             // sleep (which made the test flaky on slow CI runners).
             using var unblockOnTimeout = new ManualResetEventSlim();
-            secondRequest.OnTimeout += (sender, args) => unblockOnTimeout.Set();
+            secondRequest.OnTimeout += (sender, args) => 
+            {
+                unblockOnTimeout.Set();
+                // Ensure association cleanup before third request
+                Thread.Sleep(500);
+            };
 
             var receivedRequests = new List<DicomCStoreRequest>();
             server.OnCStoreRequest = (association, storeRequest) =>
