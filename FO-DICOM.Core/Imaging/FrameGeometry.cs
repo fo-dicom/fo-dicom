@@ -5,6 +5,7 @@
 using FellowOakDicom.Imaging.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace FellowOakDicom.Imaging
 {
@@ -35,26 +36,26 @@ namespace FellowOakDicom.Imaging
 
         public string FrameOfReferenceUid { get; private set; }
 
-        public Vector3D DirectionRow { get; private set; }
+        public Vector3<decimal> DirectionRow { get; private set; }
 
-        public Vector3D DirectionColumn { get; private set; }
+        public Vector3<decimal> DirectionColumn { get; private set; }
 
-        public Vector3D DirectionNormal { get; private set; }
+        public Vector3<decimal> DirectionNormal { get; private set; }
 
         public Point2 FrameSize { get; private set; }
 
-        public double PixelSpacingBetweenColumns { get; private set; } = 0;
-        public double PixelSpacingBetweenRows { get; private set; } = 0;
+        public decimal PixelSpacingBetweenColumns { get; private set; } = 0m;
+        public decimal PixelSpacingBetweenRows { get; private set; } = 0m;
 
-        public Point3D PointTopLeft { get; private set; }
-        public Point3D PointTopRight { get; private set; }
-        public Point3D PointBottomLeft { get; private set; }
-        public Point3D PointBottomRight { get; private set; }
+        public Point3<decimal> PointTopLeft { get; private set; }
+        public Point3<decimal> PointTopRight { get; private set; }
+        public Point3<decimal> PointBottomLeft { get; private set; }
+        public Point3<decimal> PointBottomRight { get; private set; }
 
         public FrameOrientation Orientation { get; private set; }
 
-        private MatrixD ImageToPatientSpace { get; set; }
-        private MatrixD PatientToImageSpace { get; set; }
+        private Matrix<decimal> ImageToPatientSpace { get; set; }
+        private Matrix<decimal> PatientToImageSpace { get; set; }
 
         #endregion
 
@@ -74,27 +75,27 @@ namespace FellowOakDicom.Imaging
 
             FrameSize = new Point2(image.GetSingleValueOrDefault<int>(DicomTag.Columns, 0), image.GetSingleValueOrDefault<int>(DicomTag.Rows, 0));
 
-            if (image.TryGetValues<double>(DicomTag.ImagerPixelSpacing, out var imagerPixelSpacing) && imagerPixelSpacing.Length == 2)
+            if (image.TryGetValues<decimal>(DicomTag.ImagerPixelSpacing, out var imagerPixelSpacing) && imagerPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = imagerPixelSpacing[0];
                 PixelSpacingBetweenColumns = imagerPixelSpacing[1];
             }
-            else if (image.TryGetValues<double>(DicomTag.PixelSpacing, out var pixelSpacing) && pixelSpacing.Length == 2)
+            else if (image.TryGetValues<decimal>(DicomTag.PixelSpacing, out var pixelSpacing) && pixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = pixelSpacing[0];
                 PixelSpacingBetweenColumns = pixelSpacing[1];
             }
-            else if (image.TryGetValues<double>(DicomTag.NominalScannedPixelSpacing, out var nominalPixelSpacing) && nominalPixelSpacing.Length == 2)
+            else if (image.TryGetValues<decimal>(DicomTag.NominalScannedPixelSpacing, out var nominalPixelSpacing) && nominalPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = nominalPixelSpacing[0];
                 PixelSpacingBetweenColumns = nominalPixelSpacing[1];
             }
-            else if (functionalItems.TryGetValues<double>(DicomTag.PixelSpacing, out var functionalPixelSpacing) && functionalPixelSpacing.Length == 2)
+            else if (functionalItems.TryGetValues<decimal>(DicomTag.PixelSpacing, out var functionalPixelSpacing) && functionalPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = functionalPixelSpacing[0];
                 PixelSpacingBetweenColumns = functionalPixelSpacing[1];
             }
-            else if (functionalItems.TryGetValues<double>(DicomTag.ImagerPixelSpacing, out var functionalImagerPixelSpacing) && functionalImagerPixelSpacing.Length == 2)
+            else if (functionalItems.TryGetValues<decimal>(DicomTag.ImagerPixelSpacing, out var functionalImagerPixelSpacing) && functionalImagerPixelSpacing.Length == 2)
             {
                 PixelSpacingBetweenRows = functionalImagerPixelSpacing[0];
                 PixelSpacingBetweenColumns = functionalImagerPixelSpacing[1];
@@ -106,22 +107,22 @@ namespace FellowOakDicom.Imaging
 
             InitializeTranformationMatrizes();
 
-            double[] FindInDatasetOrFunctional(DicomTag tag)
+            decimal[] FindInDatasetOrFunctional(DicomTag tag)
             {
-                if (image.TryGetValues<double>(tag, out var result))
+                if (image.TryGetValues<decimal>(tag, out var result))
                 {
                     return result;
                 }
-                if (functionalItems.TryGetValues<double>(tag, out var functionalResult))
+                if (functionalItems.TryGetValues<decimal>(tag, out var functionalResult))
                 {
                     return functionalResult;
                 }
-                return Array.Empty<double>();
+                return [];
             }
         }
 
 
-        public FrameGeometry(string frameOfReferenceUid, double[] imagePatientPosition, double[] imagePatientOrientation, double[] pixelSpacing, int width, int height)
+        public FrameGeometry(string frameOfReferenceUid, decimal[] imagePatientPosition, decimal[] imagePatientOrientation, decimal[] pixelSpacing, int width, int height)
         {
             // copy provided values
 
@@ -141,17 +142,17 @@ namespace FellowOakDicom.Imaging
 
         #region private methods
 
-        private void InitializeCalcualtedVolumeData(double[] imagePatientPosition, double[] imagePatientOrientation)
+        private void InitializeCalcualtedVolumeData(decimal[] imagePatientPosition, decimal[] imagePatientOrientation)
         {
             if (imagePatientPosition.Length < 3 || imagePatientOrientation.Length < 6)
             {
                 // in case there are no or only incomplete data, then no 3d-initialization can be done
                 // these are the default-values for some 2d-data like CR. they are used for measurements of lengths and angles in 2d, but not for 3d
                 Orientation = FrameOrientation.None;
-                PointTopLeft = new Point3D(0, 0, 0);
-                DirectionRow = new Vector3D(1, 0, 0);
-                DirectionColumn = new Vector3D(0, 1, 0);
-                DirectionNormal = Vector3D.Zero;
+                PointTopLeft = new Point3<decimal>(0, 0, 0);
+                DirectionRow = new Vector3<decimal>(1, 0, 0);
+                DirectionColumn = new Vector3<decimal>(0, 1, 0);
+                DirectionNormal = Vector3<decimal>.Zero;
                 PointTopRight = PointTopLeft + DirectionRow * PixelSpacingBetweenColumns * FrameSize.X;
                 PointBottomLeft = PointTopLeft + DirectionColumn * PixelSpacingBetweenRows * FrameSize.Y;
                 PointBottomRight = PointBottomLeft + (PointTopRight - PointTopLeft);
@@ -159,9 +160,9 @@ namespace FellowOakDicom.Imaging
                 return;
             }
 
-            PointTopLeft = new Point3D(imagePatientPosition);
-            DirectionRow = new Vector3D(imagePatientOrientation, 0);
-            DirectionColumn = new Vector3D(imagePatientOrientation, 3);
+            PointTopLeft = new Point3<decimal>(imagePatientPosition);
+            DirectionRow = new Vector3<decimal>(imagePatientOrientation, 0);
+            DirectionColumn = new Vector3<decimal>(imagePatientOrientation, 3);
 
             DirectionNormal = DirectionRow.CrossProduct(DirectionColumn);
             if (DirectionNormal.IsZero)
@@ -173,9 +174,9 @@ namespace FellowOakDicom.Imaging
                 var axis = DirectionNormal.NearestAxis();
                 Orientation = axis switch
                 {
-                    Vector3D xaxis when xaxis.X != 0 => FrameOrientation.Sagittal,
-                    Vector3D yaxis when yaxis.Y != 0 => FrameOrientation.Coronal,
-                    Vector3D zaxis when zaxis.Z != 0 => FrameOrientation.Axial,
+                    Vector3<decimal> xaxis when xaxis.X != 0 => FrameOrientation.Sagittal,
+                    Vector3<decimal> yaxis when yaxis.Y != 0 => FrameOrientation.Coronal,
+                    Vector3<decimal> zaxis when zaxis.Z != 0 => FrameOrientation.Axial,
                     _ => FrameOrientation.None
                 };
             }
@@ -196,13 +197,13 @@ namespace FellowOakDicom.Imaging
 
                 if (DirectionNormal.IsZero)
                 {
-                    ImageToPatientSpace = MatrixD.Identity(4);
+                    ImageToPatientSpace = Matrix<decimal>.Identity(4);
                     ImageToPatientSpace[0, 0] = PixelSpacingBetweenColumns;
                     ImageToPatientSpace[1, 1] = PixelSpacingBetweenRows;
                 }
                 else
                 {
-                    ImageToPatientSpace = MatrixD.Identity(4);
+                    ImageToPatientSpace = Matrix<decimal>.Identity(4);
                     ImageToPatientSpace.Column(0, DirectionRow.X * PixelSpacingBetweenColumns, DirectionRow.Y * PixelSpacingBetweenColumns, DirectionRow.Z * PixelSpacingBetweenColumns, 0);
                     ImageToPatientSpace.Column(1, DirectionColumn.X * PixelSpacingBetweenRows, DirectionColumn.Y * PixelSpacingBetweenRows, DirectionColumn.Z * PixelSpacingBetweenRows, 0);
                     ImageToPatientSpace.Column(2, DirectionNormal.X, DirectionNormal.Y, DirectionNormal.Z, 0);
@@ -211,7 +212,7 @@ namespace FellowOakDicom.Imaging
 
                 PatientToImageSpace = ImageToPatientSpace.Invert();
 
-                if (PointTopLeft != Point3D.Zero || DirectionRow != Vector3D.AxisX || DirectionColumn != Vector3D.AxisY)
+                if (PointTopLeft != Point3<decimal>.Zero || DirectionRow != Vector3<decimal>.AxisX || DirectionColumn != Vector3<decimal>.AxisY)
                 {
                     GeometryType = FrameGeometryType.Volume;
                 }
@@ -223,25 +224,25 @@ namespace FellowOakDicom.Imaging
         #region Methods
 
 
-        public Point3D TransformImagePointToPatient(Point2 imagePoint)
+        public Point3<decimal> TransformImagePointToPatient(Point2 imagePoint)
         {
             if (GeometryType == FrameGeometryType.None)
             {
                 throw new DicomImagingException("Cannot transform point in image without geometry data");
             }
-            var transformed = ImageToPatientSpace * new double[] { imagePoint.X, imagePoint.Y, 0, 1 };
-            return new Point3D(transformed, 0);
+            var transformed = ImageToPatientSpace * new decimal[] { imagePoint.X, imagePoint.Y, 0, 1 };
+            return new Point3<decimal>(transformed, 0);
         }
 
-        public Point2D TransformPatientPointToImage(Point3D patientPoint)
+        public Point2<decimal> TransformPatientPointToImage(Point3<decimal> patientPoint)
         {
             if (GeometryType == FrameGeometryType.None)
             {
                 throw new DicomImagingException("Cannot transform point in image without geometry data");
             }
-            double[] transformed = PatientToImageSpace * new double[] { patientPoint.X, patientPoint.Y, patientPoint.Z, 1 };
+            decimal[] transformed = PatientToImageSpace * new decimal[] { patientPoint.X, patientPoint.Y, patientPoint.Z, 1 };
             // validation, if the point is within the image plane, then the z-component of the transformed point should be zero
-            return new Point2D(transformed[0], transformed[1]);
+            return new Point2<decimal>(transformed[0], transformed[1]);
         }
 
         #endregion
@@ -264,19 +265,29 @@ namespace FellowOakDicom.Imaging
         public static bool CanDrawLocalizer(FrameGeometry sourceFrame, FrameGeometry destinationFrame)
         {
             // first check for valid frame geometry
-            if (sourceFrame == null) return false;
-            if (destinationFrame == null) return false;
+            if (sourceFrame == null || destinationFrame == null)
+            {
+                return false;
+            }
 
             // if either of the two frames is not a 3D image then there are no localizers
-            if (sourceFrame.Orientation == FrameOrientation.None || destinationFrame.Orientation == FrameOrientation.None) return false;
+            if (sourceFrame.Orientation == FrameOrientation.None || destinationFrame.Orientation == FrameOrientation.None)
+            {
+                return false;
+            }
             // localizers shall only be drawn on orthogonal images, so if they both are of the same orientation, then do not draw localizers
-            if (sourceFrame.Orientation == destinationFrame.Orientation) return false;
+            if (sourceFrame.Orientation == destinationFrame.Orientation)
+            {
+                return false;
+            }
 
             // in order to apply calculations on both frames, they both must be within the same FrameOfReferenceUid
-            if (string.IsNullOrEmpty(sourceFrame.FrameOfReferenceUid) || string.IsNullOrEmpty(destinationFrame.FrameOfReferenceUid)) return false;
-            if (sourceFrame.FrameOfReferenceUid != destinationFrame.FrameOfReferenceUid) return false;
+            if (string.IsNullOrEmpty(sourceFrame.FrameOfReferenceUid) || string.IsNullOrEmpty(destinationFrame.FrameOfReferenceUid))
+            {
+                return false;
+            }
 
-            return true;
+            return sourceFrame.FrameOfReferenceUid == destinationFrame.FrameOfReferenceUid;
         }
 
         /// <summary>
@@ -293,22 +304,22 @@ namespace FellowOakDicom.Imaging
         /// <returns></returns>
         public static void CalcualteProjectionLocalizer(DicomDataset sourceFrame, DicomDataset destinationFrame, out List<Point2> localizerPoints)
         {
-            localizerPoints = new List<Point2>();
+            localizerPoints = [];
 
-            GetPositionOrientationSpacingAndSize(destinationFrame, out Vector3D dstRowDir,
-                    out Vector3D dstColDir, out Vector3D dstNormal, out Point3D dstPos,
+            GetPositionOrientationSpacingAndSize(destinationFrame, out Vector3<double> dstRowDir,
+                    out Vector3<double> dstColDir, out Vector3<double> dstNormal, out Point3<double> dstPos,
                     out int _, out int _,
                     out double dstRowSpacing, out double dstColSpacing,
                     out double _, out double _);
 
-            GetPositionOrientationSpacingAndSize(sourceFrame, out Vector3D srcRowDir,
-                    out Vector3D srcColDir, out Vector3D _, out Point3D srcPos,
+            GetPositionOrientationSpacingAndSize(sourceFrame, out Vector3<double> srcRowDir,
+                    out Vector3<double> srcColDir, out Vector3<double> _, out Point3<double> srcPos,
                     out int _, out int _,
                     out double _, out double _,
                     out double srcRowLength, out double srcColLength);
 
             // Build a square to project with 4 corners TLHC, TRHC, BRHC, BLHC ...
-            var pos = new Point3D[4];
+            var pos = new Point3<double>[4];
 
             // TLHC is what is in ImagePositionPatient
             pos[0] = srcPos;
@@ -321,7 +332,7 @@ namespace FellowOakDicom.Imaging
 
             var pixel = new Point2[4];
 
-            var rotation = new MatrixD(3, 3);
+            var rotation = new Matrix<double>(3, 3);
             rotation.Row(0, dstRowDir.ToArray());
             rotation.Row(1, dstColDir.ToArray());
             rotation.Row(2, dstNormal.ToArray());
@@ -329,15 +340,14 @@ namespace FellowOakDicom.Imaging
             for (int i = 0; i < 4; i++)
             {
                 // move everything to origin of target
-                pos[i] += (Point3D.Zero - dstPos);
+                pos[i] += (Point3<double>.Zero - dstPos);
 
                 // The rotation is easy ... just rotate by the row, col and normal vectors ...
-                pos[i] = new Point3D(rotation * pos[i].ToArray());
+                pos[i] = new Point3<double>(rotation * pos[i].ToArray());
 
                 // DICOM coordinates are center of pixel 1\1
                 pixel[i] = new Point2(Convert.ToInt32(pos[i].X / dstColSpacing + 0.5),
                   Convert.ToInt32(pos[i].Y / dstRowSpacing + 0.5));
-
             }
 
             localizerPoints.AddRange(pixel);
@@ -362,19 +372,19 @@ namespace FellowOakDicom.Imaging
         /// <param name="col_length">The column length of the frame, derived from multiplying the rows by the column spacing</param>
         /// <returns></returns>
         private static bool GetPositionOrientationSpacingAndSize(DicomDataset dicomDataset,
-                        out Vector3D rowDir, out Vector3D colDir,
-                        out Vector3D normalDir, out Point3D pos,
+                        out Vector3<double> rowDir, out Vector3<double> colDir,
+                        out Vector3<double> normalDir, out Point3<double> pos,
                         out int rows, out int cols,
                         out double row_spacing, out double col_spacing,
                         out double row_length, out double col_length)
         {
             var imageorientation = dicomDataset.GetValues<double>(DicomTag.ImageOrientationPatient);
-            rowDir = new Vector3D(imageorientation, 0);
-            colDir = new Vector3D(imageorientation, 3);
+            rowDir = new Vector3<double>(imageorientation, 0);
+            colDir = new Vector3<double>(imageorientation, 3);
             // compute nrm to row and col (i.e. cross product of row and col unit vectors)
             normalDir = rowDir.CrossProduct(colDir);
 
-            pos = new Point3D(dicomDataset.GetValues<double>(DicomTag.ImagePositionPatient));
+            pos = new Point3<double>(dicomDataset.GetValues<double>(DicomTag.ImagePositionPatient));
 
             row_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 0);
             col_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 1);
@@ -403,9 +413,9 @@ namespace FellowOakDicom.Imaging
         /// <returns></returns>
         public static bool CalcualteIntersectionLocalizer(FrameGeometry sourceFrame, FrameGeometry destinationFrame, out Point2 startPoint, out Point2 endPoint)
         {
-            double t; // coeficient of the plane-equation
-            double nA, nB, nC, nD, nP;
-            var lstProj = new List<Point3D>();
+            decimal t; // coeficient of the plane-equation
+            decimal nA, nB, nC, nD, nP;
+            var lstProj = new List<Point3<decimal>>();
 
             // initialize
             startPoint = Point2.Origin;
@@ -413,7 +423,9 @@ namespace FellowOakDicom.Imaging
 
             // validation
             if (destinationFrame.DirectionNormal.IsZero)
+            {
                 return false;
+            }
 
             nP = destinationFrame.DirectionNormal * destinationFrame.PointTopLeft;
             nA = destinationFrame.DirectionNormal * sourceFrame.PointTopLeft;
@@ -422,44 +434,56 @@ namespace FellowOakDicom.Imaging
             nD = destinationFrame.DirectionNormal * sourceFrame.PointBottomLeft;
 
             // segment AB
-            if (Math.Abs(nB - nA) > Constants.Epsilon)
+            if (Math.Abs(nB - nA) > Constants.EpsilonM)
             {
                 t = (nP - nA) / (nB - nA);
                 if (t > 0 && t <= 1)
+                {
                     lstProj.Add(sourceFrame.PointTopLeft + t * (sourceFrame.PointTopRight - sourceFrame.PointTopLeft));
+                }
             }
 
             // segment BC
-            if (Math.Abs(nC - nB) > Constants.Epsilon)
+            if (Math.Abs(nC - nB) > Constants.EpsilonM)
             {
                 t = (nP - nB) / (nC - nB);
                 if (t > 0 && t <= 1)
+                {
                     lstProj.Add(sourceFrame.PointTopRight + t * (sourceFrame.PointBottomRight - sourceFrame.PointTopRight));
+                }
             }
 
             // segment CD
-            if (Math.Abs(nD - nC) > Constants.Epsilon)
+            if (Math.Abs(nD - nC) > Constants.EpsilonM)
             {
                 t = (nP - nC) / (nD - nC);
                 if (t > 0 && t <= 1)
+                {
                     lstProj.Add(sourceFrame.PointBottomRight + t * (sourceFrame.PointBottomLeft - sourceFrame.PointBottomRight));
+                }
             }
 
             // segment DA
-            if (Math.Abs(nA - nD) > Constants.Epsilon)
+            if (Math.Abs(nA - nD) > Constants.EpsilonM)
             {
                 t = (nP - nD) / (nA - nD);
                 if (t > 0 && t <= 1)
+                {
                     lstProj.Add(sourceFrame.PointBottomLeft + t * (sourceFrame.PointTopLeft - sourceFrame.PointBottomLeft));
+                }
             }
 
             // the destinationplane should have been crossed exactly two times
             if (lstProj.Count != 2)
+            {
                 return false;
+            }
 
             // now back from 3D patient space to 2D pixel space
-            startPoint = destinationFrame.TransformPatientPointToImage(lstProj[0]).Round();
-            endPoint = destinationFrame.TransformPatientPointToImage(lstProj[1]).Round();
+            var startPointExact = destinationFrame.TransformPatientPointToImage(lstProj[0]);
+            startPoint = new Point2((int)Math.Round(startPointExact.X), (int)Math.Round(startPointExact.Y));
+            var endPointExact = destinationFrame.TransformPatientPointToImage(lstProj[1]);
+            endPoint = new Point2((int)Math.Round(endPointExact.X), (int)Math.Round(endPointExact.Y));
             return true;
         }
 

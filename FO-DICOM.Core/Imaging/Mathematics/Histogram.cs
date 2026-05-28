@@ -69,7 +69,11 @@ namespace FellowOakDicom.Imaging.Mathematics
         {
             get
             {
-                if (_window == -1) ApplyWindow(100);
+                if (_window == -1)
+                {
+                    ApplyWindow(100);
+                }
+
                 return _wtotal;
             }
         }
@@ -84,8 +88,7 @@ namespace FellowOakDicom.Imaging.Mathematics
             get
             {
                 var pos = value + _offset;
-                if (pos < 0 || pos >= _values.Length) return 0;
-                return _values[pos];
+                return pos < 0 || pos >= _values.Length ? 0 : _values[pos];
             }
         }
 
@@ -100,12 +103,18 @@ namespace FellowOakDicom.Imaging.Mathematics
         public void Add(int value)
         {
             var pos = value + _offset;
-            if (pos < 0 || pos >= _values.Length) return;
+            if (pos < 0 || pos >= _values.Length)
+            {
+                return;
+            }
 
             _values[pos]++;
             _total++;
 
-            if (pos >= _wstart && pos <= _wend) _wtotal++;
+            if (pos >= _wstart && pos <= _wend)
+            {
+                _wtotal++;
+            }
         }
 
         /// <summary>
@@ -115,10 +124,16 @@ namespace FellowOakDicom.Imaging.Mathematics
         public void Clear(int value)
         {
             var pos = value + _offset - 1;
-            if (pos < 0 || pos >= _values.Length) return;
+            if (pos < 0 || pos >= _values.Length)
+            {
+                return;
+            }
 
             _total -= _values[pos];
-            if (pos >= _wstart && pos <= _wend) _wtotal -= _values[pos];
+            if (pos >= _wstart && pos <= _wend)
+            {
+                _wtotal -= _values[pos];
+            }
 
             _values[pos] = 0;
         }
@@ -136,7 +151,10 @@ namespace FellowOakDicom.Imaging.Mathematics
             _window = percent;
             _wtotal = _total;
 
-            if (percent == 100 || _total == 0) return;
+            if (percent == 100 || _total == 0)
+            {
+                return;
+            }
 
             var target = (int)(_total * (percent / 100.0));
 
@@ -146,19 +164,30 @@ namespace FellowOakDicom.Imaging.Mathematics
                 if (_values[_wstart] >= _values[_wend])
                 {
                     wtotal -= _values[_wstart];
-                    if (wtotal < target) break;
+                    if (wtotal < target)
+                    {
+                        break;
+                    }
+
                     _wstart++;
                 }
                 else
                 {
                     wtotal -= _values[_wend];
-                    if (wtotal < target) break;
+                    if (wtotal < target)
+                    {
+                        break;
+                    }
+
                     _wend--;
                 }
 
                 _wtotal = wtotal;
 
-                if (_wstart == _wend) break;
+                if (_wstart == _wend)
+                {
+                    break;
+                }
             }
         }
 
@@ -179,7 +208,10 @@ namespace FellowOakDicom.Imaging.Mathematics
                 return;
             }
 
-            for (var i = _wstart; i <= _wend; i++) _wtotal += _values[i];
+            for (var i = _wstart; i <= _wend; i++)
+            {
+                _wtotal += _values[i];
+            }
 
             _window = (int)(_wtotal / (double)_total);
         }

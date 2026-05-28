@@ -3,6 +3,7 @@
 #nullable disable
 
 using System.Linq;
+using System.Numerics;
 
 namespace FellowOakDicom.Imaging.Mathematics
 {
@@ -13,93 +14,64 @@ namespace FellowOakDicom.Imaging.Mathematics
 
         private readonly int[] _values;
 
-        private int _count;
-
         public MovingAverage(int window)
         {
             _window = window;
             _values = new int[_window];
-            _count = 0;
+            Count = 0;
         }
 
-        public int Count
-        {
-            get
-            {
-                return _count;
-            }
-        }
+        public int Count { get; private set; }
 
         public int Next(int value)
         {
-            _values[_count % _window] = value;
-            _count++;
-            if (_count < _window) return _values.Sum() / _count;
+            _values[Count % _window] = value;
+            Count++;
+            if (Count < _window)
+            {
+                return _values.Sum() / Count;
+            }
+
             return _values.Sum() / _window;
         }
     }
 
-    public class MovingAverageF
+
+    public class MovingAverage<T> where T : INumber<T>
     {
         private readonly int _window;
 
-        private readonly float[] _values;
+        private readonly T[] _values;
 
-        private int _count;
-
-        public MovingAverageF(int window)
+        public MovingAverage(int window)
         {
             _window = window;
-            _values = new float[_window];
-            _count = 0;
+            _values = new T[_window];
+            Count = 0;
         }
 
-        public int Count
+        public int Count { get; private set; }
+
+        public T Next(T value)
         {
-            get
+            _values[Count % _window] = value;
+            Count++;
+            if (Count < _window)
             {
-                return _count;
+                return Sum() / T.CreateChecked(Count);
             }
+
+            return Sum() / T.CreateChecked(_window);
         }
 
-        public float Next(float value)
+        private T Sum()
         {
-            _values[_count % _window] = value;
-            _count++;
-            if (_count < _window) return _values.Sum() / _count;
-            return _values.Sum() / _window;
-        }
-    }
-
-    public class MovingAverageD
-    {
-        private readonly int _window;
-
-        private readonly double[] _values;
-
-        private int _count;
-
-        public MovingAverageD(int window)
-        {
-            _window = window;
-            _values = new double[_window];
-            _count = 0;
-        }
-
-        public int Count
-        {
-            get
+            T sum = T.Zero;
+            for (var i = 0; i < _values.Length; i++)
             {
-                return _count;
+                sum += _values[i];
             }
-        }
-
-        public double Next(double value)
-        {
-            _values[_count % _window] = value;
-            _count++;
-            if (_count < _window) return _values.Sum() / _count;
-            return _values.Sum() / _window;
+            return sum;
         }
     }
 }

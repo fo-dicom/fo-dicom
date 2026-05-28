@@ -17,7 +17,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         private readonly VolumeData _volume;
 
 
-        public Slice(VolumeData volume, Point3D topLeft, Vector3D rowDir, Vector3D colDir, int rows, int cols, double spacing)
+        public Slice(VolumeData volume, Point3<decimal> topLeft, Vector3<decimal> rowDir, Vector3<decimal> colDir, int rows, int cols, decimal spacing)
         {
             _volume = volume;
             TopLeft = topLeft.Clone();
@@ -30,17 +30,17 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        public Point3D TopLeft { get; private set; }
+        public Point3<decimal> TopLeft { get; private set; }
 
-        public Vector3D RowDirection { get; private set; }
+        public Vector3<decimal> RowDirection { get; private set; }
 
-        public Vector3D ColumnDirection { get; private set; }
+        public Vector3<decimal> ColumnDirection { get; private set; }
 
         public int Rows { get; private set; }
 
         public int Columns { get; private set; }
 
-        public double Spacing { get; private set; }
+        public decimal Spacing { get; private set; }
 
         private double[] _output;
 
@@ -94,10 +94,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        public IntervalD GetMinMaxValue()
-        {
-            return new IntervalD(_output.Min(), _output.Max());
-        }
+        public Interval<double> GetMinMaxValue() => new Interval<double>(_output.Min(), _output.Max());
 
 
     }

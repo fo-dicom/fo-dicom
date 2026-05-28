@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
             float w1,
             float h1)
         {
-            var rect = new RectF(x0, y0, w0, h0);
+            var rect = new Rect<float>(x0, y0, w0, h0);
             rect.Inflate(inflateX, inflateY);
             Assert.Equal(x1, rect.X);
             Assert.Equal(y1, rect.Y);
@@ -41,7 +41,7 @@ namespace FellowOakDicom.Tests.Imaging.Mathematics
         [Fact]
         public void Assignment_ChangeInNewInstance_DoesNotAffectOldInstance()
         {
-            var oldRect = new RectF(10f, 20f, 30f, 40f);
+            var oldRect = new Rect<float>(10f, 20f, 30f, 40f);
             var newRect = oldRect;
             newRect.Inflate(10f, 10f);
             Assert.Equal(10f, oldRect.X);
