@@ -811,9 +811,9 @@ namespace FellowOakDicom.Tests.Network
             AppDomain.CurrentDomain.UnhandledException += (sender, args) => unhandledExceptionObject = args.ExceptionObject;
             TaskScheduler.UnobservedTaskException += (sender, args) => unhandledExceptionObject = args.Exception;
 
-            await Task.Factory.StartNew(() => {
+            await Task.Factory.StartNew(async () => {
                 var server = DicomServerFactory.Create<DicomCEchoProvider>(0);
-                Thread.Sleep(500);
+                await Task.Delay(TimeSpan.FromMilliseconds(500));
                 server.Stop();
             });
 
