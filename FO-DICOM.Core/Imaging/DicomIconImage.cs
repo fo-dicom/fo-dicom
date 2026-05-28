@@ -30,7 +30,7 @@ namespace FellowOakDicom.Imaging
                     return true;
                 }
                 catch
-                { 
+                {
                     // Failed to create Icon from dataset
                 }
             }
@@ -153,7 +153,7 @@ namespace FellowOakDicom.Imaging
                 }
             }
 
-            var pixelData = DicomPixelData.Create(dataset, false);
+            var pixelData = DicomPixelData.CreateFromDataset(dataset);
 
             // Number of frames is not part of the Image Icon Sequence
             // Set to 1 to be able to use the standard rendering functions

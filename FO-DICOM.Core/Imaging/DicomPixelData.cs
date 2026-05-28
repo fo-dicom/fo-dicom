@@ -2,9 +2,9 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Linq;
-using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.Imaging
 {
@@ -188,7 +188,7 @@ namespace FellowOakDicom.Imaging
                 {
                     ++actualWidth;
                 }
-                
+
                 // Issue #645, handle special case with uncompressed YBR_FULL_422 images
                 // chrominance channels are downsampled to 2 (nominally still 3)
                 if (PhotometricInterpretation == PhotometricInterpretation.YbrFull422)
@@ -287,44 +287,49 @@ namespace FellowOakDicom.Imaging
         public abstract void AddFrame(IByteBuffer data);
 
         /// <summary>
-        /// A factory method to initialize new instance of <see cref="DicomPixelData"/> implementation either 
-        /// <see cref="OtherWordPixelData"/>, <see cref="OtherBytePixelData"/>, or <see cref="EncapsulatedPixelData"/>
+        /// A factory method to create new instance of <see cref="DicomPixelData"/> and add it to the <paramref name="dataset"/>, 
+        /// implementation either <see cref="OtherWordPixelData"/>, <see cref="OtherBytePixelData"/>, or 
+        /// <see cref="EncapsulatedPixelData"/>
         /// </summary>
         /// <param name="dataset">Source DICOM Dataset</param>
-        /// <param name="newPixelData">true if new <see cref="DicomPixelData"/>will be created for current dataset,
-        /// false to read <see cref="DicomPixelData"/> from <paramref name="dataset"/>.
-        /// Default is false (read)</param>
         /// <returns>New instance of DicomPixelData</returns>
-        public static DicomPixelData Create(DicomDataset dataset, bool newPixelData = false)
+        public static DicomPixelData CreateNew(DicomDataset dataset)
         {
-            if (newPixelData)
+            var syntax = dataset.InternalTransferSyntax;
+            var bitsAllocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
+
+            if (syntax.IsEncapsulated)
             {
-                var syntax = dataset.InternalTransferSyntax;
-                var bitsAllocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
+                if (bitsAllocated > 16)
+                {
+                    throw new DicomImagingException($"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
+                }
 
-                if (syntax.IsEncapsulated)
-                {
-                    if (bitsAllocated > 16)
-                    {
-                        throw new DicomImagingException($"Cannot represent pixel data with Bits Allocated: {bitsAllocated} > 16");
-                    }
-
-                    return new EncapsulatedPixelData(dataset, bitsAllocated);
-                }
-                else if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian)
-                {
-                    //  DICOM 3.5 A.1
-                    return new OtherWordPixelData(dataset, true);
-                }
-                else
-                {
-                    //  DICOM 3.5 A.2
-                    return bitsAllocated > 8
-                        ? (DicomPixelData)new OtherWordPixelData(dataset, true)
-                        : new OtherBytePixelData(dataset, true);
-                }
+                return new EncapsulatedPixelData(dataset, true);
             }
+            else if (syntax == DicomTransferSyntax.ImplicitVRLittleEndian)
+            {
+                //  DICOM 3.5 A.1
+                return new OtherWordPixelData(dataset, true);
+            }
+            else
+            {
+                //  DICOM 3.5 A.2
+                return bitsAllocated > 8
+                    ? (DicomPixelData)new OtherWordPixelData(dataset, true)
+                    : new OtherBytePixelData(dataset, true);
+            }
+        }
 
+        /// <summary>
+        /// A factory method to initialize new instance of <see cref="DicomPixelData"/> to read <see cref="DicomPixelData"/> 
+        /// from <paramref name="dataset"/>, implementation either <see cref="OtherWordPixelData"/>, 
+        /// <see cref="OtherBytePixelData"/>, or <see cref="EncapsulatedPixelData"/>
+        /// </summary>
+        /// <param name="dataset">Source DICOM Dataset</param>
+        /// <returns>New instance of DicomPixelData</returns>
+        public static DicomPixelData CreateFromDataset(DicomDataset dataset)
+        {
             var item = dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
             if (item == null)
             {
@@ -343,7 +348,7 @@ namespace FellowOakDicom.Imaging
 
             if (item is DicomOtherByteFragment || item is DicomOtherWordFragment)
             {
-                return new EncapsulatedPixelData(dataset);
+                return new EncapsulatedPixelData(dataset, false);
             }
 
             throw new DicomImagingException($"Unexpected or unhandled pixel data element type: {item.GetType()}");
@@ -509,47 +514,31 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         private sealed class EncapsulatedPixelData : DicomPixelData
         {
-            #region FIELDS
-
             /// <summary>
             /// The pixel data fragment sequence element
             /// </summary>
             private readonly DicomFragmentSequence _element;
 
-            #endregion
-
-            #region CONSTRUCTORS
-
             /// <summary>
-            /// Initialize new instance of EncapsulatedPixelData with new empty pixel data.
+            /// Initialize new instance of EncapsulatedPixelData
             /// </summary>
             /// <param name="dataset">The source dataset where to create new pixel data.</param>
-            /// <param name="bitsAllocated">Bits allocated for the pixel data.</param>
-            public EncapsulatedPixelData(DicomDataset dataset, int bitsAllocated)
+            /// <param name="newPixelData">True to create new pixel data, false to read pixel data from <paramref name="dataset"/></param>
+            public EncapsulatedPixelData(DicomDataset dataset, bool newPixelData)
                 : base(dataset)
             {
-                NumberOfFrames = 0;
-
-                _element = bitsAllocated > 8
-                    ? (DicomFragmentSequence)new DicomOtherWordFragment(DicomTag.PixelData)
-                    : new DicomOtherByteFragment(DicomTag.PixelData);
-
-                Dataset.AddOrUpdate(_element);
+                if (newPixelData)
+                {
+                    NumberOfFrames = 0;
+                    _element = new DicomOtherByteFragment(DicomTag.PixelData);
+                    Dataset.AddOrUpdate(_element);
+                }
+                else
+                {
+                    _element = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
+                }
             }
 
-            /// <summary>
-            /// Initialize new instance of EncapsulatedPixelData based on existing pixel data.
-            /// </summary>
-            /// <param name="dataset">The source dataset to extract pixel data from.</param>
-            public EncapsulatedPixelData(DicomDataset dataset)
-                : base(dataset)
-            {
-                _element = dataset.GetDicomItem<DicomFragmentSequence>(DicomTag.PixelData);
-            }
-
-            #endregion
-
-            #region METHODS
 
             /// <inheritdoc />
             public override IByteBuffer GetFrame(int frame)
@@ -562,13 +551,13 @@ namespace FellowOakDicom.Imaging
                 IByteBuffer buffer;
 
                 var fragments = _element.Fragments;
-                
+
                 // GH-1586 Ignore last fragment if it is empty
                 if (fragments.Count > 0 && fragments[fragments.Count - 1].Size == 0)
                 {
                     fragments.RemoveAt(fragments.Count - 1);
                 }
-                
+
                 if (NumberOfFrames == 1)
                 {
                     buffer = fragments.Count == 1
@@ -658,7 +647,6 @@ namespace FellowOakDicom.Imaging
                 _element.Fragments.Add(data);
             }
 
-            #endregion
         }
     }
 }

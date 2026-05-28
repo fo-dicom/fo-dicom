@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Bugs
             var streamByteDicomFile = DicomFile.Open(ms);
 
             var referencePixelData = streamByteDicomFile.Dataset.GetDicomItem<DicomOtherWord>(DicomTag.PixelData);
-            var pixelData = DicomPixelData.Create(streamByteDicomFile.Dataset);
+            var pixelData = DicomPixelData.CreateFromDataset(streamByteDicomFile.Dataset);
             var numberOfFrames = streamByteDicomFile.Dataset.GetSingleValue<int>(DicomTag.NumberOfFrames);
             var referenceBytes = Enumerable.Range(0, numberOfFrames).Select(x =>
                 {

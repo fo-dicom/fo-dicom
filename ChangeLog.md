@@ -5,6 +5,8 @@
 - Performance optimizations in FO-DICOM.Core
 - use decimal in FrameGeometry instead of double to avoid rounding erors (#2085)
 - breaking change: types `Geometry3D`, `Point3D`, etc are replaced by generic `Geometry<T>`, `Point3<T>`etc.
+- new encapsulated pixeldata is now always stored correctly as OB (#2117)
+- breaking change: DicomPixelData.Create(dataset, bool) is split up to DicomPixelData.CreateNew(dataset) and DicomPixelData.CreateFromDataset(dataset)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)

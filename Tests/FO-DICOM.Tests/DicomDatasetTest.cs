@@ -406,7 +406,7 @@ namespace FellowOakDicom.Tests
             var data = new MemoryByteBuffer(new byte[] { 255 }); //dummy data
 
             ds.AddOrUpdate(DicomTag.BitsAllocated, (ushort)8);
-            var pixelData = DicomPixelData.Create(ds, true);
+            var pixelData = DicomPixelData.CreateNew(ds);
             pixelData.AddFrame(data);
 
             Assert.Equal(DicomTransferSyntax.ExplicitVRLittleEndian, ds.InternalTransferSyntax);
@@ -921,7 +921,7 @@ namespace FellowOakDicom.Tests
             );
             Assert.False(dataset.TryGetSingleValue(DicomTag.SeriesNumber, out int _));
         }
-        
+
         [Fact]
         public void FunctionalGroupValues_ShouldNotCrashWithEmptySharedFunctionalGroupsSequence()
         {
@@ -929,10 +929,10 @@ namespace FellowOakDicom.Tests
             var dataset = new DicomDataset();
             var sequence = new DicomSequence(DicomTag.SharedFunctionalGroupsSequence);
             dataset.Add(sequence);
-            
+
             //Act
             var result = dataset.FunctionalGroupValues(0);
-            
+
             //Assert
             Assert.Empty(result);
         }

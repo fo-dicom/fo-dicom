@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests.Bugs
 
             // Act
             DicomFile dicomFile;
-            if(async)
+            if (async)
             {
                 dicomFile = await DicomFile.OpenAsync(file);
             }
@@ -29,7 +29,7 @@ namespace FellowOakDicom.Tests.Bugs
                 dicomFile = DicomFile.Open(file);
                 // ReSharper restore MethodHasAsyncOverload
             }
-            var pixelData = DicomPixelData.Create(dicomFile.Dataset);
+            var pixelData = DicomPixelData.CreateFromDataset(dicomFile.Dataset);
             var frame = pixelData.GetFrame(0);
 
             // Assert

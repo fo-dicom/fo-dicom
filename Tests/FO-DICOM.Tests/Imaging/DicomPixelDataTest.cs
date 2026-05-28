@@ -17,7 +17,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ImplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, (ushort)8);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
@@ -30,7 +30,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, (ushort)32);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
@@ -44,7 +44,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             Assert.Equal("OtherWordPixelData", pixelData.GetType().Name);
         }
@@ -58,7 +58,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             Assert.Equal("OtherBytePixelData", pixelData.GetType().Name);
         }
@@ -70,7 +70,7 @@ namespace FellowOakDicom.Tests.Imaging
             {
                 { DicomTag.BitsAllocated, (ushort)1 }
             };
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             Assert.Equal("OtherBytePixelData", pixelData.GetType().Name);
 
@@ -87,7 +87,7 @@ namespace FellowOakDicom.Tests.Imaging
             {
                 { DicomTag.BitsAllocated, (ushort)1 }
             };
-            pixelData = DicomPixelData.Create(dataset, true);
+            pixelData = DicomPixelData.CreateNew(dataset);
 
             Assert.Equal("OtherBytePixelData", pixelData.GetType().Name);
 
@@ -110,7 +110,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             var exception = Record.Exception(() => pixelData.BitsStored = bitsStored);
             Assert.Null(exception);
@@ -124,7 +124,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             var exception = Record.Exception(() => pixelData.BitsStored = bitsStored);
             Assert.NotNull(exception);
@@ -137,7 +137,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             var exception = Record.Exception(() => pixelData.HighBit = highBit);
             Assert.Null(exception);
@@ -153,7 +153,7 @@ namespace FellowOakDicom.Tests.Imaging
         {
             var dataset = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
             dataset.Add(DicomTag.BitsAllocated, bitsAllocated);
-            var pixelData = DicomPixelData.Create(dataset, true);
+            var pixelData = DicomPixelData.CreateNew(dataset);
 
             var exception = Record.Exception(() => pixelData.HighBit = highBit);
             Assert.NotNull(exception);

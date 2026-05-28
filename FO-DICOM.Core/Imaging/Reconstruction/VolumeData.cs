@@ -71,7 +71,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
             ValidateInput(dataset.Contains(DicomTag.NumberOfFrames), "Given dataset must contain multiple frames");
 
             var numberOfFrames = dataset.GetSingleValue<int>(DicomTag.NumberOfFrames);
-            var pixelData = DicomPixelData.Create(dataset);
+            var pixelData = DicomPixelData.CreateFromDataset(dataset);
 
             return Enumerable.Range(0, numberOfFrames)
                 .Select(frame => new ImageData(dataset, pixelData, frame));

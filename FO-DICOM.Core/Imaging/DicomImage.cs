@@ -122,7 +122,7 @@ namespace FellowOakDicom.Imaging
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.WindowWidth ?? 255;
             set
             {
-                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames-1) : (CurrentFrame, CurrentFrame);
+                var (from, to) = AutoApplyLUTToAllFrames ? (0, NumberOfFrames - 1) : (CurrentFrame, CurrentFrame);
                 for (var frame = from; frame <= to; frame++)
                 {
                     if (GetOrCreateCachedFramePipeline(frame) is GenericGrayscalePipeline pipeline && pipeline.WindowWidth != value)
@@ -209,7 +209,7 @@ namespace FellowOakDicom.Imaging
 
         /// <summary>Show or hide DICOM overlays</summary>
         public bool ShowOverlays
-        { 
+        {
             get => _showOverlays;
             set
             {
@@ -267,7 +267,7 @@ namespace FellowOakDicom.Imaging
             var pipeline = GetOrCreateCachedFramePipeline(frame);
 
             var graphic = new ImageGraphic(pixels);
-            
+
             if (ShowOverlays)
             {
                 foreach (var overlay in _overlays.Value)
@@ -276,7 +276,7 @@ namespace FellowOakDicom.Imaging
                     {
                         continue;
                     }
-                    
+
                     // #1728 ignore overlay data that is too small
                     if (overlay.Data.Size * 8 < overlay.Rows * overlay.Columns)
                     {
@@ -389,14 +389,14 @@ namespace FellowOakDicom.Imaging
             var inputTransferSyntax = dataset.InternalTransferSyntax;
             if (!inputTransferSyntax.IsEncapsulated)
             {
-                return DicomPixelData.Create(dataset);
+                return DicomPixelData.CreateFromDataset(dataset);
             }
 
             // Clone the encapsulated dataset because modifying the pixel data modifies the dataset
             var clone = dataset.Clone();
             clone.InternalTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian;
 
-            var pixelData = DicomPixelData.Create(clone, true);
+            var pixelData = DicomPixelData.CreateNew(clone);
 
             return pixelData;
         }

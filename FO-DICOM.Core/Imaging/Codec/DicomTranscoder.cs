@@ -2,12 +2,12 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using FellowOakDicom.Imaging.Render;
 using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.IO.Writer;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace FellowOakDicom.Imaging.Codec
 {
@@ -122,8 +122,8 @@ namespace FellowOakDicom.Imaging.Codec
                 var newDataset = dataset.Clone();
                 newDataset.InternalTransferSyntax = OutputSyntax;
 
-                var oldPixelData = DicomPixelData.Create(dataset, false);
-                var newPixelData = DicomPixelData.Create(newDataset, true);
+                var oldPixelData = DicomPixelData.CreateFromDataset(dataset);
+                var newPixelData = DicomPixelData.CreateNew(newDataset);
 
                 for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
                 {
@@ -163,7 +163,7 @@ namespace FellowOakDicom.Imaging.Codec
         /// <inheritdoc />
         public IByteBuffer DecodeFrame(DicomDataset dataset, int frame)
         {
-            var pixelData = DicomPixelData.Create(dataset);
+            var pixelData = DicomPixelData.CreateFromDataset(dataset);
             var buffer = pixelData.GetFrame(frame);
 
             // is pixel data already uncompressed?
@@ -175,11 +175,11 @@ namespace FellowOakDicom.Imaging.Codec
             // clone dataset to prevent changes to source
             var cloneDataset = dataset.Clone();
 
-            var oldPixelData = DicomPixelData.Create(cloneDataset, true);
+            var oldPixelData = DicomPixelData.CreateNew(cloneDataset);
             oldPixelData.AddFrame(buffer);
 
             var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
-            var newPixelData = DicomPixelData.Create(newDataset);
+            var newPixelData = DicomPixelData.CreateFromDataset(newDataset);
 
             return newPixelData.GetFrame(0);
         }
@@ -187,7 +187,7 @@ namespace FellowOakDicom.Imaging.Codec
         /// <inheritdoc />
         public IPixelData DecodePixelData(DicomDataset dataset, int frame)
         {
-            var pixelData = DicomPixelData.Create(dataset);
+            var pixelData = DicomPixelData.CreateFromDataset(dataset);
 
             // is pixel data already uncompressed?
             if (!dataset.InternalTransferSyntax.IsEncapsulated)
@@ -200,11 +200,11 @@ namespace FellowOakDicom.Imaging.Codec
             // clone dataset to prevent changes to source
             var cloneDataset = dataset.Clone();
 
-            var oldPixelData = DicomPixelData.Create(cloneDataset, true);
+            var oldPixelData = DicomPixelData.CreateNew(cloneDataset);
             oldPixelData.AddFrame(buffer);
 
             var newDataset = Decode(cloneDataset, OutputSyntax, InputCodec, InputCodecParams);
-            var newPixelData = DicomPixelData.Create(newDataset);
+            var newPixelData = DicomPixelData.CreateFromDataset(newDataset);
 
             return PixelDataFactory.Create(newPixelData, 0);
         }
@@ -235,11 +235,11 @@ namespace FellowOakDicom.Imaging.Codec
                 throw new DicomCodecException($"Decoding dataset with transfer syntax: {oldDataset.InternalTransferSyntax} is not supported.");
             }
 
-            var oldPixelData = DicomPixelData.Create(oldDataset);
+            var oldPixelData = DicomPixelData.CreateFromDataset(oldDataset);
 
             var newDataset = oldDataset.Clone();
             newDataset.InternalTransferSyntax = outSyntax;
-            var newPixelData = DicomPixelData.Create(newDataset, true);
+            var newPixelData = DicomPixelData.CreateNew(newDataset);
 
             codec.Decode(oldPixelData, newPixelData, parameters);
 
@@ -261,11 +261,11 @@ namespace FellowOakDicom.Imaging.Codec
                 throw new DicomCodecException($"Encoding dataset to transfer syntax {outSyntax} is not supported.");
             }
 
-            var oldPixelData = DicomPixelData.Create(oldDataset);
+            var oldPixelData = DicomPixelData.CreateFromDataset(oldDataset);
 
             var newDataset = oldDataset.Clone();
             newDataset.InternalTransferSyntax = outSyntax;
-            var newPixelData = DicomPixelData.Create(newDataset, true);
+            var newPixelData = DicomPixelData.CreateNew(newDataset);
 
             codec.Encode(oldPixelData, newPixelData, parameters);
 
@@ -290,7 +290,7 @@ namespace FellowOakDicom.Imaging.Codec
                 {
                     ratios.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionRatio));
                 }
-                
+
                 ratios.Add(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", oldSize / newSize));
                 newDataset.AddOrUpdate(new DicomDecimalString(DicomTag.LossyImageCompressionRatio, ratios.ToArray()));
             }

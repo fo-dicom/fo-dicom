@@ -293,7 +293,7 @@ namespace FellowOakDicom.Tests.Imaging.Render
         {
             return
                 PixelDataFactory.Create(
-                    DicomPixelData.Create(
+                    DicomPixelData.CreateFromDataset(
                         new DicomDataset
                             {
                                 {
