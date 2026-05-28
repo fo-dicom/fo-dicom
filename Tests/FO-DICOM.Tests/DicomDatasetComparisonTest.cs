@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2012-2026 fo-dicom contributors.
 // Licensed under the Microsoft Public License (MS-PL).
 
+using FellowOakDicom.StructuredReport;
 using Xunit;
 
 namespace FellowOakDicom.Tests
@@ -122,5 +123,27 @@ namespace FellowOakDicom.Tests
 
             Assert.False(dataset1 != dataset2);
         }
+
+
+        [Fact]
+        public void DicomCodeItem_EqualityDependsOnStaticType()
+        {
+            var a = new DicomCodeItem("113820", "DCM", "Meaning A");
+            var b = new DicomCodeItem("113820", "DCM", "Meaning B");
+
+            // various ways to compare the two items
+            bool asDataset = ((DicomDataset)a).Equals((DicomDataset)b);
+            bool asObject = a.Equals((object)b);
+            bool asConcrete = a.Equals(b);
+            bool viaOperator = a == b;
+
+            // All four should be equal.
+            Assert.True(asDataset);
+            Assert.True(asObject);
+            Assert.True(asConcrete);
+            Assert.True(viaOperator);
+        }
+
+
     }
 }
