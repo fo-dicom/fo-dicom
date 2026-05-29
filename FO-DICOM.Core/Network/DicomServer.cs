@@ -302,10 +302,12 @@ namespace FellowOakDicom.Network
                         // Process incoming TcpClient in a background task to not block the main listener
                         _ = Task.Run(() =>
                         {
+                            INetworkStream networkStream = null;
+                            RunningDicomService runningService = null;
                             try
                             {
                                 // let the INetworkStream dispose the TcpClient
-                                var networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
+                                networkStream = _networkManager.CreateNetworkStream(tcpClient, _tlsAcceptor, ownsTcpClient: true);
 
                                 var scp = CreateScp(networkStream);
                                 scp.RunsAsServer = true;
@@ -316,7 +318,7 @@ namespace FellowOakDicom.Network
 
                                 var serviceTask = scp.RunAsync();
                                 int numberOfServices;
-                                var runningService = new RunningDicomService(scp, serviceTask);
+                                runningService = new RunningDicomService(scp, serviceTask);
                                 lock (_services)
                                 {
                                     _services.Add(runningService);
@@ -342,6 +344,8 @@ namespace FellowOakDicom.Network
                             {
                                 Logger.LogError(e, "An exception occurred while accepting an incoming client connection");
                                 tcpClient.Close();
+                                networkStream?.Dispose();
+                                RemoveCompletedService(runningService);
                             }
                         }, _cancellationToken);
                     }
@@ -372,9 +376,12 @@ namespace FellowOakDicom.Network
             {
                 _maxClientsSemaphore?.Release(1);
             }
-            lock (_services)
+            if (runningService != null)
             {
-                _services.Remove(runningService);
+                lock (_services)
+                {
+                    _services.Remove(runningService);
+                }
             }
         }
 

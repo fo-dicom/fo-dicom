@@ -8,6 +8,7 @@
 - new encapsulated pixeldata is now always stored correctly as OB (#2117)
 - breaking change: DicomPixelData.Create(dataset, bool) is split up to DicomPixelData.CreateNew(dataset) and DicomPixelData.CreateFromDataset(dataset)
 - remove IEquatable<DicomDataset> from DicomDataset, because this prevents the overloaded Equals methods from being invoked (#2119)
+- Release resource and semaphore if creating a SCP failes (#2116)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
