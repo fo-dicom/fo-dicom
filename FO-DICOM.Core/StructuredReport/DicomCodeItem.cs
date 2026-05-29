@@ -34,8 +34,26 @@ namespace FellowOakDicom.StructuredReport
             }
         }
 
-        public string Value => GetValueOrDefault(DicomTag.CodeValue, 0, string.Empty);
-
+        public string Value
+        {
+            get
+            {
+                if (TryGetValue<string>(DicomTag.CodeValue, 0, out var codeValue))
+                {
+                    return codeValue;
+                }
+                if (TryGetValue<string>(DicomTag.LongCodeValue, 0, out var longCodeValue))
+                {
+                    return longCodeValue;
+                }
+                if (TryGetValue<string>(DicomTag.URNCodeValue, 0, out var urnCodeValue))
+                {
+                    return urnCodeValue;
+                }
+                return string.Empty;
+            }
+        }
+            
         public string Scheme => GetValueOrDefault(DicomTag.CodingSchemeDesignator, 0, string.Empty);
 
         public string Meaning => GetValueOrDefault(DicomTag.CodeMeaning, 0, string.Empty);
