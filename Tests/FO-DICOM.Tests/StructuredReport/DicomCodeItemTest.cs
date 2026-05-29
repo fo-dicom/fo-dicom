@@ -80,24 +80,24 @@ namespace FellowOakDicom.Tests.StructuredReport
         {
             var ds = new DicomDataset
             {
-                {DicomTag.LongCodeValue, "113820113820113820" },
-                {DicomTag.CodingSchemeDesignator, "DCM" },
-                {DicomTag.CodeMeaning, "CT Acquisition Type" }
+                {DicomTag.LongCodeValue, "621566751000087104" },
+                {DicomTag.CodingSchemeDesignator, "SCT" },
+                {DicomTag.CodeMeaning, "Invasive diagnostic procedure" }
             };
             var codeItem = new DicomCodeItem(ds);
 
-            Assert.Equal("113820113820113820", codeItem.Value);
+            Assert.Equal("621566751000087104", codeItem.Value);
         }
 
         [Fact]
         public void DicomCodeItem_WriteLongCodeValue()
         {
-            var codeItem = new DicomCodeItem("113820113820113820", "DCM", "CT Acquisition Type");
+            var codeItem = new DicomCodeItem("621566751000087104", "SCT", "Invasive diagnostic procedure");
 
             Assert.False(codeItem.Contains(DicomTag.CodeValue));
             Assert.True(codeItem.Contains(DicomTag.LongCodeValue));
             Assert.False(codeItem.Contains(DicomTag.URNCodeValue));
-            Assert.Equal("113820113820113820", codeItem.GetString(DicomTag.LongCodeValue));
+            Assert.Equal("621566751000087104", codeItem.GetString(DicomTag.LongCodeValue));
         }
 
         [Fact]
@@ -124,6 +124,18 @@ namespace FellowOakDicom.Tests.StructuredReport
             Assert.True(codeItem.Contains(DicomTag.URNCodeValue));
             Assert.Equal("urn:lex:us:federal:codified.regulation:2013-04-25;45CFR164", codeItem.GetString(DicomTag.URNCodeValue));
         }
+
+        [Fact]
+        public void DicomCodeItem_WriteURNCodeValueFromFactoryMethod()
+        {
+            var codeItem = DicomCodeItem.FromUrn("urn:lex:us:federal:codified.regulation:2013-04-25;45CFR164", "HIPAA Privacy Rule");
+
+            Assert.False(codeItem.Contains(DicomTag.CodeValue));
+            Assert.False(codeItem.Contains(DicomTag.LongCodeValue));
+            Assert.True(codeItem.Contains(DicomTag.URNCodeValue));
+            Assert.Equal("urn:lex:us:federal:codified.regulation:2013-04-25;45CFR164", codeItem.GetString(DicomTag.URNCodeValue));
+        }
+
 
     }
 }

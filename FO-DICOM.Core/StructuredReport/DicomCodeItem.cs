@@ -41,8 +41,8 @@ namespace FellowOakDicom.StructuredReport
             }
             else
             {
-            Add(DicomTag.CodeValue, value);
-            Add(DicomTag.CodingSchemeDesignator, scheme);
+                Add(DicomTag.CodeValue, value);
+                Add(DicomTag.CodingSchemeDesignator, scheme);
             }
 
             Add(DicomTag.CodeMeaning, meaning);
@@ -51,6 +51,14 @@ namespace FellowOakDicom.StructuredReport
                 Add(DicomTag.CodingSchemeVersion, version);
             }
         }
+
+        public static DicomCodeItem FromUrn(string urn, string meaning)
+            => new DicomCodeItem(new DicomDataset
+            {
+                {DicomTag.URNCodeValue, urn },
+                {DicomTag.CodeMeaning, meaning }
+            });
+
 
         public string Value
         {
