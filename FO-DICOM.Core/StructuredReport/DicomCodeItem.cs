@@ -25,8 +25,26 @@ namespace FellowOakDicom.StructuredReport
 
         public DicomCodeItem(string value, string scheme, string meaning, string version = null)
         {
+            value ??= string.Empty; // avoid null value
+            if (value.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) || value.StartsWith("urn:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Add(DicomTag.URNCodeValue, value);
+                if (!string.IsNullOrEmpty(scheme))
+                {
+                    Add(DicomTag.CodingSchemeDesignator, scheme);
+                }
+            }
+            else if (value.Length > 16)
+            {
+                Add(DicomTag.LongCodeValue, value);
+                Add(DicomTag.CodingSchemeDesignator, scheme);
+            }
+            else
+            {
             Add(DicomTag.CodeValue, value);
             Add(DicomTag.CodingSchemeDesignator, scheme);
+            }
+
             Add(DicomTag.CodeMeaning, meaning);
             if (version != null)
             {
