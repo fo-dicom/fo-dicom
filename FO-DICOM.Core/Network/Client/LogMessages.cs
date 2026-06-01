@@ -32,6 +32,15 @@ namespace FellowOakDicom.Network.Client
         [LoggerMessage(Level = LogLevel.Debug, Message = "[{OldState}] --> [{NewState}]")]
         internal static partial void DebugClientStateChanged(this ILogger logger, DicomClientState oldState, DicomClientState newState);
 
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Successful user identity negotiation with type {UserIdentityType} was required but server response was null")]
+        internal static partial void WarningNoValidUserIdentityNegotiation(this ILogger logger, DicomUserIdentityType? userIdentityType);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "DICOM request sending was cancelled")]
+        internal static partial void WarningSendingRequestsCancelled(this ILogger logger);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "An error occurred while sending DICOM requests")]
+        internal static partial void ErrorWhileSendingRequest(this ILogger logger, Exception exception);
+
 
     }
 }

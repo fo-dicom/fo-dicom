@@ -34,6 +34,9 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
         [LoggerMessage(Level = LogLevel.Debug, Message = "{Request}: Connection was closed")]
         internal static partial void DebugRequestClosed(this ILogger logger, DicomRequest request);
 
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Connection closed")]
+        internal static partial void DebugConnectionClosed(this ILogger logger);
+
         [LoggerMessage(Level = LogLevel.Debug, Message = "{Request}: {Response}")]
         internal static partial void DebugRequestResponse(this ILogger logger, DicomRequest request, DicomResponse response);
 

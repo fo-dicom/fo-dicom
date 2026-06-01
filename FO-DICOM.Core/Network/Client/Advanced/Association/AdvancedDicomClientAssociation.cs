@@ -245,7 +245,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                                 return;
                             }
 
-                            _logger.LogDebug("Connection closed");
+                            _logger.DebugConnectionClosed();
 
                             if (!_associationChannel.Writer.TryWrite(connectionClosedEvent) && !IsDisposed)
                             {
@@ -432,7 +432,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
                             _logger.DebugAssociationAborted(Association);
                             return;
                         case ConnectionClosedEvent _:
-                            _logger.LogDebug("Connection has closed");
+                            _logger.DebugConnectionClosed();
                             return;
                     }
                 }

@@ -461,7 +461,7 @@ namespace FellowOakDicom.Network.Client
                                 throw new DicomNetworkException($"A positive response requested for user identity type {association.Association.UserIdentityNegotiation.UserIdentityType} but server response was null");
                             }
 
-                            _logger.LogWarning("Successful user identity negotiation with type {UserIdentityType} was required but server response was null", association.Association.UserIdentityNegotiation.UserIdentityType);
+                            _logger.WarningNoValidUserIdentityNegotiation(association.Association.UserIdentityNegotiation.UserIdentityType);
                         }
 
                         AssociationAccepted?.Invoke(this, new AssociationAcceptedEventArgs(association.Association));
@@ -575,7 +575,7 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (OperationCanceledException)
                     {
-                        _logger.LogWarning("DICOM request sending was cancelled");
+                        _logger.WarningSendingRequestsCancelled();
 
                         if (association != null && association.IsDisposed == false)
                         {
@@ -596,11 +596,11 @@ namespace FellowOakDicom.Network.Client
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "An error occurred while sending DICOM requests");
+                        _logger.ErrorWhileSendingRequest(e);
 
                         exception = e;
 
-                        if (association != null && association.IsDisposed == false)
+                        if (association != null && !association.IsDisposed)
                         {
                             await AbortAssociationAsync(association).ConfigureAwait(false);
                         }
@@ -688,7 +688,7 @@ namespace FellowOakDicom.Network.Client
             }
 
             _state = state;
-            
+
             _logger.DebugClientStateChanged(oldState, newState);
 
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
