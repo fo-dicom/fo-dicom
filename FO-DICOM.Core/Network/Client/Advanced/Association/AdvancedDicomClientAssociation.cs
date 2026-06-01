@@ -495,7 +495,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Association
 
             if (!disposing)
             {
-                _logger.DebugAssociationNotDisposed(Association);
+                _logger.WarningAssociationNotDisposed(Association);
             }
         }
 
