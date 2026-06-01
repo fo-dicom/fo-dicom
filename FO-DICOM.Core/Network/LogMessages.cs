@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace FellowOakDicom.Network
 {
@@ -63,9 +62,6 @@ namespace FellowOakDicom.Network
         [LoggerMessage(Level = LogLevel.Debug, Message = "Removing request [{MessageID}] from pending queue because an error occurred while sending it")]
         internal static partial void DebugRemovingRequestFromQueueBecauseOfError(this ILogger logger, ushort messageID, Exception exception);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to send DICOM message")]
-        internal static partial void ErrorSendingMessage(this ILogger logger, Exception exception);
-
         [LoggerMessage(Level = LogLevel.Information, Message = "{LogID} -> {pdu}")]
         internal static partial void InformationDataPduSent(this ILogger logger, string logId, PDataTF pdu);
 
@@ -110,6 +106,75 @@ namespace FellowOakDicom.Network
 
         [LoggerMessage(Level = LogLevel.Information, Message = "{logId} -> Association reject [result: {result}; source: {source}; reason: {reason}]")]
         internal static partial void InformationAssociationRejectSent(this ILogger logger, string logId, DicomRejectResult result, DicomRejectSource source, DicomRejectReason reason);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "{logId} -> Association release request")]
+        internal static partial void InformationAssociationReleaseRequestSent(this ILogger logger, string logId);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "{logId} -> Association release response")]
+        internal static partial void InformationAssociationReleaseResponseSent(this ILogger logger, string logId);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "{logId} -> Abort [source: {source}; reason: {reason}]")]
+        internal static partial void InformationAbortSent(this ILogger logger, string logId, DicomAbortSource source, DicomAbortReason reason);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Socket error while {operation} PDU: {socketError} [{errorCode}]")]
+        internal static partial void InformationSocketError(this ILogger logger, string operation, string socketError, int errorCode);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Object disposed while {operation} PDU")]
+        internal static partial void InformationDisposedPDU(this ILogger logger, string operation);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "I/O exception while {operation} PDU")]
+        internal static partial void ErrorIOExceptionPDU(this ILogger logger, string operation, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "DICOM service {DicomServiceType} was not disposed correctly, but was garbage collected instead")]
+        internal static partial void WarningDicomServiceNotDisposed(this ILogger logger, string dicomServiceType);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Unknown message type: {type}")]
+        internal static partial void WarningUnknownMessageType(this ILogger logger, DicomCommandField type);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Conversion of dataset transfer syntax from: {datasetSyntax} to: {acceptedSyntax} is not supported.")]
+        internal static partial void WarningConversionOfTransfersyntaxNotSupported(this ILogger logger, DicomTransferSyntax datasetSyntax, DicomTransferSyntax acceptedSyntax);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Will attempt to transfer dataset as-is.")]
+        internal static partial void WarningNoConversionOfTransfersyntax(this ILogger logger);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Pixel Data (7fe0,0010) is removed from dataset.")]
+        internal static partial void WarningPixelDataRemoved(this ILogger logger);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Request [{messageID}] timed out, removing from pending queue and triggering timeout callbacks")]
+        internal static partial void WarningRequestTimedOut(this ILogger logger, ushort messageID);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "An 'object disposed' exception occurred while writing the next PDU to the network stream. This can happen when the connection is being closed")]
+        internal static partial void ErrorObjectDisposedWhileWritingToStream(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Exception sending PDU")]
+        internal static partial void ErrorSendingPdu(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Exception processing PDU")]
+        internal static partial void ErrorProcessingPdu(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Error parsing C-Store dataset")]
+        internal static partial void ErrorParsingCStore(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Exception processing P-Data-TF PDU")]
+        internal static partial void ErrorProcessingDataPdu(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "An error occurred while sending a DICOM message")]
+        internal static partial void ErrorSendingMessage(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "No accepted presentation context found for abstract syntax: {sopClassUid}")]
+        internal static partial void ErrorNoPresentationContextForAbstractSyntax(this ILogger logger, DicomUID sopClassUid);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "An error occurred in the Fellow Oak DICOM timeout detection loop")]
+        internal static partial void ErrorInTimoutDetection(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Error during close attempt")]
+        internal static partial void ErrorWhenClosingConnection(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Exception creating PDV")]
+        internal static partial void ErrorCreatingPDV(this ILogger logger, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Exception writing data to PDV")]
+        internal static partial void ErrorWritingPDV(this ILogger logger, Exception exception);
 
 
     }
