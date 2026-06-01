@@ -2,14 +2,14 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using FellowOakDicom.Imaging.Mathematics;
 using FellowOakDicom.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace FellowOakDicom.Printing
 {
@@ -481,11 +481,11 @@ namespace FellowOakDicom.Printing
             {
                 if (string.IsNullOrEmpty(ImageDisplayFormat))
                 {
-                    Logger.LogError("No display format present in N-CREATE Basic Film Box dataset");
+                    Logger.ErrorNoDisplayFormatPresent();
                     return false;
                 }
 
-                Logger.LogInformation($"Applying display format {ImageDisplayFormat} for film box {SOPInstanceUID}");
+                Logger.InformationApplyDisplayFormat(ImageDisplayFormat, SOPInstanceUID);
 
                 var parts = ImageDisplayFormat.Split('\\');
 
@@ -526,7 +526,7 @@ namespace FellowOakDicom.Printing
             }
             catch (Exception ex)
             {
-                Logger.LogError("FilmBox.Initialize, exception message: {0}", ex.Message);
+                Logger.ErrorInitializeFilmbox(ex);
             }
 
             return false;
