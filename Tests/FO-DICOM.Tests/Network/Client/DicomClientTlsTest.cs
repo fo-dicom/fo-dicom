@@ -242,7 +242,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     await client.SendAsync(cts.Token);
                 }
             }
-            catch(AggregateException aggEx)
+            catch (AggregateException aggEx)
             {
                 exception = aggEx.InnerException;
             }
@@ -362,7 +362,7 @@ namespace FellowOakDicom.Tests.Network.Client
             // Step 1: Manually start a TCP session and start an SSL handshake with the server, and then freeze the handshake
             using var tcpClient = new TcpClient("127.0.0.1", server.Port);
             using var tcpStream = tcpClient.GetStream();
-            
+
             // Send TLS 1.2 Client Hello but never complete it
             byte[] helloTls12 = {
                 0x16, // Content Type: Handshake
@@ -385,7 +385,7 @@ namespace FellowOakDicom.Tests.Network.Client
             tcpStream.Write(helloTls12, 0, helloTls12.Length);
             // At this point, you would need to read the server's response to resume and complete the handshake
             // However, we won't do that, since we want to test that the server accepts more connections while the handshake is frozen
-            
+
             // Step 2: Check that, while the SSL handshake is frozen, the server accepts more connections
             var tlsInitiator = new DefaultTlsInitiator();
             var client = CreateClient("127.0.0.1", server.Port, tlsInitiator, "SCU", "ANY-SCP");
