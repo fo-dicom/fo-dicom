@@ -78,7 +78,7 @@ namespace FellowOakDicom
                 return encoding;
             }
 
-            Logger.LogWarning("\'{Charset}\' is not a valid DICOM encoding - using ASCII encoding instead", charset);
+            Logger.WarningCharsetNoValidEncoding(charset);
 
             return Default;
         }
@@ -198,7 +198,7 @@ namespace FellowOakDicom
             { 932, new byte[] { 0x1b, 0x28, 0x4a } },     // Japanese (Shift-JIS)
             { 20949, new byte[] { 0x1b, 0x24, 0x29, 0x43 } },  // Korean Wansung
         };
-    
+
         /// <summary>
         /// The known encodings with character replacement fallback handlers.
         /// </summary>
@@ -268,7 +268,7 @@ namespace FellowOakDicom
             0x09, // TAB
             0x0c // FF
         };
-        
+
         private static readonly char[] _textDelimiterChars =
             Encoding.ASCII.GetString(_textDelimiterBytes).ToCharArray();
 
@@ -279,7 +279,7 @@ namespace FellowOakDicom
             0x3d, // =
         };
 
-        private static readonly char[] _pnDelimiterChars = 
+        private static readonly char[] _pnDelimiterChars =
             Encoding.ASCII.GetString(_pnDelimiterBytes).ToCharArray();
 
         internal static string DecodeBytes(IByteBuffer buffer, Encoding[] encodings, bool isPersonName)
@@ -343,16 +343,16 @@ namespace FellowOakDicom
             catch (EncoderFallbackException)
             {
                 // could not encode the value with the first encoding, try all encodings
-                
+
                 // if there are delimiters in the string, the string has to be split into fragments
                 // for encoding, as a delimiter resets the encoding
                 var delimiters = isPersonName ? _pnDelimiterChars : _textDelimiterChars;
-                
+
                 MemoryStream stream = new MemoryStream();
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
                     var currentIndex = 0;
-                    while(true)
+                    while (true)
                     {
                         var delimiterIndex = -1;
                         char currentDelimiter = '\0';
@@ -375,7 +375,7 @@ namespace FellowOakDicom
                         EncodeFragment(value.Substring(currentIndex, delimiterIndex - currentIndex), encodings, strictEncodings, writer);
                         writer.Write(Convert.ToByte(currentDelimiter));
                         currentIndex = delimiterIndex + 1;
-                    }                    
+                    }
                 }
 
                 return stream.ToArray();
@@ -399,15 +399,13 @@ namespace FellowOakDicom
                 encoding = GetEncodingForEscapeSequence(fragment[1], fragment[2], seqLength == 4 ? fragment[3] : (byte)0);
                 if (encoding == null)
                 {
-                    Logger.LogWarning("Unknown escape sequence found in string, using ASCII encoding");
+                    Logger.WarningUnknownEscapeSequenceInAscii();
                     encoding = Default;
                 }
                 else if (encoding.CodePage != Default.CodePage && !encodings.Contains(encoding))
                 {
                     // maybe be shall try to use the encoding anyway? 
-                    Logger.LogWarning("Found escape sequence for '{EncodingName}', which is " +
-                                "not defined in Specific Character Set, using ASCII encoding instead",
-                        encoding.WebName);
+                    Logger.WarningUnknownEscapeSequenceFallbackToAscii(encoding.WebName);
                     encoding = Default;
                 }
             }
@@ -469,8 +467,7 @@ namespace FellowOakDicom
             }
 
             // the fallback uses replacement characters
-            Logger.LogWarning("Could not encode string '{Fragment}' with given encodings, " +
-                              "using replacement characters for encoding", fragment);
+            Logger.WarningNotEncodableFragment(fragment);
             var encoded = encodings[0].GetBytes(fragment);
             writer.Write(encoded);
         }
@@ -484,8 +481,7 @@ namespace FellowOakDicom
             catch (DecoderFallbackException)
             {
                 var decoded = encoding.GetString(fragment, index, count);
-                Logger.LogWarning("Could not decode string '{Decoded}' with given encoding, using replacement characters",
-                    decoded);
+                Logger.WarningNotDecodableString(decoded);
                 return decoded;
             }
         }
