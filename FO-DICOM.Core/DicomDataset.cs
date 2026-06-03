@@ -834,7 +834,7 @@ namespace FellowOakDicom
                     }
                 }
             }
-            
+
             // gets the specific items from PerFrameFunctionalGroups for this frame
             if (TryGetSequence(DicomTag.PerFrameFunctionalGroupsSequence, out var perFrameFunctionalGroupsSequence)
                 && perFrameFunctionalGroupsSequence.Items.Count > frame)
@@ -862,7 +862,7 @@ namespace FellowOakDicom
                 }
 
             }
-            
+
             return functionalDs;
         }
 

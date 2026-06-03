@@ -12,8 +12,7 @@
     <Authors>fo-dicom contributors</Authors>
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fo-dicom/fo-dicom</PackageProjectUrl>
-    <Description>A NetStandard DICOM library.
-If you find some breaking changes when updating, read here for more information how to migrate: https://github.com/fo-dicom/fo-dicom/wiki/Upgrade-from-version-4-to-version-5</Description>
+    <Description>A .Net DICOM library.</Description>
     <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
     <Version>6.0.0-alpha1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -23,6 +22,7 @@ If you find some breaking changes when updating, read here for more information 
     <LangVersion>14.0</LangVersion>
     <Platforms>AnyCPU;x64</Platforms>
     <GenerateJsonSourceContexts>true</GenerateJsonSourceContexts>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>

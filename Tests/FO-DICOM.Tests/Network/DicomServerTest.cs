@@ -2,6 +2,12 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Network;
+using FellowOakDicom.Network.Client;
+using FellowOakDicom.Network.Client.Advanced.Association;
+using FellowOakDicom.Network.Client.Advanced.Connection;
+using FellowOakDicom.Tests.Helpers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,12 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FellowOakDicom.Network;
-using FellowOakDicom.Network.Client;
-using FellowOakDicom.Network.Client.Advanced.Association;
-using FellowOakDicom.Network.Client.Advanced.Connection;
-using FellowOakDicom.Tests.Helpers;
-using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -384,7 +384,7 @@ namespace FellowOakDicom.Tests.Network
                 {
                     using (DicomServerFactory.Create<DicomCEchoProvider>(NetworkManager.IPv6Any, server.Port, logger: _logger.IncludePrefix("DicomServer")))
                     {
-                            // do nothing here
+                        // do nothing here
                     }
                 });
             Assert.Null(e);
@@ -616,7 +616,7 @@ namespace FellowOakDicom.Tests.Network
             var clientLogger = _logger.IncludePrefix("Client");
             var disposedDicomServices = new ConcurrentStack<DicomService>();
             int numberOfDisposedDicomServices;
-            using(var server = (DisposableDicomCEchoProviderServer) DicomServerFactory.Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
+            using (var server = (DisposableDicomCEchoProviderServer)DicomServerFactory.Create<DisposableDicomCEchoProvider, DisposableDicomCEchoProviderServer>(
                       "127.0.0.1", 0, logger: serverLogger))
             {
                 var connectionRequest = new AdvancedDicomClientConnectionRequest
@@ -867,7 +867,7 @@ namespace FellowOakDicom.Tests.Network
         {
             private readonly Action<DicomService> _onDispose;
 
-            public DisposableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, Microsoft.Extensions.Logging.ILogger log,
+            public DisposableDicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
                 DicomServiceDependencies dicomServiceDependencies, Action<DicomService> onDispose)
                 : base(stream, fallbackEncoding, log, dicomServiceDependencies)
             {

@@ -21,9 +21,6 @@ namespace FellowOakDicom.Network
         /// <param name="stream">Network stream on which DICOM communication is establshed.</param>
         /// <param name="fallbackEncoding">Text encoding if not specified within messaging.</param>
         /// <param name="log">DICOM logger.</param>
-        /// <param name="logManager">The log manager</param>
-        /// <param name="networkManager">The network manager</param>
-        /// <param name="transcoderManager">The transcoder manager</param>
         public DicomCEchoProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger log,
             DicomServiceDependencies dependencies)
             : base(stream, fallbackEncoding, log, dependencies)
