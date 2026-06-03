@@ -15,7 +15,7 @@ namespace FellowOakDicom.Imaging.Mathematics
     {
 
         /// <summary>
-        /// Initializes an instance of <see cref="RectF"/>.
+        /// Initializes an instance of <see cref="Rect"/>.
         /// </summary>
         /// <param name="x">The start x coordinate.</param>
         /// <param name="y">The start y coordinate.</param>
@@ -54,8 +54,8 @@ namespace FellowOakDicom.Imaging.Mathematics
         /// <summary>
         /// Enlarges this <see cref="RectF"/> structure by the specified amount.
         /// </summary>
-        /// <param name="x">The amount to inflate this <see cref="RectF"/> structure horizontally.</param>
-        /// <param name="y">The amount to inflate this <see cref="RectF"/> structure vertically.</param>
+        /// <param name="x">The amount to inflate this <see cref="Rect"/> structure horizontally.</param>
+        /// <param name="y">The amount to inflate this <see cref="Rect"/> structure vertically.</param>
         public void Inflate(T x, T y)
         {
             var two = T.One + T.One;

@@ -123,7 +123,7 @@ namespace FellowOakDicom.Imaging.Mathematics
         public override int GetHashCode() => X.GetHashCode() ^ Y.GetHashCode();
 
 
-        /// <summary>Gets a human-readable string representing this <see cref="Point2D"/> object.</summary>
+        /// <summary>Gets a human-readable string representing this <see cref="Point2"/> object.</summary>
         /// <returns>String representation</returns>
         public override string ToString() => string.Format("({0},{1})", X, Y);
 

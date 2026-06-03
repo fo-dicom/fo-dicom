@@ -85,7 +85,7 @@ namespace FellowOakDicom
         }
 
         /// <summary>
-        /// Constructs a DicomFile instance. <see cref="Dataset"/> and <see cref="FileMetaInfo"/> are initialized from values contained in parameter <paramref name="dataset"/>
+        /// Constructs a DicomFile instance. <see cref="Dataset"/> and <see cref="FileMetaInfo"/> are initialized from values contained in parameter <paramref name="dataset"/>.
         /// </summary>
         /// <param name="dataset">Values with that the DicomFile is initialized</param>
         public DicomFile(DicomDataset dataset)
