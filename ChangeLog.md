@@ -1,6 +1,6 @@
 ### 6.0.0-alpha1 (TBD)
 - breaking change: remove obsolete classes and methods (#2124)
-- Fix RawPDU.ToString throwing FormatException on .NET 8 by casting the RawPduType enum to its underlying byte before applying the `X2` format spec
+- Fix RawPDU.ToString throwing FormatException on .NET 8+ (Enum.TryFormat now rejects multi-character format specs like `X2`) by casting the enum to its underlying byte (#2147)
 - Add depth guard to DicomReader to prevent unbounded SQ recursion (#2114)
 - breaking change: update targetframeworks to net8, net9 and net10, netstandard2.0 is dropped
 - make fo-dicom.core AOT compilant (#2005)

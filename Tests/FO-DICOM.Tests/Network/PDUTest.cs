@@ -168,33 +168,48 @@ namespace FellowOakDicom.Tests.Network
             Assert.NotNull(_);
         }
 
+        // Bug only reproduces on net8.0+; on net7.0 and earlier Enum.TryFormat
+        // accepted multi-character specs like "X2". The CI matrix covers
+        // net8.0/net9.0/net10.0 so the regression is guarded on every supported
+        // TFM.
         [Theory]
-        [InlineData(RawPduType.A_ASSOCIATE_RQ)]
-        [InlineData(RawPduType.A_ASSOCIATE_AC)]
-        [InlineData(RawPduType.A_ASSOCIATE_RJ)]
-        [InlineData(RawPduType.P_DATA_TF)]
-        [InlineData(RawPduType.A_RELEASE_RQ)]
-        [InlineData(RawPduType.A_RELEASE_RP)]
-        [InlineData(RawPduType.A_ABORT)]
-        public void ToString_AllDefinedPduTypes_DoesNotThrowFormatException(RawPduType pduType)
+        [InlineData(RawPduType.A_ASSOCIATE_RQ, "01")]
+        [InlineData(RawPduType.A_ASSOCIATE_AC, "02")]
+        [InlineData(RawPduType.A_ASSOCIATE_RJ, "03")]
+        [InlineData(RawPduType.P_DATA_TF, "04")]
+        [InlineData(RawPduType.A_RELEASE_RQ, "05")]
+        [InlineData(RawPduType.A_RELEASE_RP, "06")]
+        [InlineData(RawPduType.A_ABORT, "07")]
+        public void ToString_AllDefinedPduTypes_ProducesExpectedFormat(RawPduType pduType, string expectedHex)
         {
-            // Enum.TryFormat on .NET 8+ rejects multi-character format specs like "X2".
-            // Casting the enum to its underlying byte before applying "X2" keeps the
-            // intended hex formatting and avoids FormatException at runtime.
+            // The literal expected hex (e.g. "01") is hard-coded rather than re-derived
+            // from the production interpolation -- otherwise the test would pass even if
+            // the implementation used "x2" or "X1" by mistake.
             using var pdu = new RawPDU(pduType, _memoryProvider);
 
             var description = pdu.ToString();
 
-            Assert.Contains("Pdu[type=", description);
-            Assert.Contains($"{(byte)pduType:X2}", description);
+            Assert.StartsWith($"Pdu[type={expectedHex}, length=", description);
+            Assert.EndsWith("]", description);
+        }
+
+        [Fact]
+        public void ToString_AAssociateRq_ExactFormat()
+        {
+            // Pins the full ToString output so any regression (separator change,
+            // padding loss, prefix drop) is caught loudly. Complements the Theory.
+            using var pdu = new RawPDU(RawPduType.A_ASSOCIATE_RQ, _memoryProvider);
+
+            Assert.Equal("Pdu[type=01, length=0]", pdu.ToString());
         }
 
         [Fact]
         public void SkipBytes_BeyondBufferEnd_ThrowsDicomNetworkException()
         {
-            // Regression for the PDU.ToString() FormatException: when CheckOffset
-            // built its error message it triggered FormatException instead of
-            // surfacing the intended DicomNetworkException("Requested offset out of range").
+            // Regression for the PDU.ToString() FormatException: CheckOffset builds
+            // its message via $"{ToString()} ...". If ToString throws FormatException,
+            // this test fails before the intended DicomNetworkException is raised --
+            // so this test indirectly guards ToString as well.
             using var pdu = new RawPDU(RawPduType.A_ASSOCIATE_RQ, _memoryProvider);
 
             var ex = Assert.Throws<DicomNetworkException>(() => pdu.SkipBytes("Test", 100));
