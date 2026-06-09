@@ -168,6 +168,40 @@ namespace FellowOakDicom.Tests.Network
             Assert.NotNull(_);
         }
 
+        [Theory]
+        [InlineData(RawPduType.A_ASSOCIATE_RQ)]
+        [InlineData(RawPduType.A_ASSOCIATE_AC)]
+        [InlineData(RawPduType.A_ASSOCIATE_RJ)]
+        [InlineData(RawPduType.P_DATA_TF)]
+        [InlineData(RawPduType.A_RELEASE_RQ)]
+        [InlineData(RawPduType.A_RELEASE_RP)]
+        [InlineData(RawPduType.A_ABORT)]
+        public void ToString_AllDefinedPduTypes_DoesNotThrowFormatException(RawPduType pduType)
+        {
+            // Enum.TryFormat on .NET 8+ rejects multi-character format specs like "X2".
+            // Casting the enum to its underlying byte before applying "X2" keeps the
+            // intended hex formatting and avoids FormatException at runtime.
+            using var pdu = new RawPDU(pduType, _memoryProvider);
+
+            var description = pdu.ToString();
+
+            Assert.Contains("Pdu[type=", description);
+            Assert.Contains($"{(byte)pduType:X2}", description);
+        }
+
+        [Fact]
+        public void SkipBytes_BeyondBufferEnd_ThrowsDicomNetworkException()
+        {
+            // Regression for the PDU.ToString() FormatException: when CheckOffset
+            // built its error message it triggered FormatException instead of
+            // surfacing the intended DicomNetworkException("Requested offset out of range").
+            using var pdu = new RawPDU(RawPduType.A_ASSOCIATE_RQ, _memoryProvider);
+
+            var ex = Assert.Throws<DicomNetworkException>(() => pdu.SkipBytes("Test", 100));
+
+            Assert.Contains("Requested offset out of range", ex.Message);
+        }
+
         #endregion
 
         #region Test data

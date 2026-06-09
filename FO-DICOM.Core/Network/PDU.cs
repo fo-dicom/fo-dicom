@@ -182,7 +182,7 @@ namespace FellowOakDicom.Network
         /// Gets string describing this PDU
         /// </summary>
         /// <returns>PDU description</returns>
-        public override string ToString() => $"Pdu[type={Type:X2}, length={Length}]";
+        public override string ToString() => $"Pdu[type={(byte)Type:X2}, length={Length}]";
 
         /// <summary>
         /// Reset PDU read stream
