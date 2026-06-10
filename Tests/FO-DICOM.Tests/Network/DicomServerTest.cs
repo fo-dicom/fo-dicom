@@ -805,7 +805,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
 
-        [Fact(Skip = "This test is flaky because it crashes whenever a parallel test happens to have an unobserved exception")]
+        [Fact]
         public async Task StopServerWithoutException()
         {
             object unhandledExceptionObject = null;
