@@ -325,7 +325,7 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             using var server = CreateServer<MockCEchoProvider>(0);
 
-        var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "NOTACCEPTEDSCP");
+            var client = CreateClient("127.0.0.1", server.Port, false, "SCU", "NOTACCEPTEDSCP");
 
             var reason = DicomRejectReason.NoReasonGiven;
             client.AssociationRejected += (sender, args) => reason = args.Reason;
@@ -1381,7 +1381,7 @@ namespace FellowOakDicom.Tests.Network.Client
         {
             using var server = DicomServerFactory.Create<AsyncDicomCEchoProvider>(0, logger: _logger.IncludePrefix("Server"));
             var client = DicomClientFactory.Create("127.0.0.1", server.Port, false, "SCU", "ANY-SCP");
-            client.NegotiateAsyncOps(0,0);
+            client.NegotiateAsyncOps(0, 0);
             client.Logger = _logger.IncludePrefix("Client");
 
             var numberOfRequests = 100;
@@ -1389,7 +1389,7 @@ namespace FellowOakDicom.Tests.Network.Client
             for (var i = 0; i < numberOfRequests; i++)
             {
                 var request = new DicomCEchoRequest
-                    { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
+                { OnResponseReceived = (req, res) => Interlocked.Increment(ref counter) };
                 await client.AddRequestAsync(request);
             }
 

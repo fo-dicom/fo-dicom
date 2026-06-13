@@ -57,12 +57,12 @@ namespace FellowOakDicom.Tests.Network.Client
         }
 
         private TServer CreateServer<TServer, TProvider>(int port)
-            where TServer: IDicomServer<TProvider>
+            where TServer : IDicomServer<TProvider>
             where TProvider : DicomService, IDicomServiceProvider
         {
             var server = DicomServerFactory.Create<TProvider, TServer>(NetworkManager.IPv4Any, port);
             server.Logger = _logger.IncludePrefix(typeof(TProvider).Name).WithMinimumLevel(LogLevel.Debug);
-            return (TServer) server;
+            return (TServer)server;
         }
 
         private IDicomClient CreateClient(int port)
@@ -657,7 +657,8 @@ namespace FellowOakDicom.Tests.Network.Client
                 _logger.LogError(te, te.Message);
                 timedOut = true;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 _logger.LogError(e, e.Message);
             }
             stopWatch.Stop();
@@ -796,7 +797,7 @@ namespace FellowOakDicom.Tests.Network.Client
                     timeoutException2 = e;
                 }
 
-                Assert.Equal(maxRetryCount+1, eventFired);
+                Assert.Equal(maxRetryCount + 1, eventFired);
                 Assert.Null(rejectException1);
                 Assert.NotNull(timeoutException1);
                 Assert.NotNull(rejectException2);

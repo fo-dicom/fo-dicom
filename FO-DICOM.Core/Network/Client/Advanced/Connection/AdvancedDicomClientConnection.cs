@@ -116,7 +116,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _logger.LogDebug("Sending association request from {CallingAE} to {CalledAE}", request.CallingAE, request.CalledAE);
+            _logger.LogSendingAssociationRequest(request.CallingAE, request.CalledAE);
 
             await SendAssociationRequestAsync(ToDicomAssociation(request)).ConfigureAwait(false);
 
@@ -126,7 +126,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                 {
                     case DicomAssociationAcceptedEvent dicomAssociationAcceptedEvent:
                         {
-                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} has been accepted", request.CallingAE, request.CalledAE);
+                            _logger.LogAssociationRequestAccepted(request.CallingAE, request.CalledAE);
 
                             return new AdvancedDicomClientAssociation(this, dicomAssociationAcceptedEvent.Association, _logger);
                         }
@@ -136,8 +136,7 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                             var source = dicomAssociationRejectedEvent.Source;
                             var reason = dicomAssociationRejectedEvent.Reason;
 
-                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has rejected it: {Result} {Source} {Reason}",
-                                request.CallingAE, request.CalledAE, request.CalledAE, result, source, reason);
+                            _logger.LogAssociationRejectedFromCalled(request.CallingAE, request.CalledAE, result, source, reason);
 
                             throw new DicomAssociationRejectedException(result, source, reason);
                         }
@@ -146,14 +145,13 @@ namespace FellowOakDicom.Network.Client.Advanced.Connection
                             var source = dicomAbortedEvent.Source;
                             var reason = dicomAbortedEvent.Reason;
 
-                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} failed because {CalledAE} has aborted it: {Source} {Reason}",
-                                request.CallingAE, request.CalledAE, request.CalledAE, source, reason);
+                            _logger.LogAssociationAbortedFromCaller(request.CallingAE, request.CalledAE, source, reason);
 
                             throw new DicomAssociationAbortedException(source, reason);
                         }
                     case ConnectionClosedEvent connectionClosedEvent:
                         {
-                            _logger.LogDebug("Association request from {CallingAE} to {CalledAE} failed because the connection was closed", request.CallingAE, request.CalledAE);
+                            _logger.LogAssocitionClosed(request.CallingAE, request.CalledAE);
 
                             if (connectionClosedEvent.Exception != null)
                             {
