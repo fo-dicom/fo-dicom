@@ -25,8 +25,26 @@ namespace FellowOakDicom.StructuredReport
 
         public DicomCodeItem(string value, string scheme, string meaning, string version = null)
         {
-            Add(DicomTag.CodeValue, value);
-            Add(DicomTag.CodingSchemeDesignator, scheme);
+            value ??= string.Empty; // avoid null value
+            if (value.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) || value.StartsWith("urn:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Add(DicomTag.URNCodeValue, value);
+                if (!string.IsNullOrEmpty(scheme))
+                {
+                    Add(DicomTag.CodingSchemeDesignator, scheme);
+                }
+            }
+            else if (value.Length > 16)
+            {
+                Add(DicomTag.LongCodeValue, value);
+                Add(DicomTag.CodingSchemeDesignator, scheme);
+            }
+            else
+            {
+                Add(DicomTag.CodeValue, value);
+                Add(DicomTag.CodingSchemeDesignator, scheme);
+            }
+
             Add(DicomTag.CodeMeaning, meaning);
             if (version != null)
             {
@@ -34,8 +52,34 @@ namespace FellowOakDicom.StructuredReport
             }
         }
 
-        public string Value => GetValueOrDefault(DicomTag.CodeValue, 0, string.Empty);
+        public static DicomCodeItem FromUrn(string urn, string meaning)
+            => new DicomCodeItem(new DicomDataset
+            {
+                {DicomTag.URNCodeValue, urn },
+                {DicomTag.CodeMeaning, meaning }
+            });
 
+
+        public string Value
+        {
+            get
+            {
+                if (TryGetValue<string>(DicomTag.CodeValue, 0, out var codeValue))
+                {
+                    return codeValue;
+                }
+                if (TryGetValue<string>(DicomTag.LongCodeValue, 0, out var longCodeValue))
+                {
+                    return longCodeValue;
+                }
+                if (TryGetValue<string>(DicomTag.URNCodeValue, 0, out var urnCodeValue))
+                {
+                    return urnCodeValue;
+                }
+                return string.Empty;
+            }
+        }
+            
         public string Scheme => GetValueOrDefault(DicomTag.CodingSchemeDesignator, 0, string.Empty);
 
         public string Meaning => GetValueOrDefault(DicomTag.CodeMeaning, 0, string.Empty);
