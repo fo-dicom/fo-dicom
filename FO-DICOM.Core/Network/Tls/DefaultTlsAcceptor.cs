@@ -56,7 +56,11 @@ namespace FellowOakDicom.Network.Tls
 
         public DefaultTlsAcceptor(string certificateFilename, string password)
         {
+#if NET9_0_OR_GREATER
+            Certificate = X509CertificateLoader.LoadPkcs12FromFile(certificateFilename, password);
+#else
             Certificate = new X509Certificate2(certificateFilename, password);
+#endif
         }
 
         public DefaultTlsAcceptor(X509Certificate certificate)
