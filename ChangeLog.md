@@ -11,6 +11,7 @@
 - remove IEquatable<DicomDataset> from DicomDataset, because this prevents the overloaded Equals methods from being invoked (#2119)
 - Release resource and semaphore if creating a SCP failes (#2116)
 - DicomCodeValue now also handles LongCodeValue and UrnCodeValue correctly (#2125)
+- Remove weak TLS version from default implementation (#2127)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
