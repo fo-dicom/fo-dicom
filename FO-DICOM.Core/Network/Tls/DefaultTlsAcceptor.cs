@@ -31,7 +31,7 @@ namespace FellowOakDicom.Network.Tls
         /// <summary>
         /// The protocols that should be supported
         /// </summary>
-        public SslProtocols Protocols { get; set; } = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+        public SslProtocols Protocols { get; set; } = SslProtocols.Tls12 | SslProtocols.Tls13;
 
         /// <summary>
         /// Whether or not to require mutual TLS authentication, i.e. the client must present a valid certificate as well
@@ -56,7 +56,11 @@ namespace FellowOakDicom.Network.Tls
 
         public DefaultTlsAcceptor(string certificateFilename, string password)
         {
+#if NET9_0_OR_GREATER
+            Certificate = X509CertificateLoader.LoadPkcs12FromFile(certificateFilename, password);
+#else
             Certificate = new X509Certificate2(certificateFilename, password);
+#endif
         }
 
         public DefaultTlsAcceptor(X509Certificate certificate)

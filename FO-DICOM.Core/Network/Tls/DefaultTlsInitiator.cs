@@ -36,7 +36,7 @@ namespace FellowOakDicom.Network.Tls
         /// <summary>
         /// The protocols that should be supported
         /// </summary>
-        public SslProtocols Protocols { get; set; } = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+        public SslProtocols Protocols { get; set; } = SslProtocols.Tls12 | SslProtocols.Tls13;
 
         /// <summary>
         /// Whether or not the certificate revocation list should be checked during authentication
