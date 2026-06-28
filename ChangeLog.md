@@ -1,6 +1,7 @@
 ### 6.0.0-alpha1 (TBD)
 - breaking change: remove obsolete classes and methods (#2124)
 - Observe per-connection RunningDicomService task exception in DicomServer to prevent UnobservedTaskException leaks on malformed PDUs (#2149)
+- Fix RawPDU.ToString throwing FormatException on .NET 8+ (Enum.TryFormat now rejects multi-character format specs like `X2`) by casting the enum to its underlying byte (#2147)
 - Add depth guard to DicomReader to prevent unbounded SQ recursion (#2114)
 - breaking change: update targetframeworks to net8, net9 and net10, netstandard2.0 is dropped
 - make fo-dicom.core AOT compilant (#2005)
@@ -11,6 +12,9 @@
 - breaking change: DicomPixelData.Create(dataset, bool) is split up to DicomPixelData.CreateNew(dataset) and DicomPixelData.CreateFromDataset(dataset)
 - remove IEquatable<DicomDataset> from DicomDataset, because this prevents the overloaded Equals methods from being invoked (#2119)
 - Release resource and semaphore if creating a SCP failes (#2116)
+- more performant logging via generated logger methods (#2130)
+- DicomCodeValue now also handles LongCodeValue and UrnCodeValue correctly (#2125)
+- Remove weak TLS version from default implementation (#2127)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)

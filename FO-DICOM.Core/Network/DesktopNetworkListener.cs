@@ -78,8 +78,7 @@ namespace FellowOakDicom.Network
             {
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
-                    logger.LogDebug("Waiting for inbound client connection to {IPAddress}:{Port}",
-                        _endpoint.Address.ToString(), _endpoint.Port);                
+                    logger.DebugWaitForInboundConnection(_endpoint.Address, _endpoint.Port);
                 }
 
                 using var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -101,7 +100,7 @@ namespace FellowOakDicom.Network
                     
                     if (logger.IsEnabled(LogLevel.Debug))
                     {
-                        logger.LogDebug("Client connected to {IPAddress}:{Port}", _endpoint.Address.ToString(), _endpoint.Port);                
+                        logger.DebugClientConnected(_endpoint.Address, _endpoint.Port);
                     }
 
                     return tcpClient;
@@ -116,8 +115,7 @@ namespace FellowOakDicom.Network
             {
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
-                    logger.LogDebug("Listener for {IPAddress}:{Port} has stopped because it was cancelled",
-                        _endpoint.Address.ToString(), _endpoint.Port);
+                    logger.DebugConnectionCancelled(_endpoint.Address, _endpoint.Port);
                 }
 
                 return null;
@@ -126,15 +124,13 @@ namespace FellowOakDicom.Network
             {
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
-                    logger.LogDebug("Listener for {IPAddress}:{Port} has stopped because the connection was closed",
-                        _endpoint.Address.ToString(), _endpoint.Port);
+                    logger.DebugConnectionClosed(_endpoint.Address, _endpoint.Port);
                 }
                 return null;
             }
             catch(Exception exception)
             {
-                logger.LogError(exception, "An error occurred while listening for inbound client connections to {IPAddress}:{Port}", 
-                    _endpoint.Address.ToString(), _endpoint.Port);
+                logger.ErrorWhileListeningForConnection(exception, _endpoint.Address, _endpoint.Port);
                 return null;
             }
         }

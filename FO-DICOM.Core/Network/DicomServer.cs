@@ -286,10 +286,7 @@ namespace FellowOakDicom.Network
                         // we need to wait until one of the existing clients closes its connection
                         while (!await _maxClientsSemaphore.WaitAsync(MaxClientsAllowedWaitInterval, _cancellationToken).ConfigureAwait(false))
                         {
-                            Logger.LogWarning("Waited {MaxClientsAllowedInterval}, " +
-                                               "but we still cannot accept another incoming connection " +
-                                               "because the maximum number of clients ({MaxClientsAllowed}) has been reached",
-                                MaxClientsAllowedWaitInterval, maxClientsAllowed);
+                            Logger.WarningMaxClientsAllowedReached(maxClientsAllowed, MaxClientsAllowedWaitInterval);
                         }
                     }
 
@@ -341,23 +338,20 @@ namespace FellowOakDicom.Network
                                     },
                                     TaskContinuationOptions.PreferFairness | TaskContinuationOptions.RunContinuationsAsynchronously);
 
-                                Logger.LogDebug(
-                                    "Accepted an incoming client connection, there are now {NumberOfServices} connected clients",
-                                    numberOfServices);
+                                Logger.DebugAcceptedIncommingConnection(numberOfServices);
 
                                 if (maxClientsAllowed > 0 && numberOfServices == maxClientsAllowed)
                                 {
-                                    Logger.LogWarning(
-                                        "Reached the maximum number of simultaneously connected clients, further incoming connections will be blocked until one or more clients disconnect");
+                                    Logger.WaringReachedMaximumNumberOfConnections();
                                 }
                             }
                             catch (OperationCanceledException)
                             {
-                                Logger.LogWarning("Cancellation occurred while accepting an incoming client connection");
+                                Logger.WaringAcceptingIncomingConnectionCanceled();
                             }
                             catch (Exception e)
                             {
-                                Logger.LogError(e, "An exception occurred while accepting an incoming client connection");
+                                Logger.ErrorWhileAcceptionIncommingConnection(e);
                                 tcpClient.Close();
                                 networkStream?.Dispose();
                                 RemoveCompletedService(runningService);
@@ -368,11 +362,11 @@ namespace FellowOakDicom.Network
             }
             catch (OperationCanceledException e)
             {
-                Logger.LogWarning(e, "DICOM server was canceled");
+                Logger.WarningServerWasCanceled(e);
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Exception listening for DICOM services");
+                Logger.ErrorOnServerListening(e);
 
                 Stop();
                 Exception = e;
@@ -417,7 +411,7 @@ namespace FellowOakDicom.Network
                 }
                 catch (Exception e)
                 {
-                    Logger.LogWarning("An error occurred while trying to dispose a DICOM service: {@Error}", e);
+                    Logger.WarningErrorDisposingServer(e);
                 }
             }
         }
