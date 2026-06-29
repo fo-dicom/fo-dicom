@@ -321,7 +321,22 @@ namespace FellowOakDicom.Network
                                     _services.Add(runningService);
                                     numberOfServices = _services.Count;
                                 }
-                                runningService.Task.ContinueWith((t) => RemoveCompletedService(runningService), TaskContinuationOptions.PreferFairness | TaskContinuationOptions.RunContinuationsAsynchronously);
+                                runningService.Task.ContinueWith(
+                                    (t) =>
+                                    {
+                                        // Observe and log any faulted Task. ListenAndProcessPDUAsync re-throws the
+                                        // original cause via ExceptionDispatchInfo at the end of TryCloseConnectionAsync,
+                                        // so without observing it here every malformed-PDU disconnect would leak an
+                                        // UnobservedTaskException once the Task is garbage-collected.
+                                        if (t.IsFaulted && t.Exception != null)
+                                        {
+                                            Logger.LogInformation(
+                                                t.Exception.GetBaseException(),
+                                                "DICOM service task completed with exception (peer disconnected with error)");
+                                        }
+                                        RemoveCompletedService(runningService);
+                                    },
+                                    TaskContinuationOptions.PreferFairness | TaskContinuationOptions.RunContinuationsAsynchronously);
 
                                 Logger.DebugAcceptedIncommingConnection(numberOfServices);
 

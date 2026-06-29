@@ -12,6 +12,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -804,7 +805,7 @@ namespace FellowOakDicom.Tests.Network
         }
 
 
-        [Fact(Skip = "This test is flaky because it crashes whenever a parallel test happens to have an unobserved exception")]
+        [Fact]
         public async Task StopServerWithoutException()
         {
             object unhandledExceptionObject = null;
@@ -823,6 +824,69 @@ namespace FellowOakDicom.Tests.Network
             GC.WaitForPendingFinalizers();
 
             Assert.Null(unhandledExceptionObject);
+        }
+
+        [Fact]
+        public async Task MalformedPdu_ListenAndProcessPDUAsyncException_IsObservedByContinuation()
+        {
+            // Regression for the unobserved-task leak: when ListenAndProcessPDUAsync
+            // throws (e.g. on an unknown PDU type), TryCloseConnectionAsync re-throws
+            // the original cause via ExceptionDispatchInfo. Without observing
+            // RunningDicomService.Task.Exception in the ContinueWith continuation,
+            // every faulted connection task leaks an UnobservedTaskException when
+            // the Task is finalized.
+            var capturedDicomExceptions = new ConcurrentBag<Exception>();
+            void Handler(object sender, UnobservedTaskExceptionEventArgs args)
+            {
+                foreach (var inner in args.Exception.InnerExceptions)
+                {
+                    if (inner is DicomNetworkException)
+                    {
+                        capturedDicomExceptions.Add(inner);
+                    }
+                }
+                // Always mark observed so we do not crash other parallel tests
+                // that may be in the middle of their own UnobservedTaskException
+                // race.
+                args.SetObserved();
+            }
+
+            TaskScheduler.UnobservedTaskException += Handler;
+            try
+            {
+                using (var server = DicomServerFactory.Create<DicomCEchoProvider>(0, logger: _logger.IncludePrefix("DicomServer")))
+                {
+                    await AsyncTestHelper.WaitForServerListeningAsync(server, 30);
+
+                    // Each connection sends a 6-byte PDU header with an invalid
+                    // type byte (anything outside 0x01..0x07). ListenAndProcessPDUAsync
+                    // throws DicomNetworkException("Unknown PDU type: ..."), which
+                    // would previously leak as an unobserved Task exception.
+                    for (var i = 0; i < 8; i++)
+                    {
+                        using var client = new TcpClient();
+                        await client.ConnectAsync("127.0.0.1", server.Port);
+                        await client.GetStream().WriteAsync(new byte[] { 0x9A, 0, 0, 0, 0, 0 }, 0, 6);
+                        // Read a few bytes / let the server close before disposing.
+                        try { await client.GetStream().ReadAsync(new byte[8], 0, 8); } catch { /* expected */ }
+                    }
+                }
+
+                // Force GC + finalizer drain so any leaked unobserved Task surfaces
+                // now rather than at some later point.
+                for (var i = 0; i < 4; i++)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    await Task.Delay(50);
+                }
+            }
+            finally
+            {
+                TaskScheduler.UnobservedTaskException -= Handler;
+            }
+
+            Assert.Empty(capturedDicomExceptions);
         }
 
         #endregion
