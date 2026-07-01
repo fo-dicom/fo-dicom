@@ -36,7 +36,7 @@ jobs:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
@@ -69,7 +69,7 @@ jobs:
   benchmarks:
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Build FO-DICOM..Benchmark
       run: dotnet build ./Tests/FO-DICOM.Benchmark/FO-DICOM.Benchmark.csproj --configuration Release --framework net10.0
     - name: run benchmarks
