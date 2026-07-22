@@ -166,6 +166,9 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.CTImageStorage.UID, DicomUID.CTImageStorage);
             _uids.Add(DicomUID.EnhancedCTImageStorage.UID, DicomUID.EnhancedCTImageStorage);
             _uids.Add(DicomUID.LegacyConvertedEnhancedCTImageStorage.UID, DicomUID.LegacyConvertedEnhancedCTImageStorage);
+            _uids.Add(DicomUID.CTImageStorageForProcessing.UID, DicomUID.CTImageStorageForProcessing);
+            _uids.Add(DicomUID.EnhancedCTImageStorageForProcessing.UID, DicomUID.EnhancedCTImageStorageForProcessing);
+            _uids.Add(DicomUID.LegacyConvertedEnhancedCTImageStorageForProcessing.UID, DicomUID.LegacyConvertedEnhancedCTImageStorageForProcessing);
             _uids.Add(DicomUID.UltrasoundMultiFrameImageStorageRetiredRETIRED.UID, DicomUID.UltrasoundMultiFrameImageStorageRetiredRETIRED);
             _uids.Add(DicomUID.UltrasoundMultiFrameImageStorage.UID, DicomUID.UltrasoundMultiFrameImageStorage);
             _uids.Add(DicomUID.MRImageStorage.UID, DicomUID.MRImageStorage);
@@ -1943,6 +1946,7 @@ namespace FellowOakDicom
             _uids.Add(DicomUID.UltrasoundZScorePopulationIndex12027.UID, DicomUID.UltrasoundZScorePopulationIndex12027);
             _uids.Add(DicomUID.FetalUltrasoundZScoreReferenceAuthority12028.UID, DicomUID.FetalUltrasoundZScoreReferenceAuthority12028);
             _uids.Add(DicomUID.MetalArtifactReductionAlgorithmFamily10036.UID, DicomUID.MetalArtifactReductionAlgorithmFamily10036);
+            _uids.Add(DicomUID.ImageQualityReferenceParameter10037.UID, DicomUID.ImageQualityReferenceParameter10037);
         }
 
         ///<summary>SOP Class: Verification SOP Class</summary>
@@ -2397,6 +2401,15 @@ namespace FellowOakDicom
 
         ///<summary>SOP Class: Legacy Converted Enhanced CT Image Storage</summary>
         public static readonly DicomUID LegacyConvertedEnhancedCTImageStorage = new DicomUID("1.2.840.10008.5.1.4.1.1.2.2", "Legacy Converted Enhanced CT Image Storage", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: CT Image Storage - For Processing</summary>
+        public static readonly DicomUID CTImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.2.3", "CT Image Storage - For Processing", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Enhanced CT Image Storage - For Processing</summary>
+        public static readonly DicomUID EnhancedCTImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.2.4", "Enhanced CT Image Storage - For Processing", DicomUidType.SOPClass, false);
+
+        ///<summary>SOP Class: Legacy Converted Enhanced CT Image Storage - For Processing</summary>
+        public static readonly DicomUID LegacyConvertedEnhancedCTImageStorageForProcessing = new DicomUID("1.2.840.10008.5.1.4.1.1.2.5", "Legacy Converted Enhanced CT Image Storage - For Processing", DicomUidType.SOPClass, false);
 
         ///<summary>SOP Class: Ultrasound Multi-frame Image Storage (Retired)</summary>
         public static readonly DicomUID UltrasoundMultiFrameImageStorageRetiredRETIRED = new DicomUID("1.2.840.10008.5.1.4.1.1.3", "Ultrasound Multi-frame Image Storage (Retired)", DicomUidType.SOPClass, true);
@@ -7728,6 +7741,9 @@ namespace FellowOakDicom
 
         ///<summary>Context Group Name: Metal Artifact Reduction Algorithm Family (10036)</summary>
         public static readonly DicomUID MetalArtifactReductionAlgorithmFamily10036 = new DicomUID("1.2.840.10008.6.1.1571", "Metal Artifact Reduction Algorithm Family (10036)", DicomUidType.ContextGroupName, false);
+
+        ///<summary>Context Group Name: Image Quality Reference Parameter (10037)</summary>
+        public static readonly DicomUID ImageQualityReferenceParameter10037 = new DicomUID("1.2.840.10008.6.1.1572", "Image Quality Reference Parameter (10037)", DicomUidType.ContextGroupName, false);
 
     }
 }

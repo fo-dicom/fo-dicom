@@ -8777,6 +8777,9 @@ namespace FellowOakDicom
         ///<summary>(0040,E011) VR=UI VM=1 Retrieve Location UID</summary>
         public readonly static DicomTagUI RetrieveLocationUID = new DicomTagUI(0x0040, 0xE011);
 
+        ///<summary>(0040,E012) VR=UR VM=1 Display URI</summary>
+        public readonly static DicomTagUR DisplayURI = new DicomTagUR(0x0040, 0xE012);
+
         ///<summary>(0040,E020) VR=CS VM=1 Type of Instances</summary>
         public readonly static DicomTagCS TypeOfInstances = new DicomTagCS(0x0040, 0xE020);
 
