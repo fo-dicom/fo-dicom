@@ -306,20 +306,20 @@ namespace FellowOakDicom.Imaging
         {
             localizerPoints = [];
 
-            GetPositionOrientationSpacingAndSize(destinationFrame, out Vector3<double> dstRowDir,
-                    out Vector3<double> dstColDir, out Vector3<double> dstNormal, out Point3<double> dstPos,
+            GetPositionOrientationSpacingAndSize(destinationFrame, out Vector3<decimal> dstRowDir,
+                    out Vector3<decimal> dstColDir, out Vector3<decimal> dstNormal, out Point3<decimal> dstPos,
                     out int _, out int _,
-                    out double dstRowSpacing, out double dstColSpacing,
-                    out double _, out double _);
+                    out decimal dstRowSpacing, out decimal dstColSpacing,
+                    out decimal _, out decimal _);
 
-            GetPositionOrientationSpacingAndSize(sourceFrame, out Vector3<double> srcRowDir,
-                    out Vector3<double> srcColDir, out Vector3<double> _, out Point3<double> srcPos,
+            GetPositionOrientationSpacingAndSize(sourceFrame, out Vector3<decimal> srcRowDir,
+                    out Vector3<decimal> srcColDir, out Vector3<decimal> _, out Point3<decimal> srcPos,
                     out int _, out int _,
-                    out double _, out double _,
-                    out double srcRowLength, out double srcColLength);
+                    out decimal _, out decimal _,
+                    out decimal srcRowLength, out decimal srcColLength);
 
             // Build a square to project with 4 corners TLHC, TRHC, BRHC, BLHC ...
-            var pos = new Point3<double>[4];
+            var pos = new Point3<decimal>[4];
 
             // TLHC is what is in ImagePositionPatient
             pos[0] = srcPos;
@@ -332,7 +332,7 @@ namespace FellowOakDicom.Imaging
 
             var pixel = new Point2[4];
 
-            var rotation = new Matrix<double>(3, 3);
+            var rotation = new Matrix<decimal>(3, 3);
             rotation.Row(0, dstRowDir.ToArray());
             rotation.Row(1, dstColDir.ToArray());
             rotation.Row(2, dstNormal.ToArray());
@@ -340,14 +340,14 @@ namespace FellowOakDicom.Imaging
             for (int i = 0; i < 4; i++)
             {
                 // move everything to origin of target
-                pos[i] += (Point3<double>.Zero - dstPos);
+                pos[i] += (Point3<decimal>.Zero - dstPos);
 
                 // The rotation is easy ... just rotate by the row, col and normal vectors ...
-                pos[i] = new Point3<double>(rotation * pos[i].ToArray());
+                pos[i] = new Point3<decimal>(rotation * pos[i].ToArray());
 
                 // DICOM coordinates are center of pixel 1\1
-                pixel[i] = new Point2(Convert.ToInt32(pos[i].X / dstColSpacing + 0.5),
-                  Convert.ToInt32(pos[i].Y / dstRowSpacing + 0.5));
+                pixel[i] = new Point2(Convert.ToInt32(pos[i].X / dstColSpacing + 0.5m),
+                  Convert.ToInt32(pos[i].Y / dstRowSpacing + 0.5m));
             }
 
             localizerPoints.AddRange(pixel);
@@ -372,22 +372,23 @@ namespace FellowOakDicom.Imaging
         /// <param name="col_length">The column length of the frame, derived from multiplying the rows by the column spacing</param>
         /// <returns></returns>
         private static bool GetPositionOrientationSpacingAndSize(DicomDataset dicomDataset,
-                        out Vector3<double> rowDir, out Vector3<double> colDir,
-                        out Vector3<double> normalDir, out Point3<double> pos,
+                        out Vector3<decimal> rowDir, out Vector3<decimal> colDir,
+                        out Vector3<decimal> normalDir, out Point3<decimal> pos,
                         out int rows, out int cols,
-                        out double row_spacing, out double col_spacing,
-                        out double row_length, out double col_length)
+                        out decimal row_spacing, out decimal col_spacing,
+                        out decimal row_length, out decimal col_length)
         {
-            var imageorientation = dicomDataset.GetValues<double>(DicomTag.ImageOrientationPatient);
-            rowDir = new Vector3<double>(imageorientation, 0);
-            colDir = new Vector3<double>(imageorientation, 3);
+            var imageorientation = dicomDataset.GetElem(DicomTag.ImageOrientationPatient).Values;
+            rowDir = new Vector3<decimal>(imageorientation, 0);
+            colDir = new Vector3<decimal>(imageorientation, 3);
             // compute nrm to row and col (i.e. cross product of row and col unit vectors)
             normalDir = rowDir.CrossProduct(colDir);
 
-            pos = new Point3<double>(dicomDataset.GetValues<double>(DicomTag.ImagePositionPatient));
+            pos = new Point3<decimal>(dicomDataset.GetElem(DicomTag.ImagePositionPatient).Values);
 
-            row_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 0);
-            col_spacing = dicomDataset.GetValue<double>(DicomTag.PixelSpacing, 1);
+            var spacings = dicomDataset.GetElem(DicomTag.PixelSpacing).Values;
+            row_spacing = spacings[0];
+            col_spacing = spacings[1];
 
             rows = dicomDataset.GetSingleValue<int>(DicomTag.Rows);
             cols = dicomDataset.GetSingleValue<int>(DicomTag.Columns);

@@ -477,7 +477,7 @@ namespace FellowOakDicom.Tests.Serialization
 }
 ";
             var reconstituated = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var buffer = reconstituated.GetDicomItem<DicomElement>(DicomTag.SelectorSLValue).Buffer as IBulkDataUriByteBuffer;
+            var buffer = reconstituated.GetElem(DicomTag.SelectorSLValue).Buffer as IBulkDataUriByteBuffer;
             Assert.NotNull(buffer);
             Assert.Equal("http://www.example.com/testdicom.dcm", buffer.BulkDataUri);
         }

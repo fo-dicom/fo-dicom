@@ -133,7 +133,7 @@ namespace FellowOakDicom
         /// <value>Number of value items.</value>
         public override int Count => 1;
 
-        protected string StringValue
+        internal string StringValue
         {
             get
             {
@@ -243,6 +243,15 @@ namespace FellowOakDicom
             {
                 EnsureSplitValues();
                 return _count;
+            }
+        }
+
+        public string[] StringValues
+        {
+            get
+            {
+                EnsureSplitValues();
+                return _values;
             }
         }
 
@@ -670,7 +679,7 @@ namespace FellowOakDicom
 
         public override DicomVR ValueRepresentation => DicomVR.AT;
 
-        public IEnumerable<DicomTag> Values
+        public DicomTag[] Values
         {
             get
             {
@@ -684,13 +693,13 @@ namespace FellowOakDicom
                         var element = parts[i + 1];
                         values.Add(DicomTagsIndex.LookupOrCreate(group, element) ?? new DicomTag(group, element));
                     }
-                    _values = values.ToArray();
+                    _values = [.. values];
                 }
                 return _values;
             }
             private set
             {
-                _values = value.ToArray();
+                _values = value;
                 int length = _values.Length * 4;
                 byte[] buffer = new byte[length];
                 for (int i = 0; i < _values.Length; i++)
@@ -856,6 +865,15 @@ namespace FellowOakDicom
 
         public override DicomVR ValueRepresentation => DicomVR.DS;
 
+        public decimal[] Values
+        {
+            get
+            {
+                EnsureParsedValues();
+                return _values;
+            }
+        }
+
         #endregion
 
         #region Public Members
@@ -865,20 +883,7 @@ namespace FellowOakDicom
             // no need to parse values if returning string(s)
             if (typeof(T) == typeof(string) || typeof(T) == typeof(string[])) return base.Get<T>(item);
 
-            if (_values == null)
-            {
-                var parts = base.Get<string[]>();
-                var parsed = new decimal[parts.Length];
-                for (var i = 0; i < parts.Length; i++)
-                {
-                    var s = parts[i];
-                    // #1296 some invalid files have "," as decimal separator. because a comma is no valid character in DS, this cannot be misinterpretated and it is obvious to replace it by "."
-                    parsed[i] = s.IndexOf(',') < 0
-                        ? decimal.Parse(s.AsSpan(), NumberStyles.Any, CultureInfo.InvariantCulture)
-                        : decimal.Parse(s.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture);
-                }
-                _values = parsed;
-            }
+            EnsureParsedValues();
 
             if (typeof(T).GetTypeInfo().IsArray)
             {
@@ -914,6 +919,24 @@ namespace FellowOakDicom
             }
 
             return base.Get<T>(item);
+        }
+
+        private void EnsureParsedValues()
+        {
+            if (_values == null)
+            {
+                var parts = base.Get<string[]>();
+                var parsed = new decimal[parts.Length];
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    var s = parts[i];
+                    // #1296 some invalid files have "," as decimal separator. because a comma is no valid character in DS, this cannot be misinterpretated and it is obvious to replace it by "."
+                    parsed[i] = s.IndexOf(',') < 0
+                        ? decimal.Parse(s.AsSpan(), NumberStyles.Any, CultureInfo.InvariantCulture)
+                        : decimal.Parse(s.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture);
+                }
+                _values = parsed;
+            }
         }
 
         public static string ToDecimalString(decimal value)

@@ -97,7 +97,7 @@ namespace FellowOakDicom.Network
 
                 if (Command.Contains(DicomTag.OffendingElement))
                 {
-                    string[] tags = Command.GetValues<string>(DicomTag.OffendingElement);
+                    var tags = Command.GetElem(DicomTag.OffendingElement).Values;
                     if (tags.Length > 0)
                     {
                         sb.Append("\n\t\tTags:\t\t");

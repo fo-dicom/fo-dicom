@@ -97,8 +97,7 @@ namespace FellowOakDicom
                 return DateTimeOffset.MinValue;
             }
 
-            var timezone = (topLevelDataset ?? dataset).GetDicomItem<DicomShortString>(DicomTag.TimezoneOffsetFromUTC);
-            if (timezone != null && timezone.Count > 0)
+            if ((topLevelDataset ?? dataset).TryGetElem(DicomTag.TimezoneOffsetFromUTC, out var timezone) && timezone.Count > 0)
             {
                 // Explicit timezone information present in dataset. The format is &XXYY, where & is either '+' or '-' and XX or YY are the hours or minutes
                 string s = timezone.Get<string>();
@@ -149,8 +148,7 @@ namespace FellowOakDicom
                     return false;
                 }
 
-                var timezone = (topLevelDataset ?? dataset).GetDicomItem<DicomShortString>(DicomTag.TimezoneOffsetFromUTC);
-                if (timezone != null && timezone.Count > 0)
+                if ((topLevelDataset ?? dataset).TryGetElem(DicomTag.TimezoneOffsetFromUTC, out var timezone) && timezone.Count > 0)
                 {
                     // Explicit timezone information present in dataset. The format is &XXYY, where & is either '+' or '-' and XX or YY are the hours or minutes
                     string s = timezone.Get<string>();

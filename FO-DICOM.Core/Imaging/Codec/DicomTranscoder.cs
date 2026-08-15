@@ -276,7 +276,7 @@ namespace FellowOakDicom.Imaging.Codec
                 var methods = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionMethod))
                 {
-                    methods.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionMethod));
+                    methods.AddRange(newDataset.GetElem(DicomTag.LossyImageCompressionMethod).StringValues);
                 }
 
                 methods.Add(outSyntax.LossyCompressionMethod);
@@ -288,7 +288,7 @@ namespace FellowOakDicom.Imaging.Codec
                 List<string> ratios = new List<string>();
                 if (newDataset.Contains(DicomTag.LossyImageCompressionRatio))
                 {
-                    ratios.AddRange(newDataset.GetValues<string>(DicomTag.LossyImageCompressionRatio));
+                    ratios.AddRange(newDataset.GetElem(DicomTag.LossyImageCompressionRatio).StringValues);
                 }
 
                 ratios.Add(string.Format(CultureInfo.InvariantCulture, "{0:0.000}", oldSize / newSize));

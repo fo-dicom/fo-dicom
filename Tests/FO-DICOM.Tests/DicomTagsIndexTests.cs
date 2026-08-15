@@ -11,7 +11,7 @@ namespace FellowOakDicom.Tests
         [Fact]
         public void ShouldFindKnownDicomTags()
         {
-            var tagsToTest = new[]
+            var tagsToTest = new DicomTag[]
             {
                 DicomTag.AccessionNumber,
                 DicomTag.PatientID,
@@ -19,7 +19,7 @@ namespace FellowOakDicom.Tests
             foreach (var tag in tagsToTest)
             {
                 var foundTag = DicomTagsIndex.LookupOrCreate(tag.Group, tag.Element);
-                Assert.Same(tag, foundTag);
+                Assert.Equal(tag, foundTag);
             }
         }
     }

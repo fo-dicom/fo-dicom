@@ -128,8 +128,8 @@ namespace FellowOakDicom
         {
             if (ReferenceEquals(obj, null)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (GetType() != obj.GetType()) return false;
-            return Equals(obj as DicomTag);
+            if (!(obj is DicomTag otherTag)) return false;
+            return Equals(otherTag);
         }
 
         public bool Equals(DicomTag other)

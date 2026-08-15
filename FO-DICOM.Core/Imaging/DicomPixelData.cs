@@ -231,9 +231,9 @@ namespace FellowOakDicom.Imaging
             var size = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 0);
             var bits = Dataset.GetValue<int>(DicomTag.RedPaletteColorLookupTableDescriptor, 2);
 
-            var r = Dataset.GetValues<byte>(DicomTag.RedPaletteColorLookupTableData);
-            var g = Dataset.GetValues<byte>(DicomTag.GreenPaletteColorLookupTableData);
-            var b = Dataset.GetValues<byte>(DicomTag.BluePaletteColorLookupTableData);
+            var r = Dataset.GetElem(DicomTag.RedPaletteColorLookupTableData).Buffer.Data;
+            var g = Dataset.GetElem(DicomTag.GreenPaletteColorLookupTableData).Buffer.Data;
+            var b = Dataset.GetElem(DicomTag.BluePaletteColorLookupTableData).Buffer.Data;
 
             // If the LUT size is 0, that means it's 65536 in size.
             if (size == 0)

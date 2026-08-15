@@ -432,7 +432,7 @@ namespace FellowOakDicom.Media
 
         private void CalculateOffsets(DicomWriteLengthCalculator calculator)
         {
-            foreach (var item in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence))
+            foreach (var item in Dataset.GetSequence(DicomTag.DirectoryRecordSequence))
             {
                 if (!(item is DicomDirectoryRecord record))
                 {
@@ -453,7 +453,7 @@ namespace FellowOakDicom.Media
 
         private void SetOffsets()
         {
-            foreach (var record in Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence).OfType<DicomDirectoryRecord>())
+            foreach (var record in Dataset.GetSequence(DicomTag.DirectoryRecordSequence).OfType<DicomDirectoryRecord>())
             {
                 record.AddOrUpdate(
                     new DicomUnsignedLong(DicomTag.OffsetOfTheNextDirectoryRecord, record.NextDirectoryRecord?.Offset ?? 0U),
@@ -670,14 +670,14 @@ namespace FellowOakDicom.Media
         private DicomDirectoryRecord CreatePatientRecord(DicomDataset dataset)
         {
             var patientId = dataset.GetSingleValueOrDefault(DicomTag.PatientID, string.Empty);
-            var patientName = dataset.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
+            var patientName = dataset.GetElem(DicomTag.PatientName);
 
             var currentPatient = RootDirectoryRecord;
 
             while (currentPatient != null)
             {
                 var currPatId = currentPatient.Key;
-                var currPatName = currentPatient.GetDicomItem<DicomPersonName>(DicomTag.PatientName);
+                var currPatName = currentPatient.GetElem(DicomTag.PatientName);
 
                 if (currPatId == patientId && DicomPersonName.HaveSameContent(currPatName, patientName))
                 {
@@ -754,7 +754,7 @@ namespace FellowOakDicom.Media
             df.IsPartial = result == DicomReaderResult.Stopped || result == DicomReaderResult.Suspended;
             df.Format = reader.FileFormat;
             df.Dataset.InternalTransferSyntax = reader.Syntax;
-            df._directoryRecordSequence = df.Dataset.GetDicomItem<DicomSequence>(DicomTag.DirectoryRecordSequence);
+            df._directoryRecordSequence = df.Dataset.GetSequence(DicomTag.DirectoryRecordSequence);
             df.RootDirectoryRecord = dirObserver.BuildDirectoryRecords();
 
             return df;
