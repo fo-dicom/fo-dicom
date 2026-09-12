@@ -16,11 +16,11 @@ namespace FellowOakDicom.Tests.Bugs
         {
             // dataset has GB18030 encoding, PatientSex has content "男" in that encoding
             var dataset = DicomFile.Open(TestData.Resolve("GH1301.dcm")).Dataset;
-            var buffer = dataset.GetValues<byte>(DicomTag.PatientSex);
+            var buffer = dataset.GetElem(DicomTag.PatientSex).Buffer.Data;
             Assert.Equal(196, buffer[0]);
             Assert.Equal(208, buffer[1]);
             dataset.WriteToString();
-            buffer = dataset.GetValues<byte>(DicomTag.PatientSex);
+            buffer = dataset.GetElem(DicomTag.PatientSex).Buffer.Data;
             Assert.Equal(196, buffer[0]);
             Assert.Equal(208, buffer[1]);
         }

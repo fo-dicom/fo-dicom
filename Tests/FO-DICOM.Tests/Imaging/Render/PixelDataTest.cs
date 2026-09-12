@@ -24,8 +24,8 @@ namespace FellowOakDicom.Tests.Imaging.Render
             var df = DicomFile.Open(TestData.Resolve("IM-0001-0001-0001.dcm"));
             var img = new DicomImage(df.Dataset);
             img.RenderImage(0);
-            Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowWidth, 0), img.WindowWidth);
-            Assert.Equal(df.Dataset.GetValue<double>(DicomTag.WindowCenter, 0), img.WindowCenter);
+            Assert.Equal(df.Dataset.GetElem(DicomTag.WindowWidth).Values[0], img.WindowWidth);
+            Assert.Equal(df.Dataset.GetElem(DicomTag.WindowCenter).Values[0], img.WindowCenter);
 
             // an image, that contains one windowing-setting
             df = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));

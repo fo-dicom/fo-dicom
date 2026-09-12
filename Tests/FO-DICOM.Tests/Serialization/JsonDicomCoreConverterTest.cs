@@ -1118,7 +1118,7 @@ namespace FellowOakDicom.Tests.Serialization
             var json = DicomJson.ConvertDicomToJson(dicomDataset);
 
             DicomDataset deserializedDataset = DicomJson.ConvertJsonToDicom(json);
-            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            var recoveredString = deserializedDataset.GetElem(DicomTag.Acceleration).StringValue;
             Assert.Equal("0", recoveredString);
         }
 
@@ -1135,7 +1135,7 @@ namespace FellowOakDicom.Tests.Serialization
             var json = DicomJson.ConvertDicomToJson(dicomDataset);
 
             DicomDataset deserializedDataset = DicomJson.ConvertJsonToDicom(json);
-            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            var recoveredString = deserializedDataset.GetElem(DicomTag.Acceleration).StringValue;
             Assert.Equal(validAccelarationValue, recoveredString);
         }
 
@@ -1157,14 +1157,16 @@ namespace FellowOakDicom.Tests.Serialization
 
             var converter = new DicomJsonConverter(autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
 
-            var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
+            var serializerOptions = new JsonSerializerOptions
+            {
+                TypeInfoResolver = SourceGenerationContext.Default
+            };
             serializerOptions.Converters.Add(converter);
 
             var json = JsonSerializer.Serialize(dicomDataset, serializerOptions);
             JsonDocument.Parse(json);
             DicomDataset deserializedDataset = JsonSerializer.Deserialize<DicomDataset>(json, serializerOptions);
-            var recoveredValue = deserializedDataset.GetValue<double>(DicomTag.PatientSupportAdjustedAngle, 0);
+            var recoveredValue = deserializedDataset.GetElem(DicomTag.PatientSupportAdjustedAngle).Values[0];
             Assert.Equal(overflowNumber, recoveredValue);
         }
 
@@ -1179,14 +1181,16 @@ namespace FellowOakDicom.Tests.Serialization
 
             var converter = new DicomJsonConverter(autoValidate: false, numberSerializationMode: NumberSerializationMode.PreferablyAsNumber);
 
-            var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.TypeInfoResolver = FellowOakDicom.Serialization.SourceGenerationContext.Default;
+            var serializerOptions = new JsonSerializerOptions
+            {
+                TypeInfoResolver = SourceGenerationContext.Default
+            };
             serializerOptions.Converters.Add(converter);
 
             var json = JsonSerializer.Serialize(dicomDataset, serializerOptions);
             JsonDocument.Parse(json);
             DicomDataset deserializedDataset = JsonSerializer.Deserialize<DicomDataset>(json, serializerOptions);
-            var recoveredValue = deserializedDataset.GetValue<float>(DicomTag.PhysicalDetectorSize, 0);
+            var recoveredValue = deserializedDataset.GetElem(DicomTag.PhysicalDetectorSize).Values[0];
             Assert.Equal(overflowNumber, recoveredValue);
         }
 

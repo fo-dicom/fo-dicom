@@ -15,10 +15,10 @@ namespace FellowOakDicom.Tests.Bugs
             // Arrange
             var inputFile = DicomFile.Open(TestData.Resolve("GH1296.dcm"));
 
-            var expectedWindowCenter = 20958;
-            var actualWindowCenter = inputFile.Dataset.GetValue<double>(DicomTag.WindowCenter, 0);
+            var expectedWindowCenter = 20958m;
+            var actualWindowCenter = inputFile.Dataset.GetElem(DicomTag.WindowCenter).Values[0];
 
-            Assert.Equal(expectedWindowCenter, actualWindowCenter, 0.001);
+            Assert.Equal(expectedWindowCenter, actualWindowCenter);
         }
 
     }

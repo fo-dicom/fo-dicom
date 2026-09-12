@@ -106,7 +106,7 @@ namespace FellowOakDicom
         /// </summary>
         public byte[] Version
         {
-            get => GetValues<byte>(DicomTag.FileMetaInformationVersion);
+            get => GetElem(DicomTag.FileMetaInformationVersion).Values;
             set => AddOrUpdate(DicomTag.FileMetaInformationVersion, value);
         }
 

@@ -13,8 +13,6 @@ namespace FellowOakDicom
     public partial class DicomDataset
     {
 
-
-
         /// <summary>
         /// Gets the <see cref="DicomItem"/> of the specified <paramref name="tag"/>.
         /// </summary>

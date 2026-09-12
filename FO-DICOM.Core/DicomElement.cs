@@ -2,6 +2,10 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.Mathematics;
+using FellowOakDicom.IO;
+using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,15 +13,11 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using FellowOakDicom.Imaging;
-using FellowOakDicom.Imaging.Mathematics;
-using FellowOakDicom.IO;
-using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom
 {
 
-    [DebuggerDisplay("Tag: {DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
+    [DebuggerDisplay("Tag: {FellowOakDicom.DicomDictionary.Default[Tag].Name} ({Tag.Group.ToString(\"X\")},{Tag.Element.ToString(\"X\")}), VR: {ValueRepresentation.Code}, VM: {Count}, Value: {Get<string>()}")]
     public abstract class DicomElement : DicomItem
     {
         protected DicomElement(DicomTag tag, IByteBuffer data)
@@ -497,6 +497,8 @@ namespace FellowOakDicom
         where Tv : struct
     {
 
+        private Tv[] _values = null;
+
         #region Constructors
 
         protected DicomValueElement(DicomTag tag, params Tv[] values)
@@ -515,6 +517,16 @@ namespace FellowOakDicom
 
         public override int Count => (int)Buffer.Size / ValueRepresentation.UnitSize;
 
+        // TODO: return ReadOnlyCollection instead of array, because this values have to be unmutable
+        public Tv[] Values
+        {
+            get
+            {
+                EnsureParesValues();
+                return _values;
+            }
+        }
+
         #endregion
 
         #region Public Members
@@ -532,7 +544,8 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(object[]))
             {
-                return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Cast<object>().ToArray();
+                EnsureParesValues();
+                return (T)(object)_values.Cast<object>().ToArray();
             }
 
             if (typeof(T) == typeof(Tv))
@@ -545,7 +558,8 @@ namespace FellowOakDicom
             if (typeof(T) == typeof(Tv[]))
             {
                 // Is there a way to avoid this cast?
-                return (T)(object)ByteConverter.ToArray<Tv>(Buffer);
+                EnsureParesValues();
+                return (T)(object)_values;
             }
 
             if (typeof(T) == typeof(string))
@@ -560,7 +574,8 @@ namespace FellowOakDicom
 
             if (typeof(T) == typeof(string[]))
             {
-                return (T)(object)ByteConverter.ToArray<Tv>(Buffer).Select(x => x.ToString()).ToArray();
+                EnsureParesValues();
+                return (T)(object)_values.Select(x => x.ToString()).ToArray();
             }
 
             if (typeof(T).GetTypeInfo().IsValueType)
@@ -595,6 +610,14 @@ namespace FellowOakDicom
         }
 
         #endregion
+
+        private void EnsureParesValues()
+        {
+            if (_values == null)
+            {
+                _values = ByteConverter.ToArray<Tv>(Buffer);
+            }
+        }
 
     }
 

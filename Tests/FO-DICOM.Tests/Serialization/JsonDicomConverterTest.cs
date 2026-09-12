@@ -1089,7 +1089,7 @@ namespace FellowOakDicom.Tests.Serialization
             var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
             JObject.Parse(json);
             DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            var recoveredString = deserializedDataset.GetElem(DicomTag.Acceleration).StringValue;
             Assert.Equal("0", recoveredString);
         }
 
@@ -1106,7 +1106,7 @@ namespace FellowOakDicom.Tests.Serialization
             var json = JsonConvert.SerializeObject(dicomDataset, new JsonDicomConverter());
             JObject.Parse(json);
             DicomDataset deserializedDataset = JsonConvert.DeserializeObject<DicomDataset>(json, new JsonDicomConverter());
-            var recoveredString = deserializedDataset.GetValue<string>(DicomTag.Acceleration, 0);
+            var recoveredString = deserializedDataset.GetElem(DicomTag.Acceleration).StringValue;
             Assert.Equal(validAccelarationValue, recoveredString);
         }
 
