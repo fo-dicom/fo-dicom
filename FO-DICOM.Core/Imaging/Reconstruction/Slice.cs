@@ -42,7 +42,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
         public decimal Spacing { get; private set; }
 
-        private double[] _output;
+        private decimal[] _output;
 
 
         private void CalculateCut()
@@ -94,7 +94,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        public Interval<double> GetMinMaxValue() => new Interval<double>(_output.Min(), _output.Max());
+        public Interval<decimal> GetMinMaxValue() => new Interval<decimal>(_output.Min(), _output.Max());
 
 
     }

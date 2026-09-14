@@ -41,7 +41,7 @@ namespace FellowOakDicom.Imaging.Render
             {
                 _modalityLut = options.ModalityLUT;
             }
-            else if (_options.RescaleSlope != 1.0 || _options.RescaleIntercept != 0.0)
+            else if (_options.RescaleSlope != decimal.One || _options.RescaleIntercept != decimal.Zero)
             {
                 _modalityLut = new ModalityRescaleLUT(_options);
             }
@@ -56,7 +56,7 @@ namespace FellowOakDicom.Imaging.Render
 
         #region Public Properties
 
-        public double WindowWidth
+        public decimal WindowWidth
         {
             get => _options.WindowWidth;
             set
@@ -69,7 +69,7 @@ namespace FellowOakDicom.Imaging.Render
             }
         }
 
-        public double WindowCenter
+        public decimal WindowCenter
         {
             get => _options.WindowCenter;
             set
@@ -164,7 +164,7 @@ namespace FellowOakDicom.Imaging.Render
 
                         _lut = composite;
                     }
-                    
+
                     return new PrecalculatedLUT(_lut, _options.BitDepth.MinimumValue, _options.BitDepth.MaximumValue);
                 }
             }

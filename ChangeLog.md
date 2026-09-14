@@ -7,6 +7,7 @@
 - make fo-dicom.core AOT compilant (#2005)
 - Performance optimizations in FO-DICOM.Core
 - use decimal in FrameGeometry instead of double to avoid rounding erors (#2085)
+- breaking change: rendering internally (for windowing, pixeldata) now uses decimal instead of double
 - breaking change: types `Geometry3D`, `Point3D`, etc are replaced by generic `Geometry<T>`, `Point3<T>`etc.
 - new encapsulated pixeldata is now always stored correctly as OB (#2117)
 - breaking change: DicomPixelData.Create(dataset, bool) is split up to DicomPixelData.CreateNew(dataset) and DicomPixelData.CreateFromDataset(dataset)

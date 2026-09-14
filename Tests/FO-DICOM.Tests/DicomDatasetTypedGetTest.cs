@@ -180,7 +180,7 @@ namespace FellowOakDicom.Tests
         [MemberData(nameof(ValueElementsWithTwoValues))]
         public void Get_Values_ObjectArray_Success(DicomElement element, object[] expected)
         {
-            var ds = new DicomDataset( new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
+            var ds = new DicomDataset(new[] { element }, false); // skip validation, since the intention of this test is retrieving various numbers of objects, even if they are violating VR constraints
 
             object[] objects = ds.GetValues<object>(element.Tag);
 
@@ -211,7 +211,7 @@ namespace FellowOakDicom.Tests
         private readonly DatasetTestData<DicomTagUIs, string> _emptyStringTestData = new(DicomTag.SOPClassesSupported, []);
         private readonly DatasetTestData<DicomTagCS, string> _singleValueTestData = new(DicomTag.Modality, ["CT"]);
 
-        private class DatasetTestData<U, T> where U:DicomTag
+        private class DatasetTestData<U, T> where U : DicomTag
         {
             public DatasetTestData(U tag, T[] values)
             {

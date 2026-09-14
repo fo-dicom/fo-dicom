@@ -31,15 +31,15 @@ namespace FellowOakDicom.Tests.Imaging.Render
             df = DicomFile.Open(TestData.Resolve("CR-MONO1-10-chest"));
             img = new DicomImage(df.Dataset);
             img.RenderImage(0);
-            Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowWidth), img.WindowWidth);
-            Assert.Equal(df.Dataset.GetSingleValue<double>(DicomTag.WindowCenter), img.WindowCenter);
+            Assert.Equal(df.Dataset.GetSingleValue<decimal>(DicomTag.WindowWidth), img.WindowWidth);
+            Assert.Equal(df.Dataset.GetSingleValue<decimal>(DicomTag.WindowCenter), img.WindowCenter);
 
             // an image with no windowing-setting
             df = DicomFile.Open(TestData.Resolve("GH227.dcm"));
             img = new DicomImage(df.Dataset);
             img.RenderImage(0);
             Assert.Equal(255, img.WindowWidth);
-            Assert.Equal(127.5, img.WindowCenter);
+            Assert.Equal(127.5m, img.WindowCenter);
         }
 
 

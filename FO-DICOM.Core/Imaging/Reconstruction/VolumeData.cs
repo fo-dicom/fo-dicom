@@ -171,9 +171,9 @@ namespace FellowOakDicom.Imaging.Reconstruction
         /// <param name="cols"></param>
         /// <param name="spacing"></param>
         /// <returns></returns>
-        public double[] GetCut(Point3<decimal> topleft, Vector3<decimal> rowDir, Vector3<decimal> colDir, int rows, int cols, decimal spacing)
+        public decimal[] GetCut(Point3<decimal> topleft, Vector3<decimal> rowDir, Vector3<decimal> colDir, int rows, int cols, decimal spacing)
         {
-            var output = new double[rows * cols];
+            var output = new decimal[rows * cols];
 
             var deltaX = spacing * rowDir;
             var deltaY = spacing * colDir;
@@ -213,8 +213,8 @@ namespace FellowOakDicom.Imaging.Reconstruction
 
                         if (nextPixel.HasValue && prevPixel.HasValue)
                         {
-                            var alpha1 = (double)(nextSlice.SortingValue - ordered);
-                            var alpha2 = (double)(ordered - prevSlice.SortingValue);
+                            var alpha1 = nextSlice.SortingValue - ordered;
+                            var alpha2 = ordered - prevSlice.SortingValue;
                             var pixel = (prevPixel.Value * alpha1 + nextPixel.Value * alpha2) / (alpha1 + alpha2);
                             // convert from 12bit to 8 bit
                             output[x + y * cols] = pixel;
@@ -229,14 +229,14 @@ namespace FellowOakDicom.Imaging.Reconstruction
         }
 
 
-        private static double? Interpolate(IPixelData pixels, Point2<decimal> imgSpace)
+        private static decimal? Interpolate(IPixelData pixels, Point2<decimal> imgSpace)
         {
             if ((imgSpace.X >= 0.0m) && (imgSpace.X < pixels.Width - 1) && (imgSpace.Y >= 0.0m) && (imgSpace.Y < pixels.Height - 1))
             {
                 var posX = (int)Math.Floor(imgSpace.X);
-                double alphaX = (double)(imgSpace.X - posX);
+                var alphaX = imgSpace.X - posX;
                 var posY = (int)Math.Floor(imgSpace.Y);
-                double alphaY = (double)(imgSpace.Y - posY);
+                var alphaY = imgSpace.Y - posY;
 
                 return (1 - alphaX) * ((1 - alphaY) * pixels.GetPixel(posX, posY)
                     + alphaY * pixels.GetPixel(posX, posY + 1))

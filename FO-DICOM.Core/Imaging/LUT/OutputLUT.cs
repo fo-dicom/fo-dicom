@@ -40,12 +40,12 @@ namespace FellowOakDicom.Imaging.LUT
         /// <summary>
         /// Get the minimum output value
         /// </summary>
-        public double MinimumOutputValue => int.MinValue;
+        public decimal MinimumOutputValue => int.MinValue;
 
         /// <summary>
         /// Get the maximum output value
         /// </summary>
-        public double MaximumOutputValue => int.MaxValue;
+        public decimal MaximumOutputValue => int.MaxValue;
 
         /// <summary>
         /// Returns true if the lookup table is valid
@@ -57,7 +57,7 @@ namespace FellowOakDicom.Imaging.LUT
         /// </summary>
         /// <param name="value">Input value</param>
         /// <returns>Output value</returns>
-        public double this[double value]
+        public decimal this[decimal value]
         {
             get
             {

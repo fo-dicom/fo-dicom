@@ -32,13 +32,13 @@ namespace FellowOakDicom.Imaging.LUT
 
         public double PixelPaddingValue => _paddingValue;
 
-        public double MinimumOutputValue => _minValue;
+        public decimal MinimumOutputValue => _minValue;
 
-        public double MaximumOutputValue => _maxValue;
+        public decimal MaximumOutputValue => _maxValue;
 
         public bool IsValid => true;
 
-        public double this[double value]
+        public decimal this[decimal value]
         {
             get
             {

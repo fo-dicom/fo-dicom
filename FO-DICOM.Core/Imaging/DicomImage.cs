@@ -19,7 +19,7 @@ namespace FellowOakDicom.Imaging
     {
         #region FIELDS
 
-        private double _scale;
+        private decimal _scale;
         private bool _showOverlays;
         private int _overlayColor = unchecked((int)0xffff00ff);
 
@@ -48,7 +48,7 @@ namespace FellowOakDicom.Imaging
         {
             ShowOverlays = true;
 
-            _scale = 1.0;
+            _scale = decimal.One;
 
             _dataset = DicomTranscoder.ExtractOverlays(dataset);
             _pixelDataCache = CreateDicomPixelData(_dataset);
@@ -103,7 +103,7 @@ namespace FellowOakDicom.Imaging
         public virtual bool IsGrayscale => _pi == PhotometricInterpretation.Monochrome1 || _pi == PhotometricInterpretation.Monochrome2;
 
         /// <summary>Scaling factor of the rendered image</summary>
-        public double Scale
+        public decimal Scale
         {
             get => _scale;
             set
@@ -117,7 +117,7 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>Gets or sets window width of rendered gray scale image.</summary>
-        public virtual double WindowWidth
+        public virtual decimal WindowWidth
         {
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.WindowWidth ?? 255;
             set
@@ -135,7 +135,7 @@ namespace FellowOakDicom.Imaging
         }
 
         /// <summary>Gets or sets window center of rendered gray scale image.</summary>
-        public virtual double WindowCenter
+        public virtual decimal WindowCenter
         {
             get => (GetOrCreateCachedFramePipeline(CurrentFrame) as GenericGrayscalePipeline)?.WindowCenter ?? 255;
             set

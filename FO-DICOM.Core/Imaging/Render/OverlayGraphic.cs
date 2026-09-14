@@ -25,7 +25,7 @@ namespace FellowOakDicom.Imaging.Render
 
         private readonly int _color;
 
-        private double _scale;
+        private decimal _scale;
 
         #endregion
 
@@ -45,7 +45,7 @@ namespace FellowOakDicom.Imaging.Render
             _offsetX = offsetx;
             _offsetY = offsety;
             _color = color;
-            _scale = 1.0;
+            _scale = decimal.One;
         }
 
         #endregion
@@ -56,7 +56,7 @@ namespace FellowOakDicom.Imaging.Render
         /// Set overlay scale factor.
         /// </summary>
         /// <param name="scale">Scale factor.</param>
-        public void Scale(double scale)
+        public void Scale(decimal scale)
         {
             if ((scale - _scale).IsNearlyZero()) return;
 

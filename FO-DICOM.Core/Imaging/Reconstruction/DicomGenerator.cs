@@ -60,7 +60,7 @@ namespace FellowOakDicom.Imaging.Reconstruction
                 if (!dataset.Contains(DicomTag.BitsStored))
                 {
                     var interval = slice.GetMinMaxValue();
-                    var bitsStored = (ushort)Math.Ceiling(Math.Log(interval.Max, 2));
+                    var bitsStored = (ushort)Math.Ceiling(Math.Log((double)interval.Max, 2));
 
                     dataset.AddOrUpdate(DicomTag.BitsStored, bitsStored);
                     dataset.AddOrUpdate(DicomTag.HighBit, bitsStored - 1);

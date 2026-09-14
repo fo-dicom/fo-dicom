@@ -68,8 +68,8 @@ namespace FellowOakDicom.Dump
                 var delta = point - _lastDownPosition;
                 _lastDownPosition = point;
 
-                _image.WindowCenter = _image.WindowCenter + delta.X * 10;
-                _image.WindowWidth = _image.WindowWidth + delta.Y * 10;
+                _image.WindowCenter = _image.WindowCenter + (decimal)delta.X * 10;
+                _image.WindowWidth = _image.WindowWidth + (decimal)delta.Y * 10;
                 DisplayImage();
             }
         }
@@ -91,7 +91,7 @@ namespace FellowOakDicom.Dump
             if (e.Delta > 0)
             {
                 // scroll down
-                if (_image.NumberOfFrames > (_frameNumber +1))
+                if (_image.NumberOfFrames > (_frameNumber + 1))
                 {
                     _frameNumber++;
                     DisplayImage();

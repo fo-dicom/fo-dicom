@@ -78,7 +78,7 @@ namespace FellowOakDicom.Imaging.Render
             }
         }
 
-        public double ScaleFactor
+        public decimal ScaleFactor
         {
             get
             {
@@ -138,7 +138,7 @@ namespace FellowOakDicom.Imaging.Render
         {
             _layers.Add(layer);
             _layers.Sort(
-                delegate(IGraphic a, IGraphic b)
+                delegate (IGraphic a, IGraphic b)
                     {
                         if (b.ZOrder > a.ZOrder) return 1;
                         else if (a.ZOrder > b.ZOrder) return -1;
@@ -151,7 +151,7 @@ namespace FellowOakDicom.Imaging.Render
             foreach (IGraphic graphic in _layers) graphic.Reset();
         }
 
-        public void Scale(double scale)
+        public void Scale(decimal scale)
         {
             foreach (IGraphic graphic in _layers) graphic.Scale(scale);
         }
@@ -176,7 +176,7 @@ namespace FellowOakDicom.Imaging.Render
             foreach (IGraphic graphic in _layers) graphic.FlipY();
         }
 
-        public void Transform(double scale, int rotation, bool flipx, bool flipy)
+        public void Transform(decimal scale, int rotation, bool flipx, bool flipy)
         {
             foreach (IGraphic graphic in _layers) graphic.Transform(scale, rotation, flipx, flipy);
         }

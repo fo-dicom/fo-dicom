@@ -41,10 +41,10 @@ namespace FellowOakDicom.Tests.Imaging.LUT
         }
 
         public bool IsValid { get; private set; }
-        public double MinimumOutputValue { get; private set; }
-        public double MaximumOutputValue { get; private set; }
+        public decimal MinimumOutputValue { get; private set; }
+        public decimal MaximumOutputValue { get; private set; }
 
-        public double this[double input] => input;
+        public decimal this[decimal input] => input;
 
         public void Recalculate()
         {

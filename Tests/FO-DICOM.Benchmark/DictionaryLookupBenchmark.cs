@@ -12,7 +12,7 @@ namespace FellowOakDicom.Benchmark
         private DicomDictionary _dictionary;
 
         // Common tags that are looked up during every DICOM parse
-        private static readonly DicomTag[] _commonTags = new[]
+        private static readonly DicomTag[] _commonTags = new DicomTag[]
         {
             DicomTag.PatientID,
             DicomTag.PatientName,

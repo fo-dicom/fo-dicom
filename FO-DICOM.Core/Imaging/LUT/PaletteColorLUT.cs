@@ -44,13 +44,13 @@ namespace FellowOakDicom.Imaging.LUT
             set => _lut = value;
         }
 
-        public double MinimumOutputValue => int.MinValue;
+        public decimal MinimumOutputValue => int.MinValue;
 
-        public double MaximumOutputValue => int.MaxValue;
+        public decimal MaximumOutputValue => int.MaxValue;
 
         public bool IsValid => _lut != null;
 
-        public double this[double value] => _lut[(value - _first) > 0 ? unchecked((int)(value - _first)) : 0].Value;
+        public decimal this[decimal value] => _lut[(value - _first) > 0 ? unchecked((int)(value - _first)) : 0].Value;
 
         #endregion
 

@@ -21,7 +21,7 @@ namespace FellowOakDicom.Imaging.Render
 
         protected IPixelData _scaledData;
 
-        protected double _scaleFactor;
+        protected decimal _scaleFactor;
 
         protected int _rotation;
 
@@ -66,7 +66,7 @@ namespace FellowOakDicom.Imaging.Render
         public int OriginalOffsetY => _offsetY;
 
         /// <inheritdoc />
-        public double ScaleFactor => _scaleFactor;
+        public decimal ScaleFactor => _scaleFactor;
 
         /// <summary>
         /// Gets scaled pixel data.
@@ -77,7 +77,7 @@ namespace FellowOakDicom.Imaging.Render
             {
                 if (_scaledData == null)
                 {
-                    _scaledData = (_scaleFactor - 1.0).IsNearlyZero()
+                    _scaledData = (_scaleFactor - decimal.One).IsNearlyZero()
                         ? _originalData
                         : OriginalData.Rescale(_scaleFactor);
                 }
@@ -117,7 +117,7 @@ namespace FellowOakDicom.Imaging.Render
             : this()
         {
             _originalData = pixelData;
-            Scale(1.0);
+            Scale(decimal.One);
         }
 
         /// <summary>
@@ -147,14 +147,14 @@ namespace FellowOakDicom.Imaging.Render
         /// <inheritdoc />
         public void Reset()
         {
-            Scale(1.0);
+            Scale(decimal.One);
             _rotation = 0;
             _flipX = false;
             _flipY = false;
         }
 
         /// <inheritdoc />
-        public void Scale(double scale)
+        public void Scale(decimal scale)
         {
             if ((scale - _scaleFactor).IsNearlyZero()) return;
 
@@ -170,8 +170,8 @@ namespace FellowOakDicom.Imaging.Render
         /// <inheritdoc />
         public void BestFit(int width, int height)
         {
-            double xF = (double)width / OriginalWidth;
-            double yF = (double)height / OriginalHeight;
+            var xF = (decimal)width / OriginalWidth;
+            var yF = (decimal)height / OriginalHeight;
             Scale(Math.Min(xF, yF));
         }
 
@@ -206,7 +206,7 @@ namespace FellowOakDicom.Imaging.Render
         }
 
         /// <inheritdoc />
-        public void Transform(double scale, int rotation, bool flipx, bool flipy)
+        public void Transform(decimal scale, int rotation, bool flipx, bool flipy)
         {
             Scale(scale);
             Rotate(rotation);

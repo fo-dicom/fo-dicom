@@ -25,7 +25,7 @@ namespace FellowOakDicom.Tests.Bugs
             {
                 for (var x = 0; x < pixelData.Width; ++x)
                 {
-                    if (pixelData.GetPixel(x, y) != 0.0)
+                    if (pixelData.GetPixel(x, y) != decimal.Zero)
                     {
                         Assert.True(true);
                         return;

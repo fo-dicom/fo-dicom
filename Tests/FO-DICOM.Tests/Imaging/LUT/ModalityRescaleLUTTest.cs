@@ -38,7 +38,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset, 0);
             var lut = new ModalityRescaleLUT(options);
-            Assert.Equal(0.0, lut.RescaleIntercept);
+            Assert.Equal(0m, lut.RescaleIntercept);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace FellowOakDicom.Tests.Imaging.LUT
             var file = DicomFile.Open(TestData.Resolve("CR-ModalitySequenceLUT.dcm"));
             var options = GrayscaleRenderOptions.FromDataset(file.Dataset, 0);
             var lut = new ModalityRescaleLUT(options);
-            Assert.Equal(1.0, lut.RescaleSlope);
+            Assert.Equal(1m, lut.RescaleSlope);
         }
 
         #endregion

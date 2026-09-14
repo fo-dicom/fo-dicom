@@ -38,11 +38,11 @@ namespace FellowOakDicom.Imaging.LUT
 
         public bool IsValid => _lut.IsValid;
 
-        public double MinimumOutputValue => _lut.MinimumOutputValue;
+        public decimal MinimumOutputValue => _lut.MinimumOutputValue;
 
-        public double MaximumOutputValue => _lut.MaximumOutputValue;
+        public decimal MaximumOutputValue => _lut.MaximumOutputValue;
 
-        public double this[double value]
+        public decimal this[decimal value]
         {
             get
             {

@@ -41,13 +41,13 @@ namespace FellowOakDicom.Imaging.Render
         /// </summary>
         /// <param name="padding">Padding value to ignore in min-max determination.</param>
         /// <returns>Range of calculated minimum and maximum values.</returns>
-        DicomRange<double> GetMinMax(int padding);
+        DicomRange<decimal> GetMinMax(int padding);
 
         /// <summary>
         /// Return the minimum and maximum pixel values from pixel data.
         /// </summary>
         /// <returns>Range of calculated minimum and maximum values.</returns>
-        DicomRange<double> GetMinMax();
+        DicomRange<decimal> GetMinMax();
 
         /// <summary>
         /// Gets the value of the pixel at the specified coordinates.
@@ -55,14 +55,14 @@ namespace FellowOakDicom.Imaging.Render
         /// <param name="x">X</param>
         /// <param name="y">Y</param>
         /// <returns>Pixel value</returns>
-        double GetPixel(int x, int y);
+        decimal GetPixel(int x, int y);
 
         /// <summary>
         /// Gets a rescaled copy of the pixel data.
         /// </summary>
         /// <param name="scale">Copy scale.</param>
         /// <returns>Rescaled copy of the pixel data.</returns>
-        IPixelData Rescale(double scale);
+        IPixelData Rescale(decimal scale);
 
         /// <summary>
         /// Render the pixel data after applying <paramref name="lut"/> to the output array (allocated by user)
@@ -279,40 +279,40 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax(int padding)
+        public DicomRange<decimal> GetMinMax(int padding)
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Where(v => v != padding).Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax()
+        public DicomRange<decimal> GetMinMax()
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public double GetPixel(int x, int y)
+        public decimal GetPixel(int x, int y)
         {
             var data = Data;
             return data[y * Width + x];
         }
 
         /// <inheritdoc />
-        public virtual IPixelData Rescale(double scale)
+        public virtual IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
@@ -408,7 +408,7 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public override IPixelData Rescale(double scale)
+        public override IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
@@ -522,40 +522,40 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax(int padding)
+        public DicomRange<decimal> GetMinMax(int padding)
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Where(v => v != padding).Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax()
+        public DicomRange<decimal> GetMinMax()
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public double GetPixel(int x, int y)
+        public decimal GetPixel(int x, int y)
         {
             var data = Data;
             return data[y * Width + x];
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
@@ -698,40 +698,40 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax(int padding)
+        public DicomRange<decimal> GetMinMax(int padding)
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Where(v => v != padding).Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax()
+        public DicomRange<decimal> GetMinMax()
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public double GetPixel(int x, int y)
+        public decimal GetPixel(int x, int y)
         {
             var data = Data;
             return data[y * Width + x];
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
@@ -867,39 +867,39 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax(int padding)
+        public DicomRange<decimal> GetMinMax(int padding)
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Where(v => v != padding).Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax()
+        public DicomRange<decimal> GetMinMax()
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public double GetPixel(int x, int y)
+        public decimal GetPixel(int x, int y)
         {
             return Data[y * Width + x];
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
@@ -1032,39 +1032,39 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax(int padding)
+        public DicomRange<decimal> GetMinMax(int padding)
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Where(v => v != padding).Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax()
+        public DicomRange<decimal> GetMinMax()
         {
             if (Data == null || Data.Length == 0)
             {
-                return default(DicomRange<double>);
+                return default(DicomRange<decimal>);
             }
 
-            var range = new DicomRange<double>(double.MaxValue, double.MinValue);
+            var range = new DicomRange<decimal>(decimal.MaxValue, decimal.MinValue);
             Data.Each(v => range.Join(v));
             return range;
         }
 
         /// <inheritdoc />
-        public double GetPixel(int x, int y)
+        public decimal GetPixel(int x, int y)
         {
             return Data[y * Width + x];
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);
@@ -1171,21 +1171,21 @@ namespace FellowOakDicom.Imaging.Render
         #region Public Methods
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax(int padding)
+        public DicomRange<decimal> GetMinMax(int padding)
         {
             throw new InvalidOperationException(
                 "Calculation of min/max pixel values is not supported for 24-bit color pixel data.");
         }
 
         /// <inheritdoc />
-        public DicomRange<double> GetMinMax()
+        public DicomRange<decimal> GetMinMax()
         {
             throw new InvalidOperationException(
                 "Calculation of min/max pixel values is not supported for 24-bit color pixel data.");
         }
 
         /// <inheritdoc />
-        public double GetPixel(int x, int y)
+        public decimal GetPixel(int x, int y)
         {
             var data = Data;
             var p = (y * Width + x) * 3;
@@ -1193,7 +1193,7 @@ namespace FellowOakDicom.Imaging.Render
         }
 
         /// <inheritdoc />
-        public IPixelData Rescale(double scale)
+        public IPixelData Rescale(decimal scale)
         {
             var w = (int)(Width * scale);
             var h = (int)(Height * scale);

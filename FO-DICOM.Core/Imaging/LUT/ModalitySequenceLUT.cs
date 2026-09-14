@@ -48,11 +48,11 @@ namespace FellowOakDicom.Imaging.LUT
 
         public bool IsValid => false; //always recalculate
 
-        public double MinimumOutputValue => _LUTDataArray[0];
+        public decimal MinimumOutputValue => _LUTDataArray[0];
 
-        public double MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
+        public decimal MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
 
-        public double this[double value]
+        public decimal this[decimal value]
         {
             get
             {
@@ -81,23 +81,23 @@ namespace FellowOakDicom.Imaging.LUT
             switch (LUTDataElement.ValueRepresentation.Code)
             {
                 case "OW":
-                {
-                    var LUTData = LUTDataElement as DicomOtherWord;
-                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
-                    break;
-                }
+                    {
+                        var LUTData = LUTDataElement as DicomOtherWord;
+                        _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
+                        break;
+                    }
                 case "US":
-                {
-                    var LUTData = LUTDataElement as DicomUnsignedShort;
-                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
-                    break;
-                }
+                    {
+                        var LUTData = LUTDataElement as DicomUnsignedShort;
+                        _LUTDataArray = ConvertAll(ByteConverter.ToArray<ushort>(LUTData.Buffer), x => (int)x);
+                        break;
+                    }
                 case "SS":
-                {
-                    var LUTData = LUTDataElement as DicomSignedShort;
-                    _LUTDataArray = ConvertAll(ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
-                    break;
-                }
+                    {
+                        var LUTData = LUTDataElement as DicomSignedShort;
+                        _LUTDataArray = ConvertAll(ByteConverter.ToArray<short>(LUTData.Buffer), x => (int)x);
+                        break;
+                    }
             }
         }
 
@@ -128,8 +128,8 @@ namespace FellowOakDicom.Imaging.LUT
         //Since .NET Core doesn't know Array.ConvertAll
         private TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Func<TInput, TOutput> converter)
         {
-            array = array ?? throw new ArgumentNullException(nameof (array));
-            converter = converter ?? throw new ArgumentNullException(nameof (converter));
+            array = array ?? throw new ArgumentNullException(nameof(array));
+            converter = converter ?? throw new ArgumentNullException(nameof(converter));
 
             var outputArray = new TOutput[array.Length];
             for (int index = 0; index < array.Length; ++index)

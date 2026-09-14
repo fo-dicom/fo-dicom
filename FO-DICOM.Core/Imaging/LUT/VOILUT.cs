@@ -34,29 +34,29 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        protected double WindowCenter { get; private set; }
+        protected decimal WindowCenter { get; private set; }
 
-        protected double WindowWidth { get; private set; }
+        protected decimal WindowWidth { get; private set; }
 
-        protected double WindowCenterMin05 { get; private set; }
+        protected decimal WindowCenterMin05 { get; private set; }
 
-        protected double WindowWidthMin1 { get; private set; }
+        protected decimal WindowWidthMin1 { get; private set; }
 
-        protected double WindowWidthDiv2 { get; private set; }
+        protected decimal WindowWidthDiv2 { get; private set; }
 
         protected int WindowStart { get; private set; }
 
         protected int WindowEnd { get; private set; }
 
-        public double MinimumOutputValue => 0;
+        public decimal MinimumOutputValue => 0;
 
-        public double MaximumOutputValue => 255;
+        public decimal MaximumOutputValue => 255;
 
         public int OutputRange => 255;
 
         public bool IsValid => false; // always recalculate
 
-        public abstract double this[double value] { get; }
+        public abstract decimal this[decimal value] { get; }
 
         #endregion
 
@@ -68,7 +68,7 @@ namespace FellowOakDicom.Imaging.LUT
             {
                 WindowWidth = _renderOptions.WindowWidth;
                 WindowCenter = _renderOptions.WindowCenter;
-                WindowCenterMin05 = WindowCenter - 0.5;
+                WindowCenterMin05 = WindowCenter - 0.5m;
                 WindowWidthMin1 = WindowWidth - 1;
                 WindowWidthDiv2 = WindowWidthMin1 / 2;
                 WindowStart = (int)(WindowCenterMin05 - WindowWidthDiv2);
@@ -124,7 +124,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public override double this[double value]
+        public override decimal this[decimal value]
         {
             get
             {
@@ -138,7 +138,7 @@ namespace FellowOakDicom.Imaging.LUT
                     {
                         return Math.Min(MaximumOutputValue,
                             Math.Max(MinimumOutputValue,
-                            (((value - WindowCenterMin05) / WindowWidthMin1) + 0.5) * OutputRange + MinimumOutputValue
+                            (((value - WindowCenterMin05) / WindowWidthMin1) + 0.5m) * OutputRange + MinimumOutputValue
                             ));
                     }
                 }
@@ -170,7 +170,7 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public override double this[double value]
+        public override decimal this[decimal value]
         {
             get
             {
@@ -184,7 +184,7 @@ namespace FellowOakDicom.Imaging.LUT
                     {
                         return Math.Min(MaximumOutputValue,
                             Math.Max(MinimumOutputValue,
-                            ((value - WindowCenter) / WindowWidth + 0.5) * OutputRange + MinimumOutputValue
+                            ((value - WindowCenter) / WindowWidth + 0.5m) * OutputRange + MinimumOutputValue
                             ));
                     }
                 }
@@ -215,13 +215,13 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region Public Properties
 
-        public override double this[double value]
+        public override decimal this[decimal value]
         {
             get
             {
                 unchecked
                 {
-                    return 255.0 / (1.0 + Math.Exp(-4.0 * ((value - WindowCenter) / WindowWidth)));
+                    return 255 / (1 + (decimal)Math.Exp((double)(-4.0m * ((value - WindowCenter) / WindowWidth))));
                 }
             }
         }

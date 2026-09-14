@@ -2,9 +2,9 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using FellowOakDicom.Imaging;
 using System;
 using System.Collections.Generic;
-using FellowOakDicom.Imaging;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
@@ -56,8 +56,8 @@ namespace FellowOakDicom.Tests.Imaging
 
             var actual = GrayscaleRenderOptions.FromWindowLevel(dataset);
 
-            Assert.Equal(windowWidth, actual.WindowWidth);
-            Assert.Equal(windowCenter, actual.WindowCenter);
+            Assert.Equal((decimal)windowWidth, actual.WindowWidth);
+            Assert.Equal((decimal)windowCenter, actual.WindowCenter);
         }
 
         [Theory]
@@ -89,8 +89,8 @@ namespace FellowOakDicom.Tests.Imaging
 
             var actual = GrayscaleRenderOptions.FromWindowLevel(dataset);
 
-            Assert.Equal(expectedWindowWith, actual?.WindowWidth);
-            Assert.Equal(expectedWindowCenter, actual?.WindowCenter);
+            Assert.Equal((decimal?)expectedWindowWith, actual?.WindowWidth);
+            Assert.Equal((decimal?)expectedWindowCenter, actual?.WindowCenter);
         }
 
 
@@ -166,8 +166,8 @@ namespace FellowOakDicom.Tests.Imaging
 
             var actual = GrayscaleRenderOptions.FromImagePixelValueTags(dataset);
 
-            Assert.Equal(expectedWindowWidth, actual.WindowWidth);
-            Assert.Equal(expectedWindowCenter, actual.WindowCenter);
+            Assert.Equal((decimal)expectedWindowWidth, actual.WindowWidth);
+            Assert.Equal((decimal)expectedWindowCenter, actual.WindowCenter);
         }
 
         [Theory]
@@ -199,8 +199,8 @@ namespace FellowOakDicom.Tests.Imaging
 
             Assert.Equal(expected.WindowWidth, actual.WindowWidth);
             Assert.Equal(expected.WindowCenter, actual.WindowCenter);
-            Assert.Equal(expectedWindowWidth, actual.WindowWidth);
-            Assert.Equal(expectedWindowCenter, actual.WindowCenter);
+            Assert.Equal((decimal)expectedWindowWidth, actual.WindowWidth);
+            Assert.Equal((decimal)expectedWindowCenter, actual.WindowCenter);
         }
 
         [Theory]
@@ -229,8 +229,8 @@ namespace FellowOakDicom.Tests.Imaging
 
             var actual = GrayscaleRenderOptions.FromImagePixelValueTags(dataset);
 
-            Assert.Equal(expectedWindowWidth, actual.WindowWidth);
-            Assert.Equal(expectedWindowCenter, actual.WindowCenter);
+            Assert.Equal((decimal)expectedWindowWidth, actual.WindowWidth);
+            Assert.Equal((decimal)expectedWindowCenter, actual.WindowCenter);
         }
 
         [Fact]

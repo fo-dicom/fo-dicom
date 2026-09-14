@@ -38,13 +38,13 @@ namespace FellowOakDicom.Imaging.LUT
 
         #region ILUT Members
 
-        public double MinimumOutputValue => FinalLUT?.MinimumOutputValue ?? 0;
+        public decimal MinimumOutputValue => FinalLUT?.MinimumOutputValue ?? 0;
 
-        public double MaximumOutputValue => FinalLUT?.MaximumOutputValue ?? 0;
+        public decimal MaximumOutputValue => FinalLUT?.MaximumOutputValue ?? 0;
 
         public bool IsValid => _luts.All(l => l.IsValid);
 
-        public double this[double value]
+        public decimal this[decimal value]
         {
             get
             {

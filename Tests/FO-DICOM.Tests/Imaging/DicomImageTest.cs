@@ -3,8 +3,8 @@
 
 #nullable disable
 
-using System.Threading.Tasks;
 using FellowOakDicom.Imaging;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace FellowOakDicom.Tests.Imaging
@@ -31,7 +31,7 @@ namespace FellowOakDicom.Tests.Imaging
                 Parallel.For(0, 1000, i =>
                 {
                     image.RenderImage().AsBytes();
-                    image.Scale = 0.999;
+                    image.Scale = 0.999m;
                 });
             });
 

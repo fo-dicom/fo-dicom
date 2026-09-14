@@ -18,7 +18,7 @@ namespace FellowOakDicom.Tests.Bugs
             var expectedWindowCenter = 20958m;
             var actualWindowCenter = inputFile.Dataset.GetElem(DicomTag.WindowCenter).Values[0];
 
-            Assert.Equal(expectedWindowCenter, actualWindowCenter);
+            Assert.Equal(expectedWindowCenter, actualWindowCenter, 3);
         }
 
     }

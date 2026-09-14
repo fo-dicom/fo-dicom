@@ -18,19 +18,19 @@ namespace FellowOakDicom.Imaging.LUT
         /// <summary>
         /// Get the minimum output value
         /// </summary>
-        double MinimumOutputValue { get; }
+        decimal MinimumOutputValue { get; }
 
         /// <summary>
         /// Get the maximum output value
         /// </summary>
-        double MaximumOutputValue { get; }
+        decimal MaximumOutputValue { get; }
 
         /// <summary>
         /// Indexer to transform input value into output value
         /// </summary>
         /// <param name="input">Input value</param>
         /// <returns>Output value</returns>
-        double this[double input] { get; }
+        decimal this[decimal input] { get; }
 
         /// <summary>
         /// Forces the recalculation of LUT

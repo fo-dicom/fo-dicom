@@ -35,7 +35,7 @@ namespace FellowOakDicom.Imaging.Render
         /// <summary>
         /// The image scale factor
         /// </summary>
-        double ScaleFactor { get; }
+        decimal ScaleFactor { get; }
 
         /// <summary>
         /// The scaled image width
@@ -71,7 +71,7 @@ namespace FellowOakDicom.Imaging.Render
         /// Scale the image
         /// </summary>
         /// <param name="scale">scale factor</param>
-        void Scale(double scale);
+        void Scale(decimal scale);
 
         /// <summary>
         /// Auto calculate the scale factor to fit the image in the specified width and height
@@ -103,7 +103,7 @@ namespace FellowOakDicom.Imaging.Render
         /// <param name="rotation">Rotation angle</param>
         /// <param name="flipx">True to flip vertically</param>
         /// <param name="flipy">True to flip horizontally</param>
-        void Transform(double scale, int rotation, bool flipx, bool flipy);
+        void Transform(decimal scale, int rotation, bool flipx, bool flipy);
 
         /// <summary>
         /// Render the image and return the result as <see cref="IImage"/>

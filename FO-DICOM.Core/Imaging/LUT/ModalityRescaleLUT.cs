@@ -36,20 +36,20 @@ namespace FellowOakDicom.Imaging.LUT
         /// <summary>
         /// The modality rescale slope
         /// </summary>
-        public double RescaleSlope => _renderOptions.RescaleSlope;
+        public decimal RescaleSlope => _renderOptions.RescaleSlope;
 
         /// <summary>
         /// The modality rescale intercept
         /// </summary>
-        public double RescaleIntercept => _renderOptions.RescaleIntercept;
+        public decimal RescaleIntercept => _renderOptions.RescaleIntercept;
 
         public bool IsValid => true;
 
-        public double MinimumOutputValue { get; }
+        public decimal MinimumOutputValue { get; }
 
-        public double MaximumOutputValue { get; }
+        public decimal MaximumOutputValue { get; }
 
-        public double this[double value] => (value * RescaleSlope) + RescaleIntercept;
+        public decimal this[decimal value] => (value * RescaleSlope) + RescaleIntercept;
 
         #endregion
 

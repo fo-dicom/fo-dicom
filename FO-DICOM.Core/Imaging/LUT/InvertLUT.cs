@@ -21,7 +21,7 @@ namespace FellowOakDicom.Imaging.LUT
         /// </summary>
         /// <param name="minValue">Miniumum input value</param>
         /// <param name="maxValue">Maximum output value</param>
-        public InvertLUT(double minValue, double maxValue)
+        public InvertLUT(decimal minValue, decimal maxValue)
         {
             MinimumOutputValue = minValue;
             MaximumOutputValue = maxValue;
@@ -33,11 +33,11 @@ namespace FellowOakDicom.Imaging.LUT
 
         public bool IsValid => true;
 
-        public double MinimumOutputValue { get; }
+        public decimal MinimumOutputValue { get; }
 
-        public double MaximumOutputValue { get; }
+        public decimal MaximumOutputValue { get; }
 
-        public double this[double value] => MaximumOutputValue - value;
+        public decimal this[decimal value] => MaximumOutputValue - value;
 
         #endregion
 
