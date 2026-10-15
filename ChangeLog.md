@@ -15,6 +15,7 @@
 - more performant logging via generated logger methods (#2130)
 - DicomCodeValue now also handles LongCodeValue and UrnCodeValue correctly (#2125)
 - Remove weak TLS version from default implementation (#2127)
+- Fix DICOM JSON serialization of empty single-valued text elements (ST, LT, UT, UR) writing "Value":[null] instead of omitting the Value member (#2162)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)
