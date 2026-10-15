@@ -531,9 +531,23 @@ namespace FellowOakDicom.Serialization
             throw new FormatException("Failed converting DS value to json");
         }
 
+        /// <summary>
+        /// Returns true for an empty single-valued text element (Short Text, Long Text, Unlimited Text,
+        /// Universal Resource). Such an element must not be serialized with a "Value" member, see
+        /// PS3.18 F.2.5 and issue #2162. Multi-valued elements are not affected: an empty one reports
+        /// Count == 0, and an empty value item inside a non-empty one must stay a JSON null.
+        /// </summary>
+        /// <remarks>
+        /// Reading a lazy buffer's size forces string-to-byte encoding, which can require target encodings
+        /// that have not yet been assigned to an element constructed from a string.
+        /// </remarks>
+        private static bool IsEmptySingleValuedTextElement(DicomElement elem)
+            => elem is DicomStringElement and not DicomMultiStringElement
+               && string.IsNullOrEmpty(elem.Get<string>());
+
         private static void WriteJsonElement<T>(Utf8JsonWriter writer, DicomElement elem, WriteValue<T> writeValue)
         {
-            if (elem.Count != 0)
+            if (elem.Count != 0 && !IsEmptySingleValuedTextElement(elem))
             {
                 T[] values = elem.Get<T[]>();
                 writer.WritePropertyName("Value");
