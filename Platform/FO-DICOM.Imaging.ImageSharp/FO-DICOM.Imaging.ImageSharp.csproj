@@ -21,10 +21,11 @@
     <DebugType>Embedded</DebugType>
     <AssemblyOriginatorKeyFile>fo-dicom.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
+    <SixLaborsLicenseFile Condition="'$(SixLaborsLicenseFile)' == ''">$(MSBuildThisFileDirectory)sixlabors.lic</SixLaborsLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
   </ItemGroup>
 
   <ItemGroup>
