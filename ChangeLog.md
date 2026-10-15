@@ -1,4 +1,5 @@
 ### 6.0.0-alpha1 (TBD)
+- Update fo-dicom.Imaging.ImageSharp to ImageSharp 4.1.3 and add its assembly-scoped Six Labors Community build-time license.
 - breaking change: remove obsolete classes and methods (#2124)
 - Observe per-connection RunningDicomService task exception in DicomServer to prevent UnobservedTaskException leaks on malformed PDUs (#2149)
 - Fix RawPDU.ToString throwing FormatException on .NET 8+ (Enum.TryFormat now rejects multi-character format specs like `X2`) by casting the enum to its underlying byte (#2147)
