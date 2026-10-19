@@ -1,5 +1,5 @@
 ### 6.0.0-alpha1 (TBD)
-- Fix SwapByteBuffer.GetByteRange swapping bytes beyond the requested count when the output array is larger than count
+- Fix SwapByteBuffer.GetByteRange swapping bytes beyond the requested count when the output array is larger than count (#2198)
 - breaking change: remove obsolete classes and methods (#2124)
 - Observe per-connection RunningDicomService task exception in DicomServer to prevent UnobservedTaskException leaks on malformed PDUs (#2149)
 - Fix RawPDU.ToString throwing FormatException on .NET 8+ (Enum.TryFormat now rejects multi-character format specs like `X2`) by casting the enum to its underlying byte (#2147)
