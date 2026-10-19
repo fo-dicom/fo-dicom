@@ -31,6 +31,41 @@ namespace FellowOakDicom.Tests.IO.Buffer
         }
 
         [Theory]
+        [InlineData(0, 4, 8)]
+        [InlineData(0, 3, 4)]
+        [InlineData(2, 5, 8)]
+        public void GetByteRange_OutputLargerThanCount_ShouldOnlySwapCountBytes(int offset, int count, int outputLength)
+        {
+            // Arrange
+            var bytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            var buffer = new SwapByteBuffer(new MemoryByteBuffer(bytes), 2);
+
+            // Pre-fill output with distinct sentinels so bytes past count can be checked
+            var sentinels = new byte[outputLength];
+            for (var i = 0; i < outputLength; i++)
+            {
+                sentinels[i] = (byte)(0xA0 + i);
+            }
+
+            var actual = (byte[])sentinels.Clone();
+            var expected = (byte[])sentinels.Clone();
+
+            // Only whole units within count are swapped; everything else stays as-is
+            System.Array.Copy(bytes, offset, expected, 0, count);
+            for (var i = 0; i + 1 < count; i += 2)
+            {
+                // Swap the two bytes of this 2-byte unit
+                var next = i + 1;
+                (expected[i], expected[next]) = (expected[next], expected[i]);
+            }
+
+            // Act
+            buffer.GetByteRange(offset, count, actual);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+        [Theory]
         [InlineData(0, 8)]
         [InlineData(4, 4)]
         [InlineData(2, 4)]
