@@ -65,6 +65,7 @@ namespace FellowOakDicom.Tests.IO.Buffer
             // Assert
             Assert.Equal(expected, actual);
         }
+        
         [Theory]
         [InlineData(0, 8)]
         [InlineData(4, 4)]
