@@ -13,6 +13,7 @@ namespace FellowOakDicom.Benchmark
     {
         private byte[] _data2;
         private byte[] _data4;
+        private byte[] _data8;
 
         [GlobalSetup]
         public void Setup()
@@ -21,10 +22,12 @@ namespace FellowOakDicom.Benchmark
             // 512x512 image with 2 bytes per pixel = 524,288 bytes
             _data2 = new byte[512 * 512 * 2];
             _data4 = new byte[512 * 512 * 4];
+            _data8 = new byte[512 * 512 * 8];
 
             var rng = new Random(42);
             rng.NextBytes(_data2);
             rng.NextBytes(_data4);
+            rng.NextBytes(_data8);
         }
 
         [Benchmark]
@@ -37,6 +40,12 @@ namespace FellowOakDicom.Benchmark
         public void SwapBytes4_PixelData()
         {
             Endian.SwapBytes4(_data4, _data4.Length);
+        }
+
+        [Benchmark]
+        public void SwapBytes8_PixelData()
+        {
+            Endian.SwapBytes(8, _data8);
         }
 
         [Benchmark]
