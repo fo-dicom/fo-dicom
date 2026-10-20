@@ -15,6 +15,7 @@
 - more performant logging via generated logger methods (#2130)
 - DicomCodeValue now also handles LongCodeValue and UrnCodeValue correctly (#2125)
 - Remove weak TLS version from default implementation (#2127)
+- Fix `TempFileBuffer.GetByteRange` and `FileReference.GetByteRange` ignoring the return value of `Stream.Read`, which could leave the output partly unfilled when the stream returned fewer bytes than requested
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)

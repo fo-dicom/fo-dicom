@@ -82,7 +82,7 @@ namespace FellowOakDicom.IO.Buffer
             using var fs = _file.OpenRead();
             
             fs.Seek(offset, SeekOrigin.Begin);
-            fs.Read(output, 0, count);
+            fs.ReadAtLeast(output.AsSpan(0, count), count, throwOnEndOfStream: false);
         }
 
         public void CopyToStream(Stream stream)
