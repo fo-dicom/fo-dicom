@@ -144,6 +144,19 @@ namespace FellowOakDicom.Tests.Bugs
         }
 
         /// <summary>
+        /// Odd-width YBR_PARTIAL_422 frames are padded to an even width (issue #471) and then subsampled.
+        /// </summary>
+        [Fact]
+        public void UncompressedFrameSize_YbrPartial422OddWidth_PadsThenSubsamples()
+        {
+            var dataset = CreateColorDataset(
+                PhotometricInterpretation.YbrPartial422, 3, 2, CreateSubsampled422Frame(4, 2, 100));
+            var pixelData = DicomPixelData.CreateFromDataset(dataset);
+
+            Assert.Equal(4 * 2 * 2, pixelData.UncompressedFrameSize);
+        }
+
+        /// <summary>
         /// Control: a YBR_FULL_422 frame with neutral chroma (Cb = Cr = 128) must decode to a neutral
         /// gray whose R = G = B = Y.
         /// </summary>
@@ -272,6 +285,41 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(11, bitDepth.HighBit);
         }
 
+        /// <summary>
+        /// When High Bit is absent, it defaults to Bits Stored - 1 (PS3.5 8.1.1).
+        /// </summary>
+        [Fact]
+        public void BitDepth_FromDataset_WithoutHighBit_DefaultsToBitsStoredMinusOne()
+        {
+            var dataset = CreateGrayscaleDataset(
+                2, 1, 16, 12, 11, PixelRepresentation.Unsigned, new byte[4]);
+            dataset.Remove(DicomTag.HighBit);
+
+            var bitDepth = BitDepth.FromDataset(dataset);
+
+            Assert.Equal(11, bitDepth.HighBit);
+        }
+
+        /// <summary>
+        /// <see cref="DicomPixelData.BitDepth"/> and <see cref="BitDepth.FromDataset"/> must agree,
+        /// including for a High Bit that differs from Bits Stored - 1.
+        /// </summary>
+        [Fact]
+        public void DicomPixelData_BitDepth_MatchesBitDepthFromDataset()
+        {
+            var dataset = CreateGrayscaleDataset(
+                2, 1, 16, 12, 15, PixelRepresentation.Signed, new byte[4]);
+
+            var fromPixelData = DicomPixelData.CreateFromDataset(dataset).BitDepth;
+            var fromDataset = BitDepth.FromDataset(dataset);
+
+            Assert.Equal(fromDataset.BitsAllocated, fromPixelData.BitsAllocated);
+            Assert.Equal(fromDataset.BitsStored, fromPixelData.BitsStored);
+            Assert.Equal(15, fromPixelData.HighBit);
+            Assert.Equal(fromDataset.HighBit, fromPixelData.HighBit);
+            Assert.Equal(fromDataset.IsSigned, fromPixelData.IsSigned);
+        }
+
         #endregion
 
         #region 3. Signed pixel data
@@ -335,6 +383,76 @@ namespace FellowOakDicom.Tests.Bugs
 
             Assert.Equal(-2048d, pixels.GetPixel(0, 0));
             Assert.Equal(2047d, pixels.GetPixel(1, 0));
+        }
+
+        /// <summary>
+        /// Stored-bit extraction across every grayscale container type: samples that already fill the
+        /// container (no masking), samples narrower than the container (masking and sign extension relative
+        /// to the container), and the formerly permitted encoding with High Bit above Bits Stored - 1, where
+        /// low-order bits are discarded.
+        /// </summary>
+        [Theory]
+        // 16-bit container, sample fills container
+        [InlineData(16, 16, 15, false, 0xFFFFu, 65535d)]
+        [InlineData(16, 16, 15, true, 0xFFFFu, -1d)]
+        // 16-bit container, unused high bits
+        [InlineData(16, 12, 11, false, 0xF800u, 2048d)]
+        [InlineData(16, 12, 11, true, 0x0800u, -2048d)]
+        // 16-bit container, High Bit above Bits Stored - 1
+        [InlineData(16, 12, 15, false, 0xFFF0u, 4095d)]
+        [InlineData(16, 12, 15, true, 0x8000u, -2048d)]
+        // 8-bit samples unpacked into a 16-bit container
+        [InlineData(8, 8, 7, true, 0x80u, -128d)]
+        [InlineData(8, 7, 6, false, 0xFFu, 127d)]
+        // 32-bit container, sample fills container
+        [InlineData(32, 32, 31, false, 0xFFFFFFFFu, 4294967295d)]
+        [InlineData(32, 32, 31, true, 0xFFFFFFFFu, -1d)]
+        // 32-bit container, unused high bits
+        [InlineData(32, 24, 23, false, 0xFF000001u, 1d)]
+        [InlineData(32, 24, 23, true, 0x00800000u, -8388608d)]
+        // 24-bit samples unpacked into a 32-bit container
+        [InlineData(24, 24, 23, true, 0x800000u, -8388608d)]
+        [InlineData(24, 24, 23, false, 0x800000u, 8388608d)]
+        public void PixelDataFactory_Grayscale_ExtractsStoredBits(
+            int bitsAllocated, int bitsStored, int highBit, bool signed, uint storedSample, double expected)
+        {
+            var bytesPerSample = bitsAllocated / 8;
+            var frame = new byte[2 * bytesPerSample];
+            for (var i = 0; i < bytesPerSample; i++)
+            {
+                frame[i] = (byte)(storedSample >> (8 * i));
+            }
+
+            var dataset = CreateGrayscaleDataset(
+                2,
+                1,
+                (ushort)bitsAllocated,
+                (ushort)bitsStored,
+                (ushort)highBit,
+                signed ? PixelRepresentation.Signed : PixelRepresentation.Unsigned,
+                frame);
+
+            var pixels = PixelDataFactory.Create(DicomPixelData.CreateFromDataset(dataset), 0);
+
+            Assert.Equal(expected, pixels.GetPixel(0, 0));
+            Assert.Equal(0d, pixels.GetPixel(1, 0));
+        }
+
+        /// <summary>
+        /// Pixel Representation is Type 1, but 8-bit grayscale without it has always rendered as unsigned.
+        /// </summary>
+        [Fact]
+        public void PixelDataFactory_8BitGrayscaleWithoutPixelRepresentation_IsUnsigned()
+        {
+            var dataset = CreateGrayscaleDataset(
+                2, 1, 8, 8, 7, PixelRepresentation.Unsigned, new byte[] { 0x80, 0xFF });
+            dataset.Remove(DicomTag.PixelRepresentation);
+
+            var pixels = PixelDataFactory.Create(DicomPixelData.CreateFromDataset(dataset), 0);
+
+            Assert.IsType<GrayscalePixelDataU8>(pixels);
+            Assert.Equal(128d, pixels.GetPixel(0, 0));
+            Assert.Equal(255d, pixels.GetPixel(1, 0));
         }
 
         /// <summary>
@@ -417,9 +535,8 @@ namespace FellowOakDicom.Tests.Bugs
             var options = GrayscaleRenderOptions.FromDataset(dataset, 0);
             var lut = new FellowOakDicom.Imaging.LUT.ModalityRescaleLUT(options);
 
-            Assert.True(
-                lut.MinimumOutputValue <= lut.MaximumOutputValue,
-                $"Modality LUT reports minimum {lut.MinimumOutputValue} > maximum {lut.MaximumOutputValue}.");
+            Assert.Equal(-4095d, lut.MinimumOutputValue);
+            Assert.Equal(0d, lut.MaximumOutputValue);
         }
 
         /// <summary>
@@ -467,8 +584,8 @@ namespace FellowOakDicom.Tests.Bugs
 
         /// <summary>
         /// Setting <see cref="DicomImage.UseVOILUT"/> to false must fall back to window/level
-        /// rendering. The VOI LUT Sequence is added to the pipeline unconditionally, so it keeps being
-        /// applied and the flag has no effect.
+        /// rendering. The VOI LUT Sequence used to be added to the pipeline unconditionally, so it kept
+        /// being applied and the flag had no effect.
         /// </summary>
         [Fact]
         public void DicomImage_UseVOILUTFalse_IgnoresVOILUTSequence()
@@ -497,6 +614,59 @@ namespace FellowOakDicom.Tests.Bugs
             var actual = imageWithSequence.RenderImage().AsBytes();
 
             Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// Builds a 1x1 image with stored value 2, a window of center 2 / width 4, and a non-linear VOI LUT
+        /// Sequence mapping 0..3 to 0, 30000, 60000, 65535.
+        /// </summary>
+        private static DicomDataset CreateDatasetWithVOILUTSequence()
+        {
+            var dataset = CreateGrayscaleDataset(
+                1, 1, 16, 12, 11, PixelRepresentation.Unsigned, new byte[] { 0x02, 0x00 });
+            dataset.AddOrUpdate(DicomTag.WindowCenter, "2");
+            dataset.AddOrUpdate(DicomTag.WindowWidth, "4");
+            dataset.Add(new DicomSequence(
+                DicomTag.VOILUTSequence,
+                new DicomDataset
+                {
+                    { DicomTag.LUTDescriptor, (ushort)4, (ushort)0, (ushort)16 },
+                    { DicomTag.LUTData, (ushort)0, (ushort)30000, (ushort)60000, (ushort)65535 }
+                }));
+            return dataset;
+        }
+
+        /// <summary>
+        /// By default a VOI LUT Sequence is applied: stored 2 maps to 60000 of 0..65535, which renders as
+        /// ((60000 - 32767.5) / 65534 + 0.5) * 255 = 233. Window/level alone would render it as 170.
+        /// </summary>
+        [Fact]
+        public void DicomImage_VOILUTSequence_IsAppliedByDefault()
+        {
+            var image = new DicomImage(CreateDatasetWithVOILUTSequence());
+
+            Assert.True(image.UseVOILUT);
+            var rendered = image.RenderImage().AsBytes()[0];
+
+            Assert.Equal(233, rendered);
+        }
+
+        /// <summary>
+        /// Turning <see cref="DicomImage.UseVOILUT"/> off and on again must restore the VOI LUT Sequence.
+        /// </summary>
+        [Fact]
+        public void DicomImage_UseVOILUTToggled_SwitchesBetweenSequenceAndWindow()
+        {
+            var image = new DicomImage(CreateDatasetWithVOILUTSequence());
+            var expectedWithSequence = new DicomImage(CreateDatasetWithVOILUTSequence()).RenderImage().AsBytes();
+
+            image.UseVOILUT = false;
+            var withoutSequence = image.RenderImage().AsBytes();
+            image.UseVOILUT = true;
+            var withSequence = image.RenderImage().AsBytes();
+
+            Assert.Equal(170, withoutSequence[0]);
+            Assert.Equal(expectedWithSequence, withSequence);
         }
 
         #endregion
