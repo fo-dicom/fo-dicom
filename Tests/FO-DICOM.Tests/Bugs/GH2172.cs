@@ -8,11 +8,11 @@ using FellowOakDicom.IO.Buffer;
 using System;
 using Xunit;
 
-namespace FellowOakDicom.Tests.Imaging
+namespace FellowOakDicom.Tests.Bugs
 {
 
     /// <summary>
-    /// Regression tests for defects found while replacing a hand-written DICOM-to-RGB interpreter with
+    /// Regression tests for GitHub issue #2172: defects found while replacing a hand-written DICOM-to-RGB interpreter with
     /// <see cref="DicomImage.RenderImage"/>. Every dataset is synthetic and every expected value is
     /// derived by hand from the DICOM standard, so the tests do not depend on sample files.
     ///
@@ -23,7 +23,7 @@ namespace FellowOakDicom.Tests.Imaging
     ///   4. VOI window/level and Modality LUT rescale
     /// </summary>
     [Collection(TestCollections.Imaging)]
-    public class RenderingIssuesRegressionTest
+    public class GH2172
     {
 
         #region Helpers
@@ -337,6 +337,42 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.Equal(2047d, pixels.GetPixel(1, 0));
         }
 
+        /// <summary>
+        /// Bits outside Bits Stored must be discarded relative to the in-memory container, not Bits
+        /// Allocated. Samples narrower than 16 bits are unpacked into a 16-bit container, so masking
+        /// against Bits Allocated left the unused high bit set.
+        /// </summary>
+        [Fact]
+        public void PixelDataFactory_Unsigned7In8BitGrayscale_DiscardsUnusedHighBit()
+        {
+            // Bit 7 is not part of the stored value and must be ignored.
+            var frame = new byte[] { 0xFF, 0x80 };
+            var dataset = CreateGrayscaleDataset(
+                2, 1, 8, 7, 6, PixelRepresentation.Unsigned, frame);
+
+            var pixels = PixelDataFactory.Create(DicomPixelData.CreateFromDataset(dataset), 0);
+
+            Assert.Equal(127d, pixels.GetPixel(0, 0));
+            Assert.Equal(0d, pixels.GetPixel(1, 0));
+        }
+
+        /// <summary>
+        /// Signed counterpart of the above: a 7-in-8 signed sample must be sign-extended from High Bit 6.
+        /// </summary>
+        [Fact]
+        public void PixelDataFactory_Signed7In8BitGrayscale_SignExtendsFromHighBit()
+        {
+            // 0x40 has bit 6 (the sign bit) set: -64. Bit 7 of 0xBF is unused: 0x3F = 63.
+            var frame = new byte[] { 0x40, 0xBF };
+            var dataset = CreateGrayscaleDataset(
+                2, 1, 8, 7, 6, PixelRepresentation.Signed, frame);
+
+            var pixels = PixelDataFactory.Create(DicomPixelData.CreateFromDataset(dataset), 0);
+
+            Assert.Equal(-64d, pixels.GetPixel(0, 0));
+            Assert.Equal(63d, pixels.GetPixel(1, 0));
+        }
+
         #endregion
 
         #region 4. VOI window/level and Modality LUT rescale
@@ -384,6 +420,49 @@ namespace FellowOakDicom.Tests.Imaging
             Assert.True(
                 lut.MinimumOutputValue <= lut.MaximumOutputValue,
                 $"Modality LUT reports minimum {lut.MinimumOutputValue} > maximum {lut.MaximumOutputValue}.");
+        }
+
+        /// <summary>
+        /// Every <see cref="GrayscaleRenderOptions"/> factory must enable a VOI LUT Sequence present in the
+        /// dataset. <see cref="GrayscaleRenderOptions.FromBitRange"/> and
+        /// <see cref="GrayscaleRenderOptions.FromHistogram"/> previously stored the sequence without enabling it.
+        /// </summary>
+        [Theory]
+        [InlineData("FromDataset")]
+        [InlineData("FromWindowLevel")]
+        [InlineData("FromImagePixelValueTags")]
+        [InlineData("FromMinMax")]
+        [InlineData("FromBitRange")]
+        [InlineData("FromHistogram")]
+        public void GrayscaleRenderOptions_AllFactories_EnableVOILUTSequence(string factory)
+        {
+            var dataset = CreateGrayscaleDataset(
+                2, 1, 16, 12, 11, PixelRepresentation.Unsigned, new byte[] { 0x00, 0x00, 0x03, 0x00 });
+            dataset.AddOrUpdate(DicomTag.WindowCenter, "2");
+            dataset.AddOrUpdate(DicomTag.WindowWidth, "4");
+            dataset.AddOrUpdate(DicomTag.SmallestImagePixelValue, (ushort)0);
+            dataset.AddOrUpdate(DicomTag.LargestImagePixelValue, (ushort)3);
+            dataset.Add(new DicomSequence(
+                DicomTag.VOILUTSequence,
+                new DicomDataset
+                {
+                    { DicomTag.LUTDescriptor, (ushort)4, (ushort)0, (ushort)16 },
+                    { DicomTag.LUTData, (ushort)0, (ushort)100, (ushort)200, (ushort)300 }
+                }));
+
+            var options = factory switch
+            {
+                "FromDataset" => GrayscaleRenderOptions.FromDataset(dataset, 0),
+                "FromWindowLevel" => GrayscaleRenderOptions.FromWindowLevel(dataset),
+                "FromImagePixelValueTags" => GrayscaleRenderOptions.FromImagePixelValueTags(dataset),
+                "FromMinMax" => GrayscaleRenderOptions.FromMinMax(dataset),
+                "FromBitRange" => GrayscaleRenderOptions.FromBitRange(dataset),
+                "FromHistogram" => GrayscaleRenderOptions.FromHistogram(dataset),
+                _ => throw new ArgumentOutOfRangeException(nameof(factory))
+            };
+
+            Assert.NotNull(options.VOILUTSequence);
+            Assert.True(options.UseVOILUT);
         }
 
         /// <summary>

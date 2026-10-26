@@ -65,11 +65,7 @@ namespace FellowOakDicom.Imaging
         /// <summary>
         /// Gets new instance of <see cref="BitDepth"/> using dataset information.
         /// </summary>
-        public BitDepth BitDepth => new BitDepth(
-            BitsAllocated,
-            BitsStored,
-            HighBit,
-            PixelRepresentation == PixelRepresentation.Signed);
+        public BitDepth BitDepth => BitDepth.FromDataset(Dataset);
 
         /// <summary>
         /// Gets number of bits allocated per pixel sample (0028,0100).
@@ -189,9 +185,10 @@ namespace FellowOakDicom.Imaging
                     ++actualWidth;
                 }
 
-                // Issue #645, handle special case with uncompressed YBR_FULL_422 images
+                // Issue #645, handle special case with uncompressed YBR_FULL_422 and YBR_PARTIAL_422 images
                 // chrominance channels are downsampled to 2 (nominally still 3)
-                if (PhotometricInterpretation == PhotometricInterpretation.YbrFull422)
+                if (PhotometricInterpretation == PhotometricInterpretation.YbrFull422 ||
+                    PhotometricInterpretation == PhotometricInterpretation.YbrPartial422)
                 {
                     if (Syntax == DicomTransferSyntax.ExplicitVRBigEndian ||
                         Syntax == DicomTransferSyntax.ExplicitVRLittleEndian ||

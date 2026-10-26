@@ -2,6 +2,7 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using System;
 using System.Text;
 
 namespace FellowOakDicom.Imaging
@@ -102,12 +103,17 @@ namespace FellowOakDicom.Imaging
         /// </summary>
         /// <param name="dataset">Input dataset to extract bit depth information from</param>
         /// <returns>New <see cref="BitDepth"/> instance</returns>
+        /// <remarks>
+        /// High Bit (0028,0102) is read from the dataset. If it is absent, it defaults to Bits Stored - 1,
+        /// which PS3.5 section 8.1.1 requires for current encodings.
+        /// </remarks>
         public static BitDepth FromDataset(DicomDataset dataset)
         {
             var allocated = dataset.GetSingleValue<ushort>(DicomTag.BitsAllocated);
             var stored = dataset.GetSingleValue<ushort>(DicomTag.BitsStored);
+            var highBit = dataset.GetSingleValueOrDefault(DicomTag.HighBit, (ushort)Math.Max(stored - 1, 0));
             var signed = dataset.GetSingleValue<PixelRepresentation>(DicomTag.PixelRepresentation) == PixelRepresentation.Signed;
-            return new BitDepth(allocated, stored, GetHighBit(stored, signed), signed);
+            return new BitDepth(allocated, stored, highBit, signed);
         }
 
         public override string ToString()

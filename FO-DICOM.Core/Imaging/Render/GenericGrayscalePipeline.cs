@@ -136,13 +136,9 @@ namespace FellowOakDicom.Imaging.Render
                             composite.Add(_modalityLut);
                         }
 
-                        if (_voiSequenceLut != null)
-                        {
-                            composite.Add(_voiSequenceLut);
-                        }
-
                         if (_options.UseVOILUT && _voiSequenceLut != null)
                         {
+                            composite.Add(_voiSequenceLut);
                             var voiLut = new VOILinearLUT(GrayscaleRenderOptions.CreateLinearOption(_options.BitDepth,
                                 _voiSequenceLut.MinimumOutputValue, _voiSequenceLut.MaximumOutputValue));
                             composite.Add(voiLut);

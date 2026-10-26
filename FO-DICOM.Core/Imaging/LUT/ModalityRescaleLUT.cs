@@ -2,6 +2,8 @@
 // Licensed under the Microsoft Public License (MS-PL).
 #nullable disable
 
+using System;
+
 namespace FellowOakDicom.Imaging.LUT
 {
 
@@ -25,8 +27,11 @@ namespace FellowOakDicom.Imaging.LUT
         public ModalityRescaleLUT(GrayscaleRenderOptions options)
         {
             _renderOptions = options;
-            MinimumOutputValue = this[options.BitDepth.MinimumValue];
-            MaximumOutputValue = this[options.BitDepth.MaximumValue];
+            // A negative rescale slope (PS3.3 C.11.1.1.2) maps the minimum stored value to the maximum output value.
+            var atMinimumStoredValue = this[options.BitDepth.MinimumValue];
+            var atMaximumStoredValue = this[options.BitDepth.MaximumValue];
+            MinimumOutputValue = Math.Min(atMinimumStoredValue, atMaximumStoredValue);
+            MaximumOutputValue = Math.Max(atMinimumStoredValue, atMaximumStoredValue);
         }
 
         #endregion
