@@ -669,6 +669,57 @@ namespace FellowOakDicom.Tests.Bugs
             Assert.Equal(expectedWithSequence, withSequence);
         }
 
+        /// <summary>
+        /// An inverting VOI LUT Sequence maps 0..3 to 65535, 43690, 21845, 0, so stored 2 must render dark:
+        /// ((21845 - 32767.5) / 65534 + 0.5) * 255 = 85. The output range used to be taken from the first
+        /// and last entries (65535..0), giving a negative window width that undid the inversion and rendered
+        /// stored 2 as 169, about the same as an identity LUT (170).
+        /// </summary>
+        [Fact]
+        public void DicomImage_DecreasingVOILUTSequence_RendersInverted()
+        {
+            var dataset = CreateGrayscaleDataset(
+                1, 1, 16, 12, 11, PixelRepresentation.Unsigned, new byte[] { 0x02, 0x00 });
+            dataset.AddOrUpdate(DicomTag.WindowCenter, "2");
+            dataset.AddOrUpdate(DicomTag.WindowWidth, "4");
+            dataset.Add(new DicomSequence(
+                DicomTag.VOILUTSequence,
+                new DicomDataset
+                {
+                    { DicomTag.LUTDescriptor, (ushort)4, (ushort)0, (ushort)16 },
+                    { DicomTag.LUTData, (ushort)65535, (ushort)43690, (ushort)21845, (ushort)0 }
+                }));
+
+            var rendered = new DicomImage(dataset).RenderImage().AsBytes()[0];
+
+            Assert.Equal(85, rendered);
+        }
+
+        /// <summary>
+        /// The output range of a LUT Sequence is the range of its entries, not its first and last entries,
+        /// which are reversed for a decreasing LUT and miss the extremes of a non-monotonic one.
+        /// </summary>
+        [Theory]
+        [InlineData(new ushort[] { 300, 200, 100, 0 }, 0d, 300d)]
+        [InlineData(new ushort[] { 100, 400, 50, 200 }, 50d, 400d)]
+        [InlineData(new ushort[] { 0, 100, 200, 300 }, 0d, 300d)]
+        public void SequenceLUTs_OutputRange_SpansAllEntries(ushort[] lutData, double expectedMin, double expectedMax)
+        {
+            var item = new DicomDataset
+            {
+                { DicomTag.LUTDescriptor, (ushort)lutData.Length, (ushort)0, (ushort)16 },
+                { DicomTag.LUTData, lutData }
+            };
+
+            var modalityLut = new FellowOakDicom.Imaging.LUT.ModalitySequenceLUT(item, false);
+            var voiLut = new FellowOakDicom.Imaging.LUT.VOISequenceLUT(item);
+
+            Assert.Equal(expectedMin, modalityLut.MinimumOutputValue);
+            Assert.Equal(expectedMax, modalityLut.MaximumOutputValue);
+            Assert.Equal(expectedMin, voiLut.MinimumOutputValue);
+            Assert.Equal(expectedMax, voiLut.MaximumOutputValue);
+        }
+
         #endregion
 
     }
