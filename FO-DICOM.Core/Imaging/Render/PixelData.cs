@@ -242,6 +242,7 @@ namespace FellowOakDicom.Imaging.Render
             var containerBits = Unsafe.SizeOf<T>() * 8;
             var shiftLeft = containerBits - bitDepth.HighBit - 1;
             var shiftRight = containerBits - bitDepth.BitsStored;
+            // Samples already filling the container (e.g. 16/16/15 in a 16-bit type) need no masking.
             if (shiftLeft == 0 && shiftRight == 0)
             {
                 return;
