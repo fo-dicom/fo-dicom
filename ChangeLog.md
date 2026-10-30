@@ -16,6 +16,7 @@
 - DicomCodeValue now also handles LongCodeValue and UrnCodeValue correctly (#2125)
 - Remove weak TLS version from default implementation (#2127)
 - Add `Span<byte>` overloads `Endian.SwapBytes(int, Span<byte>)`, `Endian.SwapBytes2`, `Endian.SwapBytes4` and new `Endian.SwapBytes8`, and vectorize byte swapping for 2, 4 and 8 byte units (#2199)
+- Fix DICOM JSON serialization of empty single-valued text elements (ST, LT, UT, UR) writing "Value":[null] instead of omitting the Value member (#2162)
 
 ### 5.2.6 (2026-03-30)
 - Fix FrameGeometry initialization to handle empty position and orientation arrays (#2067)

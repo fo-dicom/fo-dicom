@@ -329,6 +329,43 @@ namespace FellowOakDicom.Tests.Serialization
         }
 
         /// <summary>
+        /// PS3.18 F.2.5 requires empty attributes to omit Value,
+        /// unlike empty positions within a multi-valued attribute.
+        /// </summary>
+        [Fact]
+        public void EmptySingleValuedTextElementsShouldOmitValueMember()
+        {
+            var ds = new DicomDataset().NotValidated();
+            ds.Add(new DicomShortText(DicomTag.DerivationDescription, string.Empty));
+            ds.Add(new DicomLongText(DicomTag.PatientComments, string.Empty));
+            ds.Add(new DicomUnlimitedText(DicomTag.TextValue, string.Empty));
+
+            var json = DicomJson.ConvertDicomToJson(ds);
+            using var obj = JsonDocument.Parse(json);
+
+            Assert.False(obj.RootElement.GetProperty("00082111").TryGetProperty("Value", out _));
+            Assert.False(obj.RootElement.GetProperty("00104000").TryGetProperty("Value", out _));
+            Assert.False(obj.RootElement.GetProperty("0040A160").TryGetProperty("Value", out _));
+        }
+
+        [Fact]
+        public void NonEmptySingleValuedTextElementShouldKeepValueMember()
+        {
+            var ds = new DicomDataset().NotValidated();
+            ds.Add(new DicomShortText(DicomTag.DerivationDescription, "some derivation"));
+            ds.Add(new DicomLongText(DicomTag.PatientComments, "some comments"));
+
+            var json = DicomJson.ConvertDicomToJson(ds);
+            using var obj = JsonDocument.Parse(json);
+
+            var shortTextValue = Assert.Single(obj.RootElement.GetProperty("00082111").GetProperty("Value").EnumerateArray());
+            Assert.Equal("some derivation", shortTextValue.GetString());
+
+            var longTextValue = Assert.Single(obj.RootElement.GetProperty("00104000").GetProperty("Value").EnumerateArray());
+            Assert.Equal("some comments", longTextValue.GetString());
+        }
+
+        /// <summary>
         ///     A test for ToString
         /// </summary>
         [Fact]
