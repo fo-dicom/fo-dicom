@@ -52,6 +52,21 @@ namespace FellowOakDicom.IO.Reader
         public bool IsDeflated { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum number of bytes a deflated dataset may inflate to,
+        /// 512 MiB by default.
+        /// </summary>
+        /// <remarks>
+        /// A deflated stream is inflated in full before the first element is parsed, so no
+        /// other validation is reachable in time to reject an oversized one, and DEFLATE
+        /// reaches about 1029:1 on repetitive input. Without a bound the effective ceiling
+        /// is <see cref="MemoryStream"/>'s, just under 2 GiB, which a crafted file of a
+        /// couple of megabytes reaches. Peak memory while inflating is a multiple of this
+        /// value - measured at 2.4x for the default - because the buffer grows by doubling
+        /// and copying and the superseded buffers are not collected immediately.
+        /// </remarks>
+        internal long MaxInflatedDatasetLength { get; set; } = 512L * 1024 * 1024;
+
+        /// <summary>
         /// Gets or sets the DICOM dictionary to be used by the reader.
         /// </summary>
         public DicomDictionary Dictionary { get; set; }
@@ -69,7 +84,7 @@ namespace FellowOakDicom.IO.Reader
         /// <returns>Reader resulting status.</returns>
         public DicomReaderResult Read(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
+            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider, MaxInflatedDatasetLength);
             return worker.DoWork(source);
         }
 
@@ -82,7 +97,7 @@ namespace FellowOakDicom.IO.Reader
         /// <returns>Awaitable reader resulting status.</returns>
         public Task<DicomReaderResult> ReadAsync(IByteSource source, IDicomReaderObserver observer, Func<ParseState, bool> stop = null)
         {
-            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider);
+            var worker = new DicomReaderWorker(observer, stop, Dictionary, IsExplicitVR, IsDeflated, _private, _memoryProvider, MaxInflatedDatasetLength);
             return worker.DoWorkAsync(source);
         }
 
@@ -113,6 +128,12 @@ namespace FellowOakDicom.IO.Reader
             /// </summary>
             private const int _maxSequenceDepth = 256;
 
+            /// <summary>
+            /// Buffer size used when inflating a deflated dataset. Same value as the
+            /// default of <see cref="Stream.CopyTo(Stream)"/>, which this replaces.
+            /// </summary>
+            private const int _inflateBufferSize = 81920;
+
             private readonly IDicomReaderObserver _observer;
 
             private readonly Func<ParseState, bool> _stop;
@@ -125,6 +146,8 @@ namespace FellowOakDicom.IO.Reader
             private readonly bool _isExplicitVR;
 
             private readonly bool _isDeflated;
+
+            private readonly long _maxInflatedDatasetLength;
 
             private DicomReaderResult _result;
 
@@ -144,7 +167,8 @@ namespace FellowOakDicom.IO.Reader
                 bool isExplicitVR,
                 bool isDeflated,
                 Dictionary<uint, string> @private,
-                IMemoryProvider memoryProvider)
+                IMemoryProvider memoryProvider,
+                long maxInflatedDatasetLength)
             {
                 _observer = observer;
                 _stop = stop;
@@ -153,6 +177,7 @@ namespace FellowOakDicom.IO.Reader
                 _isDeflated = isDeflated;
                 _private = @private;
                 _memoryProvider = memoryProvider ?? throw new ArgumentNullException(nameof(memoryProvider));
+                _maxInflatedDatasetLength = maxInflatedDatasetLength;
             }
 
             #endregion
@@ -292,7 +317,22 @@ namespace FellowOakDicom.IO.Reader
                 var decompressed = new MemoryStream();
                 using (var decompressor = new DeflateStream(compressed, CompressionMode.Decompress, true))
                 {
-                    decompressor.CopyTo(decompressed);
+                    // Inflate in chunks rather than with Stream.CopyTo so that the length can
+                    // be checked as it grows: CopyTo inflates to completion before anything
+                    // can inspect the result, which is the allocation this bound exists to
+                    // prevent. The cost is DeflateStream's CopyTo override, which inflates
+                    // straight into the destination and is given up here.
+                    using var buffer = _memoryProvider.Provide(_inflateBufferSize);
+                    int read;
+                    while ((read = decompressor.Read(buffer.Bytes, 0, buffer.Length)) > 0)
+                    {
+                        if (decompressed.Length + read > _maxInflatedDatasetLength)
+                        {
+                            throw new DicomReaderException($"Deflated dataset exceeded maximum inflated length of {_maxInflatedDatasetLength} bytes.");
+                        }
+
+                        decompressed.Write(buffer.Bytes, 0, read);
+                    }
                 }
 
                 decompressed.Seek(0, SeekOrigin.Begin);

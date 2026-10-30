@@ -8,6 +8,7 @@ using FellowOakDicom.IO.Reader;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom.Memory;
@@ -177,6 +178,115 @@ namespace FellowOakDicom.Tests.IO.Reader
                 BinaryPrimitives.WriteUInt32LittleEndian(buffer.AsSpan(offset + 12, 4), 0xFFFFFFFFu);
             }
             return buffer;
+        }
+
+        [Fact]
+        public void Read_DeflatedDatasetInflatingBeyondTheLimit_ThrowsDicomReaderException()
+        {
+            // The whole dataset is inflated in ConvertSource before the first element is
+            // parsed, so the inflated length has to be bounded while inflating rather than
+            // checked afterwards: 64 KiB of zeroes is 78 deflated bytes here. The limit is
+            // lowered so the bound is exercised without the test allocating the default
+            // half gigabyte.
+            const long limit = 4 * 1024;
+            var source = new StreamByteSource(new MemoryStream(BuildDeflatedZeroes(64 * 1024)));
+            var reader = new DicomReader(new ArrayPoolMemoryProvider())
+            {
+                IsExplicitVR = true,
+                IsDeflated = true,
+                MaxInflatedDatasetLength = limit
+            };
+
+            var exception = Assert.Throws<DicomReaderException>(() => reader.Read(source, new MockObserver()));
+
+            Assert.Contains(limit.ToString(), exception.Message);
+        }
+
+        [Fact]
+        public async Task ReadAsync_DeflatedDatasetInflatingBeyondTheLimit_ThrowsDicomReaderException()
+        {
+            const long limit = 4 * 1024;
+            var source = new StreamByteSource(new MemoryStream(BuildDeflatedZeroes(64 * 1024)));
+            var reader = new DicomReader(new ArrayPoolMemoryProvider())
+            {
+                IsExplicitVR = true,
+                IsDeflated = true,
+                MaxInflatedDatasetLength = limit
+            };
+
+            await Assert.ThrowsAsync<DicomReaderException>(() => reader.ReadAsync(source, new MockObserver()));
+        }
+
+        [Theory]
+        [InlineData(0, false)]  // an inflated length exactly at the limit is accepted
+        [InlineData(1, true)]   // one byte beyond it is not
+        public void Read_DeflatedDatasetAtTheLimitBoundary_BoundFiresOnlyWhenExceeded(int excess, bool boundShouldFire)
+        {
+            // Pins the inclusive/exclusive semantics of the bound: flipping > to >= in the
+            // guard, or drifting by a whole buffer, passes every other test here.
+            // The inflated bytes are zeroes and so are not parseable, which is deliberate -
+            // asserting on the bound's own message rather than on whether anything threw
+            // keeps the unrelated parse failure in the accepted case from masking a
+            // regression.
+            const int inflatedLength = 200 * 1024;
+            var limit = inflatedLength - excess;
+            var reader = new DicomReader(new ArrayPoolMemoryProvider())
+            {
+                IsExplicitVR = true,
+                IsDeflated = true,
+                MaxInflatedDatasetLength = limit
+            };
+            var source = new StreamByteSource(new MemoryStream(BuildDeflatedZeroes(inflatedLength)));
+
+            var thrown = Record.Exception(() => reader.Read(source, new MockObserver()));
+            var boundFired = thrown is DicomReaderException
+                && thrown.Message.Contains("maximum inflated length");
+
+            Assert.Equal(boundShouldFire, boundFired);
+        }
+
+        [Fact]
+        public void MaxInflatedDatasetLength_DefaultsToHalfAGibibyte()
+        {
+            // The two bound tests above inject a small limit, so without this nothing pins
+            // the value that actually ships and raising it would silently disable the guard.
+            Assert.Equal(512L * 1024 * 1024, new DicomReader(new ArrayPoolMemoryProvider()).MaxInflatedDatasetLength);
+        }
+
+        [Fact]
+        public void Open_DeflatedFileWithinTheLimit_YieldsTheIdenticalBytes()
+        {
+            // Guards the chunked inflate against truncating, reordering or duplicating
+            // data, and against the bound firing on a legitimate file. The payload is
+            // incompressible and several times the inflate buffer, so the copy loop runs
+            // multiple iterations.
+            var payload = new byte[3 * 81920];
+            new Random(20260730).NextBytes(payload);
+            var dataset = new DicomDataset
+            {
+                { DicomTag.SOPClassUID, DicomUID.SecondaryCaptureImageStorage },
+                { DicomTag.SOPInstanceUID, DicomUID.Generate() },
+                new DicomOtherByte(DicomTag.ICCProfile, payload)
+            };
+            dataset.InternalTransferSyntax = DicomTransferSyntax.DeflatedExplicitVRLittleEndian;
+
+            using var stream = new MemoryStream();
+            new DicomFile(dataset).Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            var reloaded = DicomFile.Open(stream);
+
+            Assert.Equal(DicomTransferSyntax.DeflatedExplicitVRLittleEndian, reloaded.Dataset.InternalTransferSyntax);
+            Assert.Equal(payload, reloaded.Dataset.GetDicomItem<DicomElement>(DicomTag.ICCProfile).Buffer.Data);
+        }
+
+        private static byte[] BuildDeflatedZeroes(int inflatedLength)
+        {
+            var compressed = new MemoryStream();
+            using (var deflater = new DeflateStream(compressed, CompressionLevel.Optimal, true))
+            {
+                deflater.Write(new byte[inflatedLength], 0, inflatedLength);
+            }
+            return compressed.ToArray();
         }
 
         #endregion
