@@ -40,6 +40,20 @@ namespace FellowOakDicom.Tests.IO
                 Assert.False((File.GetAttributes(path) & FileAttributes.Temporary) == FileAttributes.Temporary);
             }
         }
+        
+        [Fact]
+        public void GetByteRange_PastEndOfFile_FillsAvailableBytes()
+        {
+            var data = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var path = Path.GetTempFileName();
+            File.WriteAllBytes(path, data);
+            var file = new FileReference(path) { IsTempFile = true };
+
+            var output = new byte[10];
+            file.GetByteRange(5, 10, output);
+
+            Assert.Equal(data[5..], output[..5]);
+        }
 
         #endregion
     }

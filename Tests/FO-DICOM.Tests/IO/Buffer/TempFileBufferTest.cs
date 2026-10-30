@@ -44,6 +44,18 @@ namespace FellowOakDicom.Tests.IO.Buffer
             buffer.GetByteRange(offset, count, actual);
             Assert.Equal(expected.ToArray(), actual);
         }
+        
+        [Fact]
+        public void GetByteRange_PastEndOfFile_FillsAvailableBytes()
+        {
+            var data = Enumerable.Range(0, 10).Select(i => (byte)i).ToArray();
+            var buffer = new TempFileBuffer(data);
+
+            var output = new byte[10];
+            buffer.GetByteRange(5, 10, output);
+
+            Assert.Equal(data[5..], output[..5]);
+        }
 
         [Fact]
         public void CopyToStream_ShouldWorkCorrectly()
