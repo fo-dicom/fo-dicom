@@ -4,6 +4,7 @@
 
 using FellowOakDicom.IO;
 using System;
+using System.Linq;
 
 namespace FellowOakDicom.Imaging.LUT
 {
@@ -48,9 +49,10 @@ namespace FellowOakDicom.Imaging.LUT
 
         public bool IsValid => false; //always recalculate
 
-        public double MinimumOutputValue => _LUTDataArray[0];
+        // LUT Data need not be monotonically increasing, so the output range spans all entries rather than the first and last.
+        public double MinimumOutputValue => _LUTDataArray.Take(_nrOfEntries).Min();
 
-        public double MaximumOutputValue => _LUTDataArray[_nrOfEntries - 1];
+        public double MaximumOutputValue => _LUTDataArray.Take(_nrOfEntries).Max();
 
         public double this[double value]
         {

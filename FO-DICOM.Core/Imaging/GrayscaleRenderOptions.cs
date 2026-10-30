@@ -214,29 +214,8 @@ namespace FellowOakDicom.Imaging
                 ColorMap = GetColorMap(dataset)
             };
 
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-                options.RescaleSlope = 1.0;
-                options.RescaleIntercept = 0.0;
-            }
-            else
-            {
-                options.RescaleSlope = dataset.TryGetSingleValue<double>(DicomTag.RescaleSlope, out var slope)
-                                       || functional.TryGetSingleValue<double>(DicomTag.RescaleSlope, out slope)
-                    ? slope
-                    : 1.0;
-                options.RescaleIntercept = dataset.TryGetSingleValue<double>(DicomTag.RescaleIntercept, out var intercept)
-                                           || functional.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept)
-                    ? intercept
-                    : 0.0;
-            }
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
-            {
-                options.VOILUTSequence = voiLutSequence;
-                options.UseVOILUT = true;
-            }
+            options.ReadModalityLut(dataset, functional);
+            options.ReadVoiLutSequence(dataset);
 
             return options;
         }
@@ -284,29 +263,8 @@ namespace FellowOakDicom.Imaging
                 ColorMap = GetColorMap(dataset)
             };
 
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-                options.RescaleSlope = 1.0;
-                options.RescaleIntercept = 0.0;
-            }
-            else
-            {
-                options.RescaleSlope = dataset.TryGetSingleValue<double>(DicomTag.RescaleSlope, out var slope)
-                               || functional.TryGetSingleValue<double>(DicomTag.RescaleSlope, out slope)
-                    ? slope
-                    : 1.0;
-                options.RescaleIntercept = dataset.TryGetSingleValue<double>(DicomTag.RescaleIntercept, out var intercept)
-                                   || functional.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept)
-                    ? intercept
-                    : 0.0;
-            }
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
-            {
-                options.VOILUTSequence = voiLutSequence;
-                options.UseVOILUT = true;
-            }
+            options.ReadModalityLut(dataset, functional);
+            options.ReadVoiLutSequence(dataset);
 
             return options;
         }
@@ -342,23 +300,8 @@ namespace FellowOakDicom.Imaging
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
 
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-                options.RescaleSlope = 1.0;
-                options.RescaleIntercept = 0.0;
-            }
-            else
-            {
-                options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
-                options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
-            }
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
-            {
-                options.VOILUTSequence = voiLutSequence;
-                options.UseVOILUT = true;
-            }
+            options.ReadModalityLut(dataset);
+            options.ReadVoiLutSequence(dataset);
 
             return options;
         }
@@ -401,25 +344,10 @@ namespace FellowOakDicom.Imaging
                     range.Maximum = bits.MaximumValue;
                 }
 
-                var min = range.Minimum;
-                var max = range.Maximum;
-                if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-                {
-                    options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
-                    options.RescaleSlope = 1.0;
-                    options.RescaleIntercept = 0.0;
-                    // if there is a modalityLUT sequence, then the values have to be mapped
-                    min = options.ModalityLUT[min];
-                    max = options.ModalityLUT[max];
-                }
-                else
-                {
-                    // no modalityLUT sequence, so apply rescale slope and intercept
-                    options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
-                    options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
-                    min = min * options.RescaleSlope + options.RescaleIntercept;
-                    max = max * options.RescaleSlope + options.RescaleIntercept;
-                }
+                // Window values are in modality output space, so map the stored range through the Modality LUT.
+                options.ReadModalityLut(dataset);
+                var min = options.ApplyModalityLut(range.Minimum);
+                var max = options.ApplyModalityLut(range.Maximum);
 
                 options.WindowWidth = Math.Max(1, Math.Abs(max - min));
                 options.WindowCenter = (max + min) / 2.0;
@@ -428,12 +356,7 @@ namespace FellowOakDicom.Imaging
             }
 
             options.ColorMap = GetColorMap(dataset);
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
-            {
-                options.VOILUTSequence = voiLutSequence;
-                options.UseVOILUT = true;
-            }
+            options.ReadVoiLutSequence(dataset);
 
             return options;
         }
@@ -450,22 +373,17 @@ namespace FellowOakDicom.Imaging
 
             double min;
             double max;
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            options.ReadModalityLut(dataset);
+            if (options.ModalityLUT != null)
             {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], bits.IsSigned);
-                options.RescaleSlope = 1.0;
-                options.RescaleIntercept = 0.0;
                 // if there is a modalityLUT sequence, then we can get the values from the LUT itself
                 min = options.ModalityLUT.MinimumOutputValue;
                 max = options.ModalityLUT.MaximumOutputValue;
             }
             else
             {
-                // no modalityLUT sequence, so apply rescale slope and intercept
-                options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
-                options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
-                min = bits.MinimumValue * options.RescaleSlope + options.RescaleIntercept;
-                max = bits.MaximumValue * options.RescaleSlope + options.RescaleIntercept;
+                min = options.ApplyModalityLut(bits.MinimumValue);
+                max = options.ApplyModalityLut(bits.MaximumValue);
             }
 
             options.WindowWidth = Math.Abs(max - min);
@@ -473,11 +391,7 @@ namespace FellowOakDicom.Imaging
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
-            {
-                options.VOILUTSequence = voiLutSequence;
-            }
+            options.ReadVoiLutSequence(dataset);
 
             return options;
         }
@@ -507,38 +421,61 @@ namespace FellowOakDicom.Imaging
 
             histogram.ApplyWindow(percent);
 
-            double min = histogram.WindowStart;
-            double max = histogram.WindowEnd;
-            
-            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
-            {
-                options.ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.First(), bits.IsSigned);
-                options.RescaleSlope = 1.0;
-                options.RescaleIntercept = 0.0;
-                // if there is a modalityLUT sequence, then the values have to be mapped
-                min = options.ModalityLUT[histogram.WindowStart];
-                max = options.ModalityLUT[histogram.WindowEnd];
-            }
-            else
-            {
-                options.RescaleSlope = dataset.GetSingleValueOrDefault(DicomTag.RescaleSlope, 1.0);
-                options.RescaleIntercept = dataset.GetSingleValueOrDefault(DicomTag.RescaleIntercept, 0.0);
-                min = min * options.RescaleSlope + options.RescaleIntercept;
-                max = max * options.RescaleSlope + options.RescaleIntercept;
-            }
+            options.ReadModalityLut(dataset);
+            var min = options.ApplyModalityLut(histogram.WindowStart);
+            var max = options.ApplyModalityLut(histogram.WindowEnd);
 
             options.WindowWidth = Math.Abs(max - min);
             options.WindowCenter = (max + min) / 2.0;
 
             options.VOILUTFunction = dataset.GetSingleValueOrDefault(DicomTag.VOILUTFunction, "LINEAR");
             options.ColorMap = GetColorMap(dataset);
-
-            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
-            {
-                options.VOILUTSequence = voiLutSequence;
-            }
+            options.ReadVoiLutSequence(dataset);
 
             return options;
+        }
+
+        /// <summary>
+        /// Reads the Modality LUT Sequence if present, otherwise Rescale Slope and Rescale Intercept.
+        /// </summary>
+        /// <param name="dataset">Dataset to read from. Its values take precedence.</param>
+        /// <param name="functional">Optional per-frame functional group values used when <paramref name="dataset"/> lacks rescale values.</param>
+        private void ReadModalityLut(DicomDataset dataset, DicomDataset functional = null)
+        {
+            if (dataset.TryGetNonEmptySequence(DicomTag.ModalityLUTSequence, out DicomSequence modalityLutSequence))
+            {
+                ModalityLUT = new ModalitySequenceLUT(modalityLutSequence.Items[0], BitDepth.IsSigned);
+                RescaleSlope = 1.0;
+                RescaleIntercept = 0.0;
+                return;
+            }
+
+            RescaleSlope = dataset.TryGetSingleValue(DicomTag.RescaleSlope, out double slope)
+                           || (functional?.TryGetSingleValue(DicomTag.RescaleSlope, out slope) ?? false)
+                ? slope
+                : 1.0;
+            RescaleIntercept = dataset.TryGetSingleValue(DicomTag.RescaleIntercept, out double intercept)
+                               || (functional?.TryGetSingleValue(DicomTag.RescaleIntercept, out intercept) ?? false)
+                ? intercept
+                : 0.0;
+        }
+
+        /// <summary>
+        /// Maps a stored pixel value to modality output space.
+        /// </summary>
+        private double ApplyModalityLut(double storedValue)
+            => ModalityLUT != null ? ModalityLUT[storedValue] : storedValue * RescaleSlope + RescaleIntercept;
+
+        /// <summary>
+        /// Reads the VOI LUT Sequence and, if present, enables it by default.
+        /// </summary>
+        private void ReadVoiLutSequence(DicomDataset dataset)
+        {
+            if (dataset.TryGetNonEmptySequence(DicomTag.VOILUTSequence, out DicomSequence voiLutSequence))
+            {
+                VOILUTSequence = voiLutSequence;
+                UseVOILUT = true;
+            }
         }
 
         /// <summary>

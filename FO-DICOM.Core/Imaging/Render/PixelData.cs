@@ -10,6 +10,8 @@ using FellowOakDicom.IO.Buffer;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace FellowOakDicom.Imaging.Render
@@ -133,7 +135,9 @@ namespace FellowOakDicom.Imaging.Render
             else if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2
                      || pi == PhotometricInterpretation.PaletteColor)
             {
-                if (pixelData.BitsAllocated == 8 && pixelData.HighBit == 7 && pixelData.BitsStored == 8)
+                if (pixelData.BitsAllocated == 8 && pixelData.HighBit == 7 && pixelData.BitsStored == 8
+                    && pixelData.Dataset.GetSingleValueOrDefault(DicomTag.PixelRepresentation, PixelRepresentation.Unsigned)
+                        == PixelRepresentation.Unsigned)
                 {
                     return new GrayscalePixelDataU8(pixelData.Width, pixelData.Height, pixelData.GetFrame(frame));
                 }
@@ -177,6 +181,11 @@ namespace FellowOakDicom.Imaging.Render
 
                 if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
                 {
+                    // Fix issue#1049: chroma-subsampled frames cannot be stored color-by-plane
+                    if (pi == PhotometricInterpretation.YbrFull422 || pi == PhotometricInterpretation.YbrPartial422)
+                    {
+                        throw new DicomImagingException($"Unsupported planar configuration for {pi.Value}");
+                    }
                     buffer = PixelDataConverter.PlanarToInterleaved24(buffer);
                 }
 
@@ -186,11 +195,6 @@ namespace FellowOakDicom.Imaging.Render
                 }
                 else if (pi == PhotometricInterpretation.YbrFull422)
                 {
-                    // Fix issue#1049: check for planar configuration in case of PhotometricInterpretation.YbrFull422 was never done
-                    if (pixelData.PlanarConfiguration == PlanarConfiguration.Planar)
-                    {
-                        throw new DicomImagingException("Unsupported planar configuration for YBR_FULL_422");
-                    }
                     buffer = PixelDataConverter.YbrFull422ToRgb(buffer, pixelData.Width);
                 }
                 else if (pi == PhotometricInterpretation.YbrPartial422)
@@ -215,6 +219,43 @@ namespace FellowOakDicom.Imaging.Render
         public static SingleBitPixelData Create(DicomOverlayData overlayData)
         {
             return new SingleBitPixelData(overlayData.Columns, overlayData.Rows, overlayData.Data);
+        }
+    }
+
+    /// <summary>
+    /// Extracts the stored bits of grayscale pixel samples that have been unpacked into an integer container.
+    /// </summary>
+    internal static class StoredBits
+    {
+        /// <summary>
+        /// Discards the bits outside Bits Stored / High Bit in place, sign-extending from High Bit when
+        /// <typeparamref name="T"/> is a signed type.
+        /// </summary>
+        /// <remarks>
+        /// Shifts are relative to the width of <typeparamref name="T"/>, not Bits Allocated, because
+        /// <see cref="ByteConverter.ToArray{T}(IByteBuffer, int)"/> places samples narrower than
+        /// <typeparamref name="T"/> in its low-order bits.
+        /// </remarks>
+        internal static void Extract<T>(T[] data, int width, int height, BitDepth bitDepth)
+            where T : IBinaryInteger<T>
+        {
+            var containerBits = Unsafe.SizeOf<T>() * 8;
+            var shiftLeft = containerBits - bitDepth.HighBit - 1;
+            var shiftRight = containerBits - bitDepth.BitsStored;
+            // Samples already filling the container (e.g. 16/16/15 in a 16-bit type) need no masking.
+            if (shiftLeft == 0 && shiftRight == 0)
+            {
+                return;
+            }
+
+            Parallel.For(0, height, y =>
+            {
+                for (int i = width * y, e = i + width; i < e; i++)
+                {
+                    // Right shift is arithmetic for signed T and logical for unsigned T.
+                    data[i] = (data[i] << shiftLeft) >> shiftRight;
+                }
+            });
         }
     }
 
@@ -461,28 +502,7 @@ namespace FellowOakDicom.Imaging.Render
             Height = height;
 
             var shortData = ByteConverter.ToArray<short>(data, bitDepth.BitsAllocated);
-
-            if (bitDepth.BitsStored != 16)
-            {
-                // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
-                // shifts in the loop below just replaces the top shift bits by the sign bit.
-                // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
-                // should also be discarded.
-                int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
-                int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-                Parallel.For(0, Height, y =>
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        // Remove masked high and low bits by shifting them out of the data type,
-                        // getting the sign correct using arithmetic (sign-extending) right shift.
-                        var d = (short)(shortData[i] << shiftLeft);
-                        shortData[i] = (short)(d >> shiftRight);
-                    }
-                }
-                );
-            }
-
+            StoredBits.Extract(shortData, Width, Height, bitDepth);
             Data = shortData;
         }
 
@@ -637,28 +657,7 @@ namespace FellowOakDicom.Imaging.Render
             Height = height;
 
             var ushortData = ByteConverter.ToArray<ushort>(data, bitDepth.BitsAllocated);
-
-            if (bitDepth.BitsStored != 16)
-            {
-                // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
-                // shifts in the loop below just zeroes the top shift bits.
-                // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
-                // should also be discarded.
-                int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
-                int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-
-                Parallel.For(0, Height, y =>
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        // Remove masked high and low bits by shifting them out of the data type. 
-                        var d = (ushort)(ushortData[i] << shiftLeft);
-                        ushortData[i] = (ushort)(d >> shiftRight);
-                    }
-                }
-                );
-            }
-
+            StoredBits.Extract(ushortData, Width, Height, bitDepth);
             Data = ushortData;
         }
 
@@ -809,25 +808,7 @@ namespace FellowOakDicom.Imaging.Render
             Height = height;
 
             var intData = ByteConverter.ToArray<int>(data, bitDepth.BitsAllocated);
-
-            // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
-            // shifts in the loop below just replaces the top shift bits by the sign bit.
-            // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
-            // should also be discarded.
-            int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
-            int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-            Parallel.For(0, Height, y =>
-            {
-                for (int i = Width * y, e = i + Width; i < e; i++)
-                {
-                    // Remove masked high and low bits by shifting them out of the data type,
-                    // getting the sign correct using arithmetic (sign-extending) right shift.
-                    var d = intData[i] << shiftLeft;
-                    intData[i] = d >> shiftRight;
-                }
-            }
-            );
-
+            StoredBits.Extract(intData, Width, Height, bitDepth);
             Data = intData;
         }
 
@@ -971,28 +952,7 @@ namespace FellowOakDicom.Imaging.Render
             Height = height;
 
             var uintData = ByteConverter.ToArray<uint>(data, bitDepth.BitsAllocated);
-
-            if (bitDepth.BitsStored != 32)
-            {
-                // Normally, HighBit == BitsStored-1, and thus shiftLeft == shiftRight, and the two
-                // shifts in the loop below just zeroes the top shift bits.
-                // Separating shiftLeft from shiftRight handles exotic cases where low-order bits
-                // should also be discarded.
-                int shiftLeft = bitDepth.BitsAllocated - bitDepth.HighBit - 1;
-                int shiftRight = bitDepth.BitsAllocated - bitDepth.BitsStored;
-
-                Parallel.For(0, Height, y =>
-                {
-                    for (int i = Width * y, e = i + Width; i < e; i++)
-                    {
-                        // Remove masked high and low bits by shifting them out of the data type. 
-                        var d = uintData[i] << shiftLeft;
-                        uintData[i] = d >> shiftRight;
-                    }
-                }
-                );
-            }
-
+            StoredBits.Extract(uintData, Width, Height, bitDepth);
             Data = uintData;
         }
 
