@@ -108,34 +108,35 @@ namespace FellowOakDicom.IO
                 throw new ArgumentException($"Cannot swap {count} bytes of an array that only contains {bytes.Length} bytes");
             }
 
-            if (count == 0)
+            SwapBytes(bytesToSwap, bytes.AsSpan(0, count));
+        }
+
+        /// <summary>
+        /// Swap bytes in sequences of <paramref name="bytesToSwap"/>.
+        /// </summary>
+        /// <param name="bytesToSwap">Number of bytes to swap.</param>
+        /// <param name="bytes">Bytes to swap in place. Trailing bytes that do not fill a full sequence are left untouched.</param>
+        public static void SwapBytes(int bytesToSwap, Span<byte> bytes)
+        {
+            switch (bytesToSwap)
             {
-                return;
+                case <= 1:
+                    return;
+                case 2:
+                    SwapBytes2(bytes);
+                    return;
+                case 4:
+                    SwapBytes4(bytes);
+                    return;
+                case 8:
+                    SwapBytes8(bytes);
+                    return;
             }
 
-            if (bytesToSwap == 1)
+            var length = bytes.Length - bytes.Length % bytesToSwap;
+            for (var i = 0; i < length; i += bytesToSwap)
             {
-                return;
-            }
-
-            if (bytesToSwap == 2)
-            {
-                SwapBytes2(bytes, count);
-                return;
-            }
-            if (bytesToSwap == 4)
-            {
-                SwapBytes4(bytes, count);
-                return;
-            }
-
-            unchecked
-            {
-                var l = count - (count % bytesToSwap);
-                for (var i = 0; i < l; i += bytesToSwap)
-                {
-                    Array.Reverse(bytes, i, bytesToSwap);
-                }
+                bytes.Slice(i, bytesToSwap).Reverse();
             }
         }
 
@@ -150,14 +151,16 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="bytes">Array of bytes.</param>
         /// <param name="count">The maximum number of bytes in the array that should be processed</param>
-        public static void SwapBytes2(byte[] bytes, int count)
+        public static void SwapBytes2(byte[] bytes, int count) => SwapBytes2(bytes.AsSpan(0, count));
+
+        /// <summary>
+        /// Swap bytes in sequences of 2.
+        /// </summary>
+        /// <param name="bytes">Bytes to swap in place. A trailing odd byte is left untouched.</param>
+        public static void SwapBytes2(Span<byte> bytes)
         {
-            var l = count - count % 2;
-            var span = MemoryMarshal.Cast<byte, ushort>(bytes.AsSpan(0, l));
-            for (var i = 0; i < span.Length; i++)
-            {
-                span[i] = BinaryPrimitives.ReverseEndianness(span[i]);
-            }
+            var values = MemoryMarshal.Cast<byte, ushort>(bytes);
+            BinaryPrimitives.ReverseEndianness(values, values);
         }
 
         /// <summary>
@@ -171,14 +174,26 @@ namespace FellowOakDicom.IO
         /// </summary>
         /// <param name="bytes">Array of bytes.</param>
         /// <param name="count">The maximum number of bytes in the array that should be processed</param>
-        public static void SwapBytes4(byte[] bytes, int count)
+        public static void SwapBytes4(byte[] bytes, int count) => SwapBytes4(bytes.AsSpan(0, count));
+
+        /// <summary>
+        /// Swap bytes in sequences of 4.
+        /// </summary>
+        /// <param name="bytes">Bytes to swap in place. Trailing bytes that do not fill a group of 4 are left untouched.</param>
+        public static void SwapBytes4(Span<byte> bytes)
         {
-            var l = count - (count % 4);
-            var span = MemoryMarshal.Cast<byte, uint>(bytes.AsSpan(0, l));
-            for (var i = 0; i < span.Length; i++)
-            {
-                span[i] = BinaryPrimitives.ReverseEndianness(span[i]);
-            }
+            var values = MemoryMarshal.Cast<byte, uint>(bytes);
+            BinaryPrimitives.ReverseEndianness(values, values);
+        }
+
+        /// <summary>
+        /// Swap bytes in sequences of 8.
+        /// </summary>
+        /// <param name="bytes">Bytes to swap in place. Trailing bytes that do not fill a group of 8 are left untouched.</param>
+        public static void SwapBytes8(Span<byte> bytes)
+        {
+            var values = MemoryMarshal.Cast<byte, ulong>(bytes);
+            BinaryPrimitives.ReverseEndianness(values, values);
         }
 
         /// <summary>

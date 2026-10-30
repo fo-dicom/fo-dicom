@@ -3,6 +3,7 @@
 #nullable disable
 
 using FellowOakDicom.IO;
+using System;
 using Xunit;
 
 namespace FellowOakDicom.Tests.IO
@@ -36,6 +37,14 @@ namespace FellowOakDicom.Tests.IO
         }
 
         [Fact]
+        public void SwapBytes2_Span_SwapsOnlyWithinSlice()
+        {
+            var bytes = new byte[] { 0xAA, 0x12, 0x34, 0x56, 0x78, 0xBB };
+            Endian.SwapBytes2(bytes.AsSpan(1, 4));
+            Assert.Equal(new byte[] { 0xAA, 0x34, 0x12, 0x78, 0x56, 0xBB }, bytes);
+        }
+
+        [Fact]
         public void SwapBytes4_AlignedCount_SwapsAllGroups()
         {
             var bytes = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x11, 0x22, 0x33, 0x44 };
@@ -50,6 +59,41 @@ namespace FellowOakDicom.Tests.IO
             Endian.SwapBytes4(bytes, 6);
             // First quad swapped, remaining 2 bytes preserved.
             Assert.Equal(new byte[] { 0x04, 0x03, 0x02, 0x01, 0x05, 0x06 }, bytes);
+        }
+
+        [Fact]
+        public void SwapBytes4_Span_SwapsOnlyWithinSlice()
+        {
+            var bytes = new byte[] { 0xAA, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xBB };
+            Endian.SwapBytes4(bytes.AsSpan(1, 6));
+            Assert.Equal(new byte[] { 0xAA, 0x04, 0x03, 0x02, 0x01, 0x05, 0x06, 0xBB }, bytes);
+        }
+
+        [Fact]
+        public void SwapBytes_Span_UnitSize8_SwapsOnlyWithinSlice()
+        {
+            var bytes = new byte[] { 0xAA, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0xBB };
+            Endian.SwapBytes(8, bytes.AsSpan(1, 9));
+            Assert.Equal(new byte[] { 0xAA, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x09, 0xBB }, bytes);
+        }
+
+        [Fact]
+        public void SwapBytes_Span_UnitSize3_ReversesGroupsAndLeavesRemainder()
+        {
+            var bytes = new byte[] { 0xAA, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0xBB };
+            Endian.SwapBytes(3, bytes.AsSpan(1, 8));
+            Assert.Equal(new byte[] { 0xAA, 0x03, 0x02, 0x01, 0x06, 0x05, 0x04, 0x07, 0x08, 0xBB }, bytes);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void SwapBytes_Span_UnitSizeOneOrLess_LeavesBytesUntouched(int bytesToSwap)
+        {
+            var bytes = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+            Endian.SwapBytes(bytesToSwap, bytes.AsSpan());
+            Assert.Equal(new byte[] { 0x01, 0x02, 0x03, 0x04 }, bytes);
         }
 
         [Fact]
