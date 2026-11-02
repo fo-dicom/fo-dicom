@@ -3,6 +3,7 @@
 #nullable disable
 
 using BenchmarkDotNet.Attributes;
+using FellowOakDicom.IO.Buffer;
 
 namespace FellowOakDicom.Benchmark
 {
@@ -88,6 +89,61 @@ namespace FellowOakDicom.Benchmark
         {
             return BuildLargePrivateDataset();
         }
+
+
+        [Benchmark]
+        public DicomDataset GetValueSetup()
+        {
+            var ds = new DicomDataset();
+            ds.Add(new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new MemoryByteBuffer("1.2.34565.151321243214"u8.ToArray())));
+
+            return ds;
+        }
+
+        [Benchmark]
+        public DicomUID GetValueLegacy()
+        {
+            var ds = new DicomDataset();
+            ds.Add(new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new MemoryByteBuffer("1.2.34565.151321243214"u8.ToArray())));
+
+            var uid = ds.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            return uid;
+        }
+
+
+        [Benchmark]
+        public DicomUID GetValueLegacyAccessTwoTimes()
+        {
+            var ds = new DicomDataset();
+            ds.Add(new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new MemoryByteBuffer("1.2.34565.151321243214"u8.ToArray())));
+
+            var uid1 = ds.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            var uid = ds.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
+            return uid;
+        }
+
+        [Benchmark]
+        public DicomUID GetValueNew()
+        {
+            var ds = new DicomDataset();
+            ds.Add(new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new MemoryByteBuffer("1.2.34565.151321243214"u8.ToArray())));
+
+            var uid = ds.GetSingleValue(DicomTag.SOPInstanceUID);
+            return uid;
+        }
+
+        [Benchmark]
+        public DicomUID GetValueNewAccessTwoTimes()
+        {
+            var ds = new DicomDataset();
+            ds.Add(new DicomUniqueIdentifier(DicomTag.SOPInstanceUID, new MemoryByteBuffer("1.2.34565.151321243214"u8.ToArray())));
+
+            var uid1 = ds.GetSingleValue(DicomTag.SOPInstanceUID);
+            var uid = ds.GetSingleValue(DicomTag.SOPInstanceUID);
+            return uid;
+        }
+
+
 
         private static DicomDataset BuildLargePrivateDataset()
         {

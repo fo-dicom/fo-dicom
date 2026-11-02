@@ -36,7 +36,7 @@ namespace FellowOakDicom
             ValidateItems = dataset.ValidateItems;
             Version = new byte[] { 0x00, 0x01 };
 
-            MediaStorageSOPClassUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID);
+            MediaStorageSOPClassUID = dataset.GetSingleValue(DicomTag.SOPClassUID);
             MediaStorageSOPInstanceUID = dataset.GetSingleValue<DicomUID>(DicomTag.SOPInstanceUID);
             TransferSyntax = dataset.InternalTransferSyntax;
 

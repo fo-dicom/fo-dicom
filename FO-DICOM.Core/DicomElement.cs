@@ -34,6 +34,8 @@ namespace FellowOakDicom
 
         public uint Length => (uint)(Buffer?.Size ?? 0);
 
+        public abstract string GetString();
+
         public abstract T Get<T>(int item = -1);
 
         public override void Validate()
@@ -151,6 +153,8 @@ namespace FellowOakDicom
         #endregion
 
         #region Public Methods
+
+        public override string GetString() => StringValue;
 
         public override T Get<T>(int item = -1)
         {
@@ -408,6 +412,15 @@ namespace FellowOakDicom
         /// </summary>
         protected string[] DateFormats { get; }
 
+        public DateTime[] DateValues
+        {
+            get
+            {
+                EnsureParsedValues();
+                return _values;
+            }
+        }
+
         #endregion
 
         #region METHODS
@@ -430,47 +443,19 @@ namespace FellowOakDicom
                 if (vals.Length >= 2)
                 {
                     if (!string.IsNullOrEmpty(vals[0]))
-                        range.Minimum = DateTime.ParseExact(
-                            vals[0],
-                            DateFormats,
-                            _dicomDateElementFormat,
-                            _dicomDateElementStyle);
+                        range.Minimum = ParseString(vals[0]);
                     if (!string.IsNullOrEmpty(vals[1]))
-                        range.Maximum = DateTime.ParseExact(
-                            vals[1],
-                            DateFormats,
-                            _dicomDateElementFormat,
-                            _dicomDateElementStyle);
+                        range.Maximum = ParseString(vals[1]);
                 }
                 else if (vals.Length == 1)
                 {
-                    range.Minimum = DateTime.ParseExact(
-                        vals[0],
-                        DateFormats,
-                        _dicomDateElementFormat,
-                        _dicomDateElementStyle);
+                    range.Minimum = ParseString(vals[0]);
                     range.Maximum = range.Minimum.AddDays(1).AddMilliseconds(-1);
                 }
                 return (T)(object)range;
             }
 
-            if (_values == null)
-            {
-                string[] vals = base.Get<string[]>();
-                if (vals.Length == 1 && string.IsNullOrEmpty(vals[0]))
-                {
-                    _values = Array.Empty<DateTime>();
-                }
-                else
-                {
-                    _values = vals.Select(val => DateTime.ParseExact(
-                            val,
-                            DateFormats,
-                            _dicomDateElementFormat,
-                            _dicomDateElementStyle))
-                        .ToArray();
-                }
-            }
+            EnsureParsedValues();
 
             if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object))
             {
@@ -489,8 +474,30 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+        private void EnsureParsedValues()
+        {
+            if (_values == null)
+            {
+                string[] vals = base.StringValues;
+                if (vals.Length == 1 && string.IsNullOrEmpty(vals[0]))
+                {
+                    _values = [];
+                }
+                else
+                {
+                    _values = [.. vals.Select(val => ParseString(val))];
+                }
+            }
+        }
+
         #endregion
 
+        private DateTime ParseString(string value)
+            => DateTime.ParseExact(
+                            value,
+                            DateFormats,
+                            _dicomDateElementFormat,
+                            _dicomDateElementStyle);
     }
 
     public abstract class DicomValueElement<Tv> : DicomElement
@@ -530,6 +537,9 @@ namespace FellowOakDicom
         #endregion
 
         #region Public Members
+
+        public override string GetString()
+            => string.Join("\\", Values.Select(v => v.ToString()));
 
         public override T Get<T>(int item = -1)
         {
@@ -740,6 +750,9 @@ namespace FellowOakDicom
 
         #region Public Members
 
+        public override string GetString()
+            => string.Join("\\", Values.Select(x => x.ToString()));
+
         public override T Get<T>(int item = -1)
         {
             if (item == -1) item = 0;
@@ -838,15 +851,15 @@ namespace FellowOakDicom
         {
             get
             {
-                _formats ??= new[]
-                {
+                _formats ??=
+                [
                     "yyyyMMdd",
                     "yyyy.MM.dd",
                     "yyyy/MM/dd",
                     "yyyy",
                     "yyyyMM",
                     "yyyy.MM"
-                };
+                ];
                 return _formats;
             }
         }
@@ -1145,6 +1158,15 @@ namespace FellowOakDicom
 
         private int[] _values;
 
+        public int[] Values
+        {
+            get
+            {
+                EnsureParsedValues();
+                return _values;
+            }
+        }
+
         public override T Get<T>(int item = -1)
         {
             // no need to parse values if returning string(s)
@@ -1156,16 +1178,7 @@ namespace FellowOakDicom
                 item = 0;
             }
 
-            if (_values == null)
-            {
-                var parts = base.Get<string[]>();
-                var parsed = new int[parts.Length];
-                for (var i = 0; i < parts.Length; i++)
-                {
-                    parsed[i] = int.Parse(parts[i].AsSpan(), NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-                }
-                _values = parsed;
-            }
+            EnsureParsedValues();
 
             if (typeof(T) == typeof(int) || typeof(T) == typeof(object))
             {
@@ -1221,6 +1234,20 @@ namespace FellowOakDicom
             return base.Get<T>(item);
         }
 
+
+        private void EnsureParsedValues()
+        {
+            if (_values == null)
+            {
+                var parts = base.StringValues;
+                var parsed = new int[parts.Length];
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    parsed[i] = int.Parse(parts[i].AsSpan(), NumberStyles.Integer | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+                }
+                _values = parsed;
+            }
+        }
         #endregion
     }
 
@@ -1909,16 +1936,22 @@ namespace FellowOakDicom
 
         public override DicomVR ValueRepresentation => DicomVR.UI;
 
+        public DicomUID[] Values
+        {
+            get
+            {
+                EnsureParsed();
+                return _values;
+            }
+        }
+
         #endregion
 
         #region Public Members
 
         public override T Get<T>(int item = -1)
         {
-            if (_values == null)
-            {
-                _values = base.Get<string[]>().Select(s => DicomUID.Parse(s)).ToArray();
-            }
+            EnsureParsed();
 
             if (typeof(T) == typeof(DicomTransferSyntax))
             {
@@ -1944,6 +1977,14 @@ namespace FellowOakDicom
         }
 
         #endregion
+
+        private void EnsureParsed()
+        {
+            if (_values == null)
+            {
+                _values = base.Get<string[]>().Select(s => DicomUID.Parse(s)).ToArray();
+            }
+        }
     }
 
     /// <summary>Unsigned Long (UL)</summary>

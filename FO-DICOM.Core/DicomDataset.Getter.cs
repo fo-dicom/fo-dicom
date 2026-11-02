@@ -388,6 +388,11 @@ namespace FellowOakDicom
             }
         }
 
+        public DicomUID GetSingleValue(DicomTagUI tag)
+        {
+            return GetElem(tag).Values[0];
+        }
+
 
 
         /// <summary>
