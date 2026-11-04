@@ -239,6 +239,45 @@ namespace FellowOakDicom.Tests
             Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
         }
 
+        [Fact]
+        public void Open_FromStream_UsingNoSeek_BlockAlignedLength_YieldsValidDicomFile()
+        {
+            var (file, stream) = CreateBlockAlignedUnseekableFile();
+            var openFile = DicomFile.Open(stream);
+            Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
+        }
+
+        [Fact]
+        public async Task OpenAsync_FromStream_UsingNoSeek_BlockAlignedLength_YieldsValidDicomFile()
+        {
+            var (file, stream) = CreateBlockAlignedUnseekableFile();
+            var openFile = await DicomFile.OpenAsync(stream);
+            Assert.True(new DicomDatasetComparer().Equals(file.Dataset, openFile.Dataset));
+        }
+
+        /// <summary>
+        /// Creates a file whose encoded length is an exact multiple of the 4096 bytes block size used to buffer
+        /// unseekable streams, padded with Data Set Trailing Padding.
+        /// </summary>
+        private static (DicomFile File, UnseekableStream Stream) CreateBlockAlignedUnseekableFile()
+        {
+            const int blockSize = 4096;
+            // Explicit VR Little Endian OB element header: tag (4) + VR (2) + reserved (2) + length (4).
+            const int paddingHeaderLength = 12;
+
+            var file = new DicomFile(new DicomDataset(_minimumDataset));
+            var unpadded = new MemoryStream();
+            file.Save(unpadded);
+            var paddingLength = 2 * blockSize - (int)((unpadded.Length + paddingHeaderLength) % blockSize);
+            file.Dataset.Add(DicomTag.DataSetTrailingPadding, new byte[paddingLength]);
+
+            var stream = new UnseekableStream();
+            file.Save(stream);
+            Assert.Equal(0, stream.Length % blockSize);
+            stream.Reset();
+            return (file, stream);
+        }
+
         [Theory]
         [MemberData(nameof(FileNames))]
         public void Open_FileFromStream_UsingNoSeek_YieldsValidDicomFile(string fileName)
