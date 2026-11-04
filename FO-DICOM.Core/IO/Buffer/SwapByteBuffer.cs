@@ -67,7 +67,7 @@ namespace FellowOakDicom.IO.Buffer
             }
             
             Internal.GetByteRange(offset, count, output);
-            Endian.SwapBytes(UnitSize, output);
+            Endian.SwapBytes(UnitSize, output, count);
         }
 
         public void CopyToStream(Stream stream)
