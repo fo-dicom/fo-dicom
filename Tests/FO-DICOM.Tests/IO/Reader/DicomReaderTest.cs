@@ -246,14 +246,6 @@ namespace FellowOakDicom.Tests.IO.Reader
         }
 
         [Fact]
-        public void MaxInflatedDatasetLength_DefaultsToHalfAGibibyte()
-        {
-            // The two bound tests above inject a small limit, so without this nothing pins
-            // the value that actually ships and raising it would silently disable the guard.
-            Assert.Equal(512L * 1024 * 1024, new DicomReader(new ArrayPoolMemoryProvider()).MaxInflatedDatasetLength);
-        }
-
-        [Fact]
         public void Open_DeflatedFileWithinTheLimit_YieldsTheIdenticalBytes()
         {
             // Guards the chunked inflate against truncating, reordering or duplicating

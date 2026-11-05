@@ -53,7 +53,7 @@ namespace FellowOakDicom.IO.Reader
 
         /// <summary>
         /// Gets or sets the maximum number of bytes a deflated dataset may inflate to,
-        /// 512 MiB by default.
+        /// <see cref="DicomFile.MaxInflatedDatasetLength"/> when the reader is created.
         /// </summary>
         /// <remarks>
         /// A deflated stream is inflated in full before the first element is parsed, so no
@@ -64,7 +64,7 @@ namespace FellowOakDicom.IO.Reader
         /// value - measured at 2.4x for the default - because the buffer grows by doubling
         /// and copying and the superseded buffers are not collected immediately.
         /// </remarks>
-        internal long MaxInflatedDatasetLength { get; set; } = 512L * 1024 * 1024;
+        internal long MaxInflatedDatasetLength { get; set; } = DicomFile.MaxInflatedDatasetLength;
 
         /// <summary>
         /// Gets or sets the DICOM dictionary to be used by the reader.

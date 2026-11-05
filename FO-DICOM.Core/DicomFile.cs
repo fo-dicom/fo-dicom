@@ -125,6 +125,27 @@ namespace FellowOakDicom
         /// </summary>
         public bool IsPartial { get; protected set; }
 
+        private static long _maxInflatedDatasetLength = 512L * 1024 * 1024;
+
+        /// <summary>
+        /// Gets or sets the maximum number of bytes the dataset of a deflated file may inflate to,
+        /// 512 MiB by default. A file whose dataset inflates beyond it fails to open with a
+        /// <see cref="DicomFileException"/>.
+        /// </summary>
+        /// <remarks>
+        /// The setting is process-wide, so it also covers the files opened for received C-STORE
+        /// requests. Peak memory while inflating is a multiple of this value, about 2.4 times for
+        /// the default.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">The value is zero or negative.</exception>
+        public static long MaxInflatedDatasetLength
+        {
+            get => _maxInflatedDatasetLength;
+            set => _maxInflatedDatasetLength = value > 0
+                ? value
+                : throw new ArgumentOutOfRangeException(nameof(value), value, "The maximum inflated dataset length must be positive.");
+        }
+
         #endregion
 
         #region METHODS
