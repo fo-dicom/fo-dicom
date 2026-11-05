@@ -115,4 +115,10 @@ namespace FellowOakDicom.Tests
     public class WithHttpClientFixture : ICollectionFixture<HttpClientFixture>
     {
     }
+
+    // Its tests change a process-wide setting, so it runs alone, after the parallel collections.
+    [CollectionDefinition(TestCollections.GlobalSettings, DisableParallelization = true)]
+    public class GlobalSettingsCollection : ICollectionFixture<GlobalFixture>
+    {
+    }
 }

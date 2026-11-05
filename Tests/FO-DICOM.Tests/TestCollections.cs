@@ -13,5 +13,6 @@ namespace FellowOakDicom.Tests
         public const string Validation = "Validation";
         public const string WithTranscoder = "WithTranscoder";
         public const string WithHttpClient = "WithHttpClient";
+        public const string GlobalSettings = "GlobalSettings";
     }
 }
