@@ -135,18 +135,25 @@ namespace FellowOakDicom.IO
             {
                 throw new NotSupportedException();
             }
+            else if (absoluteOffset <= _underlyingPosition)
+            {
+                // Seeking within the buffered data. Length must not be queried here, because it may read the next
+                // block and rotate the buffers, which would move the target out of the seek-back window.
+                if (_hasReachedEnd && absoluteOffset > _underlyingLastReadPosition)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _seekBackBufferPosition = absoluteOffset;
+                return _seekBackBufferPosition;
+            }
             else if (absoluteOffset > Length)
             {
                 throw new NotSupportedException();
             }
-            else if (absoluteOffset > _underlyingPosition)
-            {
-                return SeekForward(absoluteOffset);
-            }
             else
             {
-                _seekBackBufferPosition = absoluteOffset;
-                return _seekBackBufferPosition;
+                return SeekForward(absoluteOffset);
             }
         }
 

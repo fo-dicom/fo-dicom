@@ -81,6 +81,28 @@ namespace FellowOakDicom.Tests.IO
             Assert.Equal(data.Skip(data.Length - 100).ToArray(), actual);
         }
 
+        [Theory]
+        [InlineData(32, 0)]
+        [InlineData(32, 15)]
+        [InlineData(32, 16)]
+        [InlineData(32, 31)]
+        [InlineData(64, 0)]
+        [InlineData(64, 15)]
+        [InlineData(64, 16)]
+        [InlineData(64, 31)]
+        public void Seek_BackWithinBufferedDataAtBlockBoundary_ReadsExpectedByte(int dataLength, int seekTarget)
+        {
+            // After reading exactly two blocks, the position is at a block boundary. Seeking back within the two
+            // buffered blocks must not read the next block, otherwise the target falls out of the seek-back window.
+            const int bufferSize = 16;
+            var data = CreateData(dataLength);
+            using var stream = new ReadBufferedStream(new UnseekableStream(data), bufferSize);
+
+            Assert.Equal(2 * bufferSize, stream.Read(new byte[2 * bufferSize], 0, 2 * bufferSize));
+            Assert.Equal(seekTarget, stream.Seek(seekTarget, SeekOrigin.Begin));
+            Assert.Equal(data[seekTarget], stream.ReadByte());
+        }
+
         private static byte[] CreateData(int length) => Enumerable.Range(0, length).Select(i => (byte)i).ToArray();
 
         private static byte[] ReadAll(Stream stream, int chunkSize)
