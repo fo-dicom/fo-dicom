@@ -135,18 +135,25 @@ namespace FellowOakDicom.IO
             {
                 throw new NotSupportedException();
             }
+            else if (absoluteOffset <= _underlyingPosition)
+            {
+                // Seeking within the buffered data. Length must not be queried here, because it may read the next
+                // block and rotate the buffers, which would move the target out of the seek-back window.
+                if (_hasReachedEnd && absoluteOffset > _underlyingLastReadPosition)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _seekBackBufferPosition = absoluteOffset;
+                return _seekBackBufferPosition;
+            }
             else if (absoluteOffset > Length)
             {
                 throw new NotSupportedException();
             }
-            else if (absoluteOffset > _underlyingPosition)
-            {
-                return SeekForward(absoluteOffset);
-            }
             else
             {
-                _seekBackBufferPosition = absoluteOffset;
-                return _seekBackBufferPosition;
+                return SeekForward(absoluteOffset);
             }
         }
 
@@ -180,7 +187,21 @@ namespace FellowOakDicom.IO
 
         public override bool CanWrite => false;
 
-        public override long Length => _hasReachedEnd ? _underlyingLastReadPosition : long.MaxValue;
+        public override long Length
+        {
+            get
+            {
+                // The end of the underlying stream is only detected when a block is not filled completely.
+                // If its length is an exact multiple of the buffer size, every block is filled, so once all buffered
+                // data has been consumed the next block has to be read to find out whether there is more data.
+                if (!_hasReachedEnd && _seekBackBufferPosition == _underlyingPosition)
+                {
+                    ReadNextBlock();
+                }
+
+                return _hasReachedEnd ? _underlyingLastReadPosition : long.MaxValue;
+            }
+        }
 
         public override void SetLength(long value) => _underlyingStream.SetLength(value);
 

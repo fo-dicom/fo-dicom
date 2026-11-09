@@ -102,3 +102,4 @@
 * [Jon Kelling](https://github.com/jonkelling)
 * [Abraham Tehrani](https://github.com/atehrani-statrad)
 * [David Dashti](https://github.com/Dashtid)
+* [Alexey Marinyak](https://github.com/amarinyak)
