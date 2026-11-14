@@ -227,11 +227,7 @@ namespace FellowOakDicom.Imaging
             var overlays = new List<DicomOverlayData>();
             foreach (var group in groups)
             {
-                // ensure that 6000 group is actually an overlay group, including containing bare minimum of attributes.
-                if (ds.GetDicomItem<DicomElement>(new DicomTag(group, 0x0010)).ValueRepresentation != DicomVR.US ||
-                    string.IsNullOrEmpty(ds.GetSingleValueOrDefault<string>(OverlayTag(group, DicomTag.OverlayType), null)) ||
-                   ds.GetValueOrDefault<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) == 0 ||
-                   ds.GetValueOrDefault<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) == 0)
+                if (!IsValidOverlayGroup(ds, group))
                 {
                     continue;
                 }
@@ -250,20 +246,29 @@ namespace FellowOakDicom.Imaging
         /// <returns>True if dataset contains embedded overlays, false otherwise.</returns>
         public static bool HasEmbeddedOverlays(DicomDataset ds)
         {
-            var groups = new List<ushort>();
-            groups.AddRange(
-                ds.Where(x => DicomOverlayData.IsOverlaySequence(x) && x.Tag.Element == 0x0010)
-                    .Select(x => x.Tag.Group));
-
-            foreach (var group in groups)
+            foreach (var item in ds)
             {
-                if (!ds.Contains(new DicomTag(group, DicomTag.OverlayData.Element)))
+                if (IsOverlaySequence(item) && item.Tag.Element == 0x0010)
                 {
-                    return true;
+                    var group = item.Tag.Group;
+                    if (IsValidOverlayGroup(ds, group) &&
+                        !ds.Contains(new DicomTag(group, DicomTag.OverlayData.Element)))
+                    {
+                        return true;
+                    }
                 }
             }
 
             return false;
+        }
+
+        private static bool IsValidOverlayGroup(DicomDataset ds, ushort group)
+        {
+            // ensure that 6000 group is actually an overlay group, including containing bare minimum of attributes.
+            return ds.GetDicomItem<DicomElement>(new DicomTag(group, 0x0010))?.ValueRepresentation == DicomVR.US &&
+                !string.IsNullOrEmpty(ds.GetSingleValueOrDefault<string>(OverlayTag(group, DicomTag.OverlayType), null)) &&
+                ds.GetValueOrDefault<ushort>(OverlayTag(group, DicomTag.OverlayColumns), 0, 0) > 0 &&
+                ds.GetValueOrDefault<ushort>(OverlayTag(group, DicomTag.OverlayRows), 0, 0) > 0;
         }
 
         #endregion
