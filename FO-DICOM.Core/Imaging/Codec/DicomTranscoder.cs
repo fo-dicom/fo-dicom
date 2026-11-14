@@ -85,6 +85,18 @@ namespace FellowOakDicom.Imaging.Codec
             var input = dataset;
             if (input.InternalTransferSyntax.IsEncapsulated)
             {
+                if (input.Contains(DicomTag.PixelData))
+                {
+                    var pixelData = DicomPixelData.CreateFromDataset(input);
+                    if (pixelData.NumberOfFrames > 1)
+                    {
+                        var singleFrameDataset = input.Clone();
+                        var singleFramePixelData = DicomPixelData.CreateNew(singleFrameDataset);
+                        singleFramePixelData.AddFrame(pixelData.GetFrame(0));
+                        input = singleFrameDataset;
+                    }
+                }
+
                 input = input.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
             }
 
@@ -316,10 +328,11 @@ namespace FellowOakDicom.Imaging.Codec
                     continue;
                 }
 
+                var data = overlay.Data;
+
                 output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitsAllocated.Element), (ushort)1);
                 output.AddOrUpdate(new DicomTag(overlay.Group, DicomTag.OverlayBitPosition.Element), (ushort)0);
 
-                var data = overlay.Data;
                 if (output.InternalTransferSyntax.IsExplicitVR)
                 {
                     output.AddOrUpdate(new DicomOtherByte(dataTag, data));

@@ -202,9 +202,23 @@ namespace FellowOakDicom.Tests.Imaging
             var hasEmbeddedOverlay = DicomOverlayData.HasEmbeddedOverlays(dataset);
             Assert.False(hasEmbeddedOverlay);
 
-            dataset.AddOrUpdate(new DicomLongString(new DicomTag(0x6002, 0x0010), "Generic Data"));
+            dataset.AddOrUpdate(new DicomUnsignedShort(new DicomTag(0x6002, 0x0010), 10));
+            dataset.AddOrUpdate(new DicomUnsignedShort(new DicomTag(0x6002, 0x0011), 10));
+            dataset.AddOrUpdate(new DicomCodeString(new DicomTag(0x6002, 0x0040), "G"));
             hasEmbeddedOverlay = DicomOverlayData.HasEmbeddedOverlays(dataset);
             Assert.True(hasEmbeddedOverlay);
+        }
+
+        [Fact]
+        public void HasEmbeddedOverlays_IncompleteOverlayGroup_ReturnsFalse()
+        {
+            var dataset = new DicomDataset
+            {
+                new DicomUnsignedShort(new DicomTag(0x6000, 0x0010), 708)
+            };
+
+            Assert.False(DicomOverlayData.HasEmbeddedOverlays(dataset));
+            Assert.Same(dataset, FellowOakDicom.Imaging.Codec.DicomTranscoder.ExtractOverlays(dataset));
         }
 
     }
